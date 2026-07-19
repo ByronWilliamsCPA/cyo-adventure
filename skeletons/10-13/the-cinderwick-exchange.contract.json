@@ -1,0 +1,1505 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-cinderwick-exchange",
+  "age_band": "10-13",
+  "legacy_lexicon": [
+    "Wren",
+    "Wren Ashby",
+    "Odell Vane",
+    "Nightmaster Odell Vane",
+    "Marrow Hollow",
+    "Cinderwick Exchange",
+    "Turning",
+    "keykeeper",
+    "true-time signal",
+    "true-time token",
+    "Junia",
+    "Doran",
+    "Marlow",
+    "Effie",
+    "Clockloft",
+    "Whispering Gallery",
+    "Cistern",
+    "Cartway"
+  ],
+  "default_binding": {
+    "HERO": "Wren Ashby",
+    "NIGHTMASTER": "Nightmaster Odell Vane",
+    "ROLE_TITLE": "keykeeper",
+    "KEYRING": "brass keyring",
+    "THRESHOLD": "the Cinderwick Exchange",
+    "THRESHOLD_DESC": "tall brick message-and-clock house above the mills",
+    "ENTRANCE_DOOR": "great brass door",
+    "TOWN": "Marrow Hollow",
+    "EVENT_NAME": "Turning",
+    "DEADLINE": "midnight",
+    "SIGNAL": "true-time signal",
+    "T1_HALL": "the Clockloft",
+    "T1_MENTOR": "Junia",
+    "T1_ARTIFACT": "great pendulum",
+    "T1A_TOOL": "worn escapement pallet",
+    "T1B_TOOL": "count-wheel",
+    "T1B_PIN": "dropped brass pin",
+    "T1B_MARKS": "initials of a hundred keepers",
+    "T1B_LOGBOOK": "keeper's logbook",
+    "T1C_TOOL": "brass trim-weights",
+    "T1A_END1": "The True Tick",
+    "T1A_END2": "A Few Minutes Behind",
+    "T1B_END": "A Hundred Keepers",
+    "T1C_END1": "The Patient Swing",
+    "T1C_END2": "The Silent Hour",
+    "T2_HALL": "the Whispering Gallery",
+    "T2_MENTOR": "Doran",
+    "T2_ARTIFACT": "true message",
+    "T2_FOCUSSTONE": "focus-stone",
+    "T2_DOME": "sound-dome",
+    "T2_FALSEECHO": "false echo",
+    "T2A_TOOL": "cracked horn",
+    "T2C_TOOL": "master horn",
+    "T2A_END1": "The Cancelling Angle",
+    "T2A_END2": "The Missing Words",
+    "T2B_END": "The Breathing Voice",
+    "T2C_END1": "The Voice Past the Rail",
+    "T2C_END2": "The Coaxing Dark",
+    "T3_HALL": "the Cistern",
+    "T3_MENTOR": "Marlow",
+    "T3_ARTIFACT": "flood",
+    "T3_UNDERWORKS": "flooded underworks",
+    "T3A_CLAMP": "iron clamp",
+    "T3A_WOOL": "lead wool",
+    "T3B_TOOL": "header pump handle",
+    "T3C_TOOL": "great stop-valve",
+    "T3A_END1": "The Iron Clamp",
+    "T3A_END2": "A Thin Breath",
+    "T3B_END": "Two Backs and a Will",
+    "T3C_END1": "One Breathing Machine",
+    "T3C_END2": "The Sheared Spindle",
+    "T4_HALL": "the Cartway",
+    "T4_MENTOR": "Effie",
+    "T4_CAPSULE": "midnight capsule",
+    "T4_TOKEN": "true-time token",
+    "T4_BOARD": "routing board",
+    "T4_TUBEROOM": "pneumatic tube room",
+    "T4_VEINS": "brass veins",
+    "T4A_TOOL": "sticky junction flap",
+    "T4C_TOOL": "chaser capsule",
+    "T4A_END1": "The Rescued Token",
+    "T4A_END2": "Stuck in the Veins",
+    "T4B_END": "The Gathered Breath",
+    "T4C_END1": "The Training Round",
+    "T4C_END2": "Two Jams from One"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist, the newly chosen keykeeper.",
+      "guidance": "A single kid-relatable protagonist; capable but not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "NIGHTMASTER",
+          "T1_MENTOR",
+          "T2_MENTOR",
+          "T3_MENTOR",
+          "T4_MENTOR"
+        ]
+      }
+    },
+    {
+      "id": "NIGHTMASTER",
+      "scope": "global",
+      "meaning": "The night-long overseer who assigns halls and confirms outcomes.",
+      "guidance": "A kindly, competent authority; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "T1_MENTOR",
+          "T2_MENTOR",
+          "T3_MENTOR",
+          "T4_MENTOR"
+        ]
+      }
+    },
+    {
+      "id": "ROLE_TITLE",
+      "scope": "global",
+      "meaning": "The title of the hero's assigned duty for the night.",
+      "guidance": "A duty/office title a child could plausibly be entrusted with for one night.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEYRING",
+      "scope": "global",
+      "meaning": "The token of office pressed into the hero's hand at arrival.",
+      "guidance": "A benign token of office; carries no danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded building the story happens inside.",
+      "guidance": "One entrance, four internal halls, self-contained; wonder over dread.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD_DESC",
+      "scope": "global",
+      "meaning": "The physical exterior form of the threshold building.",
+      "guidance": "A grand but ordinary building exterior; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE_DOOR",
+      "scope": "global",
+      "meaning": "The single entry point the hero opens at n_start.",
+      "guidance": "The building's single welcoming entry point; always safe to use.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TOWN",
+      "scope": "global",
+      "meaning": "The community whose fortunes depend on the threshold's nightly work.",
+      "guidance": "The off-stage community whose ordinary life depends on tonight's work.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "EVENT_NAME",
+      "scope": "global",
+      "meaning": "The short name of the recurring annual event/night.",
+      "guidance": "A recurring, benign annual occasion; repeatable so a return visit reads true.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The hour by which each hall's task must be finished.",
+      "guidance": "A survivable deadline: missing it means a late or thin result, never harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SIGNAL",
+      "scope": "global",
+      "meaning": "The shared stake: the thing the whole building must send by the deadline.",
+      "guidance": "The unifying goal across all four halls; never itself dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T1_HALL",
+      "scope": "route",
+      "meaning": "The proper name of hall 1.",
+      "guidance": "A workshop-like room; mechanical, not menacing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "T2_HALL",
+          "T3_HALL",
+          "T4_HALL"
+        ]
+      }
+    },
+    {
+      "id": "T1_MENTOR",
+      "scope": "route",
+      "meaning": "The NPC guide for hall 1.",
+      "guidance": "A patient craft mentor; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "NIGHTMASTER",
+          "T2_MENTOR",
+          "T3_MENTOR",
+          "T4_MENTOR"
+        ]
+      }
+    },
+    {
+      "id": "T1_ARTIFACT",
+      "scope": "route",
+      "meaning": "Hall 1's central mechanism, whose trouble drives the whole hall.",
+      "guidance": "A large benign mechanism; its fault is mundane wear, not danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T1A_TOOL",
+      "scope": "track",
+      "meaning": "The object worked on in hall 1's first method (the bench path).",
+      "guidance": "A small precision part; safe to handle with care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "T1B_TOOL",
+          "T1C_TOOL"
+        ]
+      }
+    },
+    {
+      "id": "T1B_TOOL",
+      "scope": "track",
+      "meaning": "The object worked on in hall 1's second method (the climb path).",
+      "guidance": "A jammed mechanical part; freeing it is fiddly, not dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "T1A_TOOL",
+          "T1C_TOOL"
+        ]
+      }
+    },
+    {
+      "id": "T1B_PIN",
+      "scope": "track",
+      "meaning": "The small dropped part at fault in hall 1's second method.",
+      "guidance": "A tiny dropped part; benign.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T1B_MARKS",
+      "scope": "track",
+      "meaning": "The carved discovery found while working hall 1's second method.",
+      "guidance": "A benign historical trace; wonder, not hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T1B_LOGBOOK",
+      "scope": "track",
+      "meaning": "The discovered record found at the close of hall 1's second method.",
+      "guidance": "A benign keepsake record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T1C_TOOL",
+      "scope": "track",
+      "meaning": "The object worked on in hall 1's third method (the balancing path).",
+      "guidance": "A set of small weights; safe to handle.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "T1A_TOOL",
+          "T1B_TOOL"
+        ]
+      }
+    },
+    {
+      "id": "T1A_END1",
+      "scope": "ending",
+      "meaning": "Ending: hall 1's first-method success.",
+      "guidance": "Positive; a real mended mechanism, honestly earned. Names ending t1_aa_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T1A_END2",
+      "scope": "ending",
+      "meaning": "Ending: hall 1's first-method setback.",
+      "guidance": "Negative but gentle; a late, imperfect but honest result. Names ending t1_ab_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T1B_END",
+      "scope": "ending",
+      "meaning": "Ending: hall 1's second-method completion (discovery).",
+      "guidance": "Neutral/positive; a discovered chain of past keepers. Names ending t1_b_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T1C_END1",
+      "scope": "ending",
+      "meaning": "Ending: hall 1's third-method completion.",
+      "guidance": "Positive; patient craft rewarded. Names ending t1_cc_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T1C_END2",
+      "scope": "ending",
+      "meaning": "Ending: hall 1's third-method capture/setback.",
+      "guidance": "Negative; a scare and a rescue, never harm, ending in safety. Names ending t1_cd_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T2_HALL",
+      "scope": "route",
+      "meaning": "The proper name of hall 2.",
+      "guidance": "An acoustic chamber; eerie sound, not menacing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "T1_HALL",
+          "T3_HALL",
+          "T4_HALL"
+        ]
+      }
+    },
+    {
+      "id": "T2_MENTOR",
+      "scope": "route",
+      "meaning": "The NPC guide for hall 2.",
+      "guidance": "A patient listening mentor; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "NIGHTMASTER",
+          "T1_MENTOR",
+          "T3_MENTOR",
+          "T4_MENTOR"
+        ]
+      }
+    },
+    {
+      "id": "T2_ARTIFACT",
+      "scope": "route",
+      "meaning": "The true signal hall 2 must recover from the noise.",
+      "guidance": "The honest signal hidden under noise; recovering it is the whole point.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T2_FOCUSSTONE",
+      "scope": "route",
+      "meaning": "The central listening post of hall 2.",
+      "guidance": "A benign listening post at the room's center.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T2_DOME",
+      "scope": "route",
+      "meaning": "The chamber shape that carries hall 2's echoes.",
+      "guidance": "A large acoustic chamber; atmospheric, not hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T2_FALSEECHO",
+      "scope": "route",
+      "meaning": "The antagonist noise-loop hall 2's trouble centers on.",
+      "guidance": "A misleading but non-menacing noise loop; a puzzle, not a monster.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T2A_TOOL",
+      "scope": "track",
+      "meaning": "The faulty object at the source of hall 2's first method.",
+      "guidance": "A damaged fixture; safe to work on.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "T2C_TOOL"
+        ]
+      }
+    },
+    {
+      "id": "T2C_TOOL",
+      "scope": "track",
+      "meaning": "The high object at the top of hall 2's third method.",
+      "guidance": "A high fixture reached by a safe climb with a guarded rail.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "T2A_TOOL"
+        ]
+      }
+    },
+    {
+      "id": "T2A_END1",
+      "scope": "ending",
+      "meaning": "Ending: hall 2's first-method success.",
+      "guidance": "Positive; the true message recovered cleanly. Names ending t2_aa_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T2A_END2",
+      "scope": "ending",
+      "meaning": "Ending: hall 2's first-method setback.",
+      "guidance": "Neutral/negative; a partial, guessed-at recovery. Names ending t2_ab_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T2B_END",
+      "scope": "ending",
+      "meaning": "Ending: hall 2's second-method success.",
+      "guidance": "Positive; the rarer gift of listening earns a keepsake. Names ending t2_b_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T2C_END1",
+      "scope": "ending",
+      "meaning": "Ending: hall 2's third-method completion (discovery).",
+      "guidance": "Neutral; passing a trust test at height, inside the safe rail. Names ending t2_cc_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T2C_END2",
+      "scope": "ending",
+      "meaning": "Ending: hall 2's third-method capture.",
+      "guidance": "Negative; a scare on an unsafe walkway, rescued to safety, never harmed. Names ending t2_cd_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T3_HALL",
+      "scope": "route",
+      "meaning": "The proper name of hall 3.",
+      "guidance": "A flooded underlevel; damp and urgent, not menacing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "T1_HALL",
+          "T2_HALL",
+          "T4_HALL"
+        ]
+      }
+    },
+    {
+      "id": "T3_MENTOR",
+      "scope": "route",
+      "meaning": "The NPC guide for hall 3.",
+      "guidance": "A capable, protective mentor; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "NIGHTMASTER",
+          "T1_MENTOR",
+          "T2_MENTOR",
+          "T4_MENTOR"
+        ]
+      }
+    },
+    {
+      "id": "T3_ARTIFACT",
+      "scope": "route",
+      "meaning": "The rising danger hall 3's trouble threatens (used in the sorting label).",
+      "guidance": "The rising water danger named in the sorting choice; always ultimately survivable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T3_UNDERWORKS",
+      "scope": "route",
+      "meaning": "The apposition describing hall 3's flooded underlevel.",
+      "guidance": "A benign apposition for the flooded underlevel.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T3A_CLAMP",
+      "scope": "track",
+      "meaning": "The slow, strong repair option in hall 3's first method.",
+      "guidance": "A slow, strong repair fitting; safe to use with care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "T3A_WOOL"
+        ]
+      }
+    },
+    {
+      "id": "T3A_WOOL",
+      "scope": "track",
+      "meaning": "The fast, weaker repair option in hall 3's first method.",
+      "guidance": "A quick, weaker packing material; safe to use.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "T3A_CLAMP"
+        ]
+      }
+    },
+    {
+      "id": "T3B_TOOL",
+      "scope": "track",
+      "meaning": "The manual object worked in hall 3's second method.",
+      "guidance": "A manual pump fixture; physically strenuous but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T3C_TOOL",
+      "scope": "track",
+      "meaning": "The large mechanism worked in hall 3's third method.",
+      "guidance": "A large valve wheel; stiff but safe to work.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T3A_END1",
+      "scope": "ending",
+      "meaning": "Ending: hall 3's first-method success.",
+      "guidance": "Positive; the careful repair holds. Names ending t3_aa_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T3A_END2",
+      "scope": "ending",
+      "meaning": "Ending: hall 3's first-method setback.",
+      "guidance": "Negative but gentle; a thin, honest partial fix. Names ending t3_ab_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T3B_END",
+      "scope": "ending",
+      "meaning": "Ending: hall 3's second-method completion.",
+      "guidance": "Positive; teamwork and effort win the day. Names ending t3_b_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T3C_END1",
+      "scope": "ending",
+      "meaning": "Ending: hall 3's third-method completion (discovery).",
+      "guidance": "Neutral; a discovery about the building's unity. Names ending t3_cc_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T3C_END2",
+      "scope": "ending",
+      "meaning": "Ending: hall 3's third-method setback.",
+      "guidance": "Negative but gentle; equipment breaks, hero stays safe. Names ending t3_cd_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T4_HALL",
+      "scope": "route",
+      "meaning": "The proper name of hall 4.",
+      "guidance": "A warm tube-and-lever room; mechanical, not menacing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "T1_HALL",
+          "T2_HALL",
+          "T3_HALL"
+        ]
+      }
+    },
+    {
+      "id": "T4_MENTOR",
+      "scope": "route",
+      "meaning": "The NPC guide for hall 4.",
+      "guidance": "A young, eager mentor; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "NIGHTMASTER",
+          "T1_MENTOR",
+          "T2_MENTOR",
+          "T3_MENTOR"
+        ]
+      }
+    },
+    {
+      "id": "T4_CAPSULE",
+      "scope": "route",
+      "meaning": "The stuck carrier hall 4's trouble centers on.",
+      "guidance": "A stuck message carrier; the whole hall's trouble.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T4_TOKEN",
+      "scope": "route",
+      "meaning": "The precious content inside hall 4's capsule.",
+      "guidance": "The precious content the capsule protects; benign object, not dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T4_BOARD",
+      "scope": "route",
+      "meaning": "The central control surface of hall 4.",
+      "guidance": "A benign control surface with levers and gauges.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T4_TUBEROOM",
+      "scope": "route",
+      "meaning": "The apposition describing hall 4's room.",
+      "guidance": "A benign apposition for the tube room.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T4_VEINS",
+      "scope": "route",
+      "meaning": "The network of tubes running through hall 4.",
+      "guidance": "The network of tubes; cramped, not hazardous if navigated with care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T4A_TOOL",
+      "scope": "track",
+      "meaning": "The obstruction worked on in hall 4's first method.",
+      "guidance": "A jammed fixture in a tight space; must be worked free with care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T4C_TOOL",
+      "scope": "track",
+      "meaning": "The tool sent down the tube in hall 4's third method.",
+      "guidance": "A blunt secondary tool; must be used gently, per the mentor's warning.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "T4A_END1",
+      "scope": "ending",
+      "meaning": "Ending: hall 4's first-method success.",
+      "guidance": "Positive; the token rescued whole. Names ending t4_aa_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T4A_END2",
+      "scope": "ending",
+      "meaning": "Ending: hall 4's first-method capture.",
+      "guidance": "Negative but gentle; a stuck-and-rescued scare, never harmed. Names ending t4_ab_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4B_END",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T4B_END",
+      "scope": "ending",
+      "meaning": "Ending: hall 4's second-method success.",
+      "guidance": "Positive; a clever solution from the board alone. Names ending t4_b_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4C_END1",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T4C_END1",
+      "scope": "ending",
+      "meaning": "Ending: hall 4's third-method completion (discovery).",
+      "guidance": "Neutral; a personal discovery about the mentor's own past. Names ending t4_cc_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END2"
+        ]
+      }
+    },
+    {
+      "id": "T4C_END2",
+      "scope": "ending",
+      "meaning": "Ending: hall 4's third-method setback.",
+      "guidance": "Negative but gentle; equipment wrecked, both unhurt. Names ending t4_cd_end.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "capture",
+          "toxic",
+          "despair"
+        ],
+        "distinct_from": [
+          "T1A_END1",
+          "T1A_END2",
+          "T1B_END",
+          "T1C_END1",
+          "T1C_END2",
+          "T2A_END1",
+          "T2A_END2",
+          "T2B_END",
+          "T2C_END1",
+          "T2C_END2",
+          "T3A_END1",
+          "T3A_END2",
+          "T3B_END",
+          "T3C_END1",
+          "T3C_END2",
+          "T4A_END1",
+          "T4A_END2",
+          "T4B_END",
+          "T4C_END1"
+        ]
+      }
+    }
+  ]
+}

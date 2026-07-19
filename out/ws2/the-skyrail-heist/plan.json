@@ -1,0 +1,505 @@
+{
+  "beats": {
+    "n_start": "the city of {CITY} at dusk, seen from {THRESHOLD}, where {SKYRAIL} catches the last light; you, the newest junior member of the {UNION_NAME}, summoned by {SUMMONS}; stationmistress {AUTHORITY} tells the hall plainly that the city's founding archive, {MISSION_ITEMS}, was lifted from the {ARCHIVE_SOURCE} three nights ago and rides tonight in a freight car of the {LINE_NAME} night express, which leaves at twelve minutes past nine and crosses {BORDER} at dawn",
+    "n_rules": "{AUTHORITY} raises {LEGAL_INSTRUMENT} so the whole hall can read the seal: the union acts tonight within the law; an adult officer must present the {LEGAL_INSTRUMENT}, and opening a sealed car takes the car's number plus one honest piece of cause; she names the union's safety law like a second seal, {SAFETY_LAW}, juniors read, count, signal, and speak while adults do all the climbing and carrying; {VEHICLE} calls at five viaduct stations, and its one long stop is the midnight water-stop at {WATERSTOP}, twenty-four minutes",
+    "n_plan": "the map table; {AUTHORITY} chalks the night: three crews, one train, one night, working three vantages and converging on {WATERSTOP}, where she herself, stationmistress of {WATERSTOP}, will stand on the platform with the {LEGAL_INSTRUMENT} from twenty to midnight; a courteous purser named {KEEPER} signed the freight manifest without reading it, she says, and a frightened junior clerk rides with the cargo; the union recovers, it does not raid; nothing angrier than paper and lamplight, if the night goes right",
+    "n_sort": "the sorting of the crews; Route-Warden {ROUTE_PL_LEAD}, dry and exact, leads the Planners from the {ROUTE_PL_BASE}: route boards, timetables, freight ledgers, the numbers that can open a sealed door; Rigger {ROUTE_CL_LEAD}, calm as ballast, leads the Climbers along the fixed {CL_GANTRY} to the junction's service cradle: adults ride {CL_CRADLE}, juniors belay, spot, and run the lanterns; Advocate {ROUTE_TK_LEAD}, who has never lost a parley, leads the Talkers aboard {VEHICLE} itself with honest tickets: {ROUTE_TK_BASE}, the purser's office, the conductor's parley; {AUTHORITY} asks where you will serve until dawn, and the choosing is yours",
+    "pl001": "{ROUTE_PL_BASE} over {CITY} Central, all brass and lamp glass; the {LINE_NAME} laid out on the route board as rows of small lights, {VEHICLE} waiting below as lamp twelve; {ROUTE_PL_LEAD} hands out timetable cards like a dealer who has never lost",
+    "pl002": "{ROUTE_PL_BASE}'s standing rule etched over the desk, {ROUTE_PL_METHOD}; {VEHICLE}'s paperwork pulled and laid flat, freight ledger and wagon manifest side by side under the green lamp",
+    "pl003": "two documents and one hour before departure; the weight ledger, columns of axle loads off the yard scale, and the wagon manifest, cars and cargos and consignees; {ROUTE_PL_LEAD} says pick your thread, numbers first or names first, because a night this short only unravels from one end at a time",
+    "pl004": "ledger columns tallied with a card ruler, junior fingers walking the axle loads line by line; {VEHICLE} declares forty-one tons behind the tender, neat as printed music",
+    "pl005": "{ROUTE_PL_BASE}'s own tally from the yard scale reads nine tons over the declaration; somewhere in {VEHICLE} a car rides heavy and unclaimed; {ROUTE_PL_LEAD}'s rule stares down from the wall, {ROUTE_PL_METHOD}, while the departure bell rings across the yard; check the figure against the axle-counter at {PL_WAYPOINT_1}, or run with it now and buy a head start",
+    "pl006": "waiting on {VEHICLE} to pass {PL_WAYPOINT_1} at five past ten; the axle-counter's ticker tape spools into a junior's hands while {ROUTE_PL_LEAD} mans the lamps, {ROUTE_PL_BASE} quiet as arithmetic",
+    "pl007": "the tape shows the overload riding one truck: freight {TARGET_CAR}, third from the rear, and the heavy car has a number now; cause must reach {AUTHORITY} before {WATERSTOP} spends itself; the {PL_TRANSPORT} leaves in four minutes and reaches {WATERSTOP} by twenty to twelve, or {ROUTE_PL_BASE} can lamp-code the finding ahead through the {PL_WAYPOINT_2} relay and follow after",
+    "pl008": "the tram across the sleeping city with the ledger page wrapped in oilcloth; rooftops and dark canals below, and away east {VEHICLE}'s twin lamps threading the viaduct arches",
+    "pl009": "{PL_WAYPOINT_2} slides past beneath the tram at 11:18 sharp, mail sacks swinging aboard {VEHICLE} in lamplight; the timetable holding like good masonry under the whole night",
+    "pl010": "{WATERSTOP} at twenty to midnight; {AUTHORITY} on the platform with the {LEGAL_INSTRUMENT} in its case, {WATER_TOWER} dripping, and at the siding {TRANSPORT_CART}",
+    "pl011": "{VEHICLE} sighs in at three minutes to midnight and {KEEPER} steps down, walking his tickets; {ROUTE_PL_LEAD}'s crew lays the ledger and the {PL_WAYPOINT_1} tape before {AUTHORITY}, cause and car number together; she asks the crew how the door should open: the {LEGAL_INSTRUMENT} presented to {KEEPER} cold and formal, or the juniors laying the arithmetic in front of him first, since {ROUTE_PL_LEAD} holds that numbers are kinder than accusations",
+    "pl012": "the {LEGAL_INSTRUMENT} presented under the platform clock; {KEEPER} reads it twice, hands not quite steady, and unlocks {TARGET_CAR}'s man-door with the smallest bow of a long-serving man",
+    "pl013": "lantern light in the freight car; crates of true glassware in the middle bay, and forward a bulkhead standing a hand-span proud; a junior finds {CLUE_SEAM}",
+    "pl014": "the porters' screwdrivers take the six painted thumb-screws and the panel comes away; behind it {ARCHIVE_CONTAINER}, and behind them {SUSPECT} stands up out of the dark with his lantern, younger than his coat, saying he can name the buyer if anyone will listen before the constable writes him down; {AUTHORITY} looks to the juniors who found the seam, her question plain: hear him now, or let the law go first",
+    "pl015": "{SUSPECT}'s story spilling out onto a mail crate: the forged manifest, the pay he never spent, the standing order from the {ANTAGONIST} at the {ANTAGONIST_HQ} naming other cities' archives; the constable writes, {AUTHORITY} listens, and {WATER_TOWER} tops the boiler off above them all",
+    "pl016": "{ARCHIVE_CONTAINER} opened one by one on the platform: {MISSION_ITEMS} with its ribbon intact; {VEHICLE} released to roll on lighter at 12:21 exactly; {SUSPECT} to ride back with the union and tell the magistrate everything",
+    "pl017": "dawn from {THRESHOLD}, the archive home under guard and {AUTHORITY} signing the recovery into the union log; {ROUTE_PL_LEAD} pins the {PL_WAYPOINT_1} tape above {ROUTE_PL_BASE} desk as exhibit one of the lesson, two readings, one door, no shouting; the {ANTAGONIST}'s name is already wired to {BORDER} court before breakfast",
+    "pl018": "the junction constable, unhurried and correct, reads {SUSPECT} his particulars with no hand laid on him; the clerk carries one crate to the barrow himself, which the constable allows, because dignity costs a recovery nothing",
+    "pl019": "the archive tallied crate by crate against the {LEGAL_INSTRUMENT}'s schedule under the platform lamps; {KEEPER} surrenders his manifest copy unasked; {VEHICLE} rolls out at 12:21 with its whistle low, one lie lighter",
+    "pl020": "morning; {ORPHAN_LEDGER} back in the {ARCHIVE_SOURCE} and the magistrate's clerk reading the tally aloud; {ROUTE_PL_LEAD} observes that the law was enough tonight because the numbers came checked; a quiet pride that holds all the way to sleep",
+    "pl021": "the juniors spread the ledger and the {PL_WAYPOINT_1} tape on {KEEPER}'s little desk; he follows the columns with a silver pencil, courteous as ever, complimenting the tallying like a man praising the rope that will tie him",
+    "pl022": "the silver pencil stops on {TARGET_CAR}; {KEEPER} says softly that a purser signs a great many things, and forty years of service hang in the little office like a coat on its peg; the crew can press him gently, that helping the recovery makes a witness of him, or step back and let {AUTHORITY}'s {LEGAL_INSTRUMENT} carry the weight so he need only stand aside",
+    "pl023": "the appeal made gently: a man who helps the recovery tonight stands in the witness column, not the warning column; {KEEPER} asks whether the union speaks for honest witnesses, and the juniors answer with {AUTHORITY}'s own words from the hall",
+    "pl024": "{KEEPER} takes down his ring of keys and walks the platform to {TARGET_CAR} ahead of the {LEGAL_INSTRUMENT}, unlocking the man-door under {AUTHORITY}'s eye and naming {FALSE_COMPARTMENT} himself, quietly, like a debt",
+    "pl025": "the panel down, the crates out, {SUSPECT} found sitting among {MISSION_ITEMS} and treated gently; {KEEPER} writes his own statement in a round old hand; {ROUTE_PL_LEAD} tells the crew that arithmetic opened the door and mercy kept it open; dawn colors the viaduct as the archive rides home",
+    "pl026": "{AUTHORITY} presents the {LEGAL_INSTRUMENT} formally at the man-door with the arithmetic laid out as cause; {KEEPER} stands aside with a bow that looks a great deal like relief",
+    "pl027": "the panel unscrewed by the porters, the crates checked against the {LEGAL_INSTRUMENT}'s schedule, {SUSPECT} taken into the constable's care with his lantern still lit; everything by the book, and tonight the book is enough",
+    "pl028": "the recovery logged in a column of signatures, {VEHICLE} away at 12:21; {ROUTE_PL_LEAD} allows that there are nights when the quiet way is the fast way; the archive is home before the milk carts and the crew asleep before the gulls",
+    "pl029": "{ROUTE_PL_BASE}'s lamp-code lesson, quick and exact, long flash and short; {ROUTE_PL_LEAD} warns that nine and four differ by a single flash and that a tired eye will lose it",
+    "pl030": "the message away through the {PL_WAYPOINT_2} relay: HEAVY CAR NINE HOLD CAUSE AT JUNCTION; the relay's answering flicker crosses the dark city like a struck match",
+    "pl031": "the crew follows on the quarter-past-eleven milk train, watching the junction answer the relay; the acknowledge comes back one long flash, but the repeat-back is smudged by chimney haze right on the car digit; protocol says a smudged repeat-back means send it all again, which costs ten minutes of the window; repeat the message in full, or trust that it went through",
+    "pl032": "the message sent twice more from the {PL_WAYPOINT_2} relay box, the junction's repeat-back coming clean at last: NINE, one long flash sitting exactly where it belongs",
+    "pl033": "{PL_MILK_TRAIN} limps into {WATERSTOP} at ten past midnight; the platform is already busy with lanterns, and none of the hurry looks like trouble",
+    "pl034": "{TARGET_CAR} stands open; {AUTHORITY}, with tape and ledger relayed true, presented the {LEGAL_INSTRUMENT} on the lamp-code cause at the top of the window; {ARCHIVE_CONTAINER} are on the barrow and {SUSPECT} sits quiet beside the constable; {ROUTE_PL_LEAD} points from the junction lamp to {ROUTE_PL_BASE} lamp and calls them one instrument; the archive rides the pilot engine home at one o'clock",
+    "pl035": "{PL_MILK_TRAIN} in at ten past midnight, and on the platform a wrongness: {WRONG_CAR_B} stands open under the lanterns, mail sacks and stove parts, {KEEPER} apologizing beautifully to everyone at once",
+    "pl036": "the smudged flash read four for nine, and the {LEGAL_INSTRUMENT} spent its first courtesy on the wrong door; {KEEPER} is now within his rights to ask better cause before another seal breaks, and nine minutes of window remain; {ROUTE_PL_LEAD} owns the mistake without blinking and lays out two doors: wire {PL_WAYPOINT_3} to hold {VEHICLE} at the 2:40 stop, or board {VEHICLE} with {AUTHORITY} and ride the {LEGAL_INSTRUMENT} to {BORDER} gate",
+    "pl037": "the window closes; {VEHICLE} rolls at 12:21 with {TARGET_CAR} sealed; the wire to {PL_WAYPOINT_3} goes out clean, but a two-minute stop is a narrow door for a {LEGAL_INSTRUMENT}, a purser, and six painted thumb-screws",
+    "pl038": "{PL6_GATE}; {VEHICLE} barely breathes; {KEEPER}, correct now to the letter, requires the full form, and the form takes four minutes the stop does not have; the tail lamps shrink toward {BORDER} hills",
+    "pl039": "dawn at {ROUTE_PL_BASE}; {VEHICLE} crossed {BORDER} with the archive still hidden, and {AUTHORITY} files the {LEGAL_INSTRUMENT} with {BORDER} court before breakfast; {ROUTE_PL_LEAD} posts the smudged tape above the desk beside the rule it proves, and nobody shouts; the case will bring the crates home by a month of paperwork, and no junior of this crew will ever again trust a smudged repeat-back",
+    "pl040": "riding {VEHICLE} as lawful passengers with {AUTHORITY}'s {LEGAL_INSTRUMENT} in her case; the long dark run past {PL_WAYPOINT_3} while the juniors re-prove the cause from the raw tape at a dining-car table",
+    "pl041": "by four in the morning the arithmetic stands solid; the conductor, shown the working, wires ahead to {BORDER_POST} on his own authority, and {BORDER} wardens answer that the train will be held inside the gate",
+    "pl042": "at 5:41 {VEHICLE} stands held inside {BORDER_POST} while wardens open {TARGET_CAR} on the wired cause; the crates come home; but in the {ANTAGONIST_HQ} ledger the juniors glimpse the {ANTAGONIST}'s standing order naming three more cities' archives, and the recovery ends as something larger begins; the union copies the page before the morning ink dries",
+    "pl043": "the raw overage grabbed and run with, the {PL_TRANSPORT} caught at a sprint; {ROUTE_PL_BASE} shrinking behind, the rule still on its wall, and the number warm and unchecked in a junior's pocket",
+    "pl044": "on the tram the juniors re-derive the car from memory against a borrowed timetable, and the scale column lands, uneasily, on {WRONG_CAR_A}; nobody says the word rumor out loud",
+    "pl045": "{WATERSTOP} at twenty to midnight; {AUTHORITY} reads the unchecked figure pointing at {WRONG_CAR_A} and her question is gentle and heavy: is this number checked twice, because a {LEGAL_INSTRUMENT}'s first courtesy spends only once; the truthful answer is no; admit it and spend the window's first minutes re-checking against {KEEPER}'s own scale book, or stand on the figure and open {WRONG_CAR_A}",
+    "pl046": "the admission out loud and plain; {AUTHORITY} nods as if a door has passed a test, and {KEEPER}, asked courteously, produces his own scale book, because the request is small and honest",
+    "pl047": "two juniors race the columns under the platform lamp while {VEHICLE} takes water; the mis-scaled line surfaces, a doubled decimal in the seventh column, and the corrected total lands on {TARGET_CAR}",
+    "pl048": "the {PL_WAYPOINT_1} tape, wired ahead by {ROUTE_PL_BASE} on its own initiative, arrives to second the correction; two readings at last, with four minutes of margin in the window",
+    "pl049": "the {LEGAL_INSTRUMENT} presented once and rightly; the man-door open, {FALSE_COMPARTMENT} found by its fresh paint line, the porters' screwdrivers busy while the boiler tops off",
+    "pl050": "{ARCHIVE_CONTAINER} on the barrow at 12:19 and {VEHICLE} released on time; {SUSPECT} walks to the lamp room between {AUTHORITY} and the constable with his dignity intact; {ROUTE_PL_LEAD} gives the crew the night's true ledger, that a mistake admitted at speed weighs less than a doubt carried to a door; the archive sleeps at home",
+    "pl051": "{PL9_GATE}: milled glass and stove iron, honestly manifested; {KEEPER}'s courtesy acquires a fine polish as he notes that the {LEGAL_INSTRUMENT}'s cause is spent",
+    "pl052": "{WATERSTOP} ends with {TARGET_CAR} sealed and {VEHICLE} rolling into the dark; on the emptying platform {ROUTE_PL_LEAD} takes the blame onto his own page in front of the crew, before anyone else can reach for it",
+    "pl053": "the long tram ride home; at {ROUTE_PL_BASE} {ROUTE_PL_LEAD} chalks the rule bigger, {ROUTE_PL_METHOD}, and beneath it the juniors chalk what it cost; {BORDER} court takes the case at dawn with the corrected arithmetic attached, and the archive will come home by law, later and lawyer-slow, with the crew there when it does",
+    "pl054": "the wagon manifest read aloud down its column, coal, mail, milled glass; {TARGET_CAR} listed GLASSWARE FRAGILE for {BORDER_POST}, riding third from the rear",
+    "pl055": "the line read twice {ROUTE_PL_BASE} way; glassware heavy enough to crush its springs, sealed at Central by a junior clerk's hand, and bound for a border gate at dawn",
+    "pl056": "the oddity found by a junior's finger: {TARGET_CAR}'s consignee line is blank, and freight for a border crossing never rides unclaimed; {ROUTE_PL_LEAD} goes very still, the way he does at a good number; the blank line is a thread with two ends: the telegraph office keeps duplicate waybills that could name who paid, or the blank line itself can ride straight to {AUTHORITY} as thin but honest cause",
+    "pl057": "the telegraph office off the concourse, warm with resin and dust; the night clerk glad of quiet company, pulling duplicate flimsies from the wire baskets under green glass",
+    "pl058": "{TARGET_CAR}'s booking on its flimsy: paid in coin, no sender named, routed care of the {ANTAGONIST_HQ}, {BORDER_POST}; a shipment ashamed of both its ends",
+    "pl059": "the same fist, the clerk says, has booked storage at the {ANTAGONIST_HQ} twice before, a standing order with its far end across {BORDER}; the finding can travel two ways: by official wire to {BORDER} warden, formal and slow but arriving with the telegraph seal's weight, or in the crew's own hands by {PL_TRANSPORT} to {AUTHORITY} before midnight",
+    "pl060": "the wire drafted with the clerk's help in proper form, GATE HOUSE CONSIGNMENT CAR NINE RECOVERY WRIT FOLLOWS, and away south under the telegraph seal",
+    "pl061": "the crew reaches the junction on {PL_MILK_TRAIN} as {WATERSTOP} opens; {AUTHORITY} already holds the warden's answer, cause seconded from {BORDER} itself, heavy as a second signature",
+    "pl062": "{TARGET_CAR} opens to the {LEGAL_INSTRUMENT} without a raised voice; {FALSE_COMPARTMENT}, {ARCHIVE_CONTAINER}, and a tired clerk found sitting on {MISSION_ITEMS} with his lantern turned low",
+    "pl063": "crates home and {SUSPECT} gently in hand; pinned to the union board a copy of the warden's reply, which {ROUTE_PL_LEAD} calls the rarest kind of night, one where the paperwork arrived before the trouble; the standing order goes to the magistrate to be unpicked city by city",
+    "pl064": "the flimsy wrapped in oilcloth and the tram across the roofs; {PL_WAYPOINT_2} below at 11:18 with its mail sacks swinging aboard {VEHICLE}, everything on time except the truth",
+    "pl065": "the junction at twenty to twelve; {AUTHORITY} reads the {ANTAGONIST_HQ} routing and sets it beside the blank consignee line, two halves of one lie fitting like tally sticks",
+    "pl066": "{VEHICLE} in at three to midnight; the {LEGAL_INSTRUMENT} presented on doubled cause; {KEEPER} reads the flimsy and his courtesy folds into something older and sadder, and he unlocks the man-door himself",
+    "pl067": "{FALSE_COMPARTMENT} down, {ARCHIVE_CONTAINER} out, {ORPHAN_LEDGER} untied and counted page by page under {WATER_TOWER}; {SUSPECT} names the {ANTAGONIST_HQ} without being asked twice; {VEHICLE} rolls on time and the archive rides the pilot engine home, with {ROUTE_PL_LEAD} granting that names, tonight, were faster than numbers",
+    "pl068": "the tram to the junction with the manifest folded to the blank line; the aqueduct's dark arches keeping pace alongside, mile after quiet mile",
+    "pl069": "{WATERSTOP} at twenty to midnight; {AUTHORITY} at her platform desk with the {LEGAL_INSTRUMENT} in its case, and at the siding {TRANSPORT_CART} waiting with two bored porters and a stack of empty crates sized to swallow other crates",
+    "pl070": "eleven fifty-seven and {VEHICLE} sighs in; {DEADLINE_SIGN} swings out over the tender and twenty-four minutes go on the clock; {AUTHORITY} calls the blank line honest cause but thin, and a {LEGAL_INSTRUMENT} spends best with a second thread; stake the {LEGAL_INSTRUMENT} now and open {TARGET_CAR} at once, or hold four minutes for the other crews' word, trusting the union's own plan to converge",
+    "pl071": "the {LEGAL_INSTRUMENT} presented on the blank line alone; {KEEPER} hesitates a half-breath too long and stands aside; the man-door opens on lantern dark and the smell of new paint",
+    "pl072": "{FALSE_COMPARTMENT} found and unscrewed, the crates there and true; but the car's far door swings on its hinges, and {SUSPECT} is gone up the train among the passengers while the porters lift the panel down",
+    "pl073": "the archive comes home whole, which is the night's work done; but the clerk who could name the {ANTAGONIST} reaches {BORDER_POST} in a borrowed seat among strangers, and the juniors learn that a recovery's second half rides on in the Talkers' country; on the union board the blank consignee line waits, half a name, half a question",
+    "pl074": "four minutes of held breath; then {ROUTE_CL_LEAD}'s {CL_GANTRY} lantern spells PANEL SEEN and a Talker runner brings {KEEPER}'s manifest copy signed unread; the thin cause turns thick as rope",
+    "pl075": "the {LEGAL_INSTRUMENT} presented once, on three crews' cause; {TARGET_CAR} opens without argument to the panel, the crates, and {SUSPECT} found sitting on {MISSION_ITEMS} with his lantern, too tired to run",
+    "pl076": "the tally run under {WATER_TOWER} while the boiler drinks; {MISSION_ITEMS} with its ribbon; {VEHICLE} released at 12:21 to the second",
+    "pl077": "the convergence {AUTHORITY} chalked at dusk lands exactly at midnight with every crew's thread in the knot; the archive is home before two, and in the union log {ROUTE_PL_LEAD} writes the whole night up under one word, together, which from {ROUTE_PL_LEAD} is a speech",
+    "cl001": "{ROUTE_CL_BASE} under the Central {CL_GANTRY}; {ROUTE_CL_LEAD} issuing harnesses sized small and checking every buckle twice; a wall of coiled lines, and her voice like slow water naming each junior's station for the night",
+    "cl002": "the harness lesson given until it sits in the bones: {ROUTE_CL_METHOD}, and the second anchor is the one that holds you; juniors belay, spot, and signal; only adults ride steel, tonight and every night",
+    "cl003": "the climb up the fixed stair to the {CL_GANTRY} walk, clipped to the rail the whole way; the city opening below, canals like dropped ribbon, and far off the {SKYRAIL}'s twin lamps threading the dark",
+    "cl004": "the long walk east along the aqueduct service way, the old water-channel's maintenance path running arch for arch beside the {SKYRAIL}; {PL_WAYPOINT_2} passes below at 11:18 with its mail-sack swing, right on the card",
+    "cl005": "arrival above {WATERSTOP} at half past eleven; {WATER_TOWER}, the siding with its waiting dray cart, {AUTHORITY}'s lamp already on the platform, and {CL_CRADLE} hanging from {WATER_TOWER} {CL_GANTRY} like a patient spider",
+    "cl006": "{ROUTE_CL_LEAD} at {CL_CRADLE} head with forty minutes in hand and one crew; two useful hours ago she would do both, tonight it is one: rig {CL_CRADLE}'s line properly to her law, both anchors and full checks, or first walk the crew out the footbridge to scout the freight sightlines while the yard lamps last",
+    "cl007": "the rigging done right and slow, two anchors set in separate steel and each tugged to a count of ten; juniors pay out the belay line from the platform winch drum, learning the brake lever's two positions by feel",
+    "cl008": "the test drop with a sandbag rider; the brake bites clean; {ROUTE_CL_LEAD} clips in as {VEHICLE}'s whistle sounds off the western arches, 11:57 to the minute",
+    "cl009": "{ROUTE_CL_LEAD} rides {CL_CRADLE} down through lamplight to hang beside {TARGET_CAR}'s roofline; below, the platform business of water bags and tickets goes on, and the freight car's roof lies dark with one wired-shut ventilator cowl",
+    "cl010": "{ROUTE_CL_LEAD} hangs level with {TARGET_CAR}'s roof, juniors on winch and lantern below; her hand-signals up the line offer two doors: the roof ventilator, a clean look into the car with a lantern relay from the platform, or the side inspection hatch, faster to reach but needing cradle slack right over the platform lamps where any porter might look up",
+    "cl011": "{CL_CRADLE} walked two arm-lengths over the roofline; juniors angle the big platform lantern on {ROUTE_CL_LEAD}'s finger-counts, light going up through the cowl in three short washes",
+    "cl012": "through the vent {ROUTE_CL_LEAD} reads the car like a page: true glassware crated in the middle bay, and forward a bulkhead standing a hand-span proud of the frame where no bulkhead should stand",
+    "cl013": "the second pass catches it: {CLUE_SEAM}, and the corner of a green crate stenciled white; cause, hanging thirty feet over the platform",
+    "cl014": "cause must travel from {CL_GANTRY} to {LEGAL_INSTRUMENT}; the {CL_GANTRY} lamp can code it to {AUTHORITY} fast and public, letters of light over the whole junction for anyone to read, or two runners can take {WATER_TOWER} stairs down with {ROUTE_CL_LEAD}'s sketch of the seam, slower and surer and quiet; {DEADLINE_SIGN} has minutes left in it either way",
+    "cl015": "the {CL_GANTRY} lamp spelling PANEL SEEN CAR NINE in careful longs and shorts across the junction; {AUTHORITY}'s platform lamp answers UNDERSTOOD, and heads begin to turn at the talking light",
+    "cl016": "among the turned heads, {KEEPER}'s; the purser looks up {WATER_TOWER} a long moment, then crosses the platform with his courteous walk while {DEADLINE_SIGN} swings back off the tender",
+    "cl017": "{KEEPER} calls up the {CL_GANTRY} stair, politely, that inspections of railway property want railway notice, and what is the union's business aloft; {ROUTE_CL_LEAD}'s rule is that the union does not lie, and she leaves the answer to the crew on the platform: speak it straight down to him, {LEGAL_INSTRUMENT} and cause and {TARGET_CAR}, or signal {AUTHORITY} to come and answer for the union with the {LEGAL_INSTRUMENT} in her hands",
+    "cl018": "the answer given plain from the platform rail: a recovery under the magistrate's {LEGAL_INSTRUMENT}, cause seen through the ventilator, {TARGET_CAR}; {KEEPER}'s courtesy goes very still, like water finding its level",
+    "cl019": "{AUTHORITY} arrives with the {LEGAL_INSTRUMENT} before the silence ends; {KEEPER}, out-papered and strangely relieved, unlocks the man-door and asks only that the glassware be handled kindly",
+    "cl020": "the panel down and {ARCHIVE_CONTAINER} in lantern light; {SUSPECT} stands up out of the dark saying he never learned how to want this; the constable is gentle, and the boiler goes on topping off overhead",
+    "cl021": "the archive rolled up the platform as {VEHICLE} releases on time; {ROUTE_CL_LEAD} ropes {CL_CRADLE} home and tells the crew the night's truth, that the best rigging done tonight was an honest answer given at height; dawn finds {ORPHAN_LEDGER} back in the {ARCHIVE_SOURCE} and the crew asleep in {ROUTE_CL_BASE} among the coiled lines",
+    "cl022": "the {CL_GANTRY} lamp spells ANSWER COMES; {AUTHORITY} crosses with the {LEGAL_INSTRUMENT} and the two adults speak under {WATER_TOWER} while the crew holds {CL_CRADLE} line steady overhead, brake set, breath held",
+    "cl023": "from above, the parley reads like weather clearing; {KEEPER}'s shoulders settle, keys come out, and the {CL_GANTRY} sighting stands as cause while the man-door opens to the law",
+    "cl024": "panel, crates, and a frightened clerk gathered into careful hands; the crew's part done exactly and no more; {ROUTE_CL_LEAD} logs the sighting in the rigger's book and writes beneath it that a crew that knows which words are whose gets home by two, and they do",
+    "cl025": "{ROUTE_CL_LEAD}'s pencil sketch of seam and screws dropped down in a weighted bag; two juniors take {WATER_TOWER} stairs with it, boots quiet, the sketch warm as a coal against the night",
+    "cl026": "on the half-landing, climbing fast with a lantern, {SUSPECT} himself, off the train for air or for escape, eyes gone wide at the sight of union harnesses; he stands between the runners and the platform, frightened enough to bolt and bury the panel deeper; speak to him gently from where you stand, no step closer, or ease back against the rail and lamp-flash the platform for the constable",
+    "cl027": "the words kept simple and the distance kept wide: the union has a {LEGAL_INSTRUMENT}, the night has one good door left, and it is the one where he walks down first and tells it himself",
+    "cl028": "{SUSPECT} comes down the stair ahead of the runners like a boy leaving a high dive, and at the bottom asks for {AUTHORITY} by name; the sketch changes hands on the way down",
+    "cl029": "{SUSPECT} opens the panel himself with his own screwdriver, naming the {ANTAGONIST_HQ} and the {ANTAGONIST} while the constable writes; the crates come home with his testimony riding alongside; {ROUTE_CL_LEAD} tells the runners that the gentlest belay of the night was played out on a staircase, in words",
+    "cl030": "backs to the rail and room left wide; the hand-lamp flashes the platform code for constable; {SUSPECT} freezes, then simply sits down on the step and waits, tired past running",
+    "cl031": "the constable comes up the stair unhurried; particulars taken on the half-landing without a raised voice; the sketch goes down to {AUTHORITY} and the {LEGAL_INSTRUMENT} meets the man-door as {DEADLINE_SIGN} swings clear",
+    "cl032": "the recovery unrolls in good order, panel and crates and tally, nobody cornered and nobody chased; in the rigger's book {ROUTE_CL_LEAD} writes that the crew held two lines at once tonight, one of hemp and one of patience, and neither slipped",
+    "cl033": "{CL_CRADLE} slacked and walked toward the car's flank, into the wash of the platform lamps; {ROUTE_CL_LEAD}'s shadow thrown ten feet tall across {TARGET_CAR}'s boards",
+    "cl034": "a porter looks up, then another; a murmur crosses the platform like wind over water, and {KEEPER}'s head turns; {ROUTE_CL_LEAD} signals hold, hanging in plain lamplight with the hatch a body-length away",
+    "cl035": "seen is seen; {ROUTE_CL_LEAD} swings back to the {CL_GANTRY} shadow and the crew reads the salvage: wait out the stir with the winch locked and buy the ventilator look late in the window, or drop the attempt now and carry the one thing already learned, that {TARGET_CAR}'s springs ride crushed, down to {AUTHORITY} as thin cause",
+    "cl036": "minutes bought with stillness while the platform stir settles and {DEADLINE_SIGN} does its slow work; 12:09 when {ROUTE_CL_LEAD} rides out again over the roofline",
+    "cl037": "the ventilator look, quick and clean this time: {FALSE_COMPARTMENT}, the fresh paint line at the seam, a green stenciled corner behind it; cause, with the window thinning to minutes",
+    "cl038": "12:15 by {WATER_TOWER} clock and the watering nearly done; on the platform {AUTHORITY}'s lamp asks the {CL_GANTRY} a single patient question, CAUSE; three minutes will not do everything: code the cause down by {CL_GANTRY} lamp, fast and public and finished, or bring {ROUTE_CL_LEAD} to the platform in {CL_CRADLE} to speak it herself, surer in the saying but slower than the last of the water",
+    "cl039": "PANEL SEEN CAR NINE FRESH PAINT SIX SCREWS; the light steady, the letters clean, and {AUTHORITY}'s answer already moving across the platform as the last word spells",
+    "cl040": "the {LEGAL_INSTRUMENT} presented at the man-door on the lamp's word with ninety seconds of water left; {KEEPER} reads it and stands aside; {VEHICLE} will leave on time and without its secret",
+    "cl041": "panel, crates, and a clerk found sitting on {MISSION_ITEMS}; the tally run under {WATER_TOWER} as {VEHICLE} rolls at 12:21 exactly; {ROUTE_CL_LEAD} tells the winch crew that a lamp is a rope for words, and tonight they paid it out without a kink; the archive sleeps at home before two",
+    "cl042": "{CL_CRADLE}'s slow descent to the platform, juniors braking by the count exactly as drilled; {ROUTE_CL_LEAD} steps off and walks to {AUTHORITY}, speaking low and exact with {CL_SKETCHBOOK} open",
+    "cl043": "{DEADLINE_SIGN} swings clear as she finishes; {WATER_TOWER} clock gives the window nothing more; {AUTHORITY}'s hand rests on the {LEGAL_INSTRUMENT} while the engine builds its leaving breath",
+    "cl044": "{AUTHORITY}, stationmistress of her own junction, can hold a watered train a short while on her authority if the cause is sound, and she asks the {CL_GANTRY} crew straight, in front of everyone: was it seen true; say the cause is sound and stake the union's word on two seconds of lamplight, or admit the look was thin through a half-shut cowl and let her weigh it honestly",
+    "cl045": "the answer given steady, seam, screws, stencil, and the times read off {CL_SKETCHBOOK}; {AUTHORITY} reads faces the way {ROUTE_PL_LEAD} reads columns, and holds {VEHICLE} at the platform on the stationmistress's board",
+    "cl046": "the {LEGAL_INSTRUMENT} presented once; the man-door, the panel, {ARCHIVE_CONTAINER} in lamplight; {SUSPECT} surrenders his screwdriver like a sword and looks mostly relieved",
+    "cl047": "eleven minutes of held train and the archive on the barrow before the board flips; {VEHICLE} away short one lie; {ROUTE_CL_LEAD} tells the crew the night turned on their two seconds of looking and the nerve to call it sound out loud; the rigger's book gets a full page",
+    "cl048": "the honest answer, two seconds and a lamp-wash; {AUTHORITY} nods, lets {VEHICLE} roll at 12:21, and has the junction wire {PL_WAYPOINT_3} the sketch and the times before the tail lamps clear the arches",
+    "cl049": "{AUTHORITY} offers the pilot engine standing warm on the siding; the crew packs the small cab among lamps and coiled line, and the night country runs backward with {VEHICLE}'s glow two arches ahead",
+    "cl050": "{PL_WAYPOINT_3} at 2:38, but the home signal stands against the pilot on a fouled block and the two-minute stop spends itself out of reach; {AUTHORITY} names the last door, {BORDER_POST} at dawn, where the {LEGAL_INSTRUMENT} still runs on the city side of the line; press on with her through the small hours to {BORDER} parley, or wire {BORDER_POST} the whole cause from here and turn for home, trusting the wardens to act on paper alone",
+    "cl051": "the long small hours behind {VEHICLE}, the pilot running on {AUTHORITY}'s authority section by section; juniors sleeping in turns on coiled line while {BORDER} hills go grey",
+    "cl052": "{BORDER_POST} at 5:41; {VEHICLE} held inside the gate by wardens reading {AUTHORITY}'s {LEGAL_INSTRUMENT} under lanterns going pale; {TARGET_CAR}'s man-door opens on the city side of {BORDER} by the width of a platform",
+    "cl053": "{FALSE_COMPARTMENT} down at sunrise, {MISSION_ITEMS} lifted out while the {ANTAGONIST_HQ} windows watch behind drawn curtains; {SUSPECT}, found in {ROUTE_TK_BASE} with his coat buttoned wrong, chooses the union's side of the platform; the longest road home carries the heaviest proof, and the crew rides back asleep on the crates",
+    "cl054": "the whole cause wired from the {PL_WAYPOINT_3} box, sketch described screw by screw; {BORDER_POST} acknowledges in a warden's steady fist, and the pilot turns for the city under a sky going slate",
+    "cl055": "{ROUTE_CL_BASE} at dawn, harnesses on their pegs; then the junction telegraph chattering: EXPRESS HELD GATE PANEL FOUND CRATES SAFE; breakfast gathers around the message like a stove",
+    "cl056": "the archive comes home on the noon train under a warden's seal, recovered by strangers who trusted a sketch; the crew learns the night's quiet lesson, that a true report travels faster than any crew can ride and does its climbing alone; in the rigger's book {ROUTE_CL_LEAD} pastes the wire itself, the only page written in someone else's hand",
+    "cl057": "{CL_CRADLE} roped home and the stairs taken down with the one hard fact the footplates gave for free: {TARGET_CAR}'s springs sit crushed flat under a cargo of blown glass; heavy is honest, but heavy is not a seam",
+    "cl058": "{AUTHORITY} hears it and measures it and shakes her head: weight is cause to wonder, not cause to open; she will not spend the {LEGAL_INSTRUMENT}'s one courtesy on a maybe, and the window runs out with the crew grounded",
+    "cl059": "{VEHICLE} rolls with its secret; but the springs datum, wired to {BORDER} beside the Planners' ledger, is enough for the wardens to hold the train at dawn for a lawful look; recovery comes by relay, not by rescue, and the crew spends breakfast learning the difference and deciding they can live with it",
+    "cl060": "out along the fixed footbridge that spans the through line, clipped to the rail hand over hand; below, the junction lies like a map of itself, platform, water tower, and the siding where {TRANSPORT_CART} stands loaded with empty crates under a {ANTAGONIST_HQ} delivery board",
+    "cl061": "the scout's tally filling {CL_SKETCHBOOK}: the cart's crates sized to hide other crates, the porters bored and incurious, every sightline and lantern angle marked against {VEHICLE}'s arrival",
+    "cl062": "11:57 and {VEHICLE} in from the west; from the footbridge, {TARGET_CAR} reads wrong three ways: springs crushed flat, vent cowl wired half-shut from inside, and a smudge of rivet-grey paint low on the forward door edge",
+    "cl063": "rich cause in {CL_SKETCHBOOK}, but {CL_CRADLE} still hangs unrigged and the window is spending itself; go back and rig by the law, both anchors and every check, arriving over the car late but right, or rig a single anchor and buy the scouting minutes back",
+    "cl064": "the rigging done full and fast with no step skipped, {ROUTE_CL_LEAD} calling the checks and the juniors answering; the second anchor tugged to ten like always, because always is the point",
+    "cl065": "{ROUTE_CL_LEAD} out over {TARGET_CAR} at 12:07 with the window half spent and the footbridge tally pinned to her sleeve; below, {DEADLINE_SIGN} works its slow trade",
+    "cl066": "the wired cowl fought open a finger's width and a lantern wash sent inside; {FALSE_COMPARTMENT} there, the paint line there; the footbridge cause and {CL_CRADLE} cause shake hands thirty feet up; minutes remain for exactly one telling: code the doubled cause to {AUTHORITY} by {CL_GANTRY} lamp and let the {LEGAL_INSTRUMENT} walk, or bring {ROUTE_CL_LEAD} up and send her to the platform in person with {CL_SKETCHBOOK}, the surer, slower way",
+    "cl067": "the {CL_GANTRY} lamp spells it twice for surety, cowl, seam, springs, smudge; {AUTHORITY}'s answer crosses the platform at a stationmistress's walk with the {LEGAL_INSTRUMENT} already out of its case",
+    "cl068": "the man-door open at 12:16; porters' screwdrivers at the six painted screws; from above, the whole recovery fits in one lantern circle, panel, crates, and a clerk sitting down among {MISSION_ITEMS} like his knees had quit",
+    "cl069": "{VEHICLE} released to the second; the crew off the steel by half past; at the siding {TRANSPORT_CART} still waits for a transfer that now belongs to the constable's notebook",
+    "cl070": "the archive home before two and {CL_SKETCHBOOK} page pasted into the rigger's book beside the times; {ROUTE_CL_LEAD}'s verdict read aloud to {ROUTE_CL_BASE}, that scouting bought the cause and the law's rigging spent it, which is the whole craft in one night; the crew sleeps like anchors",
+    "cl071": "{ROUTE_CL_LEAD} up, unclipped, and down the stair with {CL_SKETCHBOOK} under her arm; the crew holds the {CL_GANTRY} watch with lamps trimmed while the car below keeps its secret one more minute",
+    "cl072": "on the platform {CL_SKETCHBOOK} opens page by page for {AUTHORITY} and, deliberately, for {KEEPER}; the purser reads the smudge, the cowl, the springs, and his own signature on the manifest, and grows very quiet",
+    "cl073": "{KEEPER} asks to see the door-edge himself, touches the tacky grey with one gloved finger, and stands aside before the {LEGAL_INSTRUMENT} is even raised; some doors open from the keeper's side",
+    "cl074": "the panel down and the crates tallied while the boiler tops; {SUSPECT} gathered in gently, the constable's hand on his shoulder like a teacher's; {VEHICLE} away on time; in the rigger's book {ROUTE_CL_LEAD} writes that evidence walked downstairs tonight and did the talking, and the crew adds the grey fingerprint page as proof",
+    "cl075": "{CL_GATE}, the scouting minutes singing in everyone's ears; {ROUTE_CL_LEAD} frowns at the arithmetic of it and lets the frown lose; {CL_CRADLE} swings out",
+    "cl076": "halfway down, the line jumps its sheave with a crack like a knuckle; {CL_CRADLE} lurches and {ROUTE_CL_LEAD} swings hard, catches the {CL_GANTRY} ladder with both hands, boots finding a rung, safe, shaken, forty feet of quiet below her",
+    "cl077": "nobody hurt and nothing dropped, and the platform gone still and listening under {WATER_TOWER}; the mishap happened on {AUTHORITY}'s junction, and the law says her equipment, her word; own it to her now, whole and at once, or quietly re-rig with both anchors and try to buy the look back before anyone asks",
+    "cl078": "the report made from the platform edge, single anchor, jumped sheave, no injuries; {AUTHORITY} grounds {CL_CRADLE} with one word and thanks the crew for bringing her the truth while it was still warm",
+    "cl079": "the crew finishes the night as lantern-bearers for other people's work, and from the platform watches the Talkers' parley carry the recovery through the man-door without them",
+    "cl080": "the archive comes home tonight, but not by the {CL_GANTRY}; in {ROUTE_CL_BASE} at dawn {ROUTE_CL_LEAD} sets the jumped sheave on the table where the second anchor should have hung and says only that the law is written in the shape of the nights it would have saved; the crew hears her, and next time the law will hold them forty feet above a platform, which is where laws live",
+    "cl081": "the second anchor going in with cold hands while the window drains; {ROUTE_CL_LEAD} stops mid-knot, looks at her own shaking fingers, and calls it herself: no, two anchors and no secrets, and she walks the crew down to tell it",
+    "cl082": "the truth laid out too late to buy the minutes back; {DEADLINE_SIGN} swings clear as they finish, and {VEHICLE} rolls at 12:21 with {TARGET_CAR} sealed and the {CL_GANTRY}'s look never taken",
+    "cl083": "the recovery passes to {BORDER} court's slow mill, the crates a month from home behind paperwork instead of thumb-screws; in the rigger's book {ROUTE_CL_LEAD} writes the whole of it, sheave, silence, and the cost of a quiet fix, and signs it; the crew learns that the failure that teaches rigging is cheaper than the one that teaches falling, and that both are dearer than telling",
+    "tk001": "boarding {VEHICLE} at {CITY} Central with honest tickets, 9:05 on the platform clock; {ROUTE_TK_LEAD} in her plain good coat, the crew dressed as exactly what they are, junior mapmakers on a night errand",
+    "tk002": "{ROUTE_TK_LEAD}'s three parley rules given over the seat backs as {VEHICLE} pulls out at 9:12: {TK_RULE1}; {TK_RULE2}; and {TK_RULE3}",
+    "tk003": "twelve cars of night train, and listening is the crew's whole craft until midnight; {ROUTE_TK_BASE} is where people talk over soup, and {TK_MAIL_CAR} is where paper talks off the hook; {ROUTE_TK_LEAD} will float between, and the juniors pick their post",
+    "tk004": "soup and the click of viaduct joints; {PL_WAYPOINT_1}'s ninety-second stop at 10:05 with {KEEPER} walking tickets on the platform, courteous to every window in turn",
+    "tk005": "an off-duty brakeman two tables down, grumbling into his bread that {TARGET_CAR} rides locked even against the purser, sealed at Central by a junior clerk with a manifest nobody countersigned; the grumble is a thread, and {ROUTE_TK_LEAD}'s first rule says {TK_RULE1}; draw the brakeman out with honest questions about his train, or keep the table quiet and send word back for {ROUTE_TK_LEAD} to work him herself",
+    "tk006": "honest questions about couplings and grades, the kind railway men answer for free; the brakeman warms, and the story arrives on its own: {KEEPER} signed for {TARGET_CAR} sight unseen at Central, which in forty years he has never once done",
+    "tk007": "more, into his bread: the clerk who sealed the car, young Sel, rides with it and takes his meals standing at the freight door, and the brakeman reckons the lad has not slept since Central",
+    "tk008": "{ROUTE_TK_LEAD} hears it and decides the parley opens in the purser's office before {PL_WAYPOINT_2}; she asks the juniors which telling should open it: the brakeman's words, human and warm and hearsay, or the cold oddity the crew logged at boarding, {TARGET_CAR} sealed shut yet listed for {WATERSTOP} siding on the corridor board",
+    "tk009": "the purser's office, brass and blotting paper; {ROUTE_TK_LEAD} lays the story out gently with no names attached, while the juniors watch the purser's hands instead of his face, the way she taught them at boarding",
+    "tk010": "{KEEPER} pours tea with perfect courtesy and his hands are wrong, too careful, a man carrying a full cup across forty years of service; {ROUTE_TK_LEAD}'s glance hands the moment to the juniors, her way of teaching; the unsigned consignee line lies on the desk between them: press him on it gently now, one honest question, or fold the papers and wait for Aqueduct, where {AUTHORITY}'s {LEGAL_INSTRUMENT} can carry the weight instead",
+    "tk011": "the question asked small and true: who is {TARGET_CAR} for, and why would glassware ride ashamed of its own address; {KEEPER} sets down the pot and looks at the night going past the window",
+    "tk012": "the silence {ROUTE_TK_LEAD} taught them never to break; inside it {KEEPER} says quietly that he did not ask because he was paid not to, and that he has been listening to that sentence all the way from Central",
+    "tk013": "{KEEPER} asks the office, not quite looking at anyone, what happens to a man who opens a door he was paid to keep shut; the truthful answer belongs to the union: say plainly, yourselves, that the union speaks for honest witnesses, or step out and fetch {ROUTE_TK_LEAD} to set formal terms so the promise is a paper one",
+    "tk014": "the answer given as {AUTHORITY} gave it in the hall: recovery, not revenge; witnesses stand in a different column from thieves, and the union reads its columns out loud",
+    "tk015": "{KEEPER} takes up his keys like a man picking up his own name; at {WATERSTOP} he walks past his own manifest to the man-door of {TARGET_CAR} and opens it before {AUTHORITY} has the {LEGAL_INSTRUMENT} half out of its case",
+    "tk016": "{FALSE_COMPARTMENT} named by the man who was paid to forget it; crates, ledger, and a frightened clerk gathered in gently; {KEEPER} gives his statement in a round old hand, and {ROUTE_TK_LEAD} tells the crew that the second rule won the night, {TK_RULE2}, and that they should write it somewhere they will lose it and find it all their lives",
+    "tk017": "{ROUTE_TK_LEAD}'s terms, quiet and exact: witness standing offered and taken, everything said written down; the little office fills with the particular calm of things done properly",
+    "tk018": "at {WATERSTOP} the {LEGAL_INSTRUMENT}, the manifest, and {KEEPER}'s statement meet on {AUTHORITY}'s platform desk like tributaries; the man-door opens to all three at once",
+    "tk019": "panel and crates and {ORPHAN_LEDGER} counted twice; {SUSPECT} taken into care without a hand raised; {VEHICLE} away on time; {ROUTE_TK_LEAD}'s lesson over cocoa at the junction, that mercy which gets written down survives the morning, and the morning is where recoveries live",
+    "tk020": "the papers folded and the tea finished politely; {PL_WAYPOINT_2} slides past at 11:18 with its mail swinging aboard; the office parley adjourned, not lost",
+    "tk021": "at 11:40 a junior on corridor watch sees lantern light through the freight-car door glass where no light should be, and {SUSPECT} kneeling at the forward bulkhead with a screwdriver; the sighting is cause if it is witnessed properly, and the freight vestibule is inside the train and lawful to stand in; go forward and witness it through the glass at a distance, or hold post as posted and send the report back for {ROUTE_TK_LEAD} to witness herself",
+    "tk022": "the walk forward through sleeping cars, unhurried, tickets in hand like any passenger; the freight vestibule cold and loud with rail joints, the door glass a pane of black",
+    "tk023": "through the glass, plain as a lit stage: {SUSPECT} at the forward bulkhead, screwdriver working a painted screw, three green crate-corners showing where the panel stands ajar, twelve minutes out of Aqueduct; he has not seen the watchers, and {ROUTE_TK_LEAD}'s third rule stands guard, {TK_RULE3}; slip back and send for {ROUTE_TK_LEAD} so the witnessing becomes official, or open the vestibule door and speak first, kindly, before the junction crowds him with lanterns",
+    "tk024": "the report handed back in one taught sentence; {ROUTE_TK_LEAD} comes forward alone, stands at the door glass a full minute, and writes what she sees in her level hand while the junction lamps rise ahead",
+    "tk025": "at {WATERSTOP} the {LEGAL_INSTRUMENT} meets a witnessed cause; {AUTHORITY}, {ROUTE_TK_LEAD}, and the constable enter the freight car together, lanterns low and voices lower; {SUSPECT} looks up from the half-open panel and simply sets the screwdriver down",
+    "tk026": "the recovery whole by 12:15, panel, crates, ledger, and a clerk who never had to be chased; he tells the constable the watchers could have shouted and did not, and that this is why he stayed sitting down; {ROUTE_TK_LEAD} tells the crew the kindest thing in the night was the distance they kept, which is a strange sentence to be proud of forever, and they are",
+    "tk027": "{TK4_GATE}; the kindest voice in the crew says his name, and {SUSPECT} comes up off his knees like a startled hare, lantern swinging shadows up the freight car walls",
+    "tk028": "no chase, every junior stone-still, but he is past hearing; he jams the panel shut, pockets the loose screws, and is gone up-train into the passenger crowd before the junction's first lamp slides past the glass",
+    "tk029": "at {WATERSTOP} the panel hides its seam again and the cause is now a story about a boy who ran; {AUTHORITY} will not spend the {LEGAL_INSTRUMENT} on it, and {VEHICLE} rolls at 12:21 still carrying the archive; {ROUTE_TK_LEAD} takes the blame onto her own page for posting juniors at a door, teaches the third rule again on the cold platform, and boards at {PL_WAYPOINT_3} to sit with {SUSPECT} through the small hours; the crates come home days later on his testimony, bought at the price of one bad minute at a vestibule door",
+    "tk030": "the post held; the report travels the corridor hand to hand in {ROUTE_TK_LEAD}'s taught form, what, where, when, and nothing else; the train begins its long brake for the junction",
+    "tk031": "{ROUTE_TK_LEAD} witnesses from the glass herself, then carries report and juniors to the platform where {AUTHORITY} stands with the {LEGAL_INSTRUMENT}; the sighting, timed and doubled, is cause with its boots on",
+    "tk032": "the freight car opened in good order, the panel, the crates, the clerk collected quietly at the far door where he had hoped to slip down; the tally done under {WATER_TOWER} by 12:18; {ROUTE_TK_LEAD}'s cocoa verdict, that a watch which holds its post writes half the recovery, and the half it writes is the half that holds in court",
+    "tk033": "the corridor board's oddity laid on {KEEPER}'s desk: a sealed through-car listed for the Aqueduct water-stop siding, which is a stop where engines drink, not where freight wanders",
+    "tk034": "someone plans a transfer at {WATERSTOP}, onto {TRANSPORT_CART} the union has clocked at the siding all week; {KEEPER}'s puzzlement over the amended board is the first unrehearsed thing his face has done all night; the guard's van telegraph can warn {AUTHORITY} now, minutes mattering, or the crew can verify first by having the brakeman pull and read the actual siding order before crying wolf on a forged board",
+    "tk035": "the guard's van telegraph tapping the warning south, TRANSFER PLANNED WATER STOP SIDING CAR NINE; {AUTHORITY}'s acknowledgment comes back in a stationmistress's fist, one word, HELD",
+    "tk036": "{WATERSTOP} at 11:57; from the vestibule steps the crew sees {TRANSPORT_CART} at the siding, two hired porters and empty crates sized to swallow other crates, exactly the shape of the warning",
+    "tk037": "the constable strolls to the cart and asks the porters, politely, on whose order they wait; the paper they show names the {ANTAGONIST_HQ}, {BORDER_POST}, and the {LEGAL_INSTRUMENT} has its second thread",
+    "tk038": "cause from the board and cause from the cart with the {LEGAL_INSTRUMENT} between them; {TARGET_CAR} opens at 12:10, panel, crates, ledger, and {SUSPECT} found sitting with {MISSION_ITEMS}; the porters, blameless and paid in advance, help load the archive onto their own cart for the ride to the strongroom, which even {AUTHORITY} allows is tidy; {VEHICLE} rolls one lie lighter",
+    "tk039": "the brakeman pulls the siding order from the van clip; real paper in a forged fist, the amendment written in the same hand as {TARGET_CAR}'s manifest copy, stroke for stroke",
+    "tk040": "careful minutes spent matching the forged fist while {PL_WAYPOINT_2} falls behind; the proof turns solid as track, but the warning wire goes out short of Aqueduct with the junction already in sight",
+    "tk041": "the transfer never happens, the cart stands down, and {WATERSTOP} passes in watchfulness rather than recovery, the panel unfound tonight; but the forged order in the union's hands is the court's favorite exhibit by Friday, the one paper tying clerk, board, and {ANTAGONIST_HQ} in a single fist; the crew learns that verifying can cost an evening and win a case, and that both halves of that sentence are true at once",
+    "tk042": "the word passed on a folded napkin in {ROUTE_TK_LEAD}'s taught form; she drifts to the brakeman's table with her coffee and her country manners, and the juniors keep the table and the watch",
+    "tk043": "{ROUTE_TK_LEAD} agreeing with the brakeman about grades and about management, in that order; the story arriving on its own, that {KEEPER} signed for {TARGET_CAR} sight unseen at Central, which in forty years he has never once done",
+    "tk044": "{ROUTE_TK_LEAD} works the grumble gently while the crew logs the room, who rides which car, who checks the corridor board, who eats standing; {ROUTE_TK_BASE} turns into a map with soup on it",
+    "tk045": "{ROUTE_TK_LEAD} slides back with the story confirmed and hands the juniors the counting work that wins parleys: walk the corridor and count the sealed cars against the board, looking for seals that disagree with themselves, or sit tight and map who moves between cars in the hour before the junction",
+    "tk046": "the corridor walked end to end with tickets in hand, counting like mapmakers, seals against listings; most cars agree with themselves, the way honest paper does",
+    "tk047": "{TARGET_CAR} does not: a yard seal crimped over a company seal, double-sealed the way nothing honest ever is, and the crimp's date three nights old, the {ARCHIVE_SOURCE}'s bad night",
+    "tk048": "the count written in the taught form, timed and signed by two juniors, handed to {ROUTE_TK_LEAD} as the brakes come on for Aqueduct; on the platform it passes from her hand to {AUTHORITY}'s",
+    "tk049": "a doubled seal with the right bad date is cause a magistrate can love; the {LEGAL_INSTRUMENT} opens {TARGET_CAR} at 12:08 and the night unpacks in order, panel, crates, ledger, clerk; {ROUTE_TK_LEAD} gives the crew the whole cocoa sermon in one line, that counting is the humblest kind of courage and the hardest to argue with",
+    "tk050": "the aisle mapped from the corner table in small pencil marks; passengers ebb, the brakeman naps, and at 11:20 and again at 11:44 {SUSPECT} passes forward with his lantern, checking on something that owns him",
+    "tk051": "the marks make a shape: he checks the panel on the quarter hour before every station; a frightened man is a clock, and the crew has read his time",
+    "tk052": "{ROUTE_TK_LEAD} reads the notebook, taps the 12:15 mark that has not happened yet, and carries the prediction to the platform for {AUTHORITY} to spend as she sees fit",
+    "tk053": "the adults choose to watch rather than open, and at 12:15 {SUSPECT} walks his circuit into a ring of quiet lanterns and stops, caught by arithmetic; but the water runs out before {LEGAL_INSTRUMENT} and panel and tally can all be done, and {VEHICLE} rolls with the archive aboard for {BORDER} wardens, wired ahead, to lift out at dawn on the prediction's proof; the crew discovers their notebook riding south in the mail like a small lawman, doing the work by post",
+    "tk054": "{TK_MAIL_CAR} off the baggage car, waybills on the hook swinging with the grade; the mail clerk sorting under green glass, glad of quiet company that touches nothing",
+    "tk055": "the waybills read from the hook without a finger laid on them, mapmaker discipline; coal, mail, milled glass, each sheet agreeing with itself until {TARGET_CAR}'s does not",
+    "tk056": "{TARGET_CAR}'s waybill reads wrong to a junior's nose before it reads wrong to the eye, fresh ink on an old form, a copy passing as an original; {TK_WAYBILL} is a thread with two pulls: carry it straight to {ROUTE_TK_LEAD} and let the parley have it while the night is young, or ask the mail clerk's leave to set it against his {TK_DUPLICATE_BOOK}, where every original leaves its shadow",
+    "tk057": "{TK_WAYBILL} carried back through three swaying cars, held flat in a timetable so the night air cannot crease the evidence",
+    "tk058": "{ROUTE_TK_LEAD} reads it twice and holds it to the lamp where the form's watermark should sit and does not; her face does the thing it does before a strong parley, which is nothing at all",
+    "tk059": "{ROUTE_TK_LEAD} reads {TK_WAYBILL} twice, holds it to the lamp where the watermark should sit and does not, and asks the juniors, straight-faced, for counsel, because talkers who never weigh are only mouths: open the parley early at {PL_WAYPOINT_2} and spend surprise while the thieves think themselves unseen, or hold to the union's clock and land everything at Aqueduct where {LEGAL_INSTRUMENT}, stationmistress, and constable stand waiting",
+    "tk060": "the office parley opened at 11:10 with {TK_WAYBILL} on the desk; {KEEPER}'s courtesy survives it, barely; up the corridor a door closes too carefully, a frightened clerk gone to check his panel off schedule",
+    "tk061": "{ROUTE_TK_LEAD} neither chases nor raises her voice; she posts herself in the corridor between {SUSPECT} and nowhere, coffee in hand, and talks to the air about writs and witnesses and boys who get one good door a night",
+    "tk062": "at {PL_WAYPOINT_2} the mail swings aboard under lamplight; by the time the arches fall behind, {SUSPECT} is sitting across from {ROUTE_TK_LEAD} with his lantern out, telling it in order, and {KEEPER} is writing his own statement unasked",
+    "tk063": "{VEHICLE} reaches Aqueduct with its confession already made; the {LEGAL_INSTRUMENT} is nearly a formality, the panel opened by the clerk who built its secret, the crates tallied by half past midnight; {ROUTE_TK_LEAD}'s verdict, that surprise is a tool you may use exactly once a night, and she is glad it was spent on mercy; the archive rides home with two witnesses who chose the union's side of the aisle",
+    "tk064": "certainty chosen; hours in hand, and {ROUTE_TK_LEAD} spends them the way planners spend towers, on preparation; the crew learns what a parley rehearsal is by being in one",
+    "tk065": "one hour left and two right answers; {ROUTE_TK_LEAD} can drill the crew by playing {KEEPER}, taking his courteous evasions in turn until every answer has an answer, or the crew can build {TK_WITNESS_SHEET}, every observation of the night written timed and signed, the paper spine of a parley; both win differently",
+    "tk066": "{ROUTE_TK_LEAD} plays {KEEPER} better than {KEEPER}, tea-pour and all; the crew learns where the courtesies bend and which question has no courteous answer, the blank consignee asked with {TK_WAYBILL} already on the desk",
+    "tk067": "at {WATERSTOP} the parley runs like a timetable, question, paper, question; {KEEPER}'s answers arrive exactly where the rehearsal said they would, and he sets his keys on the desk between them himself",
+    "tk068": "the man-door, the panel, {ARCHIVE_CONTAINER} in lamplight; {SUSPECT} gathered gently at the far door; {VEHICLE} away at 12:21 with the tally already signed; {ROUTE_TK_LEAD} tells the crew that every easy-looking parley is a rehearsed one, and lets them carry the {LEGAL_INSTRUMENT}'s case back to {AUTHORITY}'s office as the fee",
+    "tk069": "{TK_WITNESS_SHEET} built line by disciplined line, boarding to now, every seal, listing, and careful hand, each entry timed and signed by two; talkers' work that planners would frame",
+    "tk070": "at the junction the sheet lies beside the {LEGAL_INSTRUMENT} on {AUTHORITY}'s platform desk and makes the cause look like what it is, a night's honest watching; {KEEPER} reads the twentieth line, the one holding his own unread signature, and stands aside without a word",
+    "tk071": "{TARGET_CAR} opens to paper it cannot argue with; panel, crates, {ORPHAN_LEDGER} home; the magistrate later staples {TK_WITNESS_SHEET} to the {LEGAL_INSTRUMENT} itself as the model of cause brought right, and {ROUTE_TK_LEAD} reads the union's juniors the court's one-line compliment at the next hall meeting, twice, because some pay is worth hearing twice",
+    "tk072": "permission asked properly and granted; {TK_DUPLICATE_BOOK} opens under the green lamp, every original's carbon shadow kept in order of booking",
+    "tk073": "{TARGET_CAR}'s true shadow is there, and it is not the hook's copy: the original waybill was made out to the {ANTAGONIST_HQ}, {BORDER_POST}, consignee the {ANTAGONIST}, booking paid in coin at Central",
+    "tk074": "the carbon shadow is cause, but it lives in the clerk's book and the book is his charge; the differences run six lies long, hook against book, and the clerk has gone quiet and angry in his tidy way, forged paper being personal in a mail car; copy the page by hand with him watching, slow and sure, keeping his trust and his book aboard, or ask the bolder thing, that he close the book, bring it, and testify himself at {WATERSTOP}",
+    "tk075": "the page copied in a mapmaker's careful print, every figure checked back twice, the clerk initialing each line as true copy; slow work with the junction growing in the window",
+    "tk076": "{ROUTE_TK_LEAD} carries the initialed copy forward; at {WATERSTOP} it lies beside the {LEGAL_INSTRUMENT}, and the clerk's initials give it a spine no courtesy can bend",
+    "tk077": "{KEEPER} reads the {ANTAGONIST_HQ} line and the coin-paid booking and asks no questions at all; the man-door opens at 12:11 with {DEADLINE_SIGN} still swinging overhead",
+    "tk078": "panel, crates, ledger, clerk; the recovery in good order and the mail car's book never once out of its keeper's hands; {ROUTE_TK_LEAD}'s cocoa lesson runs that evidence borrowed politely is evidence twice, once for what it says and once for how it was got, and the second half is the half that lasts",
+    "tk079": "the bold ask, made respectfully; the mail clerk looks at his book, at the forged hook copy, and shuts the book with a snap that means yes; forgery in a mail car, he says, is a thing a man testifies about",
+    "tk080": "{ROUTE_TK_LEAD} walks him through the platform parley like a conductor calling stations; the juniors carry his flimsy box and his umbrella, which he brings, because dignity",
+    "tk081": "at {AUTHORITY}'s platform desk the clerk lays the open book beside the hook copy and says, for the record, which one the mails stand behind; the {LEGAL_INSTRUMENT} does the rest while the boiler drinks",
+    "tk082": "{TARGET_CAR} opens on the word of the man whose job is knowing which paper is true; panel, crates, {ORPHAN_LEDGER} untied under {WATER_TOWER} lamp; {SUSPECT}, hearing the mails themselves had spoken, gives up the {ANTAGONIST_HQ} name before he is asked; {ROUTE_TK_LEAD} tells the crew that the strongest voice in any parley is a witness who came because he was asked well, and the clerk rides home with the archive like a man escorting the post"
+  },
+  "titles": {
+    "pl017": "{PL1_PRIZE}",
+    "pl020": "{PL2_PRIZE}",
+    "pl025": "{PL3_PRIZE}",
+    "pl028": "{PL4_PRIZE}",
+    "pl034": "{PL5_PRIZE}",
+    "pl039": "{PL6_SETBACK}",
+    "pl042": "{PL7_PRIZE}",
+    "pl050": "{PL8_PRIZE}",
+    "pl053": "{PL9_SETBACK}",
+    "pl063": "{PL10_PRIZE}",
+    "pl067": "{PL11_PRIZE}",
+    "pl073": "{PL12_PRIZE}",
+    "pl077": "{PL13_PRIZE}",
+    "cl021": "{CL1_PRIZE}",
+    "cl024": "{CL2_PRIZE}",
+    "cl029": "{CL3_PRIZE}",
+    "cl032": "{CL4_PRIZE}",
+    "cl041": "{CL5_PRIZE}",
+    "cl047": "{CL6_PRIZE}",
+    "cl053": "{CL7_PRIZE}",
+    "cl056": "{CL8_PRIZE}",
+    "cl059": "{CL9_PRIZE}",
+    "cl070": "{CL10_PRIZE}",
+    "cl074": "{CL11_PRIZE}",
+    "cl080": "{CL12_SETBACK}",
+    "cl083": "{CL13_SETBACK}",
+    "tk016": "{TK1_PRIZE}",
+    "tk019": "{TK2_PRIZE}",
+    "tk026": "{TK3_PRIZE}",
+    "tk029": "{TK4_SETBACK}",
+    "tk032": "{TK5_PRIZE}",
+    "tk038": "{TK6_PRIZE}",
+    "tk041": "{TK7_PRIZE}",
+    "tk049": "{TK8_PRIZE}",
+    "tk053": "{TK9_PRIZE}",
+    "tk063": "{TK10_PRIZE}",
+    "tk068": "{TK11_PRIZE}",
+    "tk071": "{TK12_PRIZE}",
+    "tk078": "{TK13_PRIZE}",
+    "tk082": "{TK14_PRIZE}"
+  },
+  "labels": {
+    "n_sort": {
+      "c_n_sort_1": "Join the Planners under Route-Warden {ROUTE_PL_LEAD}.",
+      "c_n_sort_2": "Join the Climbers under Rigger {ROUTE_CL_LEAD}.",
+      "c_n_sort_3": "Join the Talkers under Advocate {ROUTE_TK_LEAD}."
+    },
+    "pl007": {
+      "c_pl007_1": "Ride the {PL_TRANSPORT} to the junction."
+    },
+    "pl008": {
+      "c_pl008_1": "Watch for {PL_WAYPOINT_2} below."
+    },
+    "pl009": {
+      "c_pl009_1": "Come into {WATERSTOP}."
+    },
+    "pl010": {
+      "c_pl010_1": "Lay the cause before {AUTHORITY}."
+    },
+    "pl011": {
+      "c_pl011_1": "Let {AUTHORITY} lead with the {LEGAL_INSTRUMENT}.",
+      "c_pl011_2": "Show {KEEPER} the arithmetic first."
+    },
+    "pl014": {
+      "c_pl014_1": "Ask {AUTHORITY} to hear him out."
+    },
+    "pl022": {
+      "c_pl022_2": "Step back for the {LEGAL_INSTRUMENT}."
+    },
+    "pl023": {
+      "c_pl023_1": "Walk with him to {TARGET_CAR}."
+    },
+    "pl032": {
+      "c_pl032_1": "Follow on {PL_MILK_TRAIN}."
+    },
+    "pl033": {
+      "c_pl033_1": "Find {AUTHORITY} at {TARGET_CAR}."
+    },
+    "pl035": {
+      "c_pl035_1": "Hear {ROUTE_PL_LEAD} own the mistake."
+    },
+    "pl036": {
+      "c_pl036_1": "Wire {PL_WAYPOINT_3} and re-form.",
+      "c_pl036_2": "Board and ride for {BORDER}."
+    },
+    "pl041": {
+      "c_pl041_1": "Reach {BORDER_POST} at dawn."
+    },
+    "pl044": {
+      "c_pl044_1": "Answer {AUTHORITY}'s question."
+    },
+    "pl048": {
+      "c_pl048_1": "Present the {LEGAL_INSTRUMENT} once, rightly."
+    },
+    "pl054": {
+      "c_pl054_1": "Read {TARGET_CAR}'s line again."
+    },
+    "pl056": {
+      "c_pl056_2": "Take the blank line to {AUTHORITY}."
+    },
+    "pl059": {
+      "c_pl059_1": "Wire {BORDER} warden."
+    },
+    "pl060": {
+      "c_pl060_1": "Ride {PL_MILK_TRAIN} after it."
+    },
+    "pl064": {
+      "c_pl064_1": "Bring it to {AUTHORITY}'s desk."
+    },
+    "pl065": {
+      "c_pl065_1": "Watch {KEEPER} read it."
+    },
+    "pl068": {
+      "c_pl068_1": "Find {AUTHORITY} on the platform."
+    },
+    "pl069": {
+      "c_pl069_1": "Hear {AUTHORITY} weigh it."
+    },
+    "pl070": {
+      "c_pl070_1": "Stake the {LEGAL_INSTRUMENT} on it now."
+    },
+    "pl074": {
+      "c_pl074_1": "Present the {LEGAL_INSTRUMENT} on three threads."
+    },
+    "pl075": {
+      "c_pl075_1": "Tally under {ROUTE_PL_BASE}."
+    },
+    "pl076": {
+      "c_pl076_1": "Hear {AUTHORITY} name the night."
+    },
+    "cl001": {
+      "c_cl001_1": "Take your {CL_HARNESS}."
+    },
+    "cl002": {
+      "c_cl002_1": "Follow {ROUTE_CL_LEAD} up the {CL_GANTRY} stair."
+    },
+    "cl004": {
+      "c_cl004_1": "Come in above {WATERSTOP}."
+    },
+    "cl005": {
+      "c_cl005_1": "Report to {CL_CRADLE} head."
+    },
+    "cl006": {
+      "c_cl006_1": "Rig {CL_CRADLE} by the law."
+    },
+    "cl008": {
+      "c_cl008_1": "Lower away on {ROUTE_CL_LEAD}'s signal."
+    },
+    "cl009": {
+      "c_cl009_1": "Hold {CL_CRADLE} at the roofline."
+    },
+    "cl014": {
+      "c_cl014_1": "Lamp-code it to {AUTHORITY}."
+    },
+    "cl016": {
+      "c_cl016_1": "Wait on {ROUTE_CL_LEAD}'s word."
+    },
+    "cl017": {
+      "c_cl017_2": "Let {AUTHORITY} answer with the {LEGAL_INSTRUMENT}."
+    },
+    "cl019": {
+      "c_cl019_1": "Follow the {LEGAL_INSTRUMENT} inside."
+    },
+    "cl022": {
+      "c_cl022_1": "Keep {CL_CRADLE} steady."
+    },
+    "cl023": {
+      "c_cl023_1": "Bring {ROUTE_CL_LEAD} up and stand down."
+    },
+    "cl049": {
+      "c_cl049_1": "Take stock at {PL_WAYPOINT_3}."
+    },
+    "cl050": {
+      "c_cl050_1": "Press on to {BORDER}.",
+      "c_cl050_2": "Wire {BORDER_POST} and turn home."
+    },
+    "cl057": {
+      "c_cl057_1": "Lay the springs before {AUTHORITY}."
+    },
+    "cl061": {
+      "c_cl061_1": "Watch {VEHICLE} come in."
+    },
+    "cl066": {
+      "c_cl066_2": "Send {ROUTE_CL_LEAD} with {CL_SKETCHBOOK}."
+    },
+    "cl067": {
+      "c_cl067_1": "Hold position for the {LEGAL_INSTRUMENT}."
+    },
+    "cl071": {
+      "c_cl071_1": "Hold the {CL_GANTRY} watch."
+    },
+    "cl077": {
+      "c_cl077_1": "Own it to {AUTHORITY} now."
+    },
+    "tk003": {
+      "c_tk003_1": "Take a table in {ROUTE_TK_BASE}.",
+      "c_tk003_2": "Work {TK_MAIL_CAR}."
+    },
+    "tk005": {
+      "c_tk005_2": "Send word to {ROUTE_TK_LEAD}."
+    },
+    "tk007": {
+      "c_tk007_1": "Carry it back to {ROUTE_TK_LEAD}."
+    },
+    "tk009": {
+      "c_tk009_1": "Wait for {ROUTE_TK_LEAD}'s glance."
+    },
+    "tk010": {
+      "c_tk010_2": "Fold and wait for the {LEGAL_INSTRUMENT}."
+    },
+    "tk013": {
+      "c_tk013_2": "Fetch {ROUTE_TK_LEAD} to set formal terms."
+    },
+    "tk015": {
+      "c_tk015_1": "Follow him to {TARGET_CAR}."
+    },
+    "tk021": {
+      "c_tk021_2": "Hold post and send for {ROUTE_TK_LEAD}."
+    },
+    "tk023": {
+      "c_tk023_1": "Slip back and send for {ROUTE_TK_LEAD}."
+    },
+    "tk028": {
+      "c_tk028_1": "Tell {ROUTE_TK_LEAD} everything."
+    },
+    "tk034": {
+      "c_tk034_1": "Wire {AUTHORITY} the warning now."
+    },
+    "tk036": {
+      "c_tk036_1": "Follow {ROUTE_TK_LEAD} onto the platform."
+    },
+    "tk040": {
+      "c_tk040_1": "Hand the order to {ROUTE_TK_LEAD}."
+    },
+    "tk046": {
+      "c_tk046_1": "Check {TARGET_CAR} twice."
+    },
+    "tk051": {
+      "c_tk051_1": "Give the pattern to {ROUTE_TK_LEAD}."
+    },
+    "tk056": {
+      "c_tk056_1": "Take it straight to {ROUTE_TK_LEAD}.",
+      "c_tk056_2": "Ask to check {TK_DUPLICATE_BOOK}."
+    },
+    "tk065": {
+      "c_tk065_2": "Draft {TK_WITNESS_SHEET}."
+    },
+    "tk067": {
+      "c_tk067_1": "Walk with him to {TARGET_CAR}."
+    },
+    "tk070": {
+      "c_tk070_1": "File the sheet with the {LEGAL_INSTRUMENT}."
+    }
+  }
+}

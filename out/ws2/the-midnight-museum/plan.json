@@ -1,0 +1,323 @@
+{
+  "beats": {
+    "n_start": "{HERO} realises the school trip left without her and {THRESHOLD} has locked its doors for the night; a note in her pocket, {MAP}, hints at {FOUNDER}'s {GOAL} left behind; three ways lead off {HUB} in the dark",
+    "a_gems1": "{ROUTE_A_PLACE} glitters under low security lights; {A1_SIGN} sits crooked on its plinth, and somewhere {A2_SIGN} starts up",
+    "a_gems_case": "{A1_SIGN} has been opened and closed in a hurry; {A1_LANDMARK1} and {A1_LANDMARK2} both look like they were disturbed recently, maybe by whoever hid {FOUNDER}'s secret",
+    "a_gems_vitrine": "under {A1_LANDMARK1} {HERO} finds a scratched {MARK} matching the one on {MAP}; it points toward {ROUTE_A_PASSAGE}",
+    "a_gems_note": "{A1_LANDMARK2} is an old exhibit label in {FOUNDER}'s spidery hand, with a single word underlined that also marks a door on {MAP}; it draws her toward {ROUTE_A_PASSAGE}",
+    "a_gems_corridor": "{ROUTE_A_PASSAGE} smells of dust and floor polish; at its end {ROUTE_A_LOCK} has a keyhole shaped like {MARK}, but no key in sight, only {ROUTE_A_CACHE}",
+    "a_gems_alarm": "{A2_SIGN} is a motion sensor blinking amber; {GUARD}'s torch beam swings at the far end of {ROUTE_A_PLACE}, sweeping closer",
+    "a_gems_hide": "crouched behind a plinth, {HERO} waits until the torch beam moves on; when {GUARD}'s footsteps fade she spots {ROUTE_A_PASSAGE} left ajar",
+    "b_egypt1": "{ROUTE_B_PLACE} is all long shadows and painted eyes; {B1_SIGN} stands open-lidded, and {B2_SIGN} shows the museum as it was a hundred years ago",
+    "b_egypt_sarco": "{B1_LID} is heavier than it looks and sits slightly off; nearby {B1_LANDMARK} has one empty velvet dent, as if a piece was borrowed and never returned",
+    "b_egypt_lid": "under {B1_LID}, tucked in cotton wool, is a {MARK} twin to the one on {MAP}; a draught tugs from {ROUTE_B_PASSAGE}",
+    "b_egypt_amulet": "{B1_LANDMARK}'s empty dent is labelled in {FOUNDER}'s hand; a thin arrow scratched into the case points toward {ROUTE_B_PASSAGE}",
+    "b_egypt_hall": "{ROUTE_B_PASSAGE} is bare except for {ROUTE_B_LOCK} with a keyhole shaped like {MARK}; a fire bucket of sand and old tools sits beside it, {ROUTE_B_CACHE} rocking underfoot",
+    "b_egypt_map": "{B2_SIGN} shows a wing that is not on any modern floor plan; {B2_TORCH} hangs on a bracket, and beyond a velvet rope {B2_GATE} beckons",
+    "b_egypt_torch": "{B2_TORCH} in hand, {HERO} follows {B2_SIGN}'s forgotten wing to {ROUTE_B_PASSAGE} she has not seen, where {ROUTE_B_LOCK} marked with {MARK} waits",
+    "c_archive1": "{ROUTE_C_PLACE} smells of old paper; {C1_SIGN} lies open on a lectern, and beyond the reading lamps {C2_SIGN} fade into total dark",
+    "c_archive_ledger": "{C1_SIGN}'s last century of names ends abruptly; {C1_INDEX} and {C1_DRAWER} both seem to hold what {FOUNDER} filed away before {THRESHOLD} forgot him",
+    "c_archive_index": "{C1_CARD} is out of order, marked with the same {MARK}; it references {ROUTE_C_VAULT} deep in {C2_SIGN}",
+    "c_archive_drawer": "{C1_DRAWER} holds {C1_PLAN}; the circle matches a {MARK} on {MAP}",
+    "c_archive_stack": "deep in {C2_SIGN} {ROUTE_C_VAULT} has a keyhole shaped like {MARK} and no key; a row of dictionaries hides {ROUTE_C_CACHE}, just wide enough for a hand",
+    "c_archive_dark": "{C2_SIGN} are pitch black and the shelves feel endless; {C2_LANTERN} hangs somewhere to the left, or she could just push on by feel",
+    "c_archive_lantern": "her fingers close on {C2_LANTERN}; its beam shows a shelf marked with {MARK} ahead and {ROUTE_C_VAULT} tucked behind it",
+    "n_key": "BOTTLENECK: whichever route she took, {HERO} finds {KEY_ITEM} wrapped in oilcloth, stamped with {FOUNDER}'s {MARK}; {CODE} is tied to it; {KEY_ITEM} could open {FOUNDER}'s {KEY_A_PLACE}, the {KEY_B_PLACE}, or the {KEY_C_PLACE}",
+    "k_founder": "{KEY_ITEM} turns {FOUNDER}'s {KEY_A_PLACE} door; inside, {KA_DESK} and {KA_PORTRAIT} of {FOUNDER} watch over a room untouched for decades",
+    "k_founder_desk": "{KA_DESK}'s pigeonholes hide {KA_NOTEBOOK}; its first page carries the same {CODE} as {KEY_ITEM}, half of a cipher waiting to be read",
+    "k_founder_portrait": "behind {KA_PORTRAIT} a shallow safe stands open and empty but for {CIPHER_TOOL}, the exact tool {CODE} seems to need",
+    "k_display": "the {KEY_B_PLACE} holds {FOUNDER}'s {KB_JOURNALS} under stiff glass; {KEY_ITEM} fits the brass latch but the lid is jammed with age",
+    "k_display_open": "patient wiggling frees the lid without a sound; inside, {KB_LEDGER} is bookmarked at a page of coded lines",
+    "k_cabinet": "{KB_LEDGER}'s coded page matches {CODE} on {KEY_ITEM}; the {STUDY_TABLE} under a green lamp is the place to lay it all out",
+    "k_display_force": "she leans hard on the latch and the old glass creaks in warning; ease off now, or give it one firm yank",
+    "k_display_careful": "she breathes, lifts gently, and the lid gives; {KB_LEDGER} slides free with its coded page uppermost, ready to read",
+    "k_stairs": "{KEY_ITEM} opens the {KEY_C_PLACE}; the stairwell climbs into shadow, and {KC_CUPBOARD} sits at its base with something pale inside",
+    "k_stairs_up": "the landing opens onto {FOUNDER}'s old {STUDY_TABLE}, a green lamp still on it, and beside the lamp {CODE} and {CIPHER_TOOL}",
+    "k_stairs_base": "{KC_CUPBOARD} holds {KC_CHART} and {FOUNDER}'s spare spectacles; {KC_CHART} is a page of code that begs for a quiet table",
+    "k_study": "BOTTLENECK: every route brings {HERO} to {FOUNDER}'s {STUDY_TABLE} with {CODE} and {CIPHER_TOOL} together at last; under the green lamp she lines them up to read the first line",
+    "n_cipher": "BOTTLENECK: the first cipher line resolves into a direction, {CIPHER_CLUE}, and points to three named rooms that all ring {HUB}; {CIPHER_A_PLACE}, {CIPHER_B_PLACE}, or {CIPHER_C_PLACE}",
+    "ci_stars": "{CIPHER_A_PLACE} glimmers with {CA_DOME}; a spiral leads up toward the dome, and {CA_LADDER} offers a shortcut",
+    "ci_stars_dome": "under {CA_DOME} a painted constellation matches the cipher's clue; a marked door beneath it opens toward {HUB} at {THRESHOLD}'s heart",
+    "ci_stars_ladder": "{CA_LADDER} rises to {CA_CATWALK} high over the hall; a steady walk across leads to a service door, but the dark above tempts her higher",
+    "ci_stars_cross": "she keeps her eyes forward and crosses {CA_CATWALK} to a service door that lets down toward {HUB}",
+    "ci_map": "{CIPHER_B_PLACE} is lined with charts; {CB_GLOBE} stands on brass rails, and {CB_ATLAS} lies open on a slanted stand",
+    "ci_map_globe": "turning {CB_GLOBE} to the cipher's latitude clicks a hidden catch; a low panel swings aside onto a passage toward {HUB}",
+    "ci_map_atlas": "{CB_ATLAS} falls open at a hand-drawn page {FOUNDER} added; a route is inked across it in faded red toward {THRESHOLD}'s centre",
+    "ci_atlas2": "the red route threads a back stair and a store room and comes out, exactly as drawn, at a door onto {HUB}",
+    "ci_clock": "{CIPHER_C_PLACE} ticks with a hundred old clocks; one doorway leads to {CC_GEARS}, another passes under {CC_PENDULUM}",
+    "ci_clock_gears": "in {CC_GEARS} the master clock's hands are set to the cipher's hour; nudging them true opens a maintenance door toward {HUB}",
+    "ci_clock_pendulum": "{CC_PENDULUM} swings across the only doorway on a slow, steady beat; she can time her steps and slip under, or rush it while it is far",
+    "ci_clock_cross": "she counts the beat, waits, and walks through cleanly between swings; the passage beyond slopes down to {HUB}",
+    "n_rotunda": "BOTTLENECK: all roads meet at {HUB}, where {RA_GLOBE} stands under the glass dome; the cipher says {FOUNDER} hid his real {GOAL} here; she can align {RA_GLOBE}, hunt {RB_PEDESTAL} for a panel, or check {GUARD}'s {RC_ROOM}",
+    "ro_align": "{RA_GLOBE}'s rings turn with a whisper; the cipher gives an exact setting, but the rings are stiff and easy to spin past",
+    "ro_align_set": "she sets each ring to the decoded mark; {RA_GLOBE} sighs, gears mesh, and a section of the marble floor slides back onto {RA_STAIR}",
+    "ro_align_guess": "spun by feel, the rings clunk into a wrong pattern and {RA_GLOBE} groans; she can start over and decode it properly, or lean in and force the rings",
+    "ro_align_retry": "she resets the rings, reads the cipher twice, and turns each to its true mark; this time {RA_GLOBE} opens the floor onto {RA_STAIR}",
+    "ro_panel": "{RB_PEDESTAL} under {RA_GLOBE} is carved with sliding tiles; one seam breathes a cool draught, hinting at a side door as well as a puzzle",
+    "ro_panel_solve": "sliding the tiles into {FOUNDER}'s {MARK} releases a catch under {RB_PEDESTAL}; the marble opens onto {RA_STAIR}",
+    "ro_panel_secret": "the draught leads to a low side door the plans never showed; it opens on {RB_WORKSHOP}",
+    "ro_workshop": "this is {FOUNDER}'s private {RB_WORKSHOP}, sealed and forgotten, its benches loaded with unfinished automata and labelled wonders; not the {GOAL} the cipher promised, but a marvel all its own",
+    "ro_records": "{GUARD}'s {RC_ROOM} hums with old monitors; {RC_LOG} lies open on the desk, and {RC_PHONE} sits within reach",
+    "ro_records_guard": "{RC_LOG}'s oldest entry, in {FOUNDER}'s hand, notes {RA_STAIR} that opens under {RA_GLOBE} at the cipher's hour; she hurries back and the marble is already sliding open",
+    "ro_records_phone": "{RC_PHONE} still works; she could call for a lift home now, safe and sound, with the mystery half-solved and a story to tell",
+    "n_vault": "BOTTLENECK: {RA_STAIR} opens on {FOUNDER}'s secret {V_CHAMBER}, shelves of donated treasures he meant the whole town to share but never lived to reveal; {V_LETTER}, {V_MAP}, and a decision, what to do with all of it",
+    "v_letter": "{V_LETTER} explains everything: {FOUNDER} hid the {GOAL} to protect it, and asks whoever finds it to give it back to the town; a last line points to one final resting clue",
+    "v_letter_reveal": "the final clue lifts a false shelf to reveal {FOUNDER}'s {VA_CATALOGUE}, naming every piece and where it truly belongs; the whole mystery lies open in her hands",
+    "v_reveal2": "page by page {VA_CATALOGUE} tells the town's lost history and clears {FOUNDER}'s name; by dawn {HERO} understands not just where the {GOAL} is, but why it was hidden and how to give it back",
+    "v_letter_keep": "she tucks {V_LETTER} into her coat and leaves the treasures untouched; {FOUNDER}'s words feel like a trust she means to honour, carefully, in daylight",
+    "v_map": "{V_MAP} marks {VB_WING} where more of the {GOAL} waits; she could follow it now, photograph it for later, or lose herself tracing every faded line",
+    "v_map_follow": "{V_MAP} leads her behind a plaster wall to {VB_GALLERY} the town thought lost forever; she marks the way and photographs each frame",
+    "v_map_photo": "she photographs {V_MAP} corner to corner and leaves {V_CHAMBER} exactly as she found it, evidence safe on her phone for whoever should decide",
+    "v_share": "she thinks about who should know: {CURATOR} would make it right, her friends would keep it thrilling and secret, or she could simply leave it for {THRESHOLD} to rediscover on its own",
+    "v_share_curator": "she gathers {V_LETTER} and {VA_CATALOGUE} and, at first light, meets the astonished {CURATOR} at the staff door with the whole discovery laid out",
+    "v_share_secret": "she decides {V_CHAMBER} will be the secret of her and her closest friends, a private wonder to visit and protect, at least for now",
+    "v_share_museum": "she leaves {FOUNDER}'s own {V_MAP} propped open on {GUARD}'s desk with a note, trusting {THRESHOLD} to follow it and finish what he started",
+    "v_grab": "{VD_OWL} on the nearest shelf would prove everything in an instant; her hand hovers over it, and she weighs taking it against leaving it be",
+    "v_grab_run": "{VD_OWL} in her bag, she bolts up {RA_STAIR}, but the shelf was pressure-set and a gentle chime of bells follows her all the way to the hall",
+    "v_grab_return": "she sets {VD_OWL} back on its velvet, deciding the truth is worth more than a trophy, and climbs out with only her notes and a clear conscience",
+    "e_set_alarm": "{GUARD}'s torch finds {HERO} standing in the open; kindly but firmly he walks her to the lobby to wait for a lift, the mystery left for another day; safe, a little embarrassed, no harm done",
+    "e_set_locked_gallery": "{B2_GATE}'s door clicks shut behind her and will not open from the inside; she settles on a bench to wait out the night, warm and safe, {FOUNDER}'s secret still hidden",
+    "e_set_stuck_dark": "blind in {C2_SIGN}, {HERO} loses all sense of direction and decides to sit tight until the lights come on at opening; uncomfortable and dusty, but perfectly safe, {ROUTE_C_VAULT} unopened",
+    "e_set_broken_case": "the glass cracks with a sharp snap and the noise brings {GUARD} at a run; nothing is hurt but the case, and {HERO} spends the rest of the night explaining herself in the lobby, {CODE} unread",
+    "e_set_stuck_dome": "high in {CA_DOME}'s dark the {CA_LADDER} ends at a bricked hatch; she climbs carefully back down and gives up the route, tired and dizzy but unhurt, {HUB} still out of reach tonight",
+    "e_set_pendulum": "she rushes and mistimes it; {CC_PENDULUM} bumps her back gently but firmly onto the safe side of the doorway, and she decides {CIPHER_C_PLACE} has beaten her for the night",
+    "e_set_jammed_globe": "forced too hard, the brass rings lock solid and will not turn either way; {RA_STAIR} stays shut, and {HERO} sits by the silent globe to wait for morning, so close and yet stuck",
+    "e_set_caught": "the ringing bells lead {GUARD} straight to her; red-faced, {HERO} hands back {VD_OWL} and puts everything right, let off with a stern word and a promise to return by daylight, the {GOAL} safe and the lesson learned",
+    "e_set_dawn": "lost in {V_MAP}'s every line, {HERO} looks up to find the sky already grey and the staff arriving; she slips out with the mystery only half-traced, promising herself she will come back and finish it properly",
+    "e_win_secret_workshop": "{FOUNDER}'s forgotten {RB_WORKSHOP} becomes {HERO}'s quiet triumph; she photographs the automata, leaves everything untouched, and by morning tells {CURATOR} of a whole lost room, a wonder no one knew survived; a warm, satisfying discovery",
+    "e_win_mystery_solved": "with {V_LETTER}, {VA_CATALOGUE}, and the whole truth, {HERO} walks into the morning and hands {FOUNDER}'s story back to the town; the lost {GOAL} is found, his name is cleared, and {THRESHOLD} will never be quite the same",
+    "e_win_quiet_keeper": "{HERO} leaves with only {FOUNDER}'s {V_LETTER} and a promise to honour it; in the weeks that follow she quietly guides {CURATOR} toward the truth, keeper of a trust she chose to carry gently",
+    "e_win_lost_wing": "{VB_WING} of lost paintings is {HERO}'s discovery to give; her photographs bring restorers and reporters, and the town crowds in to see what was hidden for a century",
+    "e_win_hero_curator": "at first light {CURATOR} listens open-mouthed, then leads a careful team down {RA_STAIR}; {HERO} is thanked as the girl who gave {FOUNDER}'s gift back to everyone, exactly as he wished",
+    "e_win_secret_kept": "the hidden {V_CHAMBER} becomes the treasured secret of {HERO} and her friends, a wonder they visit and guard together; it is theirs alone for now, a bond and a promise",
+    "e_win_donate": "{HERO} leaves {FOUNDER}'s own {V_MAP} open on the desk with a careful note; days later {THRESHOLD} follows it, finds the {GOAL}, and never learns whose small hands set them on the path",
+    "e_neutral_call_home": "{HERO} calls home from {GUARD}'s desk and waits in the warm lobby for a lift, the mystery half-solved and safe in her notebook; not the full triumph, but a good night's adventure and a promise to return; safe and content",
+    "e_neutral_evidence": "with {V_MAP} safe on her phone and {V_CHAMBER} left untouched, {HERO} slips out at dawn; she has proof enough to bring the right people back, and lets the grown-ups decide what happens next",
+    "e_neutral_wiser": "{HERO} leaves the treasures where they belong and climbs out with only her notes; she has not solved everything, but she has learned what she is willing to do and not do, and walks home wiser than she came"
+  },
+  "titles": {
+    "e_set_alarm": "{A2_GATE}",
+    "e_set_locked_gallery": "{B2_GATE}",
+    "e_set_stuck_dark": "{C2_GATE}",
+    "e_set_broken_case": "{KB_GATE}",
+    "e_set_stuck_dome": "{CA_GATE}",
+    "e_set_pendulum": "{CC_GATE}",
+    "e_set_jammed_globe": "{RA_GATE}",
+    "e_set_caught": "{VD_GATE}",
+    "e_set_dawn": "{VB_GATE}",
+    "e_win_secret_workshop": "{RB_PRIZE}",
+    "e_win_mystery_solved": "{VA_PRIZE1}",
+    "e_win_quiet_keeper": "{VA_PRIZE2}",
+    "e_win_lost_wing": "{VB_PRIZE1}",
+    "e_win_hero_curator": "{VC_PRIZE1}",
+    "e_win_secret_kept": "{VC_PRIZE2}",
+    "e_win_donate": "{VC_PRIZE3}",
+    "e_neutral_call_home": "{RC_RESULT}",
+    "e_neutral_evidence": "{VB_RESULT1}",
+    "e_neutral_wiser": "{VD_RESULT}"
+  },
+  "labels": {
+    "n_start": {
+      "c_start_gems": "Slip into {ROUTE_A_PLACE}.",
+      "c_start_egypt": "Head for {ROUTE_B_PLACE}.",
+      "c_start_archive": "Try {ROUTE_C_PLACE} downstairs."
+    },
+    "a_gems1": {
+      "c_gems_case": "Study {A1_SIGN}.",
+      "c_gems_alarm": "Follow {A2_SIGN} toward a panel."
+    },
+    "a_gems_case": {
+      "c_gems_vitrine": "Look under {A1_LANDMARK1}.",
+      "c_gems_note": "Read {A1_LANDMARK2}."
+    },
+    "a_gems_vitrine": {
+      "c_vitrine_go": "Follow {MARK} to {ROUTE_A_PASSAGE}."
+    },
+    "a_gems_note": {
+      "c_note_go": "Head for {ROUTE_A_PASSAGE}."
+    },
+    "a_gems_corridor": {
+      "c_corridor_key": "Pry up {ROUTE_A_CACHE}."
+    },
+    "a_gems_alarm": {
+      "c_alarm_hide": "Duck behind a plinth as {GUARD} passes."
+    },
+    "a_gems_hide": {
+      "c_hide_go": "Slip into {ROUTE_A_PASSAGE}."
+    },
+    "b_egypt1": {
+      "c_egypt_sarco": "Examine {B1_SIGN}.",
+      "c_egypt_map": "Trace {B2_SIGN}."
+    },
+    "b_egypt_sarco": {
+      "c_sarco_lid": "Peek under {B1_LID}.",
+      "c_sarco_amulet": "Check {B1_LANDMARK}."
+    },
+    "b_egypt_lid": {
+      "c_lid_hall": "Follow the draught to {ROUTE_B_PASSAGE}."
+    },
+    "b_egypt_amulet": {
+      "c_amulet_hall": "Take the arrow's direction to {ROUTE_B_PASSAGE}."
+    },
+    "b_egypt_hall": {
+      "c_hall_key": "Lift {ROUTE_B_CACHE}."
+    },
+    "b_egypt_map": {
+      "c_map_torch": "Grab {B2_TORCH} and press on.",
+      "c_map_rope": "Duck under the rope into {B2_GATE}."
+    },
+    "b_egypt_torch": {
+      "c_torch_hall": "Approach {ROUTE_B_LOCK}."
+    },
+    "c_archive1": {
+      "c_arch_ledger": "Open {C1_SIGN}.",
+      "c_arch_dark": "Push into {C2_SIGN}."
+    },
+    "c_archive_ledger": {
+      "c_ledger_index": "Check {C1_INDEX}.",
+      "c_ledger_drawer": "Try {C1_DRAWER}."
+    },
+    "c_archive_index": {
+      "c_index_stack": "Follow {C1_CARD} into {C2_SIGN}."
+    },
+    "c_archive_drawer": {
+      "c_drawer_stack": "Head for the circled shelf."
+    },
+    "c_archive_stack": {
+      "c_stack_key": "Reach into {ROUTE_C_CACHE}."
+    },
+    "c_archive_dark": {
+      "c_dark_lantern": "Feel along the shelf for {C2_LANTERN}."
+    },
+    "c_archive_lantern": {
+      "c_lantern_stack": "Cross to the marked shelf."
+    },
+    "n_key": {
+      "c_key_founder": "Try {KEY_ITEM} on {FOUNDER}'s {KEY_A_PLACE} door.",
+      "c_key_display": "Try it on the {KEY_B_PLACE}.",
+      "c_key_stairs": "Try it on the locked {KEY_C_PLACE}."
+    },
+    "k_founder": {
+      "c_founder_desk": "Search {KA_DESK}.",
+      "c_founder_portrait": "Look behind {FOUNDER}'s {KA_PORTRAIT}."
+    },
+    "k_founder_desk": {
+      "c_desk_study": "Carry {KA_NOTEBOOK} to the {STUDY_TABLE}."
+    },
+    "k_founder_portrait": {
+      "c_portrait_study": "Take {CIPHER_TOOL} to the {STUDY_TABLE}."
+    },
+    "k_display": {
+      "c_display_open": "Ease the {KEY_B_PLACE} open."
+    },
+    "k_display_open": {
+      "c_open_cabinet": "Lift out {KB_LEDGER}."
+    },
+    "k_cabinet": {
+      "c_cabinet_study": "Spread {KB_LEDGER} on the {STUDY_TABLE}."
+    },
+    "k_stairs": {
+      "c_stairs_base": "Check {KC_CUPBOARD} at the base."
+    },
+    "k_stairs_up": {
+      "c_up_study": "Sit at the {STUDY_TABLE}."
+    },
+    "k_stairs_base": {
+      "c_base_study": "Take {KC_CHART} up to the {STUDY_TABLE}."
+    },
+    "n_cipher": {
+      "c_cipher_stars": "Head to {CIPHER_A_PLACE} the cipher names.",
+      "c_cipher_map": "Head to {CIPHER_B_PLACE}.",
+      "c_cipher_clock": "Head down {CIPHER_C_PLACE}."
+    },
+    "ci_stars": {
+      "c_stars_dome": "Climb toward {CA_DOME}.",
+      "c_stars_ladder": "Take {CA_LADDER}."
+    },
+    "ci_stars_dome": {
+      "c_dome_rotunda": "Take the marked door to {HUB}."
+    },
+    "ci_stars_ladder": {
+      "c_ladder_cross": "Edge across {CA_CATWALK}.",
+      "c_ladder_up": "Climb higher into {CA_DOME}'s dark."
+    },
+    "ci_stars_cross": {
+      "c_cross_rotunda": "Descend toward {HUB}."
+    },
+    "ci_map": {
+      "c_map_globe": "Spin {CB_GLOBE}.",
+      "c_map_atlas": "Open {CB_ATLAS}."
+    },
+    "ci_map_globe": {
+      "c_globe_rotunda": "Step through toward {HUB}."
+    },
+    "ci_atlas2": {
+      "c_atlas_rotunda": "Open {HUB}'s door."
+    },
+    "ci_clock": {
+      "c_clock_gears": "Follow the ticking to {CC_GEARS}.",
+      "c_clock_pendulum": "Cross under {CC_PENDULUM}."
+    },
+    "ci_clock_pendulum": {
+      "c_pendulum_time": "Time your steps past {CC_PENDULUM}."
+    },
+    "ci_clock_cross": {
+      "c_cross_rot": "Follow the passage to {HUB}."
+    },
+    "n_rotunda": {
+      "c_rot_align": "Align {RA_GLOBE} to the cipher.",
+      "c_rot_panel": "Search {RB_PEDESTAL} for a hidden panel.",
+      "c_rot_records": "Slip into {GUARD}'s {RC_ROOM}."
+    },
+    "ro_align_set": {
+      "c_set_vault": "Descend {RA_STAIR}."
+    },
+    "ro_align_retry": {
+      "c_retry_vault": "Take {RA_STAIR} down."
+    },
+    "ro_panel_solve": {
+      "c_solve_vault": "Go down {RA_STAIR}."
+    },
+    "ro_panel_secret": {
+      "c_secret_workshop": "Step into {RB_WORKSHOP}."
+    },
+    "ro_records": {
+      "c_records_guard": "Read {GUARD}'s {RC_LOG}.",
+      "c_records_phone": "Use {RC_PHONE}."
+    },
+    "ro_records_guard": {
+      "c_guard_vault": "Descend {RA_STAIR}."
+    },
+    "ro_records_phone": {
+      "c_phone_call": "Call home from {THRESHOLD}'s desk."
+    },
+    "n_vault": {
+      "c_vault_letter": "Read {FOUNDER}'s {V_LETTER}.",
+      "c_vault_map": "Study {V_MAP}."
+    },
+    "v_letter": {
+      "c_letter_reveal": "Follow {V_LETTER}'s final clue.",
+      "c_letter_keep": "Keep {V_LETTER} safe and leave the rest."
+    },
+    "v_letter_reveal": {
+      "c_reveal_more": "Read {VA_CATALOGUE} to the end."
+    },
+    "v_letter_keep": {
+      "c_keep_end": "Slip out with {V_LETTER} and a plan."
+    },
+    "v_map": {
+      "c_map_follow": "Follow {V_MAP} to {VB_WING}.",
+      "c_map_photo": "Photograph {V_MAP} and go."
+    },
+    "v_map_follow": {
+      "c_follow_end": "Bring {VB_WING} to light."
+    },
+    "v_share": {
+      "c_share_curator": "Wake {CURATOR} with proof.",
+      "c_share_museum": "Leave it for {THRESHOLD} to find."
+    },
+    "v_share_curator": {
+      "c_curator_end": "Hand over {FOUNDER}'s trust."
+    }
+  }
+}

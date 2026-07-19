@@ -1,0 +1,599 @@
+{
+  "beats": {
+    "n_start": "{HERO}, the youngest apprentice at {INSTITUTION}, is rowed to {THRESHOLD} at {OPENING_MOMENT} and given one task, fill {GOAL} before {DEADLINE} or lose the apprenticeship; {ENTRANCE} opens onto five ways inland, {ROUTE_A_CHAR}, {ROUTE_B_CHAR}, {ROUTE_C_CHAR}, {ROUTE_D_CHAR}, and {ROUTE_E_CHAR}",
+    "mg_enter": "{ROUTE_A_CHAR} is a maze of roots and brown water where {A_BIRD} stand still as sticks; {HERO} must pick a bearing before the mud swallows the morning, upcoast toward {A1_SIGN}, downcoast toward {A2_SIGN}, or straight inland along {A3_SIGN}",
+    "mg_bridge": "{A1_SIGN} is slick and green, crossing a channel where the tide is already turning; halfway over {HERO} spots {A1_LANDMARK1} and {A1_LANDMARK2} loud in the branches on the far bank",
+    "mg_carve": "the driftwood carries {A1_FIND}, arrows and a little compass rose scratched by someone long ago; the marks point two ways, back toward {ROUTE_C_CHAR} and up toward {A_HIGHGROUND}",
+    "mg_readmarks": "read slowly, the shorthand is a message, the last mapmaker signing a name, {PREDECESSOR}, and a promise to leave {ALDER_CHART} at {CAMP}; the arrow up the hill is clear and sure",
+    "mg_farbank": "on the far bank {A1_LANDMARK2} erupts, hundreds of {A_BIRD} lifting at once, and in the racket {HERO} nearly misses a narrow path splitting left toward {A1_GATE} and right toward {A1_ALT}",
+    "e_mg_mud_trap": "{A1_GATE} is deeper than it looks and grips like glue up to the knee; by the time {HERO} wriggles free the tide has closed {A1_SIGN} behind, so this whole finger of coast is cut off and stays a blank corner on the paper, and {HERO} backs out to firmer ground for the day",
+    "mg_highground": "the ground lifts out of the swamp into firm palms, and from a low rise {HERO} can see the whole northern shape of {THRESHOLD}, a curl of reef and a bright notch that must be {COVE}; a goat track leads on toward it",
+    "mg_oyster": "{A2_SIGN} are sharp and busy with crabs, and among them {HERO} finds a shape that does not belong, {A2_FIND}, flippers waving, stranded by the falling water",
+    "mg_turtle_note": "{A2_FIND} is stuck but not hurt; {HERO} could right it now and lose precious time, or mark its exact spot and the reef channel on the map and send help back for it once a high vantage is found",
+    "e_mg_turtle_seen": "{HERO} tips {A2_FIND} upright and it scuttles to the water, but the delay lets the tide flood the rocks, and with wet paper and slipping light {HERO} maps only this one corner, a kind deed done and an honest sketch of the reef, while the rest of {THRESHOLD} stays blank",
+    "mg_rockpath": "past the rocks a seep of clear water threads inland through the salt marsh, colder and sweeter the higher it climbs, the sure sign of {SPRING} somewhere above",
+    "mg_seep": "{A_SEEP} climbs out of the marsh into a shaded gully of ferns; the water is properly cold now and the gully forks, one arm toward a bright pool that must be {SPRING}, one arm toward {A_OVERHANG}",
+    "mg_overhang": "under {A_OVERHANG} the rock is dry and someone has sheltered here, {A_CACHE}, and scratched on the stone a single word, {PREDECESSOR}, with an arrow pointing uphill toward {CAMP}",
+    "e_mg_shelter": "the dry shelter is so welcome after the swamp that {HERO} sits to sketch it and the morning slides by unfelt; when the light shifts {HERO} jumps up with only this one snug corner drawn, and hurries out knowing far too much of {THRESHOLD} is still bare paper",
+    "mg_creek": "{A3_SIGN} runs inland straight and slow under a green roof, so quiet {HERO} can hear paddling, and around a bend a family of {A3_CREATURE} watch from a half sunk log before slipping away upstream",
+    "mg_otter": "the {A3_CREATURE} lead to a clean gravel bar where {A3_SIGN} shallows, and beyond it the ground rises firm and dry; the water here is sweet, fed from somewhere higher up {THRESHOLD}",
+    "mg_trees": "away from the creek the trees close in and the light goes green and dim; without the water to follow {HERO} must pick a direction by instinct, uphill toward a hint of brightness or along {A3_TRAIL}",
+    "mg_gametrail": "{A3_TRAIL} runs level and easy but keeps curling back on itself, and {HERO} realises with a jolt that {ROUTE_A_CHAR} has no true landmark here, only more of itself in every direction",
+    "e_mg_lost": "the last bend gives onto the same fallen tree {HERO} passed an hour ago; {ROUTE_A_CHAR} has been walking {HERO} in a slow circle, and with the sun already high the coast is drawn as a rough guess, honest but unfinished, and {HERO} turns back to try firmer ground",
+    "mg_lagoon": "{A4_SIGN} is a mirror roofed by mangroves, so quiet the plop of a fish sounds loud; {A4_OFFER1} lies against the roots, {A4_OFFER2} leads deeper, and {A4_ZONE} dams the far end",
+    "mg_canoe": "{A4_OFFER1} is old but sound, carved by hand long ago, and half full of leaves and rain; bailed out it might carry {HERO} fast across the lagoon, or it might just as easily fold and sink under a first stroke",
+    "e_mg_canoe": "{A4_OFFER1} takes water the moment {HERO} digs in a paddle, and with a slow gurgle it settles until {HERO} is sitting waist deep in the warm lagoon, sketchbook rescued but the morning wasted wading back to shore, that corner of the coast left a wet blank",
+    "mg_paddle": "bailed and balanced, {A4_OFFER1} glides sweetly across {A4_SIGN}, and from the water {HERO} can trace the true shape of the shore far better than from the tangled bank; the far side shows {A4_FIND1}",
+    "mg_lagfar": "{A4_FIND1} on the far bank is too neat to be wild, someone shaped it once; {A4_ZONE2} stands among the trees, and beyond it a firm path leads back up toward the creek and {A_HIGHGROUND}",
+    "mg_ruin": "{A4_ZONE2} is a fish drying rack and the posts a house frame, {A4_FIND2}, older than {PREDECESSOR}, older than any chart; people lived on {THRESHOLD} once and left only this quiet clearing",
+    "e_mg_village": "{HERO} maps {A4_FIND2} post by post, imagining the people who dried their catch here, and it fills page after page; it is careful true work, but it is one small clearing, and by the time {HERO} looks up {THRESHOLD} as a whole is still barely begun, so home goes a village and not a chart",
+    "mg_lagtunnel": "{A4_OFFER2} is a green throat that {HERO} must duck and wade through, cool and dim, loud with dripping; it bends and forks, one way brightening toward open sky, one way boring deeper into the dark under {THRESHOLD}'s edge",
+    "e_mg_tunnellost": "the deeper {A4_OFFER2} goes the more it branches, root passage into root passage, until {HERO} cannot say which way is out and has to backtrack by feel, heart thudding, to the last patch of light; the lagoon is left a scribble, and {HERO} climbs out shaken to try open ground",
+    "mg_dam": "{A4_ZONE} is otter work, years of it, and jammed among the branches is {A4_FIND3}, one of {PREDECESSOR}'s marks, still standing where the map said it would be",
+    "e_mg_stake": "{HERO} works {A4_FIND3} loose and turns it over, reading the faded number, and something about holding the real thing makes the whole day feel like {PREDECESSOR}'s more than {HERO}'s; {HERO} carries the stake home like a relic, the map itself barely started, a token of the mapmaker who came first",
+    "mg_heron": "{HERO} poles a raft of lashed reeds across to {A3_ZONE}, a low green mound white with nesting {A_BIRD}, loud as a market; {A3_BLIND} stands on stilts, {A3_MUDBANK} shelves off one side, and the treetops seethe with a whole rookery",
+    "mg_blind": "{A3_BLIND} is a surveyor's hide, and {PREDECESSOR} used it well, the rails scratched with a whole tide table and the compass bearings of every headland in sight, a place to sit still and let {THRESHOLD} give up its shape",
+    "e_mg_tidetable": "{HERO} copies {PREDECESSOR}'s whole carved tide table, hour by hour, a treasure of exactly when each flat floods, and it fills the morning; it will make some future chart wonderful, but today it is one rail of scratched numbers, and {THRESHOLD} stays mostly unmapped as {HERO} poles reluctantly back",
+    "mg_mudbank": "{A3_MUDBANK} is soft and shining and crowded with wading {A_BIRD}, and a firm ribbon of sand threads across it toward a far channel and higher ground, but step wrong off the ribbon and the mud is knee deep and grasping",
+    "e_mg_birdstorm": "{HERO} cuts across the soft mud and a thousand {A_BIRD} explode up at once in a storm of wings and noise that sends {HERO} stumbling and floundering knee deep; by the time the flock settles and {HERO} struggles clear, plastered and laughing and shaken, the tide is turning and {A3_ZONE} is left a hasty smudge",
+    "mg_farchannel": "the firm ribbon delivers {HERO} dry shod to the far channel, where the water runs clear toward the mainland shore and the ground beyond lifts, green and solid, toward {A_HIGHGROUND}",
+    "mg_rookery": "counting the nests, {HERO} finds {A3_FIND} cheeping in the grass and lifts it gently back to a low branch under its parents' cross eyed glare, then sketches the whole seething rookery for the map's margin",
+    "e_mg_chick": "{HERO} cannot stop watching the {A_BIRD}, the fishing, the squabbles, {A3_FIND} settling safe, and the sketchbook fills with birds instead of coastline; it is a lovely living page, but the sun climbs on unmapped, and {HERO} poles back with a rookery drawn and {THRESHOLD} still waiting",
+    "cf_enter": "{ROUTE_B_CHAR} climbs straight off the beach into cool mist, dripping moss and birdsong; {B1_SIGN} goes up sharply, {B2_SIGN} angles across the slope, and a side path drops to {B3_SIGN} where something pale gleams",
+    "cf_switch": "{B1_SIGN} is steep but honest, each turn opening a wider view of {THRESHOLD} below; {HERO} pauses on a flat ledge where two ways continue, {B1_ROUTE1} straight up and {B1_ROUTE2} that traces toward a break in the trees",
+    "cf_ledge": "{B1_ROUTE1} is airy and exposed, cloud streaming past, but it gains height fast and delivers {HERO} onto {B_BENCH} where the ridge proper begins and a worn path runs on toward higher ground",
+    "cf_shelf": "{B1_ROUTE2} traces a contour line, exactly the sort of level path a surveyor would cut, and it curves patiently around the slope to {B_BENCH} where the true ridge path begins",
+    "cf_bench": "{B_BENCH} is the ridge's shoulder, wind combing the tussocks; from here a stony trail climbs toward {CAMP} {HERO} keeps hearing about, while off to the side a hush of {B_GROVE_ZONE} marks an ancient grove",
+    "cf_traverse": "{B2_SIGN} is gentle but long, crossing streams that all run the same way downhill; following one upstream {HERO} reaches {SPRING}, plainly the island's spring",
+    "cf_upper": "higher along {B2_SIGN} the mist thins and a stand of wind bent trees gives way to open ground; a faint path climbs on, and below it {B3_SIGN} shows the same pale gleam {HERO} glimpsed from the beach",
+    "cf_hollow": "the pale gleam is {B3_FIND1} over a rock face, and behind them a dry cleft where {B3_BOX} has been wedged, green with age and marked with a compass rose",
+    "cf_box": "inside {B3_BOX} are {B3_ITEMS}; the papers are field notes in a careful hand, and the locket holds a faded picture of a girl who looks a little like {HERO}",
+    "e_cf_locket": "{HERO} keeps the locket and climbs on, but spends the rest of the morning wondering about the girl in the picture instead of watching the land, and the ridge is mapped in a distracted scrawl, a small mystery carried home in place of a finished chart",
+    "cf_notes": "the notes are {PREDECESSOR}'s, the mapmaker who came before, describing {ALDER_CHART} hidden at {CAMP} and a warning that {ROUTE_C_CHAR} floods at high tide; the last line points uphill to the camp",
+    "cf_falls": "the roar leads {HERO} to {B4_SIGN} pouring white off a mossy lip into {B4_POOL}; a wet rock scramble climbs beside it, a mossy log crosses above the lip, and the pool below hides pale shapes under the churn",
+    "cf_fallclimb": "the rocks beside {B4_SIGN} are slick with spray and furred with moss, good holds under the green if {HERO} is careful, a fast way up to the traverse if {HERO} is bold, and a long wet slide down if {HERO} is neither",
+    "e_cf_slip": "a mossy hold peels away and {HERO} slithers down the wet rock into {B4_POOL} in a rush of cold and bubbles, unhurt but soaked to the bone and shivering; the sketchbook is saved held high, but the climbing is over for now, and the high ridge stays unmapped above",
+    "cf_fallcross": "the mossy log above the lip is broad and, tested, surprisingly firm, and edging across it {HERO} looks straight down the falling water to {B4_POOL} far below, then up to where {B2_SIGN} contours away toward the upper ridge",
+    "cf_fallpool": "the pale shapes in {B4_POOL} are {B4_GAUGE}, a water gauge someone set to measure the falls through the seasons, {PREDECESSOR}'s careful hand at work again",
+    "e_cf_gauge": "{HERO} copies {PREDECESSOR}'s {B4_GAUGE} notch by notch, working out how the falls rise and fall across a year, and it is real science, the kind that makes a place understood; but it eats the hours, and {HERO} climbs out with a page on the falls and {THRESHOLD} still mostly blank, carrying home a piece of {PREDECESSOR}'s patient study",
+    "cf_grove": "{B_GROVE_ZONE} is a cathedral of giant moss hung trees, the light green and holy, the air still after the ridge wind; {B_LADDER} climbs into the high canopy, and deep among the roots stands {B_SHRINE}",
+    "cf_canopy": "{B_LADDER} is grey and frayed but each rung holds when {HERO} tests it, and above the leaves must lie a view over the whole ridge; still, the higher rungs look thinner, and trusting them fully is a gamble",
+    "e_cf_ladder": "a high rung parts with a soft rotten crack and {HERO} drops a heart stopping foot before the next rung catches, and that is enough, down is the only sensible way now, careful hand under careful hand; the canopy view is lost, and the grove goes on the map as a green guess from the ground",
+    "cf_treetop": "{B_LADDER} tops out on {B_PLATFORM}, {PREDECESSOR}'s treetop survey point, a fixed brass sighting ring still bolted to the trunk, and through the leaves the whole green ridge rolls away to the sea",
+    "e_cf_canopy": "the swaying green world of the canopy is so wonderful that {HERO} stays and stays, sketching the ridge through gaps in the leaves, until the light tells the truth about the hour; it is a rare view few ever see, but it is one treetop, and {HERO} climbs down with a beautiful fragment and no finished chart",
+    "cf_shrine": "{B_SHRINE} is a knee high cairn dressed with shells and a single carved wooden bird, weathered soft, older than {PREDECESSOR}, a quiet marker left by the island's first people to bless the high forest",
+    "e_cf_shrine": "{HERO} sits a long peaceful while before {B_SHRINE}, drawing the shell dressed cairn and the carved bird, feeling the weight of all the people who loved {THRESHOLD} before; the grove empties {HERO} of hurry, which is lovely and costly both, and the day slips by with only the shrine set down",
+    "cf_dell": "the deer path opens on {B_DELL_ZONE}, soft grass and a ring of ferns around a trickling spring, so sheltered and green it feels like a secret room; {B_DELL_BENCH} sits by the water, and a faint way climbs on toward the upper ridge",
+    "e_cf_dell_lost": "{B_DELL_ZONE} is so peaceful that {HERO} means to rest a moment and instead rests an hour, and wakes with a jolt to a higher sun and a colder shadow; the secret green room has quietly stolen the morning, and {HERO} hurries out with the dell drawn and far too much of {THRESHOLD} still blank",
+    "cf_dellspring": "the dell spring gathers into a proper stream and leads {HERO} gently down through the ferns to {SPRING}, the whole watershed suddenly making sense",
+    "cf_dellcarve": "{B_DELL_BENCH} is carved with initials and little maps by mapmakers who rested here across the years, {PREDECESSOR}'s among them, a guest book in wood; adding a mark of your own feels like joining a long quiet company",
+    "e_cf_carve": "{HERO} reads every name and little map carved into {B_DELL_BENCH}, a history of mapmakers resting here going back before {PREDECESSOR}, and copies them all down, moved; it is a lovely record of the ones who came before, but it is not a chart, and the day slides on with the dell drawn and {THRESHOLD} bare",
+    "cv_enter": "a cool breath of air rises from a sink-hole ringed with ferns, and a knotted rope left by someone earlier dangles into the dark; below, the shaft opens into a cavern with three passages, one echoing with {C1_SIGN}, one lit by {C2_SIGN}, and one warm with {C3_SIGN}",
+    "cv_water": "the {C1_SIGN} passage slopes down to an underground stream, clear and cold, running fast toward {C1_GATE}; a line scratched high on the wall warns exactly where the water rises at the turn of the tide",
+    "cv_arch": "{C1_GATE} is low and the water is rising; a dry ledge runs beside it toward a paler light, but pressing under {C1_GATE} itself would be a shortcut into the dark heart of the caves",
+    "e_cv_flood": "past {C1_GATE} the roof drops to a hand's width above the water, and as {HERO} hesitates the tide pushes in and the passage begins to fill; there is just time to scramble back, soaked and shaking, the caverns left as a single dark question mark on the map",
+    "cv_upflow": "climbing against the current, the stream grows sweeter and the roof lifts into a bright chamber where a shaft of daylight falls on a pool, the underground face of {SPRING}",
+    "cv_glitter": "the {C2_SIGN} is not treasure but crystal, veins of quartz webbing the walls, and pressed among them {C2_FIND}, older than any chart, someone marking this place long before mapmakers came",
+    "cv_ochre": "copying {C2_FIND}, {HERO} sees they make a rough shape, {THRESHOLD} itself, with a mark where {SPRING} is and a mark at the high peak, a map drawn by the first people to find this place",
+    "e_cv_paintings": "{HERO} fills a whole page with {C2_FIND} and the island shape around them, a record no chart ever held; it costs the afternoon, and the land above stays half drawn, but {INSTITUTION} has never seen such proof that people lived here long before any surveyor",
+    "cv_deepglow": "the further glow is daylight leaking through a crack, and squeezing toward it {HERO} tumbles out blinking onto a hidden shelf of beach inside a ring of cliffs, {COVE} seen from below; back the way came, a side passage murmurs with lapping water",
+    "cv_warm": "the {C3_SIGN} breathes like a sleeping animal, and around a corner {HERO} finds why, a colony of little bats and, curled on a ledge below them, {C3_FIND} that has wriggled in through a sea tube and cannot climb back out",
+    "cv_pup": "{C3_FIND} came through a flooded tube from the sea and is stranded by the low tide; {HERO} cannot lift it alone, but marking its spot and finding a high place to signal the ship might bring help before dusk",
+    "e_cv_pup_fail": "{C3_FIND} is heavier than it looks and frightened, and after a long slippery struggle {HERO} has to admit it needs more than one pair of hands; {HERO} marks the sea tube on the map and backs out, the rescue left for the tide and better luck",
+    "cv_backout": "backing out of the warm dark, {HERO} finds a side vent choked with roots and, beyond it, a slot of daylight opening onto firm ground high on the slope",
+    "cv_tohigh": "{HERO} climbs toward the light and air, following the bats as they stream out at a crack, and comes up onto the open flank of the ridge with the whole island tilting away below and {CAMP}'s grey canvas not far above",
+    "cv_skylight": "{C4_SIGN} hangs high in the cavern roof where a shaft has broken through, and beneath it a slope of fallen rock climbs toward the light; off to one side {C4_GALLERY} glows softly, hung with drapes and columns of pale rock",
+    "cv_chimney": "the last stretch to the daylight is {C4_GATE}, a hard bright squeeze that would pop {HERO} out onto the open hillside, high and quick, if the arms hold",
+    "e_cv_chimney": "halfway up {C4_GATE} {HERO}'s arms begin to shake and the sensible thing, the only thing, is to slide carefully back down to the cavern floor before a slip becomes a fall; the surface stays out of reach by this route, and {HERO} must find another way up, time bleeding away",
+    "cv_gallery": "{C4_GALLERY} is a frozen forest of stone, columns where drips have met over ages, and among them the small bones of a goat that fell long ago and, beside it, {C4_FIND}, proof that someone came searching here before",
+    "e_cv_lantern": "{HERO} draws {C4_GALLERY} until the page glows with columns and drapes, and sets {C4_FIND} in the corner of the sketch like a signature from the past; it is beautiful, and it is one dark room, and the sunlit island above stays a rumour, so {HERO} carries home a cave and not a coast",
+    "cv_lake": "the passage opens on an underground lake, black and perfectly still, its far shore lost in dark; {C1_RAFT} is drawn up on a beach of pale sand, and the ceiling glitters faintly where water has carried the crystal down",
+    "cv_raft": "{C1_RAFT} floats when {HERO} eases it out, and a long pole finds the bottom, so crossing is possible, slow and eerie over the black glass water; but the lashings are old, and to hurry or lean is to risk a cold dark swim",
+    "e_cv_raft": "a lashing gives with a wet snap and {C1_RAFT} tips, and {HERO} is suddenly waist deep in the cold black lake, gasping, hauling the raft and the precious dry sketchbook back to the pale beach by feel; there is no crossing now, and the far dark of the cave keeps its secrets while {HERO} wrings out and retreats",
+    "cv_farcave": "the far shore is a wonder, {C1_FISH} hanging in the shallows and a natural stair of flowstone climbing toward a distant seam of grey daylight high in the rock",
+    "e_cv_fish": "{HERO} watches {C1_FISH} drift in water that has never seen the sun and fills a page with creatures no chart ever showed, patient wondering work; it is a discovery to make {INSTITUTION} gasp, but it is a single dark pool, and the sunlit island above waits unmapped as the hours drain away",
+    "cv_lakebeach": "the pale sand holds {C1_PRINTS}, and stooping close {HERO} sees they are turned to stone, the bare footprints of children who walked this hidden beach an age ago and left their steps behind them in the deep",
+    "e_cv_prints": "{HERO} maps every stone footprint on the hidden beach, imagining the children who made them in the dark long ago, and the wonder of it holds {HERO} fast; page after page fills with little vanished steps, and when {HERO} finally looks up the day is old and {THRESHOLD} above is still nearly blank",
+    "cv_rift": "the side rift is hung with {C1_GLOW}, thousands of tiny blue green lights in the black; the rift narrows to a squeeze at one end, and at the other a still pool catches the glow and doubles it",
+    "cv_squeeze": "{C1_GATE2} is a hand's breadth too narrow to be comfortable, cold rock pressing close, but a wriggle of daring would pop {HERO} out into the wider cave beyond, or wedge {HERO} fast for a frightening minute",
+    "e_cv_squeeze": "{HERO} pushes too hard too fast and sticks fast in {C1_GATE2} for one long horrible minute, breathing slow, before wriggling backward free; that is quite enough of narrow places, and {HERO} retreats the way in with the rift left as a shaky note and a firm resolve to keep to wider caves",
+    "cv_glowworm": "under the glowing ceiling {HERO} draws the rift by its own blue light, the {C1_GLOW}, the doubled pool, a page like a piece of night sky brought underground, and finds an easy way on toward the sound of {SPRING}",
+    "e_cv_glow": "the {C1_GLOW} rift is so beautiful that {HERO} lies back and simply watches the living stars, and time comes unstuck the way it does under the ground; when {HERO} finally stirs the day above has moved on, and home goes a page of underground sky and {THRESHOLD} still waiting for its map",
+    "tw_enter": "{ROUTE_D_CHAR} leans on a headland, half its stone stair fallen, a place built by mapmakers before {HERO} was born; the door hangs open on {D1_ZONE}, {D_STAIR} spirals up toward the broken top, and {D3_ZONE} is set in the floor",
+    "tw_ground": "{D1_ZONE} is full of ruined instruments, a rusted theodolite, rotten ropes, and a slate desk where {D1_LOG} lies swollen with damp, its last pages still just readable",
+    "e_tw_log": "{D1_LOG} is {PREDECESSOR}'s, and its last entry says {ALDER_CHART} was carried to {CAMP} for safekeeping before a storm; {HERO} copies the words but the light is going, and carries home a story of the lost mapmaker instead of a finished map",
+    "tw_salvage": "one instrument still turns, {D1_TOOL}, for sighting distant points; with it {HERO} could fix {THRESHOLD}'s shape fast from a high place, if a high place can be reached in time",
+    "tw_toridge": "carrying {D1_TOOL} like a treasure, {HERO} follows {D_TORIDGE} where it climbs to meet the main ridge, {CAMP}'s grey canvas showing far ahead against the cliff",
+    "tw_stair": "{D_STAIR} is missing steps and open to a long drop to the rocks; two thirds up, {D2_GATE} forces a choice, a bold stride across to the next slab or a slow clamber along a crumbling ledge",
+    "e_tw_stair_fail": "the crumbling ledge sheds stones under {HERO}'s boots and there is nothing to do but retreat, heart pounding, back to solid ground; the tower keeps its high view to itself, and that corner of {THRESHOLD} is drawn from guesswork below",
+    "tw_top": "from the tower top {THRESHOLD} shows its bones, the ridge, the reef, the pale flats, and a bright ring of cliffs hiding {COVE}; a surveyor could take rough bearings here, but {SUMMIT} stands higher still, reached only across the ridge by way of the camp",
+    "tw_ridgeway": "{D_RIDGEWAY} runs along a knife of rock with the sea on both sides, thrilling and slow, until it joins {B_BENCH} where the camp trail begins",
+    "tw_cellar": "{D3_ZONE} is dry and cool and stacked with the surveyors' stores, rope, lamp oil, tins, and rolled against the wall {D3_TUBE}",
+    "tw_tube": "{D3_TUBE} holds {D3_DRAFT}, half finished and water stained, {PREDECESSOR}'s abandoned draft, with a note that the good copy went to {CAMP}; it shows enough to guess the safe path up",
+    "e_tw_draft": "{HERO} spends the morning reading {PREDECESSOR}'s {D3_DRAFT} and copying what survives, and it is real work, but it is {PREDECESSOR}'s map, not {HERO}'s; the day ends with a faithful copy of someone else's unfinished island and no new ground of {HERO}'s own",
+    "tw_supplies": "with rope and oil coiled over a shoulder {HERO} is ready for cliff or cave, and a surveyor's chalk line points from {D3_ZONE}'s door straight along a marked path toward the high ground of the ridge",
+    "tw_quarters": "{D4_ZONE} are small and sad and human, a narrow bunk, a cold hearth, {D4_CHEST} at the foot of the bed, and a whole wall pinned with charts gone soft and curling at the edges",
+    "tw_wallcharts": "the pinned charts are not {THRESHOLD} at all but a dozen others, coasts and reefs and bays from all across the sea, a whole life of mapmaking, {PREDECESSOR}'s life, each one signed in the same small hand in the corner",
+    "e_tw_charts": "{HERO} stands a long time before {PREDECESSOR}'s wall of charts, reading a lifetime of islands, and copies a few of the finest into the sketchbook to carry home; it is an education worth more than any test, but the sun does not wait for wonder, and {HERO} rows out with {PREDECESSOR}'s story and this one island still blank",
+    "tw_seachest": "{D4_CHEST} holds a folded oilskin coat, {D4_COMPASS}, and {D4_DRAWING} of a house and three small figures, the family {PREDECESSOR} left ashore to come and map the world",
+    "e_tw_drawing": "{D4_DRAWING}, a house and three little people waiting, undoes {HERO} completely, and the morning goes to imagining the family who never saw {PREDECESSOR} come home; {HERO} tucks the drawing carefully away to return it one day, and rows out at {DUSK} with a heart full of {PREDECESSOR}'s story and a chart still bare",
+    "tw_beacon": "on a jut of the headland stands {D2_BEACON}, a great rusted iron brazier on a stone base with a coil of chain and, set into the rock beside it, {D2_DIAL}",
+    "tw_brazier": "{D2_BEACON} is cold and empty, its last fire long dead, but {HERO} sees how it worked, how a blaze here would warn ships off the reef; there must have been {D2_FUEL} nearby, and finding it would be a fine thing to mark, though it will cost time",
+    "e_tw_nofuel": "{HERO} pokes about {D2_BEACON} and finds nothing but rust and old ash, no way to light it and precious little to map, and the search has swallowed a good hour for a dead end; a little cross with the wasted time, {HERO} turns back to the ridge with the beacon barely worth a dot on the paper",
+    "tw_fuelstore": "tucked under a stone lintel {HERO} finds {D2_FUEL}, empty now, its door scrawled inside with a keeper's tally and a last line in {PREDECESSOR}'s hand, gone to finish the ridge chart, back by the storm, a message left for a ship that never came",
+    "e_tw_note": "{PREDECESSOR}'s scrawled line, back by the storm, undoes {HERO} a little, and the morning goes to sitting with it, copying it, wondering about the storm that changed everything; it is a piece of the lost mapmaker's story worth carrying home, but a story is not a survey, and the chart stays as empty as {D2_FUEL}",
+    "tw_viewdial": "{D2_DIAL} is a gift, a stone compass rose with a groove and a name cut for every headland, reef, and peak in sight, {PREDECESSOR} fixing the whole coast in stone so no fog could ever wholly hide it",
+    "e_tw_dial": "{HERO} copies every bearing cut into {PREDECESSOR}'s {D2_DIAL}, a perfect skeleton for any chart, and it is genuinely useful work, the bones of a survey handed down; but copying it all eats the light, and {HERO} carries home {PREDECESSOR}'s bearings with no coastline drawn between them, a frame around an empty island",
+    "tw_slab": "the loose slab lifts on a cavity in the floor, and in it sits {D1_BOX}, cold and heavy and locked; a rusted key hangs on a nail nearby, but the lock is seized, and forcing it might cost a bent tool or a barked knuckle",
+    "e_tw_slab": "{HERO} levers at the seized lock until the makeshift tool bends and slips and rakes a knuckle, and {D1_BOX} stays stubbornly shut; nursing the graze, {HERO} gives it up as a bad job and a lost half hour, and leaves the tower's last secret locked for someone with the proper key",
+    "tw_cache": "the rusted key turns at last, and {D1_BOX} opens on a mapmaker's treasure, {D1_TOOLS}, and {D1_LETTER} addressed simply, to whoever finishes my work, in {PREDECESSOR}'s unmistakable hand",
+    "e_tw_cache": "{HERO} breaks the seal and reads {PREDECESSOR}'s {D1_LETTER} to the one who would come after, a gentle charge to love {THRESHOLD} and finish the map and never mind the glory, and it lands like a hand on the shoulder; the reading takes what is left of the good light, and {HERO} rows out with {PREDECESSOR}'s blessing, {D1_TOOLS}, and a chart still to draw",
+    "tf_enter": "{ROUTE_E_CHAR} stretch wide and mirror bright, firm sand near shore turning to soft ooze far out where the sea has drawn back; the flats hide channels and {E1_SANDBAR} where birds crowd, and the water will return, everyone knows, faster than a person can run",
+    "tf_sandbar": "{E1_SANDBAR} is a treasure of wreck timber and {E1_WRECK}, and it would map beautifully, but the sand underfoot is already darkening as the tide turns far out; {HERO} has minutes, not hours",
+    "e_tf_stranded": "the sketch is good and the run is not fast enough; the tide fills the low channels first and {HERO} wades back chest deep, chart safe overhead but soaked, and spends what is left of the day drying out on shore, {ROUTE_E_CHAR} a bright blank on the paper",
+    "tf_sketchrun": "{HERO} sketches the wreck in furious strokes and runs, reaching firm sand as the first sheet of water slides across behind; heart hammering, but the flats are drawn and a dry way inland opens toward {E_GAP}",
+    "tf_gap": "{E_GAP} is the mouth of a valley where a stream comes down to meet the sea, and following it up on firm banks {HERO} climbs toward the sound of falling water and cool air",
+    "tf_channel": "{E_CHANNEL} make a natural road across the flats, and {HERO} follows them safely toward shore where they gather at the foot of the ring of cliffs, {E_CLIFFGAP} leading in",
+    "tf_cliffgap": "{E_CLIFFGAP} is a slot of wet sand that the sea only leaves bare at low water, and through it {HERO} steps into a hidden pocket of beach ringed by rock, {COVE} opening quiet and calm",
+    "tf_strand": "the strand line is a museum of the sea, shells, rope, a glass net float, and half buried in the wrack {E3_BOTTLE} with a curl of paper inside",
+    "tf_bottle": "the paper is a message, a mapmaker named {PREDECESSOR} writing that {THRESHOLD} is real and worth the naming, and that {ALDER_CHART} waits at {CAMP} for whoever finishes the work",
+    "e_tf_bottle": "{HERO} tucks {PREDECESSOR}'s message away and heads back to wait for the ship, carrying a mystery home in place of a map; it is a good story, but a blank chart is still a blank chart, and the apprenticeship will have to wait for another island",
+    "tf_mussel": "the mussel beds are a black glistening field that crunches underfoot, sharp enough to mind your step, and busy with oystercatchers; beyond them a colony of {E4_SEALS} hauls out on a low rock, and {E4_GULLY} cuts a dark line straight through toward the cliffs",
+    "tf_seals": "the {E4_SEALS} watch {HERO} with huge dark eyes and do not flee, a whole colony, mothers and pups, hauled up to rest on the warm rock; among them {E4_PUP} lies apart, tangled in a loop of old net and struggling",
+    "e_tf_seals": "{HERO} creeps close and works the old net gently off {E4_PUP}'s flipper until it wriggles free and humps away to its mother, but the colony spooks and floods off the rock, and the fright and the fuss have eaten the tide's low window; a good deed done, the flats left half drawn, {HERO} wades back proud and behind",
+    "tf_gully": "{E4_GULLY} is a shortcut straight to the cliffs, its floor still just dry, but the walls are streaked with weed to well above {HERO}'s head, a plain warning of how deep and how fast it floods when the sea turns",
+    "e_tf_gully": "{HERO} lingers too long puzzling over the weed lines, and the first cold tongue of returning water slides up {E4_GULLY}'s floor; there is nothing to do but splash back the way in, fast, and take the long safe road, the shortcut lost and a good stretch of the flats left unmapped with the day slipping on",
+    "tf_wreck": "{E5_WRECK} lies keeled over on the bar, a great old ship gone to ribs like the bones of a whale, timbers black with age; {E5_HOLD} gapes below, {E5_DECK} climbs above, and at the bow {E5_FIGUREHEAD} still leans out over the sand",
+    "tf_hold": "{E5_HOLD} is half full of green water and dim shapes of old cargo, reachable if {HERO} wades in now, but the light is turning silver out on {ROUTE_E_CHAR}, the tide's first warning, and a person caught in a wreck by the sea is a person in real trouble",
+    "e_tf_hold": "{HERO} wades too deep into {E5_HOLD} just as the tide slides back across the bar, and for one cold heart lurching moment the way out is a narrowing gap of grey water; {HERO} scrambles free soaked and scared, the lesson learned hard, and splashes to shore with {E5_WRECK} half seen and the flats left dangerously unfinished",
+    "tf_cargo": "in {E5_HOLD} {HERO} finds barrels furred with weed and, wedged in the ribs, {E5_BELL}, the very ship that carried the island's first settlers and never sailed home",
+    "e_tf_bell": "{HERO} pieces together {E5_WRECK}'s whole story from {E5_BELL} and the barrels and the ribs, the ship that brought the first families and foundered on the bar, and it is a tale to make {INSTITUTION} hush; but the telling costs the tide, and {HERO} wades back with a settler ship remembered and the flats left a soaking blur",
+    "tf_deck": "{E5_DECK} climbs to the bow where {E5_FIGUREHEAD} leans, a carved woman with a name board beneath, and from the high stern rail {HERO} can see the whole pattern of the flats and channels laid out clear as a drawn map below",
+    "e_tf_figurehead": "{HERO} perches at the bow and draws {E5_FIGUREHEAD} until she seems almost to breathe, the carved guardian of a ship that never came home, and it is a haunting lovely page; but the flats do not care for art, and the returning tide chases {HERO} down with the figurehead finished and the coast still bare",
+    "tf_dune": "{E3_DUNE} roll behind the beach, whispering with marram grass, and from their crest {HERO} could see the whole sweep of {ROUTE_E_CHAR} laid out clear; {E3_MARKER} leans on the highest dune, but the soft sand is exhausting to climb and the tide waits for no one",
+    "e_tf_dune": "the soft sand slides away under every step and the climb turns into a floundering slog that leaves {HERO} sweating and no higher, and the tide is already whispering back across the flats below; {HERO} gives up the dune and trudges down, the great view unwon and the flats left a hurried scribble",
+    "tf_marker": "{E3_MARKER} is a surveyor's, notched and painted long ago, and from its dune {HERO} can see the entire pattern of the flats, the channels, the bars, the safe firm roads across, and sketches it all in one clear commanding view",
+    "e_tf_marker": "from {E3_MARKER} {HERO} draws {ROUTE_E_CHAR} entire, every channel and bar and safe crossing, a genuinely fine map of the shore; but the commanding view is so satisfying that {HERO} stays too long perfecting it, and climbs down at last with the flats beautifully done and the rest of {THRESHOLD} untouched",
+    "L_cove": "{COVE} is a perfect pocket of calm inside the reef, and {HERO} sees at once why {PREDECESSOR} loved it, a place no chart has ever shown; {COVE_RILL} trickles down one wall, {COVE_PATH} climbs toward the ridge, and drawn on a flat rock is {COVE_MARK}",
+    "e_cove_rest": "{COVE} is so calm that {HERO} sits to sketch and the morning slips away unnoticed; when the shadows shift {HERO} startles up with only {COVE} drawn, one lovely finished corner and a whole blank island around it, and hurries off knowing {DUSK} is closer than it should be",
+    "cove_rise": "{COVE_PATH} up from {COVE} is steep and switchbacked, cut long ago by hand, and it climbs past the reach of the sea; halfway up {COVE_SLAB} tilts to the sky, pecked all over with dots that are not random",
+    "cove_starrock": "{COVE_SLAB} is a star map, the way the first people found {THRESHOLD} by night, dots for the guiding stars and a scratch for the peak beneath them; it is a wonder worth a whole page",
+    "e_star_map": "{HERO} fills a page with {COVE_SLAB} and the island shape beneath it, then finds the light has turned and the climb to the ridge is too far now; the chart stays unfinished, but {HERO} carries home the oldest map of all, the one drawn in stars, and {INSTITUTION} keepers gather round it in wonder",
+    "cove_ridge": "{COVE_PATH} tops out on {B_BENCH}, wind and cloud after the still cove, and the stony camp trail lifts away toward the grey canvas shelter above",
+    "cove_pools": "{COVE}'s rim is a garden of tide pools, each a jewelled world of anemone and darting fish, and low in the cliff {COVE_CAVE} breathes with the swell; the pools would map the reef edge beautifully, and the cave murmurs of something further in",
+    "cove_seacave": "{COVE_CAVE} is shallow and dry at its back, and there, cut into the rock, are {PREDECESSOR}'s initials and a date, and wedged in a cleft {COVE_TIN}",
+    "e_cove_tin": "the little note, the way up is behind you, friend, feels like {PREDECESSOR} reaching a hand across the years, and {HERO} sits with it a long grateful while in {COVE_CAVE}; it is a moment worth more than any chart, but the moment stretches, and {HERO} climbs out at last with {PREDECESSOR}'s pencil, a full heart, and an empty page",
+    "cove_rockpool": "the tide pools are the reef's edge in miniature, and mapping them {HERO} works out the whole run of {COVE}'s channel, the safe deep line a boat could follow in, drawing what {PREDECESSOR} began; then {COVE_PATH} calls upward",
+    "e_cove_reefmap": "{HERO} maps every tide pool in loving jewelled detail, anemone by anemone, and {COVE}'s reef edge comes out perfect on the page, genuinely useful for any boat; but the perfect corner costs the day, and {HERO} climbs away at last with one flawless reef and a whole blank island above it",
+    "L_fresh": "{SPRING} is {THRESHOLD}'s heart, a cold clear pool welling up under ferns where every stream begins; whoever drew the first ochre map marked this place, and from here {HERO} can finally see how the land fits, water running five ways to five shores, and a clear path climbing on toward the ridge and {CAMP}",
+    "e_fresh_linger": "{HERO} tries to trace every stream from {SPRING} and the task is endless, each rill splitting into more; by the time {HERO} looks up the sun has swung past noon, and the map is a beautiful tangle of blue lines with no coast to hold them, so {HERO} heads down with the middle done and the edges bare",
+    "fresh_study": "sitting with the streams, {HERO} works out {THRESHOLD}'s whole drainage, every valley and shore linked to this one pool, and pencils it into a clean web that will anchor the finished chart; then the climb to {CAMP} calls",
+    "fresh_climb": "the path from {SPRING} climbs out of the ferns onto open ridge where the grass lies flat under the wind, then levels through {SPRING_MEADOW} bright with flowers and grazed by a few wild goats",
+    "fresh_meadow": "{SPRING_MEADOW} is the gentlest ground all day, ringed by {SPRING_CAIRN}, a surveyor must have raised; the camp trail lifts away on the far side, but the strange old cairn tugs at {HERO}'s curiosity",
+    "fresh_cairn": "{SPRING_CAIRN} holds a flat capstone scratched with a survey mark and an arrow, one of {PREDECESSOR}'s boundary points fixing the very middle of {THRESHOLD}, a small triumph to add to the chart",
+    "e_fresh_cairn": "{HERO} copies {PREDECESSOR}'s boundary mark and the way it ties {THRESHOLD} together, careful proper work, and then {SPRING_MEADOW} is so soft and the sun so warm that resting turns to dozing; {HERO} wakes with a start to a lower sun, the middle of the island mapped and the edges bare, and hurries down with only half a chart",
+    "cf_campapproach": "the last stretch toward {CAMP} is a scramble over broken rock where the path almost disappears, but {F_CAIRNS} points the safe way up onto the high ridge",
+    "camp_ascent1": "up on {F_RIDGE} the wind is a live thing and the world falls away on both sides; {F_CAIRNS} march on ahead toward the far grey speck of {CAMP}, over ground that rises in long tired steps of rock and heather",
+    "camp_ascent2": "{F_RIDGE} splits around a shoulder of rock, {F_CAIRNS} going left along {F_LEDGE}, out of the wind, while a bolder line goes right straight over {F_CREST} with the whole island below",
+    "e_ascent_daunted": "the drop on both sides makes {HERO}'s head swim, and after a long frozen minute the only honest thing is to sit down and edge back the way that felt safe; {CAMP} stays a grey speck out of reach, and {HERO} maps the ridge from below, the high chart left for a braver day",
+    "camp_ascent3a": "{F_LEDGE} is slow but sure, out of the worst of the wind, threading below the crest past cushions of tiny alpine flowers until it climbs back to the ridgeline where the paths rejoin",
+    "camp_ascent3b": "{F_CREST} is pure exhilaration, a walk along the very spine of {THRESHOLD} with cloud pouring over from the far side, and it delivers {HERO}, breathless and grinning, back to where {F_CAIRNS} gather at a level shelf",
+    "camp_ascent4": "the two ways rejoin at a broad level shelf where the last {F_CAIRNS} cluster thick, and a final short pull over grass and rock leads up toward the cliff where {CAMP} must stand",
+    "camp_ascent5": "and there it is, tucked at last against the cliff, the grey canvas roof and low stone walls of {CAMP}, exactly where every clue on {THRESHOLD} has been pointing all day long",
+    "L_camp": "{CAMP} is a low stone shelter under grey canvas, and stepping in feels like stepping into a story, a cot, a cold stove, and a table where {ALDER_CHART} lies weighted with stones, half {THRESHOLD} drawn in a fine sure hand and the rest left for someone to finish; {F_TRUNK} sits closed beneath the cot, and beyond the door the path climbs on toward {SUMMIT}",
+    "camp_chart": "{ALDER_CHART} is honest and unfinished, the coast and caves drawn true, the high ground and the far shore left blank with a note, finish this and it is yours, mapmaker to mapmaker; the tools to do it lie ready on the table",
+    "e_camp_copy": "{HERO} copies {ALDER_CHART} neatly and carries it down to the beach, and it is a fine map, but the blank half is still blank and the hand is still {PREDECESSOR}'s; {SUPERVISOR} frowns at the empty summit and says a copied map is a story, not a survey, so {HERO} goes home with a tale of the lost mapmaker and no apprenticeship yet",
+    "camp_trunk": "{F_TRUNK} holds {PREDECESSOR}'s whole island life, fine pens, {F_SPYGLASS}, {F_MIRROR}, and {F_JOURNAL} that ends mid sentence the day a storm took the boat; the spyglass and mirror could reach the ship, and the pens could finish any chart",
+    "camp_journal": "{F_JOURNAL} tells it all, {PREDECESSOR} mapping alone, loving {THRESHOLD}, naming {COVE}, and at the end waiting for a ship that came too late; the last line asks whoever finds this to finish the chart and give the island its name",
+    "e_camp_journal": "{HERO} closes {PREDECESSOR}'s {F_JOURNAL} with a lump in the throat and decides some things matter more than a test; the afternoon goes to reading every page, and {HERO} rows out at {DUSK} with a blank chart and a full heart, carrying {PREDECESSOR}'s story home so the lost mapmaker will not be forgotten",
+    "camp_ready": "tools in hand and {ALDER_CHART} rolled safe, {HERO} steps back out of {CAMP} with everything needed to finish the work; only {SUMMIT} remains, the one place high enough to see and draw the whole island at once",
+    "camp_summitpath": "the path above {CAMP} narrows to a thread of worn grass between two long drops, {SUMMIT}'s cairn dark against the racing cloud; a line of cairns marks the safe way, though {F_SCREE} offers a tempting shortcut straight up",
+    "e_camp_scree": "{F_SCREE} shortcut slides away the moment {HERO}'s weight goes on it, a slow hissing river of stones, and {HERO} has to crab sideways off it, breathless, back toward the safe path but shaken and low on time, deciding {SUMMIT} is a bridge too far today and the high chart stays unfinished",
+    "ridge_notch": "the cairns lead through {F_NOTCH} where the wind funnels hard enough to lean on, and beyond it the ground opens to the final rise, {SUMMIT} close now above a last field of tumbled boulders",
+    "wind_gap": "the boulder field is slow careful work, hand and foot from block to block, cloud tearing past, until {HERO} pulls up over the last of it onto the bare crown of {THRESHOLD} with nothing higher left to climb",
+    "L_summit": "{SUMMIT} is a bare cairn of stacked stones in a river of cloud, and standing on it {HERO} can see the whole island at last, every shore and reef and secret laid out like a chart already half drawn in the mind; this is the place to finish the work, but the wind is fierce and the light already leans toward afternoon, so every choice from here must count",
+    "e_summit_gaze": "the view is so vast that {HERO} simply stares, turning slowly, drinking it in, until a cold gust and a slant of gold light break the spell; there is no time now to draw it properly, only to scramble down, and {HERO} reaches the beach at {DUSK} with a head full of island and a chart still mostly bare",
+    "summit_survey": "from the cairn {HERO} lays {ALDER_CHART} on a flat stone and begins, sighting the ridge, the reef, the cove, the flats, the shape coming true under the pencil faster than seems possible; but there is more to fix than time allows, so {HERO} must choose what to nail down first",
+    "e_ch_rush": "trying to draw everything at once, {HERO} smudges lines together and loses track of which bearing is which, and the page becomes a crowded muddle; there is no time to redraw it, so {HERO} carries down a chart that is full but wrong in places, honest effort spoiled by hurry, and {SUPERVISOR} marks it a near miss",
+    "ch_sightings": "{HERO} works around the cairn taking clean sightings with {F_ALIDADE}, each far point fixed and noted, {THRESHOLD} tightening into true shape; with the bearings gathered it is time to draw the finished chart properly",
+    "ch_reef": "{HERO} fixes the reef and {COVE} first, the safe water where a ship can come and go, drawing the channels {PREDECESSOR} never lived to finish; it is the most useful map on {THRESHOLD}, and with it done there is still a sliver of light to push the whole chart further",
+    "e_ch_reef": "{HERO} rows out with a chart that shows exactly how to enter {THRESHOLD} safely, the reef, the cove, the tides, all true; it is not the whole island, but {SUPERVISOR} runs a thumb along the clean channels and says this is the map that keeps sailors alive, and takes {HERO} on with a nod, the masterwork left for next season",
+    "ch_gather": "sheltered from the wind below the cairn, {HERO} spreads {ALDER_CHART} and the whole day's sketches together, and {THRESHOLD} comes whole, coast and cave and ridge and reef fitting like a puzzle; only the drawing itself remains now",
+    "ch_table": "everything is ready, and the way {F_CHART} is drawn will decide everything; {HERO} can ink it bold and clean, pencil it soft with every small detail, or copy it twice the way a careful surveyor keeps a spare",
+    "ch_ink": "{HERO} inks {F_CHART} with {PREDECESSOR}'s good pen, every coastline sure and dark, the compass rose crisp, {COVE} and the reef named at last; it is bold and true and unmistakably {HERO}'s own hand finishing {PREDECESSOR}'s island",
+    "ch_pencil": "{HERO} pencils {F_CHART} soft and fine, every tide pool and orchid and handprint cave marked, a map so full it is almost a portrait of {THRESHOLD}; it takes longer, and the light is nearly gone, but nothing is left out",
+    "e_ch_dusk": "{HERO} cannot stop adding to the soft pencil map, one more cove, one more current, until the sun is a red rim on the sea and the ship is sounding its horn; {HERO} runs for the beach with a wonderful unfinished thing, too detailed to call done, and {SUPERVISOR} sighs that a map you never finish is no map at all",
+    "ch_double": "{HERO} copies {F_CHART} twice by the failing light, one clean master to give {INSTITUTION} and one working copy to keep, the way real surveyors do; it is quick sure work, {PREDECESSOR}'s island doubled and safe from any single storm",
+    "ch_sign": "{F_CHART} is done, and there is one thing left, the name; {PREDECESSOR}'s journal asked that whoever finished the chart should name {THRESHOLD}, and the blank banner across the top waits for a word",
+    "e_ch_alder_name": "{HERO} writes {PREDECESSOR}'s Island across the top in careful letters and rows out as the first stars come, laying {F_CHART} in {SUPERVISOR}'s hands; {SUPERVISOR} reads the name, understands the whole story in it, and says {INSTITUTION} has its new apprentice, and that {PREDECESSOR} would be proud {THRESHOLD} finally has a map and a name",
+    "e_ch_both_name": "{HERO} writes the names of both mapmakers along the banner, the one who began and the one who finished, and hands {F_CHART} across as the light fails; {SUPERVISOR} studies the perfect chart and the two names and says this is the finest first survey {INSTITUTION} has seen in years, and {HERO} is an apprentice no longer but a mapmaker, name earned and island named",
+    "e_ch_survey": "{HERO} leaves the banner blank, signs the survey in the corner as {PREDECESSOR} always did, and delivers a chart so complete and true that {SUPERVISOR} cannot find a single fault; the name can wait for {INSTITUTION} to choose, {SUPERVISOR} says, but the place at {INSTITUTION} cannot, and offers it to {HERO} on the spot for the best survey a first islander has ever brought back",
+    "ch_sign_double": "with two finished charts in hand {HERO} must decide how to present them to {SUPERVISOR} waiting at the boat, both together as proof of a careful surveyor, or one given and one kept as a quiet spare",
+    "e_ch_double_win": "{HERO} hands {SUPERVISOR} both charts, master and working copy, exactly as a seasoned surveyor would, and explains that a map is too precious to trust to one sheet; {SUPERVISOR} turns them over, plainly impressed that a first islander thought like a professional, and gives {HERO} the apprenticeship for judgement as much as skill, {PREDECESSOR}'s island saved twice over",
+    "e_ch_spare": "{HERO} gives {SUPERVISOR} one clean chart and keeps the spare tucked away, and the given map is fine enough to earn a place at {INSTITUTION}; the kept copy stays {HERO}'s own, the first of a mapmaker's private library, {PREDECESSOR}'s island doubled and one half quietly, proudly {HERO}'s",
+    "ch_farshore": "{HERO} turns {F_ALIDADE} on {F_FARSHORE} last of all, the wild windward coast no boat ever lands on, and sketches its cliffs and stacks and the white line of its reef, ground that has never been on any chart at all",
+    "e_ch_farshore": "{HERO} carries down a chart of {F_FARSHORE} alone, the one coast no mapmaker ever reached, and though the rest of {THRESHOLD} is only sketched {SUPERVISOR} whistles at the sight of that unknown coast drawn true; it is not the masterwork, but it is real new ground, and {SUPERVISOR} says a surveyor who finds the unfindable is worth training, and keeps {HERO} on",
+    "ch_seal_final": "with {F_CHART} inked and signed, the little boat waiting, {HERO} has one last choice as the light goes gold, hand the chart over now and be sure of it, or add the two rescued creatures and the vanished village to the margin as living proof {THRESHOLD} is more than lines",
+    "e_ch_living": "{HERO} rings {F_CHART} with tiny true drawings, the seal pup, the turtle, the vanished fishing camp, the star slab, so the map holds not just the shape of {THRESHOLD} but its life; {SUPERVISOR} turns it in the last light and says this is more than a survey, it is the island itself on paper, and gives {HERO} the apprenticeship and the honour of naming the next island too",
+    "e_ch_clean": "{HERO} hands over {F_CHART} exactly as drawn, coast and reef and ridge all true, no flourish, no fuss, and {SUPERVISOR} checks it corner to corner and finds it faultless; a clean honest survey, {SUPERVISOR} says, is what {INSTITUTION} lives on, and {HERO} is taken on as the newest apprentice mapmaker on the strength of a perfect first island",
+    "summit_signal": "the ship is a far white speck standing off the reef, and with {PREDECESSOR}'s {F_MIRROR} {HERO} can throw the sun straight at it; a flash could call the boat in early to {COVE}, in time to help the stranded creatures {HERO} marked in the caves and the flats",
+    "signal_aim": "{HERO} steadies {F_MIRROR} against the wind and finds the angle, catching the low sun and throwing a bright blade of light out across the water toward the distant sail",
+    "signal_flash": "flash, pause, flash, the old distress rhythm from {INSTITUTION} drills, and for a long while nothing, only the wind and the far white sail, until {HERO}'s arm aches and doubt creeps in",
+    "ship_turns": "at last the sail shifts, swinging square, then heeling as the ship comes about and turns its bow toward {THRESHOLD}, answering, steering for {COVE}; now {HERO} must get down to meet it in time",
+    "race_down": "{HERO} pockets {F_MIRROR} and goes down the ridge at a controlled run, cairn to cairn, past {CAMP}, down the cut cove path, lungs burning, as the ship's little boat pulls in through the reef below",
+    "meet_boat": "the boat grounds on {COVE}'s sand and two strong sailors jump out, sent by {SUPERVISOR} who saw the signal; there is just time before the tide to help one of the stranded creatures {HERO} mapped, {C3_FIND} in the warm cave or {A2_FIND} out on the reef",
+    "e_rescue_pup": "{HERO} guides the two sailors to the warm cave and together they lift {C3_FIND} out through the sea tube on the rising tide, and it slips away whole into the green water; {SUPERVISOR} watches {HERO} work and says any mapmaker who reads a coast well enough to save a life is worth keeping, and {HERO} rows home an apprentice at last, with a good chart and a better story",
+    "e_rescue_turtle": "{HERO} leads the sailors across {ROUTE_E_CHAR} to the reef and they carry {A2_FIND} to deep water, where it kicks once and is gone; the sailors cheer, {SUPERVISOR} nods slowly, and though the chart is only half finished {SUPERVISOR} says a person who uses a map to help rather than only to win has the makings of a true mapmaker, and offers {HERO} the place"
+  },
+  "titles": {
+    "e_mg_mud_trap": "{A1_TITLE1}",
+    "e_mg_turtle_seen": "{A2_TITLE}",
+    "e_mg_shelter": "{A_TITLE_SHELTER}",
+    "e_mg_lost": "{A3_TITLE}",
+    "e_mg_canoe": "{A4_TITLE1}",
+    "e_mg_village": "{A4_TITLE1B}",
+    "e_mg_tunnellost": "{A4_TITLE2}",
+    "e_mg_stake": "{A4_TITLE3}",
+    "e_mg_tidetable": "{A3_TITLE_TIDE}",
+    "e_mg_birdstorm": "{A3_TITLE_STORM}",
+    "e_mg_chick": "{A3_TITLE_ROOKERY}",
+    "e_cf_locket": "{B3_TITLE1}",
+    "e_cf_slip": "{B4_TITLE1}",
+    "e_cf_gauge": "{B4_TITLE2}",
+    "e_cf_ladder": "{B_TITLE_LADDER}",
+    "e_cf_canopy": "{B_TITLE_CANOPY}",
+    "e_cf_shrine": "{B_TITLE_SHRINE}",
+    "e_cf_dell_lost": "{B_TITLE_DELL}",
+    "e_cf_carve": "{B_TITLE_BENCH}",
+    "e_cv_flood": "{C1_TITLE1}",
+    "e_cv_paintings": "{C2_TITLE1}",
+    "e_cv_pup_fail": "{C3_TITLE1}",
+    "e_cv_chimney": "{C4_TITLE1}",
+    "e_cv_lantern": "{C4_TITLE2}",
+    "e_cv_raft": "{C1_TITLE2}",
+    "e_cv_fish": "{C1_TITLE3}",
+    "e_cv_prints": "{C1_TITLE4}",
+    "e_cv_squeeze": "{C1_TITLE5}",
+    "e_cv_glow": "{C1_TITLE6}",
+    "e_tw_log": "{D1_TITLE1}",
+    "e_tw_stair_fail": "{D2_TITLE1}",
+    "e_tw_draft": "{D3_TITLE1}",
+    "e_tw_charts": "{D4_TITLE1}",
+    "e_tw_drawing": "{D4_TITLE2}",
+    "e_tw_nofuel": "{D2_TITLE4}",
+    "e_tw_note": "{D2_TITLE2}",
+    "e_tw_dial": "{D2_TITLE3}",
+    "e_tw_slab": "{D1_TITLE2}",
+    "e_tw_cache": "{D1_TITLE3}",
+    "e_tf_stranded": "{E1_TITLE1}",
+    "e_tf_bottle": "{E3_TITLE1}",
+    "e_tf_seals": "{E4_TITLE1}",
+    "e_tf_gully": "{E4_TITLE2}",
+    "e_tf_hold": "{E5_TITLE1}",
+    "e_tf_bell": "{E5_TITLE2}",
+    "e_tf_figurehead": "{E5_TITLE3}",
+    "e_tf_dune": "{E3_TITLE2}",
+    "e_tf_marker": "{E3_TITLE3}",
+    "e_cove_rest": "{COVE_TITLE1}",
+    "e_star_map": "{COVE_TITLE2}",
+    "e_cove_tin": "{COVE_TITLE3}",
+    "e_cove_reefmap": "{COVE_TITLE4}",
+    "e_fresh_linger": "{SPRING_TITLE1}",
+    "e_fresh_cairn": "{SPRING_TITLE2}",
+    "e_ascent_daunted": "{F_TITLE1}",
+    "e_camp_copy": "{F_TITLE2}",
+    "e_camp_journal": "{F_TITLE3}",
+    "e_camp_scree": "{F_TITLE4}",
+    "e_summit_gaze": "{F_TITLE5}",
+    "e_ch_rush": "{F_TITLE6}",
+    "e_ch_reef": "{F_TITLE7}",
+    "e_ch_dusk": "{F_TITLE8}",
+    "e_ch_alder_name": "{F_TITLE9}",
+    "e_ch_both_name": "{F_TITLE10}",
+    "e_ch_survey": "{F_TITLE11}",
+    "e_ch_double_win": "{F_TITLE12}",
+    "e_ch_spare": "{F_TITLE13}",
+    "e_ch_farshore": "{F_TITLE14}",
+    "e_ch_living": "{F_TITLE15}",
+    "e_ch_clean": "{F_TITLE16}",
+    "e_rescue_pup": "{F_TITLE17}",
+    "e_rescue_turtle": "{F_TITLE18}"
+  },
+  "labels": {
+    "n_start": {
+      "c_n_start_1": "Wade into {ROUTE_A_CHAR}.",
+      "c_n_start_2": "Climb toward {ROUTE_B_CHAR}.",
+      "c_n_start_3": "Descend into {ROUTE_C_CHAR}.",
+      "c_n_start_4": "Cross to {ROUTE_D_CHAR}.",
+      "c_n_start_5": "Walk out onto {ROUTE_E_CHAR}."
+    },
+    "mg_enter": {
+      "c_mg_enter_1": "Follow {A1_SIGN} upcoast.",
+      "c_mg_enter_2": "Pick along {A2_SIGN} downcoast.",
+      "c_mg_enter_3": "Push inland up {A3_SIGN}.",
+      "c_mg_enter_4": "Wade toward {A4_SIGN}."
+    },
+    "mg_bridge": {
+      "c_mg_bridge_1": "Stop to copy {A1_LANDMARK1}."
+    },
+    "mg_carve": {
+      "c_mg_carve_1": "Trust the arrow toward {A_HIGHGROUND}."
+    },
+    "mg_readmarks": {
+      "c_mg_readmarks_1": "Head for {A_HIGHGROUND} as {PREDECESSOR} marked."
+    },
+    "mg_farbank": {
+      "c_mg_farbank_1": "Cross {A1_GATE} quickly.",
+      "c_mg_farbank_2": "Keep to {A1_ALT}."
+    },
+    "mg_highground": {
+      "c_mg_highground_1": "Take the goat track down to {COVE}.",
+      "c_mg_highground_2": "Angle inland toward {A_SEEP}."
+    },
+    "mg_oyster": {
+      "c_mg_oyster_1": "Study {A2_FIND} and read the tide pools."
+    },
+    "mg_turtle_note": {
+      "c_mg_turtle_note_1": "Mark {A2_FIND} and press on inland.",
+      "c_mg_turtle_note_2": "Stop and right {A2_FIND} now."
+    },
+    "mg_seep": {
+      "c_mg_seep_1": "Climb to {SPRING}.",
+      "c_mg_seep_2": "Duck under {A_OVERHANG}."
+    },
+    "mg_overhang": {
+      "c_mg_overhang_1": "Follow {PREDECESSOR}'s arrow toward {CAMP}.",
+      "c_mg_overhang_2": "Copy {A_CACHE} and rest a while."
+    },
+    "mg_creek": {
+      "c_mg_creek_1": "Follow the {A3_CREATURE}.",
+      "c_mg_creek_3": "Pole across to {A3_ZONE}."
+    },
+    "mg_trees": {
+      "c_mg_trees_2": "Take {A3_TRAIL}."
+    },
+    "mg_lagoon": {
+      "c_mg_lagoon_1": "Bail out {A4_OFFER1}.",
+      "c_mg_lagoon_2": "Take {A4_OFFER2}.",
+      "c_mg_lagoon_3": "Wade to {A4_ZONE}."
+    },
+    "mg_paddle": {
+      "c_mg_paddle_1": "Land and explore {A4_FIND1}."
+    },
+    "mg_lagfar": {
+      "c_mg_lagfar_1": "Examine {A4_ZONE2}."
+    },
+    "mg_ruin": {
+      "c_mg_ruin_1": "Record {A4_FIND2} and climb on.",
+      "c_mg_ruin_2": "Sit and map {A4_FIND2} in loving detail."
+    },
+    "mg_dam": {
+      "c_mg_dam_1": "Note {PREDECESSOR}'s stake and follow the creek.",
+      "c_mg_dam_2": "Prise {A4_FIND3} free as a keepsake."
+    },
+    "mg_heron": {
+      "c_mg_heron_1": "Climb into {A3_BLIND}.",
+      "c_mg_heron_2": "Wade out onto {A3_MUDBANK}."
+    },
+    "mg_farchannel": {
+      "c_mg_farchannel_1": "Cross to {A_HIGHGROUND}."
+    },
+    "cf_enter": {
+      "c_cf_enter_1": "Take {B1_SIGN} up.",
+      "c_cf_enter_2": "Angle across {B2_SIGN}.",
+      "c_cf_enter_3": "Drop to the pale gleam in {B3_SIGN}.",
+      "c_cf_enter_4": "Follow the roar toward {B4_SIGN}."
+    },
+    "cf_switch": {
+      "c_cf_switch_1": "Climb {B1_ROUTE1}.",
+      "c_cf_switch_2": "Follow {B1_ROUTE2}."
+    },
+    "cf_bench": {
+      "c_cf_bench_2": "Detour into {B_GROVE_ZONE}."
+    },
+    "cf_traverse": {
+      "c_cf_traverse_3": "Follow a deer path to {B_DELL_ZONE}."
+    },
+    "cf_upper": {
+      "c_cf_upper_2": "Drop to the pale gleam."
+    },
+    "cf_hollow": {
+      "c_cf_hollow_1": "Open {B3_BOX}."
+    },
+    "cf_falls": {
+      "c_cf_falls_3": "Wade into {B4_POOL}."
+    },
+    "cf_fallpool": {
+      "c_cf_fallpool_2": "Copy {B4_GAUGE} in full detail."
+    },
+    "cf_grove": {
+      "c_cf_grove_1": "Climb {B_LADDER}.",
+      "c_cf_grove_2": "Kneel to {B_SHRINE}."
+    },
+    "cf_dell": {
+      "c_cf_dell_2": "Examine {B_DELL_BENCH}."
+    },
+    "cv_enter": {
+      "c_cv_enter_1": "Follow the {C1_SIGN}.",
+      "c_cv_enter_2": "Head toward the {C2_SIGN}.",
+      "c_cv_enter_3": "Trace the {C3_SIGN}.",
+      "c_cv_enter_4": "Climb toward {C4_SIGN}."
+    },
+    "cv_water": {
+      "c_cv_water_1": "Wade the stream toward {C1_GATE}."
+    },
+    "cv_arch": {
+      "c_cv_arch_2": "Duck under {C1_GATE}."
+    },
+    "cv_glitter": {
+      "c_cv_glitter_1": "Copy {C2_FIND} carefully."
+    },
+    "cv_deepglow": {
+      "c_cv_deepglow_1": "Climb up into {COVE}."
+    },
+    "cv_warm": {
+      "c_cv_warm_1": "Study how {C3_FIND} got in."
+    },
+    "cv_pup": {
+      "c_cv_pup_1": "Mark {C3_FIND} and climb toward the light.",
+      "c_cv_pup_2": "Try to coax {C3_FIND} out alone now."
+    },
+    "cv_skylight": {
+      "c_cv_skylight_2": "Explore {C4_GALLERY}."
+    },
+    "cv_lake": {
+      "c_cv_lake_1": "Pole {C1_RAFT} across the black lake."
+    },
+    "cv_farcave": {
+      "c_cv_farcave_2": "Stay to study {C1_FISH}."
+    },
+    "tw_enter": {
+      "c_tw_enter_1": "Search {D1_ZONE}.",
+      "c_tw_enter_2": "Climb {D_STAIR}.",
+      "c_tw_enter_3": "Lift {D3_ZONE}."
+    },
+    "tw_ground": {
+      "c_tw_ground_1": "Read {D1_LOG}."
+    },
+    "tw_salvage": {
+      "c_tw_salvage_1": "Take {D1_TOOL} toward the ridge camp.",
+      "c_tw_salvage_2": "Take it up {D_STAIR} first."
+    },
+    "tw_stair": {
+      "c_tw_stair_1": "Stride boldly across {D2_GATE}."
+    },
+    "tw_top": {
+      "c_tw_top_2": "Climb down toward {COVE}.",
+      "c_tw_top_3": "Examine {D2_BEACON}."
+    },
+    "tw_cellar": {
+      "c_tw_cellar_1": "Open {D3_TUBE}."
+    },
+    "tw_tube": {
+      "c_tw_tube_2": "Sit and copy {D3_DRAFT} in full."
+    },
+    "tw_quarters": {
+      "c_tw_quarters_2": "Open {D4_CHEST}."
+    },
+    "tw_wallcharts": {
+      "c_tw_wallcharts_1": "Take heart from {PREDECESSOR}'s life and climb {D_STAIR}."
+    },
+    "tw_seachest": {
+      "c_tw_seachest_1": "Take {D4_COMPASS} and climb on.",
+      "c_tw_seachest_2": "Sit with {D4_DRAWING}, undone."
+    },
+    "tw_beacon": {
+      "c_tw_beacon_1": "Inspect {D2_BEACON}.",
+      "c_tw_beacon_2": "Read {D2_DIAL}."
+    },
+    "tw_brazier": {
+      "c_tw_brazier_1": "Search along the headland for {D2_FUEL}."
+    },
+    "tw_cache": {
+      "c_tw_cache_1": "Take the tools and {D1_LETTER} and climb {D_STAIR}.",
+      "c_tw_cache_2": "Open and read {D1_LETTER} now."
+    },
+    "tf_enter": {
+      "c_tf_enter_1": "Wade toward {E1_SANDBAR}.",
+      "c_tf_enter_2": "Trace {E_CHANNEL}."
+    },
+    "tf_sketchrun": {
+      "c_tf_sketchrun_1": "Follow {E_GAP} inland."
+    },
+    "tf_channel": {
+      "c_tf_channel_1": "Follow the channels to {E_CLIFFGAP}.",
+      "c_tf_channel_2": "Cut inland toward {E_GAP}.",
+      "c_tf_channel_3": "Detour to {E5_WRECK}."
+    },
+    "tf_cliffgap": {
+      "c_tf_cliffgap_1": "Explore {COVE}."
+    },
+    "tf_strand": {
+      "c_tf_strand_1": "Open {E3_BOTTLE}.",
+      "c_tf_strand_3": "Climb {E3_DUNE}."
+    },
+    "tf_mussel": {
+      "c_tf_mussel_1": "Approach the basking {E4_SEALS}.",
+      "c_tf_mussel_2": "Follow {E4_GULLY} toward the cliffs."
+    },
+    "tf_seals": {
+      "c_tf_seals_2": "Try to free {E4_PUP} yourself now."
+    },
+    "tf_wreck": {
+      "c_tf_wreck_1": "Reach down into {E5_HOLD}.",
+      "c_tf_wreck_2": "Climb {E5_DECK} to the bow."
+    },
+    "tf_deck": {
+      "c_tf_deck_2": "Stay on the bow to draw {E5_FIGUREHEAD} in loving detail."
+    },
+    "tf_dune": {
+      "c_tf_dune_1": "Climb to {E3_MARKER} for the view."
+    },
+    "L_cove": {
+      "c_L_cove_1": "Map {COVE}, then climb {COVE_RILL} toward the spring.",
+      "c_L_cove_2": "Follow {COVE_MARK} up toward the ridge."
+    },
+    "cove_rise": {
+      "c_cove_rise_1": "Study {COVE_SLAB}."
+    },
+    "cove_pools": {
+      "c_cove_pools_1": "Explore {COVE_CAVE}."
+    },
+    "cove_seacave": {
+      "c_cove_seacave_1": "Take {PREDECESSOR}'s pencil and climb {COVE_PATH}."
+    },
+    "fresh_climb": {
+      "c_fresh_climb_1": "Cross {SPRING_MEADOW} toward the camp."
+    },
+    "fresh_meadow": {
+      "c_fresh_meadow_2": "Investigate {SPRING_CAIRN}."
+    },
+    "cf_campapproach": {
+      "c_cf_campapproach_1": "Follow {F_CAIRNS} onto the high ridge."
+    },
+    "camp_ascent2": {
+      "c_camp_ascent2_1": "Take {F_LEDGE}.",
+      "c_camp_ascent2_2": "Brave {F_CREST}."
+    },
+    "camp_ascent5": {
+      "c_camp_ascent5_1": "Step into {CAMP}."
+    },
+    "L_camp": {
+      "c_L_camp_1": "Study {ALDER_CHART} at the table.",
+      "c_L_camp_2": "Open {F_TRUNK} under the cot.",
+      "c_L_camp_3": "Take {ALDER_CHART} and start for {SUMMIT}."
+    },
+    "camp_chart": {
+      "c_camp_chart_2": "Simply copy {ALDER_CHART} and call it done."
+    },
+    "camp_trunk": {
+      "c_camp_trunk_2": "Read {F_JOURNAL} to its last page."
+    },
+    "camp_journal": {
+      "c_camp_journal_1": "Carry {PREDECESSOR}'s wish on toward {SUMMIT}.",
+      "c_camp_journal_2": "Close {F_JOURNAL}, moved, and simply keep it."
+    },
+    "camp_ready": {
+      "c_camp_ready_1": "Set out for {SUMMIT}."
+    },
+    "camp_summitpath": {
+      "c_camp_summitpath_2": "Try {F_SCREE} shortcut straight up."
+    },
+    "wind_gap": {
+      "c_wind_gap_1": "Stand up onto {SUMMIT}."
+    },
+    "L_summit": {
+      "c_L_summit_2": "Signal the far ship first with {PREDECESSOR}'s {F_MIRROR}."
+    },
+    "summit_survey": {
+      "c_summit_survey_3": "Turn the glass on {F_FARSHORE}."
+    },
+    "ch_sign": {
+      "c_ch_sign_1": "Name it for {PREDECESSOR} who came before."
+    },
+    "meet_boat": {
+      "c_meet_boat_1": "Lead them to {C3_FIND} in the cave.",
+      "c_meet_boat_2": "Lead them to {A2_FIND} on the reef."
+    }
+  }
+}

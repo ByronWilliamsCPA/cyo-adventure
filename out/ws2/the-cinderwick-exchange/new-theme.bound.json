@@ -1,0 +1,1339 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cinderwick_exchange",
+  "version": 1,
+  "title": "The Cinderwick Exchange",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "mystery",
+      "craft",
+      "responsibility",
+      "courage",
+      "listening"
+    ],
+    "estimated_minutes": 12,
+    "ending_count": 20,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "sorting_hat",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=122 beats='Halcyon Colony on the night of Alignment, the one night a year the old the Meridian Relay Station wakes; twelve-year-old Kito Reyes, chosen this year as the town's single new shiftkeeper, climbs the frost-bright lane to the tall silver docking spire above the reactor rings; as Kito Reyes reaches the door the whole building begins to hum and tick to life, dials spinning behind fogged glass; the stakes: at zero hour the Exchange must send the true-orbit beacon that keeps every clock, mill wheel, and school bell in the valley honest for the coming year, and tonight the signal is in trouble'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Push open the great airlock hatch and go in.",
+          "target": "n_arrival"
+        }
+      ]
+    },
+    {
+      "id": "n_arrival",
+      "body": "<<FILL role=rising words=116 beats='under the lobby's enormous dial, Commander Adaeze Solari, spry and inkstained, greets Kito Reyes and explains the shiftkeeper's charge: each keeper minds one hall of the Meridian Relay Station through the Alignment night and keeps its part of the machine ready for the true-orbit beacon; tonight, Commander Adaeze Solari says gravely, something has gone wrong in every one of the four halls at once, and he cannot mind them all; he presses a magnetic badge into Kito Reyes's hand and says the choosing of a hall is the keeper's own, made once and kept till dawn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_arrival_1",
+          "label": "Ask Commander Adaeze Solari about the four halls.",
+          "target": "n_sort"
+        }
+      ]
+    },
+    {
+      "id": "n_sort",
+      "body": "<<FILL role=choice words=134 beats='Commander Adaeze Solari names the four halls and their trouble this Alignment: the Gyro Bay, where the great flywheel drags and zero hour will come late unless the mechanism is mended; the Signal Deck, where a false ping loops through the listening bay and the true beacon must be found before the wrong one is sent; the Coolant Bay, the flooded coolant deck whose water pressure drives the whole Exchange, now leaking toward a burst; and the Pod Bay, the magnetic rail room, where the cargo pod carrying the true-orbit chip has jammed somewhere in the magnetic rails; the halls will not share a keeper, Commander Adaeze Solari says, and the night is already turning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_sort_1",
+          "label": "Keep the Gyro Bay and mend the great flywheel.",
+          "target": "t1_root"
+        },
+        {
+          "id": "c_n_sort_2",
+          "label": "Keep the Signal Deck and find the true beacon.",
+          "target": "t2_root"
+        },
+        {
+          "id": "c_n_sort_3",
+          "label": "Keep the Coolant Bay and hold back the surge.",
+          "target": "t3_root"
+        },
+        {
+          "id": "c_n_sort_4",
+          "label": "Keep the Pod Bay and free the cargo pod.",
+          "target": "t4_root"
+        }
+      ]
+    },
+    {
+      "id": "t1_root",
+      "body": "<<FILL role=rising words=116 beats='the spiral stair to the Gyro Bay, cold and loud with brass; Perrin, the retired clocksmith who tends the loft, waits by the great flywheel, which swings a shade too slow; she tells Kito Reyes the escapement is worn and zero hour will fall late unless they win back the lost minutes before the hour'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_root_1",
+          "label": "Follow Junia to the mechanism.",
+          "target": "t1_intro"
+        }
+      ]
+    },
+    {
+      "id": "t1_intro",
+      "body": "<<FILL role=rising words=114 beats='Perrin opens the movement's glass and shows Kito Reyes the trouble: a worn stabilizer gasket on the escapement, a drive-gear with a loose pin, and a pendulum bob whose trim has crept; any one of the three, mended right, could steady the tick in time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_intro_1",
+          "label": "Study the three faults with Junia.",
+          "target": "t1_survey"
+        }
+      ]
+    },
+    {
+      "id": "t1_survey",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes reads the loft's frost-fogged gauges while Perrin lays out her tools; the slow tick knocks in the dark like a tired heart, and the hour hand crawls toward zero hour that will not wait for a clumsy repair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_survey_1",
+          "label": "Decide where to begin.",
+          "target": "t1_hub"
+        }
+      ]
+    },
+    {
+      "id": "t1_hub",
+      "body": "<<FILL role=choice words=130 beats='Perrin says a keeper mends one fault well rather than three badly; the worn stabilizer gasket can be re-cut at the bench, the jammed drive-gear freed by climbing the frame, or the dragging great flywheel set right by rebalancing its heavy bob'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_hub_1",
+          "label": "Re-cut the worn stabilizer gasket at the bench.",
+          "target": "t1_a1"
+        },
+        {
+          "id": "c_t1_hub_2",
+          "label": "Climb the frame to free the jammed drive-gear.",
+          "target": "t1_b1"
+        },
+        {
+          "id": "c_t1_hub_3",
+          "label": "Rebalance the pendulum bob with brass balance-weights.",
+          "target": "t1_c1"
+        }
+      ]
+    },
+    {
+      "id": "t1_a1",
+      "body": "<<FILL role=rising words=114 beats='at the bench Kito Reyes files a new bearing face onto the worn stabilizer gasket under Perrin's eye, slow strokes, checking the fit against the escape wheel again and again until the shape comes true beneath the lamp'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_a1_1",
+          "label": "Ready the finished worn stabilizer gasket.",
+          "target": "t1_a2"
+        }
+      ]
+    },
+    {
+      "id": "t1_a2",
+      "body": "<<FILL role=choice words=126 beats='the worn stabilizer gasket is cut but soft; Perrin offers two roads: harden it properly in the quench and lose precious minutes, or fit it green and gamble that soft steel holds through the single stroke of zero hour'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_a2_1",
+          "label": "Temper it in the quench, the slow sure way.",
+          "target": "t1_aa1"
+        },
+        {
+          "id": "c_t1_a2_2",
+          "label": "Fit it green and race the clock.",
+          "target": "t1_ab1"
+        }
+      ]
+    },
+    {
+      "id": "t1_aa1",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes heats and quenches the worn stabilizer gasket, counting breaths against the falling hour; the steel hisses, hardens, and comes out keen; Perrin fits it while the loft holds its breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_aa1_1",
+          "label": "Set the hardened worn stabilizer gasket and watch the tick.",
+          "target": "t1_aa2"
+        }
+      ]
+    },
+    {
+      "id": "t1_aa2",
+      "body": "<<FILL role=climax words=102 beats='the escapement catches the new worn stabilizer gasket, releases, catches; the slow knock quickens, evens, and climbs back to a true, bright tick; Perrin's hands go still and the hour hand steadies exactly on its mark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_aa2_1",
+          "label": "Ring in the mended zero hour.",
+          "target": "t1_aa_end"
+        }
+      ]
+    },
+    {
+      "id": "t1_aa_end",
+      "body": "<<FILL role=success words=96 beats='at zero hour the Gyro Bay strikes clean and on time, and Kito Reyes feels the whole valley's clocks lean into the true signal; Perrin says the loft has not ticked so honestly in years, and tells Kito Reyes a keeper who mends slow keeps well'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_aa_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The True Spin"
+      }
+    },
+    {
+      "id": "t1_ab1",
+      "body": "<<FILL role=rising words=110 beats='Kito Reyes fits the green worn stabilizer gasket and the tick steadies, but Perrin frowns at the soft new steel; for an hour it holds beautifully, then, minutes before zero hour, the worn stabilizer gasket burrs and the tick begins to limp again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_ab1_1",
+          "label": "Nurse the failing worn stabilizer gasket toward zero hour.",
+          "target": "t1_ab_end"
+        }
+      ]
+    },
+    {
+      "id": "t1_ab_end",
+      "body": "<<FILL role=setback words=96 beats='Kito Reyes and Perrin hand-ease the movement through the hour and the Gyro Bay sends its signal a few minutes late; the valley's clocks will run a touch behind all year, a small honest error; Perrin says green steel and haste make their own kind of time, and next Alignment they will do it slow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_ab_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Few Degrees Off"
+      }
+    },
+    {
+      "id": "t1_b1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes climbs into the loft's iron frame toward the jammed drive-gear, boots on cold girders, the pendulum sweeping past close enough to stir the air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_b1_1",
+          "label": "Reach the stuck drive-gear.",
+          "target": "t1_b2"
+        }
+      ]
+    },
+    {
+      "id": "t1_b2",
+      "body": "<<FILL role=rising words=112 beats='clinging to the frame, Kito Reyes finds the fault: a loose locking bolt has wedged between two teeth, and behind it, scratched into the metal, are the initials of a hundred engineers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_b2_1",
+          "label": "Work the wedged loose locking bolt loose.",
+          "target": "t1_b3"
+        }
+      ]
+    },
+    {
+      "id": "t1_b3",
+      "body": "<<FILL role=rising words=112 beats='with a pick and a steady hand Kito Reyes eases the loose locking bolt free; the drive-gear shivers and remembers how to turn, and Perrin calls up that the tick is gathering strength'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_b3_1",
+          "label": "Climb down and read the initials of a hundred engineers.",
+          "target": "t1_b4"
+        }
+      ]
+    },
+    {
+      "id": "t1_b4",
+      "body": "<<FILL role=climax words=102 beats='safe on the boards again, Kito Reyes finds a engineer's logbook Perrin had never shown, each mended Alignment recorded in a different hand; the drive-gear runs true and zero hour rings clean while Kito Reyes reads a century of keepers by lamplight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_b4_1",
+          "label": "Add a name to the engineer's logbook.",
+          "target": "t1_b_end"
+        }
+      ]
+    },
+    {
+      "id": "t1_b_end",
+      "body": "<<FILL role=discovery words=96 beats='zero hour strikes on time, and Perrin lets Kito Reyes scratch a new set of initials beside the old ones in the frame; the trouble was only a fallen pin, but Kito Reyes leaves the loft knowing the Gyro Bay is really a chain of hands, each keeping the time for the next, and now Kito Reyes's hand is one of them'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_b_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Hundred Engineers"
+      }
+    },
+    {
+      "id": "t1_c1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes takes the pendulum road, sorting Perrin's brass balance-weights by the gram, each meant to nudge the heavy bob a hair faster without throwing off its long, patient swing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_c1_1",
+          "label": "Begin trimming the bob.",
+          "target": "t1_c2"
+        }
+      ]
+    },
+    {
+      "id": "t1_c2",
+      "body": "<<FILL role=rising words=112 beats='weight by weight the sweep quickens toward true; Perrin teaches Kito Reyes to read the swing by ear, and warns that past a certain point more weight makes the bob wild instead of fast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_c2_1",
+          "label": "Approach the true swing.",
+          "target": "t1_c3"
+        }
+      ]
+    },
+    {
+      "id": "t1_c3",
+      "body": "<<FILL role=choice words=126 beats='the tick sits almost perfect; Perrin says trust the arithmetic and lock the weights now, or chase the last hair of error and add one more trim past her warning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_c3_1",
+          "label": "Trust the math and lock the weights.",
+          "target": "t1_cc1"
+        },
+        {
+          "id": "c_t1_c3_2",
+          "label": "Chase perfection with one more weight.",
+          "target": "t1_cd1"
+        }
+      ]
+    },
+    {
+      "id": "t1_cc1",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes locks the trim collars exactly where the numbers say and steps back; Perrin counts the swing under her breath and nods, once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_cc1_1",
+          "label": "Watch the pendulum find its stride.",
+          "target": "t1_cc2"
+        }
+      ]
+    },
+    {
+      "id": "t1_cc2",
+      "body": "<<FILL role=climax words=102 beats='the great bob settles into a long, even, unhurried sweep, and the tick rides it home; the hour hand walks up to its mark and stands there, patient and exact, as the loft warms with the sound of a clock that knows itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_cc2_1",
+          "label": "Send the zero hour signal.",
+          "target": "t1_cc_end"
+        }
+      ]
+    },
+    {
+      "id": "t1_cc_end",
+      "body": "<<FILL role=completion words=96 beats='at zero hour the Gyro Bay leads the valley true, and Commander Adaeze Solari climbs up to mark in the great register that Alignment was kept; Perrin tells Kito Reyes that knowing when to stop is the whole craft, and that the loft has found itself a keeper it can trust with time'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_cc_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Patient Orbit"
+      }
+    },
+    {
+      "id": "t1_cd1",
+      "body": "<<FILL role=rising words=110 beats='Kito Reyes adds the extra weight past Perrin's warning; the bob lunges, the swing goes long and heavy and wrong, and a trim collar shakes loose and drops into the gears with a shriek'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_cd1_1",
+          "label": "Grab for the runaway weight.",
+          "target": "t1_cd_end"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t1_cd_end",
+      "body": "<<FILL role=capture words=96 beats='Kito Reyes's sleeve snags on the plunging bob and Perrin hauls Kito Reyes clear by the collar just in time; both are safe, but the seized movement cannot be freed before the hour, and the Gyro Bay stays silent at zero hour; the valley will set its clocks by guess this year, and Perrin holds Kito Reyes a long, shaken moment before she speaks'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t1_cd_end",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "The Silent Wheel"
+      },
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "t2_root",
+      "body": "<<FILL role=rising words=116 beats='the Signal Deck is a great dark listening bay hung with brass horns; Sable, the gallery's half-deaf echo-reader, meets Kito Reyes with a lamp; a false ping is looping somewhere in the dome, he says, and if the wrong message rides the zero hour signal the whole valley will keep a lie all year'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_root_1",
+          "label": "Follow Sable into the listening bay.",
+          "target": "t2_intro"
+        }
+      ]
+    },
+    {
+      "id": "t2_intro",
+      "body": "<<FILL role=rising words=114 beats='Sable explains the gallery's craft: real messages arrive as clean echoes read off the receiver core in the dome's center, but tonight a garbled voice repeats and repeats, hiding the true one; three ways to run it down, he says, and only one night to try'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_intro_1",
+          "label": "Learn the three ways to catch the true echo.",
+          "target": "t2_survey"
+        }
+      ]
+    },
+    {
+      "id": "t2_survey",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes stands on the receiver core while whispers slide down the dome from every side, some true, some false, all overlapping; picking the real message from the loop will take a cool head and a careful ear'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_survey_1",
+          "label": "Choose a method.",
+          "target": "t2_hub"
+        }
+      ]
+    },
+    {
+      "id": "t2_hub",
+      "body": "<<FILL role=choice words=130 beats='Sable lays out the choices: trace the false ping to its source horn on the gallery floor, sit the receiver core and sift the true words out by patient listening, or climb the high catwalk to the master dish where every echo is born'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_hub_1",
+          "label": "Trace the false ping to its source horn.",
+          "target": "t2_a1"
+        },
+        {
+          "id": "c_t2_hub_2",
+          "label": "Sit the receiver core and sift the words by ear.",
+          "target": "t2_b1"
+        },
+        {
+          "id": "c_t2_hub_3",
+          "label": "Climb the catwalk to the master dish.",
+          "target": "t2_c1"
+        }
+      ]
+    },
+    {
+      "id": "t2_a1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes walks the gallery floor, ear to one brass horn after another, following the false voice as it grows louder toward one shadowed alcove'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_a1_1",
+          "label": "Close in on the loud horn.",
+          "target": "t2_a2"
+        }
+      ]
+    },
+    {
+      "id": "t2_a2",
+      "body": "<<FILL role=choice words=126 beats='the false ping pours from a cracked antenna stuffed with an old felt baffle; Sable signs two choices: pull the baffle and silence the horn outright, or leave it and re-aim the horn so its lie folds back into itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_a2_1",
+          "label": "Re-aim the horn to cancel the false ping.",
+          "target": "t2_aa1"
+        },
+        {
+          "id": "c_t2_a2_2",
+          "label": "Pull the baffle and silence the cracked antenna.",
+          "target": "t2_ab1"
+        }
+      ]
+    },
+    {
+      "id": "t2_aa1",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes swings the heavy horn on its pivot by tiny degrees, Sable reading the dome with a hand flat on the stone, until the false voice meets its own returning wave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_aa1_1",
+          "label": "Find the cancelling angle.",
+          "target": "t2_aa2"
+        }
+      ]
+    },
+    {
+      "id": "t2_aa2",
+      "body": "<<FILL role=climax words=102 beats='at the exact angle the lie erases itself, and out of the sudden quiet rises the true beacon, clear and whole: the valley's time, spoken plain; Sable laughs a rusty laugh and copies it down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_aa2_1",
+          "label": "Carry the true beacon to the sender.",
+          "target": "t2_aa_end"
+        }
+      ]
+    },
+    {
+      "id": "t2_aa_end",
+      "body": "<<FILL role=completion words=96 beats='the true beacon rides the zero hour signal and the valley keeps a whole honest year; Commander Adaeze Solari records Alignment kept, and Sable tells Kito Reyes that anyone can make noise but a keeper learns to unmake it, and that the gallery would be glad of such ears again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_aa_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Cancelling Frequency"
+      }
+    },
+    {
+      "id": "t2_ab1",
+      "body": "<<FILL role=rising words=110 beats='Kito Reyes yanks the felt baffle and the false horn dies, but so does part of the dome's balance; the true beacon is there now, but thin and hard to hold, and Sable must guess at two blurred words'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_ab1_1",
+          "label": "Reconstruct the blurred message with Sable.",
+          "target": "t2_ab_end"
+        }
+      ]
+    },
+    {
+      "id": "t2_ab_end",
+      "body": "<<FILL role=discovery words=96 beats='between them they piece out most of the message and send it, guessing the last of it right by luck and sense; the valley keeps good time, and Sable teaches Kito Reyes that silencing a lie is easy but recovering the truth underneath is the real work, a lesson Kito Reyes turns over all the way down the stairs'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_ab_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Missing Digits"
+      }
+    },
+    {
+      "id": "t2_b1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes sits cross-legged on the cold receiver core and closes both eyes, letting the whole dome pour its whispers down at once instead of chasing any single one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_b1_1",
+          "label": "Let every echo arrive together.",
+          "target": "t2_b2"
+        }
+      ]
+    },
+    {
+      "id": "t2_b2",
+      "body": "<<FILL role=rising words=112 beats='slowly the loop reveals its shape: the false voice always lags a half-beat and never breathes, while the true beacon, faint beneath it, keeps a living rhythm; Kito Reyes learns to hear the difference'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_b2_1",
+          "label": "Lock onto the breathing voice.",
+          "target": "t2_b3"
+        }
+      ]
+    },
+    {
+      "id": "t2_b3",
+      "body": "<<FILL role=rising words=112 beats='holding the true rhythm like a thread, Kito Reyes follows it word by word out of the tangle while Sable writes down each one Kito Reyes calls; the false voice rages louder but cannot break the thread'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_b3_1",
+          "label": "Call the last of the message.",
+          "target": "t2_b4"
+        }
+      ]
+    },
+    {
+      "id": "t2_b4",
+      "body": "<<FILL role=climax words=102 beats='the true beacon stands complete on Sable's slate, every word earned by listening; Sable seals it for the sender, and the false ping, unheeded at last, fades to nothing in the dome above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_b4_1",
+          "label": "Send the listened message.",
+          "target": "t2_b_end"
+        }
+      ]
+    },
+    {
+      "id": "t2_b_end",
+      "body": "<<FILL role=success words=96 beats='the honest message goes out at zero hour and the valley runs true; Sable tells Kito Reyes that most keepers try to shout the lie down, and that Kito Reyes instead learned to listen it apart, which is the rarer gift; he presses a small brass ear-horn into Kito Reyes's hand to remember the night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_b_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Steady Line"
+      }
+    },
+    {
+      "id": "t2_c1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes climbs the iron catwalk that rings the dome toward the master dish, the false echo growing colder and louder with every rung, the gallery floor dropping away below into dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_c1_1",
+          "label": "Climb toward the master dish.",
+          "target": "t2_c2"
+        }
+      ]
+    },
+    {
+      "id": "t2_c2",
+      "body": "<<FILL role=rising words=112 beats='on the high walk the false voice is almost a person, wheedling, telling Kito Reyes the safe rail is rusted and the true horn lies out past it on the old unsafe gantry, just there, only a few steps beyond the barrier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_c2_1",
+          "label": "Weigh the coaxing voice.",
+          "target": "t2_c3"
+        }
+      ]
+    },
+    {
+      "id": "t2_c3",
+      "body": "<<FILL role=choice words=126 beats='Sable's warning shout comes thin from below: stay inside the rail; the false echo insists the true horn is just past the barrier on the old gantry; Kito Reyes must choose whom to trust, the friend below or the voice in the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_c3_1",
+          "label": "Trust Sable and stay inside the rail.",
+          "target": "t2_cc1"
+        },
+        {
+          "id": "c_t2_c3_2",
+          "label": "Trust the voice and cross onto the old gantry.",
+          "target": "t2_cd1"
+        }
+      ]
+    },
+    {
+      "id": "t2_cc1",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes keeps a hand on the safe rail and ignores the coaxing; from inside the barrier the master dish is plainly reachable, and the false voice was only trying to lure a climber out over the drop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_cc1_1",
+          "label": "Reach the master dish safely.",
+          "target": "t2_cc2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t2_cc2",
+      "body": "<<FILL role=climax words=102 beats='at the master dish Kito Reyes finds the loose valve feeding the loop and closes it; the false voice snuffs out, and the whole dome fills with the single true message it had been drowning all night'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_cc2_1",
+          "label": "Read the freed true message.",
+          "target": "t2_cc_end"
+        }
+      ]
+    },
+    {
+      "id": "t2_cc_end",
+      "body": "<<FILL role=discovery words=96 beats='the recovered message rides the zero hour signal and the valley keeps true; climbing down, Kito Reyes understands the false echo was the gallery testing whether a keeper could tell a coaxing lie from a friend's warning, and Sable says Kito Reyes passed the only test that ever mattered up there'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_cc_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Beacon Past the Rail"
+      }
+    },
+    {
+      "id": "t2_cd1",
+      "body": "<<FILL role=rising words=110 beats='Kito Reyes swings a leg over the barrier onto the old gantry, chasing the voice; the rusted iron groans, the promised horn is not there at all, only more dark, and the walkway tilts underfoot with a long tearing sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_cd1_1",
+          "label": "Grab for the rail as the gantry gives.",
+          "target": "t2_cd_end"
+        }
+      ],
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "t2_cd_end",
+      "body": "<<FILL role=capture words=96 beats='the tilting gantry pins Kito Reyes against the cold rail, boots slipping over nothing, the promised horn never there at all; the false voice goes gleeful and then, cheated of a fall, sullen, while Kito Reyes clings in the swallowing dark, too turned around to find the way back; only Sable's lamp and steady called-out directions bring Kito Reyes inching off the ruined walkway to safety, long minutes gone; the gallery keeps its oldest, saddest lesson, that a voice which flatters you toward the edge was never a friend, and the Signal Deck sends no true message this Alignment'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t2_cd_end",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "The Coaxing Static"
+      },
+      "safety_scope": [
+        "peril",
+        "scary_imagery"
+      ]
+    },
+    {
+      "id": "t3_root",
+      "body": "<<FILL role=rising words=116 beats='down slick stone stairs to the Coolant Bay, the flooded coolant deck whose water pressure drives the whole Exchange; Nadia the cistern-keeper wades knee-deep with a storm-lantern; a seam is leaking, she says, and if the pressure drops before zero hour the signal upstairs dies for want of breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_root_1",
+          "label": "Wade in after Nadia.",
+          "target": "t3_intro"
+        }
+      ]
+    },
+    {
+      "id": "t3_intro",
+      "body": "<<FILL role=rising words=114 beats='Nadia shows Kito Reyes the works: the great header tank, the pressure gauge creeping down, and a hairline leak somewhere along the old brick main; fix the pressure in time, she says, and the Exchange breathes; fail, and zero hour goes quiet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_intro_1",
+          "label": "Look over the failing works with Nadia.",
+          "target": "t3_survey"
+        }
+      ]
+    },
+    {
+      "id": "t3_survey",
+      "body": "<<FILL role=rising words=112 beats='cold water tugs at Kito Reyes's boots while the gauge needle sinks; Nadia counts three ways to save the pressure before the hour, each with its own risk in the dark and the rising damp'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_survey_1",
+          "label": "Pick a way to hold the pressure.",
+          "target": "t3_hub"
+        }
+      ]
+    },
+    {
+      "id": "t3_hub",
+      "body": "<<FILL role=choice words=130 beats='Nadia lays it out: dive to find and plug the leaking seam at the main, work the hand-pumps to refill the header tank faster than it drains, or shut the great bypass valve to seal off the leaking section entirely'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_hub_1",
+          "label": "Dive to find and plug the leaking seam.",
+          "target": "t3_a1"
+        },
+        {
+          "id": "c_t3_hub_2",
+          "label": "Work the hand-pumps to refill the tank.",
+          "target": "t3_b1"
+        },
+        {
+          "id": "c_t3_hub_3",
+          "label": "Shut the great bypass valve on the leaking section.",
+          "target": "t3_c1"
+        }
+      ]
+    },
+    {
+      "id": "t3_a1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes takes a breath and goes under along the brick main, feeling for the pull of escaping water, Nadia's lantern a wobbling green coin above the surface'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_a1_1",
+          "label": "Feel along the main for the leak.",
+          "target": "t3_a2"
+        }
+      ]
+    },
+    {
+      "id": "t3_a2",
+      "body": "<<FILL role=choice words=126 beats='Kito Reyes finds the seam, a finger-width crack sucking cold; two choices surface with the next breath: pack it fast with Nadia's sealant foam, or take longer to set a proper titanium clamp that will hold far better if the hour allows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_a2_1",
+          "label": "Set the titanium clamp, the strong slow fix.",
+          "target": "t3_aa1"
+        },
+        {
+          "id": "c_t3_a2_2",
+          "label": "Pack it fast with sealant foam.",
+          "target": "t3_ab1"
+        }
+      ]
+    },
+    {
+      "id": "t3_aa1",
+      "body": "<<FILL role=rising words=112 beats='diving again and again, Kito Reyes fits the titanium clamp across the seam and draws it tight bolt by bolt, lungs burning, Nadia timing each dive from above and hauling Kito Reyes up to breathe between'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_aa1_1",
+          "label": "Draw the last bolt tight.",
+          "target": "t3_aa2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t3_aa2",
+      "body": "<<FILL role=climax words=102 beats='the titanium clamp bites and the sucking stops; the gauge needle shivers, halts, and climbs; the great tank stops draining and the Exchange draws a deep, even breath through the pipes overhead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_aa2_1",
+          "label": "Watch the pressure climb home.",
+          "target": "t3_aa_end"
+        }
+      ]
+    },
+    {
+      "id": "t3_aa_end",
+      "body": "<<FILL role=success words=96 beats='at zero hour the Coolant Bay holds full pressure and the signal goes out strong; Nadia wraps Kito Reyes in a dry coat and says most folk fear going under the cold water, and that a keeper who faces it and fixes it right belongs down here whenever the valley needs one'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_aa_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Titanium Clamp"
+      }
+    },
+    {
+      "id": "t3_ab1",
+      "body": "<<FILL role=rising words=110 beats='Kito Reyes jams the sealant foam into the crack and the worst of the leak stops, but the fast patch weeps a slow thread of water that Nadia eyes with doubt as the gauge creeps only halfway back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_ab1_1",
+          "label": "Nurse the half-pressure toward zero hour.",
+          "target": "t3_ab_end"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t3_ab_end",
+      "body": "<<FILL role=setback words=96 beats='the patch holds just enough; the Coolant Bay sends its signal thin but real, and the valley keeps time on a shallow breath this year; Nadia tells Kito Reyes a fast plug beats a burst main any night, but that next Alignment they will set the titanium clamp and do it properly, and Kito Reyes means to be there'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_ab_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Thin Pressure"
+      }
+    },
+    {
+      "id": "t3_b1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes throws off a coat and takes the long iron handle of the manual pump lever, and Nadia takes the other; together they begin the brutal rhythm of hauling water up faster than the leak can steal it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_b1_1",
+          "label": "Set the pumping rhythm with Nadia.",
+          "target": "t3_b2"
+        }
+      ]
+    },
+    {
+      "id": "t3_b2",
+      "body": "<<FILL role=rising words=112 beats='the tank rises a hand's width, then holds; Kito Reyes's arms turn to rope, but Nadia calls the stroke and the two of them find a pace they can just barely keep against the sinking gauge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_b2_1",
+          "label": "Hold the pace against the clock.",
+          "target": "t3_b3"
+        }
+      ]
+    },
+    {
+      "id": "t3_b3",
+      "body": "<<FILL role=rising words=112 beats='as zero hour nears the leak slows on its own, silt drawn into the crack, and the manual pump lever at last gains on it; the gauge needle lifts steadily under Kito Reyes's aching, streaming effort'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_b3_1",
+          "label": "Pump the tank the last of the way full.",
+          "target": "t3_b4"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t3_b4",
+      "body": "<<FILL role=climax words=102 beats='the header tank brims and overflows its mark; the Exchange breathes deep and even, and Nadia finally lets the handle rest, grinning through the sweat at a job done by nothing but two backs and a lot of will'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_b4_1",
+          "label": "Let the full tank feed the signal.",
+          "target": "t3_b_end"
+        }
+      ]
+    },
+    {
+      "id": "t3_b_end",
+      "body": "<<FILL role=completion words=96 beats='the Coolant Bay holds and the zero hour signal rings full and true; Commander Adaeze Solari comes down to record Alignment kept, and Nadia tells him the new keeper out-pumped a leak with bare arms; some nights, she says to Kito Reyes, the Exchange runs on muscle and stubbornness, and Kito Reyes has both'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_b_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Two Hands and a Will"
+      }
+    },
+    {
+      "id": "t3_c1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes wades toward the great bypass valve, a rusted wheel as tall as a door, that will seal the whole leaking section away from the rest of the works if it can be turned'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_c1_1",
+          "label": "Reach the great bypass valve.",
+          "target": "t3_c2"
+        }
+      ]
+    },
+    {
+      "id": "t3_c2",
+      "body": "<<FILL role=rising words=112 beats='the wheel is seized with rust and years; Nadia warns that shutting it saves the pressure but strands the far pumps, so it must be turned fully or not at all, no half measures in the cold dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_c2_1",
+          "label": "Set both hands to the frozen wheel.",
+          "target": "t3_c3"
+        }
+      ]
+    },
+    {
+      "id": "t3_c3",
+      "body": "<<FILL role=choice words=126 beats='the valve gives an inch and stops; Nadia says brace it slow and steady and it will come, or throw all of Kito Reyes's weight against it at once and risk snapping the old spindle for good'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_c3_1",
+          "label": "Brace it slow and steady with Nadia.",
+          "target": "t3_cc1"
+        },
+        {
+          "id": "c_t3_c3_2",
+          "label": "Throw all your weight against it at once.",
+          "target": "t3_cd1"
+        }
+      ]
+    },
+    {
+      "id": "t3_cc1",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes and Nadia lean into the wheel together, a hand's turn at a time, letting the old iron remember its threads instead of forcing them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_cc1_1",
+          "label": "Walk the wheel around, turn by turn.",
+          "target": "t3_cc2"
+        }
+      ]
+    },
+    {
+      "id": "t3_cc2",
+      "body": "<<FILL role=climax words=102 beats='with a groan and then a rush the valve seats home; the leaking section falls silent and the pressure everywhere else surges back; the gauge climbs past its mark and steadies, and the Exchange breathes easy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_cc2_1",
+          "label": "Confirm the pressure holds.",
+          "target": "t3_cc_end"
+        }
+      ]
+    },
+    {
+      "id": "t3_cc_end",
+      "body": "<<FILL role=discovery words=96 beats='the sealed works hold pressure to zero hour and the signal goes out true; reading the old valve's maker-mark by lantern, Kito Reyes learns the Coolant Bay was built by the same hands that raised the Gyro Bay, one machine breathing through the whole hill, and Nadia says a keeper who sees the whole works has seen the real Exchange'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_cc_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "One Breathing Station"
+      }
+    },
+    {
+      "id": "t3_cd1",
+      "body": "<<FILL role=rising words=110 beats='Kito Reyes throws everything into the wheel at once; it lurches a quarter-turn and the old spindle shears with a crack, jamming the valve half-open, neither sealed nor free, water pushing through the gap'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_cd1_1",
+          "label": "Scramble back from the failing valve.",
+          "target": "t3_cd_end"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t3_cd_end",
+      "body": "<<FILL role=setback words=96 beats='with the valve jammed half-shut the pressure cannot hold, and the Coolant Bay sends no signal from the underworks this Alignment; Kito Reyes and Nadia are cold and safe but beaten, and the valley will keep rough time this year; forcing the old iron, Nadia says quietly, only ever breaks it, a lesson Kito Reyes carries up the wet stairs'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t3_cd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sheared Valve"
+      }
+    },
+    {
+      "id": "t4_root",
+      "body": "<<FILL role=rising words=116 beats='the Pod Bay is a warm brass-veined room where message capsules whistle through pneumatic tubes; Tobin, the young tube-runner, meets Kito Reyes wide-eyed; the cargo pod carrying the true-orbit chip has jammed somewhere in the veins, she says, and without it the sender has nothing true to send'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_root_1",
+          "label": "Join Tobin at the tube board.",
+          "target": "t4_intro"
+        }
+      ]
+    },
+    {
+      "id": "t4_intro",
+      "body": "<<FILL role=rising words=114 beats='Tobin shows Kito Reyes the routing console, a wall of brass tubes and levers mapping the whole Exchange; the cargo pod is stuck somewhere between here and the sending station, and three routes might reach it before the hour'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_intro_1",
+          "label": "Read the routing console with Tobin.",
+          "target": "t4_survey"
+        }
+      ]
+    },
+    {
+      "id": "t4_survey",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes traces the cold dead tube where the capsule went silent; Tobin counts the ways to reach it, each running through a different stretch of the old magnetic rails, each with its own hazard'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_survey_1",
+          "label": "Choose a route to the jammed capsule.",
+          "target": "t4_hub"
+        }
+      ]
+    },
+    {
+      "id": "t4_hub",
+      "body": "<<FILL role=choice words=130 beats='Tobin lays out the routes: crawl the service duct to the jam and clear it by hand, reroute the air pressure to blow the capsule free from the routing console, or send a chaser pod down the tube to knock the stuck one loose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_hub_1",
+          "label": "Crawl the service duct and clear the jam by hand.",
+          "target": "t4_a1"
+        },
+        {
+          "id": "c_t4_hub_2",
+          "label": "Reroute the air pressure to blow it free.",
+          "target": "t4_b1"
+        },
+        {
+          "id": "c_t4_hub_3",
+          "label": "Send a chaser pod to knock it loose.",
+          "target": "t4_c1"
+        }
+      ]
+    },
+    {
+      "id": "t4_a1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes wriggles into the tight brass service duct with a hand-lamp, following the dead tube by touch toward the muffled place where the capsule sits wedged'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_a1_1",
+          "label": "Crawl to the wedged capsule.",
+          "target": "t4_a2"
+        }
+      ]
+    },
+    {
+      "id": "t4_a2",
+      "body": "<<FILL role=choice words=126 beats='Kito Reyes reaches the jam: the capsule is crumpled against a sticky cargo latch; two choices in the cramped dark, ease the flap open gently and free the capsule whole, or shove hard and trust speed over care'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_a2_1",
+          "label": "Ease the sticky cargo latch and free the capsule whole.",
+          "target": "t4_aa1"
+        },
+        {
+          "id": "c_t4_a2_2",
+          "label": "Shove it through hard and fast.",
+          "target": "t4_ab1"
+        }
+      ]
+    },
+    {
+      "id": "t4_aa1",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes works the stiff sticky cargo latch open a careful degree at a time until the dented capsule slides loose into waiting fingers, its true-orbit chip safe and dry inside'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_aa1_1",
+          "label": "Cradle the freed capsule and back out.",
+          "target": "t4_aa2"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t4_aa2",
+      "body": "<<FILL role=climax words=102 beats='out of the duct, Kito Reyes loads the rescued capsule into the sending tube; Tobin throws the lever and it whistles away clean toward the station, the token intact and the minutes just barely enough'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_aa2_1",
+          "label": "Send the capsule to the station.",
+          "target": "t4_aa_end"
+        }
+      ]
+    },
+    {
+      "id": "t4_aa_end",
+      "body": "<<FILL role=completion words=96 beats='the true-orbit chip reaches the sender and the zero hour signal goes out whole; Commander Adaeze Solari marks Alignment kept, and Tobin tells Kito Reyes that runners learn the veins with their hands in the dark, and that Kito Reyes has the touch for it; the Pod Bay would keep Kito Reyes gladly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_aa_end",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Rescued Chip"
+      }
+    },
+    {
+      "id": "t4_ab1",
+      "body": "<<FILL role=rising words=110 beats='Kito Reyes shoves the capsule hard through the flap; it tears free but the dented case springs open, and the true-orbit chip skitters loose into the dark bottom of the duct'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_ab1_1",
+          "label": "Grope after the loose token.",
+          "target": "t4_ab_end"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t4_ab_end",
+      "body": "<<FILL role=capture words=96 beats='Kito Reyes wedges deeper after the token and gets stuck fast in the narrowing brass, and Tobin has to fetch Commander Adaeze Solari and a grease-can to work Kito Reyes gently out; everyone is safe, but the token is lost below and the Pod Bay sends no signal this Alignment; haste in a tight place, Tobin says, only ever wedges you tighter, and she stays close while they free Kito Reyes'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_ab_end",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Stuck in the Rails"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "t4_b1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes stays at the routing console to reroute the air, and Tobin coaches the trick: close every branch but the jammed one so the whole Exchange's pressure gathers behind the stuck capsule at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_b1_1",
+          "label": "Close the branch valves one by one.",
+          "target": "t4_b2"
+        }
+      ]
+    },
+    {
+      "id": "t4_b2",
+      "body": "<<FILL role=rising words=112 beats='lever by lever the routing console goes quiet as tubes fall shut, the gauges climbing as pressure banks up behind the jam; Tobin watches the dial and tells Kito Reyes when to hold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_b2_1",
+          "label": "Bank the pressure behind the jam.",
+          "target": "t4_b3"
+        }
+      ]
+    },
+    {
+      "id": "t4_b3",
+      "body": "<<FILL role=rising words=112 beats='at the right instant Kito Reyes throws the release; a great breath of air punches down the dead tube, and far off in the brass something knocks, shudders, and begins to move'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_b3_1",
+          "label": "Track the freed capsule down the board.",
+          "target": "t4_b4"
+        }
+      ]
+    },
+    {
+      "id": "t4_b4",
+      "body": "<<FILL role=climax words=102 beats='the cargo pod comes whistling home to the routing console, shaken loose and whole; Tobin catches it, whoops, and slots it straight into the sending tube while the last minutes drain away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_b4_1",
+          "label": "Send the recovered capsule.",
+          "target": "t4_b_end"
+        }
+      ]
+    },
+    {
+      "id": "t4_b_end",
+      "body": "<<FILL role=success words=96 beats='the capsule reaches the sender and the signal goes out on time; Tobin tells Commander Adaeze Solari that Kito Reyes cleared the whole vein without ever leaving the board, just by understanding how the air wanted to move; a keeper who thinks the machine through, Commander Adaeze Solari says, is worth three who only climb into it, and he shakes Kito Reyes's hand'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_b_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Gathered Current"
+      }
+    },
+    {
+      "id": "t4_c1",
+      "body": "<<FILL role=rising words=114 beats='Kito Reyes loads a heavy chaser pod to send down the tube after the jammed one, meaning to knock it loose the quick and simple way, and Tobin sets the pressure for the shot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_c1_1",
+          "label": "Ready the chaser pod.",
+          "target": "t4_c2"
+        }
+      ]
+    },
+    {
+      "id": "t4_c2",
+      "body": "<<FILL role=rising words=112 beats='Tobin warns that a chaser pod is a blunt tool: sent right it taps the jam free, sent too hard it drives both capsules into a worse wreck deeper in the magnetic rails where no hand can reach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_c2_1",
+          "label": "Set the chaser's force.",
+          "target": "t4_c3"
+        }
+      ]
+    },
+    {
+      "id": "t4_c3",
+      "body": "<<FILL role=choice words=126 beats='the tube is loaded and Kito Reyes's hand is on the lever; Tobin says send it soft and true, a gentle tap that might need a second try, or send it hard and settle the whole thing in one shot if it works'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_c3_1",
+          "label": "Send the chaser pod soft and true.",
+          "target": "t4_cc1"
+        },
+        {
+          "id": "c_t4_c3_2",
+          "label": "Send the chaser pod hard, one shot to settle it.",
+          "target": "t4_cd1"
+        }
+      ]
+    },
+    {
+      "id": "t4_cc1",
+      "body": "<<FILL role=rising words=112 beats='Kito Reyes feathers the lever and the chaser pod slips away with a soft whoosh; it coasts down the tube and meets the jam with the lightest of taps, exactly as Tobin hoped'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_cc1_1",
+          "label": "Wait on the gentle tap.",
+          "target": "t4_cc2"
+        }
+      ]
+    },
+    {
+      "id": "t4_cc2",
+      "body": "<<FILL role=climax words=102 beats='the tap is enough; the cargo pod shakes loose and both capsules come coasting back to the routing console unhurt, the true-orbit chip rattling safe inside; Tobin grabs it and races it to the sending tube'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_cc2_1",
+          "label": "Send the loosened capsule home.",
+          "target": "t4_cc_end"
+        }
+      ]
+    },
+    {
+      "id": "t4_cc_end",
+      "body": "<<FILL role=discovery words=96 beats='the signal goes out true at zero hour; sorting the two returned capsules, Kito Reyes finds the chaser pod was an old training round from Tobin's own first Alignment, her initials scratched inside, and Tobin goes quiet and glad; the Pod Bay remembers its runners, she says, and now it will remember Kito Reyes too'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_cc_end",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Training Pod"
+      }
+    },
+    {
+      "id": "t4_cd1",
+      "body": "<<FILL role=rising words=110 beats='Kito Reyes slams the lever full; the heavy chaser pod rockets down the tube and hits the jam with a bang that shakes the whole routing console, and both capsules crumple together deep in an unreachable bend of the brass'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_cd1_1",
+          "label": "Search the board for any sign of the capsules.",
+          "target": "t4_cd_end"
+        }
+      ]
+    },
+    {
+      "id": "t4_cd_end",
+      "body": "<<FILL role=setback words=96 beats='the wrecked capsules sit jammed where no runner can reach before dawn, and the Pod Bay sends nothing this Alignment; Kito Reyes and Tobin are unhurt but low, and the valley will guess at its clocks this year; a chaser pod sent in anger, Tobin says, only ever makes two jams out of one, and Kito Reyes nods, learning it the hard way'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "t4_cd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Two Wrecks from One"
+      }
+    }
+  ]
+}

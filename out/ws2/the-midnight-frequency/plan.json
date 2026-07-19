@@ -1,0 +1,258 @@
+{
+  "beats": {
+    "n_start": "{HERO}, twelve, is awake past {OPENING_MOMENT} when {ANCESTOR}'s {DEVICE}, inherited in spring and silent ever since, clicks itself on from the timer preset nobody ever understood; through the static a calm voice reads five-figure number groups, pauses, and says {DEADLINE}, {DEADLINE}; the voice, recorded long ago, is unmistakably {ANCESTOR}'s; taped under the dial in worn print is a label reading {CALLSIGN} LISTENS; {HERO} grabs a pencil and copies the groups with her heart drumming",
+    "n_teo": "{COMPANION}, sixteen, grumbles awake, hears the voice, and sits bolt upright; he fetches {GUIDE_LOG} from the shelf while the broadcast repeats on the half hour and promises to end at {DEADLINE}; they wake {GUARDIAN}, who takes one look at {GUIDE_LOG}, goes quiet in a remembering way, and sets the rules: stay together, phones charged, bike lights on, {COMPANION} leads, home by breakfast, and text me from wherever this takes you",
+    "n_decode": "At the kitchen table {CIPHER} gives up its pattern, and the groups resolve one by one into five places they know: {ROUTE_A_LURE}, {ROUTE_B_LURE}, {ROUTE_C_LURE}, {ROUTE_D_LURE}, {ROUTE_E_LURE}, each with its own short hint group; the last line reads {TONE_MOTIF}, then come home to {GOAL}; when {COMPANION} swings {ANTENNA}, the signal peaks on one steady bearing, east across town, no matter where they stand; the countdown to {DEADLINE} is already running",
+    "n_hub": "{ENTRANCE}, five streets spoking away under sodium lamps, the sea a soft breath beyond the rooftops; {DEVICE} murmurs its patient numbers from {COMPANION}'s handlebar basket and {ANTENNA} keeps pulling east; keep this scene general so it reads naturally on a first arrival or on any return trip between sites; around them wait {ROUTE_A_APPROACH} up to {ROUTE_A_LURE}, the road down to {ROUTE_B_LURE}, {ROUTE_C_APPROACH}, {ROUTE_D_APPROACH} to {ROUTE_D_LURE}, {ROUTE_E_APPROACH} to {ROUTE_E_LURE}, and always that steady eastward bearing",
+    "wt_lane": "{ROUTE_A_APPROACH} climbs between sleeping trees and {ROUTE_A_LURE} rises ahead on six riveted legs, the town name painted pale on the tank against the stars; {DEVICE} murmurs the tower's hint group as they ride; write the approach general enough to read naturally whether this is their first stop of the night or a return",
+    "wt_gap": "The chain-link fence around {ROUTE_A_LURE} has a gap by a bent post that every kid in town knows; slipping through, they stand under the tank as if under a giant's table, legs going up forever, a slow drip ticking somewhere in the dark ironwork overhead",
+    "wt_gate": "In the gravel lot {COMPANION} works the tower's hint group through {CIPHER} and it comes out SIX LEGS, ONE SINGS, READ LOW; around them stand a small maintenance shed with a latch but no lock, the six great legs each stenciled with a number, and up the tank stands the {ROUTE_A_GATE}, its rungs already glinting with frost",
+    "wt_ladder": "The {ROUTE_A_GATE} is locked, and its rungs glitter with frost; READ LOW nags at {HERO} while {COMPANION} zooms his phone camera up the painted letters and finds nothing but paint; either the hint means the answer waits down here, or somebody has to climb around the outside of the {ROUTE_A_GATE} in the dark",
+    "wt_legs": "Six legs stenciled 1 to 6 for the maintenance crews, all alike in the torchlight; ONE SINGS; write this beat neutral so it reads the same whether they come from the lot or double back from the {ROUTE_A_GATE}; a leg that sings must sound different from its five silent sisters, or else carry some mark the others lack",
+    "wt_tap": "Knuckles on cold steel: five legs answer with a dead thud, but leg four answers back with {ROUTE_A_DETAIL1}, something hollow bolted to the steel; at exactly eye height on that leg sits {ROUTE_A_FIND}",
+    "wt_marks": "Torchlight slides over rivets and stencils until it snags on leg four: a scratched {MARKER} at eye height, the same mark that dots the margins of {GUIDE_LOG}, right beside {ROUTE_A_FIND} bolted to the steel",
+    "wt_box": "{ROUTE_A_FIND} holds dead fuses and one laminated card in {ANCESTOR}'s print: PAINT KEEPS BETTER THAN PAPER, LITTLE {CALLSIGN}; on the card's back is a pencil sketch of a shelf of paint cans; write the find neutral so it reads naturally whichever way the legs led them here, by ringing note or by scratched {MARKER}",
+    "wt_card": "{COMPANION} turns {ROUTE_A_CLUE} under his light: in the sketch one can is shaded dark, third from the left; and he works out why paint, of all things: the tank's letters look hand-painted because they were, a volunteer crew repainted this tower once, and a paint store would be exactly where an old painter could hide something",
+    "wt_shed": "{ROUTE_A_ZONE} opens on a latch, no lock: valve charts, a workbench, a shelf of old paint cans, and on the wall a framed photograph of a paint crew up on the catwalk, decades old; keep the scene general so it lands the same whether they walk in cold from the lot or arrive hunting a sketched shelf",
+    "wt_photo": "The caption reads TOWER REPAINT, VOLUNTEERS OF {CLUB_NAME}; front row, brush raised, laughing at the camera, stands a young {ANCESTOR}; on the frame's edge someone chalked a small arrow, long ago, pointing back toward the paint shelf",
+    "wt_cans": "Among the rusted cans one label is hand-lettered {CALLSIGN} BLUE; it lifts far too light for paint, and inside, dry as the day it was hidden, waits {ROUTE_A_CACHE}; write the moment neutral so it works whether the shelf was searched straight away or found by following the photograph's chalk arrow",
+    "wt_cache": "Inside {ROUTE_A_CACHE}: a small brass tag shaped like a bird, stamped with the single word {ROUTE_A_TAG}, and a slip in {ANCESTOR}'s hand remembering the repaint summer, the whole club singing rounds on the catwalk while the paint dried and her keeping time on the rail; beneath it the familiar line, {TONE_MOTIF}, then come home to {GOAL}; the tag goes warm in {HERO}'s pocket and the night is still open",
+    "e_wt_climb": "Two rungs up the outside of the {ROUTE_A_GATE} her trainer skids on frosted steel and {COMPANION}'s hand is already on her jacket, easing her down; they sit on the gravel until their hearts slow; the clue said READ LOW, and {ANCESTOR} never made her club climb anything; palms stinging and pride dented, they ride home under {DEADLINE_SIGN}, leaving the hunt for another, warmer night; a lesson about frost, taken with dignity",
+    "cn_marquee": "Main Street is empty and silver; {ROUTE_B_LURE}'s dead marquee still spells half a title in crooked letters; the cinema's hint group works out to ROW J SEAT TWELVE, WHERE THE LIGHT LIVES; the front doors are chained, but a margin note in {GUIDE_LOG} mentions {ROUTE_B_APPROACH} in the alley that never latched properly; keep the arrival general for a first visit or a return",
+    "cn_alley": "{ROUTE_B_APPROACH} gives with a push, unlatched exactly as {GUIDE_LOG} promised; inside is dust, old velvet, and the deep held breath of an empty theater; from the dark wings two ways open: the double doors into the auditorium, and a narrow stair marked PROJECTION in flaking gilt",
+    "cn_stalls": "The auditorium: rows of seats under dust sheets like a sleeping audience, the screen a pale blank wall; ROW J is out there somewhere under the sheets; and up on the stage, behind the screen's edge, loom the shapes of the great speaker horns {CLUB_NAME} once borrowed for its shows",
+    "cn_rowj": "Row J under its sheet, seats folded shut like all the rest; but seat twelve's armrest carries a small brass plate engraved THE {CALLSIGN}'S SEAT, polished brighter than fifty years of dust should allow",
+    "cn_under": "Under-seat archaeology: springs, dust, gum gone to stone; then her fingers find {ROUTE_B_DETAIL1}'s mounting screws from behind, and they are thumb-loose, turned a hundred times, meant to be turned again",
+    "cn_tip": "The seat folds down with a thump that rolls around the empty hall like a single clap; nothing is taped beneath it, but up close {ROUTE_B_DETAIL1} sits proud of the wood and rocks under her fingertip, its screws thumb-loose on purpose",
+    "cn_plate": "Behind {ROUTE_B_DETAIL1} a shallow hollow is carved into the armrest, holding a rolled slip: NOT IN THE DARK, LITTLE {CALLSIGN}, THE PRIZE LIVES WHERE THE LIGHT LIVES; every eye in this hall spent its evenings looking away from the answer, up at the little window where the light comes from; write the find neutral for either way of reaching it, from under the seat or over it",
+    "cn_stage": "Up the side steps onto the stage; behind the screen's edge the horn alcove waits, but the {ROUTE_B_GATE} on this side flexes under her toe with a groan, dark pit space showing through the gaps",
+    "cn_horns": "The speaker horns rise taller than {COMPANION}, mouths full of dark, the machines that once gave {CLUB_NAME} its thunder; chalked neatly on the biggest horn's frame are a {MARKER} and the words EVERY SHOW ENDS AT THE BOOTH",
+    "cn_boothstairs": "The narrow stair coils up past a crooked PRIVATE sign to the booth landing, where the door stands ajar on darkness and {ROUTE_B_DETAIL2} looks in beside it; write this landing neutral so it reads naturally from any direction the theater has funneled them",
+    "cn_port": "Through the glass: the projector crouched like a sleeping brass animal, a splicing bench, and a wall rack of film tins in neat rows, except for {ROUTE_B_FIND} standing nose-out of line as if it has been waiting to be noticed",
+    "cn_booth": "{ROUTE_B_FIND} in the booth smells of oil and dust gone cold decades ago; the rack's labels are hand-inked, and it reads {ROUTE_B_PRIZE}, FINAL REEL, in {ANCESTOR}'s print; the projector's lamp housing stands open and threaded, ready, as if someone always meant for one more show; keep the room neutral for a first or return visit",
+    "cn_cache": "No film inside; {ROUTE_B_FIND} is lined with felt and holds a small brass tag stamped {ROUTE_B_TAG}, and a slip in {ANCESTOR}'s hand: {ROUTE_B_PRIZE}, once a year {CLUB_NAME} filled this hall with a radio play through the big horns, and she voiced the storm so well the front row put their umbrellas up; beneath, the line, {TONE_MOTIF}, then come home to {GOAL}; the tag clinks into {HERO}'s pocket",
+    "e_cn_boards": "The {ROUTE_B_GATE} cracks and her leg drops knee-deep into the under-stage dark; {COMPANION} has her by both arms before the fright even lands; a scraped shin, a torn sock, a long careful crawl back to the solid wings; on the alley steps they take stock and call it honestly: no treasure is worth a broken ankle in an empty building at night; they wedge {ROUTE_B_APPROACH} shut behind them and pedal home limping-proud, the hunt paused, not lost",
+    "e_cn_reel": "The projector clatters awake and the screen fills, not with film stars but with the club's own home footage: this very hall packed for {ROUTE_B_PRIZE}, paper tickets waving, and through some past hand's patching of projector to horns rolls {ANCESTOR}'s storm scene, wind and thunder made of voice and tray-rattled tin; {HERO} and {COMPANION} sink into row J and watch until the reel runs out and the booth window goes gray; the hunt can wait a night, they have seen the show",
+    "hb_road": "{ROUTE_C_APPROACH}: masts ticking, halyards ringing their small bells, black water breathing slow against the quay; out along the far quay stands {ROUTE_C_LURE}, and past it one window of the harbor office glows yellow, somebody awake at this hour; write the approach general for a first ride out or a return",
+    "hb_wall": "{ROUTE_C_APPROACH}'s lamps space out pools of light with long dark gaps between; far out in the channel a bell buoy clanks its slow patient note, the sound this town falls asleep to; ahead wait {ROUTE_C_LURE}'s big rolling doors and, beyond them, the lit office window",
+    "hb_quay": "{ROUTE_C_LURE}'s rolling doors wear a serious padlock; the office window's light spills yellow onto the quay stones a little farther on; and below the shed's seaward side, {ROUTE_C_GATE} is tied at the water steps near a small hatch above the tideline, though it sits oddly low in the water, paint peeling and oars dusty, the look of a boat nobody has trusted in a long while",
+    "hb_doors": "The padlock is solid and the hasp is welded on, but the old doors have shrunk with age and a torch-wide gap runs between them; and among the faded harbor stencils on the planks one small painted shape is no stencil at all: a {MARKER}",
+    "hb_peek": "Through the gap the torch finds a herd of huge buoys sleeping on their cradles, cones and cans and cages; and at the very back an old bell buoy, its bell still hung, something in its shadowed cage just catching the thin beam of light",
+    "hb_office": "The harbor office: kettle, charts, a VHF murmuring the shipping weather, and Mr. Okafor the harbormaster keeping the pre-dawn watch; on his desk lies a pad of penciled five-figure groups in a neat old-fashioned hand, tonight's {BROADCAST}, copied; write his greeting warm and general so it lands the same on a first knock of the night or on a return visit",
+    "hb_show": "He reads {HERO}'s page and goes very still; that is {CALLSIGN}'s grid, he says; he was {CLUB_NAME}'s youngest member and copied his first net at this very desk; he cannot leave the watch until the day man comes, but he slides {ROUTE_C_FIND} across the counter: the bell buoy at the back, and {ANCESTOR} would want a {FAMILY_NAME} to be the one to open it",
+    "hb_pad": "The pad's top sheet is tonight; underneath lie older sheets in the same hand but rounder and younger, nets he copied here as a teenager and never threw away; he taps the small {MARKER} doodled in the margin: {CLUB_NAME}, the midnight club of a night-shift town, cannery and harbor and hospital, and {ANCESTOR} the best of them; then he reaches into the drawer for {ROUTE_C_FIND}",
+    "hb_key": "{ROUTE_C_FIND} is warm from his hand; the kettle has just boiled and the cocoa tin is already down off the shelf; outside, {ROUTE_C_LURE} waits in the dark and {DEVICE} keeps murmuring its countdown; write the moment neutral for either doorway that brought them to it",
+    "hb_shed": "{ROUTE_C_FIND} turns a small side door and the buoy herd looms up in torchlight, iron and salt and tar; at the back on its cradle rests the retired bell buoy, bell still hung in its cage, and the hint group said THE RETIRED BELL REMEMBERS",
+    "hb_bell": "One soft knuckle-ring and the note fills the whole shed, round and low, the other buoys humming along; and inside the ringing she hears a rattle that does not belong: under the bell's skirt, the clapper chain carries a small brass cylinder swaged into its links",
+    "hb_cage": "Fingers along the cage frame find a patch of newer paint; under the torch it resolves into a {MARKER} and a painted arrow pointing up into the bell's dark throat, where her reaching knuckles knock the clapper and something on its chain rattles in answer",
+    "hb_cache": "The cylinder unscrews: a small brass tag stamped {ROUTE_C_TAG}, and a rolled slip in {ANCESTOR}'s hand about the fog nights, the club taking turns on {ROUTE_C_APPROACH} ringing answers out to the bell buoy so nobody at sea felt alone, because a voice finds you in the fog, little {CALLSIGN}; and beneath it the line, {TONE_MOTIF}, then come home to {GOAL}; write the find neutral for either path through the bell",
+    "e_hb_dinghy": "Two oar-pulls out and the {ROUTE_C_GATE} is ankle-deep, hauled out for caulking and never meant to float tonight; they put back in an undignified hurry, boots full of harbor, and stand dripping on the steps while the bell buoy clanks somewhere out in the dark, unbothered; {COMPANION} quotes the rule from {GUIDE_LOG}'s margin, never go on the water tired; soaked socks, warm shame, and a slow ride home with the hunt saved for a drier night",
+    "e_hb_stories": "The cocoa goes down and the stories come out: the night {CLUB_NAME} counted a trawler home through fog by bell-rings, the Christmas net with paper hats over headphones, the way {ANCESTOR} could tune a signal out of pure noise like coaxing a cat off a roof; the day man arrives with the gulls and the sky already pearl-gray, {DEADLINE} spent, {ROUTE_C_LURE} unopened; but the club is alive in the telling, and Mr. Okafor shakes both their hands like colleagues; they will be back, and he will be listening",
+    "lb_green": "Cutting across {ROUTE_D_APPROACH} toward the dark library and its one lit porch lamp; {ROUTE_D_LURE}'s hint group works out to MAP ROOM, THE DRAWER OF THE FOUNDING YEAR, MIND THE BELL; quick in, quick out, {COMPANION} says, this one is a pit stop; keep the approach general for any point in the night",
+    "lb_porch": "The service door under the porch lamp; above the lintel the library's stone owl stares down, and above the door frame hangs a small black box holding the night {ROUTE_D_GATE}, marked MIND THE BELL; everyone's gran knows the librarians have hidden an after-hours key up behind the owl since before {GUARDIAN} was born",
+    "lb_key": "Her fingers find the worn brass key on its ancient nail behind the owl's wing; the lock turns as if oiled for exactly this, the door opens on the smell of paper and floor wax, and the {ROUTE_D_GATE} above the frame keeps its peace",
+    "lb_hall": "The reading hall by moonlight, tables silver, stacks fading into the dark; {ROUTE_D_LURE}'s glass door waits at the far end, and midway one green-shaded lamp has been left burning over a display table, a small island of light in the hush",
+    "lb_table": "The display is half-built, town anniversaries pinned on card; one card reads {CLUB_NAME}, FOUNDED 1975, beside a photograph of a dozen night-shift faces crowded around a kitchen table of radios; the founding year, handed to them in passing, like the library meant to help",
+    "lb_maproom": "{ROUTE_D_LURE} is one wide cabinet of flat drawers labeled by year, the town on paper a hundred times over; THE DRAWER OF THE FOUNDING YEAR; and on one drawer's label, visible only up close, someone long ago inked a tiny {MARKER}; write the room neutral for either way in, direct or by way of the display table",
+    "lb_hunt": "Drawer after drawer whispers open, coastlines and street grids sliding past under the torch; then the beam snags on a label inked with a tiny {MARKER} beside its year, 1975, and the hunt through the years is over",
+    "lb_drawer": "{ROUTE_D_FIND}: the whole town in fine ink, and drawn onto it five faded circles, {ROUTE_A_LURE}, {ROUTE_B_LURE}, {ROUTE_C_LURE}, this very library, {ROUTE_E_LURE}, with pencil lines running from all five to one spot on the old rail spur east of the fairgrounds, marked with a tiny drawn bird; taped in the drawer's corner, a capsule holding a small brass tag stamped {ROUTE_D_TAG} and a slip in {ANCESTOR}'s hand, the night we founded the club we divided the town into listening posts, and I circled my favorites; the map says on paper what {ANTENNA} has hummed all night, everything points east; write the find neutral for either route to this drawer",
+    "e_lb_alarm": "The handle turns a quarter-inch and the {ROUTE_D_GATE} goes off like a tin thunderstorm over their heads; a light comes on in the librarian's cottage across the green; they stand and wait, honest, while Ms. Kettle arrives in dressing gown and slippers, silences the {ROUTE_D_GATE} with one practiced whack, and hears them out; she is kinder than her {ROUTE_D_GATE} but firm: {ROUTE_D_LURE} by daylight, with her, and {GUARDIAN} hears about tonight from you and no one else; a red-eared walk home",
+    "bh_path": "{ROUTE_E_APPROACH} up {ROUTE_E_LURE} starts by the allotment gates; high above, the mast's red beacon pulses slow as a heartbeat against the stars; two ways climb from here, the long patient switchbacks or the {ROUTE_E_GATE} the big kids brag about; keep the foot of the hill general for any hour of the night",
+    "bh_climb": "The switchbacks zigzag up through gorse; the town drops away below them, a circuit board of sleeping streetlamps edged by the dark sea; breath, pedal-push, walk the steep bits, and always the beacon's slow red pulse drawing nearer overhead",
+    "bh_wind": "At the hill's shoulder the night wind takes over, and the wind up here is singing: {ROUTE_E_DETAIL1}, hanging in the air, swelling and fading, the mast's guy wires played like harp strings; the hint group said WHERE THE WIRES SING, THE THIRD ANCHOR",
+    "bh_summit": "The mast compound at the top: a locked gate, a DANGER KEEP OUT sign, the great mast humming to itself inside its fence; but the guy wires leave the fence high overhead and slope down into the open bracken, down to concrete anchor blocks that no fence guards at all; THE THIRD ANCHOR is out there in the dark",
+    "bh_listen": "Ear tipped to the wind: each wire holds its own note, and the chord slowly turns as gusts walk across the hill, the whole summit one instrument; {ANCESTOR} stood here, both of them know it without saying so; the wires slope away downhill like strings on a tilted harp, pointing to their anchors",
+    "bh_anchors": "The anchor blocks sit out in the bracken, concrete shoulders with steel plates stamped A1, A2, A3; the third anchor stands a little apart, beside {ROUTE_E_DETAIL2}; write the blocks neutral so the scene reads the same whether they came straight down or stayed to listen first",
+    "bh_plate": "A3's plate carries a ring of bolts, all weathered gray except one: {ROUTE_E_FIND} stamped with a tiny {MARKER}, and it turns under her fingers, threaded smooth, as if someone has greased it faithfully once a year",
+    "bh_pillar": "{ROUTE_E_DETAIL2}'s brass benchmark cap is engraved with the mapmakers' arrow, and around the arrow someone has added a ring of tiny stamped {MARKER}s and one scratched line pointing straight at the base of anchor three, where {ROUTE_E_FIND} glints brass among the gray",
+    "bh_hollow": "{ROUTE_E_FIND} draws a small cover plate with it, and behind the plate is a dry cavity cast into the concrete itself, made when the anchor was poured; whoever built this cache built it to outlast everything on the hill; inside waits a brass cylinder; write the find neutral for either clue that led here, plate or pillar",
+    "bh_cache": "The tag inside reads {ROUTE_E_TAG}; the slip remembers the night {CLUB_NAME} strung a longwire from this mast and heard Japan, Alaska, a ship off Chile, our little town talking to the whole turning Earth, and from this hill, little {CALLSIGN}, everything is in range; beneath it, the line, {TONE_MOTIF}, then come home to {GOAL}",
+    "bh_view": "The whole town lies below, harbor to fairgrounds, lamps going out one by one; {COMPANION} swings {DEVICE}'s loop slowly and the numbers peak, not at the mast at all but down the far slope, east past the fairgrounds where the old rail spur runs, and there among the dark fields one small amber window is lit",
+    "e_bh_scree": "Halfway up, the {ROUTE_E_GATE} moves; not a fall, a slither, the whole slope of loose stone walking out from under them until they are back at the bottom sitting down hard, palms skinned, one bike wheel still spinning; they patch up with the tape in {COMPANION}'s bag and take honest stock: the hill is not going anywhere, but skin only grows back so fast; they walk the bikes home under {DEADLINE_SIGN}, and the switchbacks will still be there tomorrow",
+    "fin_bearing": "Following {ANTENNA}'s steady bearing east, past the fairgrounds fence and onto the grass-grown old rail spur; write this arrival fully neutral so it reads naturally whenever in the night it happens and whatever has come before it; the numbers grow in {DEVICE} and then, faintly, arrive from somewhere ahead too, the same voice a half-beat early, the night speaking in stereo with itself; down the rails stands a squat brick-and-wood signal box with one amber-lit upper window, a longwire running from its roof to a tall ash tree",
+    "fin_gate": "The signal box up close: brick base, wooden upper storey, outside stairs to a landing door; a weathered board reads MILEPOST 7 SIGNAL BOX, and beneath it a smaller painted sign, {GOAL}, {CLUB_NAME}, EST. 1975; the door holds an old lever lock, the sash window glows amber above the stair rail, and through the glass the patient voice reads on; keep this entry visit-neutral for any point in the night",
+    "fin_door_listen": "Through the door: the voice, the soft clunk of relays, the hiss of tape moving reel to reel, machinery keeping a decades-long appointment all by itself; and behind the numbers, faint as a pulse, a clock ticking toward {DEADLINE}",
+    "fin_search": "Where would radio people leave a key; the landing door has a lintel under fifty years of paint, and over by the antenna anchor on the ash tree hangs {FIN_KEYBOX}, sitting exactly where a longwire needs tending; write the hunt neutral for either doorway that brought them to it",
+    "fin_lintel": "Nothing on the lintel but paint layers and one spider with opinions; but from up on the stair rail, eye level with the tree, {FIN_KEYBOX} by the antenna anchor looks freshly weatherproofed for something supposedly fifty years old",
+    "fin_wrenbox": "{FIN_KEYBOX}'s floor slides out like a matchbox drawer; inside, wrapped in wax paper, lies a key, and with it a small tag in {ANCESTOR}'s print: FOR WHOEVER IS STILL LISTENING; write the find neutral for either path that led to the tree",
+    "fin_door": "The key turns a lock kept oiled by its builder's long care; the landing door swings onto warm amber light, and the voice is suddenly clear and close, patient, reading its groups to the room the way it has all night",
+    "fin_threshold": "From the doorway: a signal box operating floor turned radio shack, the old lever frame gleaming down one wall, and on the instrument shelf the station itself, tape reels turning, valves glowing amber, a clockwork timer ticking beside them; the floor is swept and the dust sheets are folded; this is a room that has been waiting, not abandoned",
+    "fin_inside": "The room holds three pulls at once: a wall of photographs and postcards behind the desk; {GUIDE_LOG} lying open on the desk beside a microphone on its stand; and the humming rack itself, reels and valves and the timer's brass wheel creeping toward its last notch, with a card in a stand reading FINAL TRANSMISSION ENDS AT {DEADLINE}; keep the room's welcome neutral, it reads the same whenever the night delivers its visitors",
+    "fin_wall": "The photographs tell the whole story plainly, whatever the night has already shown: {CLUB_NAME}, night-shift faces in headphones and paper hats, {ANCESTOR} young at this very desk; captions in her print; and one typed card at the end: when the cannery closed and the club scattered, {ANCESTOR} built this station and her hunt so the town would keep one more net in it; recap only these path-universal facts, {BROADCAST}, the bearing, the countdown, what this wall itself shows; the sky in the window is turning",
+    "fin_log": "{GUIDE_LOG}'s last entry is in {ANCESTOR}'s hand, dated the spring she died: TO WHOEVER FINDS {GOAL}, at {DEADLINE} today the station ends its watch; you may let her sign off as built, keep her singing, or give her to the town, and any of the three is right; sign the log, little {CALLSIGN}, whoever you are; below runs a page of members' callsigns and telephone numbers, most gently crossed through, a few not",
+    "fin_rack": "At the rack the timer's brass wheel sits close to its last cam; the microphone waits on the desk, wired through a toggle labeled in {ANCESTOR}'s print, LISTEN and SPEAK; the voice reads on, pausing between groups as if leaving room for someone; keep this decision beat visit-neutral and recap only path-universal facts, {BROADCAST}, the eastward bearing, the countdown now nearly spent; however much of her trail the night has held, it ends in this room, and what becomes of {GOAL} is theirs to choose before {DEADLINE}",
+    "fin_answer": "The toggle clicks to SPEAK; the reels keep turning, recording now as well as playing, because {ANCESTOR} built her station to listen back; the next pause between groups opens like a held breath; and on the desk stands a small frame holding a typed sign-off script laid out in her careful style",
+    "f_answer_own": "{HERO} keys the mic and says it plainly: her name, whose granddaughter she is, and that the town is still listening; her voice goes onto the same tape as {ANCESTOR}'s, the two of them together in the archive now; the toggle rests under her hand, the reels turn, and {DEADLINE_SIGN} is fast beyond the window",
+    "f_answer_script": "The framed script is the club's old net-closing, ending with the lines THIS IS {CALLSIGN}, THE NET IS CLOSED, {ROUTE_A_TAG} {ROUTE_B_TAG} {ROUTE_C_TAG} {ROUTE_D_TAG} {ROUTE_E_TAG}, 73 AND GOODNIGHT; read aloud in this room, the closing line lands like the whole night said out loud at last; the timer's wheel edges toward its final cam while she steadies her breath",
+    "fin_keep": "The shelf holds a maintenance folder in {ANCESTOR}'s print, diagrams of the timer, the tape path, the winding crank, all kept simple on purpose, teachable; so the station can keep singing, the only real question is who its keepers will be and how far they will take the keeping",
+    "f_keep_wind": "Together they follow the diagram, crank the clockwork until the spring sits firm, and re-cue the reels; the station takes the winding like an old cat settling deeper into its chair; next year, same frequency, same midnight; and the key goes back into {FIN_KEYBOX} afterward, because keepers put things back where {CALLSIGN}s can find them",
+    "f_keep_learn": "By torch and desk lamp they copy what matters into {COMPANION}'s phone: the frequency, the timer diagram, the manual's title, and the few uncrossed names on {GUIDE_LOG}'s last page who could still teach them; the plan builds itself on the ride home, licenses, callsigns, lessons; the station will not just survive, it will be understood",
+    "fin_share": "{GOAL} was built out of people, night-shifters and neighbors and family; {GUIDE_LOG}'s page of telephone numbers sits open on the desk and {COMPANION}'s phone sits charged in his pocket, and between them run two roads: bring family here now, before the watch ends, or use the station's own voice to hand the hunt onward",
+    "f_share_family": "{GUARDIAN} answers on the first ring, awake after all, and the headlights come bumping up the rail lane in minutes; she climbs into the amber light, sees {ANCESTOR}'s handwriting on every label and lever, and puts her hand over her mouth; the three of them fit in front of the desk exactly, as if the room had been measured for it",
+    "f_share_hunt": "With minutes left they key the mic and read five new groups of their own, planned fast in fierce whispers, five new places worth finding, and a recorded promise that {GOAL} will call again; the machine takes their voices in and keeps them beside {ANCESTOR}'s, the answer reel winding the future on next to the past",
+    "e_fin_window": "The stretch from the stair rail is longer than it looked and the {FIN_GATE1} is painted shut anyway; a boot slips, a shin barks on the rail, and {COMPANION} hauls her back by the jacket with both their hearts going like drum solos; sitting on the stairs they agree on the obvious, nobody breaks into {GOAL}, least of all family; the amber window glows on above them as they head home to come back with better ideas, and daylight",
+    "e_fin_late": "One more caption, then one more, and then the voice changes: the numbers stop and the sign-off begins while they are still at the wall; by the time they reach the desk the words are already ending and the reels wind down with a long sigh; {DEADLINE}, exactly as promised; they missed the moment to answer, but they stood in the right room and heard her say goodnight; they lock up softly, slide the key back into {FIN_KEYBOX} for the next listener, and walk home planning the telling of it",
+    "e_fin_listen": "They sit shoulder to shoulder on the wooden stairs and let the last broadcast play out through the door: groups, pauses, and at {DEADLINE} a sign-off in that beloved voice, heard through weathered wood with the first birds starting up around them; some doors you open, and some watches you simply witness; they walk home full and quiet, saving the question of the key for daylight and {GUARDIAN}, while the amber light clicks off behind them like a goodnight",
+    "e_win_net": "The hiss holds, and then, one by one, voices: an old careful voice from across town that might be keeping a harbor watch, then farther ones, callsigns surfacing out of the static like lights coming on, old {MEMBER_TERM}s who never quite stopped listening and heard the final night go out; {HERO} takes the check-ins the way her grandmother must have, name by name, while {DEADLINE} fills the window; the net, it turns out, was never closed, it was only waiting for a voice at this desk",
+    "e_win_answer": "She signs the logbook beneath {ANCESTOR}'s final entry, granddaughter under grandmother; at {DEADLINE} the voice reads its last group, says its goodnight, and the reels stop with her answer safely inside the archive, the last voice on the tape a {FAMILY_NAME} once again; the station finishes its watch complete, and {HERO} walks out into the birdsong carrying the key and the whole story home to breakfast",
+    "e_win_signoff": "{HERO} reads it exactly as written, steady as she can manage: THIS IS {CALLSIGN}, THE NET IS CLOSED, {ROUTE_A_TAG} {ROUTE_B_TAG} {ROUTE_C_TAG} {ROUTE_D_TAG} {ROUTE_E_TAG}, 73 AND GOODNIGHT; the cam trips, the reels slow, the valve glow fades like embers banked for the night; the station ends its watch precisely as its builder designed, closed in family voice; they sign the log, return the key to {FIN_KEYBOX}, and walk home through {DEADLINE} letting the quiet be part of the gift",
+    "e_win_encore": "She reads the closing as written, and then, before the cam can trip, adds one line of her own: {GOAL} will open again, same night next year; to make the promise true they wind the timer together until the spring sits firm; the station accepts its encore, one more year, wound and waiting; walking home through the gray-gold light they are already keeping a secret the size of a year, and it fits in their pockets like a brass key",
+    "e_win_keepers": "Hands are shaken in the amber light, and {STORY_MOTIF} has keepers again; through the year that follows they come back on quiet nights to dust and wind and listen, learning the room by heart; and when the station next wakes the town, two more voices are on the tape welcoming whoever is clever enough to find it; the hunt stands ready, {GOAL} stays warm, the watch goes on",
+    "e_win_apprentice": "Months of Saturdays later there are two framed licenses on {GOAL}'s wall beneath {ANCESTOR}'s photographs, two new callsigns inked into the logbook, and the last uncrossed names of the old club teaching them code over cocoa; when the station next speaks it will be maintained, understood, and loved by keepers who know every valve by its first name; the watch continues, properly crewed",
+    "e_win_family": "Three of them stand shoulder to shoulder as the station reads its last groups; {GUARDIAN}'s hand finds {HERO}'s on one side and {COMPANION}'s on the other; the sign-off comes in the voice all three of them know best, and nobody needs to say anything at all; when the reels stop, {GUARDIAN} signs the logbook beneath her children's names, and they leave together into {DEADLINE}, a family handed its inheritance while it could still be heard",
+    "e_win_passiton": "The next time {STORY_MOTIF} wakes, a year on, other kids' windows light up around town; five new sites, built through a summer of family workdays and borrowed ladders; {ANCESTOR}'s voice opens the broadcast and {HERO}'s closes it, a living voice at each end of the night; the hunt is no longer a memorial, it is a tradition, passed on exactly the way {MEMBER_TERM}s would have wanted"
+  },
+  "titles": {
+    "e_wt_climb": "Frost on the {ROUTE_A_GATE}",
+    "e_cn_boards": "The {ROUTE_B_GATE}",
+    "e_cn_reel": "{ROUTE_B_PRIZE}",
+    "e_hb_dinghy": "Never on the Water Tired",
+    "e_hb_stories": "The Youngest {MEMBER_TERM}",
+    "e_lb_alarm": "Mind the {ROUTE_D_GATE}",
+    "e_bh_scree": "The Shortcut That Wasn't",
+    "e_fin_window": "Nobody Breaks In",
+    "e_fin_late": "{DEADLINE} Comes Anyway",
+    "e_fin_listen": "Heard Through the Door",
+    "e_win_net": "The Sunrise Net",
+    "e_win_answer": "The Answer on the Tape",
+    "e_win_signoff": "{ROUTE_A_TAG} {ROUTE_B_TAG} {ROUTE_C_TAG} {ROUTE_D_TAG} {ROUTE_E_TAG}",
+    "e_win_encore": "Same Time Next Year",
+    "e_win_keepers": "Keepers of {STORY_MOTIF}",
+    "e_win_apprentice": "Two New Callsigns",
+    "e_win_family": "Three at {DEADLINE}",
+    "e_win_passiton": "New {CALLSIGN}s"
+  },
+  "labels": {
+    "n_start": {
+      "c_start_teo": "Wake {COMPANION}, quietly."
+    },
+    "n_teo": {
+      "c_teo_decode": "Spread {GUIDE_LOG} on the kitchen table and decode the numbers."
+    },
+    "n_decode": {
+      "c_decode_ride": "Ride out into {THRESHOLD}."
+    },
+    "n_hub": {
+      "c_hub_tower": "Ride {ROUTE_A_APPROACH} up to {ROUTE_A_LURE}.",
+      "c_hub_cinema": "Coast down Main Street to {ROUTE_B_LURE}.",
+      "c_hub_harbor": "Take {ROUTE_C_APPROACH} out to {ROUTE_C_LURE}.",
+      "c_hub_library": "Cut across {ROUTE_D_APPROACH} to {ROUTE_D_LURE}.",
+      "c_hub_mast": "Climb {ROUTE_E_APPROACH} to {ROUTE_E_LURE}.",
+      "c_hub_nest": "Follow {ANTENNA}'s steady bearing east to {GOAL}."
+    },
+    "wt_gate": {
+      "c_wt_gate_shed": "Look inside {ROUTE_A_ZONE}.",
+      "c_wt_gate_ladder": "Size up the {ROUTE_A_GATE}."
+    },
+    "wt_ladder": {
+      "c_wt_ladder_climb": "Climb around the outside of the {ROUTE_A_GATE} anyway."
+    },
+    "wt_tap": {
+      "c_wt_tap_box": "Open {ROUTE_A_FIND} on leg four."
+    },
+    "wt_marks": {
+      "c_wt_marks_box": "Open {ROUTE_A_FIND} under the scratched {MARKER}."
+    },
+    "wt_box": {
+      "c_wt_box_shed": "Head for {ROUTE_A_ZONE} and its shelves.",
+      "c_wt_box_card": "Puzzle over {ROUTE_A_CLUE} with {COMPANION} first."
+    },
+    "wt_cache": {
+      "c_wt_cache_hub": "Ride back to {ENTRANCE}.",
+      "c_wt_cache_nest": "Follow the bearing east to {GOAL}."
+    },
+    "cn_marquee": {
+      "c_cn_marquee_alley": "Slip down the alley to {ROUTE_B_APPROACH}."
+    },
+    "cn_boothstairs": {
+      "c_cn_stairs_port": "Look through {ROUTE_B_DETAIL2} first."
+    },
+    "cn_port": {
+      "c_cn_port_in": "Go in to {ROUTE_B_FIND}."
+    },
+    "cn_booth": {
+      "c_cn_booth_open": "Open {ROUTE_B_FIND}."
+    },
+    "cn_cache": {
+      "c_cn_cache_hub": "Back to {ENTRANCE}.",
+      "c_cn_cache_nest": "Follow the bearing east to {GOAL}."
+    },
+    "hb_road": {
+      "c_hb_road_wall": "Ride out along {ROUTE_C_APPROACH}."
+    },
+    "hb_wall": {
+      "c_hb_wall_quay": "Come up to {ROUTE_C_LURE}'s doors."
+    },
+    "hb_quay": {
+      "c_hb_quay_dinghy": "Row the {ROUTE_C_GATE} around to the sea hatch."
+    },
+    "hb_show": {
+      "c_hb_show_key": "Take {ROUTE_C_FIND}."
+    },
+    "hb_pad": {
+      "c_hb_pad_key": "Take {ROUTE_C_FIND} he holds out."
+    },
+    "hb_key": {
+      "c_hb_key_shed": "Go open {ROUTE_C_LURE} now.",
+      "c_hb_key_stories": "Stay for a mug and his {MEMBER_TERM} stories."
+    },
+    "hb_cache": {
+      "c_hb_cache_hub": "Ride back to {ENTRANCE}.",
+      "c_hb_cache_nest": "Follow the bearing east to {GOAL}."
+    },
+    "lb_hall": {
+      "c_lb_hall_maproom": "Go straight for {ROUTE_D_LURE}."
+    },
+    "lb_table": {
+      "c_lb_table_maproom": "On to {ROUTE_D_LURE}."
+    },
+    "lb_maproom": {
+      "c_lb_maproom_diamond": "Open the drawer with the little inked {MARKER}."
+    },
+    "lb_drawer": {
+      "c_lb_drawer_hub": "Ease the drawer shut and head back to {ENTRANCE}.",
+      "c_lb_drawer_nest": "Follow the map's pencil lines east to {GOAL}."
+    },
+    "bh_path": {
+      "c_bh_path_scree": "Scramble straight up the {ROUTE_E_GATE}."
+    },
+    "bh_anchors": {
+      "c_bh_anchors_pillar": "Check {ROUTE_E_DETAIL2} beside it."
+    },
+    "bh_plate": {
+      "c_bh_plate_hollow": "Turn {ROUTE_E_FIND} out."
+    },
+    "bh_pillar": {
+      "c_bh_pillar_hollow": "Go turn {ROUTE_E_FIND}."
+    },
+    "bh_view": {
+      "c_bh_view_hub": "Coast back down to {ENTRANCE}.",
+      "c_bh_view_nest": "Ride the far slope straight for {GOAL}."
+    },
+    "fin_gate": {
+      "c_fing_key": "Hunt for the key a {CALLSIGN} would leave.",
+      "c_fing_window": "Stretch from the stair rail to the {FIN_GATE1}."
+    },
+    "fin_search": {
+      "c_fins_wrenbox": "Open {FIN_KEYBOX} on the ash tree."
+    },
+    "fin_lintel": {
+      "c_flin_box": "Go open {FIN_KEYBOX}."
+    },
+    "fin_inside": {
+      "c_fini_log": "Read {GUIDE_LOG}, open on the desk."
+    },
+    "fin_log": {
+      "c_finlog_rack": "Carry {GUIDE_LOG} over to the humming rack."
+    },
+    "fin_rack": {
+      "c_finr_share": "Give {GOAL} to the people it was built from."
+    },
+    "f_keep_learn": {
+      "c_fkl_end": "Start the long apprenticeship at {DEADLINE}."
+    },
+    "fin_share": {
+      "c_fsh_family": "Call {GUARDIAN} to come, right now, before {DEADLINE}."
+    }
+  }
+}

@@ -35,19 +35,19 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=118 beats='the city-state of Tessara on the river Meret, the eve of summit day; you, drawn in the summer lottery, are this year's Youth Envoy, the one young citizen who serves the river summit; the Meret runs low and brown under the Lantern Bridge, barges sit aground at the Tideway mud, and tomorrow the three courts that share the city, Tides, Groves, and Bells, meet at Bell Hall over one question: where did the water go'>>",
+      "body": "<<FILL role=setup words=118 beats='{CITY} on {RIVER}, the eve of summit day; you, drawn in {SELECTION_RITE}, are this year's {ROLE_TITLE}, the one young citizen who serves the river summit; {RIVER} runs low and brown under {BRIDGE}, barges sit aground at {HARBOR_FLATS}, and tomorrow the three courts that share the city, {ROUTE_A_COURT}, {ROUTE_B_COURT}, and {ROUTE_C_COURT}, meet at {SUMMIT_VENUE} over one question: {MYSTERY_Q}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_start_1",
-          "label": "Climb the Bell Hall steps to be sworn in.",
+          "label": "Climb {SUMMIT_VENUE}'s steps to be sworn in.",
           "target": "n_rules"
         }
       ]
     },
     {
       "id": "n_rules",
-      "body": "<<FILL role=rising words=112 beats='Chancellor Ives, who will chair the summit, swears you in beneath the great bells and teaches you the envoy's three rules: carry messages truly, keep your ears open and your word good, serve the city and not one court; he shows you the Accord of the Meret, sixty years old, its water-measure page damaged and disputed, and lays out tomorrow: dawn, noon, and dusk sessions, each opened by a turn of his brass hourglass'>>",
+      "body": "<<FILL role=rising words=112 beats='{CHANCELLOR}, who will chair the summit, swears you in beneath the great bells and teaches you the envoy's three rules: carry messages truly, keep your ears open and your word good, serve the city and not one court; he shows you {ACCORD}, sixty years old, {ACCORD_PAGE} damaged and disputed, and lays out tomorrow: dawn, noon, and dusk sessions, each opened by a turn of {TIMEKEEPER}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -59,63 +59,63 @@
     },
     {
       "id": "n_sort",
-      "body": "<<FILL role=choice words=132 beats='Ives lays three letters of attachment on the bench and names each: the Court of Tides, harbors and trade, its delegation led by Harbormistress Selk, blunt and honest, whose barges lie aground; the Court of Groves, farms and festivals, led by Warden Oleth, patient and worried, whose new channels the whole city blames; the Court of Bells, law and archives, under First Archivist Corvel, precise and kind, keeper of the damaged accord; each delegation needs its young envoy from tonight until the last bell, the courts will not share you, and Ives says the choosing is yours alone'>>",
+      "body": "<<FILL role=choice words=132 beats='{CHANCELLOR} lays three letters of attachment on the bench and names each: {ROUTE_A_COURT}, {ROUTE_A_DOMAIN}, its delegation led by {ROUTE_A_LEAD}, {ROUTE_A_LEAD_TRAIT}, whose {ROUTE_A_PROBLEM}; {ROUTE_B_COURT}, {ROUTE_B_DOMAIN}, led by {ROUTE_B_LEAD}, {ROUTE_B_LEAD_TRAIT}, whose {ROUTE_B_PROBLEM}; {ROUTE_C_COURT}, {ROUTE_C_DOMAIN}, under {ROUTE_C_LEAD}, {ROUTE_C_LEAD_TRAIT}, keeper of {ACCORD_PAGE}; each delegation needs its young envoy from tonight until the last bell, the courts will not share you, and {CHANCELLOR} says the choosing is yours alone'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_sort_1",
-          "label": "Serve the Court of Tides with Harbormistress Selk.",
+          "label": "Serve {ROUTE_A_COURT} with {ROUTE_A_LEAD}.",
           "target": "t_hall"
         },
         {
           "id": "c_n_sort_2",
-          "label": "Serve the Court of Groves with Warden Oleth.",
+          "label": "Serve {ROUTE_B_COURT} with {ROUTE_B_LEAD}.",
           "target": "g_road"
         },
         {
           "id": "c_n_sort_3",
-          "label": "Serve the Court of Bells with First Archivist Corvel.",
+          "label": "Serve {ROUTE_C_COURT} with {ROUTE_C_LEAD}.",
           "target": "b_hall"
         }
       ]
     },
     {
       "id": "t_hall",
-      "body": "<<FILL role=rising words=106 beats='Harbor Hall smells of tar and ledger ink; Harbormistress Selk sizes you up and hands you a runner's sash; out the window the Tideway shows its mud like a bared secret, barges heeled over on their sides; if the summit fails, she says plainly, the harbor starves first, and she does not intend to let it'>>",
+      "body": "<<FILL role=rising words=106 beats='{ROUTE_A_HALL} smells of tar and ledger ink; {ROUTE_A_LEAD} sizes you up and hands you a runner's sash; out the window {HARBOR_FLATS} shows its mud like a bared secret, barges heeled over on their sides; if the summit fails, she says plainly, the harbor starves first, and she does not intend to let it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_hall_1",
-          "label": "Walk the evening quays with Selk.",
+          "label": "Walk the evening quays with {ROUTE_A_LEAD}.",
           "target": "t_walk"
         }
       ]
     },
     {
       "id": "t_walk",
-      "body": "<<FILL role=rising words=104 beats='Selk walks you down the quays naming every hull and what it carries; she tells you Chancellor Ives is sending his draft compromise to all three courts tonight by courier; near midnight, shouts rise from the Lantern Bridge, where the harbor watch has stopped a limping courier under the lamps'>>",
+      "body": "<<FILL role=rising words=104 beats='{ROUTE_A_LEAD} walks you down the quays naming every hull and what it carries; she tells you {CHANCELLOR} is sending his draft compromise to all three courts tonight by {COURIER}; near midnight, shouts rise from {BRIDGE}, where the harbor watch has stopped a limping courier under the lamps'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_walk_1",
-          "label": "Hurry to the Lantern Bridge.",
+          "label": "Hurry to {BRIDGE}.",
           "target": "t_bridge"
         }
       ]
     },
     {
       "id": "t_bridge",
-      "body": "<<FILL role=choice words=118 beats='midnight on the Lantern Bridge: the courier Pell leans on the split rail, ankle turned, and the seal on the chancellor's letter hangs torn; the watchman's lantern swings from face to face and somebody mutters the word tampered; three things could use doing and there is one of you'>>",
+      "body": "<<FILL role=choice words=118 beats='midnight on {BRIDGE}: {COURIER} leans on the split rail, ankle turned, and the seal on the chancellor's letter hangs torn; the watchman's lantern swings from face to face and somebody mutters the word {ROUTE_A_RUMOR}; three things could use doing and there is one of you'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_bridge_1",
-          "label": "Stay close and listen to the courier's account.",
+          "label": "Stay close and listen to {COURIER}'s account.",
           "target": "t_a1"
         },
         {
           "id": "c_t_bridge_2",
-          "label": "Run and fetch Harbormistress Selk.",
+          "label": "Run and fetch {ROUTE_A_LEAD}.",
           "target": "t_b1"
         },
         {
@@ -127,19 +127,19 @@
     },
     {
       "id": "t_a1",
-      "body": "<<FILL role=rising words=102 beats='you stay at Pell's elbow and listen: he slipped on the wet steps, caught the rail, felt the seal tear on something sharp; his voice shakes but his story holds together; the watchman writes it down slowly while the crowd on the bridge grows, and the whisper of tampering grows with it'>>",
+      "body": "<<FILL role=rising words=102 beats='you stay at {COURIER}'s elbow and listen: he slipped on the wet steps, caught the rail, felt the seal tear on something sharp; his voice shakes but his story holds together; the watchman writes it down slowly while the crowd on the bridge grows, and the whisper of {ROUTE_A_RUMOR} grows with it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_a1_1",
-          "label": "See Pell on his way and snatch some sleep.",
+          "label": "See {COURIER} on his way and snatch some sleep.",
           "target": "t_a2"
         }
       ]
     },
     {
       "id": "t_a2",
-      "body": "<<FILL role=rising words=106 beats='dawn session at Bell Hall: Ives turns the brass hourglass and asks for grievances; Harbormistress Selk rises and accuses the Court of Groves of taking the river with their new channels; Warden Oleth answers quietly that his orchards are browning too; the shouting swallows the rest and Ives suspends the session until noon'>>",
+      "body": "<<FILL role=rising words=106 beats='dawn session at {SUMMIT_VENUE}: {CHANCELLOR} turns {TIMEKEEPER} and asks for grievances; {ROUTE_A_LEAD} rises and accuses {ROUTE_B_COURT} of taking the river with their new channels; {ROUTE_B_LEAD} answers quietly that his orchards are browning too; the shouting swallows the rest and {CHANCELLOR} suspends the session until noon'>>",
       "is_ending": false,
       "choices": [
         {
@@ -151,48 +151,48 @@
     },
     {
       "id": "t_a3",
-      "body": "<<FILL role=rising words=100 beats='morning on the quays: the story of the torn seal has beaten you here, retold worse at every mooring; barge crews say the Groves opened the chancellor's letter, or the Bells wrote two versions of it; you know what you heard from Pell himself, which makes every whisper itch'>>",
+      "body": "<<FILL role=rising words=100 beats='morning on the quays: the story of the torn seal has beaten you here, retold worse at every mooring; barge crews say {ROUTE_B_COURT} opened the chancellor's letter, or {ROUTE_C_COURT} wrote two versions of it; you know what you heard from {COURIER} himself, which makes every whisper itch'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_a3_1",
-          "label": "Head in when Marka beckons you aside.",
+          "label": "Head in when {ROUTE_A_DEPUTY} beckons you aside.",
           "target": "t_a4"
         }
       ]
     },
     {
       "id": "t_a4",
-      "body": "<<FILL role=choice words=112 beats='Marka, Selk's deputy, pulls you behind a stack of crab pots: the captains are ready to believe the Groves tampered with the letter, and one good push would put the whole harbor at Selk's back by noon; all Marka asks of the envoy who stood on that bridge is to not correct anybody today'>>",
+      "body": "<<FILL role=choice words=112 beats='{ROUTE_A_DEPUTY}, {ROUTE_A_LEAD}'s deputy, pulls you behind a stack of crab pots: the captains are ready to believe {ROUTE_B_COURT} tampered with the letter, and one good push would put the whole harbor at {ROUTE_A_LEAD}'s back by noon; all {ROUTE_A_DEPUTY} asks of the envoy who stood on that bridge is to let {TA_GATE} stand today'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_a4_1",
-          "label": "Refuse, and tell Selk what you actually heard.",
+          "label": "Refuse, and tell {ROUTE_A_LEAD} what you actually heard.",
           "target": "t_a5"
         },
         {
           "id": "c_t_a4_2",
-          "label": "Look away and let the rumor do its work.",
+          "label": "Look away and let {TA_GATE} do its work.",
           "target": "t_a12"
         }
       ]
     },
     {
       "id": "t_a5",
-      "body": "<<FILL role=rising words=108 beats='you tell Selk the courier's account, the wet steps, the nail, the accidental tear; she listens without blinking and says the harbor argues for the river, not with lies; at noon the courts lay the accord copies side by side and the damaged water-measure page is bared; then, mid-argument, the flood bell begins to ring'>>",
+      "body": "<<FILL role=rising words=108 beats='you tell {ROUTE_A_LEAD} {COURIER}'s account, the wet steps, the nail, the accidental tear; she listens without blinking and says the harbor argues for the river, not with lies; at noon the courts lay the accord copies side by side and {ACCORD_PAGE} is bared; then, mid-argument, {FLOOD_SIGNAL} begins to ring'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_a5_1",
-          "label": "Run out with the Tides crews.",
+          "label": "Run out with {ROUTE_A_COURT} crews.",
           "target": "t_a6"
         }
       ]
     },
     {
       "id": "t_a6",
-      "body": "<<FILL role=choice words=104 beats='the Willow Sluice has jammed and water is backing toward the low quarter; Selk is up in one motion, sending crews; she gives her envoy a choice of posts: the sluice gang needs runners at the water, and the tally room needs hands to ready the Tideway logs before the dusk session'>>",
+      "body": "<<FILL role=choice words=104 beats='{FLOOD_SITE} has jammed and water is backing toward {LOW_QUARTER}; {ROUTE_A_LEAD} is up in one motion, sending crews; she gives her envoy a choice of posts: the sluice gang needs runners at the water, and the tally room needs hands to ready {TA_TALLY} before the dusk session'>>",
       "is_ending": false,
       "choices": [
         {
@@ -202,14 +202,14 @@
         },
         {
           "id": "c_t_a6_2",
-          "label": "Dig into the tally logs.",
+          "label": "Dig into {TA_TALLY}.",
           "target": "t_a10"
         }
       ]
     },
     {
       "id": "t_a7",
-      "body": "<<FILL role=rising words=102 beats='the sluice: brown water piling, Tides sailors and Groves wardens hauling the same rope; the jam comes up in armfuls of storm debris, willow limbs and a broken cartwheel, no sabotage at all; and as the pool drains you glimpse, below the gate, an old bronze gauge plate furred with silt'>>",
+      "body": "<<FILL role=rising words=102 beats='{FLOOD_SITE}: brown water piling, {ROUTE_A_COURT} sailors and {ROUTE_B_COURT} wardens hauling the same rope; the jam comes up in armfuls of {DEBRIS_CAUSE}, no sabotage at all; and as the pool drains you glimpse, below the gate, {GAUGE} furred with silt'>>",
       "is_ending": false,
       "choices": [
         {
@@ -224,7 +224,7 @@
     },
     {
       "id": "t_a8",
-      "body": "<<FILL role=rising words=98 beats='dusk session, one hourglass turn late; the hall smells of river mud off everyone's boots; Ives calls for witnesses to the day, the bridge, the sluice, and the state of the accord, before any signing can start; Selk catches your eye and nods you forward'>>",
+      "body": "<<FILL role=rising words=98 beats='dusk session, one hourglass turn late; the hall smells of river mud off everyone's boots; {CHANCELLOR} calls for witnesses to the day, the bridge, the sluice, and the state of {ACCORD}, before any signing can start; {ROUTE_A_LEAD} catches your eye and nods you forward'>>",
       "is_ending": false,
       "choices": [
         {
@@ -236,7 +236,7 @@
     },
     {
       "id": "t_a9",
-      "body": "<<FILL role=climax words=100 beats='you take the witness step with the envoy's sash straight; the room is a wall of faces, Selk's steady among them; you have three true things to tell: what Pell said on the bridge at midnight, what the debris looked like coming out of the sluice, and the silted gauge you saw under the gate'>>",
+      "body": "<<FILL role=climax words=100 beats='you take the witness step with the envoy's sash straight; the room is a wall of faces, {ROUTE_A_LEAD}'s steady among them; you have three true things to tell: what {COURIER} said on the bridge at midnight, what the debris looked like coming out of the sluice, and {GAUGE} you saw under the gate'>>",
       "is_ending": false,
       "choices": [
         {
@@ -248,18 +248,18 @@
     },
     {
       "id": "t_ae1",
-      "body": "<<FILL role=success words=96 beats='you tell it plainly and the tamper story dies in the room; the silted gauge explains the drifted measures better than any accusation; Ives steers the courts to terms, rebuild the gauge as a public one, share the dredging, water the groves at night; Selk tells the bench the harbor is proud to have lent the city its envoy'>>",
+      "body": "<<FILL role=success words=96 beats='you tell it plainly and the story of {ROUTE_A_RUMOR} dies in the room; {GAUGE} explains the drifted measures better than any accusation; {CHANCELLOR} steers the courts to terms, rebuild the gauge as a public one, share the dredging, water the groves at night; {ROUTE_A_LEAD} tells the bench the harbor is proud to have lent the city its envoy'>>",
       "is_ending": true,
       "ending": {
         "id": "t_ae1",
         "valence": "positive",
         "kind": "success",
-        "title": "The Bridge Witness"
+        "title": "{TA_PRIZE1}"
       }
     },
     {
       "id": "t_a10",
-      "body": "<<FILL role=rising words=100 beats='the tally room: you and two clerks pull the Tideway draft logs; the numbers keep saying the same unwelcome thing, the river began dropping weeks before the Groves ever opened their channels; whatever is wrong with the Meret started earlier and quieter than any feud'>>",
+      "body": "<<FILL role=rising words=100 beats='the tally room: you and two clerks pull {TA_TALLY}; the numbers keep saying the same unwelcome thing, the river began dropping weeks before {ROUTE_B_COURT} ever opened their channels; whatever is wrong with {RIVER} started earlier and quieter than any feud'>>",
       "is_ending": false,
       "choices": [
         {
@@ -271,7 +271,7 @@
     },
     {
       "id": "t_a11",
-      "body": "<<FILL role=climax words=96 beats='dusk session, one turn late; Selk reads your log page to the hall, dates and drafts and nothing else; Warden Oleth confirms the orchard wells match it; Ives says evidence like this deserves measuring rather than arguing, and asks the courts what they mean to do with the truth'>>",
+      "body": "<<FILL role=climax words=96 beats='dusk session, one turn late; {ROUTE_A_LEAD} reads your log page to the hall, dates and drafts and nothing else; {ROUTE_B_LEAD} confirms the orchard wells match it; {CHANCELLOR} says evidence like this deserves measuring rather than arguing, and asks the courts what they mean to do with the truth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -283,18 +283,18 @@
     },
     {
       "id": "t_ae2",
-      "body": "<<FILL role=ending words=94 beats='no accord is signed tonight; instead the three courts order a joint survey of the river and the old gauge, its findings to be read publicly next month; it is not the ending anyone pictured at dawn, but it is honest ground; Selk says slow water still reaches the sea, and has your log page entered into the record'>>",
+      "body": "<<FILL role=ending words=94 beats='no accord is signed tonight; instead the three courts order a joint survey of {RIVER} and {GAUGE}, its findings to be read publicly next month; it is not the ending anyone pictured at dawn, but it is honest ground; {ROUTE_A_LEAD} says slow water still reaches the sea, and has your log page entered into the record'>>",
       "is_ending": true,
       "ending": {
         "id": "t_ae2",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Patient Sounding"
+        "title": "{TA_PRIZE2}"
       }
     },
     {
       "id": "t_a12",
-      "body": "<<FILL role=rising words=104 beats='you look away; by noon the quays believe the Groves tore the seal, and the noon session curdles, captains jeering from the gallery while the damaged page is shown; Warden Oleth stops answering questions at all; then the flood bell rings and everyone is running'>>",
+      "body": "<<FILL role=rising words=104 beats='you look away; by noon the quays believe {ROUTE_B_COURT} tore the seal, and the noon session curdles, captains jeering from the gallery while {ACCORD_PAGE} is shown; {ROUTE_B_LEAD} stops answering questions at all; then {FLOOD_SIGNAL} rings and everyone is running'>>",
       "is_ending": false,
       "choices": [
         {
@@ -306,12 +306,12 @@
     },
     {
       "id": "t_a13",
-      "body": "<<FILL role=choice words=110 beats='at the sluice the rumor got there first: Tides haulers and Groves wardens grip the same rope like they would rather not share it, and the work goes ragged; your stomach knows whose push started this; Selk is ten steps away, directing crews through the spray'>>",
+      "body": "<<FILL role=choice words=110 beats='at {FLOOD_SITE} the rumor got there first: {ROUTE_A_COURT} haulers and {ROUTE_B_COURT} wardens grip the same rope like they would rather not share it, and the work goes ragged; your stomach knows whose push started this; {ROUTE_A_LEAD} is ten steps away, directing crews through the spray'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_a13_1",
-          "label": "Tell Selk the rumor is false and you let it run.",
+          "label": "Tell {ROUTE_A_LEAD} {ROUTE_A_RUMOR} is false and you let it run.",
           "target": "t_a14"
         },
         {
@@ -323,7 +323,7 @@
     },
     {
       "id": "t_a14",
-      "body": "<<FILL role=rising words=102 beats='Selk goes very still, then says torn sails mend and torn trust takes longer, and marches you down the rope line to tell the captains Pell's true story yourself, twice, three times, until the gangs pull like one crew again; the jam comes up as plain storm debris, willow limbs and a cartwheel'>>",
+      "body": "<<FILL role=rising words=102 beats='{ROUTE_A_LEAD} goes very still, then says torn sails mend and torn trust takes longer, and marches you down the rope line to tell the captains {COURIER}'s true story yourself, twice, three times, until the gangs pull like one crew again; the jam comes up as plain {DEBRIS_CAUSE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -335,7 +335,7 @@
     },
     {
       "id": "t_a15",
-      "body": "<<FILL role=climax words=96 beats='dusk, one turn late: Selk stands and corrects the record herself, the harbor spread a false story and the harbor takes it back; Ives notes the correction with visible respect; the talk turns at last to the real question, the drifted measures of a tired old accord'>>",
+      "body": "<<FILL role=climax words=96 beats='dusk, one turn late: {ROUTE_A_LEAD} stands and corrects the record herself, the harbor spread a false story and the harbor takes it back; {CHANCELLOR} notes the correction with visible respect; the talk turns at last to the real question, the drifted measures of a tired old {ACCORD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -347,18 +347,18 @@
     },
     {
       "id": "t_ae3",
-      "body": "<<FILL role=completion words=94 beats='the courts sign a narrower accord tonight, rebuild the sluice gauge first and settle the shares at next season's summit, and Ives credits the correction that made calm possible; Selk tells you the hardest cargo she ever carried was an apology, and that you carried yours to the right dock in time'>>",
+      "body": "<<FILL role=completion words=94 beats='the courts sign a narrower accord tonight, rebuild {GAUGE} first and settle the shares at next season's summit, and {CHANCELLOR} credits the correction that made calm possible; {ROUTE_A_LEAD} tells you the hardest cargo she ever carried was an apology, and that you carried yours to the right dock in time'>>",
       "is_ending": true,
       "ending": {
         "id": "t_ae3",
         "valence": "positive",
         "kind": "completion",
-        "title": "Mended Trust"
+        "title": "{TA_PRIZE3}"
       }
     },
     {
       "id": "t_a16",
-      "body": "<<FILL role=rising words=100 beats='the rumor wins the rope line: a Groves warden is shoved, shovels drop, and grown folk have to be hauled apart by grayer grown folk while the water keeps rising; the jam clears late and ugly, and the dusk session opens with mud on everyone and trust on no one'>>",
+      "body": "<<FILL role=rising words=100 beats='the rumor wins the rope line: a {ROUTE_B_COURT} warden is shoved, shovels drop, and grown folk have to be hauled apart by grayer grown folk while the water keeps rising; the jam clears late and ugly, and the dusk session opens with mud on everyone and trust on no one'>>",
       "is_ending": false,
       "choices": [
         {
@@ -373,13 +373,13 @@
     },
     {
       "id": "t_ae4",
-      "body": "<<FILL role=failure words=98 beats='dusk collapses under too much anger and too little daylight; Ives closes the summit without an accord, but before the hall empties he enters Pell's true account into the record, with you named as the bridge witness who confirmed it at last; next season starts from the truth, Selk says on the dark walk home, thanks to that much, and she leaves the rest unsaid'>>",
+      "body": "<<FILL role=failure words=98 beats='dusk collapses under too much anger and too little daylight; {CHANCELLOR} closes the summit without an accord, but before the hall empties he enters {COURIER}'s true account into the record, with you named as the bridge witness who confirmed it at last; next season starts from the truth, {ROUTE_A_LEAD} says on the dark walk home, thanks to that much, and she leaves the rest unsaid'>>",
       "is_ending": true,
       "ending": {
         "id": "t_ae4",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Rumor Tide"
+        "title": "{TA_PRIZE4}"
       },
       "safety_scope": [
         "sad_moment"
@@ -387,7 +387,7 @@
     },
     {
       "id": "t_b1",
-      "body": "<<FILL role=rising words=102 beats='you sprint the quay and hammer on Selk's door; she comes in sea boots, questions the watch herself, and has the letter's arrival written down then and there, witnessed by a Bells clerk and a Groves carter pulled off the street; whatever the seal looks like, she says, the record will be straight'>>",
+      "body": "<<FILL role=rising words=102 beats='you sprint the quay and hammer on {ROUTE_A_LEAD}'s door; she comes in sea boots, questions the watch herself, and has the letter's arrival written down then and there, witnessed by a {ROUTE_C_COURT} clerk and a {ROUTE_B_COURT} carter pulled off the street; whatever the seal looks like, she says, the record will be straight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -399,19 +399,19 @@
     },
     {
       "id": "t_b2",
-      "body": "<<FILL role=rising words=104 beats='dawn session: Ives turns the hourglass; Selk accuses the Groves of overdrawing the river, but when the tamper whisper first surfaces she reads the bridge record aloud and flattens it; the shouting ends the session anyway, yet you notice Chancellor Ives mark something in his notes with approval'>>",
+      "body": "<<FILL role=rising words=104 beats='dawn session: {CHANCELLOR} turns {TIMEKEEPER}; {ROUTE_A_LEAD} accuses {ROUTE_B_COURT} of overdrawing the river, but when {ROUTE_A_RUMOR} first surfaces she reads the bridge record aloud and flattens it; the shouting ends the session anyway, yet you notice {CHANCELLOR} mark something in his notes with approval'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_b2_1",
-          "label": "Return to Harbor Hall for orders.",
+          "label": "Return to {ROUTE_A_HALL} for orders.",
           "target": "t_b3"
         }
       ]
     },
     {
       "id": "t_b3",
-      "body": "<<FILL role=rising words=100 beats='back at Harbor Hall, Selk lays two errands on the chart table and says an envoy should choose work the way a pilot chooses water, by where the hull actually sits; the Bells have asked for the harbor's sworn tally book, and the Tideway needs its grounded barges measured before noon'>>",
+      "body": "<<FILL role=rising words=100 beats='back at {ROUTE_A_HALL}, {ROUTE_A_LEAD} lays two errands on the chart table and says an envoy should choose work the way a pilot chooses water, by where the hull actually sits; {ROUTE_C_COURT} have asked for {TB_TALLY_BOOK}, and {HARBOR_FLATS} needs its grounded barges measured before noon'>>",
       "is_ending": false,
       "choices": [
         {
@@ -423,48 +423,48 @@
     },
     {
       "id": "t_b4",
-      "body": "<<FILL role=choice words=106 beats='the tally book is the harbor's sworn record of drafts and cargoes, wanted at Bell Hall for checking against the accord; the barge measuring is cold mud work with Selk herself, hunting exactly how far the river has fallen; both will matter by dusk, and there is one of you'>>",
+      "body": "<<FILL role=choice words=106 beats='{TB_TALLY_BOOK} is the harbor's sworn record of drafts and cargoes, wanted at {SUMMIT_VENUE} for checking against {ACCORD}; the barge measuring is cold mud work with {ROUTE_A_LEAD} herself, hunting exactly how far {RIVER} has fallen; both will matter by dusk, and there is one of you'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_b4_1",
-          "label": "Carry the tally book to Bell Hall.",
+          "label": "Carry {TB_TALLY_BOOK} to {SUMMIT_VENUE}.",
           "target": "t_b5"
         },
         {
           "id": "c_t_b4_2",
-          "label": "Measure the grounded barges with Selk.",
+          "label": "Measure the grounded barges with {ROUTE_A_LEAD}.",
           "target": "t_b10"
         }
       ]
     },
     {
       "id": "t_b5",
-      "body": "<<FILL role=rising words=100 beats='Bell Hall hums like a struck bell, clerks comparing accord copies at long tables; as you hand over the tally book you hear one mutter that the water-measure pages do not agree copy to copy; you carry that overheard sentence back across the bridge like a live coal in cupped hands'>>",
+      "body": "<<FILL role=rising words=100 beats='{SUMMIT_VENUE} hums like a struck bell, clerks comparing accord copies at long tables; as you hand over {TB_TALLY_BOOK} you hear one mutter that {ACCORD_PAGE}s do not agree copy to copy; you carry that overheard sentence back across {BRIDGE} like a live coal in cupped hands'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_b5_1",
-          "label": "Report the overheard words to Selk.",
+          "label": "Report the overheard words to {ROUTE_A_LEAD}.",
           "target": "t_b6"
         }
       ]
     },
     {
       "id": "t_b6",
-      "body": "<<FILL role=rising words=104 beats='noon session: the damaged page is laid bare and, just as the clerk muttered, the fair copies disagree; because your delivered tally book sits open on the table, the courts can at least argue from the same harbor numbers; then the flood bell rolls across the roofs and the hall empties at a run'>>",
+      "body": "<<FILL role=rising words=104 beats='noon session: {ACCORD_PAGE} is laid bare and, just as the clerk muttered, the fair copies disagree; because your delivered {TB_TALLY_BOOK} sits open on the table, the courts can at least argue from the same harbor numbers; then {FLOOD_SIGNAL} rolls across the roofs and the hall empties at a run'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_b6_1",
-          "label": "Follow Selk into the low quarter.",
+          "label": "Follow {ROUTE_A_LEAD} into {LOW_QUARTER}.",
           "target": "t_b7"
         }
       ]
     },
     {
       "id": "t_b7",
-      "body": "<<FILL role=choice words=102 beats='the low quarter: water curling up through the drain grates, the Willow Sluice jammed somewhere above; Selk splits her crews without raising her voice, a sandbag line to hold the warehouse lane, and a runner chain to move true word between sluice, Hall, and harbor'>>",
+      "body": "<<FILL role=choice words=102 beats='{LOW_QUARTER}: water curling up through the drain grates, {FLOOD_SITE} jammed somewhere above; {ROUTE_A_LEAD} splits her crews without raising her voice, a sandbag line to hold the warehouse lane, and a runner chain to move true word between sluice, Hall, and harbor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -481,7 +481,7 @@
     },
     {
       "id": "t_b8",
-      "body": "<<FILL role=rising words=100 beats='the sandbag line: you pass weight until your arms are string, and Groves wardens shoulder in beside Tides sailors without anyone asking whose court owns which sandbag; behind you the lane stays dry; ahead, the shout goes up that the jam is storm debris, coming clear'>>",
+      "body": "<<FILL role=rising words=100 beats='the sandbag line: you pass weight until your arms are string, and {ROUTE_B_COURT} wardens shoulder in beside {ROUTE_A_COURT} sailors without anyone asking whose court owns which sandbag; behind you the lane stays dry; ahead, the shout goes up that the jam is {DEBRIS_CAUSE}, coming clear'>>",
       "is_ending": false,
       "choices": [
         {
@@ -496,7 +496,7 @@
     },
     {
       "id": "t_b8b",
-      "body": "<<FILL role=climax words=96 beats='dusk, one turn late, mud to every knee in the hall; Selk speaks last and shortest: the river does not care whose water it is, she says, and today the line held because every court held it; Ives lets the words sit a moment before he opens the terms'>>",
+      "body": "<<FILL role=climax words=96 beats='dusk, one turn late, mud to every knee in the hall; {ROUTE_A_LEAD} speaks last and shortest: the river does not care whose water it is, she says, and today the line held because every court held it; {CHANCELLOR} lets the words sit a moment before he opens the terms'>>",
       "is_ending": false,
       "choices": [
         {
@@ -508,18 +508,18 @@
     },
     {
       "id": "t_be1",
-      "body": "<<FILL role=success words=95 beats='the accord comes together like the sandbag line, one weight at a time: rebuild the sluice gauge, share the dredging, night water for the groves, retimed drafts for the barges; Selk signs first and hands you the pen to carry to the other courts, which is envoy's work, done properly, in front of everyone'>>",
+      "body": "<<FILL role=success words=95 beats='the accord comes together like the sandbag line, one weight at a time: rebuild {GAUGE}, share the dredging, night water for the groves, retimed drafts for the barges; {ROUTE_A_LEAD} signs first and hands you the pen to carry to the other courts, which is envoy's work, done properly, in front of everyone'>>",
       "is_ending": true,
       "ending": {
         "id": "t_be1",
         "valence": "positive",
         "kind": "success",
-        "title": "Shoulder to Shoulder"
+        "title": "{TB_PRIZE1}"
       }
     },
     {
       "id": "t_b9",
-      "body": "<<FILL role=rising words=102 beats='you run the chain, sluice to Hall to harbor and back, carrying counts and orders; on your third leg the sluice keeper hands you the report that matters, the jam is willow limbs and a broken cartwheel, storm debris, no cut ropes and no sabotage, and you put it into Chancellor Ives's own hand before dusk'>>",
+      "body": "<<FILL role=rising words=102 beats='you run the chain, sluice to Hall to harbor and back, carrying counts and orders; on your third leg the sluice keeper hands you the report that matters, the jam is {DEBRIS_CAUSE}, no cut ropes and no sabotage, and you put it into {CHANCELLOR}'s own hand before dusk'>>",
       "is_ending": false,
       "choices": [
         {
@@ -534,47 +534,47 @@
     },
     {
       "id": "t_be2",
-      "body": "<<FILL role=completion words=94 beats='the dusk session opens with your carried report read aloud, and the sabotage talk dies before it can poison the terms; the courts initial a working accord and set the full signing for the new gauge's first public reading; Ives notes for the record that a summit runs on true feet'>>",
+      "body": "<<FILL role=completion words=94 beats='the dusk session opens with your carried report read aloud, and the sabotage talk dies before it can poison the terms; the courts initial a working accord and set the full signing for {GAUGE}'s first public reading; {CHANCELLOR} notes for the record that a summit runs on true feet'>>",
       "is_ending": true,
       "ending": {
         "id": "t_be2",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Runner's Report"
+        "title": "{TB_PRIZE2}"
       }
     },
     {
       "id": "t_b10",
-      "body": "<<FILL role=rising words=102 beats='the Tideway at low water: you and Selk measure heeled barges with rod and line while the mud sucks at your boots; the figures keep saying the same unwelcome thing, the river began falling weeks before the Groves ever opened their new channels; Selk reads your column twice and goes quiet'>>",
+      "body": "<<FILL role=rising words=102 beats='{HARBOR_FLATS} at low water: you and {ROUTE_A_LEAD} measure heeled barges with rod and line while the mud sucks at your boots; {TB_FIGURES} keep saying the same unwelcome thing, the river began falling weeks before {ROUTE_B_COURT} ever opened their new channels; {ROUTE_A_LEAD} reads your column twice and goes quiet'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_b10_1",
-          "label": "Head back with the figures.",
+          "label": "Head back with {TB_FIGURES}.",
           "target": "t_b11"
         }
       ]
     },
     {
       "id": "t_b11",
-      "body": "<<FILL role=choice words=108 beats='with Selk called ahead to the Hall, Marka catches you at the sea wall and holds out a hand for the figures page: those numbers soften the case against the Groves, Marka says, and the harbor cannot afford soft today; better they stay in a pocket until the summit is won'>>",
+      "body": "<<FILL role=choice words=108 beats='with {ROUTE_A_LEAD} called ahead to the Hall, {ROUTE_A_DEPUTY} catches you at the sea wall and holds out a hand for {TB_FIGURES}: those numbers soften the case against {ROUTE_B_COURT}, {ROUTE_A_DEPUTY} says, and the harbor cannot afford soft today; better {TB_GATE} stays hidden until the summit is won'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_b11_1",
-          "label": "Bring the figures straight to Selk.",
+          "label": "Bring {TB_FIGURES} straight to {ROUTE_A_LEAD}.",
           "target": "t_b12"
         },
         {
           "id": "c_t_b11_2",
-          "label": "Let Marka pocket the page for now.",
+          "label": "Let {ROUTE_A_DEPUTY} pocket the page for now.",
           "target": "t_b13"
         }
       ]
     },
     {
       "id": "t_b12",
-      "body": "<<FILL role=rising words=104 beats='Selk reads the figures, jaw tight, and says the harbor does not trim its soundings; at noon she presents them herself alongside the damaged page, which costs her case and buys her something better; when the flood bell rings she leads her crews out with her head up'>>",
+      "body": "<<FILL role=rising words=104 beats='{ROUTE_A_LEAD} reads {TB_FIGURES}, jaw tight, and says the harbor does not trim its soundings; at noon she presents them herself alongside {ACCORD_PAGE}, which costs her case and buys her something better; when {FLOOD_SIGNAL} rings she leads her crews out with her head up'>>",
       "is_ending": false,
       "choices": [
         {
@@ -586,7 +586,7 @@
     },
     {
       "id": "t_b12b",
-      "body": "<<FILL role=rising words=100 beats='at the jammed sluice, Warden Oleth works the debris line across from Selk, and between hauls the two of them speak, actually speak, about wells and drafts and dry years; the jam comes up as plain storm rubbish; you watch two old rivals discover they have been losing the same river'>>",
+      "body": "<<FILL role=rising words=100 beats='at {FLOOD_SITE}, {ROUTE_B_LEAD} works the debris line across from {ROUTE_A_LEAD}, and between hauls the two of them speak, actually speak, about wells and drafts and dry years; the jam comes up as plain {DEBRIS_CAUSE}; you watch two old rivals discover they have been losing the same river'>>",
       "is_ending": false,
       "choices": [
         {
@@ -598,7 +598,7 @@
     },
     {
       "id": "t_b12c",
-      "body": "<<FILL role=climax words=96 beats='dusk, one turn late: Selk and Oleth present the harbor figures and the orchard well records together, two courts telling one story between them; Ives turns the hourglass and observes that for the first time all day the summit is measuring instead of blaming'>>",
+      "body": "<<FILL role=climax words=96 beats='dusk, one turn late: {ROUTE_A_LEAD} and {ROUTE_B_LEAD} present {TB_FIGURES} and the orchard well records together, two courts telling one story between them; {CHANCELLOR} turns {TIMEKEEPER} and observes that for the first time all day the summit is measuring instead of blaming'>>",
       "is_ending": false,
       "choices": [
         {
@@ -610,18 +610,18 @@
     },
     {
       "id": "t_be3",
-      "body": "<<FILL role=success words=96 beats='the accord is signed on shared numbers: a rebuilt public gauge at the Willow Sluice, shared dredging, night watering, retimed drafts; Selk tells the hall that the envoy reminded the harbor of its own law, sound honestly and sail safely; outside, the Meret slides on toward the sea, unbothered and forgiven'>>",
+      "body": "<<FILL role=success words=96 beats='the accord is signed on shared numbers: a rebuilt public {GAUGE} at {FLOOD_SITE}, shared dredging, night watering, retimed drafts; {ROUTE_A_LEAD} tells the hall that the envoy reminded the harbor of its own law, sound honestly and sail safely; outside, {RIVER} slides on toward the sea, unbothered and forgiven'>>",
       "is_ending": true,
       "ending": {
         "id": "t_be3",
         "valence": "positive",
         "kind": "success",
-        "title": "For the River"
+        "title": "{TB_PRIZE3}"
       }
     },
     {
       "id": "t_b13",
-      "body": "<<FILL role=rising words=104 beats='noon session: a Bells surveyor presents the Tideway soundings anyway, taken independently that morning, and asks why the harbor's own figures were not offered; Selk is blindsided in front of the courts, Marka studies the floor, and the pocketed page burns like a stone; then the flood bell interrupts everything'>>",
+      "body": "<<FILL role=rising words=104 beats='noon session: a {ROUTE_C_COURT} surveyor presents {HARBOR_FLATS} soundings anyway, taken independently that morning, and asks why the harbor's own figures were not offered; {ROUTE_A_LEAD} is blindsided in front of the courts, {ROUTE_A_DEPUTY} studies the floor, and {TB_GATE} burns like a stone; then {FLOOD_SIGNAL} interrupts everything'>>",
       "is_ending": false,
       "choices": [
         {
@@ -633,12 +633,12 @@
     },
     {
       "id": "t_b14",
-      "body": "<<FILL role=choice words=106 beats='the flood work swallows the afternoon, sandbags and shouted counts, but the question is waiting when the water drops; before dusk, Selk gathers her delegation on the Bell Hall steps to settle what the harbor will say for itself'>>",
+      "body": "<<FILL role=choice words=106 beats='the flood work swallows the afternoon, sandbags and shouted counts, but the question is waiting when the water drops; before dusk, {ROUTE_A_LEAD} gathers her delegation on {SUMMIT_VENUE}'s steps to settle what the harbor will say about {TB_GATE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_b14_1",
-          "label": "Own it: hand Selk the page and the truth.",
+          "label": "Own it: hand {ROUTE_A_LEAD} {TB_GATE} and the truth.",
           "target": "t_b15"
         },
         {
@@ -650,7 +650,7 @@
     },
     {
       "id": "t_b15",
-      "body": "<<FILL role=rising words=100 beats='Selk takes the page without a word, walks in, and opens dusk by apologizing to the courts for her own house holding back soundings; it costs her, visibly; Ives accepts the correction, the session steadies, and the argument finally turns to the measures themselves, though the daylight is nearly spent'>>",
+      "body": "<<FILL role=rising words=100 beats='{ROUTE_A_LEAD} takes the page without a word, walks in, and opens dusk by apologizing to the courts for her own house holding back soundings; it costs her, visibly; {CHANCELLOR} accepts the correction, the session steadies, and the argument finally turns to the measures themselves, though the daylight is nearly spent'>>",
       "is_ending": false,
       "choices": [
         {
@@ -662,18 +662,18 @@
     },
     {
       "id": "t_be4",
-      "body": "<<FILL role=ending words=95 beats='too little hourglass remains for a full accord, so the courts order a joint survey and set a signing date, the harbor's late figures first into the new public ledger; on the walk home Selk says the tide went out on the deal but the harbor got its name back, and that was the dearer cargo'>>",
+      "body": "<<FILL role=ending words=95 beats='too little hourglass remains for a full accord, so the courts order a joint survey and set a signing date, the harbor's late figures first into the new public ledger; on the walk home {ROUTE_A_LEAD} says the tide went out on the deal but the harbor got its name back, and that was the dearer cargo'>>",
       "is_ending": true,
       "ending": {
         "id": "t_be4",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Sounded Honest"
+        "title": "{TB_PRIZE4}"
       }
     },
     {
       "id": "t_b16",
-      "body": "<<FILL role=rising words=98 beats='dusk runs aground on distrust: if the harbor sat on its own soundings, the other courts ask, what else sits unoffered; Selk fights for the terms stubbornly, but the room has hardened around her, and the hourglass runs out while the question is still circling'>>",
+      "body": "<<FILL role=rising words=98 beats='dusk runs aground on distrust: if the harbor sat on its own soundings, the other courts ask, what else sits unoffered; {ROUTE_A_LEAD} fights for the terms stubbornly, but the room has hardened around her, and the hourglass runs out while the question is still circling'>>",
       "is_ending": false,
       "choices": [
         {
@@ -685,13 +685,13 @@
     },
     {
       "id": "t_be5",
-      "body": "<<FILL role=failure words=97 beats='the summit closes without an accord; that night Selk finds the figures anyway, reads them twice by lamplight, and enters them in the harbor record under the next day's date; next year, she says, the truth goes first through the door; she does not scold you twice, but then she does not need to'>>",
+      "body": "<<FILL role=failure words=97 beats='the summit closes without an accord; that night {ROUTE_A_LEAD} finds {TB_GATE} anyway, reads them twice by lamplight, and enters them in the harbor record under the next day's date; next year, she says, the truth goes first through the door; she does not scold you twice, but then she does not need to'>>",
       "is_ending": true,
       "ending": {
         "id": "t_be5",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Unsounded Page"
+        "title": "{TB_PRIZE5}"
       },
       "safety_scope": [
         "sad_moment"
@@ -699,7 +699,7 @@
     },
     {
       "id": "t_c1",
-      "body": "<<FILL role=rising words=104 beats='you crouch by the rail with the watchman's lantern: a nail stands proud where the rail split, and caught on it a gray thread, the same weave as the courier's cloak; the tear in the seal matches the nail's bite exactly; you have the watchman log the nail, the thread, and the hour, with your name as witness'>>",
+      "body": "<<FILL role=rising words=104 beats='you crouch by the rail with the watchman's lantern: {TC_THREAD} snagged where the rail split, the same weave as {COURIER}'s cloak; the tear in the seal matches the nail's bite exactly; you have the watchman log {TC_THREAD} and the hour, with your name as witness'>>",
       "is_ending": false,
       "choices": [
         {
@@ -711,7 +711,7 @@
     },
     {
       "id": "t_c2",
-      "body": "<<FILL role=rising words=102 beats='dawn session: when the tamper whisper first slithers up the benches, Selk reads the watch log aloud, nail, thread, hour, envoy's witness, and the whisper loses its legs; the session still breaks on the water question, Selk accusing and Oleth denying, the hourglass turned and abandoned'>>",
+      "body": "<<FILL role=rising words=102 beats='dawn session: when {ROUTE_A_RUMOR} first slithers up the benches, {ROUTE_A_LEAD} reads the watch log aloud, {TC_THREAD}, hour, envoy's witness, and the whisper loses its legs; the session still breaks on the water question, {ROUTE_A_LEAD} accusing and {ROUTE_B_LEAD} denying, the hourglass turned and abandoned'>>",
       "is_ending": false,
       "choices": [
         {
@@ -723,7 +723,7 @@
     },
     {
       "id": "t_c3",
-      "body": "<<FILL role=rising words=100 beats='mid-morning the courier Pell finds you on the quay, walking on a wrapped ankle, to say thank you; the letter went on to all three courts and the Bells re-waxed the seal at their own door before witnesses; a small thing set straight, he says, but summits are stacked out of small things'>>",
+      "body": "<<FILL role=rising words=100 beats='mid-morning {COURIER} finds you on the quay, walking on a wrapped ankle, to say thank you; the letter went on to all three courts and {ROUTE_C_COURT} re-waxed the seal at their own door before witnesses; a small thing set straight, he says, but summits are stacked out of small things'>>",
       "is_ending": false,
       "choices": [
         {
@@ -735,7 +735,7 @@
     },
     {
       "id": "t_c4",
-      "body": "<<FILL role=choice words=112 beats='two summonses arrive with one bell: Chancellor Ives asks the bridge witness to sit beside the chair for the day, a neutral post in every court's sight, and Harbormistress Selk wants her sworn envoy at the Tides bench where you were attached; Marka mutters that nobody can stand in two courts at once'>>",
+      "body": "<<FILL role=choice words=112 beats='two summonses arrive with one bell: {CHANCELLOR} asks the bridge witness to sit beside the chair for the day, a neutral post in every court's sight, and {ROUTE_A_LEAD} wants her sworn envoy at {ROUTE_A_COURT} bench where you were attached; {ROUTE_A_DEPUTY} mutters that nobody can stand in two courts at once'>>",
       "is_ending": false,
       "choices": [
         {
@@ -745,31 +745,31 @@
         },
         {
           "id": "c_t_c4_2",
-          "label": "Keep your place at the Tides bench.",
+          "label": "Keep your place at {ROUTE_A_COURT} bench.",
           "target": "t_c11"
         }
       ]
     },
     {
       "id": "t_c5",
-      "body": "<<FILL role=rising words=102 beats='noon from beside the chair: you see the summit the way Ives sees it, three tired courts each certain it is the honest one; the damaged page is laid bare, fair copies disagreeing; when the flood bell rings, Ives keeps his seat one breath longer than everyone else, watching who runs where'>>",
+      "body": "<<FILL role=rising words=102 beats='noon from beside the chair: you see the summit the way {CHANCELLOR} sees it, three tired courts each certain it is the honest one; {ACCORD_PAGE} is laid bare, fair copies disagreeing; when {FLOOD_SIGNAL} rings, {CHANCELLOR} keeps his seat one breath longer than everyone else, watching who runs where'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_c5_1",
-          "label": "Ask the chancellor where he needs you.",
+          "label": "Ask {CHANCELLOR} where he needs you.",
           "target": "t_c6"
         }
       ]
     },
     {
       "id": "t_c6",
-      "body": "<<FILL role=choice words=104 beats='Ives needs two things at once during the scare and has one envoy: a steady voice at the Bell Hall door relaying the chair's orders both ways, or a pair of young eyes at the Willow Sluice itself to bring back what is actually true down there'>>",
+      "body": "<<FILL role=choice words=104 beats='{CHANCELLOR} needs two things at once during the scare and has one envoy: a steady voice at {SUMMIT_VENUE}'s door relaying the chair's orders both ways, or a pair of young eyes at {FLOOD_SITE} itself to bring back what is actually true down there'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_c6_1",
-          "label": "Hold the Hall door and relay orders.",
+          "label": "Hold {SUMMIT_VENUE}'s door and relay orders.",
           "target": "t_c7"
         },
         {
@@ -781,7 +781,7 @@
     },
     {
       "id": "t_c7",
-      "body": "<<FILL role=rising words=100 beats='you hold the door and pass the chair's orders both ways, pumps to the low quarter, the tally of hands by court, the extra hourglass turn announced to the benches; through the doorway you watch three courts blur into one dripping crew, and you keep the ledger of who helped, which is everyone'>>",
+      "body": "<<FILL role=rising words=100 beats='you hold the door and pass the chair's orders both ways, pumps to {LOW_QUARTER}, the tally of hands by court, the extra hourglass turn announced to the benches; through the doorway you watch three courts blur into one dripping crew, and you keep the ledger of who helped, which is everyone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -793,7 +793,7 @@
     },
     {
       "id": "t_c8",
-      "body": "<<FILL role=climax words=98 beats='dusk: Ives opens by reading your door ledger aloud, every court's hands at the sluice, then asks you to state the bridge facts one last time for the record; a neutral witness, he tells the hall over his hourglass, is the rarest water in Tessara'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk: {CHANCELLOR} opens by reading your door ledger aloud, every court's hands at the sluice, then asks you to state the bridge facts one last time for the record; a neutral witness, he tells the hall over his hourglass, is the rarest water in {CITY}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -805,23 +805,23 @@
     },
     {
       "id": "t_ce1",
-      "body": "<<FILL role=success words=96 beats='on straight facts and a shared afternoon the courts settle terms by full dark: a public gauge, shared dredging, night water, honest soundings; Ives signs last and tells you that every accord is only paper, and what holds is the witnessing; he says, turning the hourglass flat, that you witnessed well'>>",
+      "body": "<<FILL role=success words=96 beats='on straight facts and a shared afternoon the courts settle terms by full dark: a public {GAUGE}, shared dredging, night water, honest soundings; {CHANCELLOR} signs last and tells you that every accord is only paper, and what holds is the witnessing; he says, turning the hourglass flat, that you witnessed well'>>",
       "is_ending": true,
       "ending": {
         "id": "t_ce1",
         "valence": "positive",
         "kind": "success",
-        "title": "The Neutral Chair"
+        "title": "{TC_PRIZE1}"
       }
     },
     {
       "id": "t_c9",
-      "body": "<<FILL role=rising words=102 beats='you reach the sluice as the jam gives way, storm debris hauled clear by mixed crews, willow limbs and a cartwheel and no cut ropes anywhere; below the draining gate you see it plainly and sketch it fast, a bronze gauge plate silted to the collar, the accord's own measure drowned in mud for years'>>",
+      "body": "<<FILL role=rising words=102 beats='you reach {FLOOD_SITE} as the jam gives way, {DEBRIS_CAUSE} and no cut ropes anywhere; below the draining gate you see it plainly and sketch it fast, {GAUGE} silted to the collar, the accord's own measure drowned in mud for years'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_c9_1",
-          "label": "Run the sketch back to the chancellor.",
+          "label": "Run the sketch back to {CHANCELLOR}.",
           "target": "t_c10"
         }
       ],
@@ -831,7 +831,7 @@
     },
     {
       "id": "t_c10",
-      "body": "<<FILL role=climax words=100 beats='Ives studies your sketch of the drowned gauge a long time and says quietly that the city has been arguing over a ruler nobody could read; at dusk he sets the sketch before the courts and asks whether they would rather be right tonight or measured rightly forever'>>",
+      "body": "<<FILL role=climax words=100 beats='{CHANCELLOR} studies your sketch of {GAUGE} a long time and says quietly that the city has been arguing over a ruler nobody could read; at dusk he sets the sketch before the courts and asks whether they would rather be right tonight or measured rightly forever'>>",
       "is_ending": false,
       "choices": [
         {
@@ -843,30 +843,30 @@
     },
     {
       "id": "t_ce3",
-      "body": "<<FILL role=ending words=95 beats='the courts choose measured rightly: no full accord tonight, but a binding order to raise and rebuild the gauge, signatures set for its first public reading; Ives enters your sketch into the record and tells you that some days the bravest thing a summit can do is wait for the truth to dry out'>>",
+      "body": "<<FILL role=ending words=95 beats='the courts choose measured rightly: no full accord tonight, but a binding order to raise and rebuild {GAUGE}, signatures set for its first public reading; {CHANCELLOR} enters your sketch into the record and tells you that some days the bravest thing a summit can do is wait for the truth to dry out'>>",
       "is_ending": true,
       "ending": {
         "id": "t_ce3",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Chair's Eyes"
+        "title": "{TC_PRIZE2}"
       }
     },
     {
       "id": "t_c11",
-      "body": "<<FILL role=rising words=100 beats='you keep the Tides bench, and Selk puts you to proper envoy work between sessions, carrying the harbor's numbers to the Bells and their queries back; at noon the damaged page is laid bare; when the flood bell rings, Selk sends her crews and keeps her runner, you, at her side'>>",
+      "body": "<<FILL role=rising words=100 beats='you keep {ROUTE_A_COURT} bench, and {ROUTE_A_LEAD} puts you to proper envoy work between sessions, carrying the harbor's numbers to {ROUTE_C_COURT} and their queries back; at noon {ACCORD_PAGE} is laid bare; when {FLOOD_SIGNAL} rings, {ROUTE_A_LEAD} sends her crews and keeps her runner, you, at her side'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t_c11_1",
-          "label": "Follow her into the low quarter.",
+          "label": "Follow her into {LOW_QUARTER}.",
           "target": "t_c12"
         }
       ]
     },
     {
       "id": "t_c12",
-      "body": "<<FILL role=rising words=102 beats='the warehouse lane: sandbags, shouted counts, the harbor holding its own doorstep while word comes down the runner chain that the sluice jam is storm debris coming clear; Selk works beside you and asks, between bags, exactly what you saw and logged on that bridge at midnight'>>",
+      "body": "<<FILL role=rising words=102 beats='the warehouse lane: sandbags, shouted counts, the harbor holding its own doorstep while word comes down the runner chain that the sluice jam is {DEBRIS_CAUSE} coming clear; {ROUTE_A_LEAD} works beside you and asks, between bags, exactly what you saw and logged on that bridge at midnight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -881,7 +881,7 @@
     },
     {
       "id": "t_c13",
-      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: Selk cites your bridge log to close the tamper question for good, then lays out the harbor's case; loyalty, she tells the bench with a hand on your shoulder, is not saying what your court wants, it is bringing your court the truth while there is still time to use it'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: {ROUTE_A_LEAD} cites your bridge log to close {ROUTE_A_RUMOR} for good, then lays out the harbor's case; loyalty, she tells the bench with a hand on your shoulder, is not saying what your court wants, it is bringing your court the truth while there is still time to use it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -893,18 +893,18 @@
     },
     {
       "id": "t_ce2",
-      "body": "<<FILL role=completion words=94 beats='the courts initial a working accord, gauge first, full terms at next season's summit, and Selk writes into the harbor log that this year's Youth Envoy served the Tides best by staying exactly honest; you walk home along a river that has not changed beside a city that slightly has'>>",
+      "body": "<<FILL role=completion words=94 beats='the courts initial a working accord, gauge first, full terms at next season's summit, and {ROUTE_A_LEAD} writes into the harbor log that this year's {ROLE_TITLE} served {ROUTE_A_COURT} best by staying exactly honest; you walk home along a river that has not changed beside a city that slightly has'>>",
       "is_ending": true,
       "ending": {
         "id": "t_ce2",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Harbor's Witness"
+        "title": "{TC_PRIZE3}"
       }
     },
     {
       "id": "g_road",
-      "body": "<<FILL role=rising words=106 beats='the orchard road out to Grove Gate at dusk before the summit: terraces stepped up the valley, leaves curling early, the festival cisterns showing their rings; Warden Oleth meets you at the lodge with tea and no small talk: the Groves dug new channels this spring because the rains failed twice, he says, and now the whole city says thief'>>",
+      "body": "<<FILL role=rising words=106 beats='the orchard road out to {ROUTE_B_HALL} at dusk before the summit: terraces stepped up the valley, leaves curling early, {GB_CISTERN} showing their rings; {ROUTE_B_LEAD} meets you at the lodge with tea and no small talk: {ROUTE_B_COURT} dug new channels this spring because the rains failed twice, he says, and now the whole city says thief'>>",
       "is_ending": false,
       "choices": [
         {
@@ -916,7 +916,7 @@
     },
     {
       "id": "g_gate",
-      "body": "<<FILL role=rising words=102 beats='Oleth walks you along the channels by lantern light: clay-lined, hand-dug, opened to save the young trees; he shows you the sluice-fed mains and the numbered gates with their pins; at gate seven the pin sits crooked in its hasp, as if lifted once and reset, and Oleth, ahead with the lantern, does not see it'>>",
+      "body": "<<FILL role=rising words=102 beats='{ROUTE_B_LEAD} walks you along the channels by lantern light: clay-lined, hand-dug, opened to save the young trees; he shows you the sluice-fed mains and the numbered gates with their pins; at {GA_GATE_NUM} the pin sits crooked in its hasp, as if lifted once and reset, and {ROUTE_B_LEAD}, ahead with the lantern, does not see it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -928,7 +928,7 @@
     },
     {
       "id": "g_walk",
-      "body": "<<FILL role=rising words=100 beats='from Grove Gate you can see the Lantern Bridge lamps across the fields; near midnight a courier hurries over the bridge, lantern guttering, and goes down hard on the wet steps; he is up again, limping on toward Bell Hall, before you can even call out; the chancellor's letters, Oleth murmurs, go out tonight'>>",
+      "body": "<<FILL role=rising words=100 beats='from {ROUTE_B_HALL} you can see {BRIDGE} lamps across the fields; near midnight {COURIER} hurries over the bridge, lantern guttering, and goes down hard on the wet steps; he is up again, limping on toward {SUMMIT_VENUE}, before you can even call out; the chancellor's letters, {ROUTE_B_LEAD} murmurs, go out tonight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -940,7 +940,7 @@
     },
     {
       "id": "g_night",
-      "body": "<<FILL role=choice words=108 beats='the fallen courier limps on with his lantern failing and two fields still to cross; you could catch him with the lodge lantern and see him safely to the Bell Hall door, or wake Warden Oleth so the Groves can send proper word of the fall ahead to the Bell watch; the cold will not hold the choice open long'>>",
+      "body": "<<FILL role=choice words=108 beats='the fallen {COURIER} limps on with his lantern failing and two fields still to cross; you could catch him with the lodge lantern and see him safely to {SUMMIT_VENUE}'s door, or wake {ROUTE_B_LEAD} so {ROUTE_B_COURT} can send proper word of the fall ahead to the Bell watch; the cold will not hold the choice open long'>>",
       "is_ending": false,
       "choices": [
         {
@@ -957,19 +957,19 @@
     },
     {
       "id": "g_a1",
-      "body": "<<FILL role=rising words=104 beats='you catch the courier, Pell, at the field stile: ankle swelling, and the chancellor's seal torn where it caught a nail on the split bridge rail, a gray thread of his own cloak left behind on the metal; you lend him your shoulder as far as the Bell Hall door and hear the night clerk log him in'>>",
+      "body": "<<FILL role=rising words=104 beats='you catch {COURIER} at the field stile: ankle swelling, and the chancellor's seal torn where it caught a nail on the split bridge rail, a gray thread of his own cloak left behind on the metal; you lend him your shoulder as far as {SUMMIT_VENUE}'s door and hear the night clerk log him in'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_a1_1",
-          "label": "Take the dawn bell at the Groves bench.",
+          "label": "Take the dawn bell at {ROUTE_B_COURT} bench.",
           "target": "g_a2"
         }
       ]
     },
     {
       "id": "g_a2",
-      "body": "<<FILL role=rising words=106 beats='dawn session from the Groves bench: Ives turns the brass hourglass; Harbormistress Selk stands and accuses the Groves of taking the river with their new channels, and half the gallery growls along with her; Oleth answers only that his orchards are browning too; the shouting drowns the rest and Ives suspends until noon'>>",
+      "body": "<<FILL role=rising words=106 beats='dawn session from {ROUTE_B_COURT} bench: {CHANCELLOR} turns {TIMEKEEPER}; {ROUTE_A_LEAD} stands and accuses {ROUTE_B_COURT} of taking the river with their new channels, and half the gallery growls along with her; {ROUTE_B_LEAD} answers only that his orchards are browning too; the shouting drowns the rest and {CHANCELLOR} suspends until noon'>>",
       "is_ending": false,
       "choices": [
         {
@@ -981,24 +981,24 @@
     },
     {
       "id": "g_a3",
-      "body": "<<FILL role=rising words=102 beats='in the market you hear the torn seal retold as theft, the Groves opened the chancellor's letter, folk are saying, the Groves tore the seal; you stood at the stile and know better; back at the channels, Sefa the under-warden is waiting for you alone, twisting her hat in her hands'>>",
+      "body": "<<FILL role=rising words=102 beats='in the market you hear the torn seal retold as theft, {ROUTE_B_COURT} opened the chancellor's letter, folk are saying, {ROUTE_B_COURT} tore the seal; you stood at the stile and know better; back at the channels, {ROUTE_B_CHAR} the under-warden is waiting for you alone, twisting her hat in her hands'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_a3_1",
-          "label": "Hear what Sefa has to say.",
+          "label": "Hear what {ROUTE_B_CHAR} has to say.",
           "target": "g_a4"
         }
       ]
     },
     {
       "id": "g_a4",
-      "body": "<<FILL role=choice words=112 beats='Sefa confesses to you alone: in the worst dry week she lifted gate seven without leave, one night, to save the young trees, and reset the pin after; with the whole city already calling the Groves thieves, she begs you to keep it just until the summit is over, one day of silence, envoy, one day'>>",
+      "body": "<<FILL role=choice words=112 beats='{ROUTE_B_CHAR} confesses to you alone: in the worst dry week she lifted {GA_GATE_NUM} without leave, one night, to save the young trees, and reset the pin after; with the whole city already calling {ROUTE_B_COURT} thieves, she begs you to keep {GA_GATE} just until the summit is over, one day of silence, envoy, one day'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_a4_1",
-          "label": "Say the warden must hear it, and go with her.",
+          "label": "Say {ROUTE_B_LEAD} must hear it, and go with her.",
           "target": "g_a5"
         },
         {
@@ -1010,7 +1010,7 @@
     },
     {
       "id": "g_a5",
-      "body": "<<FILL role=rising words=106 beats='Sefa tells Oleth with you standing beside her; he is quiet long enough for the orchard to hear it, then thanks her for the truth and grieves the timing; the gate is closed and the lift logged with its dates, and Oleth says the Groves will not be the court that hides things, he will disclose it at noon himself'>>",
+      "body": "<<FILL role=rising words=106 beats='{ROUTE_B_CHAR} tells {ROUTE_B_LEAD} with you standing beside her; he is quiet long enough for the orchard to hear it, then thanks her for the truth and grieves the timing; {GA_GATE_NUM} is closed and the lift logged with its dates, and {ROUTE_B_LEAD} says {ROUTE_B_COURT} will not be the court that hides things, he will disclose it at noon himself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1022,7 +1022,7 @@
     },
     {
       "id": "g_a6",
-      "body": "<<FILL role=rising words=108 beats='noon session: Oleth rises first and discloses gate seven before anyone can accuse, one gate, one night, logged and closed; the hall rustles, but there is respect in the sound; then the damaged water-measure page is laid bare, fair copies disagreeing, and into the middle of the argument the flood bell begins to ring'>>",
+      "body": "<<FILL role=rising words=108 beats='noon session: {ROUTE_B_LEAD} rises first and discloses {GA_GATE_NUM} before anyone can accuse, one gate, one night, logged and closed; the hall rustles, but there is respect in the sound; then {ACCORD_PAGE} is laid bare, fair copies disagreeing, and into the middle of the argument {FLOOD_SIGNAL} begins to ring'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1034,7 +1034,7 @@
     },
     {
       "id": "g_a7",
-      "body": "<<FILL role=choice words=110 beats='the Willow Sluice is jammed and backing toward the low quarter, and the Groves, whose channels feed off that sluice, are watched by every eye on the bank; Oleth needs runners three ways at once and trusts his envoy to pick the post that needs you most'>>",
+      "body": "<<FILL role=choice words=110 beats='{FLOOD_SITE} is jammed and backing toward {LOW_QUARTER}, and {ROUTE_B_COURT}, whose channels feed off that sluice, are watched by every eye on the bank; {ROUTE_B_LEAD} needs runners three ways at once and trusts his envoy to pick the post that needs you most'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1049,14 +1049,14 @@
         },
         {
           "id": "c_g_a7_3",
-          "label": "Carry the warden's compromise offer to Bell Hall.",
+          "label": "Carry {ROUTE_B_LEAD}'s compromise offer to {SUMMIT_VENUE}.",
           "target": "g_a12"
         }
       ]
     },
     {
       "id": "g_a8",
-      "body": "<<FILL role=rising words=102 beats='at the sluice you haul rope beside sailors who eyed the Groves all day; the jam comes up as storm debris, willow limbs and a broken cartwheel, no cut ropes anywhere; and as the pool drains a gray-bearded Tides hauler whistles low: below the gate, silted to the collar, sits the accord's old bronze gauge'>>",
+      "body": "<<FILL role=rising words=102 beats='at {FLOOD_SITE} you haul rope beside sailors who eyed {ROUTE_B_COURT} all day; the jam comes up as {DEBRIS_CAUSE}, no cut ropes anywhere; and as the pool drains a gray-bearded {ROUTE_A_COURT} hauler whistles low: below the gate, silted to the collar, sits {GAUGE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1071,7 +1071,7 @@
     },
     {
       "id": "g_a9",
-      "body": "<<FILL role=climax words=98 beats='dusk session, one turn late, mud on every bench; when Ives calls for what the day taught the city, Oleth sends you, the envoy who stood in the water, to the witness step: the debris, the shared rope, and the drowned gauge that nobody has been able to read for years'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk session, one turn late, mud on every bench; when {CHANCELLOR} calls for what the day taught the city, {ROUTE_B_LEAD} sends you, the envoy who stood in the water, to the witness step: the debris, the shared rope, and {GAUGE} that nobody has been able to read for years'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1083,18 +1083,18 @@
     },
     {
       "id": "g_ae1",
-      "body": "<<FILL role=success words=96 beats='your witness turns the summit from blame to measuring: the courts agree to raise and rebuild the gauge as a public one, share the dredging, and water the groves at night; Oleth signs for the Groves and tells you an orchard grows on patience and true measure, and so, it turns out, does a city'>>",
+      "body": "<<FILL role=success words=96 beats='your witness turns the summit from blame to measuring: the courts agree to raise and rebuild {GAUGE} as a public one, share the dredging, and water the groves at night; {ROUTE_B_LEAD} signs for {ROUTE_B_COURT} and tells you an orchard grows on patience and true measure, and so, it turns out, does a city'>>",
       "is_ending": true,
       "ending": {
         "id": "g_ae1",
         "valence": "positive",
         "kind": "success",
-        "title": "The Buried Gauge"
+        "title": "{GA_PRIZE1}"
       }
     },
     {
       "id": "g_a10",
-      "body": "<<FILL role=rising words=100 beats='you walk the line with the gate book: every gate checked, pinned, and signed, gate seven's closure fresh on its page; twice you turn away angry strangers hunting sabotage with lanterns, politely, with the book open; when the water settles, the Groves ledger shows every drop accounted, dated, and initialed'>>",
+      "body": "<<FILL role=rising words=100 beats='you walk the line with the gate book: every gate checked, pinned, and signed, {GA_GATE_NUM}'s closure fresh on its page; twice you turn away angry strangers hunting sabotage with lanterns, politely, with the book open; when the water settles, {ROUTE_B_COURT} ledger shows every drop accounted, dated, and initialed'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1106,7 +1106,7 @@
     },
     {
       "id": "g_a11",
-      "body": "<<FILL role=climax words=98 beats='dusk: when a Tides captain rises to suggest the Groves used the scare to draw water, Oleth does not argue; he passes your gate book down the bench and lets the courts read it page by page until the muttering dies; honesty at noon, he murmurs beside you, is why the book is believed at dusk'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk: when a {ROUTE_A_COURT} captain rises to suggest {ROUTE_B_COURT} used the scare to draw water, {ROUTE_B_LEAD} does not argue; he passes your gate book down the bench and lets the courts read it page by page until the muttering dies; honesty at noon, he murmurs beside you, is why the book is believed at dusk'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1118,18 +1118,18 @@
     },
     {
       "id": "g_ae2",
-      "body": "<<FILL role=completion words=95 beats='the courts initial a working accord, rebuild the gauge first and set the shares by its first honest readings, and the Groves walk out with their name scrubbed clean by their own bookkeeping; at the lodge Oleth tells the wardens their envoy guarded the orchard with a pen, which is how it is done in a city of courts'>>",
+      "body": "<<FILL role=completion words=95 beats='the courts initial a working accord, rebuild {GAUGE} first and set the shares by its first honest readings, and {ROUTE_B_COURT} walk out with their name scrubbed clean by their own bookkeeping; at the lodge {ROUTE_B_LEAD} tells the wardens their envoy guarded the orchard with a pen, which is how it is done in a city of courts'>>",
       "is_ending": true,
       "ending": {
         "id": "g_ae2",
         "valence": "positive",
         "kind": "completion",
-        "title": "Clean Ledgers"
+        "title": "{GA_PRIZE2}"
       }
     },
     {
       "id": "g_a12",
-      "body": "<<FILL role=rising words=102 beats='Oleth writes fast on the lodge table: the Groves offer night watering, metered gates, and a share of the dredging costs, all of it contingent on a rebuilt public gauge; you run the offer through streets loud with flood work, past the sandbag lines, and put it into the hands of the chancellor's clerk before the dusk bell'>>",
+      "body": "<<FILL role=rising words=102 beats='{ROUTE_B_LEAD} writes fast on the lodge table: {ROUTE_B_COURT} offer night watering, metered gates, and a share of the dredging costs, all of it contingent on a rebuilt public {GAUGE}; you run the offer through streets loud with flood work, past the sandbag lines, and put it into the hands of the chancellor's clerk before the dusk bell'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1141,7 +1141,7 @@
     },
     {
       "id": "g_a13",
-      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: Ives opens by reading the Groves offer aloud, the first plain proposal of the whole summit, and the room changes temperature; Selk stands, allows that the harbor could retime its barge drafts, and suddenly the courts are trading terms instead of accusations'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: {CHANCELLOR} opens by reading {ROUTE_B_COURT} offer aloud, the first plain proposal of the whole summit, and the room changes temperature; {ROUTE_A_LEAD} stands, allows that the harbor could retime its barge drafts, and suddenly the courts are trading terms instead of accusations'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1153,18 +1153,18 @@
     },
     {
       "id": "g_ae3",
-      "body": "<<FILL role=completion words=94 beats='built on the Groves' opening bid, the courts initial an accord by lamplight and set the signing for the new gauge's first reading; Oleth tells you an envoy's legs matter as much as an envoy's ears, and that tonight the Groves led the city by offering first; the orchard road home smells of rain finally coming'>>",
+      "body": "<<FILL role=completion words=94 beats='built on {ROUTE_B_COURT}'s opening bid, the courts initial an accord by lamplight and set the signing for {GAUGE}'s first reading; {ROUTE_B_LEAD} tells you an envoy's legs matter as much as an envoy's ears, and that tonight {ROUTE_B_COURT} led the city by offering first; the orchard road home smells of rain finally coming'>>",
       "is_ending": true,
       "ending": {
         "id": "g_ae3",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Offer Carried"
+        "title": "{GA_PRIZE3}"
       }
     },
     {
       "id": "g_a14",
-      "body": "<<FILL role=rising words=106 beats='you give Sefa your silence, and at noon it spends itself: a Bells surveyor reports fresh scratches on gate seven's pin and asks the Groves to explain, Oleth turns to his own bench blindsided, Sefa goes pale as paper beside you, and before anyone can answer anything, the flood bell begins to ring'>>",
+      "body": "<<FILL role=rising words=106 beats='you give {ROUTE_B_CHAR} your silence, and at noon it spends itself: a {ROUTE_C_COURT} surveyor reports fresh scratches on {GA_GATE_NUM}'s pin and asks {ROUTE_B_COURT} to explain, {ROUTE_B_LEAD} turns to his own bench blindsided, {ROUTE_B_CHAR} goes pale as paper beside you, and before anyone can answer anything, {FLOOD_SIGNAL} begins to ring'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1176,7 +1176,7 @@
     },
     {
       "id": "g_a15",
-      "body": "<<FILL role=rising words=104 beats='the scare falls hardest on the Groves: every eye at the sluice asks whether the court that lifted a gate in secret also jammed a sluice; you haul debris beside Sefa, who will not look up from the rope, while Oleth carries the suspicion of the whole bank on his level voice'>>",
+      "body": "<<FILL role=rising words=104 beats='the scare falls hardest on {ROUTE_B_COURT}: every eye at the sluice asks whether the court that lifted a gate in secret also jammed a sluice; you haul debris beside {ROUTE_B_CHAR}, who will not look up from the rope, while {ROUTE_B_LEAD} carries the suspicion of the whole bank on his level voice'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1191,12 +1191,12 @@
     },
     {
       "id": "g_a16",
-      "body": "<<FILL role=choice words=108 beats='in the lull before dusk, Oleth gathers the lodge and asks plainly: does anyone know why gate seven's pin was scratched; Sefa's breath goes thin beside you; your promise sits on your tongue like a pebble, and the hourglass at Bell Hall is already being carried to the bench'>>",
+      "body": "<<FILL role=choice words=108 beats='in the lull before dusk, {ROUTE_B_LEAD} gathers the lodge and asks plainly: does anyone know why {GA_GATE_NUM}'s pin was scratched; {ROUTE_B_CHAR}'s breath goes thin beside you; {GA_GATE} sits on your tongue like a pebble, and the hourglass at {SUMMIT_VENUE} is already being carried to the bench'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_a16_1",
-          "label": "Break your promise: tell the warden now.",
+          "label": "Break your promise: tell {ROUTE_B_LEAD} now.",
           "target": "g_a17"
         },
         {
@@ -1208,7 +1208,7 @@
     },
     {
       "id": "g_a17",
-      "body": "<<FILL role=rising words=102 beats='you tell it, and Sefa, released, tells the rest herself; Oleth's disappointment is a weather that passes; at dusk he discloses gate seven late, with Sefa standing beside him and you named as the envoy who would not carry a hidden thing one field farther'>>",
+      "body": "<<FILL role=rising words=102 beats='you tell it, and {ROUTE_B_CHAR}, released, tells the rest herself; {ROUTE_B_LEAD}'s disappointment is a weather that passes; at dusk he discloses {GA_GATE_NUM} late, with {ROUTE_B_CHAR} standing beside him and you named as the envoy who would not carry a hidden thing one field farther'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1220,18 +1220,18 @@
     },
     {
       "id": "g_ae4",
-      "body": "<<FILL role=ending words=96 beats='the courts, wary now, sign nothing tonight; they order a joint survey of gates and gauge with the Groves records open to all, and set a new summit for the month's end; Sefa keeps her post on probation and grips your hand hard at the lodge door; a promise to hide, Oleth says, is a seed that only grows downward'>>",
+      "body": "<<FILL role=ending words=96 beats='the courts, wary now, sign nothing tonight; they order a joint survey of gates and {GAUGE} with {ROUTE_B_COURT} records open to all, and set a new summit for the month's end; {ROUTE_B_CHAR} keeps her post on probation and grips your hand hard at the lodge door; a promise to hide, {ROUTE_B_LEAD} says, is a seed that only grows downward'>>",
       "is_ending": true,
       "ending": {
         "id": "g_ae4",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Late Truth"
+        "title": "{GA_PRIZE4}"
       }
     },
     {
       "id": "g_a18",
-      "body": "<<FILL role=rising words=100 beats='silence holds until dusk and then breaks everything at once: the surveyor presses, Sefa confesses in front of all three courts, too late for it to look like anything but concealment, and the Groves case, honest on every other page, drowns in the one page it held back'>>",
+      "body": "<<FILL role=rising words=100 beats='silence holds until dusk and then breaks everything at once: the surveyor presses, {ROUTE_B_CHAR} confesses in front of all three courts, too late for it to look like anything but concealment, and {ROUTE_B_COURT} case, honest on every other page, drowns in the one page it held back'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1243,13 +1243,13 @@
     },
     {
       "id": "g_ae5",
-      "body": "<<FILL role=failure words=98 beats='the summit closes without an accord; Ives records Sefa's confession, and at Oleth's own asking he also records the envoy's kindness to a hurt courier on the summit's eve, so the record holds the whole of the day; walking home, Oleth says the orchard will stand one more dry season, then plants his words slowly: the hiding cost more than the water ever did'>>",
+      "body": "<<FILL role=failure words=98 beats='the summit closes without an accord; {CHANCELLOR} records {ROUTE_B_CHAR}'s confession, and at {ROUTE_B_LEAD}'s own asking he also records the envoy's kindness to a hurt courier on the summit's eve, so the record holds the whole of the day; walking home, {ROUTE_B_LEAD} says the orchard will stand one more dry season, then plants his words slowly: the hiding cost more than the water ever did'>>",
       "is_ending": true,
       "ending": {
         "id": "g_ae5",
         "valence": "negative",
         "kind": "setback",
-        "title": "Gate Seven"
+        "title": "{GA_PRIZE5}"
       },
       "safety_scope": [
         "sad_moment"
@@ -1257,7 +1257,7 @@
     },
     {
       "id": "g_b1",
-      "body": "<<FILL role=rising words=102 beats='you wake Oleth; he sends a rider to the Bell watch at once, so the courier's fall on the bridge is logged by two courts before any rumor can be born crooked; a small thing, he says, pulling on his boots, but in a summit year you log the weather itself; you sleep three hours and dream of numbered gates'>>",
+      "body": "<<FILL role=rising words=102 beats='you wake {ROUTE_B_LEAD}; he sends a rider to the Bell watch at once, so the courier's fall on the bridge is logged by two courts before any rumor can be born crooked; a small thing, he says, pulling on his boots, but in a summit year you log the weather itself; you sleep three hours and dream of numbered gates'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1269,36 +1269,36 @@
     },
     {
       "id": "g_b2",
-      "body": "<<FILL role=rising words=104 beats='dawn session: Selk accuses the Groves of taking the river with their new channels; when the torn-seal whisper tries the air, Oleth cites the night log, courier fallen, seal torn on the rail, reported within the hour, and the whisper thins; the water question still ends in shouting, and Ives suspends until noon'>>",
+      "body": "<<FILL role=rising words=104 beats='dawn session: {ROUTE_A_LEAD} accuses {ROUTE_B_COURT} of taking the river with their new channels; when {ROUTE_A_RUMOR} tries the air, {ROUTE_B_LEAD} cites the night log, courier fallen, seal torn on the rail, reported within the hour, and the whisper thins; the water question still ends in shouting, and {CHANCELLOR} suspends until noon'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_b2_1",
-          "label": "Ride back to Grove Gate for orders.",
+          "label": "Ride back to {ROUTE_B_HALL} for orders.",
           "target": "g_b3"
         }
       ]
     },
     {
       "id": "g_b3",
-      "body": "<<FILL role=choice words=106 beats='Oleth has two jobs and one envoy before the noon bell: ride the channel line with him, measuring the real flows against what the accusers claim the Groves take, or help Sefa ready the festival cisterns, the Groves' stored rain, for a goodwill release to the starving lower river'>>",
+      "body": "<<FILL role=choice words=106 beats='{ROUTE_B_LEAD} has two jobs and one envoy before the noon bell: ride the channel line with him, measuring the real flows against what the accusers claim {ROUTE_B_COURT} take, or help {ROUTE_B_CHAR} ready {GB_CISTERN}, {ROUTE_B_COURT}' stored rain, for a goodwill release to the starving lower river'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_b3_1",
-          "label": "Ride the measuring line with the warden.",
+          "label": "Ride the measuring line with {ROUTE_B_LEAD}.",
           "target": "g_b4"
         },
         {
           "id": "c_g_b3_2",
-          "label": "Help ready the festival cisterns.",
+          "label": "Help ready {GB_CISTERN}.",
           "target": "g_b10"
         }
       ]
     },
     {
       "id": "g_b4",
-      "body": "<<FILL role=rising words=102 beats='gate by gate you measure: even opened wide, the new channels take less water than the harbor swears is missing; Oleth chalks each figure on the gate boards where anyone who walks the line may check it, and says that something upstream of everyone's certainty is wrong with the measuring itself'>>",
+      "body": "<<FILL role=rising words=102 beats='gate by gate you measure: even opened wide, the new channels take less water than the harbor swears is missing; {ROUTE_B_LEAD} chalks each figure on the gate boards where anyone who walks the line may check it, and says that something upstream of everyone's certainty is wrong with the measuring itself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1310,7 +1310,7 @@
     },
     {
       "id": "g_b5",
-      "body": "<<FILL role=rising words=104 beats='noon session: the damaged water-measure page is laid bare, fair copies disagreeing; Oleth presents your flow figures, less taken than claimed missing, and for one blessed minute the courts frown at the same numbers instead of at each other; then the flood bell rolls through the hall'>>",
+      "body": "<<FILL role=rising words=104 beats='noon session: {ACCORD_PAGE} is laid bare, fair copies disagreeing; {ROUTE_B_LEAD} presents your flow figures, less taken than claimed missing, and for one blessed minute the courts frown at the same numbers instead of at each other; then {FLOOD_SIGNAL} rolls through the hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1322,7 +1322,7 @@
     },
     {
       "id": "g_b6",
-      "body": "<<FILL role=choice words=104 beats='at the jammed sluice Oleth splits his wardens: a debris crew into the water beside the Tides sailors, and a gate crew to hold and watch the channel mouths so that no surge can be blamed on the Groves afterward; he leaves the choice of posts to his envoy'>>",
+      "body": "<<FILL role=choice words=104 beats='at the jammed sluice {ROUTE_B_LEAD} splits his wardens: a debris crew into the water beside {ROUTE_A_COURT} sailors, and a gate crew to hold and watch the channel mouths so that no surge can be blamed on {ROUTE_B_COURT} afterward; he leaves the choice of posts to his envoy'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1339,7 +1339,7 @@
     },
     {
       "id": "g_b7",
-      "body": "<<FILL role=rising words=102 beats='between hauls you sound the backed pool with the measuring rod, and when the debris comes clear, willow limbs, a cartwheel, no sabotage, your rod raps something square below the gate: a bronze gauge plate, silted blind, the accord's own measure that no living clerk has read'>>",
+      "body": "<<FILL role=rising words=102 beats='between hauls you sound the backed pool with the measuring rod, and when the debris comes clear, {DEBRIS_CAUSE}, no sabotage, your rod raps something square below the gate: {GAUGE}, silted blind, the accord's own measure that no living clerk has read'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1354,7 +1354,7 @@
     },
     {
       "id": "g_b8",
-      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: your flow figures, your soundings, and the drowned gauge line up like beads on one string; Oleth lets the numbers speak first and then asks the courts a warden's question, whether they mean to keep farming blame or to start measuring water'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: your flow figures, your soundings, and {GAUGE} line up like beads on one string; {ROUTE_B_LEAD} lets the numbers speak first and then asks the courts a warden's question, whether they mean to keep farming blame or to start measuring water'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1366,18 +1366,18 @@
     },
     {
       "id": "g_be1",
-      "body": "<<FILL role=success words=96 beats='the accord is signed around the Groves arithmetic: raise the gauge, read it publicly, night water for the orchards, shared dredging for the channel; Selk shakes Oleth's hand like a woman testing a fence post, and Oleth tells you the city was saved by a measuring rod and the patience to use it twice'>>",
+      "body": "<<FILL role=success words=96 beats='the accord is signed around {ROUTE_B_COURT} arithmetic: raise {GAUGE}, read it publicly, night water for the orchards, shared dredging for the channel; {ROUTE_A_LEAD} shakes {ROUTE_B_LEAD}'s hand like a woman testing a fence post, and {ROUTE_B_LEAD} tells you the city was saved by a measuring rod and the patience to use it twice'>>",
       "is_ending": true,
       "ending": {
         "id": "g_be1",
         "valence": "positive",
         "kind": "success",
-        "title": "Measured Fair"
+        "title": "{GB_PRIZE1}"
       }
     },
     {
       "id": "g_b9",
-      "body": "<<FILL role=rising words=100 beats='you hold the gates, pinned, watched, and logged, while the surge shoulders past and the low quarter stays dry; twice a lantern party comes hunting Groves sabotage, and twice the open gate book turns them polite; when the jam clears as plain storm debris, your log shows the channels never moved'>>",
+      "body": "<<FILL role=rising words=100 beats='you hold the gates, pinned, watched, and logged, while the surge shoulders past and {LOW_QUARTER} stays dry; twice a lantern party comes hunting {ROUTE_B_COURT} sabotage, and twice the open gate book turns them polite; when the jam clears as plain {DEBRIS_CAUSE}, your log shows the channels never moved'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1392,7 +1392,7 @@
     },
     {
       "id": "g_b9b",
-      "body": "<<FILL role=climax words=96 beats='dusk: when suspicion reaches for the Groves one last time, the gate log answers it page by page, every pin, every hour, every initial; Ives remarks that of all the day's evidence the dullest book is the most convincing, and asks the courts to talk terms at last'>>",
+      "body": "<<FILL role=climax words=96 beats='dusk: when suspicion reaches for {ROUTE_B_COURT} one last time, the gate log answers it page by page, every pin, every hour, every initial; {CHANCELLOR} remarks that of all the day's evidence the dullest book is the most convincing, and asks the courts to talk terms at last'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1404,18 +1404,18 @@
     },
     {
       "id": "g_be2",
-      "body": "<<FILL role=completion words=94 beats='the courts initial a truce and a working accord, gauge first and shares after, and the Groves gate book is entered whole into the record as the summit's example of an open ledger; at the lodge, Oleth tells the wardens that their envoy kept the gates, and the gates kept the Groves' good name'>>",
+      "body": "<<FILL role=completion words=94 beats='the courts initial a truce and a working accord, gauge first and shares after, and {ROUTE_B_COURT} gate book is entered whole into the record as the summit's example of an open ledger; at the lodge, {ROUTE_B_LEAD} tells the wardens that their envoy kept the gates, and the gates kept {ROUTE_B_COURT}' good name'>>",
       "is_ending": true,
       "ending": {
         "id": "g_be2",
         "valence": "positive",
         "kind": "completion",
-        "title": "Holding the Line"
+        "title": "{GB_PRIZE2}"
       }
     },
     {
       "id": "g_b10",
-      "body": "<<FILL role=rising words=102 beats='the festival cisterns: the Groves' stored rain, saved all year for the harvest festival; Oleth means to release a share down-city as plain goodwill, proof the Groves do not hoard while the river runs thin; you help Sefa rig the release gear and count off hands for the work'>>",
+      "body": "<<FILL role=rising words=102 beats='{GB_CISTERN}: {ROUTE_B_COURT}' stored rain, saved all year for the harvest festival; {ROUTE_B_LEAD} means to release a share down-city as plain goodwill, proof {ROUTE_B_COURT} do not hoard while the river runs thin; you help {ROUTE_B_CHAR} rig the release gear and count off hands for the work'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1427,19 +1427,19 @@
     },
     {
       "id": "g_b10b",
-      "body": "<<FILL role=rising words=100 beats='noon session: Oleth announces the coming release; some benches call it neighborly and some call it a bribe, and then the damaged page steals the argument entirely; when the flood bell rings, Oleth realizes aloud that a goodwill release into a backing river must now be timed exactly right or not at all'>>",
+      "body": "<<FILL role=rising words=100 beats='noon session: {ROUTE_B_LEAD} announces the coming release; some benches call it neighborly and some call it a bribe, and then {ACCORD_PAGE} steals the argument entirely; when {FLOOD_SIGNAL} rings, {ROUTE_B_LEAD} realizes aloud that a goodwill release into a backing river must now be timed exactly right or not at all'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_b10b_1",
-          "label": "Hurry back to the cistern gear with Sefa.",
+          "label": "Hurry back to the cistern gear with {ROUTE_B_CHAR}.",
           "target": "g_b11"
         }
       ]
     },
     {
       "id": "g_b11",
-      "body": "<<FILL role=choice words=108 beats='Sefa, hauling on the release gear, says the paperwork can catch up later, open the valves now while the sluice pool is dropping and the gesture still lands today; the proper way is slower, log the release, notify the Bells, and open on a witnessed signal, and the daylight is spending itself while you decide'>>",
+      "body": "<<FILL role=choice words=108 beats='{ROUTE_B_CHAR}, hauling on the release gear, says the paperwork can catch up later, open {GB_GATE} now while the sluice pool is dropping and the gesture still lands today; the proper way is slower, log the release, notify {ROUTE_C_COURT}, and open on a witnessed signal, and the daylight is spending itself while you decide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1449,14 +1449,14 @@
         },
         {
           "id": "c_g_b11_2",
-          "label": "Skip the paperwork and open the valves now.",
+          "label": "Skip the paperwork and open {GB_GATE} now.",
           "target": "g_b13"
         }
       ]
     },
     {
       "id": "g_b12",
-      "body": "<<FILL role=rising words=102 beats='the logged release opens on the Bells' signal just as the cleared sluice can take it, and the fresh cistern water rides the drop harmlessly down-city; the sluice keeper marks the levels hour by hour into three ledgers, and the low quarter watches the Groves send their festival water past their own orchards'>>",
+      "body": "<<FILL role=rising words=102 beats='the logged release opens on {ROUTE_C_COURT}' signal just as the cleared sluice can take it, and the fresh cistern water rides the drop harmlessly down-city; the sluice keeper marks the levels hour by hour into three ledgers, and {LOW_QUARTER} watches {ROUTE_B_COURT} send their festival water past their own orchards'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1468,7 +1468,7 @@
     },
     {
       "id": "g_b12b",
-      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: the release is read into the record with its times and its levels, and even Selk grants that water given on paper and in fact at once is a hard argument to distrust; the courts warm by degrees, like a hall filling slowly with people'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: the release is read into the record with its times and its levels, and even {ROUTE_A_LEAD} grants that water given on paper and in fact at once is a hard argument to distrust; the courts warm by degrees, like a hall filling slowly with people'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1480,23 +1480,23 @@
     },
     {
       "id": "g_be3",
-      "body": "<<FILL role=completion words=95 beats='a narrower accord is initialed tonight, the gauge rebuilt first and full shares at next season's summit, and the record names the Groves release as the turn of the day; Oleth tells you that generosity, logged, is called diplomacy, and that the festival will taste better for the water it gave away'>>",
+      "body": "<<FILL role=completion words=95 beats='a narrower accord is initialed tonight, {GAUGE} rebuilt first and full shares at next season's summit, and the record names {ROUTE_B_COURT} release as the turn of the day; {ROUTE_B_LEAD} tells you that generosity, logged, is called diplomacy, and that the festival will taste better for the water it gave away'>>",
       "is_ending": true,
       "ending": {
         "id": "g_be3",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Festival Gift"
+        "title": "{GB_PRIZE3}"
       }
     },
     {
       "id": "g_b13",
-      "body": "<<FILL role=rising words=104 beats='the valves open unlogged, and for one giddy hour it looks like generosity; then the sluice readings, already tangled by the jam, jump where no reading should, and a Bells surveyor asks acidly whether the Groves are moving unrecorded water in the middle of a flood scare, which is, you realize coldly, exactly what happened'>>",
+      "body": "<<FILL role=rising words=104 beats='{GB_GATE} open unlogged, and for one giddy hour it looks like generosity; then the sluice readings, already tangled by the jam, jump where no reading should, and a {ROUTE_C_COURT} surveyor asks acidly whether {ROUTE_B_COURT} are moving unrecorded water in the middle of a flood scare, which is, you realize coldly, exactly what happened'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_b13_1",
-          "label": "Stand with the Groves through dusk.",
+          "label": "Stand with {ROUTE_B_COURT} through dusk.",
           "target": "g_b13b"
         }
       ],
@@ -1506,7 +1506,7 @@
     },
     {
       "id": "g_b13b",
-      "body": "<<FILL role=rising words=100 beats='Oleth spends the dusk hour untangling honest generosity from what the ledgers make it look like, and the accounting eats the summit's last daylight; Sefa owns her shortcut out loud before the courts, and Oleth will not let her carry it alone: the warden signs for every gate, he says, even the kind ones'>>",
+      "body": "<<FILL role=rising words=100 beats='{ROUTE_B_LEAD} spends the dusk hour untangling honest generosity from what the ledgers make it look like, and the accounting eats the summit's last daylight; {ROUTE_B_CHAR} owns her shortcut out loud before the courts, and {ROUTE_B_LEAD} will not let her carry it alone: the warden signs for every gate, he says, even the kind ones'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1518,13 +1518,13 @@
     },
     {
       "id": "g_be4",
-      "body": "<<FILL role=failure words=97 beats='the summit adjourns without an accord; by lamplight the Bells re-tally the levels and enter the release, hours late, as the gift it truly was, and Ives sets a new summit for the month's end, writing one line the whole city repeats by morning: a good deed done in the dark still needs a ledger'>>",
+      "body": "<<FILL role=failure words=97 beats='the summit adjourns without an accord; by lamplight {ROUTE_C_COURT} re-tally the levels and enter the release, hours late, as the gift it truly was, and {CHANCELLOR} sets a new summit for the month's end, writing one line the whole city repeats by morning: a good deed done in the dark still needs a ledger'>>",
       "is_ending": true,
       "ending": {
         "id": "g_be4",
         "valence": "negative",
         "kind": "setback",
-        "title": "Water Unaccounted"
+        "title": "{GB_PRIZE4}"
       },
       "safety_scope": [
         "sad_moment"
@@ -1532,7 +1532,7 @@
     },
     {
       "id": "b_hall",
-      "body": "<<FILL role=rising words=106 beats='Bell Hall at evening: lamplit tables, ladders in the stacks, and First Archivist Corvel, who shakes your hand like a man filing it for reference; he shows you the trouble itself, the Accord of the Meret, sixty years old, its water-measure page water-stained and torn at the fold, and its two fair copies disagreeing with each other'>>",
+      "body": "<<FILL role=rising words=106 beats='{SUMMIT_VENUE} at evening: lamplit tables, ladders in the stacks, and {ROUTE_C_LEAD}, who shakes your hand like a man filing it for reference; he shows you the trouble itself, {ACCORD}, sixty years old, {ACCORD_PAGE} water-stained and torn at the fold, and its two fair copies disagreeing with each other'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1544,19 +1544,19 @@
     },
     {
       "id": "b_door",
-      "body": "<<FILL role=rising words=108 beats='midnight door duty: the courier Pell arrives limping, the chancellor's letter in hand and its seal torn; Corvel logs the hour, the nail-shaped tear, and Pell's account of the wet steps and the split bridge rail, then re-waxes the packet before three witnesses so no one can ever say the Bells read it; you write the label'>>",
+      "body": "<<FILL role=rising words=108 beats='midnight door duty: {COURIER} arrives limping, the chancellor's letter in hand and its seal torn; {ROUTE_C_LEAD} logs the hour, the nail-shaped tear, and {COURIER}'s account of the wet steps and the split bridge rail, then re-waxes the packet before three witnesses so no one can ever say {ROUTE_C_COURT} read it; you write the label'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_door_1",
-          "label": "Ask what the Bells do next.",
+          "label": "Ask what {ROUTE_C_COURT} do next.",
           "target": "b_vault"
         }
       ]
     },
     {
       "id": "b_vault",
-      "body": "<<FILL role=rising words=100 beats='tomorrow, Corvel says, the courts will fight over what the accord says, so tonight the Bells must find out what it said; the answer sleeps somewhere in the stacks, in the accord-year copy drafts or in the sluice keepers' logbooks, and there is one of you and one dawn coming'>>",
+      "body": "<<FILL role=rising words=100 beats='tomorrow, {ROUTE_C_LEAD} says, the courts will fight over what {ACCORD} says, so tonight {ROUTE_C_COURT} must find out what it said; the answer sleeps somewhere in the stacks, in the accord-year copy drafts or in the sluice keepers' logbooks, and there is one of you and one dawn coming'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1568,7 +1568,7 @@
     },
     {
       "id": "b_stacks",
-      "body": "<<FILL role=choice words=106 beats='two trails lead into the dark of the stacks: the copy-drafts crate from the accord year, every scribe's working sheet the fair copies were made from, or the sluice keepers' logbooks, the daily readings of the Willow Sluice gauge going back a century; Corvel will work whichever trail you do not choose'>>",
+      "body": "<<FILL role=choice words=106 beats='two trails lead into the dark of the stacks: the copy-drafts crate from the accord year, every scribe's working sheet the fair copies were made from, or the sluice keepers' logbooks, the daily readings of {FLOOD_SITE} gauge going back a century; {ROUTE_C_LEAD} will work whichever trail you do not choose'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1585,7 +1585,7 @@
     },
     {
       "id": "b_c1",
-      "body": "<<FILL role=rising words=102 beats='dawn session happens under your feet, muffled shouting and the hourglass bell, while you and Corvel unlace the accord-year crate: sixty years of dust, working drafts in two different hands, margin notes by scribes long dead; Corvel reads the shouting below by its rhythm alone: grievances, he says, suspended until noon'>>",
+      "body": "<<FILL role=rising words=102 beats='dawn session happens under your feet, muffled shouting and the hourglass bell, while you and {ROUTE_C_LEAD} unlace the accord-year crate: sixty years of dust, working drafts in two different hands, margin notes by scribes long dead; {ROUTE_C_LEAD} reads the shouting below by its rhythm alone: grievances, he says, suspended until noon'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1597,19 +1597,19 @@
     },
     {
       "id": "b_c2",
-      "body": "<<FILL role=rising words=104 beats='mid-morning you find it: the water-measure clauses drafted in one hand and fair-copied in another, and where the drafts read one way, the fair copy skips a line and jumps a page number; in the margin of the flawed page, small and young, a copyist's initials; Corvel goes very quiet, and then says the name: Marest'>>",
+      "body": "<<FILL role=rising words=104 beats='mid-morning you find it: the water-measure clauses drafted in one hand and fair-copied in another, and where the drafts read one way, the fair copy skips {BC_LINE}; in the margin of the flawed page, small and young, a copyist's initials; {ROUTE_C_LEAD} goes very quiet, and then says the name: {ROUTE_C_CHAR}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_c2_1",
-          "label": "Ask who Marest is.",
+          "label": "Ask who {ROUTE_C_CHAR} is.",
           "target": "b_c3"
         }
       ]
     },
     {
       "id": "b_c3",
-      "body": "<<FILL role=rising words=100 beats='Marest: senior clerk of the Bells, sixty years at the long tables, due to retire with honors at the year's end; the skipped line is his, made when he was your age, and it is why the two fair copies disagree and why each court can read the page its own way; the flaw is small; the consequence is this summit'>>",
+      "body": "<<FILL role=rising words=100 beats='{ROUTE_C_CHAR}: senior clerk of {ROUTE_C_COURT}, sixty years at the long tables, due to retire with honors at the year's end; {BC_LINE} is his, made when he was your age, and it is why the two fair copies disagree and why each court can read the page its own way; the flaw is small; the consequence is this summit'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1621,12 +1621,12 @@
     },
     {
       "id": "b_c4",
-      "body": "<<FILL role=choice words=112 beats='Marest himself finds you among the drafts, reads his own young initials, and grips the crate edge with both hands; he asks for one day, let him retire first, he will set the record right quietly after the summit, the courts need never know whose hand slipped sixty years ago'>>",
+      "body": "<<FILL role=choice words=112 beats='{ROUTE_C_CHAR} himself finds you among the drafts, reads his own young initials, and grips the crate edge with both hands; he asks for {BC_GATE}, let him retire first, he will set the record right quietly after the summit, the courts need never know whose hand slipped sixty years ago'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_c4_1",
-          "label": "Bring it to Corvel now, together with Marest.",
+          "label": "Bring it to {ROUTE_C_LEAD} now, together with {ROUTE_C_CHAR}.",
           "target": "b_c5"
         },
         {
@@ -1638,7 +1638,7 @@
     },
     {
       "id": "b_c5",
-      "body": "<<FILL role=rising words=104 beats='Corvel hears it standing very straight, and then surprises you both: the record is not ours to spare ourselves, he says, but a slip is not a sin, and he sets Marest, whose eyes know the accord-year hands better than anyone alive, to lead the reconstruction of the true page from his own old drafts'>>",
+      "body": "<<FILL role=rising words=104 beats='{ROUTE_C_LEAD} hears it standing very straight, and then surprises you both: the record is not ours to spare ourselves, he says, but a slip is not a sin, and he sets {ROUTE_C_CHAR}, whose eyes know the accord-year hands better than anyone alive, to lead the reconstruction of the true page from his own old drafts'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1650,7 +1650,7 @@
     },
     {
       "id": "b_c5b",
-      "body": "<<FILL role=rising words=100 beats='noon session: the reconstruction, drafts pinned beside the flawed fair copy, is shown to the courts; read true, the page hangs everything on readings from the Willow Sluice gauge, a gauge, somebody says slowly into the hush, that no living clerk remembers reading; and into that silence comes the flood bell'>>",
+      "body": "<<FILL role=rising words=100 beats='noon session: the reconstruction, drafts pinned beside the flawed fair copy, is shown to the courts; read true, the page hangs everything on readings from {FLOOD_SITE} gauge, a gauge, somebody says slowly into the hush, that no living clerk remembers reading; and into that silence comes {FLOOD_SIGNAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1662,7 +1662,7 @@
     },
     {
       "id": "b_c6",
-      "body": "<<FILL role=choice words=108 beats='the scare strikes the Bells where they live: the archive cellar, where the records sleep below river level, and Corvel is needed in three places at once; he looks at his envoy and lets you choose the post'>>",
+      "body": "<<FILL role=choice words=108 beats='the scare strikes {ROUTE_C_COURT} where they live: the archive cellar, where the records sleep below river level, and {ROUTE_C_LEAD} is needed in three places at once; he looks at his envoy and lets you choose the post'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1672,7 +1672,7 @@
         },
         {
           "id": "c_b_c6_2",
-          "label": "Go with Corvel to the sluice to see the gauge itself.",
+          "label": "Go with {ROUTE_C_LEAD} to the sluice to see {GAUGE} itself.",
           "target": "b_c9"
         },
         {
@@ -1684,7 +1684,7 @@
     },
     {
       "id": "b_c7",
-      "body": "<<FILL role=rising words=102 beats='the cellar brigade: crates up the spiral stair hand to hand, and when the Bells run short of hands, Tides sailors and Groves wardens fill the line without being asked; the accord-year crate rides up between a fisherman and an orchard girl, and Corvel remarks that this is the first shared work the summit has done'>>",
+      "body": "<<FILL role=rising words=102 beats='the cellar brigade: crates up the spiral stair hand to hand, and when {ROUTE_C_COURT} run short of hands, {ROUTE_A_COURT} sailors and {ROUTE_B_COURT} wardens fill the line without being asked; the accord-year crate rides up between a fisherman and an orchard girl, and {ROUTE_C_LEAD} remarks that this is the first shared work the summit has done'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1699,7 +1699,7 @@
     },
     {
       "id": "b_c8",
-      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: the reconstruction is presented, and Marest himself rises to read the correction aloud, his own sixty-year-old slip named in his own steady voice; the hall does not laugh; several very senior heads bow slightly, the way you salute a hard thing done properly'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: the reconstruction is presented, and {ROUTE_C_CHAR} himself rises to read the correction aloud, his own sixty-year-old slip named in his own steady voice; the hall does not laugh; several very senior heads bow slightly, the way you salute a hard thing done properly'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1711,18 +1711,18 @@
     },
     {
       "id": "b_ce1",
-      "body": "<<FILL role=success words=96 beats='with the page read true the terms nearly write themselves: rebuild the public gauge the accord always meant, share the dredging, night water, open ledgers; Marest signs as witness with a steady hand, and Corvel tells you the archive did not save the summit, it only told the truth on time, which is the same thing'>>",
+      "body": "<<FILL role=success words=96 beats='with the page read true the terms nearly write themselves: rebuild the public {GAUGE} the accord always meant, share the dredging, night water, open ledgers; {ROUTE_C_CHAR} signs as witness with a steady hand, and {ROUTE_C_LEAD} tells you the archive did not save the summit, it only told the truth on time, which is the same thing'>>",
       "is_ending": true,
       "ending": {
         "id": "b_ce1",
         "valence": "positive",
         "kind": "success",
-        "title": "The True Page"
+        "title": "{BC_PRIZE1}"
       }
     },
     {
       "id": "b_c9",
-      "body": "<<FILL role=rising words=102 beats='the sluice: debris hauled clear by mixed crews, and there below the draining gate Corvel points with his cane, silt to the collar, the bronze gauge the true page depends on, drowned and unread for years; you sketch it fast while he measures the silt line, both of you soaked through and neither of you caring'>>",
+      "body": "<<FILL role=rising words=102 beats='the sluice: debris hauled clear by mixed crews, and there below the draining gate {ROUTE_C_LEAD} points with his cane, silt to the collar, {GAUGE} the true page depends on, drowned and unread for years; you sketch it fast while he measures the silt line, both of you soaked through and neither of you caring'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1734,7 +1734,7 @@
     },
     {
       "id": "b_c10",
-      "body": "<<FILL role=climax words=98 beats='dusk: the reconstruction and your sketch tell one story between them, the accord was sound and its instrument was lost; the argument was never thief against thief, it was a city measuring with its eyes shut; Ives turns the hourglass and asks the courts for terms that open them again'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk: the reconstruction and your sketch tell one story between them, the accord was sound and its instrument was lost; the argument was never thief against thief, it was a city measuring with its eyes shut; {CHANCELLOR} turns {TIMEKEEPER} and asks the courts for terms that open them again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1746,13 +1746,13 @@
     },
     {
       "id": "b_ce2",
-      "body": "<<FILL role=completion words=95 beats='the courts initial the gauge accord: raise it, rebuild it, read it publicly at every festival, the shares set by its first honest year; the signing is fixed for the first reading, and Corvel enters your sketch beside Marest's correction, because the flaw and the fix, he says, belong on the same shelf'>>",
+      "body": "<<FILL role=completion words=95 beats='the courts initial the gauge accord: raise it, rebuild it, read it publicly at every festival, the shares set by its first honest year; the signing is fixed for the first reading, and {ROUTE_C_LEAD} enters your sketch beside {ROUTE_C_CHAR}'s correction, because the flaw and the fix, he says, belong on the same shelf'>>",
       "is_ending": true,
       "ending": {
         "id": "b_ce2",
         "valence": "positive",
         "kind": "completion",
-        "title": "Silt to the Collar"
+        "title": "{BC_PRIZE2}"
       }
     },
     {
@@ -1769,7 +1769,7 @@
     },
     {
       "id": "b_c12",
-      "body": "<<FILL role=climax words=98 beats='dusk: Ives reads the draft terms, plain words first and formal after, and the plain words do the work, heads nodding along the benches before the jurists can even object; you watch three tired courts hear one sentence mean one thing, the same thing, for the first time all day'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk: {CHANCELLOR} reads the draft terms, plain words first and formal after, and the plain words do the work, heads nodding along the benches before the jurists can even object; you watch three tired courts hear one sentence mean one thing, the same thing, for the first time all day'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1781,18 +1781,18 @@
     },
     {
       "id": "b_ce3",
-      "body": "<<FILL role=success words=96 beats='the accord is signed in both registers, the formal copy for the shelves and the plain copy for the doors, and copies are posted at Harbor Hall, Grove Gate, and Bell Hall where anyone may read what was promised; Corvel tells you the archive keeps a special fondness for documents people actually understand'>>",
+      "body": "<<FILL role=success words=96 beats='the accord is signed in both registers, the formal copy for the shelves and the plain copy for the doors, and copies are posted at {ROUTE_A_HALL}, {ROUTE_B_HALL}, and {SUMMIT_VENUE} where anyone may read what was promised; {ROUTE_C_LEAD} tells you the archive keeps a special fondness for documents people actually understand'>>",
       "is_ending": true,
       "ending": {
         "id": "b_ce3",
         "valence": "positive",
         "kind": "success",
-        "title": "Plain Words"
+        "title": "{BC_PRIZE3}"
       }
     },
     {
       "id": "b_c13",
-      "body": "<<FILL role=rising words=104 beats='you give Marest his day, and noon spends it cruelly: the flawed page is fought over line by line while the true drafts sit dark in their crate; suspicion, given nothing to eat, eats the courts instead; then the flood bell, and in the cellar scramble you find Marest alone, wrestling the accord-year crate toward a hiding place, water already at his shins'>>",
+      "body": "<<FILL role=rising words=104 beats='you give {ROUTE_C_CHAR} {BC_GATE}, and noon spends it cruelly: the flawed page is fought over line by line while the true drafts sit dark in their crate; suspicion, given nothing to eat, eats the courts instead; then {FLOOD_SIGNAL}, and in the cellar scramble you find {ROUTE_C_CHAR} alone, wrestling the accord-year crate toward a hiding place, water already at his shins'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1827,7 +1827,7 @@
     },
     {
       "id": "b_c15",
-      "body": "<<FILL role=rising words=102 beats='the brigade answers your shout; the crate goes up wet but whole, and the whole story comes up with it, drafts, skipped line, young initials; Corvel is cold with you for one flight of stairs and fair for all the rest; Marest, wrung out, agrees the reconstruction happens tonight, late, or never'>>",
+      "body": "<<FILL role=rising words=102 beats='the brigade answers your shout; the crate goes up wet but whole, and the whole story comes up with it, drafts, {BC_LINE}, young initials; {ROUTE_C_LEAD} is cold with you for one flight of stairs and fair for all the rest; {ROUTE_C_CHAR}, wrung out, agrees the reconstruction happens tonight, late, or never'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1842,7 +1842,7 @@
     },
     {
       "id": "b_c16",
-      "body": "<<FILL role=climax words=98 beats='dusk gets the correction dripping and an hour past its moment; Ives grants one extra turn of the hourglass so the reconstruction can be read in full; the courts, twice interrupted and once misled, listen with folded arms, believing the page now and trusting the day rather less'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk gets the correction dripping and an hour past its moment; {CHANCELLOR} grants one extra turn of {TIMEKEEPER} so the reconstruction can be read in full; the courts, twice interrupted and once misled, listen with folded arms, believing the page now and trusting the day rather less'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1854,13 +1854,13 @@
     },
     {
       "id": "b_ce4",
-      "body": "<<FILL role=ending words=95 beats='the true page enters the record but the signatures do not: the courts adjourn to verify the drafts and will resume in a month; Marest's slip is recorded beside his sixty years of service, which is how Corvel insists it be written, and you are named as the envoy who shouted for help, which, he says, is the whole job, only sooner next time'>>",
+      "body": "<<FILL role=ending words=95 beats='the true page enters the record but the signatures do not: the courts adjourn to verify the drafts and will resume in a month; {ROUTE_C_CHAR}'s slip is recorded beside his sixty years of service, which is how {ROUTE_C_LEAD} insists it be written, and you are named as the envoy who shouted for help, which, he says, is the whole job, only sooner next time'>>",
       "is_ending": true,
       "ending": {
         "id": "b_ce4",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "One Extra Turn"
+        "title": "{BC_PRIZE4}"
       }
     },
     {
@@ -1877,13 +1877,13 @@
     },
     {
       "id": "b_ce5",
-      "body": "<<FILL role=failure words=98 beats='the summit fails, and days later the drafts surface anyway, as hidden things do, and the slip looks like a scheme until Corvel, who has guessed the shape of it, sets the record straight and retires Marest with his honor bruised but whole; the archive forgives slips, Corvel tells you at the door, it is silences it cannot file'>>",
+      "body": "<<FILL role=failure words=98 beats='the summit fails, and days later the drafts surface anyway, as hidden things do, and the slip looks like a scheme until {ROUTE_C_LEAD}, who has guessed the shape of it, sets the record straight and retires {ROUTE_C_CHAR} with his honor bruised but whole; the archive forgives slips, {ROUTE_C_LEAD} tells you at the door, it is silences it cannot file'>>",
       "is_ending": true,
       "ending": {
         "id": "b_ce5",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Quiet Handling"
+        "title": "{BC_PRIZE5}"
       },
       "safety_scope": [
         "sad_moment"
@@ -1891,7 +1891,7 @@
     },
     {
       "id": "b_k1",
-      "body": "<<FILL role=rising words=102 beats='the keepers' logbooks: a century of Willow Sluice gauge readings in patient columns, and then, nineteen years back, the columns simply stop, mid-page, mid-month; dawn session mutters up through the floorboards, Selk accusing and Oleth denying, while you hunt for the reason a river's diary just ends'>>",
+      "body": "<<FILL role=rising words=102 beats='the keepers' logbooks: a century of {FLOOD_SITE} gauge readings in patient columns, and then, nineteen years back, the columns simply stop, mid-page, mid-month; dawn session mutters up through the floorboards, {ROUTE_A_LEAD} accusing and {ROUTE_B_LEAD} denying, while you hunt for the reason a river's diary just ends'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1903,19 +1903,19 @@
     },
     {
       "id": "b_k2",
-      "body": "<<FILL role=rising words=104 beats='the last keeper's final note, in a tired hand: gauge silted past reading, dredge requested again, no funds again; will measure from the old mark on the Lantern Bridge pier until the gauge is raised; and after that, nothing; nineteen years, you realize, of the city's water law hanging from an unofficial scratch on a bridge'>>",
+      "body": "<<FILL role=rising words=104 beats='the last keeper's final note, in a tired hand: gauge silted past reading, dredge requested again, no funds again; will measure from {BK_PIER_MARK} until the gauge is raised; and after that, nothing; nineteen years, you realize, of the city's water law hanging from an unofficial scratch on a bridge'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_k2_1",
-          "label": "Take the note up to Corvel.",
+          "label": "Take the note up to {ROUTE_C_LEAD}.",
           "target": "b_k2b"
         }
       ]
     },
     {
       "id": "b_k2b",
-      "body": "<<FILL role=rising words=98 beats='Corvel reads the note twice between sessions and puts on his coat: if the law has been living on a bridge pier, he says, then the Bells had better go and pay their respects; the morning is bright and hard as the two of you cross toward the Lantern Bridge'>>",
+      "body": "<<FILL role=rising words=98 beats='{ROUTE_C_LEAD} reads the note twice between sessions and puts on his coat: if the law has been living on a bridge pier, he says, then {ROUTE_C_COURT} had better go and pay their respects; the morning is bright and hard as the two of you cross toward {BRIDGE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1927,7 +1927,7 @@
     },
     {
       "id": "b_k3",
-      "body": "<<FILL role=rising words=102 beats='on the bridge Corvel finds the pier mark, a chiseled line furred with moss just above the waterline, and you find something else where the rail split: a nail standing proud with a gray thread caught on it, the same weave as the courier's cloak; the seal tore here, on this nail, by accident, and you can prove it'>>",
+      "body": "<<FILL role=rising words=102 beats='on the bridge {ROUTE_C_LEAD} finds {BK_PIER_MARK}, and you find something else where the rail split: {BK_THREAD}, the same weave as {COURIER}'s cloak; the seal tore here, on this nail, by accident, and you can prove it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1939,12 +1939,12 @@
     },
     {
       "id": "b_k4",
-      "body": "<<FILL role=choice words=110 beats='two finds in one morning: the pier mark that has been carrying the law, and the thread that clears the courier; Corvel is already sketching the mark for the record, but the thread is yours, and how you spend it is an envoy's own choice'>>",
+      "body": "<<FILL role=choice words=110 beats='two finds in one morning: {BK_PIER_MARK} that has been carrying the law, and {BK_THREAD} that clears {COURIER}; {ROUTE_C_LEAD} is already sketching the mark for the record, but {BK_GATE} is yours, and how you spend it is an envoy's own choice'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_k4_1",
-          "label": "Take the thread to the watch now and kill the rumor.",
+          "label": "Take {BK_GATE} to the watch now and kill the rumor.",
           "target": "b_k5"
         },
         {
@@ -1956,19 +1956,19 @@
     },
     {
       "id": "b_k5",
-      "body": "<<FILL role=rising words=102 beats='the watch matches thread to cloak and nail to tear before the noon bell, and posts the finding; the tamper rumor dies at midday instead of festering; the noon session, spared one poison, argues the real one, the damaged page, until the flood bell rings and word comes that the backing pool is climbing the bridge piers'>>",
+      "body": "<<FILL role=rising words=102 beats='the watch matches {BK_GATE} to cloak and nail to tear before the noon bell, and posts the finding; {ROUTE_A_RUMOR} dies at midday instead of festering; the noon session, spared one poison, argues the real one, {ACCORD_PAGE}, until {FLOOD_SIGNAL} rings and word comes that the backing pool is climbing the bridge piers'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_b_k5_1",
-          "label": "Run with Corvel to the waterline.",
+          "label": "Run with {ROUTE_C_LEAD} to the waterline.",
           "target": "b_k6"
         }
       ]
     },
     {
       "id": "b_k6",
-      "body": "<<FILL role=choice words=106 beats='the pier mark, the only measure the city has used for nineteen years, is going underwater while the courts still need it read against today's level; at the sluice the crews are launching a flat-bottomed boat onto the backed pool'>>",
+      "body": "<<FILL role=choice words=106 beats='{BK_PIER_MARK}, the only measure the city has used for nineteen years, is going underwater while the courts still need it read against today's level; at the sluice the crews are launching a flat-bottomed boat onto the backed pool'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1985,7 +1985,7 @@
     },
     {
       "id": "b_k7",
-      "body": "<<FILL role=rising words=104 beats='you go out in the boat with a lantern and a keeper's rule, reading the mossy line against the climbing water while debris bumps the hull and the sluice crews haul willow limbs and a cartwheel out behind you; you call the figures and a Bells clerk on the bank writes them down, double-checked, signed, and splashed'>>",
+      "body": "<<FILL role=rising words=104 beats='you go out in the boat with a lantern and a keeper's rule, reading the mossy line against the climbing water while debris bumps the hull and the sluice crews haul {DEBRIS_CAUSE} out behind you; you call the figures and a {ROUTE_C_COURT} clerk on the bank writes them down, double-checked, signed, and splashed'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2000,7 +2000,7 @@
     },
     {
       "id": "b_k8",
-      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: the keeper logs, the pier-mark reading, and the drowned gauge line up into one plain story, the city has been measuring its river law off a scratch, in good faith, for nineteen years; the hall goes very quiet, and Ives turns the hourglass gently, as if it might wake something'>>",
+      "body": "<<FILL role=climax words=98 beats='dusk, one turn late: the keeper logs, {BK_PIER_MARK} reading, and {GAUGE} line up into one plain story, the city has been measuring its river law off a scratch, in good faith, for nineteen years; the hall goes very quiet, and {CHANCELLOR} turns {TIMEKEEPER} gently, as if it might wake something'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2012,18 +2012,18 @@
     },
     {
       "id": "b_ke1",
-      "body": "<<FILL role=success words=97 beats='the accord is signed around your soaked figures: raise the gauge, retire the pier mark with honors, read the river publicly each season; Ives has the last keeper's final note copied into the accord itself, so that no request for dredging is ever shelved unheard again; Corvel calls it the finest day of filing in his life'>>",
+      "body": "<<FILL role=success words=97 beats='the accord is signed around your soaked figures: raise {GAUGE}, retire {BK_PIER_MARK} with honors, read the river publicly each season; {CHANCELLOR} has the last keeper's final note copied into the accord itself, so that no request for dredging is ever shelved unheard again; {ROUTE_C_LEAD} calls it the finest day of filing in his life'>>",
       "is_ending": true,
       "ending": {
         "id": "b_ke1",
         "valence": "positive",
         "kind": "success",
-        "title": "The Keeper's Mark"
+        "title": "{BK_PRIZE1}"
       }
     },
     {
       "id": "b_k9",
-      "body": "<<FILL role=rising words=100 beats='you wait for still water, and when the jam clears and the pool settles at lamplighting you read the pier mark with two sworn witnesses and a level line, slower than heroics and twice as signed; the figures walk into the dusk session with three names on them and no mud on any'>>",
+      "body": "<<FILL role=rising words=100 beats='you wait for still water, and when the jam clears and the pool settles at lamplighting you read {BK_PIER_MARK} with two sworn witnesses and a level line, slower than heroics and twice as signed; the figures walk into the dusk session with three names on them and no mud on any'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2035,18 +2035,18 @@
     },
     {
       "id": "b_ke2",
-      "body": "<<FILL role=completion words=95 beats='dusk runs long by lamplight, but numbers carrying three signatures are hard to shout at: the courts initial the gauge accord and fix the full signing at the new gauge's first reading; Corvel enters your measurement sheet as the summit's steadiest page, done, he notes, at the speed of being right'>>",
+      "body": "<<FILL role=completion words=95 beats='dusk runs long by lamplight, but numbers carrying three signatures are hard to shout at: the courts initial the gauge accord and fix the full signing at {GAUGE}'s first reading; {ROUTE_C_LEAD} enters your measurement sheet as the summit's steadiest page, done, he notes, at the speed of being right'>>",
       "is_ending": true,
       "ending": {
         "id": "b_ke2",
         "valence": "positive",
         "kind": "completion",
-        "title": "Twice Measured"
+        "title": "{BK_PRIZE2}"
       }
     },
     {
       "id": "b_k10",
-      "body": "<<FILL role=rising words=102 beats='the thread stays in your pocket, and the rumor, unanswered, spends the day growing teeth: by noon the tamper story is fact in three flavors, and during the flood scare the watch, pressed to be seen doing something, searches Pell's satchel on the open street while the crowd watches him hold still and take it'>>",
+      "body": "<<FILL role=rising words=102 beats='{BK_GATE} stays in your pocket, and {ROUTE_A_RUMOR}, unanswered, spends the day growing teeth: by noon the tamper story is fact in three flavors, and during the flood scare the watch, pressed to be seen doing something, searches {COURIER}'s satchel on the open street while the crowd watches him hold still and take it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2058,7 +2058,7 @@
     },
     {
       "id": "b_k11",
-      "body": "<<FILL role=choice words=108 beats='Pell's face in the lantern light stays with you through the flood work; dusk and your grand moment are one hourglass away, and the thread weighs a very great deal for a thread'>>",
+      "body": "<<FILL role=choice words=108 beats='{COURIER}'s face in the lantern light stays with you through the flood work; dusk and your grand moment are one hourglass away, and {BK_GATE} weighs a very great deal for a thread'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2075,7 +2075,7 @@
     },
     {
       "id": "b_k12",
-      "body": "<<FILL role=rising words=100 beats='you produce the thread and say plainly when you found it; the watch sergeant looks at you for a long moment, then posts the finding and clears Pell before the dusk bell; Corvel, informed, says only that evidence is for the record and not for the stage, and puts you to work hauling keeper logs to the hall'>>",
+      "body": "<<FILL role=rising words=100 beats='you produce {BK_GATE} and say plainly when you found it; the watch sergeant looks at you for a long moment, then posts the finding and clears {COURIER} before the dusk bell; {ROUTE_C_LEAD}, informed, says only that evidence is for the record and not for the stage, and puts you to work hauling keeper logs to the hall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2087,18 +2087,18 @@
     },
     {
       "id": "b_ke3",
-      "body": "<<FILL role=ending words=95 beats='dusk mends what it can: Pell publicly cleared, the keeper logs and the pier mark entered into the record, but the courts, rubbed raw by a day of rumor, adjourn to resume in a month rather than sign tonight; Pell finds you after and shakes your hand anyway, which is somehow heavier than the hourglass'>>",
+      "body": "<<FILL role=ending words=95 beats='dusk mends what it can: {COURIER} publicly cleared, the keeper logs and {BK_PIER_MARK} entered into the record, but the courts, rubbed raw by a day of rumor, adjourn to resume in a month rather than sign tonight; {COURIER} finds you after and shakes your hand anyway, which is somehow heavier than the hourglass'>>",
       "is_ending": true,
       "ending": {
         "id": "b_ke3",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Not for the Stage"
+        "title": "{BK_PRIZE3}"
       }
     },
     {
       "id": "b_k13",
-      "body": "<<FILL role=rising words=100 beats='you stand at dusk and produce the thread with a flourish, and it lands exactly wrong: a day too late for Pell and an hour too clever for the courts; if the envoy sat on this, a captain asks aloud, what are the courts sitting on; the question has no bottom, and the session slides into it'>>",
+      "body": "<<FILL role=rising words=100 beats='you stand at dusk and produce {BK_GATE} with a flourish, and it lands exactly wrong: a day too late for {COURIER} and an hour too clever for the courts; if the envoy sat on this, a captain asks aloud, what are the courts sitting on; the question has no bottom, and the session slides into it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2110,13 +2110,13 @@
     },
     {
       "id": "b_ke4",
-      "body": "<<FILL role=failure words=97 beats='the summit closes unsigned; Ives enters the nail, the thread, and the hour you found them into the record, the truth preserved and the timing noted; Corvel walks you home under the cold bells and assigns you a season of door duty, kindly, because at the door, he says, everything that matters arrives on time or not at all'>>",
+      "body": "<<FILL role=failure words=97 beats='the summit closes unsigned; {CHANCELLOR} enters the nail, {BK_GATE}, and the hour you found them into the record, the truth preserved and the timing noted; {ROUTE_C_LEAD} walks you home under the cold bells and assigns you a season of door duty, kindly, because at the door, he says, everything that matters arrives on time or not at all'>>",
       "is_ending": true,
       "ending": {
         "id": "b_ke4",
         "valence": "negative",
         "kind": "setback",
-        "title": "Too Clever by Half"
+        "title": "{BK_PRIZE4}"
       },
       "safety_scope": [
         "sad_moment"
