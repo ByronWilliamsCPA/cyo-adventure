@@ -6,13 +6,13 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+        <meta name="description" content="Strategy for maximizing story diversity, defined as: each story must feel like a new adventure to the reader. Vary the leaves (the descriptive content along a shared tree of paths and decision points) first, add structural and state variety as the library scales, and let the deterministic gate keep every variant safe. Corrects an earlier premise: the automated fill already themes stories from the requester's brief.">
       
       
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/capability-register/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/story-flexibility-plan/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Capability Register (Top-Down Expectation Map) - CYO Adventure</title>
+        <title>Story Flexibility and Diversity Plan - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#capability-register" class="md-skip">
+        <a href="#1-objective-each-story-must-feel-like-a-new-adventure" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Capability Register (Top-Down Expectation Map)
+              Story Flexibility and Diversity Plan
             
           </span>
         </div>
@@ -2755,8 +2755,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2765,10 +2763,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#purpose-and-method" class="md-nav__link">
+  <a href="#1-objective-each-story-must-feel-like-a-new-adventure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Purpose and method
+        1. Objective: each story must feel like a new adventure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Objective: each story must feel like a new adventure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-leaves-on-a-tree-model-the-frame-we-design-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The leaves-on-a-tree model (the frame we design to)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-problem-current-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Problem (current-state)
       
     </span>
   </a>
@@ -2776,10 +2802,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ratified-decisions-2026-07-16" class="md-nav__link">
+  <a href="#3-design-principle-freeze-the-safety-constraints-vary-within-them" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Ratified decisions (2026-07-16)
+        3. Design principle: freeze the safety constraints, vary within them
       
     </span>
   </a>
@@ -2787,10 +2813,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#k-kid-capabilities" class="md-nav__link">
+  <a href="#4-three-axes-of-diversity-leaf-first" class="md-nav__link">
     <span class="md-ellipsis">
       
-        K: Kid capabilities
+        4. Three axes of diversity (leaf-first)
       
     </span>
   </a>
@@ -2798,10 +2824,115 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#g-guardian-capabilities" class="md-nav__link">
+  <a href="#5-workstreams-prioritized" class="md-nav__link">
     <span class="md-ellipsis">
       
-        G: Guardian capabilities
+        5. Workstreams (prioritized)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Workstreams (prioritized)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ws-0-diversity-metrics-eval-harness-do-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WS-0: Diversity metrics + eval harness (do first)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ws-1-leaf-diversity-verification-theme-parity-re-scoped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WS-1: Leaf-diversity verification + theme parity (re-scoped)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ws-4-similarity-driven-escalating-selection-consumes-ws-0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WS-4: Similarity-driven, escalating selection (consumes WS-0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ws-2-parameterize-the-catalog-for-safe-auditable-leaves-absorbs-packs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WS-2: Parameterize the catalog for safe, auditable leaves (absorbs "packs")
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ws-5-structure-and-state-variation-within-the-adr-011-grammar-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WS-5: Structure and state variation within the ADR-011 grammar (scaling)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ws-6-harden-fresh_generation-as-the-flywheel-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WS-6: Harden fresh_generation as the flywheel feed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ws-8-catalog-flywheel-highest-ceiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WS-8: Catalog flywheel (highest ceiling)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ws-7-request-interpretation-and-expectation-setting-delivers-k19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WS-7: Request interpretation and expectation-setting (delivers K19)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-sequencing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Sequencing
       
     </span>
   </a>
@@ -2809,10 +2940,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#a-admin-capabilities" class="md-nav__link">
+  <a href="#7-safety-invariants-hold-across-all-workstreams" class="md-nav__link">
     <span class="md-ellipsis">
       
-        A: Admin capabilities
+        7. Safety invariants (hold across all workstreams)
       
     </span>
   </a>
@@ -2820,10 +2951,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#s-system-capabilities-cross-cutting" class="md-nav__link">
+  <a href="#8-current-state" class="md-nav__link">
     <span class="md-ellipsis">
       
-        S: System capabilities (cross-cutting)
+        8. Current state
       
     </span>
   </a>
@@ -2831,43 +2962,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#known-doc-debt-this-register-supersedes-or-exposes" class="md-nav__link">
+  <a href="#9-open-questions-adr-candidates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Known doc debt this register supersedes or exposes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#unregistered-scope-rulings" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Unregistered scope: rulings
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#maintenance-rules" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Maintenance rules
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related-documents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related documents
+        9. Open questions / ADR candidates
       
     </span>
   </a>
@@ -2894,588 +2992,394 @@
   
 
 
-<h1 id="capability-register">Capability Register<a class="headerlink" href="#capability-register" title="Permanent link">&para;</a></h1>
+  <h1>Story Flexibility and Diversity Plan</h1>
+
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.6 | <strong>Created</strong>: 2026-07-16 | <strong>Updated</strong>: 2026-07-16
-(v1.4: note corrections and ruling queue from the full traceability review, see
-<a href="../traceability-review-2026-07-16/">traceability-review-2026-07-16.md</a>;
-v1.5: owner rulings applied: K18 and A16 minted, back button ratified, ADR-007
-admin-first sequencing, repair re-gate and band fail-closed fixes ordered, G2 build
-confirmed; v1.6: A12 note extended to name the admin child-PIN set/reset authority
-explicitly, with an ADR-014 cross-reference, per the 2026-07-16 review condition)</p>
-<p><strong>Delivery update (2026-07-17, M4b-d execution on branch
-claude/app-capabilities-review-wm6gt3)</strong>: the following capabilities moved to DELIVERED
-(code, tests, and E2E where noted; commits 5fd1de7 through 6f729d5): K5 (Go Back pinned),
-K6 (tracker UI), K7 (read-aloud), K12 (complete incl. generation status), K15 (flag end
-to end: kid button, admin queue, guardian alert), K17 (shelf chips), G2 (controls UI and
-brief wiring), G3 (envelope backend, write path, and form UI), G5 (structure summaries),
-G6 (prose editor with gate and moderation re-run; admin surface, guardian UI awaits a
-guardian review surface), G7 (complete: consent debits quota on ALL spend paths incl.
-the legacy intake gate), G9 (Reading page), G10/S9 (notification feed and bell), G13
-(interim balance), G17/A15 (dual-guardian consent flow with the ENFORCED ring-2 guard,
-superseding the holds-by-omission note below), and the S8 flow now includes the budget
-stage. PR #267 (A12/A13, connection substrate) merged to main; PR #268 (A8 UI) in
-flight. Remaining for M4-full: G15 device/storage view (needs a design decision), G8
-offline revocation (Phase 5), and the owner-side items (secrets, redeploy, live
-checklist).</p>
-<p><strong>Delivery-state review (2026-07-16, open PRs and working docs)</strong>: the Docs column below
-measures <em>foundational-doc</em> coverage, but a review of
-<a href="../story-lifecycle-redesign/">story-lifecycle-redesign.md</a> (owner-ratified 2026-07-06,
-workstreams A-G merged 2026-07-10) and open PRs #267/#268 found several items further
-along in working docs and code than foundational coverage suggested. Affected rows carry
-delivery notes; treat the Notes column as the current truth.</p>
+<p><strong>Status: Active (revised).</strong> The parameterized-beat pilot (<code>out/pilot/</code>) is
+built and proven; nothing beyond it is wired into the live path yet. This
+revision (a) sets the objective from the negative, each story must feel like a
+new adventure, in the academic leaves-on-a-tree frame; (b) corrects the original
+problem statement (the automated fill already consumes the theme brief);
+&copy; adds a metrics workstream (WS-0) without which "maximize" is unfalsifiable;
+and (d) adds structure/state variety and a catalog flywheel. Parameterized
+skeletons are an ADR-019 candidate (see Open questions).</p>
 </blockquote>
-<h2 id="purpose-and-method">Purpose and method<a class="headerlink" href="#purpose-and-method" title="Permanent link">&para;</a></h2>
-<p>This register was produced by a deliberate fresh-look exercise: start from the top-line goal only
-(an online and offline app where kids read choose-your-own-adventure books and use AI to generate
-new stories based on their interests), derive what a child, guardian, and application admin would
-expect the app to do, and only then compare against the foundational documents (project vision,
-tech spec, ADRs 001-014, privacy model, authorization matrix). It deliberately ignores code,
-sprints, and milestones.</p>
-<p>Each capability has a stable ID: <strong>K</strong> (kid), <strong>G</strong> (guardian), <strong>A</strong> (admin), <strong>S</strong> (system,
-cross-cutting). IDs are permanent; never renumber. New capabilities append at the end of their
-section. This register is the checkoff sheet for scope and the basis for acceptance testing:
-every item should eventually map to one or more tests, and every spec or feature should trace
-back to at least one ID.</p>
-<p>The <strong>Docs</strong> column records coverage in the foundational documents as of 2026-07-16:</p>
+<hr />
+<h2 id="1-objective-each-story-must-feel-like-a-new-adventure">1. Objective: each story must feel like a new adventure<a class="headerlink" href="#1-objective-each-story-must-feel-like-a-new-adventure" title="Permanent link">&para;</a></h2>
+<p>Defined from the negative, the failures we must avoid:</p>
 <ul>
-<li>✅ covered (the docs spec this, often more deeply than the expectation)</li>
-<li>🟡 partial (mechanism or fragment exists; the user-facing capability is not fully specced)</li>
-<li>❌ missing (absent from the foundational docs)</li>
+<li>A reader reads two stories and feels they are <strong>similar</strong>.</li>
+<li>A <strong>dog swapped for a cat</strong> with the rest of the story identical: a surface
+  substitution is not a new experience.</li>
+<li>A reader requests <strong>their own</strong> story and it reads like another they requested.</li>
 </ul>
-<h2 id="ratified-decisions-2026-07-16">Ratified decisions (2026-07-16)<a class="headerlink" href="#ratified-decisions-2026-07-16" title="Permanent link">&para;</a></h2>
-<p>These rulings from the project owner resolve the open tensions the fresh-look surfaced. They are
-binding on the register below. Decisions 1-3 are recorded in
-<a href="../adr/adr-015-story-request-initiation-and-gating/">ADR-015</a>; all five are folded into the
-vision doc (v1.2):</p>
+<p>So the objective is perceptual: <strong>minimize the perceived similarity between any
+two stories a reader encounters.</strong> With only a handful of stories in a cell some
+similarity is inherent; the goal is to hold perceived-uniqueness up as the
+library grows so every book is a new adventure.</p>
+<h3 id="the-leaves-on-a-tree-model-the-frame-we-design-to">The leaves-on-a-tree model (the frame we design to)<a class="headerlink" href="#the-leaves-on-a-tree-model-the-frame-we-design-to" title="Permanent link">&para;</a></h3>
+<p>From the original research: a story is a <strong>tree</strong> whose branches are the
+<strong>paths and decision points</strong>, and whose <strong>leaves</strong> are the story told along
+those branches.</p>
+<ul>
+<li>The <strong>tree</strong> (structure) may be <strong>shared</strong> between stories. Two stories can
+  follow the same path to the same branch point, and the path back to the main
+  line is the same path. Shared structure is acceptable, and inevitable when a
+  cell has few skeletons.</li>
+<li>The <strong>leaves</strong> (the description of each point, "how they describe point A and
+  point B") must be <strong>genuinely different</strong> between stories. This is where
+  perceived uniqueness is made.</li>
+</ul>
+<p>Three consequences for strategy:</p>
 <ol>
-<li><strong>Initiation is universal.</strong> A child, a guardian, or an admin may initiate a story request
-   (K11, G4, A10). The original guardian-only intake was scope inherited from the one-family era.</li>
-<li><strong>The guardian is the cost gate.</strong> A story request consumes generation budget only with
-   guardian consent; guardians control spend (G7, G13).</li>
-<li><strong>The admin is the AI gate.</strong> The admin remains the party who gates the AI output before it
-   can reach a child (A6), consistent with ADR-005 as amended 2026-06-30.</li>
-<li><strong>The kid feedback loop exists.</strong> Children get a simple flag/reaction signal that a grown-up
-   actually sees (K15, feeding G10 and A1).</li>
-<li><strong>Guardian visibility and notifications exist.</strong> Engagement visibility (G9) and a
-   digest-plus-alerts notification surface (G10, S9) are in scope.</li>
-<li><strong>The social boundary is three rings, not a flat exclusion</strong> (ruled 2026-07-16, recorded
-   in <a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a>): recommendations
-   flow within a family (ring 1) and between guardian-approved connected families, the
-   cousins case (ring 2, structured data only, dual-guardian consent, no
-   receive-from-everyone option); globally only the system recommends, from anonymized
-   aggregate scores (ring 3, future); never kid to kid beyond ring 2, and no messaging,
-   discovery, or contact outside active parental approval (K17, G17, A15, S11, S12).</li>
+<li><strong>Leaf diversity is the primary lever.</strong> Most of the perceived-uniqueness
+   load, per pair of stories, is carried by genuinely re-authored leaf content,
+   not by new structures. The dog-for-cat failure is a leaf that collapsed into a
+   variable substitution; the fix is a genuinely re-imagined leaf on the same
+   branch, not a new tree.</li>
+<li><strong>Structural variety is the scaling lever.</strong> Shared trees are fine at small
+   scale, but as a family reads more and as the per-cell library grows, repeated
+   trees start to show. Structural variety (new trees, mutated trees) is what
+   keeps uniqueness up at scale; it complements leaf diversity rather than
+   replacing it.</li>
+<li><strong>Reuse is unavoidable, so differentiation escalates with similarity
+   pressure.</strong> We cannot give every request its own tree. The operating model is:
+   as similar content accumulates for a reader, escalate, a <strong>different tree</strong>
+   first (the second dragon), then <strong>harder leaf/element variation</strong> on a reused
+   tree (the tenth dragon), then <strong>grow the catalog</strong>. This is why selection
+   (WS-4) must consume the similarity metric (WS-0), not just recency.</li>
 </ol>
-<p>The resulting canonical request flow (S8):</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>initiate (K11 | G4 | A10)
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>   -&gt; guardian cost gate (G7; may be pre-authorized per child via G3)
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>   -&gt; staged generation (existing pipeline)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   -&gt; deterministic validation + independent moderation (S4, S7)
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   -&gt; admin safety gate: approve and publish (A6)
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>   -&gt; child&#39;s shelf (K9), with honest status shown to the requester throughout (K12, G10)
+<p>This rebalances the adversarial review, which pushed structural variety as the
+ceiling: correct at scale, but leaf diversity is the first and largest lever.</p>
+<h2 id="2-problem-current-state">2. Problem (current-state)<a class="headerlink" href="#2-problem-current-state" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>The automated fill already themes the story from the requester's brief.</strong>
+   <code>generation/templates/fill.md</code> tells the model to "adapt the world, character
+   names, and surface theme to match the child's story request," rewrite every
+   choice <code>label</code>, and preserve only the beats/structure; the child's text is
+   fenced as <code>UNTRUSTED_USER_INPUT</code>. <code>worker.py::_run_skeleton_fill</code> reads
+   <code>authoring["theme_brief"]</code>; <code>orchestrator.fill_skeleton</code> builds the prompt with
+   it; <code>brief.py</code> sets <code>premise = request.request_text</code>. (An earlier draft wrongly
+   said the theme is ignored; that grep was of the manual <code>cyo-author</code> skill, the
+   one path that genuinely has no theme step.)</li>
+<li><strong>But the leaves may be varying too little.</strong> The reskin changes names and
+   surface, and the same skeleton is reused (selection recency is on the slug
+   only, <code>skeleton_match.py</code>). Nothing measures whether two fills of one tree are
+   <em>genuinely</em> different leaves or just a dog-for-cat swap.</li>
+</ol>
+<p>The real gaps:</p>
+<ul>
+<li><strong>No measurement of perceived similarity.</strong> "Maximize diversity" has no metric
+  and no eval loop, so "optimal" is unfalsifiable. This is the top gap.</li>
+<li><strong>Leaf variation is unverified and possibly shallow.</strong> The Stage 1 fidelity
+  gate (<code>moderation/fidelity_review.py</code>) checks beat/word fidelity, not whether
+  two fills of the same skeleton read as different adventures, and not whether the
+  requested theme was genuinely woven in vs surface-swapped.</li>
+<li><strong>Skill-path parity.</strong> The manual <code>cyo-author</code> skill has no theme step.</li>
+<li><strong>Only the thematic axis moves, shallowly.</strong> Structural and state/consequence
+  variety (<a href="../capability-register/">K3</a>) are untouched; the thematic axis itself
+  is at risk of the dog-for-cat failure.</li>
+<li><strong>Selection recycles trees.</strong> Recency is slug-only; topology/tone/theme are not
+  de-weighted.</li>
+</ul>
+<h2 id="3-design-principle-freeze-the-safety-constraints-vary-within-them">3. Design principle: freeze the safety <em>constraints</em>, vary within them<a class="headerlink" href="#3-design-principle-freeze-the-safety-constraints-vary-within-them" title="Permanent link">&para;</a></h2>
+<p>Safety does not require freezing the ~50 hand-authored graphs in <code>skeletons/</code>. It
+requires freezing the <strong>properties</strong> the gate verifies: the ADR-011 per-band
+topology/primitive allowances, the ending kind/valence policy, the three clocks,
+the cell envelopes, the reading band. The validator (<code>topology.py</code>, <code>walk.py</code>,
+<code>policy.py</code>, <code>band_profile.py</code>, the L2 config walk, the L2-13 scale advisory)
+checks the properties of a graph, not its identity. The frozen safety object is
+the <strong>ADR-011 constraint grammar</strong>; any leaf content or any structure, sampled,
+mutated, or composed, is legitimate once it passes the same gate. Leaves vary
+freely within band + safety; trees vary within the grammar; the gate verifies
+every result.</p>
+<h2 id="4-three-axes-of-diversity-leaf-first">4. Three axes of diversity (leaf-first)<a class="headerlink" href="#4-three-axes-of-diversity-leaf-first" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Axis</th>
+<th>Question</th>
+<th>Primary?</th>
+<th>Levers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Leaf / content</strong></td>
+<td>Does each point read as a new experience?</td>
+<td><strong>Primary</strong></td>
+<td>genuine per-node re-authoring (not slot substitution); theme binding (shipped, needs verification); anti-template guard</td>
+</tr>
+<tr>
+<td>Structural</td>
+<td>How does it branch?</td>
+<td>Scaling</td>
+<td>mutation of verified trees, grammar-based composition, fresh-generation feed, catalog flywheel</td>
+</tr>
+<tr>
+<td>State / consequence</td>
+<td>How does it play?</td>
+<td>Scaling</td>
+<td>Tier-2 variable semantics, condition-gated routes, ending-set variation within band policy (<a href="../capability-register/">K3</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>The anti-pattern that spans all three: a <strong>template</strong>, where the tree and the
+leaf skeleton are fixed and only proper nouns change (dog for cat). The metric
+in WS-0 must detect and fail it.</p>
+<h2 id="5-workstreams-prioritized">5. Workstreams (prioritized)<a class="headerlink" href="#5-workstreams-prioritized" title="Permanent link">&para;</a></h2>
+<h3 id="ws-0-diversity-metrics-eval-harness-do-first">WS-0: Diversity metrics + eval harness (do first)<a class="headerlink" href="#ws-0-diversity-metrics-eval-harness-do-first" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Status (2026-07-18): Phase 1 and Phase 2 delivered.</strong> Phase 1 shipped the
+<code>diversity/</code> package core (<code>normalize</code>, <code>structure</code>, <code>leaf</code> incl. the
+anti-template guard, <code>report</code>, <code>history</code>, <code>query</code>). Phase 2 shipped
+<code>aggregate</code> (ECS, PS, RAR), the <code>lexical</code> guards, the committed eval panel
+and baseline, <code>scripts/run_diversity_eval.py</code>, the <code>diversity_eval</code> nox
+session, and the per-PR CI regression gate (rules R1-R6); see
+<a href="../ws0-phase2-harness-design/">ws0-phase2-harness-design.md</a> for the exact
+spec. Phase 3 (judge-model calibration) is implemented behind
+<code>--with-judge</code> but not yet run (needs a live, non-mock provider); WS-1's
+per-band threshold calibration remains open. WS-4's consumption of the
+request-time query is delivered (see the WS-4 section below).</p>
+</blockquote>
+<ul>
+<li><strong>Goal:</strong> measure perceived similarity per cell and per family so every claim
+  below is testable and regressions are caught.</li>
+<li><strong>Headline metric:</strong> <strong>perceived-similarity / repeat-adventure rate</strong>, the
+  probability that a reader's next story feels like one they have read. Proxied
+  by a judge-model "do these read as different adventures?" score, validated
+  against <a href="../capability-register/">K18</a> ratings over time.</li>
+<li><strong>The anti-template guard (most important):</strong> for two fills of the <strong>same
+  skeleton</strong>, normalize proper nouns and measure leaf-level content overlap
+  (per-node embedding + lexical distance). Low distance after noun-normalization =
+  the dog-for-cat failure = a hard regression, even if the theme labels differ.</li>
+<li><strong>Supporting metrics.</strong> <em>Leaf:</em> per-node pairwise distance across fills of one
+  tree (the direct leaf-diversity signal). <em>Structural:</em> topology entropy;
+  pairwise structural distance (node/ending/branching/depth features); distinct
+  trees served per family per 90 days. <em>Thematic:</em> proper-noun overlap between a
+  family's consecutive stories (~0); theme-incorporation rate. <em>Lexical guard:</em>
+  self-BLEU / distinct-n, cross-checked with RL-13 so variety never buys
+  reading-level drift. <em>Aggregate:</em> effective catalog size (exp entropy of served
+  (tree, leaf-set) pairs).</li>
+<li><strong>Request-time query (the interface WS-4 consumes).</strong> Beyond post-hoc metrics,
+  WS-0 must expose a selection-time signal: given an incoming <code>(theme, cell,
+  reader/family history)</code>, return which of the reader's existing stories are most
+  similar and how <em>saturated</em> the cell is for that theme. This is what lets WS-4
+  decide "different tree" vs "harder leaf differentiation." It reuses the same
+  distance functions as the metrics, over the reader's <code>storybook_version</code>
+  history.</li>
+<li><strong>Harness.</strong> A <code>nox</code> session runs a fixed (skeleton x theme-brief) panel,
+  including the same skeleton x multiple briefs, through <code>fill_skeleton</code> +
+  <code>run_story_gate</code>, emits the suite, and a CI guard fails on drops. Per-family
+  metrics from <code>storybook_version</code> history.</li>
+<li><strong>Serves:</strong> every workstream (their success metrics live here); directly gates
+  WS-4.</li>
+</ul>
+<h3 id="ws-1-leaf-diversity-verification-theme-parity-re-scoped">WS-1: Leaf-diversity verification + theme parity (re-scoped)<a class="headerlink" href="#ws-1-leaf-diversity-verification-theme-parity-re-scoped" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Goal:</strong> confirm two fills of one tree are genuinely different leaves (not
+  templates), that the requested theme is woven in, and bring the skill path to
+  parity. The automated theme wiring is shipped; the gap is verification and
+  genuine leaf variation.</li>
+<li><strong>Approach:</strong> add the anti-template guard (WS-0) as a check alongside Stage 1;
+  strengthen the fill instruction to re-imagine each leaf for the theme, not
+  substitute nouns; add a theme step to the <code>cyo-author</code> <code>SKILL.md</code> (the brief is
+  already in <code>authoring_metadata</code>). <strong>Metric:</strong> anti-template guard passes;
+  theme-incorporation &gt; 90%.</li>
+<li><strong>Serves:</strong> <a href="../capability-register/">K11</a>, <a href="../capability-register/">K13</a>.</li>
+<li><strong>Precondition note (2026-07-18, WS-0 labels-are-leaves decision):</strong> choice
+  labels are leaf content, stripped from <code>structure_fingerprint</code> and folded into
+  the ATG's leaf distance
+  (<code>docs/planning/ws0-label-fingerprint-evaluation.md</code>). The ATG's same-tree
+  precondition is now genuinely label-free: <code>select_atg_comparison_partner</code>'s
+  slug-matched pairs no longer raise <code>ValidationError</code> merely because the
+  automated fill rewrote choice labels per theme (the shipped <code>fill.md</code>
+  contract). This removes the only nominal byte-level check that a fill did
+  not change what a choice <em>means</em>; per-choice label-intent fidelity (does the
+  rewritten label still match the frozen action-semantic of the original
+  choice?) is a Stage 1 fidelity-reviewer extension, not a fingerprint concern.
+  Per the evaluation's supervisor sign-off (section 8), that extension was a
+  <strong>hard prerequisite</strong> on wiring the ATG into the production pipeline.</li>
+<li><strong>Delivered (2026-07-18): the label-intent prerequisite.</strong>
+  <code>run_semantic_fidelity_check</code> (<code>moderation/fidelity_review.py</code>) now sends each
+  choice's original and final label alongside the beat/prose pairs in the same
+  aggregate review call, and the reviewer flags a fill when a rewritten label
+  changes what the decision means (an inverted "go left" -&gt; "go right", or
+  "trust the stranger" -&gt; "attack the stranger"). It runs even for a node whose
+  body was not a FILL directive but whose choice label was reskinned. This
+  restores, on exactly the artifacts production creates, the semantic guarantee
+  the removed byte-level label check only nominally provided; it stays advisory
+  (fails open), one signal among several, consistent with the reviewer's
+  existing design. The sign-off prerequisite is satisfied.</li>
+</ul>
+<h3 id="ws-4-similarity-driven-escalating-selection-consumes-ws-0">WS-4: Similarity-driven, escalating selection (consumes WS-0)<a class="headerlink" href="#ws-4-similarity-driven-escalating-selection-consumes-ws-0" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Status (2026-07-18): request-time consumption delivered.</strong>
+<code>generation/skeleton_match.py::select_skeleton_for_cell</code> takes an optional
+<code>similar_usage</code> map and blends it with recency via
+<code>weight = 1 / (1 + recent + 3*similar)</code>: a similar-theme reuse of a tree is
+de-weighted like 3 plain recent uses. The <code>3</code> penalty is a starting
+heuristic, not calibrated data; it is tunable once WS-0 metrics accumulate
+(mirrors the <code>_HARD_BANDS</code>-style heuristics elsewhere in
+<code>story_requests/authoring_plan.py</code>). The <code>_weight</code> novelty floor is
+preserved: no candidate is ever fully excluded.
+<code>story_requests/authoring_plan.py::_resolve_skeleton_fill</code>'s auto-pick path
+(never the admin override path) calls
+<code>diversity.query.similarity_context</code> and threads
+<code>similar_count_per_slug</code> into the pick. When the cell escalates to
+<code>DifferentiationLevel.LEAF</code> or <code>CATALOG</code>, the plan result carries a
+non-blocking warning and an <code>selection.cell_theme_saturated</code> info log
+(band + level), for the WS-8 catalog flywheel to consume later. <code>CATALOG</code>
+only warns and logs here; it does <strong>not</strong> grow the catalog itself, that
+auto-growth is WS-8's job, not WS-4's. A <code>family_id=None</code> (admin/catalog)
+request is unaffected: <code>similarity_context</code> returns an empty history, every
+similar count is 0, and no warning appears, exactly the pre-WS-4 behavior.
+Still open: the leaf/element differentiation push itself (WS-1/WS-2/WS-5)
+and any per-band tuning of the <code>3</code> penalty.</p>
+</blockquote>
+<ul>
+<li><strong>Depends on WS-0.</strong> Selection is driven by the perceived-similarity metric, so
+  WS-0 comes first; WS-4 is the first thing that consumes it.</li>
+<li><strong>Premise: reuse is unavoidable.</strong> We cannot author a unique tree per request;
+  with K skeletons per cell and unbounded requests, trees repeat by construction.
+  The job is to <em>manage</em> reuse so no reader feels the repeat, not to eliminate it.</li>
+<li><strong>Mechanism, escalate differentiation with similarity pressure.</strong> On a new
+  request, measure how much similar content the reader (and family) already has in
+  that cell, applying the WS-0 metric to the request's theme against prior
+  stories:</li>
+<li><strong>Low pressure (a second dragon story):</strong> differentiate at the <em>tree</em> level,
+    prioritize a <strong>different skeleton</strong> in the cell. A fresh tree alone makes it a
+    new adventure.</li>
+<li><strong>High pressure (the tenth dragon story, the cell's skeletons exhausted for
+    this theme):</strong> the trees are used up, so escalate to <em>leaf/element</em>
+    differentiation, push harder on tone, cast and relationships, setting
+    sub-elements, pacing, and ending mix (WS-1/WS-2 leaf variety, WS-5 state and
+    ending variation) to keep it fresh on a necessarily-reused tree.</li>
+<li><strong>Saturated even there:</strong> grow the tree catalog (WS-5 mutation, WS-8 flywheel).</li>
+<li><strong>Approach:</strong> extend <code>skeleton_match.py</code> from slug-recency to a similarity-aware
+  pick, de-weight a skeleton by its structural + thematic proximity to what the
+  reader already has (not raw recency alone), and raise a
+  "needs-leaf-differentiation" signal to the fill when the cell is saturated for
+  this theme. Keep the <code>_weight</code> novelty floor.</li>
+<li><strong>Scope:</strong> primarily per reader/family (the UX concern is a reader's own
+  repeats); the same metric can also inform library-level diversity.</li>
+<li><strong>Serves:</strong> <a href="../capability-register/">K3</a>, engagement. <strong>Metric:</strong> perceived
+  similarity between a reader's consecutive same-theme stories, down.</li>
+</ul>
+<h3 id="ws-2-parameterize-the-catalog-for-safe-auditable-leaves-absorbs-packs">WS-2: Parameterize the catalog for safe, auditable leaves (absorbs "packs")<a class="headerlink" href="#ws-2-parameterize-the-catalog-for-safe-auditable-leaves-absorbs-packs" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Goal:</strong> make leaf variation <em>auditable</em> and its safety enforceable per band,
+  <strong>without</strong> turning the fill into slot substitution.</li>
+<li><strong>Approach:</strong> generalize the pilot: a per-skeleton theme contract declaring
+  what may vary (world, cast, props, tone) with per-band/per-slot safety
+  constraints, plus character/tone packs as slot-value libraries. Crucially, the
+  contract <strong>bounds and audits</strong> the reskin; the leaf prose is still <strong>generated
+  fresh per node</strong> (as <code>fill.md</code> does today), never filled by lookup, or it
+  becomes the dog-for-cat template WS-0 is built to fail. Reconcile the label
+  policy with <code>fill.md</code> (labels are content with a frozen action-semantic, not
+  frozen strings; the pilot froze them, a step back). Payoffs: measurable
+  incorporation, crisper Stage 1 fidelity (fewer reskin false-positives that burn
+  the shared <code>max_repairs=3</code> budget), per-slot safety.</li>
+<li><strong>Serves:</strong> <a href="../capability-register/">K3</a>, <a href="../capability-register/">K11</a>,
+  <a href="../capability-register/">K13</a>. <strong>Metric:</strong> anti-template distance up; Stage 1
+  false-positive rate down.</li>
+</ul>
+<h3 id="ws-5-structure-and-state-variation-within-the-adr-011-grammar-scaling">WS-5: Structure and state variation within the ADR-011 grammar (scaling)<a class="headerlink" href="#ws-5-structure-and-state-variation-within-the-adr-011-grammar-scaling" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Goal:</strong> new and mutated trees + state variety, for when leaf diversity alone
+  no longer holds uniqueness up (heavy readers, larger per-cell libraries).</li>
+<li><strong>Approach:</strong> cheap <strong>mutation operators</strong> on verified trees first (sibling
+  subtree swap; re-map which reconvergent leaf carries which ending within the
+  valence set; prune/graft within the envelope; vary decisions-per-path in 4-8;
+  <strong>vary Tier-2 variable semantics and condition-gated routes</strong>). Every mutant
+  re-runs the full gate. A grammar-based composer is the larger second step.</li>
+<li><strong>Serves:</strong> <a href="../capability-register/">K3</a>. <strong>Metric:</strong> distinct trees per cell.</li>
+</ul>
+<h3 id="ws-6-harden-fresh_generation-as-the-flywheel-feed">WS-6: Harden <code>fresh_generation</code> as the flywheel feed<a class="headerlink" href="#ws-6-harden-fresh_generation-as-the-flywheel-feed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Goal:</strong> bespoke plots and a supply of new verified trees. Output persists via
+  WS-8 rather than being consumed once. Strictest gating (weakest safety posture).</li>
+<li><strong>Serves:</strong> <a href="../capability-register/">K11</a>; gated by <a href="../capability-register/">K13</a>.</li>
+</ul>
+<h3 id="ws-8-catalog-flywheel-highest-ceiling">WS-8: Catalog flywheel (highest ceiling)<a class="headerlink" href="#ws-8-catalog-flywheel-highest-ceiling" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Goal:</strong> grow the tree catalog with usage, not authoring budget.</li>
+<li><strong>Approach:</strong> promote any gate-passed, human-approved fresh (WS-6) or composed
+  (WS-5) tree via the neutralize transform (<code>out/pilot/_neutralize.py</code>) into the
+  parameterized catalog, behind a human structure-approval step.</li>
+<li><strong>Serves:</strong> <a href="../capability-register/">K3</a>. <strong>Metric:</strong> net new trees per month.</li>
+</ul>
+<h3 id="ws-7-request-interpretation-and-expectation-setting-delivers-k19">WS-7: Request interpretation and expectation-setting (delivers K19)<a class="headerlink" href="#ws-7-request-interpretation-and-expectation-setting-delivers-k19" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Goal:</strong> reflect the request back before generation, what is built in vs set
+  aside and why, and provide the rejection path for a theme a tree cannot carry.</li>
+<li><strong>Approach:</strong> interpret <code>premise</code> into structured intent with a disposition per
+  element; persist and return it in kid language and guardian detail. Consumes
+  WS-2's contract for precise dispositions and per-skeleton theme-compatibility.</li>
+<li><strong>Delivers:</strong> <a href="../capability-register/">K19</a> (design record). <strong>Also serves:</strong>
+  <a href="../capability-register/">K11</a>, <a href="../capability-register/">K12</a>; gated by
+  <a href="../capability-register/">K13</a>.</li>
+</ul>
+<h2 id="6-sequencing">6. Sequencing<a class="headerlink" href="#6-sequencing" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>WS-0 (metrics; defines &quot;feels like a new adventure&quot;)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>   |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>   +--&gt; WS-4 (similarity-driven, escalating selection)   consumes WS-0; first action
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   +--&gt; WS-1 (leaf-diversity verification + theme parity)   proves leaves differ
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>          |
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>          +--&gt; WS-2 (auditable parameterized leaves; reconcile labels)
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                 +--&gt; WS-7 (request interpretation)
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   +--&gt; WS-5 (structure/state variation)  --feeds--&gt; WS-8 (catalog flywheel) &lt;-- WS-6
 </span></code></pre></div>
-<h2 id="k-kid-capabilities">K: Kid capabilities<a class="headerlink" href="#k-kid-capabilities" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>K1</td>
-<td>Read with age-appropriate presentation: legible type, UI complexity, and reading level matched to the child's band</td>
-<td>🟡</td>
-<td>Bands and reading levels are deeply specced (ADR-011); per-band presentation/UX is not</td>
-</tr>
-<tr>
-<td>K2</td>
-<td>Choices are obvious, tappable, impossible to get mechanically wrong; locked (state-gated) choices are hidden, never shown-and-disabled</td>
-<td>✅</td>
-<td>Tech spec runtime semantics</td>
-</tr>
-<tr>
-<td>K3</td>
-<td>Choices are consequential: paths genuinely differ, endings vary, the story remembers state (items, flags, counters)</td>
-<td>✅</td>
-<td>Storybook format, Tier 2 state, ADR-011 clocks</td>
-</tr>
-<tr>
-<td>K4</td>
-<td>Resume exactly where they left off, on any device, with no understanding of sync required</td>
-<td>✅</td>
-<td>Revision-based sync, version pinning</td>
-</tr>
-<tr>
-<td>K5</td>
-<td>Restart and re-read freely; replay is first-class, including a single-step "Go back" undo</td>
-<td>✅</td>
-<td>RULED 2026-07-16: the back button stays; tech spec Runtime Semantics amended (replay-based undo, no backward state mutation); shipped in the Reader</td>
-</tr>
-<tr>
-<td>K6</td>
-<td>Endings tracker as a replay motivator ("found 3 of 7 endings")</td>
-<td>✅</td>
-<td><code>completion</code> rows shipped (write path); NO tracker UI exists yet, delivery pending Phase 4b</td>
-</tr>
-<tr>
-<td>K7</td>
-<td>Read-aloud / narration for pre-readers and emerging readers</td>
-<td>🟡</td>
-<td>Scoped (Web Speech API, per-profile <code>tts_enabled</code>) but deferred to Phase 4b while the vision's own persona needs it</td>
-</tr>
-<tr>
-<td>K8</td>
-<td>Picture support at lower bands: covers at minimum; per-passage illustrations as an explicit decision</td>
-<td>🟡</td>
-<td>Cover art ratified and recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a> (shipped: Gemini generation, R2 storage, kid-visible with fallback tile); per-passage art stays out of scope; pre-reader picture support beyond covers still open</td>
-</tr>
-<tr>
-<td>K9</td>
-<td>Visual library shelf with covers: what's new, in progress, finished</td>
-<td>🟡</td>
-<td>Library API exists; shelf presentation not specced</td>
-</tr>
-<tr>
-<td>K10</td>
-<td>Offline is invisible: identical experience offline; never a connectivity error; at most "this book isn't downloaded yet"</td>
-<td>🟡</td>
-<td>Offline reading fully specced; kid-facing connectivity UX not</td>
-</tr>
-<tr>
-<td>K11</td>
-<td>Express interests and initiate a story request in kid terms (picking interests, typing a wish)</td>
-<td>🟡</td>
-<td>Shipped end to end: <code>POST /story-requests</code> plus a kid-terms request UI (idea box, series continuation, own-status list in kid language); ADR-015 is the foundational record</td>
-</tr>
-<tr>
-<td>K12</td>
-<td>Kid-friendly waiting and error states: "your story is being written", sync conflicts, and failures presented in kid terms</td>
-<td>❌</td>
-<td>Substantially built despite the ❌ doc status: kid-language request statuses, plain-language conflict dialog, mascot error/empty states, honest save-retry banner; remaining gap is generation progress inside the kid surface</td>
-</tr>
-<tr>
-<td>K13</td>
-<td>Age-band content guarantee: themes, scariness, and ending intensity land within the band (e.g. no death endings in young bands)</td>
-<td>✅</td>
-<td>ADR-011 per-band allowances, content flags, moderation by band</td>
-</tr>
-<tr>
-<td>K14</td>
-<td>Safe room: no ads, no purchases, no external links, no contact with strangers, no dark patterns in the kid context</td>
-<td>✅</td>
-<td>Permanent exclusions in vision; parental gate in ADR-008</td>
-</tr>
-<tr>
-<td>K15</td>
-<td>Feedback signal: "I didn't like this / this scared me", routed to a grown-up who actually sees it</td>
-<td>❌</td>
-<td>Ratified 2026-07-16 (decision 4); feeds G10 alerts and A1 queue</td>
-</tr>
-<tr>
-<td>K16</td>
-<td>Pick "me" from a picker: name and avatar, no password or email; sibling shelves and progress never collide</td>
-<td>✅</td>
-<td>Profile picker, per-profile PIN, ADR-014 device grants, IDOR suite</td>
-</tr>
-<tr>
-<td>K17</td>
-<td>Give and receive structured book recommendations within the family and across guardian-connected families (cousins); a recommendation is a book pointer plus rating, never a message</td>
-<td>🟡</td>
-<td>ADR-016 records the policy; only the connection substrate exists (PR #267); no recommendation surfaces yet; K18 ratings are the payload substrate</td>
-</tr>
-<tr>
-<td>K18</td>
-<td>Rate a finished book (1-5 stars): the enjoyment signal that feeds S12 aggregate scoring and K17 recommendation payloads</td>
-<td>✅</td>
-<td>RULED 2026-07-16: owner's variant of thumbs up/down for aggregate ratings; shipped (kid widget, <code>Rating</code> table, <code>api/ratings.py</code>); debt item U6 (cannot clear a rating) folds here; distinct from K15, which remains the safety-flag signal</td>
-</tr>
-<tr>
-<td>K19</td>
-<td>Request interpretation and expectation-setting: when a child submits a free-form story idea, the app reflects it back in kid terms before generation, what it understood and will build into the story versus what it set aside and why (outside the age band, not safe, or not part of this kind of story), so the child knows what to expect from their wish</td>
-<td>❌</td>
-<td>Added 2026-07-18 (owner directive). Design record: <a href="../story-flexibility-plan/">story-flexibility-plan.md</a> WS-7. Surfaces WS-1's theme binding; the precise "what maps / what dropped against the actual story" depends on WS-1 (theme_brief wiring), currently unbuilt (the fill ignores <code>premise</code>). A submission-time general interpretation (band + safety) is buildable now. Gated by K13 (never echo unsafe input back); complements K11 (express a request) and K12 (kid-friendly states). The guardian-console view is the G-side companion surface</td>
-</tr>
-</tbody>
-</table>
-<h2 id="g-guardian-capabilities">G: Guardian capabilities<a class="headerlink" href="#g-guardian-capabilities" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>G1</td>
-<td>One account, multiple child profiles; each profile's age band and reading level actually changes what the child sees</td>
-<td>✅</td>
-<td><code>child_profile</code> caps enforced in library filtering</td>
-</tr>
-<tr>
-<td>G2</td>
-<td>Per-child content controls: allowed and banned themes, content flags, family-specific exclusions (phobias, no-magic, no-weapons)</td>
-<td>✅</td>
-<td>Schema-deep only: <code>allowed_content_flags</code> and <code>content_nogo</code> exist in the data model, but the intake UI hardcodes empty lists and the profile form has no theme controls. RULED 2026-07-16: build confirmed, scheduling open</td>
-</tr>
-<tr>
-<td>G3</td>
-<td>Per-child permissions and limits: whether the child may initiate story requests (including pre-authorized auto-allow), screen-time norms if any</td>
-<td>🟡</td>
-<td>ADR-015 defines the pre-authorization envelope semantics; screen-time norms still unspecced</td>
-</tr>
-<tr>
-<td>G4</td>
-<td>Initiate story requests themselves, including personalized stories ("one about our camping trip for Maya")</td>
-<td>✅</td>
-<td>Concept-brief intake; PII rules keep real names out of prompts</td>
-</tr>
-<tr>
-<td>G5</td>
-<td>Fast review of a generated story without reading every path: summary, themes, flagged passages, branch structure</td>
-<td>🟡</td>
-<td>Review surface named; skim aids (summary, branch view) not specced; approval itself moved to admin</td>
-</tr>
-<tr>
-<td>G6</td>
-<td>Edit or reject a generated story (prose tweaks, veto) with re-review on edit</td>
-<td>🟡</td>
-<td><code>PATCH .../nodes/{id}</code> + re-review specced for Phase 4b; <code>needs_revision</code> exists</td>
-</tr>
-<tr>
-<td>G7</td>
-<td>Cost gate: a story request spends generation budget only with guardian consent; per-child auto-allow is a guardian setting</td>
-<td>🟡</td>
-<td>Consent step shipped (guardian request approval precedes any concept/GenerationJob, WS-B); budget/credit debiting at consent and pre-auth envelopes (G3) remain per ADR-015</td>
-</tr>
-<tr>
-<td>G8</td>
-<td>Kill switch: pull any published book off a child's shelf immediately, including offline copies at next connection</td>
-<td>✅</td>
-<td><code>archived</code> state exists; offline-copy revocation delivered 2026-07-17 (client-side reconcile-on-fetch/reconnect against the authoritative <code>/v1/library</code> response, no backend change needed; <code>frontend/src/offline/revocation.ts</code>)</td>
-</tr>
-<tr>
-<td>G9</td>
-<td>Engagement visibility: what each child is reading, how much, endings found, re-reads; literacy signals, not surveillance</td>
-<td>❌</td>
-<td>Ratified 2026-07-16 (decision 5); raw data (<code>reading_state</code>, <code>completion</code>) exists with no reporting capability</td>
-</tr>
-<tr>
-<td>G10</td>
-<td>Notifications that matter: child flagged content, a story awaiting action, a story ready; digest by default, alert on safety</td>
-<td>❌</td>
-<td>Ratified 2026-07-16 (decision 5); no notification surface anywhere</td>
-</tr>
-<tr>
-<td>G11</td>
-<td>Plain-language trust surface: what data is collected, where the AI text came from, who reviewed it, no training on child inputs, COPPA/GDPR-K posture</td>
-<td>🟡</td>
-<td>Privacy model and ADR-008 compliance are strong internally; no user-facing articulation specced</td>
-</tr>
-<tr>
-<td>G12</td>
-<td>Data export and full account/family deletion</td>
-<td>🟡</td>
-<td>Deletion-readiness and Apple revocation specced; user-facing export absent</td>
-</tr>
-<tr>
-<td>G13</td>
-<td>Predictable cost model: quotas, "3 stories left this month", no surprise bills a child can trigger</td>
-<td>🟡</td>
-<td>ADR-008 credits/quotas for the public tier; no in-app balance surface specced</td>
-</tr>
-<tr>
-<td>G14</td>
-<td>Standard adult auth; multi-guardian households (two parents, a grandparent)</td>
-<td>🟡</td>
-<td>Supabase OIDC solid; multi-guardian implied by the data model, never specced</td>
-</tr>
-<tr>
-<td>G15</td>
-<td>Device management: authorize and revoke devices, see which books are downloaded where, storage use</td>
-<td>🟡</td>
-<td>ADR-014 grants list/revoke ✅; download/storage visibility ❌</td>
-</tr>
-<tr>
-<td>G16</td>
-<td>Browse the curated catalog and assign books to their own children</td>
-<td>✅</td>
-<td>WS-E catalog visibility + assignment gate</td>
-</tr>
-<tr>
-<td>G17</td>
-<td>Approve, decline, and revoke family connections for their own family, in each direction (share out and receive in); connections activate nothing without this consent</td>
-<td>🟡</td>
-<td>ADR-016 requires dual-guardian consent; PR #267 is admin-managed only, and the constraint currently holds BY OMISSION (nothing reads the table yet); the first consumer of <code>family_connection</code> must add an enforced consent guard, not rely on this note</td>
-</tr>
-</tbody>
-</table>
-<h2 id="a-admin-capabilities">A: Admin capabilities<a class="headerlink" href="#a-admin-capabilities" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>A1</td>
-<td>Moderation queue: flagged, uncertain, and reader/guardian-reported items, each showing why; decisions feed back into automated rules</td>
-<td>🟡</td>
-<td><code>needs_review</code> routing and global queue ✅; feedback-into-rules shipped as the WS-F propose-and-ratify suggestion dashboard over <code>pipeline_event</code>; kid/guardian reports (K15) still ❌</td>
-</tr>
-<tr>
-<td>A2</td>
-<td>Sample audits: random re-review of anything published without direct human review (becomes real if any auto-publish tier ever exists)</td>
-<td>❌</td>
-<td>Moot while A6 gates everything; register it so it survives any future gating change</td>
-</tr>
-<tr>
-<td>A3</td>
-<td>Global policy levers: age-band definitions, theme taxonomy, classifier thresholds, banned-content lists</td>
-<td>🟡</td>
-<td>Per-band moderation thresholds are DB-backed, admin-editable with an audit trail (WS-A); band definitions and taxonomy remain code-level</td>
-</tr>
-<tr>
-<td>A4</td>
-<td>Policy re-evaluation: re-screen the already-published catalog when policy or thresholds change</td>
-<td>🟡</td>
-<td>First cut delivered 2026-07-17 (Phase 5/M5): admin-only <code>POST /api/v1/admin/rescreen</code> (<code>moderation/rescreen.py</code>, <code>api/rescreen.py</code>) re-runs the deterministic policy/band gate plus Stage-0 classifiers over already-published family-tier books, scoped by an optional id list, and writes a <code>moderation_completed</code> pipeline event per book; a flagged book is never auto-unpublished (ADR-005), only surfaced for an admin to archive by hand. Full public-catalog re-screen (Phase 9) and an admin UI hook still ❌</td>
-</tr>
-<tr>
-<td>A5</td>
-<td>Incident path: trace how content reached a child (prompt, model, gate version), pull it everywhere including offline, notify affected guardians</td>
-<td>🟡</td>
-<td>Provenance supports trace ✅; pull-everywhere (offline copies) delivered 2026-07-17, same client-side revocation reconcile as G8 (<code>frontend/src/offline/revocation.ts</code>); guardian notification still ❌</td>
-</tr>
-<tr>
-<td>A6</td>
-<td>AI safety gate: the admin's recorded approval is the only path from generated content to a child (approve-and-publish)</td>
-<td>✅</td>
-<td>ADR-005 as amended; state machine with no bypass; ratified 2026-07-16 (decision 3)</td>
-</tr>
-<tr>
-<td>A7</td>
-<td>Pipeline observability: success/failure rates, queue depth and latency, rejection reasons by stage, cost per story, per-provider quality</td>
-<td>🟡</td>
-<td><code>pipeline_event</code> captures every transition and the WS-F dashboard aggregates moderation outcomes; cost/latency/yield operational views still ❌</td>
-</tr>
-<tr>
-<td>A8</td>
-<td>Pipeline levers: switch or disable providers, tune prompts/templates, set rate limits and cost caps, kill a runaway job</td>
-<td>🟡</td>
-<td>Config-pinned swap + fallback cascade ✅; per-request provider/model against a server-side allowlist shipped (WS-C), with allowlist + authoring-queue admin UI in PR #268; kill-job and caps surfaces still ❌</td>
-</tr>
-<tr>
-<td>A9</td>
-<td>Curated/seed catalog management so a new child never sees an empty shelf</td>
-<td>🟡</td>
-<td>Catalog visibility + "curated starter library" (ADR-008); management surface thin</td>
-</tr>
-<tr>
-<td>A10</td>
-<td>Admin-initiated story generation (seeding the catalog, testing the pipeline)</td>
-<td>✅</td>
-<td>Shipped (WS-B): <code>POST /story-requests/authored</code>, admin catalog-targeted with no family; ADR-015 names it foundationally</td>
-</tr>
-<tr>
-<td>A11</td>
-<td>Structural quality tools across the corpus: broken graphs, reading-level drift, repetitive or template-y output</td>
-<td>🟡</td>
-<td>Per-story validator is world-class; corpus-level drift/repetition tooling ❌</td>
-</tr>
-<tr>
-<td>A12</td>
-<td>Account support ops: lockouts, deletion requests, abuse handling (an adult misusing generation)</td>
-<td>🟡</td>
-<td>PR #267 (open) delivers user/family lifecycle management: invites, edit, deactivate with auth-boundary enforcement and self-lockout guard; deletion-request and abuse workflows still ❌. Per the 2026-07-16 review condition: PR #267 also grants the admin console authority to set and reset a child profile's picker PIN (<code>PATCH /admin/profiles/{profile_id}</code>, <code>api/admin_profiles.py</code>), named here explicitly as an A12 admin-support capability rather than left implicit in the CRUD description; cross-reference <a href="../adr/adr-014-device-authorized-kid-access/">ADR-014</a>, which defines the picker PIN as a convenience lock behind an already-authenticated guardian/admin bearer, not a security boundary in its own right</td>
-</tr>
-<tr>
-<td>A13</td>
-<td>Admin action audit trail: admins touching child-related data leave a trail</td>
-<td>🟡</td>
-<td>Approver stamps and <code>acting_role</code> audit stamps ✅; no audit view/report</td>
-</tr>
-<tr>
-<td>A14</td>
-<td>Compliance and platform ops: retention enforcement, compliance reporting, backups and tested restore</td>
-<td>🟡</td>
-<td>ADR-007 retention, backups live, restore drill planned; compliance reporting ❌</td>
-</tr>
-<tr>
-<td>A15</td>
-<td>Administer family connections: broker, list, and remove connection records on request; admin action never substitutes for guardian consent</td>
-<td>🟡</td>
-<td>Console shipped in PR #267 (open); ADR-016 subordinates it to G17 consent</td>
-</tr>
-<tr>
-<td>A16</td>
-<td>Generate and manage AI cover art per storybook version, reviewed on the approval surface before it reaches a child</td>
-<td>✅</td>
-<td>RULED 2026-07-16, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>; shipped (covers/ module, admin trigger, R2 storage, best-effort with fallback)</td>
-</tr>
-</tbody>
-</table>
-<h2 id="s-system-capabilities-cross-cutting">S: System capabilities (cross-cutting)<a class="headerlink" href="#s-system-capabilities-cross-cutting" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>S1</td>
-<td>Offline as a first-class mode: reading, choices, progress, and flags all work offline and reconcile later</td>
-<td>✅</td>
-<td>ADR-002, sync rules, offline queue with idempotent replay</td>
-</tr>
-<tr>
-<td>S2</td>
-<td>Multi-device conflict resolution that never silently loses a child's progress</td>
-<td>✅</td>
-<td>Revision-based 409 model; kid-facing presentation tracked as K12</td>
-</tr>
-<tr>
-<td>S3</td>
-<td>Story representation that supports the format: branching graph, state, conditions, multiple ending types</td>
-<td>✅</td>
-<td>ADR-001, ADR-006, ADR-011; deeper than the expectation</td>
-</tr>
-<tr>
-<td>S4</td>
-<td>Deterministic pre-publication validation that a story is playable (no dead ends, orphans, traps, unsatisfiable paths)</td>
-<td>✅</td>
-<td>Two-layer gate incl. state-space walk; RULED 2026-07-16: repair output must re-run the gate and the band policy must fail closed on an unconfigured band (fixes implemented on this branch)</td>
-</tr>
-<tr>
-<td>S5</td>
-<td>Age-banding as the system-wide spine: reading level, theme intensity, safety thresholds keyed off one per-child band</td>
-<td>✅</td>
-<td>ADR-011</td>
-</tr>
-<tr>
-<td>S6</td>
-<td>Human-legible provenance per story: who or what created it, checks passed, approver, when</td>
-<td>✅</td>
-<td>Per-version model/provider/prompt/approver stamps</td>
-</tr>
-<tr>
-<td>S7</td>
-<td>Independent safety pipeline: moderation independent of the generator; no path to a child bypasses the automated gates plus the human gate</td>
-<td>✅</td>
-<td>ADR-005, ADR-010, prompt-injection defenses</td>
-</tr>
-<tr>
-<td>S8</td>
-<td>End-to-end request flow: initiate (K/G/A) -&gt; guardian cost gate -&gt; generation -&gt; validation/moderation -&gt; admin gate -&gt; shelf, with honest async status</td>
-<td>🟡</td>
-<td>Flow shipped end to end (WS-A..G: request -&gt; guardian approve -&gt; admin authoring plan -&gt; pipeline -&gt; admin release) except budget accounting at consent and kid-facing status; ADR-015 is the foundational record</td>
-</tr>
-<tr>
-<td>S9</td>
-<td>Notification/event delivery infrastructure underlying K12, G10, and admin alerts</td>
-<td>❌</td>
-<td>Append-only pipeline event log exists in code; no delivery capability in foundational docs</td>
-</tr>
-<tr>
-<td>S10</td>
-<td>Privacy architecture: no child PII to providers, data minimization, deletion-readiness, no third-party trackers in the kid context</td>
-<td>✅</td>
-<td>Privacy model, PII guard, ADR-007/008/009</td>
-</tr>
-<tr>
-<td>S11</td>
-<td>Social boundary enforcement: no messaging or free text between users, no user/family discovery, no kid contact outside active parental approval; cross-family flows exist only through ring-2 connections</td>
-<td>✅</td>
-<td>ADR-016 + vision v1.3; enforcement is structural (no such surfaces exist) plus the ADR-016 validation criteria</td>
-</tr>
-<tr>
-<td>S12</td>
-<td>System recommendations from anonymized aggregate book scores (ring 3): no identity in or inferable from a global recommendation; minimum-population threshold before aggregates surface</td>
-<td>🟡</td>
-<td>Named as permitted future scope in ADR-016; no design</td>
-</tr>
-</tbody>
-</table>
-<h2 id="known-doc-debt-this-register-supersedes-or-exposes">Known doc debt this register supersedes or exposes<a class="headerlink" href="#known-doc-debt-this-register-supersedes-or-exposes" title="Permanent link">&para;</a></h2>
-<p>All three items below were resolved in the 2026-07-16 alignment pass; kept for the record:</p>
-<ul>
-<li><del>The vision doc still says "no story reaches a child until a parent approves it"</del>:
-  resolved in vision v1.2 (TL;DR, success metrics, and MVP capability 5 now name the global
-  safety admin per ADR-005 as amended); the guardian's residual controls are G5/G6/G7/G8,
-  not approval.</li>
-<li><del>The vision doc's one-family target-user framing predates the public pivot</del>: resolved in
-  vision v1.2 (scope note generalizes to the three roles; the founding family is kept as
-  reference personas).</li>
-<li><del>The "children cannot request stories" narrowing was never a recorded decision</del>: resolved
-  by <a href="../adr/adr-015-story-request-initiation-and-gating/">ADR-015</a>, which reverses it
-  explicitly and refines ADR-008's "children never trigger generation" phrasing to the
-  enforceable invariant (no spend or provider egress without adult consent).</li>
-</ul>
-<h2 id="unregistered-scope-rulings">Unregistered scope: rulings<a class="headerlink" href="#unregistered-scope-rulings" title="Permanent link">&para;</a></h2>
-<p>Per maintenance rule 3, work serving no register ID gets a conscious call. Found in the
-2026-07-16 open-PR review; both now ruled:</p>
-<ul>
-<li><strong>Cross-family recommendation connections</strong> (PR #267): RULED 2026-07-16 (decision 6).
-  Registered as K17/G17/A15/S11/S12 and recorded in
-  <a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a>. The PR's substrate
-  stands; the binding constraint is that no connection activates child-facing visibility
-  until the dual-guardian consent flow (G17) exists.</li>
-<li><strong>Provider allowlist admin UI</strong> (PR #268): serves A8 and is cited there; no separate
-  ruling needed.</li>
-</ul>
-<p>Added by the full traceability review (2026-07-16, see
-<a href="../traceability-review-2026-07-16/">traceability-review-2026-07-16.md</a> section 2);
-RULED by the owner later the same day:</p>
-<ul>
-<li><strong>Star ratings</strong>: RULED, registered as <strong>K18</strong> (the owner's variant of thumbs up/down,
-  feeding aggregate ratings/S12). Debt item U6 folds under K18.</li>
-<li><strong>AI cover-art subsystem</strong>: RULED, wanted as a register item; K8 updated, <strong>A16</strong>
-  minted, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>.</li>
-<li><strong>Reader "Go back" button</strong>: RULED, the app should have one; tech spec Runtime
-  Semantics amended, K5 updated.</li>
-<li><strong>ADR-007 raw output</strong>: RULED, admin reviews first, then the parent (a dual-role adult
-  is covered by the admin capability); the job-detail endpoint is tightened to
-  admin-only <code>report</code> access and ADR-007 amended. The parent may ultimately receive
-  unedited LLM output when the admin approves without changes; accepted, since it has
-  passed the automated gates and admin review by then.</li>
-<li><strong>Repair re-gate and band fail-closed</strong>: RULED, both fixes ordered and implemented on
-  this branch (S4 note updated).</li>
-<li><strong>G2 content controls</strong>: RULED, will be built; scheduling open.</li>
-<li><strong>Admin child-PIN set/reset</strong> (PR #267): still open, recommend naming in A12 with an
-  ADR-014 cross-reference at PR review time.</li>
-<li><strong>Planned items lacking a design element</strong> (not schedulable until one exists): Android
-  release, web direct-billing channel, education/teacher persona, i18n catalog. Still
-  open as a batch.</li>
-</ul>
-<h2 id="maintenance-rules">Maintenance rules<a class="headerlink" href="#maintenance-rules" title="Permanent link">&para;</a></h2>
+<p>The operating model is a differentiation ladder driven by similarity pressure:
+WS-0 defines "feels like a new adventure"; WS-4 reads it per request and picks a
+<strong>different tree</strong> while trees remain, then calls for <strong>harder leaf/element
+variation</strong> (WS-1/WS-2/WS-5) once a cell is saturated for a theme; WS-5/WS-8 raise
+the structural ceiling when even that saturates. WS-0 is therefore a hard
+prerequisite for WS-4, not parallel to it.</p>
+<h2 id="7-safety-invariants-hold-across-all-workstreams">7. Safety invariants (hold across all workstreams)<a class="headerlink" href="#7-safety-invariants-hold-across-all-workstreams" title="Permanent link">&para;</a></h2>
 <ol>
-<li>IDs are stable forever. Append, never renumber; mark dead items "Retired" with a reason.</li>
-<li>When a capability lands, flip Docs status and link the spec/ADR and the tests that cover it.</li>
-<li>Any new feature proposal must cite the ID(s) it serves; a proposal serving no ID is either
-   scope creep or a missing register entry, and that call gets made consciously.</li>
+<li>Neither a theme nor a leaf can change the gate-verified structural properties,
+   the fail-state policy, the reading band, or the ending kind/valence policy. The
+   frozen safety object is the ADR-011 constraint grammar, enforced by the gate on
+   <strong>every</strong> tree and every fill.</li>
+<li>Every generated story passes the full <code>validator/</code> gate and <code>moderation/</code>
+   review before publish. No novelty exception.</li>
+<li>Per-band content guarantees (<a href="../capability-register/">K13</a>) are enforced by the
+   structure + the gate, never by trusting the theme brief. Theme freedom is
+   bounded per band, per slot, in the theme contract (WS-2), not left open.</li>
+<li>Untrusted-input handling (OWASP LLM01) covers <strong>derived</strong> artifacts: a
+   theme-derived world bible and the WS-7 reflected interpretation re-enter other
+   prompts (cover-art in <code>covers/</code>, repair, the kid-facing echo) and must be
+   fenced at every reuse, not only at intake.</li>
+<li><strong>Novelty floor.</strong> Selection never fully excludes an eligible option (the
+   <code>_weight</code> nonzero floor). A rating- or learning-driven selector (WS-4) may set
+   a quality floor but must keep an exploration/novelty bonus, so optimizing
+   <a href="../capability-register/">K18</a> ratings can never homogenize the catalog.</li>
 </ol>
-<h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
+<h2 id="8-current-state">8. Current state<a class="headerlink" href="#8-current-state" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../project-vision/">Project Vision</a> (update pending per doc debt above)</li>
-<li><a href="../tech-spec/">Tech Spec</a></li>
-<li><a href="../adr/">ADR index</a></li>
-<li><a href="../authorization-matrix/">Authorization Matrix</a></li>
-<li><a href="../privacy-model/">Privacy Model</a></li>
+<li><strong>Pilot built and proven</strong> (<code>out/pilot/</code>): one parameterized skeleton filled for
+  two new themes (space station, dino dig), both gate-passing and non-lethal. It
+  demonstrated a <strong>structured, auditable</strong> binding.</li>
+<li><strong>Pilot cautions, now WS-2 requirements:</strong> (a) it froze <code>choices[].label</code>, but
+  <code>fill.md</code> rewrites labels, labels are content; (b) a slot contract must bound
+  and audit the reskin, not become a fill-in-the-blank template, or it produces
+  the dog-for-cat failure WS-0 fails.</li>
+<li><strong>Next:</strong> WS-0 (define and measure "new adventure") is the true first step;
+  WS-4 and WS-1 are the cheapest immediate wins.</li>
+</ul>
+<h2 id="9-open-questions-adr-candidates">9. Open questions / ADR candidates<a class="headerlink" href="#9-open-questions-adr-candidates" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>ADR-019 candidate:</strong> "Parameterized skeletons and theme-driven fills." Ratify
+  the parameterization scheme, the theme-contract format (per-band/per-slot safety
+  constraints, per-skeleton theme-compatibility), the label policy, and the rule
+  that leaves are generated fresh (not substituted), before migrating the catalog.</li>
+<li>Do fixed and parameterized skeletons coexist, or is parameterization the target
+  end-state? Where does the theme contract live?</li>
+<li>WS-8 promotion bar: what human approval gates a new tree into the catalog, and
+  how is its safety re-proven at promotion?</li>
+<li>How much theme freedom is safe per band without a human theme-review step (a
+  WS-2 blocker, not an afterthought)?</li>
 </ul>
 
 
@@ -3509,7 +3413,7 @@ RULED by the owner later the same day:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 19:07:42 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 19, 2026 00:29:53 UTC">July 19, 2026</span>
   </span>
 
     

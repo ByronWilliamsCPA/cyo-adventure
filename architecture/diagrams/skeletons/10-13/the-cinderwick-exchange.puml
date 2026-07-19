@@ -1,0 +1,355 @@
+@startuml the-cinderwick-exchange
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 122w
+state n_arrival #D1C4E9
+n_arrival : rising · 116w
+state n_sort #FFF9C4
+n_sort : choice · 134w
+state t1_root #D1C4E9
+t1_root : rising · 116w
+state t1_intro #D1C4E9
+t1_intro : rising · 114w
+state t1_survey #D1C4E9
+t1_survey : rising · 112w
+state t1_hub #FFF9C4
+t1_hub : choice · 130w
+state t1_a1 #D1C4E9
+t1_a1 : rising · 114w
+state t1_a2 #FFF9C4
+t1_a2 : choice · 126w
+state t1_aa1 #D1C4E9
+t1_aa1 : rising · 112w
+state t1_aa2 #FFE0B2
+t1_aa2 : climax · 102w
+state t1_aa_end #C8E6C9
+t1_aa_end : success (positive)
+t1_aa_end : "The True Tick"
+state t1_ab1 #D1C4E9
+t1_ab1 : rising · 110w
+state t1_ab_end #FFCDD2
+t1_ab_end : setback (negative)
+t1_ab_end : "A Few Minutes Behind"
+state t1_b1 #D1C4E9
+t1_b1 : rising · 114w
+state t1_b2 #D1C4E9
+t1_b2 : rising · 112w
+state t1_b3 #D1C4E9
+t1_b3 : rising · 112w
+state t1_b4 #FFE0B2
+t1_b4 : climax · 102w
+state t1_b_end #E0E0E0
+t1_b_end : discovery (neutral)
+t1_b_end : "A Hundred Keepers"
+state t1_c1 #D1C4E9
+t1_c1 : rising · 114w
+state t1_c2 #D1C4E9
+t1_c2 : rising · 112w
+state t1_c3 #FFF9C4
+t1_c3 : choice · 126w
+state t1_cc1 #D1C4E9
+t1_cc1 : rising · 112w
+state t1_cc2 #FFE0B2
+t1_cc2 : climax · 102w
+state t1_cc_end #C8E6C9
+t1_cc_end : completion (positive)
+t1_cc_end : "The Patient Swing"
+state t1_cd1 #D1C4E9
+t1_cd1 : rising · 110w
+state t1_cd_end #FFCDD2
+t1_cd_end : capture (negative)
+t1_cd_end : "The Silent Hour"
+state t2_root #D1C4E9
+t2_root : rising · 116w
+state t2_intro #D1C4E9
+t2_intro : rising · 114w
+state t2_survey #D1C4E9
+t2_survey : rising · 112w
+state t2_hub #FFF9C4
+t2_hub : choice · 130w
+state t2_a1 #D1C4E9
+t2_a1 : rising · 114w
+state t2_a2 #FFF9C4
+t2_a2 : choice · 126w
+state t2_aa1 #D1C4E9
+t2_aa1 : rising · 112w
+state t2_aa2 #FFE0B2
+t2_aa2 : climax · 102w
+state t2_aa_end #C8E6C9
+t2_aa_end : completion (positive)
+t2_aa_end : "The Cancelling Angle"
+state t2_ab1 #D1C4E9
+t2_ab1 : rising · 110w
+state t2_ab_end #E0E0E0
+t2_ab_end : discovery (neutral)
+t2_ab_end : "The Missing Words"
+state t2_b1 #D1C4E9
+t2_b1 : rising · 114w
+state t2_b2 #D1C4E9
+t2_b2 : rising · 112w
+state t2_b3 #D1C4E9
+t2_b3 : rising · 112w
+state t2_b4 #FFE0B2
+t2_b4 : climax · 102w
+state t2_b_end #C8E6C9
+t2_b_end : success (positive)
+t2_b_end : "The Breathing Voice"
+state t2_c1 #D1C4E9
+t2_c1 : rising · 114w
+state t2_c2 #D1C4E9
+t2_c2 : rising · 112w
+state t2_c3 #FFF9C4
+t2_c3 : choice · 126w
+state t2_cc1 #D1C4E9
+t2_cc1 : rising · 112w
+state t2_cc2 #FFE0B2
+t2_cc2 : climax · 102w
+state t2_cc_end #E0E0E0
+t2_cc_end : discovery (neutral)
+t2_cc_end : "The Voice Past the Rail"
+state t2_cd1 #D1C4E9
+t2_cd1 : rising · 110w
+state t2_cd_end #FFCDD2
+t2_cd_end : capture (negative)
+t2_cd_end : "The Coaxing Dark"
+state t3_root #D1C4E9
+t3_root : rising · 116w
+state t3_intro #D1C4E9
+t3_intro : rising · 114w
+state t3_survey #D1C4E9
+t3_survey : rising · 112w
+state t3_hub #FFF9C4
+t3_hub : choice · 130w
+state t3_a1 #D1C4E9
+t3_a1 : rising · 114w
+state t3_a2 #FFF9C4
+t3_a2 : choice · 126w
+state t3_aa1 #D1C4E9
+t3_aa1 : rising · 112w
+state t3_aa2 #FFE0B2
+t3_aa2 : climax · 102w
+state t3_aa_end #C8E6C9
+t3_aa_end : success (positive)
+t3_aa_end : "The Iron Clamp"
+state t3_ab1 #D1C4E9
+t3_ab1 : rising · 110w
+state t3_ab_end #FFCDD2
+t3_ab_end : setback (negative)
+t3_ab_end : "A Thin Breath"
+state t3_b1 #D1C4E9
+t3_b1 : rising · 114w
+state t3_b2 #D1C4E9
+t3_b2 : rising · 112w
+state t3_b3 #D1C4E9
+t3_b3 : rising · 112w
+state t3_b4 #FFE0B2
+t3_b4 : climax · 102w
+state t3_b_end #C8E6C9
+t3_b_end : completion (positive)
+t3_b_end : "Two Backs and a Will"
+state t3_c1 #D1C4E9
+t3_c1 : rising · 114w
+state t3_c2 #D1C4E9
+t3_c2 : rising · 112w
+state t3_c3 #FFF9C4
+t3_c3 : choice · 126w
+state t3_cc1 #D1C4E9
+t3_cc1 : rising · 112w
+state t3_cc2 #FFE0B2
+t3_cc2 : climax · 102w
+state t3_cc_end #E0E0E0
+t3_cc_end : discovery (neutral)
+t3_cc_end : "One Breathing Machine"
+state t3_cd1 #D1C4E9
+t3_cd1 : rising · 110w
+state t3_cd_end #FFCDD2
+t3_cd_end : setback (negative)
+t3_cd_end : "The Sheared Spindle"
+state t4_root #D1C4E9
+t4_root : rising · 116w
+state t4_intro #D1C4E9
+t4_intro : rising · 114w
+state t4_survey #D1C4E9
+t4_survey : rising · 112w
+state t4_hub #FFF9C4
+t4_hub : choice · 130w
+state t4_a1 #D1C4E9
+t4_a1 : rising · 114w
+state t4_a2 #FFF9C4
+t4_a2 : choice · 126w
+state t4_aa1 #D1C4E9
+t4_aa1 : rising · 112w
+state t4_aa2 #FFE0B2
+t4_aa2 : climax · 102w
+state t4_aa_end #C8E6C9
+t4_aa_end : completion (positive)
+t4_aa_end : "The Rescued Token"
+state t4_ab1 #D1C4E9
+t4_ab1 : rising · 110w
+state t4_ab_end #FFCDD2
+t4_ab_end : capture (negative)
+t4_ab_end : "Stuck in the Veins"
+state t4_b1 #D1C4E9
+t4_b1 : rising · 114w
+state t4_b2 #D1C4E9
+t4_b2 : rising · 112w
+state t4_b3 #D1C4E9
+t4_b3 : rising · 112w
+state t4_b4 #FFE0B2
+t4_b4 : climax · 102w
+state t4_b_end #C8E6C9
+t4_b_end : success (positive)
+t4_b_end : "The Gathered Breath"
+state t4_c1 #D1C4E9
+t4_c1 : rising · 114w
+state t4_c2 #D1C4E9
+t4_c2 : rising · 112w
+state t4_c3 #FFF9C4
+t4_c3 : choice · 126w
+state t4_cc1 #D1C4E9
+t4_cc1 : rising · 112w
+state t4_cc2 #FFE0B2
+t4_cc2 : climax · 102w
+state t4_cc_end #E0E0E0
+t4_cc_end : discovery (neutral)
+t4_cc_end : "The Training Round"
+state t4_cd1 #D1C4E9
+t4_cd1 : rising · 110w
+state t4_cd_end #FFCDD2
+t4_cd_end : setback (negative)
+t4_cd_end : "Two Jams from One"
+n_start --> n_arrival : Push open the great brass door and go in...
+n_arrival --> n_sort : Ask Vane about the four halls.
+n_sort --> t1_root : Keep the Clockloft and mend the pendulum...
+n_sort --> t2_root : Keep the Whispering Gallery and find the...
+n_sort --> t3_root : Keep the Cistern and hold back the flood...
+n_sort --> t4_root : Keep the Cartway and free the midnight c...
+t1_root --> t1_intro : Follow Junia to the mechanism.
+t1_intro --> t1_survey : Study the three faults with Junia.
+t1_survey --> t1_hub : Decide where to begin.
+t1_hub --> t1_a1 : Re-cut the worn escapement pallet at the...
+t1_hub --> t1_b1 : Climb the frame to free the jammed count...
+t1_hub --> t1_c1 : Rebalance the pendulum bob with trim-wei...
+t1_a1 --> t1_a2 : Ready the finished pallet.
+t1_a2 --> t1_aa1 : Temper it in the quench, the slow sure w...
+t1_a2 --> t1_ab1 : Fit it green and race the clock.
+t1_aa1 --> t1_aa2 : Set the hardened pallet and watch the ti...
+t1_aa2 --> t1_aa_end : Ring in the mended midnight.
+t1_ab1 --> t1_ab_end : Nurse the failing pallet toward midnight...
+t1_b1 --> t1_b2 : Reach the stuck count-wheel.
+t1_b2 --> t1_b3 : Work the wedged pin loose.
+t1_b3 --> t1_b4 : Climb down and read the old marks.
+t1_b4 --> t1_b_end : Add a name to the log.
+t1_c1 --> t1_c2 : Begin trimming the bob.
+t1_c2 --> t1_c3 : Approach the true swing.
+t1_c3 --> t1_cc1 : Trust the math and lock the weights.
+t1_c3 --> t1_cd1 : Chase perfection with one more weight.
+t1_cc1 --> t1_cc2 : Watch the pendulum find its stride.
+t1_cc2 --> t1_cc_end : Send the midnight signal.
+t1_cd1 --> t1_cd_end : Grab for the runaway weight.
+t2_root --> t2_intro : Follow Doran into the sound-dome.
+t2_intro --> t2_survey : Learn the three ways to catch the true e...
+t2_survey --> t2_hub : Choose a method.
+t2_hub --> t2_a1 : Trace the false echo to its source horn.
+t2_hub --> t2_b1 : Sit the focus-stone and sift the words b...
+t2_hub --> t2_c1 : Climb the catwalk to the master horn.
+t2_a1 --> t2_a2 : Close in on the loud horn.
+t2_a2 --> t2_aa1 : Re-aim the horn to cancel the false echo...
+t2_a2 --> t2_ab1 : Pull the baffle and silence the horn.
+t2_aa1 --> t2_aa2 : Find the cancelling angle.
+t2_aa2 --> t2_aa_end : Carry the true message to the sender.
+t2_ab1 --> t2_ab_end : Reconstruct the blurred message with Dor...
+t2_b1 --> t2_b2 : Let every echo arrive together.
+t2_b2 --> t2_b3 : Lock onto the breathing voice.
+t2_b3 --> t2_b4 : Call the last of the message.
+t2_b4 --> t2_b_end : Send the listened message.
+t2_c1 --> t2_c2 : Climb toward the master horn.
+t2_c2 --> t2_c3 : Weigh the coaxing voice.
+t2_c3 --> t2_cc1 : Trust Doran and stay inside the rail.
+t2_c3 --> t2_cd1 : Trust the voice and cross onto the old g...
+t2_cc1 --> t2_cc2 : Reach the master horn safely.
+t2_cc2 --> t2_cc_end : Read the freed true message.
+t2_cd1 --> t2_cd_end : Grab for the rail as the gantry gives.
+t3_root --> t3_intro : Wade in after Marlow.
+t3_intro --> t3_survey : Look over the failing works with Marlow.
+t3_survey --> t3_hub : Pick a way to hold the pressure.
+t3_hub --> t3_a1 : Dive to find and plug the leaking seam.
+t3_hub --> t3_b1 : Work the hand-pumps to refill the tank.
+t3_hub --> t3_c1 : Shut the great stop-valve on the leaking...
+t3_a1 --> t3_a2 : Feel along the main for the leak.
+t3_a2 --> t3_aa1 : Set the proper clamp, the strong slow fi...
+t3_a2 --> t3_ab1 : Pack it fast with lead wool.
+t3_aa1 --> t3_aa2 : Draw the last bolt tight.
+t3_aa2 --> t3_aa_end : Watch the pressure climb home.
+t3_ab1 --> t3_ab_end : Nurse the half-pressure toward midnight.
+t3_b1 --> t3_b2 : Set the pumping rhythm with Marlow.
+t3_b2 --> t3_b3 : Hold the pace against the clock.
+t3_b3 --> t3_b4 : Pump the tank the last of the way full.
+t3_b4 --> t3_b_end : Let the full tank feed the signal.
+t3_c1 --> t3_c2 : Reach the great stop-valve.
+t3_c2 --> t3_c3 : Set both hands to the frozen wheel.
+t3_c3 --> t3_cc1 : Brace it slow and steady with Marlow.
+t3_c3 --> t3_cd1 : Throw all your weight against it at once...
+t3_cc1 --> t3_cc2 : Walk the wheel around, turn by turn.
+t3_cc2 --> t3_cc_end : Confirm the pressure holds.
+t3_cd1 --> t3_cd_end : Scramble back from the failing valve.
+t4_root --> t4_intro : Join Effie at the tube board.
+t4_intro --> t4_survey : Read the routing board with Effie.
+t4_survey --> t4_hub : Choose a route to the jammed capsule.
+t4_hub --> t4_a1 : Crawl the service duct and clear the jam...
+t4_hub --> t4_b1 : Reroute the air pressure to blow it free...
+t4_hub --> t4_c1 : Send a chaser capsule to knock it loose.
+t4_a1 --> t4_a2 : Crawl to the wedged capsule.
+t4_a2 --> t4_aa1 : Ease the flap and free the capsule whole...
+t4_a2 --> t4_ab1 : Shove it through hard and fast.
+t4_aa1 --> t4_aa2 : Cradle the freed capsule and back out.
+t4_aa2 --> t4_aa_end : Send the capsule to the station.
+t4_ab1 --> t4_ab_end : Grope after the loose token.
+t4_b1 --> t4_b2 : Close the branch valves one by one.
+t4_b2 --> t4_b3 : Bank the pressure behind the jam.
+t4_b3 --> t4_b4 : Track the freed capsule down the board.
+t4_b4 --> t4_b_end : Send the recovered capsule.
+t4_c1 --> t4_c2 : Ready the chaser capsule.
+t4_c2 --> t4_c3 : Set the chaser's force.
+t4_c3 --> t4_cc1 : Send the chaser soft and true.
+t4_c3 --> t4_cd1 : Send the chaser hard, one shot to settle...
+t4_cc1 --> t4_cc2 : Wait on the gentle tap.
+t4_cc2 --> t4_cc_end : Send the loosened capsule home.
+t4_cd1 --> t4_cd_end : Search the board for any sign of the cap...
+t1_aa_end --> [*]
+t1_ab_end --> [*]
+t1_b_end --> [*]
+t1_cc_end --> [*]
+t1_cd_end --> [*]
+t2_aa_end --> [*]
+t2_ab_end --> [*]
+t2_b_end --> [*]
+t2_cc_end --> [*]
+t2_cd_end --> [*]
+t3_aa_end --> [*]
+t3_ab_end --> [*]
+t3_b_end --> [*]
+t3_cc_end --> [*]
+t3_cd_end --> [*]
+t4_aa_end --> [*]
+t4_ab_end --> [*]
+t4_b_end --> [*]
+t4_cc_end --> [*]
+t4_cd_end --> [*]
+
+legend right
+  The Cinderwick Exchange
+  Band 10-13 · Tier 1 · ~12 min
+  Topology: sorting_hat
+  99 nodes · 20 endings (8+ / 5n / 7-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

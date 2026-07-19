@@ -1,0 +1,644 @@
+@startuml the-blackwood-sanatorium
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_arrival
+state n_arrival #BBDEFB
+n_arrival : setup · 185w
+state n_hub #FFF9C4
+n_hub : choice · 155w
+state e_abandon #FFCDD2
+e_abandon : setback (negative)
+e_abandon : "The Night She Walked Away"
+state n_stair_r1 #D1C4E9
+n_stair_r1 : rising · 170w
+state n_stair_r2 #D1C4E9
+n_stair_r2 : rising · 170w
+state n_stair_r3 #D1C4E9
+n_stair_r3 : rising · 170w
+state n_stair_r4 #D1C4E9
+n_stair_r4 : rising · 170w
+state n_stair_r5 #D1C4E9
+n_stair_r5 : rising · 170w
+state n_stair_r6 #D1C4E9
+n_stair_r6 : rising · 170w
+state n_stair_r7 #D1C4E9
+n_stair_r7 : rising · 170w
+state n_stair_r8 #D1C4E9
+n_stair_r8 : rising · 170w
+state n_stair_r9 #D1C4E9
+n_stair_r9 : rising · 170w
+state n_stair_r10 #D1C4E9
+n_stair_r10 : rising · 170w
+state n_stair_r11 #D1C4E9
+n_stair_r11 : rising · 170w
+state n_stair_r12 #D1C4E9
+n_stair_r12 : rising · 170w
+state n_stair_r13 #D1C4E9
+n_stair_r13 : rising · 170w
+state n_stair_r14 #D1C4E9
+n_stair_r14 : rising · 170w
+state n_stair_r15 #D1C4E9
+n_stair_r15 : rising · 170w
+state n_stair_r16 #D1C4E9
+n_stair_r16 : rising · 170w
+state n_stair_term #FFF9C4
+n_stair_term : choice · 170w
+state e_stair_1 #C8E6C9
+e_stair_1 : completion (positive)
+e_stair_1 : "The Ledger Carried Down"
+state e_stair_2 #E0E0E0
+e_stair_2 : discovery (neutral)
+e_stair_2 : "The Empty Volume"
+state n_hydro_r1 #D1C4E9
+n_hydro_r1 : rising · 170w
+state n_hydro_r2 #D1C4E9
+n_hydro_r2 : rising · 170w
+state n_hydro_r3 #D1C4E9
+n_hydro_r3 : rising · 170w
+state n_hydro_r4 #D1C4E9
+n_hydro_r4 : rising · 170w
+state n_hydro_r5 #D1C4E9
+n_hydro_r5 : rising · 170w
+state n_hydro_r6 #D1C4E9
+n_hydro_r6 : rising · 170w
+state n_hydro_r7 #D1C4E9
+n_hydro_r7 : rising · 170w
+state n_hydro_r8 #D1C4E9
+n_hydro_r8 : rising · 170w
+state n_hydro_r9 #D1C4E9
+n_hydro_r9 : rising · 170w
+state n_hydro_r10 #D1C4E9
+n_hydro_r10 : rising · 170w
+state n_hydro_r11 #D1C4E9
+n_hydro_r11 : rising · 170w
+state n_hydro_r12 #D1C4E9
+n_hydro_r12 : rising · 170w
+state n_hydro_r13 #D1C4E9
+n_hydro_r13 : rising · 170w
+state n_hydro_term #FFF9C4
+n_hydro_term : choice · 170w
+state e_hydro_1 #E0E0E0
+e_hydro_1 : discovery (neutral)
+e_hydro_1 : "The Crew's Head Start"
+state e_hydro_2 #FFCDD2
+e_hydro_2 : capture (negative)
+e_hydro_2 : "Locked in the Sluice"
+state e_hydro_3 #FFCDD2
+e_hydro_3 : death (negative)
+e_hydro_3 : "The Charged Pipe"
+state n_morgue_r1 #D1C4E9
+n_morgue_r1 : rising · 170w
+state n_morgue_r2 #D1C4E9
+n_morgue_r2 : rising · 170w
+state n_morgue_r3 #D1C4E9
+n_morgue_r3 : rising · 170w
+state n_morgue_r4 #D1C4E9
+n_morgue_r4 : rising · 170w
+state n_morgue_r5 #D1C4E9
+n_morgue_r5 : rising · 170w
+state n_morgue_r6 #D1C4E9
+n_morgue_r6 : rising · 170w
+state n_morgue_r7 #D1C4E9
+n_morgue_r7 : rising · 170w
+state n_morgue_r8 #D1C4E9
+n_morgue_r8 : rising · 170w
+state n_morgue_r9 #D1C4E9
+n_morgue_r9 : rising · 170w
+state n_morgue_r10 #D1C4E9
+n_morgue_r10 : rising · 170w
+state n_morgue_r11 #D1C4E9
+n_morgue_r11 : rising · 170w
+state n_morgue_r12 #D1C4E9
+n_morgue_r12 : rising · 170w
+state n_morgue_r13 #D1C4E9
+n_morgue_r13 : rising · 170w
+state n_morgue_term #FFF9C4
+n_morgue_term : choice · 170w
+state e_morgue_1 #E0E0E0
+e_morgue_1 : discovery (neutral)
+e_morgue_1 : "The Contradicted Record"
+state e_morgue_2 #FFCDD2
+e_morgue_2 : capture (negative)
+e_morgue_2 : "The Watchman's Round"
+state e_morgue_3 #FFCDD2
+e_morgue_3 : death (negative)
+e_morgue_3 : "The Cold That Reads You"
+state n_chapel_r1 #D1C4E9
+n_chapel_r1 : rising · 170w
+state n_chapel_r2 #D1C4E9
+n_chapel_r2 : rising · 170w
+state n_chapel_r3 #D1C4E9
+n_chapel_r3 : rising · 170w
+state n_chapel_r4 #D1C4E9
+n_chapel_r4 : rising · 170w
+state n_chapel_r5 #D1C4E9
+n_chapel_r5 : rising · 170w
+state n_chapel_r6 #D1C4E9
+n_chapel_r6 : rising · 170w
+state n_chapel_r7 #D1C4E9
+n_chapel_r7 : rising · 170w
+state n_chapel_r8 #D1C4E9
+n_chapel_r8 : rising · 170w
+state n_chapel_r9 #D1C4E9
+n_chapel_r9 : rising · 170w
+state n_chapel_r10 #D1C4E9
+n_chapel_r10 : rising · 170w
+state n_chapel_r11 #D1C4E9
+n_chapel_r11 : rising · 170w
+state n_chapel_r12 #D1C4E9
+n_chapel_r12 : rising · 170w
+state n_chapel_term #FFF9C4
+n_chapel_term : choice · 170w
+state e_chapel_1 #E0E0E0
+e_chapel_1 : discovery (neutral)
+e_chapel_1 : "The Number That Names Her"
+state e_chapel_2 #FFCDD2
+e_chapel_2 : setback (negative)
+e_chapel_2 : "Driven Out by the Storm"
+state e_chapel_3 #FFCDD2
+e_chapel_3 : capture (negative)
+e_chapel_3 : "Sealed in the Recess"
+state n_boiler_r1 #D1C4E9
+n_boiler_r1 : rising · 170w
+state n_boiler_r2 #D1C4E9
+n_boiler_r2 : rising · 170w
+state n_boiler_r3 #D1C4E9
+n_boiler_r3 : rising · 170w
+state n_boiler_r4 #D1C4E9
+n_boiler_r4 : rising · 170w
+state n_boiler_r5 #D1C4E9
+n_boiler_r5 : rising · 170w
+state n_boiler_r6 #D1C4E9
+n_boiler_r6 : rising · 170w
+state n_boiler_r7 #D1C4E9
+n_boiler_r7 : rising · 170w
+state n_boiler_r8 #D1C4E9
+n_boiler_r8 : rising · 170w
+state n_boiler_r9 #D1C4E9
+n_boiler_r9 : rising · 170w
+state n_boiler_r10 #D1C4E9
+n_boiler_r10 : rising · 170w
+state n_boiler_r11 #D1C4E9
+n_boiler_r11 : rising · 170w
+state n_boiler_r12 #D1C4E9
+n_boiler_r12 : rising · 170w
+state n_boiler_term #FFF9C4
+n_boiler_term : choice · 170w
+state e_boiler_1 #FFCDD2
+e_boiler_1 : death (negative)
+e_boiler_1 : "The Rotten Catwalk"
+state e_boiler_2 #E0E0E0
+e_boiler_2 : discovery (neutral)
+e_boiler_2 : "The Disposal Column"
+state e_boiler_3 #FFCDD2
+e_boiler_3 : capture (negative)
+e_boiler_3 : "The Sealed Tunnel"
+state n_office_r1 #D1C4E9
+n_office_r1 : rising · 170w
+state n_office_r2 #D1C4E9
+n_office_r2 : rising · 170w
+state n_office_r3 #D1C4E9
+n_office_r3 : rising · 170w
+state n_office_r4 #D1C4E9
+n_office_r4 : rising · 170w
+state n_office_r5 #D1C4E9
+n_office_r5 : rising · 170w
+state n_office_r6 #D1C4E9
+n_office_r6 : rising · 170w
+state n_office_r7 #D1C4E9
+n_office_r7 : rising · 170w
+state n_office_r8 #D1C4E9
+n_office_r8 : rising · 170w
+state n_office_r9 #D1C4E9
+n_office_r9 : rising · 170w
+state n_office_r10 #D1C4E9
+n_office_r10 : rising · 170w
+state n_office_r11 #D1C4E9
+n_office_r11 : rising · 170w
+state n_office_r12 #D1C4E9
+n_office_r12 : rising · 170w
+state n_office_r13 #D1C4E9
+n_office_r13 : rising · 170w
+state n_office_r14 #D1C4E9
+n_office_r14 : rising · 170w
+state n_office_r15 #D1C4E9
+n_office_r15 : rising · 170w
+state n_office_r16 #D1C4E9
+n_office_r16 : rising · 170w
+state n_office_term #FFF9C4
+n_office_term : choice · 170w
+state e_office_1 #C8E6C9
+e_office_1 : success (positive)
+e_office_1 : "The Signed Hand"
+state e_office_2 #FFCDD2
+e_office_2 : setback (negative)
+e_office_2 : "Ash in the Grate"
+state n_ward_r1 #D1C4E9
+n_ward_r1 : rising · 170w
+state n_ward_r2 #D1C4E9
+n_ward_r2 : rising · 170w
+state n_ward_r3 #D1C4E9
+n_ward_r3 : rising · 170w
+state n_ward_r4 #D1C4E9
+n_ward_r4 : rising · 170w
+state n_ward_r5 #D1C4E9
+n_ward_r5 : rising · 170w
+state n_ward_r6 #D1C4E9
+n_ward_r6 : rising · 170w
+state n_ward_r7 #D1C4E9
+n_ward_r7 : rising · 170w
+state n_ward_r8 #D1C4E9
+n_ward_r8 : rising · 170w
+state n_ward_r9 #D1C4E9
+n_ward_r9 : rising · 170w
+state n_ward_r10 #D1C4E9
+n_ward_r10 : rising · 170w
+state n_ward_r11 #D1C4E9
+n_ward_r11 : rising · 170w
+state n_ward_term #FFF9C4
+n_ward_term : choice · 170w
+state e_ward_1 #FFCDD2
+e_ward_1 : setback (negative)
+e_ward_1 : "Too Much to Read"
+state e_ward_2 #E0E0E0
+e_ward_2 : discovery (neutral)
+e_ward_2 : "The Authorising Signature"
+state e_ward_3 #FFCDD2
+e_ward_3 : capture (negative)
+e_ward_3 : "The Side Ward Door"
+state n_dispensary_r1 #D1C4E9
+n_dispensary_r1 : rising · 170w
+state n_dispensary_r2 #D1C4E9
+n_dispensary_r2 : rising · 170w
+state n_dispensary_r3 #D1C4E9
+n_dispensary_r3 : rising · 170w
+state n_dispensary_r4 #D1C4E9
+n_dispensary_r4 : rising · 170w
+state n_dispensary_r5 #D1C4E9
+n_dispensary_r5 : rising · 170w
+state n_dispensary_r6 #D1C4E9
+n_dispensary_r6 : rising · 170w
+state n_dispensary_r7 #D1C4E9
+n_dispensary_r7 : rising · 170w
+state n_dispensary_r8 #D1C4E9
+n_dispensary_r8 : rising · 170w
+state n_dispensary_r9 #D1C4E9
+n_dispensary_r9 : rising · 170w
+state n_dispensary_r10 #D1C4E9
+n_dispensary_r10 : rising · 170w
+state n_dispensary_r11 #D1C4E9
+n_dispensary_r11 : rising · 170w
+state n_dispensary_r12 #D1C4E9
+n_dispensary_r12 : rising · 170w
+state n_dispensary_term #FFF9C4
+n_dispensary_term : choice · 170w
+state e_dispensary_1 #E0E0E0
+e_dispensary_1 : discovery (neutral)
+e_dispensary_1 : "The True Withdrawal Book"
+state e_dispensary_2 #FFCDD2
+e_dispensary_2 : death (negative)
+e_dispensary_2 : "The Settled Demijohn"
+state n_attic_r1 #D1C4E9
+n_attic_r1 : rising · 170w
+state n_attic_r2 #D1C4E9
+n_attic_r2 : rising · 170w
+state n_attic_r3 #D1C4E9
+n_attic_r3 : rising · 170w
+state n_attic_r4 #D1C4E9
+n_attic_r4 : rising · 170w
+state n_attic_r5 #D1C4E9
+n_attic_r5 : rising · 170w
+state n_attic_r6 #D1C4E9
+n_attic_r6 : rising · 170w
+state n_attic_r7 #D1C4E9
+n_attic_r7 : rising · 170w
+state n_attic_r8 #D1C4E9
+n_attic_r8 : rising · 170w
+state n_attic_r9 #D1C4E9
+n_attic_r9 : rising · 170w
+state n_attic_r10 #D1C4E9
+n_attic_r10 : rising · 170w
+state n_attic_r11 #D1C4E9
+n_attic_r11 : rising · 170w
+state n_attic_term #FFF9C4
+n_attic_term : choice · 170w
+state e_attic_1 #E0E0E0
+e_attic_1 : discovery (neutral)
+e_attic_1 : "The Cache Under the Ridge"
+state e_attic_2 #FFCDD2
+e_attic_2 : death (negative)
+e_attic_2 : "Through the Rafters"
+n_arrival --> n_hub : Cross the overgrown court and step into ...
+n_hub --> n_stair_r1 : Take the passage to the flooded stairwel...
+n_hub --> n_hydro_r1 : Take the passage to the hydrotherapy hal...
+n_hub --> n_morgue_r1 : Take the passage to the cold rooms.
+n_hub --> n_chapel_r1 : Take the passage to the chapel and the g...
+n_hub --> n_boiler_r1 : Take the passage to the boiler house.
+n_hub --> n_office_r1 : Take the passage to the superintendent's...
+n_hub --> n_ward_r1 : Take the passage to the locked dormitori...
+n_hub --> n_dispensary_r1 : Take the passage to the dispensary.
+n_hub --> n_attic_r1 : Take the passage to the attic wards.
+n_hub --> e_abandon : Cut your losses and leave Blackwood whil...
+n_stair_r1 --> n_stair_r2 : Press deeper in.
+n_stair_r1 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r2 --> n_stair_r3 : Press deeper in.
+n_stair_r2 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r3 --> n_stair_r4 : Press deeper in.
+n_stair_r3 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r4 --> n_stair_r5 : Press deeper in.
+n_stair_r4 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r5 --> n_stair_r6 : Press deeper in.
+n_stair_r5 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r6 --> n_stair_r7 : Press deeper in.
+n_stair_r6 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r7 --> n_stair_r8 : Press deeper in.
+n_stair_r7 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r8 --> n_stair_r9 : Press deeper in.
+n_stair_r8 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r9 --> n_stair_r10 : Press deeper in.
+n_stair_r9 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r10 --> n_stair_r11 : Press deeper in.
+n_stair_r10 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r11 --> n_stair_r12 : Press deeper in.
+n_stair_r11 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r12 --> n_stair_r13 : Press deeper in.
+n_stair_r12 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r13 --> n_stair_r14 : Press deeper in.
+n_stair_r13 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r14 --> n_stair_r15 : Press deeper in.
+n_stair_r14 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r15 --> n_stair_r16 : Press deeper in.
+n_stair_r15 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_r16 --> n_stair_term : Press deeper in.
+n_stair_r16 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_stair_term --> e_stair_1 : The Ledger Carried Down.
+n_stair_term --> e_stair_2 : The Empty Volume.
+n_stair_term --> n_hub : Leave it and withdraw to the rotunda.
+n_hydro_r1 --> n_hydro_r2 : Press deeper in.
+n_hydro_r1 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r2 --> n_hydro_r3 : Press deeper in.
+n_hydro_r2 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r3 --> n_hydro_r4 : Press deeper in.
+n_hydro_r3 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r4 --> n_hydro_r5 : Press deeper in.
+n_hydro_r4 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r5 --> n_hydro_r6 : Press deeper in.
+n_hydro_r5 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r6 --> n_hydro_r7 : Press deeper in.
+n_hydro_r6 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r7 --> n_hydro_r8 : Press deeper in.
+n_hydro_r7 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r8 --> n_hydro_r9 : Press deeper in.
+n_hydro_r8 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r9 --> n_hydro_r10 : Press deeper in.
+n_hydro_r9 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r10 --> n_hydro_r11 : Press deeper in.
+n_hydro_r10 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r11 --> n_hydro_r12 : Press deeper in.
+n_hydro_r11 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r12 --> n_hydro_r13 : Press deeper in.
+n_hydro_r12 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_r13 --> n_hydro_term : Press deeper in.
+n_hydro_r13 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_hydro_term --> e_hydro_1 : The Crew's Head Start.
+n_hydro_term --> e_hydro_2 : Locked in the Sluice.
+n_hydro_term --> e_hydro_3 : The Charged Pipe.
+n_hydro_term --> n_hub : Leave it and withdraw to the rotunda.
+n_morgue_r1 --> n_morgue_r2 : Press deeper in.
+n_morgue_r1 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r2 --> n_morgue_r3 : Press deeper in.
+n_morgue_r2 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r3 --> n_morgue_r4 : Press deeper in.
+n_morgue_r3 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r4 --> n_morgue_r5 : Press deeper in.
+n_morgue_r4 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r5 --> n_morgue_r6 : Press deeper in.
+n_morgue_r5 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r6 --> n_morgue_r7 : Press deeper in.
+n_morgue_r6 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r7 --> n_morgue_r8 : Press deeper in.
+n_morgue_r7 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r8 --> n_morgue_r9 : Press deeper in.
+n_morgue_r8 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r9 --> n_morgue_r10 : Press deeper in.
+n_morgue_r9 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r10 --> n_morgue_r11 : Press deeper in.
+n_morgue_r10 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r11 --> n_morgue_r12 : Press deeper in.
+n_morgue_r11 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r12 --> n_morgue_r13 : Press deeper in.
+n_morgue_r12 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_r13 --> n_morgue_term : Press deeper in.
+n_morgue_r13 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_morgue_term --> e_morgue_1 : The Contradicted Record.
+n_morgue_term --> e_morgue_2 : The Watchman's Round.
+n_morgue_term --> e_morgue_3 : The Cold That Reads You.
+n_morgue_term --> n_hub : Leave it and withdraw to the rotunda.
+n_chapel_r1 --> n_chapel_r2 : Press deeper in.
+n_chapel_r1 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r2 --> n_chapel_r3 : Press deeper in.
+n_chapel_r2 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r3 --> n_chapel_r4 : Press deeper in.
+n_chapel_r3 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r4 --> n_chapel_r5 : Press deeper in.
+n_chapel_r4 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r5 --> n_chapel_r6 : Press deeper in.
+n_chapel_r5 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r6 --> n_chapel_r7 : Press deeper in.
+n_chapel_r6 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r7 --> n_chapel_r8 : Press deeper in.
+n_chapel_r7 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r8 --> n_chapel_r9 : Press deeper in.
+n_chapel_r8 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r9 --> n_chapel_r10 : Press deeper in.
+n_chapel_r9 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r10 --> n_chapel_r11 : Press deeper in.
+n_chapel_r10 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r11 --> n_chapel_r12 : Press deeper in.
+n_chapel_r11 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_r12 --> n_chapel_term : Press deeper in.
+n_chapel_r12 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_chapel_term --> e_chapel_1 : The Number That Names Her.
+n_chapel_term --> e_chapel_2 : Driven Out by the Storm.
+n_chapel_term --> e_chapel_3 : Sealed in the Recess.
+n_chapel_term --> n_hub : Leave it and withdraw to the rotunda.
+n_boiler_r1 --> n_boiler_r2 : Press deeper in.
+n_boiler_r1 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r2 --> n_boiler_r3 : Press deeper in.
+n_boiler_r2 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r3 --> n_boiler_r4 : Press deeper in.
+n_boiler_r3 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r4 --> n_boiler_r5 : Press deeper in.
+n_boiler_r4 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r5 --> n_boiler_r6 : Press deeper in.
+n_boiler_r5 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r6 --> n_boiler_r7 : Press deeper in.
+n_boiler_r6 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r7 --> n_boiler_r8 : Press deeper in.
+n_boiler_r7 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r8 --> n_boiler_r9 : Press deeper in.
+n_boiler_r8 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r9 --> n_boiler_r10 : Press deeper in.
+n_boiler_r9 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r10 --> n_boiler_r11 : Press deeper in.
+n_boiler_r10 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r11 --> n_boiler_r12 : Press deeper in.
+n_boiler_r11 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_r12 --> n_boiler_term : Press deeper in.
+n_boiler_r12 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_boiler_term --> e_boiler_1 : The Rotten Catwalk.
+n_boiler_term --> e_boiler_2 : The Disposal Column.
+n_boiler_term --> e_boiler_3 : The Sealed Tunnel.
+n_boiler_term --> n_hub : Leave it and withdraw to the rotunda.
+n_office_r1 --> n_office_r2 : Press deeper in.
+n_office_r1 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r2 --> n_office_r3 : Press deeper in.
+n_office_r2 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r3 --> n_office_r4 : Press deeper in.
+n_office_r3 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r4 --> n_office_r5 : Press deeper in.
+n_office_r4 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r5 --> n_office_r6 : Press deeper in.
+n_office_r5 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r6 --> n_office_r7 : Press deeper in.
+n_office_r6 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r7 --> n_office_r8 : Press deeper in.
+n_office_r7 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r8 --> n_office_r9 : Press deeper in.
+n_office_r8 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r9 --> n_office_r10 : Press deeper in.
+n_office_r9 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r10 --> n_office_r11 : Press deeper in.
+n_office_r10 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r11 --> n_office_r12 : Press deeper in.
+n_office_r11 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r12 --> n_office_r13 : Press deeper in.
+n_office_r12 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r13 --> n_office_r14 : Press deeper in.
+n_office_r13 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r14 --> n_office_r15 : Press deeper in.
+n_office_r14 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r15 --> n_office_r16 : Press deeper in.
+n_office_r15 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_r16 --> n_office_term : Press deeper in.
+n_office_r16 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_office_term --> e_office_1 : The Signed Hand.
+n_office_term --> e_office_2 : Ash in the Grate.
+n_office_term --> n_hub : Leave it and withdraw to the rotunda.
+n_ward_r1 --> n_ward_r2 : Press deeper in.
+n_ward_r1 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r2 --> n_ward_r3 : Press deeper in.
+n_ward_r2 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r3 --> n_ward_r4 : Press deeper in.
+n_ward_r3 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r4 --> n_ward_r5 : Press deeper in.
+n_ward_r4 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r5 --> n_ward_r6 : Press deeper in.
+n_ward_r5 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r6 --> n_ward_r7 : Press deeper in.
+n_ward_r6 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r7 --> n_ward_r8 : Press deeper in.
+n_ward_r7 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r8 --> n_ward_r9 : Press deeper in.
+n_ward_r8 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r9 --> n_ward_r10 : Press deeper in.
+n_ward_r9 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r10 --> n_ward_r11 : Press deeper in.
+n_ward_r10 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_r11 --> n_ward_term : Press deeper in.
+n_ward_r11 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_ward_term --> e_ward_1 : Too Much to Read.
+n_ward_term --> e_ward_2 : The Authorising Signature.
+n_ward_term --> e_ward_3 : The Side Ward Door.
+n_ward_term --> n_hub : Leave it and withdraw to the rotunda.
+n_dispensary_r1 --> n_dispensary_r2 : Press deeper in.
+n_dispensary_r1 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r2 --> n_dispensary_r3 : Press deeper in.
+n_dispensary_r2 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r3 --> n_dispensary_r4 : Press deeper in.
+n_dispensary_r3 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r4 --> n_dispensary_r5 : Press deeper in.
+n_dispensary_r4 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r5 --> n_dispensary_r6 : Press deeper in.
+n_dispensary_r5 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r6 --> n_dispensary_r7 : Press deeper in.
+n_dispensary_r6 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r7 --> n_dispensary_r8 : Press deeper in.
+n_dispensary_r7 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r8 --> n_dispensary_r9 : Press deeper in.
+n_dispensary_r8 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r9 --> n_dispensary_r10 : Press deeper in.
+n_dispensary_r9 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r10 --> n_dispensary_r11 : Press deeper in.
+n_dispensary_r10 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r11 --> n_dispensary_r12 : Press deeper in.
+n_dispensary_r11 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_r12 --> n_dispensary_term : Press deeper in.
+n_dispensary_r12 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_dispensary_term --> e_dispensary_1 : The True Withdrawal Book.
+n_dispensary_term --> e_dispensary_2 : The Settled Demijohn.
+n_dispensary_term --> n_hub : Leave it and withdraw to the rotunda.
+n_attic_r1 --> n_attic_r2 : Press deeper in.
+n_attic_r1 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r2 --> n_attic_r3 : Press deeper in.
+n_attic_r2 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r3 --> n_attic_r4 : Press deeper in.
+n_attic_r3 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r4 --> n_attic_r5 : Press deeper in.
+n_attic_r4 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r5 --> n_attic_r6 : Press deeper in.
+n_attic_r5 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r6 --> n_attic_r7 : Press deeper in.
+n_attic_r6 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r7 --> n_attic_r8 : Press deeper in.
+n_attic_r7 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r8 --> n_attic_r9 : Press deeper in.
+n_attic_r8 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r9 --> n_attic_r10 : Press deeper in.
+n_attic_r9 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r10 --> n_attic_r11 : Press deeper in.
+n_attic_r10 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_r11 --> n_attic_term : Press deeper in.
+n_attic_r11 --> n_hub : Withdraw to the rotunda and choose anoth...
+n_attic_term --> e_attic_1 : The Cache Under the Ridge.
+n_attic_term --> e_attic_2 : Through the Rafters.
+n_attic_term --> n_hub : Leave it and withdraw to the rotunda.
+e_abandon --> [*]
+e_stair_1 --> [*]
+e_stair_2 --> [*]
+e_hydro_1 --> [*]
+e_hydro_2 --> [*]
+e_hydro_3 --> [*]
+e_morgue_1 --> [*]
+e_morgue_2 --> [*]
+e_morgue_3 --> [*]
+e_chapel_1 --> [*]
+e_chapel_2 --> [*]
+e_chapel_3 --> [*]
+e_boiler_1 --> [*]
+e_boiler_2 --> [*]
+e_boiler_3 --> [*]
+e_office_1 --> [*]
+e_office_2 --> [*]
+e_ward_1 --> [*]
+e_ward_2 --> [*]
+e_ward_3 --> [*]
+e_dispensary_1 --> [*]
+e_dispensary_2 --> [*]
+e_attic_1 --> [*]
+e_attic_2 --> [*]
+
+legend right
+  The Blackwood Sanatorium
+  Band 16+ · Tier 1 · ~40 min
+  Topology: open_map
+  151 nodes · 24 endings (2+ / 8n / 14-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml
