@@ -8,6 +8,7 @@ Tests cover:
 
 from __future__ import annotations
 
+import hashlib
 import json
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, cast
@@ -17,7 +18,11 @@ import pytest
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.config import settings as config_settings
-from cyo_adventure.core.exceptions import ConfigurationError, ResourceNotFoundError
+from cyo_adventure.core.exceptions import (
+    ConfigurationError,
+    ResourceNotFoundError,
+    ValidationError,
+)
 from cyo_adventure.generation import worker as worker_module
 from cyo_adventure.generation.orchestrator import GenerationOutcome
 from cyo_adventure.generation.pii import PiiContext
@@ -41,9 +46,18 @@ from cyo_adventure.generation.worker import (
     _should_persist_storybook,
     _SkeletonFillContext,
 )
-from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.storybook.models import AgeBand, Storybook
+from cyo_adventure.storybook.theme_contract import (
+    SlotConstraints,
+    SlotScope,
+    SlotSpec,
+    ThemeContract,
+)
+from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from cyo_adventure.generation.concept import ConceptBrief
     from cyo_adventure.generation.provider import GenerationProvider
 
@@ -1074,3 +1088,514 @@ async def test_load_and_start_job_skips_terminal_row() -> None:
     )
     assert result is None
     assert job.status == "passed"
+
+
+# ---------------------------------------------------------------------------
+# WS-2: theme-contract dispatch in _run_skeleton_fill (worker.py section 5.1)
+# ---------------------------------------------------------------------------
+#
+# These tests exercise the REAL generation.binding functions
+# (load_contract_for, bind_theme_to_contract, render_bound_skeleton) against
+# tiny on-disk fixtures under tmp_path -- never the real skeletons/ catalog --
+# and only stub out fill_skeleton (the expensive LLM fill step) to observe
+# what the dispatch hands it. worker_module.resolve_skeleton_path is
+# monkeypatched to point at the tmp_path fixture directory so no test ever
+# touches skeletons/ on disk.
+
+
+def _dispatch_brief() -> ConceptBrief:
+    return cast("ConceptBrief", SimpleNamespace(age_band=SimpleNamespace(value="8-11")))
+
+
+def _dispatch_pii() -> PiiContext:
+    return PiiContext(child_names=frozenset(), birthdates=frozenset())
+
+
+async def _fail_if_fill_called(*_args: object, **_kwargs: object) -> GenerationOutcome:
+    """A ``fill_skeleton`` stub for tests that must never reach the fill step."""
+    pytest.fail("fill_skeleton must not be called on a fail-closed dispatch path")
+
+
+def _bound_dispatch_skeleton() -> dict[str, object]:
+    """A tiny, gate-passing, parameterized fixture skeleton (mirrors
+    tests/unit/test_binding_render.py's ``_tiny_skeleton``): one decision node
+    with two slotted beats tokens and a slotted choice label, plus one slotted
+    and one fixed ending title.
+    """
+    return {
+        "schema_version": "2.0",
+        "id": "s_test_worker_bind_dispatch",
+        "version": 1,
+        "title": "Test Story",
+        "metadata": {
+            "age_band": "3-5",
+            "reading_level": {
+                "scheme": "flesch_kincaid",
+                "target": 1.0,
+                "tolerance": 1.0,
+            },
+            "tier": 1,
+            "themes": ["adventure"],
+            "estimated_minutes": 5,
+            "ending_count": 2,
+            "topology": "time_cave",
+            "content_flags": {
+                "violence": "none",
+                "scariness": "none",
+                "peril": "none",
+            },
+        },
+        "variables": [],
+        "start_node": "n_start",
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": (
+                    "<<FILL role=setup words=40 beats='The hero, {HERO}, "
+                    "arrives at {A1_GATE} and must choose a path.'>>"
+                ),
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": "c_a",
+                        "label": "Approach {A1_OFFER}.",
+                        "target": "n_end_a",
+                    },
+                    {
+                        "id": "c_b",
+                        "label": "Turn back toward home.",
+                        "target": "n_end_b",
+                    },
+                ],
+            },
+            {
+                "id": "n_end_a",
+                "body": (
+                    "<<FILL role=ending words=30 beats='The hero claims the "
+                    "prize and celebrates.'>>"
+                ),
+                "is_ending": True,
+                "ending": {
+                    "id": "e_a",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The {PRIZE}",
+                },
+                "choices": [],
+            },
+            {
+                "id": "n_end_b",
+                "body": (
+                    "<<FILL role=ending words=30 beats='The hero returns "
+                    "home safely.'>>"
+                ),
+                "is_ending": True,
+                "ending": {
+                    "id": "e_b",
+                    "valence": "neutral",
+                    "kind": "completion",
+                    "title": "Home Again",
+                },
+                "choices": [],
+            },
+        ],
+    }
+
+
+_BOUND_DISPATCH_BINDINGS = {
+    "HERO": "Priya",
+    "A1_GATE": "the jammed hatch",
+    "A1_OFFER": "a glinting tide pool",
+    "PRIZE": "Glass Starfish",
+}
+
+
+def _bound_dispatch_contract() -> ThemeContract:
+    def _slot(slot_id: str, *, scope: SlotScope = SlotScope.GLOBAL) -> SlotSpec:
+        return SlotSpec(
+            id=slot_id,
+            scope=scope,
+            meaning=f"placeholder meaning for {slot_id}",
+            constraints=SlotConstraints(),
+        )
+
+    return ThemeContract(
+        contract_version=1,
+        skeleton_slug="s_test_worker_bind_dispatch",
+        age_band=AgeBand.BAND_3_5,
+        legacy_lexicon=[],
+        default_binding=dict(_BOUND_DISPATCH_BINDINGS),
+        slots=[
+            _slot("HERO"),
+            _slot("A1_GATE", scope=SlotScope.TRACK),
+            _slot("A1_OFFER", scope=SlotScope.TRACK),
+            _slot("PRIZE", scope=SlotScope.ENDING),
+        ],
+    )
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_no_sidecar_dispatches_legacy_call_unchanged(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """No sidecar file: fill_skeleton is called exactly as it was pre-WS-2.
+
+    Regression pin for coexistence (design section 5.1): the real
+    ``load_contract_for`` runs against a tmp_path skeleton with no ``{SLOT}``
+    tokens and no ``<slug>.contract.json`` sidecar, returns ``None``, and the
+    dispatch falls through to the byte-identical legacy ``fill_skeleton`` call
+    -- in particular, NO ``slot_bindings`` kwarg is passed at all (not even
+    ``None``), matching every one of the 59 unmigrated catalog skeletons today.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "legacy-slug.json"
+    # Deliberately no "legacy-slug.contract.json" sidecar written.
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    fake_skeleton: dict[str, object] = {"id": "s_x", "nodes": []}
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
+
+    captured: dict[str, object] = {}
+
+    async def _fake_fill_skeleton(
+        skeleton: dict[str, object],
+        theme_brief: dict[str, object],
+        provider: object,
+        pii: object,
+        **kwargs: object,
+    ) -> GenerationOutcome:
+        captured["skeleton"] = skeleton
+        captured["theme_brief"] = theme_brief
+        captured["provider"] = provider
+        captured["pii"] = pii
+        captured["kwargs"] = kwargs
+        return GenerationOutcome(
+            status="passed",
+            storybook={"id": "s_x"},
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
+
+    provider = cast("GenerationProvider", object())
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "legacy-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    assert outcome.status == "passed"
+    assert captured["skeleton"] is fake_skeleton
+    assert "slot_bindings" not in cast("dict[str, object]", captured["kwargs"])
+    assert "theme_contract" not in outcome.report
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_half_migrated_fails_closed_no_fill_call(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A skeleton with {SLOT} tokens but no sidecar fails closed (design 5.1).
+
+    A raw token reaching a child-facing fill is a content defect the
+    post-generation gate cannot see, so ``load_contract_for`` itself raises;
+    the dispatch must let that propagate rather than silently filling raw
+    placeholders, and must never reach the fill step.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "half-migrated.json"
+    # No "half-migrated.contract.json" sidecar written: half-migrated state.
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    fake_skeleton: dict[str, object] = {
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": "<<FILL role=setup words=10 beats='The hero {HERO} arrives.'>>",
+                "is_ending": False,
+                "choices": [],
+            }
+        ]
+    }
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fail_if_fill_called)
+
+    with pytest.raises(ValidationError):
+        await _run_skeleton_fill(
+            _SkeletonFillContext(
+                authoring={"skeleton_slug": "half-migrated", "theme_brief": {}},
+                brief=_dispatch_brief(),
+                effective_provider=cast("GenerationProvider", object()),
+                pii=_dispatch_pii(),
+            )
+        )
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_sidecar_present_binds_renders_then_fills(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Sidecar present: bind -> render -> fill, with the BOUND skeleton and
+    ``slot_bindings`` threaded into fill_skeleton, plus the audit block.
+
+    Exercises the REAL ``load_contract_for``, ``bind_theme_to_contract``, and
+    ``render_bound_skeleton``; only ``fill_skeleton`` (the LLM fill step) is
+    stubbed, so this pins the exact order and payload WS-2 design section 4/7
+    promises without paying for a real fill.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_bytes = _bound_dispatch_contract().model_dump_json().encode("utf-8")
+    contract_path.write_bytes(contract_bytes)
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _bound_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    # A single valid bind response so bind_theme_to_contract's ONE real
+    # provider call returns the exact bindings this test asserts on.
+    provider = MockProvider(responses=[json.dumps(_BOUND_DISPATCH_BINDINGS)])
+
+    captured: dict[str, object] = {}
+
+    async def _fake_fill_skeleton(
+        skeleton: dict[str, object],
+        theme_brief: dict[str, object],
+        provider_arg: object,
+        pii: object,
+        **kwargs: object,
+    ) -> GenerationOutcome:
+        captured["skeleton"] = skeleton
+        captured["kwargs"] = kwargs
+        return GenerationOutcome(
+            status="passed",
+            storybook={"id": "s_x"},
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    # Exactly one provider call: the bind step. fill_skeleton is stubbed, so
+    # no fill/repair provider call happens in this test.
+    assert len(provider.calls) == 1
+
+    expected_bound = worker_module.render_bound_skeleton(
+        original_skeleton, _BOUND_DISPATCH_BINDINGS
+    )
+    assert captured["skeleton"] == expected_bound
+    assert captured["skeleton"] != original_skeleton
+    kwargs = cast("dict[str, object]", captured["kwargs"])
+    assert kwargs["slot_bindings"] == _BOUND_DISPATCH_BINDINGS
+
+    audit = cast("dict[str, object]", outcome.report["theme_contract"])
+    assert audit["skeleton_slug"] == "s_test_worker_bind_dispatch"
+    assert audit["contract_version"] == 1
+    assert audit["denylist_version"] == DENYLIST_VERSION
+    assert audit["slot_bindings"] == _BOUND_DISPATCH_BINDINGS
+    assert audit["contract_sha256"] == hashlib.sha256(contract_bytes).hexdigest()
+    # bind_theme_to_contract does not report how many attempts it used, so a
+    # hardcoded count is never fabricated here (see the inline worker.py
+    # comment next to this block).
+    assert "bind_attempts" not in audit
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_bind_failure_fails_closed_no_fill_call(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A brief the binder cannot fit to the contract fails closed (OQ-1).
+
+    Uses the REAL ``bind_theme_to_contract`` against a MockProvider that
+    always returns a denylist-violating value, so the violation detail in the
+    raised ``ValidationError`` is genuine, not fabricated by a test double.
+    No fill/repair provider call is ever made.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract = _bound_dispatch_contract()
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _bound_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fail_if_fill_called)
+
+    # HERO has no declared `forbid`, but the 3-5 band-mandatory union
+    # (validator/slots.py) forbids `weapon` on every slot regardless; "a
+    # sword-wielder" trips it on every attempt, so bind_theme_to_contract
+    # exhausts its retries and raises.
+    violating_response = json.dumps(
+        {
+            "HERO": "a sword-wielder",
+            "A1_GATE": "the jammed hatch",
+            "A1_OFFER": "a glinting tide pool",
+            "PRIZE": "Glass Starfish",
+        }
+    )
+    provider = MockProvider(responses=[violating_response, violating_response])
+
+    with pytest.raises(ValidationError) as exc_info:
+        await _run_skeleton_fill(
+            _SkeletonFillContext(
+                authoring={
+                    "skeleton_slug": "themed-slug",
+                    "theme_brief": {"premise": "a fox"},
+                },
+                brief=_dispatch_brief(),
+                effective_provider=provider,
+                pii=_dispatch_pii(),
+            )
+        )
+
+    # Exactly the two bind attempts; no additional (fill/repair) call.
+    assert len(provider.calls) == 2
+    violations = exc_info.value.details["violations"]
+    assert any(v["rule"] == "forbid:weapon" for v in violations)
+
+
+class _ThemeContractBindFailureSession:
+    """Session double for a run_generation_job pipeline-exception test.
+
+    Supports the full path up to (and including) the pipeline dispatch
+    failing, then the ``_record_failure`` write: job/concept lookup, the
+    empty child-name query ``_load_concept_and_pii`` issues, and the
+    ``record_event`` + commit calls ``_record_failure`` performs.
+    """
+
+    def __init__(self, job: object, concept: object) -> None:
+        self.job = job
+        self.concept = concept
+        self.added: list[object] = []
+
+    async def get(self, model: type, ident: object) -> object | None:
+        from cyo_adventure.db.models import Concept, GenerationJob
+
+        if model is GenerationJob and getattr(self.job, "id", None) == ident:
+            return self.job
+        if model is Concept and getattr(self.concept, "id", None) == ident:
+            return self.concept
+        return None
+
+    async def execute(self, *_args: object, **_kwargs: object) -> _FreshGenResult:
+        return _FreshGenResult()
+
+    def add(self, obj: object) -> None:
+        self.added.append(obj)
+
+    async def flush(self) -> None:
+        pass
+
+    async def commit(self) -> None:
+        pass
+
+    async def rollback(self) -> None:
+        pass
+
+
+@pytest.mark.asyncio
+async def test_run_generation_job_bind_failure_records_violations_on_job_report(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A fail-closed bind failure surfaces through run_generation_job's own
+    pipeline-exception handling: job.status == "failed" and the violation
+    detail lands on job.report (job.error alone would truncate it away).
+
+    This pins the worker.py change to `_record_failure` / the pipeline
+    `except Exception` block, not just `_run_skeleton_fill` in isolation.
+    """
+    import uuid as uuid_mod
+
+    from cyo_adventure.db.models import Concept, GenerationJob
+
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract = _bound_dispatch_contract()
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _bound_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fail_if_fill_called)
+
+    violating_response = json.dumps(
+        {
+            "HERO": "a sword-wielder",
+            "A1_GATE": "the jammed hatch",
+            "A1_OFFER": "a glinting tide pool",
+            "PRIZE": "Glass Starfish",
+        }
+    )
+    provider = MockProvider(responses=[violating_response, violating_response])
+
+    job_id = uuid_mod.uuid4()
+    concept_id = uuid_mod.uuid4()
+    job = GenerationJob(
+        id=job_id,
+        concept_id=concept_id,
+        status="queued",
+        authoring_metadata={
+            "skeleton_slug": "themed-slug",
+            "theme_brief": {"premise": "a fox"},
+        },
+    )
+    concept = Concept(id=concept_id, family_id=uuid_mod.uuid4(), brief=_FRESHGEN_BRIEF)
+    session_ctx = _ThemeContractBindFailureSession(job, concept)
+
+    def factory() -> object:
+        class _Ctx:
+            async def __aenter__(self) -> _ThemeContractBindFailureSession:
+                return session_ctx
+
+            async def __aexit__(self, *exc: object) -> None:
+                return None
+
+        return _Ctx()
+
+    with pytest.raises(ValidationError):
+        await worker_module.run_generation_job(
+            job_id, provider=provider, session_factory=factory
+        )
+
+    assert job.status == "failed"
+    assert job.report is not None
+    violations = cast("list[dict[str, object]]", job.report["slot_binding_violations"])
+    assert any(v["rule"] == "forbid:weapon" for v in violations)
