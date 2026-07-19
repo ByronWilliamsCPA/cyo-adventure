@@ -12,7 +12,9 @@ on:
       - "REUSE.toml"
       - "LICENSES/**"
       - ".github/workflows/reuse.yml"
-  merge_group:
+  # No merge_group: license-header/SPDX compliance is per-file and already
+  # checked on every PR; a merge of two already-compliant PRs cannot become
+  # non-compliant. The push-to-main run below re-confirms the real commit.
   push:
     branches:
       - main

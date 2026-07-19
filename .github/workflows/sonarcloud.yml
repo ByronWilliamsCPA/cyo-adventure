@@ -20,7 +20,11 @@ on:
     branches:
       - main
       - develop
-  merge_group:
+  # No merge_group: fail-on-quality-gate below is already forced off outside
+  # `push` specifically because a merge_group run can only ever be advisory
+  # noise (Sonar's PR decoration needs a pull_request context it doesn't
+  # have) - it re-runs the same analysis the PR already got with no way to
+  # act on the result. Dropped rather than left advisory-and-duplicate.
   workflow_dispatch:
 
 permissions:

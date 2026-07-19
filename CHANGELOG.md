@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- CI: stopped re-running the frontend, design-system, OpenAPI contract-drift,
+  coverage-upload, and API-tests jobs in `ci.yml` on `merge_group` events,
+  since they validate file content already checked on the PR run rather than
+  merged-state validity; `ci-gate` now treats their intentional `skipped`
+  result as passing. Dropped `merge_group` entirely from
+  `security-analysis.yml`, `sonarcloud.yml`, and `reuse.yml` (all
+  file-content-only scans that already ran on the PR and are re-confirmed by
+  the existing push-to-main trigger). Removed `dead-code` and `link-check`
+  from running on `merge_group` in `pr-validation.yml` (both already
+  advisory-only in `validate-dependencies`). Removed the `pull_request`
+  trigger from `python-compatibility.yml`, which duplicated `ci.yml`'s
+  required Python 3.12 test run on every PR; its weekly schedule and
+  push-to-main trigger still cover 3.11/3.13 compatibility drift. Together
+  these remove the largest source of duplicate work between a PR's own CI run
+  and the merge-queue's re-run of the same commit.
+
 ## [0.16.0] - 2026-07-19
 
 ### Added

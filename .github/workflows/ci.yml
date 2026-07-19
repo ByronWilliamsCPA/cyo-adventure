@@ -66,6 +66,11 @@ jobs:
     name: Frontend (Node 22)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # merge_group re-runs the identical tree the pull_request run already
+    # validated (frontend build/lint/typecheck/tests are file-content-only,
+    # not merged-state-sensitive); skip here and rely on the PR run plus the
+    # post-merge push-to-main run. See docs/planning/PROJECT-PLAN.md CI notes.
+    if: github.event_name != 'merge_group'
     defaults:
       run:
         working-directory: ./frontend
@@ -184,6 +189,8 @@ jobs:
     name: Design System (Node 22)
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # See frontend job: not merged-state-sensitive, skip on merge_group.
+    if: github.event_name != 'merge_group'
     defaults:
       run:
         working-directory: ./frontend/design-system
@@ -270,6 +277,13 @@ jobs:
     name: OpenAPI Contract Drift
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # See frontend job: skip on merge_group. #EDGE: concurrency: two queued
+    # PRs could each pass individually but drift the schema only when
+    # combined; the post-merge push-to-main run on ci.yml catches that case
+    # after the fact rather than blocking the queue on it.
+    # #VERIFY: if combined-PR schema drift becomes a recurring incident, move
+    # this job back to running on merge_group.
+    if: github.event_name != 'merge_group'
     permissions:
       contents: read
     steps:
@@ -387,7 +401,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: ci
-    if: ${{ !cancelled() && needs.ci.result == 'success' }}
+    # merge_group's commit is the ephemeral queue merge commit, not the real
+    # commit that lands on main, so a coverage upload keyed to it is wasted;
+    # the push-to-main run after the queue lands uploads for the real commit.
+    if: ${{ !cancelled() && needs.ci.result == 'success' && github.event_name != 'merge_group' }}
     permissions:
       contents: read
     env:
@@ -509,6 +526,10 @@ jobs:
     name: Detect API collection
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    # Not in ci-gate's needs (see api-tests comment); skipping here on
+    # merge_group cascades to skip the 15-minute docker-compose api-tests job
+    # below via its `needs.detect-api-collection.outputs.present` check.
+    if: github.event_name != 'merge_group'
     permissions:
       contents: read
     outputs:
@@ -699,11 +720,14 @@ jobs:
           DESIGN_SYSTEM_RESULT: ${{ needs.design-system.result }}
           CONTRACT_RESULT: ${{ needs.contract.result }}
         run: |
+          # frontend/design-system/contract intentionally report "skipped" on
+          # merge_group (see their job-level `if:`); ci never skips, so a
+          # skipped ci result still fails the gate.
           FAILED=false
           [ "$CI_RESULT" != "success" ] && FAILED=true
-          [ "$FRONTEND_RESULT" != "success" ] && FAILED=true
-          [ "$DESIGN_SYSTEM_RESULT" != "success" ] && FAILED=true
-          [ "$CONTRACT_RESULT" != "success" ] && FAILED=true
+          [ "$FRONTEND_RESULT" != "success" ] && [ "$FRONTEND_RESULT" != "skipped" ] && FAILED=true
+          [ "$DESIGN_SYSTEM_RESULT" != "success" ] && [ "$DESIGN_SYSTEM_RESULT" != "skipped" ] && FAILED=true
+          [ "$CONTRACT_RESULT" != "success" ] && [ "$CONTRACT_RESULT" != "skipped" ] && FAILED=true
           if [ "$FAILED" = "true" ]; then
             echo "CI Gate failed"
             exit 1

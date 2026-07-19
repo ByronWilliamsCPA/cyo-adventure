@@ -13,7 +13,13 @@ name: Security Analysis
     branches: [main, master]
   pull_request:
     branches: [main, master]
-  merge_group:
+  # No merge_group: this scan is file-content-only (bandit + OSV-Scanner over
+  # the tree), not merged-state-sensitive, and already ran on the PR that's
+  # entering the queue. The push-to-main trigger above re-scans the real
+  # commit right after the queue lands it. #VERIFY: if branch protection
+  # marks this job "required" specifically for the merge_group context,
+  # remove that requirement in the ruleset or the queue will stall waiting
+  # for a check that never reports.
   schedule:
     # Run security scans weekly on Monday at 9 AM UTC
     - cron: '0 9 * * 1'

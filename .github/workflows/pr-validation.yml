@@ -50,6 +50,10 @@ jobs:
     name: Dead Code Check
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Advisory-only (see validate-dependencies below, which never fails on
+    # this result) and file-content-only, not merged-state-sensitive; skip on
+    # merge_group, same rationale as changelog's existing pull_request-only if.
+    if: github.event_name != 'merge_group'
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
@@ -140,6 +144,8 @@ jobs:
     name: Documentation Links
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Advisory-only and not merged-state-sensitive; see dead-code above.
+    if: github.event_name != 'merge_group'
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
