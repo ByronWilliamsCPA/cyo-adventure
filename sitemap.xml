@@ -293,6 +293,18 @@
          <lastmod>2026-07-19</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/ws1-leaf-diversity-sprint-design/</loc>
+         <lastmod>2026-07-19</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/ws2-parameterized-catalog-design/</loc>
+         <lastmod>2026-07-19</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/ws7-request-interpretation-design/</loc>
+         <lastmod>2026-07-19</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/adr/</loc>
          <lastmod>2026-07-19</lastmod>
     </url>
@@ -366,6 +378,10 @@
     </url>
     <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-018-childrens-privacy-compliance/</loc>
+         <lastmod>2026-07-19</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-019-parameterized-skeletons-theme-contracts/</loc>
          <lastmod>2026-07-19</lastmod>
     </url>
     <url>

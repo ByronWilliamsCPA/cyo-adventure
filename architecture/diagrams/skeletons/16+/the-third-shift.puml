@@ -351,7 +351,7 @@ se07 --> se08 : Go on.
 se06 --> se07 : Go on.
 se04 --> se05 : Close the old ticket.
 se04 --> se06 : Keep watching the snow.
-se33 --> se34 : Sign the witness log.
+se33 --> se34 : Sign the {SE_A2_LOG}.
 se33 --> se35 : Keep the watch's silence.
 se32 --> se33 : Go on.
 se31 --> se32 : Go on.
@@ -365,10 +365,10 @@ se24 --> se25 : Go on.
 se23 --> se24 : Go on.
 se22 --> se23 : Go on.
 se21 --> se22 : Go on.
-se19 --> se20 : Walk into the amber.
-se19 --> se21 : Hold the wall and log it.
+se19 --> se20 : Walk into the {DEADLINE_SIGN}.
+se19 --> se21 : Hold the {ROUTE_A_PLACE} and log it.
 se48 --> se49 : Carry it to the day staff.
-se48 --> se50 : Wipe the drive yourself.
+se48 --> se50 : Wipe the {SE_A3_DRIVE} yourself.
 se47 --> se48 : Go on.
 se46 --> se47 : Go on.
 se45 --> se46 : Go on.
@@ -379,14 +379,14 @@ se41 --> se42 : Go on.
 se40 --> se41 : Go on.
 se39 --> se40 : Go on.
 se38 --> se39 : Go on.
-se36 --> se37 : Go down to stairwell B.
-se36 --> se38 : Rewind at the wall.
-se03 --> se04 : Stare into the static.
-se03 --> se19 : Log the amber sweep.
+se36 --> se37 : Go down to {SE_A3_PLACE}.
+se36 --> se38 : Rewind at the {ROUTE_A_PLACE}.
+se03 --> se04 : Stare into the {SE_STATIC}.
+se03 --> se19 : Log the {DEADLINE_SIGN} sweep.
 se03 --> se36 : Chase the lost figure.
 se02 --> se03 : Take the watch.
-se01 --> se02 : Settle in at the wall.
-ar20 --> ar21 : Write Case his sign-out.
+se01 --> se02 : Settle in at the {ROUTE_A_PLACE}.
+ar20 --> ar21 : Write {GHOST_NAME} his sign-out.
 ar20 --> ar22 : Refuse to forge a leaving.
 ar19 --> ar20 : Go on.
 ar18 --> ar19 : Go on.
@@ -396,7 +396,7 @@ ar15 --> ar16 : Go on.
 ar14 --> ar15 : Go on.
 ar13 --> ar14 : Go on.
 ar11 --> ar12 : File them straight.
-ar11 --> ar13 : Pull the cold-floor cards.
+ar11 --> ar13 : Pull the {COLD_ROOM} cards.
 ar10 --> ar11 : Go on.
 ar09 --> ar10 : Go on.
 ar33 --> ar34 : Write his story true.
@@ -407,7 +407,7 @@ ar30 --> ar31 : Go on.
 ar29 --> ar30 : Go on.
 ar28 --> ar29 : Go on.
 ar26 --> ar27 : Keep to honest filing.
-ar26 --> ar28 : Open the cold drawer.
+ar26 --> ar28 : Open the {COLD_ROOM} drawer.
 ar25 --> ar26 : Go on.
 ar24 --> ar25 : Go on.
 ar23 --> ar24 : Go on.
@@ -434,7 +434,7 @@ ar57 --> ar58 : Go on.
 ar56 --> ar57 : Go on.
 ar55 --> ar56 : Go on.
 ar54 --> ar55 : Go on.
-ar53 --> ar54 : Ask what the count is for.
+ar53 --> ar54 : Ask what the {RECKONING} is for.
 ar53 --> ar62 : File until the doors unlock.
 ar52 --> ar53 : Go on.
 ar51 --> ar52 : Go on.
@@ -442,14 +442,14 @@ ar38 --> ar39 : Open the rewriting card.
 ar38 --> ar51 : Reshelve it untouched.
 ar37 --> ar38 : Go on.
 ar36 --> ar37 : Go on.
-ar04 --> ar05 : Ask Ibsen about the card.
+ar04 --> ar05 : Ask {ROUTE_B_CHAR} about the card.
 ar04 --> ar36 : File it and watch him work.
 ar03 --> ar04 : Go on.
 ar02 --> ar03 : Go on.
 ar01 --> ar02 : Go on.
-ma32 --> ma33 : Cut the climate.
-ma32 --> ma34 : Set the badge facing out.
-ma32 --> ma35 : Patch the count subsystem.
+ma32 --> ma33 : Cut the {MA_CLIMATE}.
+ma32 --> ma34 : Set the {BADGE} facing out.
+ma32 --> ma35 : Patch the {RECKONING} subsystem.
 ma32 --> ma36 : Seal the door as found.
 ma31 --> ma32 : Go on.
 ma30 --> ma31 : Go on.
@@ -457,20 +457,20 @@ ma29 --> ma30 : Go on.
 ma28 --> ma29 : Go on.
 ma27 --> ma28 : Go on.
 ma26 --> ma27 : Go on.
-ma24 --> ma25 : Lift the coat.
+ma24 --> ma25 : Lift the {MA_COAT}.
 ma24 --> ma26 : Leave it as it lies.
 ma23 --> ma24 : Go on.
 ma22 --> ma23 : Go on.
 ma21 --> ma22 : Go on.
 ma20 --> ma21 : Go on.
 ma18 --> ma19 : Force the door now.
-ma18 --> ma20 : Radio Halvers first.
+ma18 --> ma20 : Radio {SUPERVISOR} first.
 ma17 --> ma18 : Go on.
 ma16 --> ma17 : Go on.
 ma15 --> ma16 : Go on.
 ma14 --> ma15 : Go on.
 ma13 --> ma14 : Go on.
-ma11 --> ma12 : Jump the breaker.
+ma11 --> ma12 : Jump the {MA_BREAKER}.
 ma11 --> ma13 : Reset it by the book.
 ma10 --> ma11 : Go on.
 ma09 --> ma10 : Go on.
@@ -482,9 +482,9 @@ ma04 --> ma06 : Trace the draw.
 ma03 --> ma04 : Go on.
 ma02 --> ma03 : Go on.
 ma01 --> ma02 : Go on.
-n03 --> se01 : Take the camera wall.
-n03 --> ar01 : Take the record vault.
-n03 --> ma01 : Take the plant.
+n03 --> se01 : Take the {ROUTE_A_PLACE}.
+n03 --> ar01 : Take the {ROUTE_B_PLACE}.
+n03 --> ma01 : Take the {ROUTE_C_PLACE}.
 n02 --> n03 : Go on.
 n01 --> n02 : Go on.
 se05 --> [*]

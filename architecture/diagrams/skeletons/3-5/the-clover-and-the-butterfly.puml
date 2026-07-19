@@ -13,7 +13,7 @@ state n_daisies #FFF9C4
 n_daisies : choice · 40w
 state n_bee_end #FFCDD2
 n_bee_end : setback (negative)
-n_bee_end : "The Busy Bumblebee"
+n_bee_end : "{A1_SETBACK}"
 state n_birdbath #D1C4E9
 n_birdbath : rising · 38w
 state n_strawberries #D1C4E9
@@ -22,15 +22,15 @@ state n_meadow #FFF9C4
 n_meadow : choice · 40w
 state n_nose_end #C8E6C9
 n_nose_end : completion (positive)
-n_nose_end : "On Clover’s Nose"
+n_nose_end : "On {HERO}'s {A2_PRIZE1}"
 state n_crown_end #C8E6C9
 n_crown_end : success (positive)
-n_crown_end : "The Daisy Crown"
+n_crown_end : "{A2_PRIZE2}"
 state n_pond #FFF9C4
 n_pond : choice · 40w
 state n_frog_end #FFCDD2
 n_frog_end : setback (negative)
-n_frog_end : "Peekaboo Frog"
+n_frog_end : "{B1_SETBACK}"
 state n_reeds #D1C4E9
 n_reeds : rising · 38w
 state n_hedgehog #D1C4E9
@@ -39,7 +39,7 @@ state n_friend #D1C4E9
 n_friend : rising · 38w
 state n_share_end #C8E6C9
 n_share_end : completion (positive)
-n_share_end : "Berries to Share"
+n_share_end : "{B2_PRIZE}"
 state n_grass #FFF9C4
 n_grass : choice · 40w
 state n_lost_end #FFCDD2
@@ -53,26 +53,26 @@ state n_arch #D1C4E9
 n_arch : rising · 38w
 state n_perch_end #C8E6C9
 n_perch_end : success (positive)
-n_perch_end : "Under the Flower Arch"
-n_start --> n_daisies : Follow it to the daisy patch.
-n_start --> n_pond : Follow it to the little pond.
-n_start --> n_grass : Follow it to the tall grass.
-n_daisies --> n_bee_end : Stop and watch the bumblebee.
-n_daisies --> n_birdbath : Keep following the butterfly.
-n_birdbath --> n_strawberries : Follow the butterfly to the strawberries...
-n_strawberries --> n_meadow : Tiptoe after the butterfly.
+n_perch_end : "{C2_PRIZE}"
+n_start --> n_daisies : Follow it to {ROUTE_A_ZONE}.
+n_start --> n_pond : Follow it to {ROUTE_B_ZONE}.
+n_start --> n_grass : Follow it to {ROUTE_C_ZONE}.
+n_daisies --> n_bee_end : Stop and watch the {A1_LURE}.
+n_daisies --> n_birdbath : Keep following {GOAL}.
+n_birdbath --> n_strawberries : Follow {GOAL} to {A2_LANDMARK2}.
+n_strawberries --> n_meadow : Tiptoe after {GOAL}.
 n_meadow --> n_nose_end : Hold still and wait.
-n_meadow --> n_crown_end : Peek at the little flower ring.
-n_pond --> n_frog_end : Play peekaboo with the frog.
-n_pond --> n_reeds : Follow the butterfly to the reeds.
-n_reeds --> n_hedgehog : Follow past the mossy log.
-n_hedgehog --> n_friend : Tiptoe into the shady corner.
-n_friend --> n_share_end : Share the sweet berries with Pip.
+n_meadow --> n_crown_end : Peek at {A2_OFFER1}.
+n_pond --> n_frog_end : Play peekaboo with the {B1_LURE}.
+n_pond --> n_reeds : Follow {GOAL} to {B2_LANDMARK1}.
+n_reeds --> n_hedgehog : Follow past the {B2_LANDMARK2}.
+n_hedgehog --> n_friend : Tiptoe into {B2_ZONE}.
+n_friend --> n_share_end : Share the sweet berries with {B2_OFFER1}...
 n_grass --> n_lost_end : Dash after it fast!
 n_grass --> n_sunflower : Tiptoe slow and quiet.
-n_sunflower --> n_gate : Follow toward the garden gate.
-n_gate --> n_arch : Follow into the flower corner.
-n_arch --> n_perch_end : Sit quietly beneath the arch.
+n_sunflower --> n_gate : Follow toward {C2_LANDMARK2}.
+n_gate --> n_arch : Follow into {C2_ZONE}.
+n_arch --> n_perch_end : Sit quietly beneath the {C2_LANDMARK3}.
 n_bee_end --> [*]
 n_nose_end --> [*]
 n_crown_end --> [*]

@@ -17,10 +17,10 @@ state a_ap3 #FFF9C4
 a_ap3 : choice · 70w
 state a_ap3_bad #FFCDD2
 a_ap3_bad : setback (negative)
-a_ap3_bad : "The Flooded Dead End"
+a_ap3_bad : "{A_AP3_BAD}"
 state a_ap4 #FFCDD2
 a_ap4 : setback (negative)
-a_ap4 : "The Hinged Stair"
+a_ap4 : "{A_AP4}"
 state b_towergate #FFF9C4
 b_towergate : choice · 78w
 state b_gate_pod #D1C4E9
@@ -43,7 +43,7 @@ state u_pb2 #FFF9C4
 u_pb2 : choice · 72w
 state u_pb_bad #FFCDD2
 u_pb_bad : setback (negative)
-u_pb_bad : "Sealed Under the Undercroft"
+u_pb_bad : "Sealed Under {TIER_U}"
 state u_pc1 #D1C4E9
 u_pc1 : rising · 69w
 state u_pc2 #FFF9C4
@@ -62,7 +62,7 @@ state u_pd_p3 #D1C4E9
 u_pd_p3 : rising · 74w
 state u_pd_end #FFCDD2
 u_pd_end : setback (negative)
-u_pd_end : "Lost in the Undercroft"
+u_pd_end : "Lost in {TIER_U}"
 state u_pe1 #D1C4E9
 u_pe1 : rising · 60w
 state u_pe_rest #E0E0E0
@@ -86,7 +86,7 @@ state u_gc_p2 #D1C4E9
 u_gc_p2 : rising · 72w
 state u_gc_end #FFCDD2
 u_gc_end : setback (negative)
-u_gc_end : "Turned Back at the Undercroft Barrier"
+u_gc_end : "Turned Back at {TIER_U} Barrier"
 state u_gal #ECEFF1
 u_gal : hub · 80w
 state u_gal_c1_p1 #D1C4E9
@@ -171,7 +171,7 @@ state c_pb2 #FFF9C4
 c_pb2 : choice · 72w
 state c_pb_bad #FFCDD2
 c_pb_bad : setback (negative)
-c_pb_bad : "Sealed Under the Clockwork Galleries"
+c_pb_bad : "Sealed Under {TIER_C}"
 state c_pc1 #D1C4E9
 c_pc1 : rising · 60w
 state c_pc2 #FFF9C4
@@ -190,7 +190,7 @@ state c_pd_p3 #D1C4E9
 c_pd_p3 : rising · 66w
 state c_pd_end #FFCDD2
 c_pd_end : setback (negative)
-c_pd_end : "Lost in the Clockwork Galleries"
+c_pd_end : "Lost in {TIER_C}"
 state c_pe1 #D1C4E9
 c_pe1 : rising · 72w
 state c_pe_rest #E0E0E0
@@ -214,7 +214,7 @@ state c_gc_p2 #D1C4E9
 c_gc_p2 : rising · 63w
 state c_gc_end #FFCDD2
 c_gc_end : setback (negative)
-c_gc_end : "Turned Back at the Clockwork Galleries Barrier"
+c_gc_end : "Turned Back at {TIER_C} Barrier"
 state c_gal #ECEFF1
 c_gal : hub · 80w
 state c_gal_c1_p1 #D1C4E9
@@ -299,7 +299,7 @@ state l_pb2 #FFF9C4
 l_pb2 : choice · 72w
 state l_pb_bad #FFCDD2
 l_pb_bad : setback (negative)
-l_pb_bad : "Sealed Under the Whispering Library"
+l_pb_bad : "Sealed Under {TIER_L}"
 state l_pc1 #D1C4E9
 l_pc1 : rising · 72w
 state l_pc2 #FFF9C4
@@ -318,7 +318,7 @@ state l_pd_p3 #D1C4E9
 l_pd_p3 : rising · 55w
 state l_pd_end #FFCDD2
 l_pd_end : setback (negative)
-l_pd_end : "Lost in the Whispering Library"
+l_pd_end : "Lost in {TIER_L}"
 state l_pe1 #D1C4E9
 l_pe1 : rising · 63w
 state l_pe_rest #E0E0E0
@@ -342,7 +342,7 @@ state l_gc_p2 #D1C4E9
 l_gc_p2 : rising · 58w
 state l_gc_end #FFCDD2
 l_gc_end : setback (negative)
-l_gc_end : "Turned Back at the Whispering Library Barrier"
+l_gc_end : "Turned Back at {TIER_L} Barrier"
 state l_gal #ECEFF1
 l_gal : hub · 80w
 state l_gal_c1_p1 #D1C4E9
@@ -427,7 +427,7 @@ state r_pb2 #FFF9C4
 r_pb2 : choice · 72w
 state r_pb_bad #FFCDD2
 r_pb_bad : setback (negative)
-r_pb_bad : "Sealed Under the Wind-Scoured Ramparts"
+r_pb_bad : "Sealed Under {TIER_R}"
 state r_pc1 #D1C4E9
 r_pc1 : rising · 63w
 state r_pc2 #FFF9C4
@@ -446,7 +446,7 @@ state r_pd_p3 #D1C4E9
 r_pd_p3 : rising · 67w
 state r_pd_end #FFCDD2
 r_pd_end : setback (negative)
-r_pd_end : "Lost in the Wind-Scoured Ramparts"
+r_pd_end : "Lost in {TIER_R}"
 state r_pe1 #D1C4E9
 r_pe1 : rising · 58w
 state r_pe_rest #E0E0E0
@@ -470,7 +470,7 @@ state r_gc_p2 #D1C4E9
 r_gc_p2 : rising · 69w
 state r_gc_end #FFCDD2
 r_gc_end : setback (negative)
-r_gc_end : "Turned Back at the Wind-Scoured Ramparts Barrier"
+r_gc_end : "Turned Back at {TIER_R} Barrier"
 state r_gal #ECEFF1
 r_gal : hub · 80w
 state r_gal_c1_p1 #D1C4E9
@@ -551,52 +551,52 @@ state s_b3 #FFE0B2
 s_b3 : climax · 80w
 state e_relight #C8E6C9
 e_relight : completion (positive)
-e_relight : "The Beacon Relit"
+e_relight : "{RELIGHT_PRIZE}"
 state b_widder #FFCDD2
 b_widder : setback (negative)
-b_widder : "The Last Turn Wrong"
+b_widder : "{B_WIDDER}"
 state b_force #FFCDD2
 b_force : setback (negative)
-b_force : "The Wild Spark"
+b_force : "{B_FORCE}"
 state b_pa1 #D1C4E9
 b_pa1 : rising · 64w
 state b_pb1 #FFF9C4
 b_pb1 : choice · 72w
 state b_pb_bad #FFCDD2
 b_pb_bad : setback (negative)
-b_pb_bad : "Held by the Shadow"
+b_pb_bad : "{B_PB_BAD}"
 state b_pc1 #D1C4E9
 b_pc1 : rising · 60w
 state b_pd1 #E0E0E0
 b_pd1 : discovery (neutral)
-b_pd1 : "The Braced Doors"
+b_pd1 : "{B_PD1}"
 state b_ga1 #FFF9C4
 b_ga1 : choice · 74w
 state b_ga_bad #FFCDD2
 b_ga_bad : setback (negative)
-b_ga_bad : "The Bargained Shard"
+b_ga_bad : "{B_GA_BAD}"
 state b_gb1 #D1C4E9
 b_gb1 : rising · 62w
 state b_gb2 #FFCDD2
 b_gb2 : setback (negative)
-b_gb2 : "The Jammed Housing"
+b_gb2 : "{B_GB2}"
 state s_b2b #FFE0B2
 s_b2b : climax · 78w
 state e_clever #C8E6C9
 e_clever : success (positive)
-e_clever : "The Clever Summit"
-n_start --> a_ap1 : Cross the crumbled moat causeway.
-n_start --> a_ap2 : Climb the ivy on the north face.
-n_start --> a_ap3 : Slip into the servants tunnel.
-n_start --> a_ap4 : Take the wide front stair.
-a_ap1 --> b_towergate : Reach the tower gate.
-a_ap2 --> b_towergate : Drop down to the tower gate.
-a_ap3 --> b_towergate : Climb toward the gate hall.
+e_clever : "{CLEVER_PRIZE}"
+n_start --> a_ap1 : Cross {AP1_NAME}.
+n_start --> a_ap2 : Climb {AP2_NAME}.
+n_start --> a_ap3 : Slip into {AP3_NAME}.
+n_start --> a_ap4 : Take {AP4_NAME}.
+a_ap1 --> b_towergate : Reach {ENTRANCE}.
+a_ap2 --> b_towergate : Drop down to {ENTRANCE}.
+a_ap3 --> b_towergate : Climb toward {ENTRANCE}.
 a_ap3 --> a_ap3_bad : Follow the downward branch.
 b_towergate --> c_descent : Descend toward the water.
 b_towergate --> b_gate_pod : Follow the warm draught aside.
 b_gate_pod --> c_descent : Take the ladder down.
-c_descent --> h_u : Enter the undercroft.
+c_descent --> h_u : Enter {TIER_U}.
 h_u --> s_u1 : Take the direct route.
 h_u --> u_pa1 : Try the flanking passage.
 h_u --> u_pb1 : Search the side chamber.
@@ -837,27 +837,27 @@ r_gal_c7_p2 --> r_gal_c7_p3 : Press on.
 r_gal_c7_p3 --> r_gal_c7_end : Press on.
 r_gal_c8_p1 --> r_gal_c8_p2 : Press on.
 r_gal_c8_p2 --> r_gal_c8_end : Press on.
-h_b --> s_b1 : Approach the lantern crown.
+h_b --> s_b1 : Approach the lantern {CROWN}.
 h_b --> b_pa1 : Circle the chamber first.
-h_b --> b_pb1 : Study the curse-shadow.
-h_b --> b_pc1 : Search for the keeper remains.
+h_b --> b_pb1 : Study {SHADOW}.
+h_b --> b_pc1 : Search for the {KEEPER} remains.
 h_b --> b_pd1 : Brace the doors against the night.
-s_b1 --> g_b : Read the crown order.
-g_b --> s_b2 : Refuse the shadow and set the shards.
-g_b --> b_ga1 : Bargain with the shadow.
-g_b --> b_gb1 : Try to set the shards blind.
-s_b2 --> s_b3 : Speak the old keeper words.
-s_b2 --> b_force : Force the spark at once.
-s_b3 --> e_relight : Turn the crown sunwise, as the log said.
-s_b3 --> b_widder : Turn the crown widdershins, to spite the...
-b_pa1 --> s_b1 : Read on, then approach the crown.
-b_pb1 --> s_b1 : Slip past to the crown.
+s_b1 --> g_b : Read the {CROWN} order.
+g_b --> s_b2 : Refuse {SHADOW} and set the {SHARD}s.
+g_b --> b_ga1 : Bargain with {SHADOW}.
+g_b --> b_gb1 : Try to set the {SHARD}s blind.
+s_b2 --> s_b3 : Speak the old {KEEPER} words.
+s_b2 --> b_force : Force the {SPARK} at once.
+s_b3 --> e_relight : Turn the {CROWN} sunwise, as the log sai...
+s_b3 --> b_widder : Turn the {CROWN} widdershins, to spite t...
+b_pa1 --> s_b1 : Read on, then approach the {CROWN}.
+b_pb1 --> s_b1 : Slip past to the {CROWN}.
 b_pb1 --> b_pb_bad : Keep watching, transfixed.
-b_pc1 --> s_b1 : Take the key to the crown.
-b_ga1 --> s_b2b : Snatch the shard back and run for the cr...
-b_ga1 --> b_ga_bad : Let the shadow take the shard.
+b_pc1 --> s_b1 : Take the key to the {CROWN}.
+b_ga1 --> s_b2b : Snatch the {SHARD} back and run for the ...
+b_ga1 --> b_ga_bad : Let {SHADOW} take the {SHARD}.
 b_gb1 --> b_gb2 : Force the third by feel.
-s_b2b --> e_clever : Set the shards from the far side.
+s_b2b --> e_clever : Set the {SHARD}s from the far side.
 a_ap3_bad --> [*]
 a_ap4 --> [*]
 u_pb_bad --> [*]

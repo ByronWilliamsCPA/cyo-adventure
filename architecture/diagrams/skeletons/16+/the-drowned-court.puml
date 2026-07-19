@@ -20,7 +20,7 @@ state n_start #BBDEFB
 n_start : setup · 92w
 state fan_tg_s0 #FFCDD2
 fan_tg_s0 : setback (negative)
-fan_tg_s0 : "Pinned at the Gate"
+fan_tg_s0 : "Pinned at the {TIDEGATE_TITLE}"
 state fan_tg_s1 #FFCDD2
 fan_tg_s1 : setback (negative)
 fan_tg_s1 : "The Arch Comes Down"
@@ -42,14 +42,14 @@ fan_throne_s0 : setback (negative)
 fan_throne_s0 : "The Floor Gives"
 state fan_throne_s1 #FFCDD2
 fan_throne_s1 : setback (negative)
-fan_throne_s1 : "Walled from the Crown"
+fan_throne_s1 : "Walled from the {CIRCLET_TITLE}"
 state n_throne_hub #FFF9C4
 n_throne_hub : choice · 86w
 state n_throne_dais #FFE0B2
 n_throne_dais : climax · 88w
 state n_throne_race #FFCDD2
 n_throne_race : setback (negative)
-n_throne_race : "Outraced at the Throne"
+n_throne_race : "Outraced at the {THRONE_TITLE}"
 state n_throne_feint #D1C4E9
 n_throne_feint : rising · 64w
 state n_throne_cut #FFF9C4
@@ -180,7 +180,7 @@ state n_obs_open_ascent #ECEFF1
 n_obs_open_ascent : resolution · 74w
 state n_open_rivalrope #FFCDD2
 n_open_rivalrope : setback (negative)
-n_open_rivalrope : "Fouled on the Rival Line"
+n_open_rivalrope : "Fouled on the {RIVAL_TITLE} Line"
 state n_end_open_full #C8E6C9
 n_end_open_full : completion (positive)
 n_end_open_full : "Regalia Recovered, Court Left to the Sea"
@@ -249,7 +249,7 @@ xf_rl_e0 : setback (negative)
 xf_rl_e0 : "The Lesser Niches"
 state xf_rl_e1 #FFCDD2
 xf_rl_e1 : setback (negative)
-xf_rl_e1 : "The Rival Buoy"
+xf_rl_e1 : "The {RIVAL_TITLE} Buoy"
 state xf_rl_e2 #FFCDD2
 xf_rl_e2 : setback (negative)
 xf_rl_e2 : "The Sealed Ambry"
@@ -743,16 +743,16 @@ pad41_b1 : rising · 62w
 n_ap_moat --> n_tidegate_hub : Press on.
 n_ap_sluice --> n_tidegate_hub : Press on.
 n_ap_scaff --> n_tidegate_hub : Press on.
-n_start --> n_ap_moat : Swim the drowned moat.
-n_start --> n_ap_sluice : Force the old sluice channel.
-n_start --> n_ap_scaff : Climb the rival scaffold.
-n_start --> n_ap_undertow : Chance the seaward culvert.
+n_start --> n_ap_moat : Swim {ROUTE_A_CHAR}.
+n_start --> n_ap_sluice : Force {ROUTE_B_CHAR}.
+n_start --> n_ap_scaff : Climb {ROUTE_C_CHAR}.
+n_start --> n_ap_undertow : Chance {ROUTE_D_CHAR}.
 n_tidegate_hub --> fan_tg_s0 : Wrench the rusted counterweight.
 n_tidegate_hub --> fan_tg_s1 : Blast the silt with a burst of air.
 n_tidegate_hub --> n_tg_gallery : Ease through the flooded gallery mouth.
 n_tidegate_hub --> xf_tg_dec : Explore a side passage first.
 n_tidegate_hub --> pad1_b2 : Try the flooded side-corridor.
-n_tidegate_hub --> pad22_b1 : Follow the warded march.
+n_tidegate_hub --> pad22_b1 : Follow the {MOTIF_MARCH}.
 n_tg_gallery --> n_tg_left : Take the left archway.
 n_tg_gallery --> n_tg_right : Take the right archway.
 n_tg_gallery --> n_tg_stair : Descend the grand stair.
@@ -762,8 +762,8 @@ n_tg_gallery --> pad23_b3 : Ride the surge sideways.
 n_tg_left --> n_throne_hub : Press on.
 n_tg_right --> fan_tgr_s0 : Pry the barnacled reliquary door here.
 n_tg_right --> n_throne_hub : Follow the court script downward.
-n_tg_right --> pad3_b1 : Detour through the caved vault.
-n_tg_right --> pad24_b2 : Probe the drowned gallery.
+n_tg_right --> pad3_b1 : Detour through the {MOTIF_VAULT}.
+n_tg_right --> pad24_b2 : Probe the {MOTIF_GALLERY}.
 n_tg_stair --> n_throne_hub : Press on.
 n_throne_hub --> fan_throne_s0 : Cross the cracked mosaic floor.
 n_throne_hub --> fan_throne_s1 : Loot the sunken sarcophagi.
@@ -774,12 +774,12 @@ n_throne_hub --> pad25_b4 : Try the flooded side-corridor.
 n_throne_dais --> n_throne_race : Race the rival for the circlet.
 n_throne_dais --> n_throne_feint : Feint low and take the high approach.
 n_throne_dais --> n_throne_cut : Cut the rival tether.
-n_throne_dais --> ds_td_b0 : The rival calls a false truce at the dai...
+n_throne_dais --> ds_td_b0 : The {RIVAL} calls a false truce at the {...
 n_throne_feint --> n_circlet_taken : Press on.
 n_throne_cut --> n_circlet_taken : Grab the circlet and go.
 n_throne_cut --> n_throne_greed : Strip the rival gear first.
-n_throne_cut --> pad6_b3 : Follow the warded march.
-n_throne_cut --> pad27_b1 : Detour through the caved vault.
+n_throne_cut --> pad6_b3 : Follow the {MOTIF_MARCH}.
+n_throne_cut --> pad27_b1 : Detour through the {MOTIF_VAULT}.
 n_circlet_taken --> n_throne_exit : Press on.
 n_throne_exit --> fan_thex_s0 : Rest in the flooded alcove.
 n_throne_exit --> n_reliquary_hub : Take the colonnade march.
@@ -795,13 +795,13 @@ n_reliquary_hub --> pad28_b3 : Test the deeper stair.
 n_reliq_study --> n_reliq_time : Time the lattice gaps.
 n_reliq_study --> n_reliq_force : Force it with the pry-bar.
 n_reliq_study --> n_reliq_flood : Flood the trapped air bubble.
-n_reliq_study --> pad8_b1 : Probe the drowned gallery.
+n_reliq_study --> pad8_b1 : Probe the {MOTIF_GALLERY}.
 n_reliq_study --> pad29_b2 : Squeeze the silt crawl.
 n_reliq_time --> n_scepter_taken : Press on.
 n_reliq_flood --> n_scepter_taken : Take the scepter and run.
 n_reliq_flood --> n_reliq_shore : Shore the ceiling first.
 n_reliq_flood --> pad9_b3 : Try the flooded side-corridor.
-n_reliq_flood --> pad30_b3 : Follow the warded march.
+n_reliq_flood --> pad30_b3 : Follow the {MOTIF_MARCH}.
 n_scepter_taken --> n_reliq_exit : Press on.
 n_reliq_exit --> n_reliq_spill : Ride the spillway shaft.
 n_reliq_exit --> n_cistern_hub : Take the silted stair.
@@ -810,8 +810,8 @@ n_reliq_exit --> pad10_b2 : Chase the trailing bubbles.
 n_reliq_exit --> pad31_b1 : Ride the surge sideways.
 n_reliq_spill --> n_reliq_ride_fail : Ride it out.
 n_reliq_spill --> n_cistern_hub : Grab a rung and slow.
-n_reliq_spill --> pad11_b4 : Detour through the caved vault.
-n_reliq_spill --> pad32_b4 : Probe the drowned gallery.
+n_reliq_spill --> pad11_b4 : Detour through the {MOTIF_VAULT}.
+n_reliq_spill --> pad32_b4 : Probe the {MOTIF_GALLERY}.
 n_cistern_hub --> fan_cist_s0 : Wade the deep sump for the shortcut.
 n_cistern_hub --> fan_cist_s1 : Chisel the crusted vault seam.
 n_cistern_hub --> n_cistern_font : Move pillar to pillar toward the font.
@@ -826,8 +826,8 @@ n_cistern_font --> pad13_b1 : Squeeze the silt crawl.
 n_cistern_font --> pad34_b3 : Chase the trailing bubbles.
 n_cistern_confront --> n_cistern_wrestle : Wrestle for the ring.
 n_cistern_confront --> n_ring_taken : Kill the lamp and take it in the dark.
-n_cistern_confront --> pad14_b3 : Follow the warded march.
-n_cistern_confront --> pad35_b5 : Detour through the caved vault.
+n_cistern_confront --> pad14_b3 : Follow the {MOTIF_MARCH}.
+n_cistern_confront --> pad35_b5 : Detour through the {MOTIF_VAULT}.
 n_cistern_shadow --> n_ring_taken : Press on.
 n_cistern_collapse --> n_ring_taken : Snatch the ring and move.
 n_cistern_collapse --> n_cistern_cache : Search the rival dropped cache too.
@@ -837,7 +837,7 @@ n_ring_taken --> n_cistern_exit : Press on.
 n_cistern_exit --> n_cist_orrery : Cross the flooded orrery hall.
 n_cistern_exit --> n_cist_dome : Climb the collapsed dome gallery.
 n_cistern_exit --> xf_cix_dec : Explore a side passage first.
-n_cistern_exit --> pad16_b3 : Probe the drowned gallery.
+n_cistern_exit --> pad16_b3 : Probe the {MOTIF_GALLERY}.
 n_cistern_exit --> pad37_b3 : Squeeze the silt crawl.
 n_cist_orrery --> n_observatory_hub : Press on.
 n_cist_dome --> fan_dome_s0 : Trust the cracked dome ribs.
@@ -851,19 +851,19 @@ n_observatory_hub --> fan_obs_s0 : Force the seized shutter mechanism.
 n_observatory_hub --> n_obs_deep_a : Move on the rival at the control ring.
 n_observatory_hub --> xf_ob_dec : Explore a side passage first.
 n_observatory_hub --> pad17_b1 : Try the flooded side-corridor.
-n_observatory_hub --> pad38_b2 : Follow the warded march.
+n_observatory_hub --> pad38_b2 : Follow the {MOTIF_MARCH}.
 n_obs_control --> n_obs_bargain : Bargain a shared surfacing.
 n_obs_control --> n_obs_climb : Out-climb the rival to the shaft.
 n_obs_control --> n_obs_race : Race the rising water straight up.
-n_obs_control --> ds_obs_b0 : The rival feints toward the ascent shaft...
+n_obs_control --> ds_obs_b0 : The {RIVAL} feints toward the ascent sha...
 n_obs_control --> ds_obs_b1 : A wing of the dome peels loose above the...
 n_obs_control --> pad18_b4 : Chase the trailing bubbles.
 n_obs_control --> pad39_b4 : Ride the surge sideways.
-n_obs_bargain --> n_obs_trade_circlet : Trade away the circlet.
-n_obs_bargain --> n_obs_trade_ring : Trade away the seal-ring.
+n_obs_bargain --> n_obs_trade_circlet : Trade away the {CIRCLET}.
+n_obs_bargain --> n_obs_trade_ring : Trade away the {RING}.
 n_obs_bargain --> n_obs_refuse : Refuse and gamble on the water.
-n_obs_bargain --> pad19_b2 : Detour through the caved vault.
-n_obs_bargain --> pad40_b2 : Probe the drowned gallery.
+n_obs_bargain --> pad19_b2 : Detour through the {MOTIF_VAULT}.
+n_obs_bargain --> pad40_b2 : Probe the {MOTIF_GALLERY}.
 n_obs_climb --> n_obs_seal_choice : Press on.
 n_obs_race --> n_obs_seal_choice : Turn back to seal the court.
 n_obs_race --> n_obs_open_ascent : Climb now, leave the court open.
@@ -900,7 +900,7 @@ xf_thx_dec --> xf_thx_e0 : Detour through the drowned kitchens.
 xf_thx_dec --> xf_thx_e1 : Climb the minstrel gallery.
 xf_thx_dec --> xf_thx_e2 : Push the passage to its end.
 xf_rl_dec --> xf_rl_e0 : Rifle the lesser niches.
-xf_rl_dec --> xf_rl_e1 : Chase the rival marker buoy.
+xf_rl_dec --> xf_rl_e1 : Chase the {RIVAL} marker buoy.
 xf_rl_dec --> xf_rl_e2 : Pry the sealed ambry.
 xf_rl_dec --> xf_rl_e3 : Push the passage to its end.
 xf_rlx_dec --> xf_rlx_e0 : Take the flooded scriptorium turn.

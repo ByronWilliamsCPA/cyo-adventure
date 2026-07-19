@@ -57,56 +57,56 @@ state n_funny_out #FFF9C4
 n_funny_out : choice · 42w
 state e_teatime #C8E6C9
 e_teatime : completion (positive)
-e_teatime : "A Teatime Picnic for Two"
+e_teatime : "{A_PRIZE1}"
 state e_neighbors #C8E6C9
 e_neighbors : success (positive)
-e_neighbors : "Warm Buns for the Whole Burrow"
+e_neighbors : "{A_PRIZE2}"
 state e_perfect #C8E6C9
 e_perfect : success (positive)
-e_perfect : "The Perfect Golden Batch"
+e_perfect : "{A_PRIZE3}"
 state e_funny #C8E6C9
 e_funny : completion (positive)
-e_funny : "Funny Shapes, Yummy Buns"
+e_funny : "{B_PRIZE1}"
 state e_recipe #C8E6C9
 e_recipe : discovery (positive)
-e_recipe : "A Brand-New Family Recipe"
+e_recipe : "{B_PRIZE2}"
 state e_silly #C8E6C9
 e_silly : success (positive)
-e_silly : "Silly Buns Make Everyone Smile"
+e_silly : "{B_PRIZE3}"
 n_start --> n_kitchen : Scamper to the burrow kitchen.
 n_kitchen --> n_bowls : Go get the big brown bowl.
 n_bowls --> n_bowl_ok : Lift the top bowls off one at a time.
-n_bowls --> n_bowl_oops : Slide the bottom bowl out fast.
+n_bowls --> n_bowl_oops : Slide {STEP1_ITEM} out from the bottom.
 n_bowl_oops --> n_bowls : Try the bowl shelf again.
 n_bowl_ok --> n_flour : Fetch the flour crock.
 n_flour --> n_flour_ok : Scoop small scoops, nice and slow.
-n_flour --> n_flour_oops : Tip the whole crock over at once.
+n_flour --> n_flour_oops : Tip {STEP2_ITEM} over all at once.
 n_flour_oops --> n_flour : Dust off and scoop again.
 n_flour_ok --> n_seeds : Open the seed jar.
 n_seeds --> n_seeds_ok : Pour the seeds in a gentle stream.
 n_seeds --> n_acorn_chase : Shake the jar hard upside down.
-n_acorn_chase --> n_acorn_back : Catch that rolling acorn!
+n_acorn_chase --> n_acorn_back : Catch {TOKEN}!
 n_acorn_back --> n_seeds : Pour the seeds again, gently.
-n_seeds_ok --> n_honey : Bring the honey pot.
+n_seeds_ok --> n_honey : Bring {HONEY}.
 n_honey --> n_mix : Stir it all together.
 n_mix --> n_rest : Let the dough have a little nap.
-n_rest --> n_shape : Shape the buns with Grandma.
-n_shape --> n_tray_neat : Roll neat round buns like Grandma’s.
-n_shape --> n_tray_funny : Squish fun shapes, stars and snails.
-n_tray_neat --> n_oven : Watch and wait by the warm oven.
-n_tray_funny --> n_oven_funny : Watch and wait by the warm oven.
-n_oven --> n_golden : Wait for the little bell.
+n_rest --> n_shape : Shape the {GOAL} with {MENTOR}.
+n_shape --> n_tray_neat : Roll neat round buns like {MENTOR}'s.
+n_shape --> n_tray_funny : Squish fun shapes, {ROUTE_B_SHAPES}.
+n_tray_neat --> n_oven : Watch and wait by {OVEN}.
+n_tray_funny --> n_oven_funny : Watch and wait by {OVEN}.
+n_oven --> n_golden : Wait for {BELL}.
 n_oven --> n_peek_oops : Open the door for a tiny peek.
-n_peek_oops --> n_oven : Wait by the warm oven again.
-n_golden --> e_teatime : Have a teatime picnic with Grandma.
-n_golden --> e_neighbors : Take warm buns to the neighbors.
+n_peek_oops --> n_oven : Wait by {OVEN} again.
+n_golden --> e_teatime : Have a {DRINK} picnic with {MENTOR}.
+n_golden --> e_neighbors : Take warm {GOAL} to the neighbors.
 n_golden --> e_perfect : Line up the batch on the windowsill.
-n_oven_funny --> n_funny_out : Wait for the little bell.
+n_oven_funny --> n_funny_out : Wait for {BELL}.
 n_oven_funny --> n_funny_peek : Open the door for a tiny peek.
-n_funny_peek --> n_oven_funny : Wait by the warm oven again.
+n_funny_peek --> n_oven_funny : Wait by {OVEN} again.
 n_funny_out --> e_funny : Taste the wiggly star bun first.
-n_funny_out --> e_recipe : Draw the new buns on the recipe card.
-n_funny_out --> e_silly : Show the silly buns to the neighbors.
+n_funny_out --> e_recipe : Draw the new {GOAL} on {RECIPE_CARD}.
+n_funny_out --> e_silly : Show the silly {GOAL} to the neighbors.
 e_teatime --> [*]
 e_neighbors --> [*]
 e_perfect --> [*]

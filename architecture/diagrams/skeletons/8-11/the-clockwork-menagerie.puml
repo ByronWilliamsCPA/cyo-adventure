@@ -47,7 +47,7 @@ state av_rec2 #D1C4E9
 av_rec2 : rising · 88w
 state e_set_av #FFCDD2
 e_set_av : setback (negative)
-e_set_av : "Stranded in the High Nests"
+e_set_av : "Stranded in {A_STUCK}"
 state sv_x0 #D1C4E9
 sv_x0 : rising · 96w
 state sv_x1 #FFF9C4
@@ -86,7 +86,7 @@ state sv_rec2 #D1C4E9
 sv_rec2 : rising · 88w
 state e_set_sv #FFCDD2
 e_set_sv : setback (negative)
-e_set_sv : "Cornered by the Clockwork Elephant"
+e_set_sv : "Cornered by {B_GATE}"
 state ds_x0 #D1C4E9
 ds_x0 : rising · 96w
 state ds_x1 #FFF9C4
@@ -125,7 +125,7 @@ state ds_rec2 #D1C4E9
 ds_rec2 : rising · 88w
 state e_set_ds #FFCDD2
 e_set_ds : setback (negative)
-e_set_ds : "Lost in the Dark Deep Hall"
+e_set_ds : "Lost in {C_STUCK}"
 state cg_x0 #D1C4E9
 cg_x0 : rising · 96w
 state cg_x1 #FFF9C4
@@ -164,7 +164,7 @@ state cg_rec2 #D1C4E9
 cg_rec2 : rising · 88w
 state e_set_cg #FFCDD2
 e_set_cg : setback (negative)
-e_set_cg : "Shut in the Glass Gallery"
+e_set_cg : "Shut in {D_STUCK}"
 state n_key #FFF9C4
 n_key : choice · 128w
 state k_a1 #D1C4E9
@@ -187,7 +187,7 @@ state k_c3 #D1C4E9
 k_c3 : rising · 92w
 state e_set_key #FFCDD2
 e_set_key : setback (negative)
-e_set_key : "Turned Around in the Dark"
+e_set_key : "Turned Around at {KC_GATE}"
 state n_spring #FFF9C4
 n_spring : choice · 130w
 state s_a1 #D1C4E9
@@ -210,7 +210,7 @@ state s_c3 #D1C4E9
 s_c3 : rising · 92w
 state e_set_spring #FFCDD2
 e_set_spring : setback (negative)
-e_set_spring : "Pinned by a Fallen Gear"
+e_set_spring : "Pinned by {SC_GATE}"
 state n_shop #FFF9C4
 n_shop : choice · 132w
 state p_a1 #D1C4E9
@@ -233,7 +233,7 @@ state p_c3 #D1C4E9
 p_c3 : rising · 92w
 state e_set_shop #FFCDD2
 e_set_shop : setback (negative)
-e_set_shop : "The Runaway Cart"
+e_set_shop : "The Runaway {PB_CART}"
 state n_hub #FFF9C4
 n_hub : choice · 130w
 state fh_rw1 #FFF9C4
@@ -255,13 +255,13 @@ e_win_all : completion (positive)
 e_win_all : "The Menagerie Wakes at Dawn"
 state e_win_all_quiet #C8E6C9
 e_win_all_quiet : success (positive)
-e_win_all_quiet : "Ready for Keeper Fettle"
+e_win_all_quiet : "Ready for {CARETAKER}"
 state e_win_most #C8E6C9
 e_win_most : success (positive)
 e_win_most : "Most of the Menagerie Stirs"
 state e_set_rw #FFCDD2
 e_set_rw : setback (negative)
-e_set_rw : "The Spring Slips"
+e_set_rw : "{SPARE} Slips"
 state e_win_clever #C8E6C9
 e_win_clever : success (positive)
 e_win_clever : "The Clever Rewind"
@@ -273,35 +273,35 @@ state fh_fx_bird2 #D1C4E9
 fh_fx_bird2 : rising · 92w
 state e_win_bird #C8E6C9
 e_win_bird : success (positive)
-e_win_bird : "The Brass Lark Sings"
+e_win_bird : "{ANIMAL_BIRD} Sings"
 state fh_fx_lion #D1C4E9
 fh_fx_lion : rising · 92w
 state fh_fx_lion2 #D1C4E9
 fh_fx_lion2 : rising · 92w
 state e_win_lion #C8E6C9
 e_win_lion : success (positive)
-e_win_lion : "The Tin Lion Roars"
+e_win_lion : "{ANIMAL_LION} Roars"
 state fh_fx_whale #D1C4E9
 fh_fx_whale : rising · 92w
 state fh_fx_whale2 #D1C4E9
 fh_fx_whale2 : rising · 92w
 state e_win_whale #C8E6C9
 e_win_whale : success (positive)
-e_win_whale : "The Copper Whale Sounds"
+e_win_whale : "{ANIMAL_WHALE} Sounds"
 state fh_fx_fly #D1C4E9
 fh_fx_fly : rising · 92w
 state fh_fx_fly2 #D1C4E9
 fh_fx_fly2 : rising · 92w
 state e_win_fly #C8E6C9
 e_win_fly : success (positive)
-e_win_fly : "The Crystal Butterfly Flies"
+e_win_fly : "{ANIMAL_FLY} Flies"
 state fh_fx_eleph #D1C4E9
 fh_fx_eleph : rising · 92w
 state fh_fx_eleph2 #D1C4E9
 fh_fx_eleph2 : rising · 92w
 state e_win_eleph #C8E6C9
 e_win_eleph : success (positive)
-e_win_eleph : "The Gentle Elephant"
+e_win_eleph : "{ANIMAL_ELEPH}"
 state fh_sec1 #FFF9C4
 fh_sec1 : choice · 98w
 state fh_sec_j1 #D1C4E9
@@ -312,7 +312,7 @@ state fh_sec_j3 #D1C4E9
 fh_sec_j3 : rising · 92w
 state e_win_journal #C8E6C9
 e_win_journal : completion (positive)
-e_win_journal : "Keeper Fettle’s Journal"
+e_win_journal : "{CARETAKER}'s Journal"
 state fh_sec_m1 #FFF9C4
 fh_sec_m1 : choice · 96w
 state fh_sec_m2 #D1C4E9
@@ -334,7 +334,7 @@ e_win_cabinet : completion (positive)
 e_win_cabinet : "The First Clockwork Animal"
 state e_set_cabinet #FFCDD2
 e_set_cabinet : setback (negative)
-e_set_cabinet : "The Cabinet Stays Shut"
+e_set_cabinet : "{SEC_CABINET_ZONE} Stays Shut"
 state fh_dawn1 #FFF9C4
 fh_dawn1 : choice · 98w
 state fh_dawn_s1 #D1C4E9
@@ -365,16 +365,16 @@ e_neu_caretaker : discovery (neutral)
 e_neu_caretaker : "Waiting for the Keepers"
 state e_set_dawn #FFCDD2
 e_set_dawn : setback (negative)
-e_set_dawn : "Caught by the Cleaner"
-n_start --> av_x0 : Enter the brass aviary.
-n_start --> sv_x0 : Cross into the tin savanna.
-n_start --> ds_x0 : Slip into the copper deep-sea hall.
-n_start --> cg_x0 : Step into the crystal conservatory.
+e_set_dawn : "Caught by {DAWN_CLEANER}"
+n_start --> av_x0 : Enter {ROUTE_A_ZONE}.
+n_start --> sv_x0 : Cross into {ROUTE_B_ZONE}.
+n_start --> ds_x0 : Slip into {ROUTE_C_ZONE}.
+n_start --> cg_x0 : Step into {ROUTE_D_ZONE}.
 av_x0 --> av_x1 : Walk in under the silent birds.
 av_x1 --> av_deep : Walk among the perch-trees.
-av_x1 --> av_risk : Climb the spiral stair to the nests.
-av_deep --> av_a1 : Visit the songbird alcove.
-av_deep --> av_b1 : Approach the raptor roost.
+av_x1 --> av_risk : Climb the spiral stair to {A2_ZONE}.
+av_deep --> av_a1 : Visit {A1_ZONE}.
+av_deep --> av_b1 : Approach {A2_ZONE}.
 av_a1 --> av_a2 : Go on.
 av_a2 --> av_a3 : Press deeper.
 av_a3 --> av_a4 : Follow Tock.
@@ -388,14 +388,14 @@ av_conv --> av_conv2 : Keep going.
 av_conv2 --> av_conv3 : Step forward.
 av_conv3 --> n_key : Enter the central rotunda.
 av_risk --> av_rec : Grab the rail and climb back down.
-av_risk --> e_set_av : Climb on toward the high nests.
+av_risk --> e_set_av : Climb on toward {A_STUCK}.
 av_rec --> av_rec2 : Steady yourself.
 av_rec2 --> av_deep : Explore the safer way.
 sv_x0 --> sv_x1 : Step out onto the tin plain.
 sv_x1 --> sv_deep : Cross the open savanna floor.
 sv_x1 --> sv_risk : Edge along the horizon wall.
-sv_deep --> sv_a1 : Approach the elephant herd.
-sv_deep --> sv_b1 : Enter the giraffe grove.
+sv_deep --> sv_a1 : Approach {B1_ZONE}.
+sv_deep --> sv_b1 : Enter {B2_ZONE}.
 sv_a1 --> sv_a2 : Go on.
 sv_a2 --> sv_a3 : Press deeper.
 sv_a3 --> sv_a4 : Follow Tock.
@@ -409,14 +409,14 @@ sv_conv --> sv_conv2 : Keep going.
 sv_conv2 --> sv_conv3 : Step forward.
 sv_conv3 --> n_key : Enter the central rotunda.
 sv_risk --> sv_rec : Press into an alcove and wait.
-sv_risk --> e_set_sv : Try to hurry past the elephant.
+sv_risk --> e_set_sv : Try to hurry past {B_GATE}.
 sv_rec --> sv_rec2 : Steady yourself.
 sv_rec2 --> sv_deep : Explore the safer way.
 ds_x0 --> ds_x1 : Wade into the blue hall.
 ds_x1 --> ds_deep : Wade among the floor tanks.
 ds_x1 --> ds_risk : Climb the whale-rib catwalk.
-ds_deep --> ds_a1 : Open the coral cabinet.
-ds_deep --> ds_b1 : Peer into the deep trench.
+ds_deep --> ds_a1 : Open {C1_ZONE}.
+ds_deep --> ds_b1 : Peer into {C2_ZONE}.
 ds_a1 --> ds_a2 : Go on.
 ds_a2 --> ds_a3 : Press deeper.
 ds_a3 --> ds_a4 : Follow Tock.
@@ -430,14 +430,14 @@ ds_conv --> ds_conv2 : Keep going.
 ds_conv2 --> ds_conv3 : Step forward.
 ds_conv3 --> n_key : Enter the central rotunda.
 ds_risk --> ds_rec : Cling to the rope and back off.
-ds_risk --> e_set_ds : Try to jump the gap in the dark.
+ds_risk --> e_set_ds : Try to jump {C_GATE} in the dark.
 ds_rec --> ds_rec2 : Steady yourself.
 ds_rec2 --> ds_deep : Explore the safer way.
 cg_x0 --> cg_x1 : Wander in among the glass ferns.
 cg_x1 --> cg_deep : Wander the fern beds.
 cg_x1 --> cg_risk : Climb the mezzanine gallery.
-cg_deep --> cg_a1 : Enter the butterfly vault.
-cg_deep --> cg_b1 : Visit the beetle corner.
+cg_deep --> cg_a1 : Enter {D1_ZONE}.
+cg_deep --> cg_b1 : Visit {D2_ZONE}.
 cg_a1 --> cg_a2 : Go on.
 cg_a2 --> cg_a3 : Press deeper.
 cg_a3 --> cg_a4 : Follow Tock.
@@ -451,12 +451,12 @@ cg_conv --> cg_conv2 : Keep going.
 cg_conv2 --> cg_conv3 : Step forward.
 cg_conv3 --> n_key : Enter the central rotunda.
 cg_risk --> cg_rec : Step back from the loose glass.
-cg_risk --> e_set_cg : Squeeze past the shifting panel.
+cg_risk --> e_set_cg : Squeeze past {D_GATE}.
 cg_rec --> cg_rec2 : Steady yourself.
 cg_rec2 --> cg_deep : Explore the safer way.
-n_key --> k_a1 : Push through the great spring-room doors...
-n_key --> k_b1 : Follow the gallery of keeper portraits.
-n_key --> k_c1 : Slip down the narrow back stairs.
+n_key --> k_a1 : Push through {K_A_ZONE}.
+n_key --> k_b1 : Follow {K_B_ZONE}.
+n_key --> k_c1 : Slip down {K_C_ZONE}.
 k_a1 --> k_a2 : Go deeper toward the works.
 k_a2 --> k_a3 : Go deeper toward the works.
 k_a3 --> n_spring : Go deeper toward the works.
@@ -464,11 +464,11 @@ k_b1 --> k_b2 : Follow the gallery on.
 k_b2 --> k_b3 : Follow the gallery on.
 k_b3 --> n_spring : Follow the gallery on.
 k_c1 --> k_c2 : Squeeze carefully through the gap.
-k_c1 --> e_set_key : Shove hard against the turnstile.
+k_c1 --> e_set_key : Shove hard against {KC_GATE}.
 k_c2 --> k_c3 : Follow the low passage.
 k_c3 --> n_spring : Climb down to the works.
-n_spring --> s_a1 : Open the keeper toolbox.
-n_spring --> s_b1 : Search the wall of manuals.
+n_spring --> s_a1 : Open {S_A_ZONE}.
+n_spring --> s_b1 : Search {S_B_ZONE}.
 n_spring --> s_c1 : Dig where Tock is scratching.
 s_a1 --> s_a2 : Follow the keeper sign.
 s_a2 --> s_a3 : Follow the keeper sign.
@@ -480,9 +480,9 @@ s_c1 --> s_c2 : Ease the panel up gently.
 s_c1 --> e_set_spring : Yank the panel free quickly.
 s_c2 --> s_c3 : Crawl through the space.
 s_c3 --> n_shop : Open the hidden door.
-n_shop --> p_a1 : Study the open repair manual.
-n_shop --> p_b1 : Take down the spare mainspring.
-n_shop --> p_c1 : Read keeper Fettle’s letter.
+n_shop --> p_a1 : Study {P_A_ZONE}.
+n_shop --> p_b1 : Take down {SPARE} from {P_B_ZONE}.
+n_shop --> p_c1 : Read {LETTER}.
 p_a1 --> p_a2 : Head back to the spring-room.
 p_a2 --> p_a3 : Head back to the spring-room.
 p_a3 --> n_hub : Head back to the spring-room.
@@ -490,7 +490,7 @@ p_b1 --> p_b2 : Wheel the cart back.
 p_b2 --> p_b3 : Wheel the cart back.
 p_b3 --> n_hub : Wheel the cart back.
 p_c1 --> p_c2 : Carry the spring the long safe way.
-p_c1 --> e_set_shop : Throw the rusted shortcut lever.
+p_c1 --> e_set_shop : Throw {PC_GATE}.
 p_c2 --> p_c3 : Set the spring down.
 p_c3 --> n_hub : Turn to the great spring.
 n_hub --> fh_rw1 : Change the great spring and rewind them ...
@@ -508,11 +508,11 @@ fh_rw_b1 --> e_set_rw : Wind it now and hope.
 fh_rw_b_ok --> e_win_most : Wind the museum awake.
 fh_rw_cl1 --> fh_rw_cl2 : Turn the master key.
 fh_rw_cl2 --> e_win_clever : Watch the menagerie stir.
-fh_fx1 --> fh_fx_bird : Wake the brass lark.
-fh_fx1 --> fh_fx_lion : Wake the tin lion.
-fh_fx1 --> fh_fx_whale : Wake the copper whale.
-fh_fx1 --> fh_fx_fly : Wake the crystal butterfly.
-fh_fx1 --> fh_fx_eleph : Wake the gentle elephant.
+fh_fx1 --> fh_fx_bird : Wake {ANIMAL_BIRD}.
+fh_fx1 --> fh_fx_lion : Wake {ANIMAL_LION}.
+fh_fx1 --> fh_fx_whale : Wake {ANIMAL_WHALE}.
+fh_fx1 --> fh_fx_fly : Wake {ANIMAL_FLY}.
+fh_fx1 --> fh_fx_eleph : Wake {ANIMAL_ELEPH}.
 fh_fx_bird --> fh_fx_bird2 : Wind it carefully.
 fh_fx_bird2 --> e_win_bird : Step back and watch.
 fh_fx_lion --> fh_fx_lion2 : Wind it carefully.
@@ -523,16 +523,16 @@ fh_fx_fly --> fh_fx_fly2 : Wind it carefully.
 fh_fx_fly2 --> e_win_fly : Step back and watch.
 fh_fx_eleph --> fh_fx_eleph2 : Wind it carefully.
 fh_fx_eleph2 --> e_win_eleph : Step back and watch.
-fh_sec1 --> fh_sec_j1 : Read Fettle’s private journal.
-fh_sec1 --> fh_sec_m1 : Follow the clockwork mouse.
-fh_sec1 --> fh_sec_c1 : Open the locked cabinet.
+fh_sec1 --> fh_sec_j1 : Read {SEC_JOURNAL}.
+fh_sec1 --> fh_sec_m1 : Follow {SEC_MOUSE}.
+fh_sec1 --> fh_sec_c1 : Open {SEC_CABINET_ZONE}.
 fh_sec_j1 --> fh_sec_j2 : Read on.
 fh_sec_j2 --> fh_sec_j3 : Read to the last page.
 fh_sec_j3 --> e_win_journal : Close the journal.
 fh_sec_m1 --> fh_sec_m2 : Chase the mouse into the dark.
 fh_sec_m1 --> e_neu_mouse : Coax the mouse gently to you.
 fh_sec_m2 --> e_win_mouse : Wind the little mice.
-fh_sec_c1 --> fh_sec_c2 : Try the small keys one by one.
+fh_sec_c1 --> fh_sec_c2 : Try {SEC_CABINET_KEYS} one by one.
 fh_sec_c1 --> e_set_cabinet : Force the lock with a tool.
 fh_sec_c2 --> fh_sec_c3 : Look inside.
 fh_sec_c3 --> e_win_cabinet : Wind the little rabbit.

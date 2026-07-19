@@ -6,13 +6,13 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Strategy for maximizing story diversity, defined as: each story must feel like a new adventure to the reader. Vary the leaves (the descriptive content along a shared tree of paths and decision points) first, add structural and state variety as the library scales, and let the deterministic gate keep every variant safe. Corrects an earlier premise: the automated fill already themes stories from the requester's brief.">
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
       
       
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/story-flexibility-plan/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-019-parameterized-skeletons-theme-contracts/">
       
       
       
@@ -20,19 +20,19 @@
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Story Flexibility and Diversity Plan - CYO Adventure</title>
+        <title>ADR-019: Parameterized skeletons and machine-readable theme contracts - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#1-objective-each-story-must-feel-like-a-new-adventure" class="md-skip">
+        <a href="#adr-019-parameterized-skeletons-and-machine-readable-theme-contracts" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Story Flexibility and Diversity Plan
+              ADR-019: Parameterized skeletons and machine-readable theme contracts
             
           </span>
         </div>
@@ -235,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -256,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../operations/runbook/" class="md-tabs__link">
+        <a href="../../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -322,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../architecture/" class="md-tabs__link">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -344,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -366,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -388,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../" class="md-tabs__link">
+        <a href="../../" class="md-tabs__link">
           
   
   
@@ -410,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -432,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -468,7 +468,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -498,7 +498,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -596,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -631,7 +631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -666,7 +666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -701,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -801,7 +801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -903,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/runbook/" class="md-nav__link">
+      <a href="../../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -938,7 +938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -1017,7 +1017,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../architecture/" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -1068,7 +1068,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1103,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1138,7 +1138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1173,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1208,7 +1208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1243,7 +1243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1318,7 +1318,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../api/" class="md-nav__link ">
+            <a href="../../../api/" class="md-nav__link ">
               
   
   
@@ -1367,7 +1367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1402,7 +1402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1439,7 +1439,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1474,7 +1474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1578,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1613,7 +1613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1648,7 +1648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1725,7 +1725,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -1776,7 +1776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project-vision/" class="md-nav__link">
+      <a href="../../project-vision/" class="md-nav__link">
         
   
   
@@ -1811,7 +1811,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tech-spec/" class="md-nav__link">
+      <a href="../../tech-spec/" class="md-nav__link">
         
   
   
@@ -1846,7 +1846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1881,7 +1881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../roadmap/" class="md-nav__link">
         
   
   
@@ -1963,7 +1963,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../adr/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -2014,7 +2014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2049,7 +2049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2084,7 +2084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2119,7 +2119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2154,7 +2154,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2189,7 +2189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2224,7 +2224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2259,7 +2259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2294,7 +2294,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2329,7 +2329,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2364,7 +2364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2478,7 +2478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2513,7 +2513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2548,7 +2548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2583,7 +2583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2652,7 +2652,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2703,7 +2703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2755,6 +2755,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2763,22 +2765,55 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-objective-each-story-must-feel-like-a-new-adventure" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Objective: each story must feel like a new adventure
+        TL;DR
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="1. Objective: each story must feel like a new adventure">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#the-leaves-on-a-tree-model-the-frame-we-design-to" class="md-nav__link">
+  <a href="#where-the-pipeline-stands" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The leaves-on-a-tree model (the frame we design to)
+        Where the pipeline stands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-pilot-proved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the pilot proved
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-constraint-the-design-must-not-violate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The constraint the design must not violate
       
     </span>
   </a>
@@ -2791,55 +2826,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-problem-current-state" class="md-nav__link">
+  <a href="#decision" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Problem (current-state)
+        Decision
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-design-principle-freeze-the-safety-constraints-vary-within-them" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Design principle: freeze the safety constraints, vary within them
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-three-axes-of-diversity-leaf-first" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Three axes of diversity (leaf-first)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-workstreams-prioritized" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Workstreams (prioritized)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="5. Workstreams (prioritized)">
+    <nav class="md-nav" aria-label="Decision">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#ws-0-diversity-metrics-eval-harness-do-first" class="md-nav__link">
+  <a href="#1-parameterization-scheme-slots-in-guidance-never-in-prose" class="md-nav__link">
     <span class="md-ellipsis">
       
-        WS-0: Diversity metrics + eval harness (do first)
+        1. Parameterization scheme: slots in guidance, never in prose
       
     </span>
   </a>
@@ -2847,10 +2849,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ws-1-leaf-diversity-verification-theme-parity-re-scoped" class="md-nav__link">
+  <a href="#2-the-theme-contract-a-machine-readable-sidecar-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        WS-1: Leaf-diversity verification + theme parity (re-scoped)
+        2. The theme contract: a machine-readable sidecar file
       
     </span>
   </a>
@@ -2858,10 +2860,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ws-4-similarity-driven-escalating-selection-consumes-ws-0" class="md-nav__link">
+  <a href="#3-deterministic-contract-validation-is-the-safety-mechanism-no-new-human-step" class="md-nav__link">
     <span class="md-ellipsis">
       
-        WS-4: Similarity-driven, escalating selection (consumes WS-0)
+        3. Deterministic contract validation is the safety mechanism (no new human step)
       
     </span>
   </a>
@@ -2869,10 +2871,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ws-2-parameterize-the-catalog-for-safe-auditable-leaves-absorbs-packs" class="md-nav__link">
+  <a href="#4-leaves-are-generated-fresh-substitution-is-prompt-side-only" class="md-nav__link">
     <span class="md-ellipsis">
       
-        WS-2: Parameterize the catalog for safe, auditable leaves (absorbs "packs")
+        4. Leaves are generated fresh; substitution is prompt-side only
       
     </span>
   </a>
@@ -2880,43 +2882,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ws-5-structure-and-state-variation-within-the-adr-011-grammar-scaling" class="md-nav__link">
+  <a href="#5-label-policy-content-with-a-frozen-action-semantic" class="md-nav__link">
     <span class="md-ellipsis">
       
-        WS-5: Structure and state variation within the ADR-011 grammar (scaling)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ws-6-harden-fresh_generation-as-the-flywheel-feed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        WS-6: Harden fresh_generation as the flywheel feed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ws-8-catalog-flywheel-highest-ceiling" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        WS-8: Catalog flywheel (highest ceiling)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ws-7-request-interpretation-and-expectation-setting-delivers-k19" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        WS-7: Request interpretation and expectation-setting (delivers K19)
+        5. Label policy: content with a frozen action-semantic
       
     </span>
   </a>
@@ -2925,50 +2894,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-sequencing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Sequencing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-safety-invariants-hold-across-all-workstreams" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Safety invariants (hold across all workstreams)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8-current-state" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. Current state
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#9-open-questions-adr-candidates" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9. Open questions / ADR candidates
-      
-    </span>
-  </a>
   
 </li>
       
@@ -2992,415 +2917,274 @@
   
 
 
-  <h1>Story Flexibility and Diversity Plan</h1>
-
+<h1 id="adr-019-parameterized-skeletons-and-machine-readable-theme-contracts">ADR-019: Parameterized skeletons and machine-readable theme contracts<a class="headerlink" href="#adr-019-parameterized-skeletons-and-machine-readable-theme-contracts" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status: Active (revised).</strong> The parameterized-beat pilot (<code>out/pilot/</code>) is
-built and proven; nothing beyond it is wired into the live path yet. This
-revision (a) sets the objective from the negative, each story must feel like a
-new adventure, in the academic leaves-on-a-tree frame; (b) corrects the original
-problem statement (the automated fill already consumes the theme brief);
-&copy; adds a metrics workstream (WS-0) without which "maximize" is unfalsifiable;
-and (d) adds structure/state variety and a catalog flywheel. Parameterized
-skeletons are an ADR-019 candidate (see Open questions).</p>
+<p><strong>Status</strong>: Accepted (2026-07-19; ratified by supervisor sign-off, recorded in
+<code>docs/planning/ws2-parameterized-catalog-design.md</code> section 13, before the catalog
+migration begins)
+<strong>Date</strong>: 2026-07-19
+<strong>Relates to</strong>: <a href="../adr-011-story-scale-framework/">ADR-011</a> (the constraint grammar
+is the frozen safety object; parameterization varies content strictly inside it),
+<a href="../adr-005-mandatory-human-approval/">ADR-005</a> (human approval still gates every
+published story; nothing here adds or removes a human step),
+<a href="../adr-001-story-format-json-storybook/">ADR-001</a> (the Storybook schema is
+unchanged; contracts live outside the story document),
+<a href="../adr-010-modal-review-and-gated-generation/">ADR-010</a> (the deterministic gate +
+moderation review remain mandatory for every fill). Companion analysis:
+<code>docs/planning/ws0-label-fingerprint-evaluation.md</code> (the labels-are-leaves decision
+this ADR's label policy builds on) and <code>docs/planning/story-flexibility-plan.md</code>
+section 5 (WS-2) and section 9 (the ADR-019 candidate bullet this ADR resolves).
+Implementation spec: <code>docs/planning/ws2-parameterized-catalog-design.md</code>.</p>
 </blockquote>
-<hr />
-<h2 id="1-objective-each-story-must-feel-like-a-new-adventure">1. Objective: each story must feel like a new adventure<a class="headerlink" href="#1-objective-each-story-must-feel-like-a-new-adventure" title="Permanent link">&para;</a></h2>
-<p>Defined from the negative, the failures we must avoid:</p>
-<ul>
-<li>A reader reads two stories and feels they are <strong>similar</strong>.</li>
-<li>A <strong>dog swapped for a cat</strong> with the rest of the story identical: a surface
-  substitution is not a new experience.</li>
-<li>A reader requests <strong>their own</strong> story and it reads like another they requested.</li>
-</ul>
-<p>So the objective is perceptual: <strong>minimize the perceived similarity between any
-two stories a reader encounters.</strong> With only a handful of stories in a cell some
-similarity is inherent; the goal is to hold perceived-uniqueness up as the
-library grows so every book is a new adventure.</p>
-<h3 id="the-leaves-on-a-tree-model-the-frame-we-design-to">The leaves-on-a-tree model (the frame we design to)<a class="headerlink" href="#the-leaves-on-a-tree-model-the-frame-we-design-to" title="Permanent link">&para;</a></h3>
-<p>From the original research: a story is a <strong>tree</strong> whose branches are the
-<strong>paths and decision points</strong>, and whose <strong>leaves</strong> are the story told along
-those branches.</p>
-<ul>
-<li>The <strong>tree</strong> (structure) may be <strong>shared</strong> between stories. Two stories can
-  follow the same path to the same branch point, and the path back to the main
-  line is the same path. Shared structure is acceptable, and inevitable when a
-  cell has few skeletons.</li>
-<li>The <strong>leaves</strong> (the description of each point, "how they describe point A and
-  point B") must be <strong>genuinely different</strong> between stories. This is where
-  perceived uniqueness is made.</li>
-</ul>
-<p>Three consequences for strategy:</p>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>Every skeleton in <code>skeletons/</code> will gain a sidecar <strong>theme contract</strong>
+(<code>skeletons/&lt;band&gt;/&lt;slug&gt;.contract.json</code>, a Pydantic-validated JSON document) that
+declares the skeleton's <strong>slots</strong>: the named positions in its beats guidance, ending
+titles, and choice-label templates that a theme may re-bind (world, cast, props, tone).
+Each slot carries <strong>machine-checkable constraints</strong> (word caps, character-set rules,
+band-mandatory term denylists, sibling distinctness, legacy-lexicon leak checks) that a
+new <strong>deterministic pre-fill slot validator</strong> enforces, fail closed, before any fill
+LLM call is spent. A small <strong>binding step</strong> turns the free-text theme brief (fenced as
+untrusted input) into a concrete slot-value map; the validated values are rendered into
+a <strong>bound skeleton</strong> (beats guidance, ending titles, label templates only), and the
+existing fill pipeline then writes <strong>fresh prose per node</strong> against that bound
+skeleton. Slot values are never string-substituted into final reader prose. Safety for
+any conforming theme is enforced by the per-slot deterministic constraints, by the
+ending kind/valence set baked immutably into the skeleton structure, and by the
+existing <code>validator/</code> gate plus <code>moderation/</code> review on the generated story; no new
+human theme-review step is added. Fixed (free-text) and parameterized skeletons
+coexist: a skeleton without a contract keeps the current WS-1 fill path byte-for-byte,
+so the migration of all 59 catalog files is incremental and non-breaking.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<h3 id="where-the-pipeline-stands">Where the pipeline stands<a class="headerlink" href="#where-the-pipeline-stands" title="Permanent link">&para;</a></h3>
+<p>The automated fill already themes stories from the requester's brief: <code>worker.py</code>
+routes any job whose <code>authoring_metadata</code> carries a string <code>skeleton_slug</code> into
+<code>_run_skeleton_fill</code> (<code>src/cyo_adventure/generation/worker.py:954-965</code>), which reads
+<code>authoring["theme_brief"]</code> (<code>worker.py:275</code>, written by
+<code>story_requests/authoring_plan.py:510</code>) and calls
+<code>orchestrator.fill_skeleton</code> (<code>worker.py:313-321</code>). The fill prompt
+(<code>generation/templates/fill.md</code>, strengthened by WS-1 D2) instructs the model to
+re-imagine every passage for the theme and forbids prose that would survive a
+find-and-replace of setting nouns (<code>fill.md:43-57</code>), with the brief fenced as
+<code>UNTRUSTED_USER_INPUT</code> (<code>fill.md:106-113</code>). The brief's premise is the raw request
+text (<code>story_requests/brief.py:187</code>).</p>
+<p>What is missing is <strong>auditability and per-slot safety</strong>: the reskin is bounded only by
+prose instructions and post-hoc review. Nothing machine-checks, before the fill, that
+the theme's concrete gate obstacles, prizes, hazards, or deadlines respect the band's
+fail-state policy; nothing records which concrete values a theme bound into which
+structural positions; and Stage 1 fidelity review must judge a reskin with no
+structured statement of what was allowed to change, producing false positives that
+burn the shared <code>max_repairs=3</code> budget
+(<code>story-flexibility-plan.md:303-319</code>).</p>
+<h3 id="what-the-pilot-proved">What the pilot proved<a class="headerlink" href="#what-the-pilot-proved" title="Permanent link">&para;</a></h3>
+<p>The parameterized-beat pilot (<code>out/pilot/</code>) rewrote the 8-11 skeleton
+<code>the-cave-of-echoes</code> (64 nodes, 16 endings) into a slotted form: 73 slots across
+global, route, track, and ending scopes, placed in the <code>beats='...'</code> guidance of every
+FILL directive and in every ending title (<code>out/pilot/_neutralize.py:20-335</code>), with a
+prose contract documenting per-slot meaning and constraints
+(<code>out/pilot/cave-of-echoes.theme-contract.md</code>). Two agent fills for wholly new themes
+(space station, dinosaur dig) both passed <code>check_fill_integrity</code> and the full gate
+(<code>out/pilot/RESULTS.md:9-25</code>). The decisive safety observation
+(<code>RESULTS.md:22-25</code>): the 8-11 no-death guarantee held automatically for both themes,
+because the ending <code>kind</code>/<code>valence</code> set is baked into the fixed structure and no slot
+can change it. The gate's PL-15 rule enforces the per-band forbidden ending kinds
+deterministically (<code>validator/policy.py:108-134</code>;
+<code>validator/band_profile.py:38-92</code> forbids <code>death</code> for 8-11 and <code>death</code> + <code>capture</code>
+for 3-5 and 5-8).</p>
+<p>The pilot also exposed three gaps this ADR resolves:</p>
 <ol>
-<li><strong>Leaf diversity is the primary lever.</strong> Most of the perceived-uniqueness
-   load, per pair of stories, is carried by genuinely re-authored leaf content,
-   not by new structures. The dog-for-cat failure is a leaf that collapsed into a
-   variable substitution; the fix is a genuinely re-imagined leaf on the same
-   branch, not a new tree.</li>
-<li><strong>Structural variety is the scaling lever.</strong> Shared trees are fine at small
-   scale, but as a family reads more and as the per-cell library grows, repeated
-   trees start to show. Structural variety (new trees, mutated trees) is what
-   keeps uniqueness up at scale; it complements leaf diversity rather than
-   replacing it.</li>
-<li><strong>Reuse is unavoidable, so differentiation escalates with similarity
-   pressure.</strong> We cannot give every request its own tree. The operating model is:
-   as similar content accumulates for a reader, escalate, a <strong>different tree</strong>
-   first (the second dragon), then <strong>harder leaf/element variation</strong> on a reused
-   tree (the tenth dragon), then <strong>grow the catalog</strong>. This is why selection
-   (WS-4) must consume the similarity metric (WS-0), not just recency.</li>
+<li><strong>It froze choice labels</strong> (out of scope for a beats-only transform), so labels
+   still carried sea-cave nouns that new themes had to bridge awkwardly in prose
+   (<code>RESULTS.md:27-44</code>). Since then the labels-are-leaves decision shipped (PR #300):
+   <code>diversity/structure.py:83-102</code> strips <code>choices[].label</code> from
+   <code>structure_fingerprint</code>, <code>scripts/check_fill_integrity.py:60-82</code> treats labels as
+   leaf content, and the Stage 1 reviewer now checks per-choice label intent
+   (<code>moderation/fidelity_review.py:1-18,35-43</code>). Labels are content with a <strong>frozen
+   action-semantic</strong>, not frozen strings, so label parameterization is unblocked.</li>
+<li><strong>Its fills left ending titles as literal slot tokens</strong> (verified:
+   <code>out/pilot/fills/the-cave-of-echoes.space-station.filled.json</code> still carries
+   <code>"title": "{A1_PRIZE1}"</code>), because nothing rendered the bindings into the skeleton
+   before the fill. The production design must perform that render deterministically.</li>
+<li><strong>Its contract was prose</strong>, readable by humans and agents but not machine-checkable,
+   so "validation before fill" (<code>cave-of-echoes.theme-contract.md:171-186</code>) was a
+   convention, not a gate.</li>
 </ol>
-<p>This rebalances the adversarial review, which pushed structural variety as the
-ceiling: correct at scale, but leaf diversity is the first and largest lever.</p>
-<h2 id="2-problem-current-state">2. Problem (current-state)<a class="headerlink" href="#2-problem-current-state" title="Permanent link">&para;</a></h2>
+<h3 id="the-constraint-the-design-must-not-violate">The constraint the design must not violate<a class="headerlink" href="#the-constraint-the-design-must-not-violate" title="Permanent link">&para;</a></h3>
+<p><code>story-flexibility-plan.md:311-315</code> and safety invariant 3 (<code>:385-388</code>): the contract
+<strong>bounds and audits</strong> the reskin; leaf prose is still <strong>generated fresh per node</strong>,
+never filled by lookup, or the scheme becomes exactly the dog-for-cat template the
+WS-0 anti-template guard (now live as an advisory moderation check,
+<code>moderation/leaf_diversity.py</code>) is built to fail.</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<h3 id="1-parameterization-scheme-slots-in-guidance-never-in-prose">1. Parameterization scheme: slots in guidance, never in prose<a class="headerlink" href="#1-parameterization-scheme-slots-in-guidance-never-in-prose" title="Permanent link">&para;</a></h3>
+<p>A <strong>parameterized skeleton</strong> is a normal, gate-valid skeleton
+(<code>generation/skeleton.py:25-46</code> loads it through the unchanged blocking gate) whose
+theme-specific content positions are replaced by <code>{SLOT}</code> tokens
+(<code>{[A-Z][A-Z0-9_]*}</code>) in exactly three places, and nowhere else:</p>
+<ul>
+<li>the <code>beats='...'</code> guidance segment inside <code>&lt;&lt;FILL role=... words=... beats='...'&gt;&gt;</code>
+  node bodies (<code>role=</code> and <code>words=</code> are never slotted);</li>
+<li>ending <code>title</code> strings;</li>
+<li>choice <code>label</code> strings (now legal, per the labels-are-leaves decision).</li>
+</ul>
+<p>Node ids, choice ids and targets, conditions, effects, <code>is_ending</code>, ending
+<code>id</code>/<code>kind</code>/<code>valence</code>, <code>variables</code>, <code>start_node</code>, and all <code>metadata</code> are never
+slotted and never touched. A slot changes content, never shape
+(<code>cave-of-echoes.theme-contract.md:3-8</code>). Structural identity between the original
+and parameterized skeleton is asserted with <code>structure_fingerprint</code> equality
+(<code>diversity/structure.py:83-102</code>, which strips exactly the three slotted surfaces).</p>
+<h3 id="2-the-theme-contract-a-machine-readable-sidecar-file">2. The theme contract: a machine-readable sidecar file<a class="headerlink" href="#2-the-theme-contract-a-machine-readable-sidecar-file" title="Permanent link">&para;</a></h3>
+<p>Each parameterized skeleton has exactly one contract at
+<code>skeletons/&lt;band&gt;/&lt;slug&gt;.contract.json</code>, schema-validated by new Pydantic models
+(<code>ThemeContract</code>, <code>SlotSpec</code>, <code>SlotConstraints</code>, <code>SlotScope</code>) in a new pure module
+<code>src/cyo_adventure/storybook/theme_contract.py</code>. Per slot: <code>id</code>, <code>scope</code> (closed enum
+<code>global | route | track | ending</code>), human <code>meaning</code>, advisory <code>guidance</code>, and
+machine-checkable <code>constraints</code>. Per contract: <code>skeleton_slug</code>, <code>age_band</code>,
+<code>contract_version</code>, <code>legacy_lexicon</code> (the original theme's proper nouns and setting
+terms, used as a deterministic leak denylist), and <code>default_binding</code> (the original
+theme's slot values, the golden fixture and the no-theme fallback).</p>
+<p>A sidecar file is chosen over the two alternatives considered:</p>
+<ul>
+<li><strong>Embedded in the skeleton JSON</strong>: rejected. <code>Storybook</code> and <code>StoryMetadata</code> are
+  <code>extra="forbid"</code> (<code>storybook/models.py:463,212</code>), so any embedded contract block
+  fails the L1-1 schema check that <code>load_skeleton</code> runs at load
+  (<code>generation/skeleton.py:38-46</code>); loosening the reader-facing schema for
+  authoring-time data is backwards, and the contract would be copied into every
+  persisted <code>StorybookVersion</code> blob for no benefit.</li>
+<li><strong>A database table</strong>: rejected. Skeletons are git-versioned files, discovered by a
+  filesystem scan (<code>generation/skeleton_match.py:42,121-130</code>) and reviewed by PR; the
+  contract must version and review atomically with the skeleton it constrains, and
+  the offline tooling (<code>scripts/run_story_gate.py</code>, <code>scripts/check_fill_integrity.py</code>,
+  the cyo-author skill) must work with no database.</li>
+</ul>
+<p>The catalog scanner's <code>band_dir.glob("*.json")</code> (<code>skeleton_match.py:127</code>) is amended
+to skip <code>*.contract.json</code> so sidecars are never mistaken for skeletons.</p>
+<h3 id="3-deterministic-contract-validation-is-the-safety-mechanism-no-new-human-step">3. Deterministic contract validation is the safety mechanism (no new human step)<a class="headerlink" href="#3-deterministic-contract-validation-is-the-safety-mechanism-no-new-human-step" title="Permanent link">&para;</a></h3>
+<p>Safety for any conforming theme rests on three deterministic legs, and only these:</p>
 <ol>
-<li><strong>The automated fill already themes the story from the requester's brief.</strong>
-   <code>generation/templates/fill.md</code> tells the model to "adapt the world, character
-   names, and surface theme to match the child's story request," rewrite every
-   choice <code>label</code>, and preserve only the beats/structure; the child's text is
-   fenced as <code>UNTRUSTED_USER_INPUT</code>. <code>worker.py::_run_skeleton_fill</code> reads
-   <code>authoring["theme_brief"]</code>; <code>orchestrator.fill_skeleton</code> builds the prompt with
-   it; <code>brief.py</code> sets <code>premise = request.request_text</code>. (An earlier draft wrongly
-   said the theme is ignored; that grep was of the manual <code>cyo-author</code> skill, the
-   one path that genuinely has no theme step.)</li>
-<li><strong>But the leaves may be varying too little.</strong> The reskin changes names and
-   surface, and the same skeleton is reused (selection recency is on the slug
-   only, <code>skeleton_match.py</code>). Nothing measures whether two fills of one tree are
-   <em>genuinely</em> different leaves or just a dog-for-cat swap.</li>
+<li><strong>Pre-fill slot validation, fail closed.</strong> A new pure checker
+   (<code>validator/slots.py::validate_slot_bindings</code>) verifies every binding against the
+   contract before any fill call: completeness, structural character rules (single
+   line, no <code>{</code>/<code>}</code>, no <code>&lt;&lt;</code>/<code>&gt;&gt;</code>, no control characters, no U+2014, bounded length),
+   word caps, term denylists (with a band-mandatory minimum unioned in for the young
+   bands, so a contract-authoring omission can never open a hole), sibling
+   distinctness, and legacy-lexicon leak. A violating binding blocks the fill before
+   the fill-LLM spend.</li>
+<li><strong>The fixed ending kind/valence set.</strong> No slot exists on <code>ending.kind</code>,
+   <code>ending.valence</code>, or any structural field, so no theme can alter the fail-state
+   surface PL-15/PL-16/PL-17 verify (<code>validator/policy.py:98-134</code>). This is what the
+   pilot demonstrated end to end.</li>
+<li><strong>The existing post-generation gate and review.</strong> Every fill still runs the full
+   <code>validator/</code> gate (<code>validator/gate.py:76-150</code>) and the <code>moderation/</code> pipeline, and
+   still requires human approval to publish (ADR-005). Parameterization adds a gate,
+   it removes none.</li>
 </ol>
-<p>The real gaps:</p>
+<p>Constraints that are semantic rather than lexical ("retreat is always safe", "wonder
+over dread") are carried as advisory <code>guidance</code> strings injected into the binding and
+fill prompts, and are enforced downstream by legs 2 and 3, not claimed as
+deterministic. The contract format records this split honestly per slot.</p>
+<h3 id="4-leaves-are-generated-fresh-substitution-is-prompt-side-only">4. Leaves are generated fresh; substitution is prompt-side only<a class="headerlink" href="#4-leaves-are-generated-fresh-substitution-is-prompt-side-only" title="Permanent link">&para;</a></h3>
+<p>The <strong>only</strong> substitution in the system is the deterministic render of validated slot
+values into the skeleton's three guidance surfaces (beats text, ending titles, label
+templates), producing a <strong>bound skeleton</strong> that is handed to the existing
+<code>fill_skeleton</code> pipeline (<code>generation/orchestrator.py:712-839</code>). Node prose is written
+fresh by the model for every node, under the unchanged WS-1 re-imagine contract
+(<code>fill.md:43-57</code>); slot values reach prose only as beat guidance inside the prompt,
+exactly as the pilot placed them (<code>cave-of-echoes.theme-contract.md:3-8</code>). Rendered
+ending titles are final and frozen for the fill (they are short names composed from
+validated values, not prose). Rendered labels are theme-correct <strong>guidance</strong>: the fill
+still writes the final label text, and the Stage 1 label-intent reviewer verifies the
+final label preserves the bound label's action-semantic
+(<code>moderation/fidelity_review.py:35-43</code>). A parameterized fill whose node bodies could
+be produced by lookup would fail the anti-template guard, which remains in force
+unchanged (<code>moderation/leaf_diversity.py:119-213</code>).</p>
+<h3 id="5-label-policy-content-with-a-frozen-action-semantic">5. Label policy: content with a frozen action-semantic<a class="headerlink" href="#5-label-policy-content-with-a-frozen-action-semantic" title="Permanent link">&para;</a></h3>
+<p>Ratified as already decided by the labels-are-leaves evaluation and shipped in PR</p>
+<h1 id="300-a-choices-edge-target-condition-and-action-semantic-are-structure-the-label">300: a choice's edge, target, condition, and action-semantic are structure; the label<a class="headerlink" href="#300-a-choices-edge-target-condition-and-action-semantic-are-structure-the-label" title="Permanent link">&para;</a></h1>
+<p>string the child reads is a leaf. Therefore label templates in a parameterized
+skeleton carry slots for the theme-supplied object of the action ("Look closely at
+{B2_OFFER1}") while the verb frame preserves what choosing does, and the final label
+is model-written content checked by Stage 1 label intent. The pilot's label freeze is
+formally superseded.</p>
+<h3 id="6-binding-from-a-free-text-request-fenced-as-untrusted">6. Binding from a free-text request, fenced as untrusted<a class="headerlink" href="#6-binding-from-a-free-text-request-fenced-as-untrusted" title="Permanent link">&para;</a></h3>
+<p>The production brief is free text (<code>brief.py:187</code>). A new bounded LLM binding step
+("bind this brief to these slots, honoring each constraint") emits a slot-value map as
+JSON; the deterministic slot validator then accepts or rejects it (with a small
+bounded retry carrying the violation list), and only a validated map reaches the
+render. The brief is fenced as <code>UNTRUSTED_USER_INPUT</code> in the binding prompt exactly as
+in <code>fill.md:106-113</code>, and the resulting slot values, being derived from untrusted
+input (safety invariant 4, <code>story-flexibility-plan.md:389-392</code>), are injected into
+later prompts only as labeled data, with the structural character rules
+deterministically preventing prompt-structure injection (no braces, no directive
+markers, single line). Full request interpretation remains WS-7; this step produces
+validated bindings and nothing more.</p>
+<h3 id="7-coexistence-now-full-migration-as-the-target">7. Coexistence now, full migration as the target<a class="headerlink" href="#7-coexistence-now-full-migration-as-the-target" title="Permanent link">&para;</a></h3>
+<p>Dispatch is per skeleton, decided by the presence of the contract sidecar: with a
+contract, the job binds, validates, renders, and fills the bound skeleton; without
+one, the job takes the current WS-1 free-text fill path with byte-identical prompts.
+A skeleton containing <code>{SLOT}</code> tokens but lacking a contract (a half-migrated state)
+fails closed at load. The end-state is a fully parameterized catalog (all 59 files,
+56 production plus 3 MVP/test); until then both paths are production paths, and
+migration order is free. The migration recipe and acceptance bar are specified in
+<code>docs/planning/ws2-parameterized-catalog-design.md</code> (Phase C).</p>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>No measurement of perceived similarity.</strong> "Maximize diversity" has no metric
-  and no eval loop, so "optimal" is unfalsifiable. This is the top gap.</li>
-<li><strong>Leaf variation is unverified and possibly shallow.</strong> The Stage 1 fidelity
-  gate (<code>moderation/fidelity_review.py</code>) checks beat/word fidelity, not whether
-  two fills of the same skeleton read as different adventures, and not whether the
-  requested theme was genuinely woven in vs surface-swapped.</li>
-<li><strong>Skill-path parity.</strong> The manual <code>cyo-author</code> skill has no theme step.</li>
-<li><strong>Only the thematic axis moves, shallowly.</strong> Structural and state/consequence
-  variety (<a href="../capability-register/">K3</a>) are untouched; the thematic axis itself
-  is at risk of the dog-for-cat failure.</li>
-<li><strong>Selection recycles trees.</strong> Recency is slug-only; topology/tone/theme are not
-  de-weighted.</li>
+<li><strong>Per-slot, per-band safety becomes deterministic and pre-spend.</strong> A lethal gate or
+  prize binding is rejected by code before the fill call, instead of relying on prose
+  instructions plus post-hoc review; the young-band denylists are unioned in by the
+  validator itself, so no contract author can forget them.</li>
+<li><strong>The reskin becomes auditable.</strong> The persisted job report records the contract
+  version, its hash, and the exact slot bindings, so a reviewer can see precisely
+  what the theme changed and Stage 1 has a structured statement of intended variation
+  (expected payoff: anti-template distance up, Stage 1 false-positive rate down,
+  <code>story-flexibility-plan.md:316-319</code>).</li>
+<li><strong>Labels stop fighting the theme.</strong> The pilot's forced in-prose bridging of
+  off-theme label nouns disappears; label guidance is theme-correct by construction
+  while action-semantics stay verified.</li>
+<li><strong>WS-7 and WS-8 get their substrate.</strong> Request interpretation can consume per-slot
+  dispositions, and the catalog flywheel can promote new trees through the same
+  neutralize-and-contract machinery.</li>
 </ul>
-<h2 id="3-design-principle-freeze-the-safety-constraints-vary-within-them">3. Design principle: freeze the safety <em>constraints</em>, vary within them<a class="headerlink" href="#3-design-principle-freeze-the-safety-constraints-vary-within-them" title="Permanent link">&para;</a></h2>
-<p>Safety does not require freezing the ~50 hand-authored graphs in <code>skeletons/</code>. It
-requires freezing the <strong>properties</strong> the gate verifies: the ADR-011 per-band
-topology/primitive allowances, the ending kind/valence policy, the three clocks,
-the cell envelopes, the reading band. The validator (<code>topology.py</code>, <code>walk.py</code>,
-<code>policy.py</code>, <code>band_profile.py</code>, the L2 config walk, the L2-13 scale advisory)
-checks the properties of a graph, not its identity. The frozen safety object is
-the <strong>ADR-011 constraint grammar</strong>; any leaf content or any structure, sampled,
-mutated, or composed, is legitimate once it passes the same gate. Leaves vary
-freely within band + safety; trees vary within the grammar; the gate verifies
-every result.</p>
-<h2 id="4-three-axes-of-diversity-leaf-first">4. Three axes of diversity (leaf-first)<a class="headerlink" href="#4-three-axes-of-diversity-leaf-first" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Axis</th>
-<th>Question</th>
-<th>Primary?</th>
-<th>Levers</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Leaf / content</strong></td>
-<td>Does each point read as a new experience?</td>
-<td><strong>Primary</strong></td>
-<td>genuine per-node re-authoring (not slot substitution); theme binding (shipped, needs verification); anti-template guard</td>
-</tr>
-<tr>
-<td>Structural</td>
-<td>How does it branch?</td>
-<td>Scaling</td>
-<td>mutation of verified trees, grammar-based composition, fresh-generation feed, catalog flywheel</td>
-</tr>
-<tr>
-<td>State / consequence</td>
-<td>How does it play?</td>
-<td>Scaling</td>
-<td>Tier-2 variable semantics, condition-gated routes, ending-set variation within band policy (<a href="../capability-register/">K3</a>)</td>
-</tr>
-</tbody>
-</table>
-<p>The anti-pattern that spans all three: a <strong>template</strong>, where the tree and the
-leaf skeleton are fixed and only proper nouns change (dog for cat). The metric
-in WS-0 must detect and fail it.</p>
-<h2 id="5-workstreams-prioritized">5. Workstreams (prioritized)<a class="headerlink" href="#5-workstreams-prioritized" title="Permanent link">&para;</a></h2>
-<h3 id="ws-0-diversity-metrics-eval-harness-do-first">WS-0: Diversity metrics + eval harness (do first)<a class="headerlink" href="#ws-0-diversity-metrics-eval-harness-do-first" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p><strong>Status (2026-07-18): Phase 1 and Phase 2 delivered.</strong> Phase 1 shipped the
-<code>diversity/</code> package core (<code>normalize</code>, <code>structure</code>, <code>leaf</code> incl. the
-anti-template guard, <code>report</code>, <code>history</code>, <code>query</code>). Phase 2 shipped
-<code>aggregate</code> (ECS, PS, RAR), the <code>lexical</code> guards, the committed eval panel
-and baseline, <code>scripts/run_diversity_eval.py</code>, the <code>diversity_eval</code> nox
-session, and the per-PR CI regression gate (rules R1-R6); see
-<a href="../ws0-phase2-harness-design/">ws0-phase2-harness-design.md</a> for the exact
-spec. Phase 3 (judge-model calibration) is implemented behind
-<code>--with-judge</code> but not yet run (needs a live, non-mock provider); WS-1's
-per-band threshold calibration remains open. WS-4's consumption of the
-request-time query is delivered (see the WS-4 section below).</p>
-</blockquote>
+<h3 id="negative-accepted-costs">Negative / accepted costs<a class="headerlink" href="#negative-accepted-costs" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Goal:</strong> measure perceived similarity per cell and per family so every claim
-  below is testable and regressions are caught.</li>
-<li><strong>Headline metric:</strong> <strong>perceived-similarity / repeat-adventure rate</strong>, the
-  probability that a reader's next story feels like one they have read. Proxied
-  by a judge-model "do these read as different adventures?" score, validated
-  against <a href="../capability-register/">K18</a> ratings over time.</li>
-<li><strong>The anti-template guard (most important):</strong> for two fills of the <strong>same
-  skeleton</strong>, normalize proper nouns and measure leaf-level content overlap
-  (per-node embedding + lexical distance). Low distance after noun-normalization =
-  the dog-for-cat failure = a hard regression, even if the theme labels differ.</li>
-<li><strong>Supporting metrics.</strong> <em>Leaf:</em> per-node pairwise distance across fills of one
-  tree (the direct leaf-diversity signal). <em>Structural:</em> topology entropy;
-  pairwise structural distance (node/ending/branching/depth features); distinct
-  trees served per family per 90 days. <em>Thematic:</em> proper-noun overlap between a
-  family's consecutive stories (~0); theme-incorporation rate. <em>Lexical guard:</em>
-  self-BLEU / distinct-n, cross-checked with RL-13 so variety never buys
-  reading-level drift. <em>Aggregate:</em> effective catalog size (exp entropy of served
-  (tree, leaf-set) pairs).</li>
-<li><strong>Request-time query (the interface WS-4 consumes).</strong> Beyond post-hoc metrics,
-  WS-0 must expose a selection-time signal: given an incoming <code>(theme, cell,
-  reader/family history)</code>, return which of the reader's existing stories are most
-  similar and how <em>saturated</em> the cell is for that theme. This is what lets WS-4
-  decide "different tree" vs "harder leaf differentiation." It reuses the same
-  distance functions as the metrics, over the reader's <code>storybook_version</code>
-  history.</li>
-<li><strong>Harness.</strong> A <code>nox</code> session runs a fixed (skeleton x theme-brief) panel,
-  including the same skeleton x multiple briefs, through <code>fill_skeleton</code> +
-  <code>run_story_gate</code>, emits the suite, and a CI guard fails on drops. Per-family
-  metrics from <code>storybook_version</code> history.</li>
-<li><strong>Serves:</strong> every workstream (their success metrics live here); directly gates
-  WS-4.</li>
+<li><strong>One extra LLM call per parameterized fill</strong> (the binding step; small, JSON-only,
+  bounded retries), plus a new failure mode (binding that cannot satisfy the
+  contract) which fails the job closed rather than degrading silently.</li>
+<li><strong>59 contracts must be authored and maintained.</strong> Contract quality varies with the
+  authoring agent; the deterministic acceptance scripts and the band-mandatory
+  denylist union bound the blast radius of a weak contract, but meaning/guidance text
+  quality still needs per-wave review.</li>
+<li><strong>Two fill paths exist during migration.</strong> Mitigated by making dispatch a pure
+  function of the sidecar's existence and by keeping the legacy path byte-identical.</li>
+<li><strong>Denylists are lexical.</strong> A determined euphemism can slip a hostile concept past a
+  word list; that residual risk is exactly what legs 2 and 3 (fixed ending set, full
+  gate + moderation + human approval) exist to catch, and is why the deterministic
+  claims are scoped to what word-level checks can actually guarantee.</li>
 </ul>
-<h3 id="ws-1-leaf-diversity-verification-theme-parity-re-scoped">WS-1: Leaf-diversity verification + theme parity (re-scoped)<a class="headerlink" href="#ws-1-leaf-diversity-verification-theme-parity-re-scoped" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Goal:</strong> confirm two fills of one tree are genuinely different leaves (not
-  templates), that the requested theme is woven in, and bring the skill path to
-  parity. The automated theme wiring is shipped; the gap is verification and
-  genuine leaf variation.</li>
-<li><strong>Approach:</strong> add the anti-template guard (WS-0) as a check alongside Stage 1;
-  strengthen the fill instruction to re-imagine each leaf for the theme, not
-  substitute nouns; add a theme step to the <code>cyo-author</code> <code>SKILL.md</code> (the brief is
-  already in <code>authoring_metadata</code>). <strong>Metric:</strong> anti-template guard passes;
-  theme-incorporation &gt; 90%.</li>
-<li><strong>Serves:</strong> <a href="../capability-register/">K11</a>, <a href="../capability-register/">K13</a>.</li>
-<li><strong>Precondition note (2026-07-18, WS-0 labels-are-leaves decision):</strong> choice
-  labels are leaf content, stripped from <code>structure_fingerprint</code> and folded into
-  the ATG's leaf distance
-  (<code>docs/planning/ws0-label-fingerprint-evaluation.md</code>). The ATG's same-tree
-  precondition is now genuinely label-free: <code>select_atg_comparison_partner</code>'s
-  slug-matched pairs no longer raise <code>ValidationError</code> merely because the
-  automated fill rewrote choice labels per theme (the shipped <code>fill.md</code>
-  contract). This removes the only nominal byte-level check that a fill did
-  not change what a choice <em>means</em>; per-choice label-intent fidelity (does the
-  rewritten label still match the frozen action-semantic of the original
-  choice?) is a Stage 1 fidelity-reviewer extension, not a fingerprint concern.
-  Per the evaluation's supervisor sign-off (section 8), that extension was a
-  <strong>hard prerequisite</strong> on wiring the ATG into the production pipeline.</li>
-<li><strong>Delivered (2026-07-18): the label-intent prerequisite.</strong>
-  <code>run_semantic_fidelity_check</code> (<code>moderation/fidelity_review.py</code>) now sends each
-  choice's original and final label alongside the beat/prose pairs in the same
-  aggregate review call, and the reviewer flags a fill when a rewritten label
-  changes what the decision means (an inverted "go left" -&gt; "go right", or
-  "trust the stranger" -&gt; "attack the stranger"). It runs even for a node whose
-  body was not a FILL directive but whose choice label was reskinned. This
-  restores, on exactly the artifacts production creates, the semantic guarantee
-  the removed byte-level label check only nominally provided; it stays advisory
-  (fails open), one signal among several, consistent with the reviewer's
-  existing design. The sign-off prerequisite is satisfied.</li>
-<li><strong>Delivered (2026-07-19): the WS-1 body (D1/D2/D3).</strong> Per the sprint design in
-  <a href="../ws1-leaf-diversity-sprint-design/">ws1-leaf-diversity-sprint-design.md</a>
-  (Fable-designed, Opus-signed-off section 10): <strong>D1</strong> wires the anti-template
-  guard into <code>moderation/pipeline.py::run_moderation_pipeline</code> as an advisory,
-  fail-open check (new <code>moderation/leaf_diversity.py</code>, new
-  <code>diversity/history.py::load_version_blob</code>). It loads the family's most recent
-  prior fill of the same skeleton, excludes the just-persisted draft from its own
-  history (the load-bearing self-exclusion: the uncommitted draft is visible to
-  the same-transaction query and would otherwise self-select and FAIL at distance
-  ~0), and on an ATG <code>FAIL</code> emits per-node soft-<code>FLAG</code> findings that ride the one
-  existing bounded repair, then routes to the human guardian. It never blocks,
-  auto-rejects, or publishes; a <code>SQLAlchemyError</code> from its two reads propagates to
-  the worker rollback/retry rather than being swallowed. <strong>D2</strong> strengthens
-  <code>generation/templates/fill.md</code> to require genuine per-node re-imagining (the
-  find-and-replace-survivable-prose test) rather than noun substitution, with the
-  safety/structure "must not change" block and the untrusted-input fence held
-  byte-identical. <strong>D3</strong> adds a theme step (2b) to <code>cyo-author/SKILL.md</code> for
-  skill-path parity, stating the same re-imagine contract and fencing the brief as
-  untrusted data. Still open (unchanged): per-band ATG threshold calibration (the
-  guard stays advisory until then) and brief-passing into the guard.</li>
-</ul>
-<h3 id="ws-4-similarity-driven-escalating-selection-consumes-ws-0">WS-4: Similarity-driven, escalating selection (consumes WS-0)<a class="headerlink" href="#ws-4-similarity-driven-escalating-selection-consumes-ws-0" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p><strong>Status (2026-07-18): request-time consumption delivered.</strong>
-<code>generation/skeleton_match.py::select_skeleton_for_cell</code> takes an optional
-<code>similar_usage</code> map and blends it with recency via
-<code>weight = 1 / (1 + recent + 3*similar)</code>: a similar-theme reuse of a tree is
-de-weighted like 3 plain recent uses. The <code>3</code> penalty is a starting
-heuristic, not calibrated data; it is tunable once WS-0 metrics accumulate
-(mirrors the <code>_HARD_BANDS</code>-style heuristics elsewhere in
-<code>story_requests/authoring_plan.py</code>). The <code>_weight</code> novelty floor is
-preserved: no candidate is ever fully excluded.
-<code>story_requests/authoring_plan.py::_resolve_skeleton_fill</code>'s auto-pick path
-(never the admin override path) calls
-<code>diversity.query.similarity_context</code> and threads
-<code>similar_count_per_slug</code> into the pick. When the cell escalates to
-<code>DifferentiationLevel.LEAF</code> or <code>CATALOG</code>, the plan result carries a
-non-blocking warning and an <code>selection.cell_theme_saturated</code> info log
-(band + level), for the WS-8 catalog flywheel to consume later. <code>CATALOG</code>
-only warns and logs here; it does <strong>not</strong> grow the catalog itself, that
-auto-growth is WS-8's job, not WS-4's. A <code>family_id=None</code> (admin/catalog)
-request is unaffected: <code>similarity_context</code> returns an empty history, every
-similar count is 0, and no warning appears, exactly the pre-WS-4 behavior.
-Still open: the leaf/element differentiation push itself (WS-1/WS-2/WS-5)
-and any per-band tuning of the <code>3</code> penalty.</p>
-</blockquote>
-<ul>
-<li><strong>Depends on WS-0.</strong> Selection is driven by the perceived-similarity metric, so
-  WS-0 comes first; WS-4 is the first thing that consumes it.</li>
-<li><strong>Premise: reuse is unavoidable.</strong> We cannot author a unique tree per request;
-  with K skeletons per cell and unbounded requests, trees repeat by construction.
-  The job is to <em>manage</em> reuse so no reader feels the repeat, not to eliminate it.</li>
-<li><strong>Mechanism, escalate differentiation with similarity pressure.</strong> On a new
-  request, measure how much similar content the reader (and family) already has in
-  that cell, applying the WS-0 metric to the request's theme against prior
-  stories:</li>
-<li><strong>Low pressure (a second dragon story):</strong> differentiate at the <em>tree</em> level,
-    prioritize a <strong>different skeleton</strong> in the cell. A fresh tree alone makes it a
-    new adventure.</li>
-<li><strong>High pressure (the tenth dragon story, the cell's skeletons exhausted for
-    this theme):</strong> the trees are used up, so escalate to <em>leaf/element</em>
-    differentiation, push harder on tone, cast and relationships, setting
-    sub-elements, pacing, and ending mix (WS-1/WS-2 leaf variety, WS-5 state and
-    ending variation) to keep it fresh on a necessarily-reused tree.</li>
-<li><strong>Saturated even there:</strong> grow the tree catalog (WS-5 mutation, WS-8 flywheel).</li>
-<li><strong>Approach:</strong> extend <code>skeleton_match.py</code> from slug-recency to a similarity-aware
-  pick, de-weight a skeleton by its structural + thematic proximity to what the
-  reader already has (not raw recency alone), and raise a
-  "needs-leaf-differentiation" signal to the fill when the cell is saturated for
-  this theme. Keep the <code>_weight</code> novelty floor.</li>
-<li><strong>Scope:</strong> primarily per reader/family (the UX concern is a reader's own
-  repeats); the same metric can also inform library-level diversity.</li>
-<li><strong>Serves:</strong> <a href="../capability-register/">K3</a>, engagement. <strong>Metric:</strong> perceived
-  similarity between a reader's consecutive same-theme stories, down.</li>
-</ul>
-<h3 id="ws-2-parameterize-the-catalog-for-safe-auditable-leaves-absorbs-packs">WS-2: Parameterize the catalog for safe, auditable leaves (absorbs "packs")<a class="headerlink" href="#ws-2-parameterize-the-catalog-for-safe-auditable-leaves-absorbs-packs" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Goal:</strong> make leaf variation <em>auditable</em> and its safety enforceable per band,
-  <strong>without</strong> turning the fill into slot substitution.</li>
-<li><strong>Approach:</strong> generalize the pilot: a per-skeleton theme contract declaring
-  what may vary (world, cast, props, tone) with per-band/per-slot safety
-  constraints, plus character/tone packs as slot-value libraries. Crucially, the
-  contract <strong>bounds and audits</strong> the reskin; the leaf prose is still <strong>generated
-  fresh per node</strong> (as <code>fill.md</code> does today), never filled by lookup, or it
-  becomes the dog-for-cat template WS-0 is built to fail. Reconcile the label
-  policy with <code>fill.md</code> (labels are content with a frozen action-semantic, not
-  frozen strings; the pilot froze them, a step back). Payoffs: measurable
-  incorporation, crisper Stage 1 fidelity (fewer reskin false-positives that burn
-  the shared <code>max_repairs=3</code> budget), per-slot safety.</li>
-<li><strong>Serves:</strong> <a href="../capability-register/">K3</a>, <a href="../capability-register/">K11</a>,
-  <a href="../capability-register/">K13</a>. <strong>Metric:</strong> anti-template distance up; Stage 1
-  false-positive rate down.</li>
-</ul>
-<h3 id="ws-5-structure-and-state-variation-within-the-adr-011-grammar-scaling">WS-5: Structure and state variation within the ADR-011 grammar (scaling)<a class="headerlink" href="#ws-5-structure-and-state-variation-within-the-adr-011-grammar-scaling" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Goal:</strong> new and mutated trees + state variety, for when leaf diversity alone
-  no longer holds uniqueness up (heavy readers, larger per-cell libraries).</li>
-<li><strong>Approach:</strong> cheap <strong>mutation operators</strong> on verified trees first (sibling
-  subtree swap; re-map which reconvergent leaf carries which ending within the
-  valence set; prune/graft within the envelope; vary decisions-per-path in 4-8;
-  <strong>vary Tier-2 variable semantics and condition-gated routes</strong>). Every mutant
-  re-runs the full gate. A grammar-based composer is the larger second step.</li>
-<li><strong>Serves:</strong> <a href="../capability-register/">K3</a>. <strong>Metric:</strong> distinct trees per cell.</li>
-</ul>
-<h3 id="ws-6-harden-fresh_generation-as-the-flywheel-feed">WS-6: Harden <code>fresh_generation</code> as the flywheel feed<a class="headerlink" href="#ws-6-harden-fresh_generation-as-the-flywheel-feed" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Goal:</strong> bespoke plots and a supply of new verified trees. Output persists via
-  WS-8 rather than being consumed once. Strictest gating (weakest safety posture).</li>
-<li><strong>Serves:</strong> <a href="../capability-register/">K11</a>; gated by <a href="../capability-register/">K13</a>.</li>
-</ul>
-<h3 id="ws-8-catalog-flywheel-highest-ceiling">WS-8: Catalog flywheel (highest ceiling)<a class="headerlink" href="#ws-8-catalog-flywheel-highest-ceiling" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Goal:</strong> grow the tree catalog with usage, not authoring budget.</li>
-<li><strong>Approach:</strong> promote any gate-passed, human-approved fresh (WS-6) or composed
-  (WS-5) tree via the neutralize transform (<code>out/pilot/_neutralize.py</code>) into the
-  parameterized catalog, behind a human structure-approval step.</li>
-<li><strong>Serves:</strong> <a href="../capability-register/">K3</a>. <strong>Metric:</strong> net new trees per month.</li>
-</ul>
-<h3 id="ws-7-request-interpretation-and-expectation-setting-delivers-k19">WS-7: Request interpretation and expectation-setting (delivers K19)<a class="headerlink" href="#ws-7-request-interpretation-and-expectation-setting-delivers-k19" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Goal:</strong> reflect the request back before generation, what is built in vs set
-  aside and why, and provide the rejection path for a theme a tree cannot carry.</li>
-<li><strong>Approach:</strong> interpret <code>premise</code> into structured intent with a disposition per
-  element; persist and return it in kid language and guardian detail. Consumes
-  WS-2's contract for precise dispositions and per-skeleton theme-compatibility.</li>
-<li><strong>Delivers:</strong> <a href="../capability-register/">K19</a> (design record). <strong>Also serves:</strong>
-  <a href="../capability-register/">K11</a>, <a href="../capability-register/">K12</a>; gated by
-  <a href="../capability-register/">K13</a>.</li>
-</ul>
-<h2 id="6-sequencing">6. Sequencing<a class="headerlink" href="#6-sequencing" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>WS-0 (metrics; defines &quot;feels like a new adventure&quot;)
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>   |
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>   +--&gt; WS-4 (similarity-driven, escalating selection)   consumes WS-0; first action
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   +--&gt; WS-1 (leaf-diversity verification + theme parity)   proves leaves differ
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>          |
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>          +--&gt; WS-2 (auditable parameterized leaves; reconcile labels)
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                 +--&gt; WS-7 (request interpretation)
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   +--&gt; WS-5 (structure/state variation)  --feeds--&gt; WS-8 (catalog flywheel) &lt;-- WS-6
-</span></code></pre></div>
-<p>The operating model is a differentiation ladder driven by similarity pressure:
-WS-0 defines "feels like a new adventure"; WS-4 reads it per request and picks a
-<strong>different tree</strong> while trees remain, then calls for <strong>harder leaf/element
-variation</strong> (WS-1/WS-2/WS-5) once a cell is saturated for a theme; WS-5/WS-8 raise
-the structural ceiling when even that saturates. WS-0 is therefore a hard
-prerequisite for WS-4, not parallel to it.</p>
-<h2 id="7-safety-invariants-hold-across-all-workstreams">7. Safety invariants (hold across all workstreams)<a class="headerlink" href="#7-safety-invariants-hold-across-all-workstreams" title="Permanent link">&para;</a></h2>
+<h2 id="alternatives-considered">Alternatives considered<a class="headerlink" href="#alternatives-considered" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Neither a theme nor a leaf can change the gate-verified structural properties,
-   the fail-state policy, the reading band, or the ending kind/valence policy. The
-   frozen safety object is the ADR-011 constraint grammar, enforced by the gate on
-   <strong>every</strong> tree and every fill.</li>
-<li>Every generated story passes the full <code>validator/</code> gate and <code>moderation/</code>
-   review before publish. No novelty exception.</li>
-<li>Per-band content guarantees (<a href="../capability-register/">K13</a>) are enforced by the
-   structure + the gate, never by trusting the theme brief. Theme freedom is
-   bounded per band, per slot, in the theme contract (WS-2), not left open.</li>
-<li>Untrusted-input handling (OWASP LLM01) covers <strong>derived</strong> artifacts: a
-   theme-derived world bible and the WS-7 reflected interpretation re-enter other
-   prompts (cover-art in <code>covers/</code>, repair, the kid-facing echo) and must be
-   fenced at every reuse, not only at intake.</li>
-<li><strong>Novelty floor.</strong> Selection never fully excludes an eligible option (the
-   <code>_weight</code> nonzero floor). A rating- or learning-driven selector (WS-4) may set
-   a quality floor but must keep an exploration/novelty bonus, so optimizing
-   <a href="../capability-register/">K18</a> ratings can never homogenize the catalog.</li>
+<li><strong>Free-text theming only (status quo, WS-1 endpoint).</strong> Keeps working, but leaves
+   theme safety as prose instruction plus review, is unauditable per slot, and cannot
+   feed WS-7 dispositions. Rejected as the end-state; retained as the coexistence
+   path.</li>
+<li><strong>Slot substitution into final prose (a true template engine).</strong> Cheapest and most
+   deterministic, and categorically rejected: it is the dog-for-cat failure the ATG
+   exists to fail, and it would collapse leaf diversity, the primary lever of the
+   whole plan (<code>story-flexibility-plan.md:69-73,311-315</code>).</li>
+<li><strong>Slot-value libraries ("packs") as the binding source instead of an LLM binding
+   step.</strong> Curated packs (cast packs, tone packs) remain compatible with this design
+   as pre-validated bindings, but packs alone cannot serve the actual product input,
+   a child's free-text request; the binding step is required regardless. Packs are
+   deferred to a later increment on top of this contract format.</li>
+<li><strong>A new human theme-review step per theme.</strong> Explicitly ruled out by the owner:
+   deterministic contract validation is the chosen safety mechanism, and ADR-005's
+   human approval of the finished story already provides the human eyes where they
+   matter. The pilot's evidence supports this: safety held structurally, not
+   editorially.</li>
+<li><strong>Embedding contracts in skeleton JSON or a DB table.</strong> Rejected for the schema,
+   provenance, and offline-tooling reasons in Decision 2.</li>
 </ol>
-<h2 id="8-current-state">8. Current state<a class="headerlink" href="#8-current-state" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Pilot built and proven</strong> (<code>out/pilot/</code>): one parameterized skeleton filled for
-  two new themes (space station, dino dig), both gate-passing and non-lethal. It
-  demonstrated a <strong>structured, auditable</strong> binding.</li>
-<li><strong>Pilot cautions, now WS-2 requirements:</strong> (a) it froze <code>choices[].label</code>, but
-  <code>fill.md</code> rewrites labels, labels are content; (b) a slot contract must bound
-  and audit the reskin, not become a fill-in-the-blank template, or it produces
-  the dog-for-cat failure WS-0 fails.</li>
-<li><strong>Next:</strong> WS-0 (define and measure "new adventure") is the true first step;
-  WS-4 and WS-1 are the cheapest immediate wins.</li>
-</ul>
-<h2 id="9-open-questions-adr-candidates">9. Open questions / ADR candidates<a class="headerlink" href="#9-open-questions-adr-candidates" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>ADR-019 candidate:</strong> "Parameterized skeletons and theme-driven fills." Ratify
-  the parameterization scheme, the theme-contract format (per-band/per-slot safety
-  constraints, per-skeleton theme-compatibility), the label policy, and the rule
-  that leaves are generated fresh (not substituted), before migrating the catalog.</li>
-<li>Do fixed and parameterized skeletons coexist, or is parameterization the target
-  end-state? Where does the theme contract live?</li>
-<li>WS-8 promotion bar: what human approval gates a new tree into the catalog, and
-  how is its safety re-proven at promotion?</li>
-<li>How much theme freedom is safe per band without a human theme-review step (a
-  WS-2 blocker, not an afterthought)?</li>
-</ul>
 
 
 
@@ -3433,7 +3217,7 @@ prerequisite for WS-4, not parallel to it.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 19, 2026 00:29:53 UTC">July 19, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 19, 2026 16:14:48 UTC">July 19, 2026</span>
   </span>
 
     
@@ -3510,10 +3294,10 @@ prerequisite for WS-4, not parallel to it.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

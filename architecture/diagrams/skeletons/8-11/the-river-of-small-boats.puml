@@ -31,14 +31,14 @@ state a_free_rocket #D1C4E9
 a_free_rocket : rising · 100w
 state a_grace_end #C8E6C9
 a_grace_end : success (positive)
-a_grace_end : "Second, and a Friend"
+a_grace_end : "{A1_WHEEL_PRIZE1}"
 state a_wait_ring #D1C4E9
 a_wait_ring : rising · 95w
 state a_outflow #D1C4E9
 a_outflow : rising · 95w
 state a_ribbon_end #C8E6C9
 a_ribbon_end : success (positive)
-a_ribbon_end : "The River Ribbon"
+a_ribbon_end : "{A1_WHEEL_PRIZE2}"
 state a_wall #D1C4E9
 a_wall : rising · 95w
 state a_tangle #FFF9C4
@@ -53,17 +53,17 @@ state a_chute_guard #D1C4E9
 a_chute_guard : rising · 95w
 state a_clean_chute_end #C8E6C9
 a_clean_chute_end : success (positive)
-a_clean_chute_end : "Keeper of the Chute"
+a_clean_chute_end : "{A1_WALL_PRIZE1}"
 state a_shoulder_ride #D1C4E9
 a_shoulder_ride : rising · 90w
 state a_shoulders_end #E0E0E0
 a_shoulders_end : setback (neutral)
-a_shoulders_end : "The View From Up High"
+a_shoulders_end : "{A1_WALL_PRIZE2}"
 state a_luck_gap #D1C4E9
 a_luck_gap : rising · 95w
 state a_spinout_end #E0E0E0
 a_spinout_end : setback (neutral)
-a_spinout_end : "Spun Out"
+a_spinout_end : "{A1_WALL_PRIZE3}"
 state a_stop #D1C4E9
 a_stop : rising · 100w
 state a_helpers #FFF9C4
@@ -78,14 +78,14 @@ state a_merge_pass #D1C4E9
 a_merge_pass : rising · 95w
 state a_crew_end #C8E6C9
 a_crew_end : completion (positive)
-a_crew_end : "Crew of Two"
+a_crew_end : "{A2_BRANCH_PRIZE1}"
 state a_caulk #D1C4E9
 a_caulk : rising · 100w
 state a_second_launch #D1C4E9
 a_second_launch : rising · 95w
 state a_after_bell_end #E0E0E0
 a_after_bell_end : completion (neutral)
-a_after_bell_end : "After the Last Bell"
+a_after_bell_end : "{A2_BRANCH_PRIZE2}"
 state a_bridge #D1C4E9
 a_bridge : rising · 100w
 state a_curtain_lift #D1C4E9
@@ -98,14 +98,14 @@ state a_pole_free #D1C4E9
 a_pole_free : rising · 95w
 state a_fleet_hero_end #C8E6C9
 a_fleet_hero_end : completion (positive)
-a_fleet_hero_end : "The Willow Curtain"
+a_fleet_hero_end : "{A2_BRIDGE_PRIZE1}"
 state a_spare_net #D1C4E9
 a_spare_net : rising · 95w
 state a_parapet_lunge #D1C4E9
 a_parapet_lunge : rising · 95w
 state a_short_net_end #FFCDD2
 a_short_net_end : setback (negative)
-a_short_net_end : "An Inch Short"
+a_short_net_end : "{A2_BRIDGE_PRIZE2}"
 state b_bend #D1C4E9
 b_bend : rising · 95w
 state b_heron #FFF9C4
@@ -124,12 +124,12 @@ state b_rope #D1C4E9
 b_rope : rising · 95w
 state b_warden_end #C8E6C9
 b_warden_end : discovery (positive)
-b_warden_end : "The Blue Flash"
+b_warden_end : "{B1_STONES_PRIZE1}"
 state b_field #D1C4E9
 b_field : rising · 95w
 state b_see_finish_end #E0E0E0
 b_see_finish_end : completion (neutral)
-b_see_finish_end : "Eleventh Place, First Nest"
+b_see_finish_end : "{B1_STONES_PRIZE2}"
 state b_sprint_ivy #D1C4E9
 b_sprint_ivy : rising · 95w
 state b_ivy_runs #D1C4E9
@@ -142,7 +142,7 @@ state b_brace #D1C4E9
 b_brace : rising · 90w
 state b_two_hands_end #C8E6C9
 b_two_hands_end : completion (positive)
-b_two_hands_end : "Four Hands and a Spade"
+b_two_hands_end : "{B1_SPRINT_PRIZE1}"
 state b_narrows #D1C4E9
 b_narrows : rising · 100w
 state b_shelf_watch #FFF9C4
@@ -153,12 +153,12 @@ state b_all_free #D1C4E9
 b_all_free : rising · 90w
 state b_ferry_end #C8E6C9
 b_ferry_end : success (positive)
-b_ferry_end : "Warden of the Narrows"
+b_ferry_end : "{B1_SPRINT_PRIZE2}"
 state b_acorn_first #D1C4E9
 b_acorn_first : rising · 95w
 state b_two_at_once_end #E0E0E0
 b_two_at_once_end : setback (neutral)
-b_two_at_once_end : "Two at Once"
+b_two_at_once_end : "{B1_SPRINT_PRIZE3}"
 state b_top_path #D1C4E9
 b_top_path : rising · 95w
 state b_pool_view #D1C4E9
@@ -177,12 +177,12 @@ state b_pour_out #D1C4E9
 b_pour_out : rising · 90w
 state b_lane_end #C8E6C9
 b_lane_end : success (positive)
-b_lane_end : "The Green Lane"
+b_lane_end : "{B2_CLEAR_PRIZE1}"
 state b_jog_cheer #D1C4E9
 b_jog_cheer : rising · 90w
 state b_jam_end #E0E0E0
 b_jam_end : setback (neutral)
-b_jam_end : "Traffic in the Green"
+b_jam_end : "{B2_CLEAR_PRIZE2}"
 state b_plank_walk #D1C4E9
 b_plank_walk : rising · 95w
 state b_boom #FFF9C4
@@ -193,14 +193,14 @@ state b_half_gate #D1C4E9
 b_half_gate : rising · 90w
 state b_thread_end #C8E6C9
 b_thread_end : success (positive)
-b_thread_end : "The Silver Thread"
+b_thread_end : "{B2_BOOM_PRIZE1}"
 state b_pin #D1C4E9
 b_pin : rising · 95w
 state b_full_gate #D1C4E9
 b_full_gate : rising · 90w
 state b_floodgate_end #C8E6C9
 b_floodgate_end : completion (positive)
-b_floodgate_end : "When the Gate Swung Wide"
+b_floodgate_end : "{B2_BOOM_PRIZE2}"
 state c_cut #D1C4E9
 c_cut : rising · 95w
 state c_gates #D1C4E9
@@ -221,12 +221,12 @@ state c_number_swap #D1C4E9
 c_number_swap : rising · 95w
 state c_firefly_end #C8E6C9
 c_firefly_end : completion (positive)
-c_firefly_end : "Firefly, Boat No. 7"
+c_firefly_end : "{C1_FIREFLY_PRIZE1}"
 state c_escort #D1C4E9
 c_escort : rising · 95w
 state c_escort_end #C8E6C9
 c_escort_end : discovery (positive)
-c_escort_end : "The Escort"
+c_escort_end : "{C1_FIREFLY_PRIZE2}"
 state c_windlass #D1C4E9
 c_windlass : rising · 100w
 state c_stragglers #FFF9C4
@@ -237,14 +237,14 @@ state c_brass_key #D1C4E9
 c_brass_key : rising · 95w
 state c_keeper_end #C8E6C9
 c_keeper_end : completion (positive)
-c_keeper_end : "The Lock Talks Back"
+c_keeper_end : "{C1_WINDLASS_PRIZE1}"
 state c_bell_run #D1C4E9
 c_bell_run : rising · 95w
 state c_surge #D1C4E9
 c_surge : rising · 90w
 state c_bell_end #C8E6C9
 c_bell_end : success (positive)
-c_bell_end : "On the Last Bell"
+c_bell_end : "{C1_WINDLASS_PRIZE2}"
 state c_bywash #D1C4E9
 c_bywash : rising · 95w
 state c_wall_path #D1C4E9
@@ -261,14 +261,14 @@ state c_twin_parade #D1C4E9
 c_twin_parade : rising · 90w
 state c_twins_end #C8E6C9
 c_twins_end : completion (positive)
-c_twins_end : "Captain of the Minnow Fleet"
+c_twins_end : "{C2_RAPIDS_PRIZE1}"
 state c_shout #D1C4E9
 c_shout : rising · 90w
 state c_merge_race #D1C4E9
 c_merge_race : rising · 90w
 state c_fifth_end #E0E0E0
 c_fifth_end : success (neutral)
-c_fifth_end : "Fifth, With an Echo"
+c_fifth_end : "{C2_RAPIDS_PRIZE2}"
 state c_island #D1C4E9
 c_island : rising · 100w
 state c_blanket #FFF9C4
@@ -279,56 +279,56 @@ state c_wind #D1C4E9
 c_wind : rising · 90w
 state c_sail_end #C8E6C9
 c_sail_end : success (positive)
-c_sail_end : "The Dragonfly Stitch"
+c_sail_end : "{C2_ISLAND_PRIZE1}"
 state c_stone_step #D1C4E9
 c_stone_step : rising · 95w
 state c_lead_bends #D1C4E9
 c_lead_bends : rising · 90w
 state c_torn_end #FFCDD2
 c_torn_end : setback (negative)
-c_torn_end : "The Torn Leaf"
-s_morning --> s_launch : Carry The Acorn to the weir chute.
-s_launch --> s_split : Run with the fleet toward Three Willows.
-s_split --> a_dash : Sprint down the mill race path.
-s_split --> b_bend : Follow the meadow bend.
-s_split --> c_cut : Take the old lock cut.
-a_dash --> a_snag : Race toward the fallen tree.
-a_snag --> a_gap : Race on through the willow gap.
+c_torn_end : "{C2_ISLAND_PRIZE2}"
+s_morning --> s_launch : Carry {COMPANION} to the {ENTRANCE}.
+s_launch --> s_split : Run with the fleet toward {SPLIT_LANDMAR...
+s_split --> a_dash : Sprint down the {ROUTE_A_NAME} path.
+s_split --> b_bend : Follow the {ROUTE_B_NAME}.
+s_split --> c_cut : Take the {ROUTE_C_NAME}.
+a_dash --> a_snag : Race toward {A_WILLOW}.
+a_snag --> a_gap : Race on through the {A_WILLOW} gap.
 a_snag --> a_stop : Stop at the snag to help.
 a_gap --> a_neck : Chase the leaders along the race wall.
-a_neck --> a_wheel : Run to the fork at the mill island.
-a_wheel --> a_arch : Take the wheel side, under the splash ar...
+a_neck --> a_wheel : Run to the fork at the {A_ISLAND}.
+a_wheel --> a_arch : Take the wheel side, under the {A1_WHEEL...
 a_wheel --> a_wall : Take the wall side, past the miller's wi...
-a_arch --> a_swirl : Follow the boats to the wheelpool.
-a_swirl --> a_free_rocket : Reach down and set Rocket free.
-a_swirl --> a_wait_ring : Wait, poised, for Acorn's ring to come r...
+a_arch --> a_swirl : Follow the boats to the {A1_WHEEL_ZONE}.
+a_swirl --> a_free_rocket : Reach down and set {RIVAL_BOAT} free.
+a_swirl --> a_wait_ring : Wait, poised, for {COMPANION}'s ring to ...
 a_free_rocket --> a_grace_end : Sprint after both boats to the line.
-a_wait_ring --> a_outflow : Race the freed Acorn down the outflow.
+a_wait_ring --> a_outflow : Race the freed {COMPANION} down the outf...
 a_outflow --> a_ribbon_end : Run flat out for the finish.
-a_wall --> a_tangle : Run up to the blocked chute mouth.
+a_wall --> a_tangle : Run up to the blocked {A1_WALL_CHUTE} mo...
 a_tangle --> a_untangle_pair : Untangle the spinning pair from the plan...
-a_tangle --> a_luck_gap : Trust Acorn through the thin gap.
-a_untangle_pair --> a_chute_clear : Watch the chute run clear.
+a_tangle --> a_luck_gap : Trust {COMPANION} through the thin gap.
+a_untangle_pair --> a_chute_clear : Watch the {A1_WALL_CHUTE} run clear.
 a_chute_clear --> a_shoulder_offer : Meet the big kids pounding back along th...
-a_shoulder_offer --> a_chute_guard : Stay and keep the chute mouth clear.
+a_shoulder_offer --> a_chute_guard : Stay and keep the {A1_WALL_CHUTE} mouth ...
 a_shoulder_offer --> a_shoulder_ride : Ride high on their shoulders to the line...
 a_chute_guard --> a_clean_chute_end : Let the last boats through, then look up...
-a_shoulder_ride --> a_shoulders_end : Scramble down and run for the chute.
+a_shoulder_ride --> a_shoulders_end : Scramble down and run for the {A1_WALL_C...
 a_luck_gap --> a_spinout_end : Sprint beside her for the line.
-a_stop --> a_helpers : Size up the willow curtain.
-a_helpers --> a_big_branch : Heave the big limb with Tam.
+a_stop --> a_helpers : Size up the {A_WILLOW} curtain.
+a_helpers --> a_big_branch : Heave the big limb with {FRIEND}.
 a_helpers --> a_bridge : Lever the curtain from the footbridge.
-a_big_branch --> a_crew_ask : Catch your breath beside Tam.
+a_big_branch --> a_crew_ask : Catch your breath beside {FRIEND}.
 a_crew_ask --> a_chase : Crew up and chase the fleet.
-a_crew_ask --> a_caulk : Point at the seam and fix Beetle first.
+a_crew_ask --> a_caulk : Point at the seam and fix {FRIEND_BOAT} ...
 a_chase --> a_merge_pass : Push hard for the meadow merge.
 a_merge_pass --> a_crew_end : Run the last field together.
-a_caulk --> a_second_launch : Relaunch Beetle tight and dry.
+a_caulk --> a_second_launch : Relaunch {FRIEND_BOAT} tight and dry.
 a_second_launch --> a_after_bell_end : Follow the empty river home.
 a_bridge --> a_curtain_lift : Hold the curtain high.
 a_curtain_lift --> a_pole_stuck : Haul at the stuck pole.
 a_pole_stuck --> a_wrestle : Wrestle your own pole free first.
-a_pole_stuck --> a_spare_net : Take Bram's stubby spare and run.
+a_pole_stuck --> a_spare_net : Take {A_MILLER}'s stubby spare and run.
 a_wrestle --> a_pole_free : Chase the race with the long net.
 a_pole_free --> a_fleet_hero_end : Run her home with the fleet.
 a_spare_net --> a_parapet_lunge : Kneel at the parapet with the short net.
@@ -338,28 +338,28 @@ b_heron --> b_creep : Creep the low track, staying with your b...
 b_heron --> b_top_path : Climb the top path to get ahead at the p...
 b_creep --> b_alarm : Hurry toward the piping alarm.
 b_alarm --> b_stones : Stay and shore up the bank yourself.
-b_alarm --> b_sprint_ivy : Sprint and fetch Warden Ivy.
+b_alarm --> b_sprint_ivy : Sprint and fetch {B1_WARDEN}.
 b_stones --> b_blue_flash : Sit back and watch the tunnel mouth.
 b_blue_flash --> b_ivy : Turn at the sound of running boots.
-b_ivy --> b_rope : Stay and rope off the nest bank with Ivy...
+b_ivy --> b_rope : Stay and rope off the nest bank with {B1...
 b_ivy --> b_field : Sprint the field path to the finish.
 b_rope --> b_warden_end : Knot on the armband.
-b_field --> b_see_finish_end : Cheer The Acorn up the straight.
-b_sprint_ivy --> b_ivy_runs : Run after Ivy.
+b_field --> b_see_finish_end : Cheer {COMPANION} up the straight.
+b_sprint_ivy --> b_ivy_runs : Run after {B1_WARDEN}.
 b_ivy_runs --> b_back_track : Stop at the fork and choose.
-b_back_track --> b_nest_help : Help Ivy shore up the nest.
+b_back_track --> b_nest_help : Help {B1_WARDEN} shore up the nest.
 b_back_track --> b_narrows : Guard the narrows with your net.
 b_nest_help --> b_brace : Keep passing stones till the bank holds.
-b_brace --> b_two_hands_end : Walk the bank back with Ivy.
+b_brace --> b_two_hands_end : Walk the bank back with {B1_WARDEN}.
 b_narrows --> b_shelf_watch : Watch the next boats come down.
-b_shelf_watch --> b_twins_first : Free the twins' tipping boat first.
-b_shelf_watch --> b_acorn_first : Free your Acorn first, she is nearest.
-b_twins_first --> b_all_free : Set The Acorn loose.
+b_shelf_watch --> b_twins_first : Free the {TWINS}' tipping boat first.
+b_shelf_watch --> b_acorn_first : Free your {COMPANION} first, she is near...
+b_twins_first --> b_all_free : Set {COMPANION} loose.
 b_all_free --> b_ferry_end : Jog the bank to the finish.
 b_acorn_first --> b_two_at_once_end : Work the wedged boat loose.
 b_top_path --> b_pool_view : Come down the rise to the pool.
-b_pool_view --> b_pool : Hear Dev out.
-b_pool --> b_clear : Team up and rake the punt channel clear.
+b_pool_view --> b_pool : Hear {B2_RIVAL2} out.
+b_pool --> b_clear : Team up and rake the {B2_CLEAR_CHANNEL} ...
 b_pool --> b_plank_walk : Cross the plank walk and swing the boom.
 b_clear --> b_lane_open : Wave the fleet into the lane.
 b_lane_open --> b_convoy : Look from the convoy to the lane and bac...
@@ -368,46 +368,46 @@ b_convoy --> b_jog_cheer : Let the convoy run and cheer them throug...
 b_passing_loop --> b_pour_out : Follow the convoy to the pool's lip.
 b_pour_out --> b_lane_end : Chase the fleet down the merge.
 b_jog_cheer --> b_jam_end : Cheer the survivors through the jam.
-b_plank_walk --> b_boom : Get both hands on the boom.
+b_plank_walk --> b_boom : Get both hands on the {B2_WEED_BOOM}.
 b_boom --> b_partway : Heave it partway, right now.
-b_boom --> b_pin : Work the pin loose for the full swing.
+b_boom --> b_pin : Work the {B2_BOOM_PIN} loose for the ful...
 b_partway --> b_half_gate : Watch the fleet take the thread.
 b_half_gate --> b_thread_end : Run the bank beside her.
 b_pin --> b_full_gate : Swing the boom wide.
 b_full_gate --> b_floodgate_end : Follow the armada out of the pool.
-c_cut --> c_gates : Walk up to the great gates.
-c_gates --> c_maren : Answer the lock keeper's nod.
-c_maren --> c_pen : Ride the flight with Maren.
-c_maren --> c_bywash : Follow the bywash sluice.
+c_cut --> c_gates : Walk up to the great {C_GATES}.
+c_gates --> c_maren : Answer the {C_LOCK} keeper's nod.
+c_maren --> c_pen : Ride the flight with {C_KEEPER}.
+c_maren --> c_bywash : Follow the {C2_BYWASH} sluice.
 c_pen --> c_story : Hold the rope and listen.
-c_story --> c_firefly : Look where Maren is not looking.
-c_firefly --> c_dust : Ask Maren to launch Firefly beside The A...
-c_firefly --> c_windlass : Ask her to teach you the windlass.
+c_story --> c_firefly : Look where {C_KEEPER} is not looking.
+c_firefly --> c_dust : Ask {C_KEEPER} to launch {C_KEEPER_BOAT}...
+c_firefly --> c_windlass : Ask her to teach you the {C_WINDLASS}.
 c_dust --> c_hats : Run the lower cut beside the two boats.
-c_hats --> c_number_swap : Swap Acorn's number onto Firefly.
+c_hats --> c_number_swap : Swap {COMPANION}'s number onto {C_KEEPER...
 c_hats --> c_escort : Sail them on together and let the line d...
 c_number_swap --> c_firefly_end : Run the last stretch with them.
 c_escort --> c_escort_end : Stay with them to the line.
 c_windlass --> c_stragglers : Look up from your first worked gate.
 c_stragglers --> c_solo_flight : Lock the stragglers down yourself.
-c_stragglers --> c_bell_run : Hand back the windlass and run for the b...
+c_stragglers --> c_bell_run : Hand back the {C_WINDLASS} and run for t...
 c_solo_flight --> c_brass_key : Close the last gate and turn around.
 c_brass_key --> c_keeper_end : Take the key.
-c_bell_run --> c_surge : Race the lock water down the last stretc...
+c_bell_run --> c_surge : Race the {C_LOCK} water down the last st...
 c_surge --> c_bell_end : Sprint the final bend.
 c_bywash --> c_wall_path : Keep pace along the sluice wall.
 c_wall_path --> c_white_post : Run down to the white post.
-c_white_post --> c_rapids : Let her run the bywash to the fan.
+c_white_post --> c_rapids : Let her run the {C2_BYWASH} to the fan.
 c_white_post --> c_island : Scoop her out and portage the island.
-c_rapids --> c_grating : Meet the twins at the gravel fan.
-c_grating --> c_pin_pull : Take the bridge and pull the tipping pin...
-c_grating --> c_shout : Shout the twins the pin trick and run on...
-c_pin_pull --> c_twin_parade : Relaunch the twins' boats in the calm.
+c_rapids --> c_grating : Meet the {TWINS} at the gravel fan.
+c_grating --> c_pin_pull : Take the bridge and pull the {C2_GRATING...
+c_grating --> c_shout : Shout the {TWINS} the pin trick and run ...
+c_pin_pull --> c_twin_parade : Relaunch the {TWINS}' boats in the calm.
 c_twin_parade --> c_twins_end : Bring the small fleet home.
 c_shout --> c_merge_race : Catch the fleet at the merge.
 c_merge_race --> c_fifth_end : Run the last bend with her.
 c_island --> c_blanket : Stop at the trading blanket.
-c_blanket --> c_stitch : Trade the plum cake for the stitch-up.
+c_blanket --> c_stitch : Trade the {TREAT} for the stitch-up.
 c_blanket --> c_stone_step : Skip the trade and relaunch at the stone...
 c_stitch --> c_wind : Carry her down to the stone step.
 c_wind --> c_sail_end : Chase her down the last reach.

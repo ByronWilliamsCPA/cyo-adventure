@@ -121,40 +121,40 @@ state g_m7 #D1C4E9
 g_m7 : rising · 90w
 state g_z1 #FFCDD2
 g_z1 : setback (negative)
-g_z1 : "The Fox That Waited"
+g_z1 : "{GF_SETBACK}"
 state g_z2 #E0E0E0
 g_z2 : discovery (neutral)
-g_z2 : "Keeper of Springs"
+g_z2 : "{GF_DISCOVERY}"
 state g_z3 #FFCDD2
 g_z3 : setback (negative)
-g_z3 : "Three Seasons Out of Four"
+g_z3 : "{GG_SETBACK}"
 state g_z4 #C8E6C9
 g_z4 : success (positive)
-g_z4 : "The Dry-Run Parade"
+g_z4 : "{GH_SUCCESS}"
 state g_z5 #C8E6C9
 g_z5 : success (positive)
-g_z5 : "The Seasons Wake at Noon"
+g_z5 : "{GI_SUCCESS_A}"
 state g_z6 #E0E0E0
 g_z6 : discovery (neutral)
-g_z6 : "The Hidden Crank"
+g_z6 : "{GI_DISCOVERY}"
 state g_z7 #FFCDD2
 g_z7 : setback (negative)
-g_z7 : "The Wheel Comes Out"
+g_z7 : "{GK_SETBACK}"
 state g_z8 #E0E0E0
 g_z8 : discovery (neutral)
-g_z8 : "The Paddle-Carver's Summer"
+g_z8 : "{GK_DISCOVERY}"
 state g_z9 #FFCDD2
 g_z9 : setback (negative)
-g_z9 : "The Hand-Rung Noon"
+g_z9 : "{GL_SETBACK}"
 state g_z10 #C8E6C9
 g_z10 : completion (positive)
-g_z10 : "The Midsummer Rewinding"
+g_z10 : "{GM_SUCCESS_A}"
 state g_z11 #C8E6C9
 g_z11 : success (positive)
-g_z11 : "The Conductor of Bells"
+g_z11 : "{GM_SUCCESS_B}"
 state g_z12 #FFCDD2
 g_z12 : setback (negative)
-g_z12 : "The Four-Minute Noon"
+g_z12 : "{GM_SETBACK}"
 state l_a1 #D1C4E9
 l_a1 : rising · 98w
 state l_a2 #D1C4E9
@@ -265,40 +265,40 @@ state l_m7 #D1C4E9
 l_m7 : rising · 90w
 state l_z1 #FFCDD2
 l_z1 : setback (negative)
-l_z1 : "Adrift at the Second Hoop"
+l_z1 : "{LF_SETBACK}"
 state l_z2 #E0E0E0
 l_z2 : discovery (neutral)
-l_z2 : "The Trim Doctor"
+l_z2 : "{LF_DISCOVERY}"
 state l_z3 #FFCDD2
 l_z3 : setback (negative)
-l_z3 : "The Slipped Hook"
+l_z3 : "{LG_SETBACK}"
 state l_z4 #C8E6C9
 l_z4 : success (positive)
-l_z4 : "Three Clean Hoops"
+l_z4 : "{LH_SUCCESS_A}"
 state l_z5 #C8E6C9
 l_z5 : success (positive)
-l_z5 : "The Chimney Line"
+l_z5 : "{LI_SUCCESS_A}"
 state l_z6 #E0E0E0
 l_z6 : discovery (neutral)
-l_z6 : "The Thermal River"
+l_z6 : "{LI_DISCOVERY}"
 state l_z7 #FFCDD2
 l_z7 : setback (negative)
-l_z7 : "The Featherweight Mistake"
+l_z7 : "{LK_SETBACK}"
 state l_z8 #E0E0E0
 l_z8 : discovery (neutral)
-l_z8 : "Signed for the Winter Mail"
+l_z8 : "{LK_DISCOVERY}"
 state l_z9 #FFCDD2
 l_z9 : setback (negative)
-l_z9 : "Grounded"
+l_z9 : "{LL_SETBACK}"
 state l_z10 #C8E6C9
 l_z10 : completion (positive)
-l_z10 : "First Bell, Two Birds"
+l_z10 : "{LM_COMPLETION}"
 state l_z11 #C8E6C9
 l_z11 : success (positive)
-l_z11 : "Co-Captains of the Loft"
+l_z11 : "{LM_SUCCESS}"
 state l_z12 #FFCDD2
 l_z12 : setback (negative)
-l_z12 : "The Early Launch"
+l_z12 : "{LM_SETBACK}"
 state m_a1 #D1C4E9
 m_a1 : rising · 96w
 state m_a2 #D1C4E9
@@ -395,82 +395,82 @@ state m_m7 #D1C4E9
 m_m7 : rising · 90w
 state m_z1 #E0E0E0
 m_z1 : discovery (neutral)
-m_z1 : "The First Order Slip"
+m_z1 : "{MF_DISCOVERY}"
 state m_z2 #FFCDD2
 m_z2 : setback (negative)
-m_z2 : "The Extra-Crusty Specials"
+m_z2 : "{MF_SETBACK}"
 state m_z3 #C8E6C9
 m_z3 : success (positive)
-m_z3 : "The Breakfast Bun"
+m_z3 : "{MH_SUCCESS}"
 state m_z4 #FFCDD2
 m_z4 : setback (negative)
-m_z4 : "The Day It Rained Rolls"
+m_z4 : "{MG_SETBACK}"
 state m_z5 #E0E0E0
 m_z5 : discovery (neutral)
-m_z5 : "The Jar-of-Peas Chart"
+m_z5 : "{MK_DISCOVERY}"
 state m_z6 #FFCDD2
 m_z6 : setback (negative)
-m_z6 : "The Cobble-Box Demo"
+m_z6 : "{MK_SETBACK}"
 state m_z7 #FFCDD2
 m_z7 : setback (negative)
-m_z7 : "A Certificate and a Knot"
+m_z7 : "{ML_SETBACK}"
 state m_z8 #C8E6C9
 m_z8 : success (positive)
-m_z8 : "Priya's First Ribbon"
+m_z8 : "{MM_SUCCESS_A}"
 state m_z9 #C8E6C9
 m_z9 : completion (positive)
-m_z9 : "Forty Apples Home"
+m_z9 : "{MM_COMPLETION}"
 state m_z10 #FFCDD2
 m_z10 : setback (negative)
-m_z10 : "The Stall That Moved"
-n_start --> n_tour : Follow the guildmaster on the tour.
-n_tour --> n_test : Take the tinker-test.
-n_test --> n_sort : Hear the guildmaster's verdict.
-n_sort --> g_a1 : Join the Gears workshop.
-n_sort --> l_a1 : Join the Gliders workshop.
-n_sort --> m_a1 : Join the Gadgets workshop.
+m_z10 : "{MM_SETBACK}"
+n_start --> n_tour : Follow {GUILDMASTER} on the tour.
+n_tour --> n_test : Take the {ENTRY_TEST}.
+n_test --> n_sort : Hear {GUILDMASTER}'s verdict.
+n_sort --> g_a1 : Join the {ROUTE_G_NAME} workshop.
+n_sort --> l_a1 : Join the {ROUTE_L_NAME} workshop.
+n_sort --> m_a1 : Join the {ROUTE_M_NAME} workshop.
 g_a1 --> g_a2 : Settle in at your bench.
 g_a2 --> g_a3 : Ask where you come in.
 g_a3 --> g_b1 : Hear the two jobs out.
 g_b1 --> g_c1 : Restore the four season figures.
-g_b1 --> g_j1 : Take on the chime train and water wheel.
-g_c1 --> g_c2 : Start with the spring heron.
-g_c2 --> g_c3 : Ask Master Pin for a better way.
+g_b1 --> g_j1 : Take on the {G_BELLS} and {G_WHEEL}.
+g_c1 --> g_c2 : Start with the {G_FIGURE_SPRING}.
+g_c2 --> g_c3 : Ask {ROUTE_G_MENTOR} for a better way.
 g_c3 --> g_c4 : Look at the two worst figures.
-g_c4 --> g_f1 : Reforge the fox's snapped leap spring.
-g_c4 --> g_g1 : Free the winter owl's seized head.
+g_c4 --> g_f1 : Reforge the {G_FIGURE_SUMMER}'s snapped ...
+g_c4 --> g_g1 : Free the {G_FIGURE_WINTER}'s seized head...
 g_f1 --> g_f2 : Coil your first spring.
 g_f2 --> g_f3 : Decide how to temper it.
 g_f3 --> g_f4 : Quench the spring fast and test it tomor...
 g_f3 --> g_f5 : Temper it slowly overnight, the old way.
-g_f4 --> g_z1 : Face Master Pin with the pieces.
+g_f4 --> g_z1 : Face {ROUTE_G_MENTOR} with the pieces.
 g_f5 --> g_z2 : Follow where the springs lead.
 g_g1 --> g_g2 : Find out who has the press.
-g_g2 --> g_g3 : Weigh Felix's trade.
+g_g2 --> g_g3 : Weigh {ROUTE_G_RIVAL}'s trade.
 g_g3 --> g_g4 : Rig your own press from the bench vise.
-g_g3 --> g_h1 : Take Felix's trade and share the press.
-g_g4 --> g_g5 : Show Master Pin the damage.
-g_g5 --> g_z3 : Finish the summer without the owl.
-g_h1 --> g_h2 : Wake the winter owl.
+g_g3 --> g_h1 : Take {ROUTE_G_RIVAL}'s trade and share t...
+g_g4 --> g_g5 : Show {ROUTE_G_MENTOR} the damage.
+g_g5 --> g_z3 : Finish the summer without the {G_FIGURE_...
+g_h1 --> g_h2 : Wake the {G_FIGURE_WINTER}.
 g_h2 --> g_h3 : Study the jammed parade ring.
-g_h3 --> g_h4 : Bring the old drawing to Pin.
+g_h3 --> g_h4 : Bring the old drawing to {ROUTE_G_MENTOR...
 g_h4 --> g_h5 : Run the parade dry, a sure thing.
-g_h4 --> g_i1 : Hunt the lost drain gate with Felix.
+g_h4 --> g_i1 : Hunt the lost {G_DRAIN_GATE} with {ROUTE...
 g_h5 --> g_h6 : Hold the dry-run reveal.
 g_h6 --> g_z4 : Take your bow.
 g_i1 --> g_i2 : Open the brass door.
-g_i2 --> g_i3 : Rehearse for Midsummer.
+g_i2 --> g_i3 : Rehearse for {ROUTE_G_EVENT}.
 g_i3 --> g_i4 : Step up to the clock.
-g_i4 --> g_i5 : Wind the clock yourself, as Pin offered.
-g_i4 --> g_i6 : Give Felix the key and take the hidden c...
+g_i4 --> g_i5 : Wind the clock yourself, as {ROUTE_G_MEN...
+g_i4 --> g_i6 : Give {ROUTE_G_RIVAL} the {G_KEY} and tak...
 g_i5 --> g_z5 : Watch the seasons run.
 g_i6 --> g_z6 : Turn the crank at noon.
 g_j1 --> g_j2 : Survey your new kingdom.
-g_j2 --> g_j3 : Report to Master Pin.
+g_j2 --> g_j3 : Report to {ROUTE_G_MENTOR}.
 g_j3 --> g_j4 : Choose where to start.
-g_j4 --> g_k1 : Start below and free the water wheel.
-g_j4 --> g_l1 : Start above and rebuild the chime train.
-g_k1 --> g_k2 : Inspect the freed wheel.
+g_j4 --> g_k1 : Start below and free the {G_WHEEL}.
+g_j4 --> g_l1 : Start above and rebuild the {G_BELLS}.
+g_k1 --> g_k2 : Inspect the freed {G_WHEEL}.
 g_k2 --> g_k3 : Settle the paddle question.
 g_k3 --> g_k4 : Patch the paddles quickly with tin.
 g_k3 --> g_k5 : Carve proper oak paddles all summer.
@@ -478,16 +478,16 @@ g_k4 --> g_z7 : Pull the choked grating.
 g_k5 --> g_z8 : Mount the last paddle.
 g_l1 --> g_l2 : Trace the late chimes.
 g_l2 --> g_l3 : Open the escapement housing.
-g_l3 --> g_l4 : Decide how the anchor gets made.
-g_l4 --> g_l5 : File an anchor alone, working nights.
-g_l4 --> g_m1 : Ask Pin to teach you, three slow weeks.
-g_l5 --> g_l6 : Wake up to Pin's lantern.
+g_l3 --> g_l4 : Decide how the {G_ANCHOR} gets made.
+g_l4 --> g_l5 : File an {G_ANCHOR} alone, working nights...
+g_l4 --> g_m1 : Ask {ROUTE_G_MENTOR} to teach you, three...
+g_l5 --> g_l6 : Wake up to {ROUTE_G_MENTOR}'s lantern.
 g_l6 --> g_z9 : Keep time the old way.
-g_m1 --> g_m2 : Finish the true anchor.
+g_m1 --> g_m2 : Finish the true {G_ANCHOR}.
 g_m2 --> g_m3 : Rehearse the full chime.
 g_m3 --> g_m4 : Answer at the noon rehearsal.
-g_m4 --> g_m5 : Take the winding post, Felix on bells.
-g_m4 --> g_m6 : Give Felix the winding and conduct the h...
+g_m4 --> g_m5 : Take the winding post, {ROUTE_G_RIVAL} o...
+g_m4 --> g_m6 : Give {ROUTE_G_RIVAL} the winding and con...
 g_m4 --> g_m7 : Add your untested quarter-chime surprise...
 g_m5 --> g_z10 : Wind, and let noon come.
 g_m6 --> g_z11 : Conduct the first noon.
@@ -495,34 +495,34 @@ g_m7 --> g_z12 : Ring the surprise at noon.
 l_a1 --> l_a2 : Clip in and look around.
 l_a2 --> l_a3 : Meet the rest of the roof.
 l_a3 --> l_b1 : Pick your first love.
-l_b1 --> l_c1 : Rebuild the trainer for the Glider Derby...
-l_b1 --> l_j1 : Join the pigeon post and race Admiral.
+l_b1 --> l_c1 : Rebuild the {L_TRAINER} for {ROUTE_L_EVE...
+l_b1 --> l_j1 : Join the pigeon post and race {ROUTE_L_R...
 l_c1 --> l_c2 : Test what the old wing knows.
-l_c2 --> l_c3 : Ask Sky about the tip stall.
-l_c3 --> l_f1 : Build the long soarer wing for the high ...
-l_c3 --> l_g1 : Build the short dart wing for the fast l...
-l_f1 --> l_f2 : Take the soarer up for a hop.
+l_c2 --> l_c3 : Ask {ROUTE_L_MENTOR} about the tip stall...
+l_c3 --> l_f1 : Build the long {L_SOARER} for the high l...
+l_c3 --> l_g1 : Build the short {L_DART} for the fast li...
+l_f1 --> l_f2 : Take the {L_SOARER} up for a hop.
 l_f2 --> l_f3 : Face the trim tab problem.
 l_f3 --> l_f4 : Fly the trials solo tomorrow, no crew.
-l_f3 --> l_f5 : Ask Juno and a friend to crew the launch...
+l_f3 --> l_f5 : Ask {ROUTE_L_RIVAL} and a friend to crew...
 l_f4 --> l_z1 : Fetch her down from the awning.
 l_f5 --> l_c4 : Fly the crewed month out.
 l_c4 --> l_z2 : See where the crew work leads.
 l_g1 --> l_g2 : Study the launch release.
 l_g2 --> l_g3 : Decide about the hook.
-l_g3 --> l_g4 : Rig a quiet copy of Juno's hook.
-l_g3 --> l_h1 : Ask Juno straight out to share the relea...
-l_g4 --> l_g5 : Pull the dart from the straw.
+l_g3 --> l_g4 : Rig a quiet copy of {ROUTE_L_RIVAL}'s ho...
+l_g3 --> l_h1 : Ask {ROUTE_L_RIVAL} straight out to shar...
+l_g4 --> l_g5 : Pull the {L_DART} from the straw.
 l_g5 --> l_z3 : Shake on next season.
 l_h1 --> l_h2 : Train evenings, fly mornings.
-l_h2 --> l_h3 : Survey the wreckage with Sky.
+l_h2 --> l_h3 : Survey the wreckage with {ROUTE_L_MENTOR...
 l_h3 --> l_h4 : Put the plan to the guild.
-l_h4 --> l_h5 : Rebuild the single rail, safe and proven...
-l_h4 --> l_i1 : Build the twin-rail catapult from the fl...
+l_h4 --> l_h5 : Rebuild the single {L_RAIL}, safe and pr...
+l_h4 --> l_i1 : Build the {L_CATAPULT} from the flagpole...
 l_h5 --> l_h6 : Fly the derby you trained for.
 l_h6 --> l_z4 : Land and hear the scores.
 l_i1 --> l_i2 : Bolt down the twin rails.
-l_i2 --> l_i3 : Take the times to Sky.
+l_i2 --> l_i3 : Take the times to {ROUTE_L_MENTOR}.
 l_i3 --> l_i4 : Call your line.
 l_i4 --> l_i5 : Fly the fast line under the chimneys.
 l_i4 --> l_i6 : Fly the high line over the weathervanes.
@@ -530,42 +530,42 @@ l_i5 --> l_z5 : Cross the last hoop.
 l_i6 --> l_i7 : Ride the secret river.
 l_i7 --> l_z6 : Land where the river ends.
 l_j1 --> l_j2 : Meet your own bird.
-l_j2 --> l_j3 : Start Pip on the routes.
-l_j3 --> l_j6 : Plan Pip's training summer.
+l_j2 --> l_j3 : Start {L_PIGEON} on the routes.
+l_j3 --> l_j6 : Plan {L_PIGEON}'s training summer.
 l_j6 --> l_j4 : Choose her one great leg.
-l_j4 --> l_k1 : Train Pip for the market sprint.
-l_j4 --> l_l1 : Train Pip for the storm-bell return.
+l_j4 --> l_k1 : Train {L_PIGEON} for the {L_SPRINT_LEG}.
+l_j4 --> l_l1 : Train {L_PIGEON} for the {L_STORM_LEG}.
 l_k1 --> l_k2 : Shave the last seconds.
-l_k2 --> l_k3 : Choose Pip's trial capsule.
-l_k3 --> l_k4 : Fly the featherweight capsule in the tri...
-l_k3 --> l_k5 : Keep the regulation capsule and trust th...
+l_k2 --> l_k3 : Choose {L_PIGEON}'s trial {L_CAPSULE}.
+l_k3 --> l_k4 : Fly the featherweight {L_CAPSULE} in the...
+l_k3 --> l_k5 : Keep the regulation {L_CAPSULE} and trus...
 l_k4 --> l_z7 : Stand at the judges' table.
-l_k5 --> l_z8 : Fly the market sprint.
-l_l1 --> l_l2 : Watch the sky with Pip.
+l_k5 --> l_z8 : Fly the {L_SPRINT_LEG}.
+l_l1 --> l_l2 : Watch the sky with {L_PIGEON}.
 l_l2 --> l_l3 : Say nothing, for now.
 l_l3 --> l_l4 : Take up the protocol problem.
 l_l4 --> l_l5 : Prove the protocol solo in the next squa...
-l_l4 --> l_m1 : Bring Juno in and design it together.
+l_l4 --> l_m1 : Bring {ROUTE_L_RIVAL} in and design it t...
 l_l5 --> l_l6 : Answer for the broken rule.
-l_l6 --> l_z9 : Watch the trials from the loft.
+l_l6 --> l_z9 : Watch the trials from the {ROUTE_L_LOFT}...
 l_m1 --> l_m2 : Build the buddy protocol.
 l_m2 --> l_m3 : Train the first buddy pair.
 l_m3 --> l_m4 : Name the lead bird.
-l_m4 --> l_m5 : Let Pip lead the storm leg, Admiral flan...
-l_m4 --> l_m6 : Let Admiral lead, with Pip holding the l...
+l_m4 --> l_m5 : Let {L_PIGEON} lead the storm leg, {ROUT...
+l_m4 --> l_m6 : Let {ROUTE_L_RIVAL_ANIMAL} lead, with {L...
 l_m4 --> l_m7 : Launch early and chase the record crossi...
 l_m5 --> l_z10 : Bring them home to the bell.
-l_m6 --> l_z11 : Meet them at the loft door.
-l_m7 --> l_z12 : Wait at the loft rail for the sky to cle...
-m_a1 --> m_a2 : Walk Market Street with Gran.
+l_m6 --> l_z11 : Meet them at the {ROUTE_L_LOFT} door.
+l_m7 --> l_z12 : Wait at the {ROUTE_L_LOFT} rail for the ...
+m_a1 --> m_a2 : Walk {STREET_NAME} with {ROUTE_M_MENTOR}...
 m_a2 --> m_a3 : Meet the other junior.
 m_a3 --> m_b1 : Choose your shopkeeper.
-m_b1 --> m_c1 : Adopt Mr. Crumb the baker.
-m_b1 --> m_j1 : Adopt Ms. Okafor the greengrocer.
+m_b1 --> m_c1 : Adopt {M_BAKER} the baker.
+m_b1 --> m_j1 : Adopt {M_GREENGROCER} the greengrocer.
 m_c1 --> m_c2 : Ask him what the problem is.
 m_c2 --> m_c4 : Weigh the two builds at the bench.
-m_c4 --> m_f1 : Build the proofing-clock with weighted f...
-m_c4 --> m_g1 : Build the dumbwaiter lift for the narrow...
+m_c4 --> m_f1 : Build the {M_CLOCK_DEVICE} with weighted...
+m_c4 --> m_g1 : Build the {M_LIFT_DEVICE} for the narrow...
 m_f1 --> m_f2 : Build version two.
 m_f2 --> m_f3 : Face the fair deadline.
 m_f3 --> m_f5 : Perfect the two-oven clock and enter it ...
@@ -575,9 +575,9 @@ m_f6 --> m_z1 : Show it at the fair.
 m_f4 --> m_z2 : Untangle in front of the judges.
 m_g1 --> m_g2 : Rig the first test lift.
 m_g2 --> m_g3 : Solve the brake problem.
-m_g3 --> m_h1 : Offer Priya a trade for her brake design...
+m_g3 --> m_h1 : Offer {ROUTE_M_RIVAL} a trade for her br...
 m_g3 --> m_g4 : Improvise the rope-twist brake from the ...
-m_h1 --> m_h2 : Show Mr. Crumb the finished lift.
+m_h1 --> m_h2 : Show {M_BAKER} the finished lift.
 m_h2 --> m_h3 : Design the guard cage.
 m_h3 --> m_h5 : Bolt the cage in before dawn.
 m_h5 --> m_h6 : Let the week tell the story.
@@ -588,31 +588,31 @@ m_j1 --> m_j2 : Ask her once, then twice.
 m_j2 --> m_j3 : Take the problem to the bench.
 m_j3 --> m_j5 : Learn the stall before you build.
 m_j5 --> m_j4 : Choose your line of attack.
-m_j4 --> m_k1 : Build the rumble-damper for the stall's ...
-m_j4 --> m_l1 : Build the apple-catcher rail and return ...
+m_j4 --> m_k1 : Build the {M_DAMPER_DEVICE} for the stal...
+m_j4 --> m_l1 : Build the {M_CATCHER_DEVICE} and return ...
 m_k1 --> m_k2 : Plan the street test.
 m_k2 --> m_k6 : Ask the clerk about a permit.
 m_k6 --> m_k3 : Choose how to get your data.
 m_k3 --> m_k5 : Wait for the permit and lose the week.
 m_k3 --> m_k4 : Test on the street tonight, without the ...
-m_k5 --> m_z5 : Tune the damper to the chart.
+m_k5 --> m_z5 : Tune the {M_DAMPER_DEVICE} to the chart.
 m_k4 --> m_z6 : Face the shop in the morning.
 m_l1 --> m_l2 : Cure the bruising.
 m_l2 --> m_l3 : Keep one eye on stall nine.
 m_l3 --> m_l4 : Decide what neighbors are for.
-m_l4 --> m_m1 : Knock on Priya's bench and offer your he...
+m_l4 --> m_m1 : Knock on {ROUTE_M_RIVAL}'s bench and off...
 m_l4 --> m_l5 : Polish your own entry; the row is a cont...
 m_l5 --> m_l6 : Take a perfect entry to the row.
 m_l6 --> m_z7 : Hear the row scored as a row.
-m_m1 --> m_m2 : Rehearse Market Row together.
+m_m1 --> m_m2 : Rehearse {M_FAIR_EVENT} together.
 m_m2 --> m_m3 : Wake early for fair morning.
 m_m3 --> m_m4 : Choose your place in the row.
-m_m4 --> m_m5 : Stand with Priya and co-run the scaler.
-m_m4 --> m_m6 : Run the apple-catcher at your own stall.
+m_m4 --> m_m5 : Stand with {ROUTE_M_RIVAL} and co-run th...
+m_m4 --> m_m6 : Run the {M_CATCHER_DEVICE} at your own s...
 m_m4 --> m_m7 : Move your stall to the head of the row.
 m_m5 --> m_z8 : Stand back for the scoring.
 m_m6 --> m_z9 : Count the apples home.
-m_m7 --> m_z10 : Present the catcher to the judges.
+m_m7 --> m_z10 : Present the {M_CATCHER_DEVICE} to the ju...
 g_z1 --> [*]
 g_z2 --> [*]
 g_z3 --> [*]

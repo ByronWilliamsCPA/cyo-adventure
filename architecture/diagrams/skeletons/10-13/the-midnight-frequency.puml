@@ -43,7 +43,7 @@ state wt_cache #FFF9C4
 wt_cache : choice · 110w
 state e_wt_climb #FFCDD2
 e_wt_climb : setback (negative)
-e_wt_climb : "Frost on the Rungs"
+e_wt_climb : "Frost on the {ROUTE_A_GATE}"
 state cn_marquee #D1C4E9
 cn_marquee : rising · 90w
 state cn_alley #FFF9C4
@@ -72,10 +72,10 @@ state cn_cache #FFF9C4
 cn_cache : choice · 110w
 state e_cn_boards #FFCDD2
 e_cn_boards : setback (negative)
-e_cn_boards : "The Soft Board"
+e_cn_boards : "The {ROUTE_B_GATE}"
 state e_cn_reel #E0E0E0
 e_cn_reel : discovery (neutral)
-e_cn_reel : "The Midnight Matinee"
+e_cn_reel : "{ROUTE_B_PRIZE}"
 state hb_road #D1C4E9
 hb_road : rising · 90w
 state hb_wall #D1C4E9
@@ -107,7 +107,7 @@ e_hb_dinghy : setback (negative)
 e_hb_dinghy : "Never on the Water Tired"
 state e_hb_stories #E0E0E0
 e_hb_stories : discovery (neutral)
-e_hb_stories : "The Youngest Nightjar"
+e_hb_stories : "The Youngest {MEMBER_TERM}"
 state lb_green #D1C4E9
 lb_green : rising · 85w
 state lb_porch #FFF9C4
@@ -126,7 +126,7 @@ state lb_drawer #FFF9C4
 lb_drawer : choice · 115w
 state e_lb_alarm #FFCDD2
 e_lb_alarm : setback (negative)
-e_lb_alarm : "Mind the Bell"
+e_lb_alarm : "Mind the {ROUTE_D_GATE}"
 state bh_path #FFF9C4
 bh_path : choice · 95w
 state bh_climb #D1C4E9
@@ -199,7 +199,7 @@ e_fin_window : setback (negative)
 e_fin_window : "Nobody Breaks In"
 state e_fin_late #FFCDD2
 e_fin_late : setback (negative)
-e_fin_late : "First Light Comes Anyway"
+e_fin_late : "{DEADLINE} Comes Anyway"
 state e_fin_listen #C8E6C9
 e_fin_listen : discovery (positive)
 e_fin_listen : "Heard Through the Door"
@@ -211,52 +211,52 @@ e_win_answer : success (positive)
 e_win_answer : "The Answer on the Tape"
 state e_win_signoff #C8E6C9
 e_win_signoff : completion (positive)
-e_win_signoff : "Every Voice Finds Its Home"
+e_win_signoff : "{ROUTE_A_TAG} {ROUTE_B_TAG} {ROUTE_C_TAG} {ROUTE_D_TAG} {ROUTE_E_TAG}"
 state e_win_encore #C8E6C9
 e_win_encore : success (positive)
 e_win_encore : "Same Time Next Year"
 state e_win_keepers #C8E6C9
 e_win_keepers : success (positive)
-e_win_keepers : "Keepers of the Midnight Frequency"
+e_win_keepers : "Keepers of {STORY_MOTIF}"
 state e_win_apprentice #C8E6C9
 e_win_apprentice : completion (positive)
 e_win_apprentice : "Two New Callsigns"
 state e_win_family #C8E6C9
 e_win_family : completion (positive)
-e_win_family : "Three at First Light"
+e_win_family : "Three at {DEADLINE}"
 state e_win_passiton #C8E6C9
 e_win_passiton : success (positive)
-e_win_passiton : "New Wrens"
-n_start --> n_teo : Wake your brother Teo, quietly.
-n_teo --> n_decode : Spread the logbook on the kitchen table ...
-n_decode --> n_hub : Ride out into the sleeping town.
-n_hub --> wt_lane : Ride the orchard lane up to the water to...
-n_hub --> cn_marquee : Coast down Main Street to the shuttered ...
-n_hub --> hb_road : Take the harbor road out to the buoy she...
-n_hub --> lb_green : Cut across the green to the library map ...
-n_hub --> bh_path : Climb the cinder path to the mast on Bea...
-n_hub --> fin_bearing : Follow the loop antenna's steady bearing...
+e_win_passiton : "New {CALLSIGN}s"
+n_start --> n_teo : Wake {COMPANION}, quietly.
+n_teo --> n_decode : Spread {GUIDE_LOG} on the kitchen table ...
+n_decode --> n_hub : Ride out into {THRESHOLD}.
+n_hub --> wt_lane : Ride {ROUTE_A_APPROACH} up to {ROUTE_A_L...
+n_hub --> cn_marquee : Coast down Main Street to {ROUTE_B_LURE}...
+n_hub --> hb_road : Take {ROUTE_C_APPROACH} out to {ROUTE_C_...
+n_hub --> lb_green : Cut across {ROUTE_D_APPROACH} to {ROUTE_...
+n_hub --> bh_path : Climb {ROUTE_E_APPROACH} to {ROUTE_E_LUR...
+n_hub --> fin_bearing : Follow {ANTENNA}'s steady bearing east t...
 wt_lane --> wt_gap : Roll up to the tower fence.
 wt_gap --> wt_gate : Cross the gravel to the tower's base.
-wt_gate --> wt_shed : Look inside the maintenance shed.
+wt_gate --> wt_shed : Look inside {ROUTE_A_ZONE}.
 wt_gate --> wt_legs : Walk the six stenciled legs.
-wt_gate --> wt_ladder : Size up the caged ladder.
-wt_ladder --> e_wt_climb : Climb around the outside of the cage any...
+wt_gate --> wt_ladder : Size up the {ROUTE_A_GATE}.
+wt_ladder --> e_wt_climb : Climb around the outside of the {ROUTE_A...
 wt_ladder --> wt_legs : Trust READ LOW and go check the legs.
 wt_legs --> wt_tap : Tap each leg in turn and listen.
 wt_legs --> wt_marks : Search the legs by torchlight for marks.
-wt_tap --> wt_box : Open the little box on leg four.
-wt_marks --> wt_box : Open the box under the scratched diamond...
-wt_box --> wt_shed : Head for the shed and its shelves.
-wt_box --> wt_card : Puzzle over the card with Teo first.
+wt_tap --> wt_box : Open {ROUTE_A_FIND} on leg four.
+wt_marks --> wt_box : Open {ROUTE_A_FIND} under the scratched ...
+wt_box --> wt_shed : Head for {ROUTE_A_ZONE} and its shelves.
+wt_box --> wt_card : Puzzle over {ROUTE_A_CLUE} with {COMPANI...
 wt_card --> wt_shed : Go find that shelf.
 wt_shed --> wt_cans : Go through the paint cans on the shelf.
 wt_shed --> wt_photo : Take the crew photo down for a closer lo...
 wt_photo --> wt_cans : Follow the chalk arrow to the cans.
 wt_cans --> wt_cache : Unroll the oilcloth.
-wt_cache --> n_hub : Ride back to the square.
-wt_cache --> fin_bearing : Follow the bearing east to the Nest.
-cn_marquee --> cn_alley : Slip down the alley to the stage door.
+wt_cache --> n_hub : Ride back to {ENTRANCE}.
+wt_cache --> fin_bearing : Follow the bearing east to {GOAL}.
+cn_marquee --> cn_alley : Slip down the alley to {ROUTE_B_APPROACH...
 cn_alley --> cn_stalls : Push through into the auditorium.
 cn_alley --> cn_boothstairs : Take the narrow stair toward the project...
 cn_stalls --> cn_rowj : Count the rows back to J.
@@ -270,80 +270,80 @@ cn_stage --> cn_horns : Edge along the solid boards by the wall.
 cn_stage --> e_cn_boards : Hurry straight across before you lose yo...
 cn_horns --> cn_boothstairs : Find the stair up to the projection boot...
 cn_boothstairs --> cn_booth : Push the booth door open.
-cn_boothstairs --> cn_port : Look through the porthole first.
-cn_port --> cn_booth : Go in to the out-of-line tin.
-cn_booth --> cn_cache : Open the tin.
+cn_boothstairs --> cn_port : Look through {ROUTE_B_DETAIL2} first.
+cn_port --> cn_booth : Go in to {ROUTE_B_FIND}.
+cn_booth --> cn_cache : Open {ROUTE_B_FIND}.
 cn_booth --> e_cn_reel : Thread the reel and roll the show.
-cn_cache --> n_hub : Back to the square.
-cn_cache --> fin_bearing : Follow the bearing east to the Nest.
-hb_road --> hb_wall : Ride out along the harbor wall.
-hb_wall --> hb_quay : Come up to the buoy shed doors.
+cn_cache --> n_hub : Back to {ENTRANCE}.
+cn_cache --> fin_bearing : Follow the bearing east to {GOAL}.
+hb_road --> hb_wall : Ride out along {ROUTE_C_APPROACH}.
+hb_wall --> hb_quay : Come up to {ROUTE_C_LURE}'s doors.
 hb_quay --> hb_office : Knock at the lit harbor office.
 hb_quay --> hb_doors : Check the shed doors up close.
-hb_quay --> e_hb_dinghy : Row the dinghy around to the sea hatch.
+hb_quay --> e_hb_dinghy : Row the {ROUTE_C_GATE} around to the sea...
 hb_doors --> hb_peek : Shine the torch through the gap.
 hb_doors --> hb_office : Go knock at the office for the key.
 hb_peek --> hb_office : Only one way in: knock at the office.
 hb_office --> hb_show : Show him your decoded page.
 hb_office --> hb_pad : Ask about the numbers on his pad.
-hb_show --> hb_key : Take the key.
-hb_pad --> hb_key : Take the key he holds out.
-hb_key --> hb_shed : Go open the buoy shed now.
-hb_key --> e_hb_stories : Stay for a mug and his Nightjar stories.
+hb_show --> hb_key : Take {ROUTE_C_FIND}.
+hb_pad --> hb_key : Take {ROUTE_C_FIND} he holds out.
+hb_key --> hb_shed : Go open {ROUTE_C_LURE} now.
+hb_key --> e_hb_stories : Stay for a mug and his {MEMBER_TERM} sto...
 hb_shed --> hb_bell : Ring the old bell, softly.
 hb_shed --> hb_cage : Search the buoy's cage frame by torchlig...
 hb_bell --> hb_cache : Unscrew the little cylinder.
 hb_cage --> hb_cache : Work the little cylinder off the chain.
-hb_cache --> n_hub : Ride back to the square.
-hb_cache --> fin_bearing : Follow the bearing east to the Nest.
+hb_cache --> n_hub : Ride back to {ENTRANCE}.
+hb_cache --> fin_bearing : Follow the bearing east to {GOAL}.
 lb_green --> lb_porch : Roll up to the side porch.
 lb_porch --> lb_key : Feel up behind the stone owl for the key...
 lb_porch --> e_lb_alarm : Just try the handle.
 lb_key --> lb_hall : Slip inside.
-lb_hall --> lb_maproom : Go straight for the map room.
+lb_hall --> lb_maproom : Go straight for {ROUTE_D_LURE}.
 lb_hall --> lb_table : Detour past the lamp-lit display table.
-lb_table --> lb_maproom : On to the map room.
-lb_maproom --> lb_drawer : Open the drawer with the little inked di...
+lb_table --> lb_maproom : On to {ROUTE_D_LURE}.
+lb_maproom --> lb_drawer : Open the drawer with the little inked {M...
 lb_maproom --> lb_hunt : Work along the drawers year by year.
 lb_hunt --> lb_drawer : Slide that drawer wide.
-lb_drawer --> n_hub : Ease the drawer shut and head back to th...
-lb_drawer --> fin_bearing : Follow the map's pencil lines east to th...
+lb_drawer --> n_hub : Ease the drawer shut and head back to {E...
+lb_drawer --> fin_bearing : Follow the map's pencil lines east to {G...
 bh_path --> bh_climb : Take the long switchbacks.
-bh_path --> e_bh_scree : Scramble straight up the scree chute.
+bh_path --> e_bh_scree : Scramble straight up the {ROUTE_E_GATE}.
 bh_climb --> bh_wind : Climb into the wind at the shoulder of t...
 bh_wind --> bh_summit : Follow the singing up to the summit.
 bh_summit --> bh_anchors : Trace the wires out to their anchor bloc...
 bh_summit --> bh_listen : Stand a moment and listen to the hill si...
 bh_listen --> bh_anchors : Follow the wires down to the anchors.
 bh_anchors --> bh_plate : Examine anchor three's steel plate.
-bh_anchors --> bh_pillar : Check the survey pillar beside it.
-bh_plate --> bh_hollow : Turn the brass bolt out.
-bh_pillar --> bh_hollow : Go turn that brass bolt.
+bh_anchors --> bh_pillar : Check {ROUTE_E_DETAIL2} beside it.
+bh_plate --> bh_hollow : Turn {ROUTE_E_FIND} out.
+bh_pillar --> bh_hollow : Go turn {ROUTE_E_FIND}.
 bh_hollow --> bh_cache : Unscrew the cylinder.
 bh_cache --> bh_view : Stand up and look out from the hill.
-bh_view --> n_hub : Coast back down to the square.
-bh_view --> fin_bearing : Ride the far slope straight for that amb...
+bh_view --> n_hub : Coast back down to {ENTRANCE}.
+bh_view --> fin_bearing : Ride the far slope straight for {GOAL}.
 fin_bearing --> fin_gate : Walk the rails to the lit signal box.
-fin_gate --> fin_search : Hunt for the key a wren would leave.
-fin_gate --> e_fin_window : Stretch from the stair rail to the sash ...
+fin_gate --> fin_search : Hunt for the key a {CALLSIGN} would leav...
+fin_gate --> e_fin_window : Stretch from the stair rail to the {FIN_...
 fin_gate --> fin_door_listen : Put an ear to the landing door first.
 fin_door_listen --> fin_search : Go find the key.
 fin_door_listen --> e_fin_listen : Sit on the stairs and witness the last b...
-fin_search --> fin_wrenbox : Open the wren box on the ash tree.
+fin_search --> fin_wrenbox : Open {FIN_KEYBOX} on the ash tree.
 fin_search --> fin_lintel : Feel along the door lintel.
-fin_lintel --> fin_wrenbox : Go open the wren box.
+fin_lintel --> fin_wrenbox : Go open {FIN_KEYBOX}.
 fin_wrenbox --> fin_door : Climb the stairs and unlock the door.
 fin_door --> fin_threshold : Step inside.
 fin_threshold --> fin_inside : Come all the way in.
 fin_inside --> fin_wall : Study the wall of photographs.
-fin_inside --> fin_log : Read the open logbook.
+fin_inside --> fin_log : Read {GUIDE_LOG}, open on the desk.
 fin_inside --> fin_rack : Go straight to the humming station.
 fin_wall --> e_fin_late : Stay at the wall, reading every caption ...
 fin_wall --> fin_rack : Turn to the station while there is still...
-fin_log --> fin_rack : Carry the logbook over to the humming ra...
+fin_log --> fin_rack : Carry {GUIDE_LOG} over to the humming ra...
 fin_rack --> fin_answer : Flip the toggle to SPEAK and answer her.
 fin_rack --> fin_keep : Find out how to keep the station alive p...
-fin_rack --> fin_share : Give the Nest to the people it was built...
+fin_rack --> fin_share : Give {GOAL} to the people it was built f...
 fin_answer --> f_answer_own : Answer in your own words.
 fin_answer --> f_answer_script : Read her framed sign-off script.
 f_answer_own --> e_win_net : Flip back to LISTEN and wait in the hiss...
@@ -353,8 +353,8 @@ f_answer_script --> e_win_encore : Read it, then add one promise before the...
 fin_keep --> f_keep_wind : Wind the timer for one more year, same m...
 fin_keep --> f_keep_learn : Plan to learn the station properly, lice...
 f_keep_wind --> e_win_keepers : Shake on it in the amber light.
-f_keep_learn --> e_win_apprentice : Start the long apprenticeship at first l...
-fin_share --> f_share_family : Call Mom to come, right now, before firs...
+f_keep_learn --> e_win_apprentice : Start the long apprenticeship at {DEADLI...
+fin_share --> f_share_family : Call {GUARDIAN} to come, right now, befo...
 fin_share --> f_share_hunt : Record a brand-new hunt onto her tape fo...
 f_share_family --> e_win_family : Stand together for the last groups.
 f_share_hunt --> e_win_passiton : Sign the log as the new hunt-makers.
