@@ -211,36 +211,36 @@ waiting on any legal/business decision. Phase 2 needs decision 1 above. Phase 5 
 
 ### Phase 1: Close the PII-egress gaps (engineering, no dependencies, start now)
 
-Directly addresses the gaps found in Section 1.
+Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1b, 1c, 1e shipped
+(commit on `claude/gdpr-compliance-review-qzyvc2`); 1d deferred, see its entry below.**
 
-- **1a. Add field-targeted content screening at `ConceptBrief` intake**, not a general scan of
-  the assembled prompt. Per Section 1's parameterization note, only `premise` and
-  `special_constraints` are genuinely open-ended prose; apply pattern-based detection (email
-  addresses, phone numbers, street addresses, a configurable "other family members' names" list
-  a guardian can register) to those two fields specifically, in `story_requests/brief.py`
-  alongside the existing control-character strip, so a hit is rejected before the text is
-  persisted to `story_request.request_text`/`concept.brief` at all, not just before it reaches a
-  provider. Document the residual risk explicitly (a pattern/named-entity detector will never be
-  perfect); this is defense-in-depth on top of the exact-match guard, not a replacement for the
-  consent/notice work in Phase 2. Separately, strengthen the existing `protagonist.name` check
-  (already enforced today via the whole-prompt guard) to also catch close variants/nicknames of
-  a registered child's name, not just exact matches, since Decision 4 (Section 2/5) has now
-  confirmed self-naming is intentionally disallowed as product policy, not just an incidental
-  side effect of the guard.
-- **1b. Guard the cover-art path.** Wrap `covers/service.py`'s prompt assembly (which calls
-  `covers/prompt.py::build_cover_prompt`) in the same `PiiGuardedProvider`/
-  `assert_prompt_pii_safe` chokepoint the generation path already uses, using the same
-  `PiiContext` for the family. This is the highest-value single fix in this phase: it closes
-  the one path that currently has *zero* PII screening.
-- **1c. Guard the Stage-0 classifier calls in the moderation pipeline.** Wrap the
-  `run_classifiers` call in `moderation/pipeline.py::_run_all_stages` with the same guard
-  already applied three lines away to `guarded_review`, so OpenAI Moderation and Google
-  Perspective receive the same screening as every other external call in that function.
-- **1d. Make the R2 cover bucket private.** Switch to signed, expiring URLs (or gate retrieval
-  behind the family-scoped API) instead of a public bucket with a guessable key. Independent of
-  1a-1c; can be done in parallel.
-- **1e. Retire the dead birthdate-screening branch**, or wire it correctly if a birthdate is
-  ever collected, so the guard's own documentation doesn't imply coverage it doesn't have.
+- **1a. DONE.** Pattern-based content screening (email, phone, street address) added to
+  `generation/pii.py::assert_prompt_pii_safe`, the same chokepoint every provider call already
+  goes through, rather than at brief-construction time as originally scoped: this was a
+  deliberate implementation choice once the parameterization review showed the guard already
+  screens the fully-assembled prompt (which includes `premise`/`special_constraints`) before
+  every provider call, so extending that one chokepoint gives every existing and new call site
+  the new coverage automatically, including the cover-art and classifier paths added in 1b/1c
+  below. The nickname/variant-matching enhancement for `protagonist.name` was **not** built this
+  pass (deprioritized as lower-confidence, higher-maintenance than the pattern-based work) and
+  remains a documented follow-up if it's wanted later.
+- **1b. DONE.** `covers/service.py::generate_cover` now screens the cover-art prompt via the
+  same guard before calling Gemini, closing the one path that previously had zero PII screening.
+- **1c. DONE.** `moderation/pipeline.py::_run_all_stages` and `api/node_edit.py::edit_node` (a
+  second, identical gap found while fixing 1c, same pattern: an admin/guardian's edited node
+  text reached the classifier call unguarded) now screen node text before the Stage-0 classifier
+  calls.
+- **1d. Deferred, not done.** Closing this properly needs either a breaking return-contract
+  change (presigned URLs, which ripples into `api/covers.py`, `api/library.py`, and
+  `api/recommendations.py`, all three of which read `cover_image_url` today) or a
+  key-derivation change that would break retrieval of every already-published cover without a
+  live-R2 migration script to move existing objects to new keys. Both need integration/E2E
+  testing this sandbox cannot do (no Docker, no live R2 credentials). Recommend scheduling this
+  as its own change with a migration plan, rather than shipping either approach unverified.
+- **1e. DONE.** The birthdate-matching code path is removed outright (not just left unused):
+  `ChildProfile` has no birthdate column and the product only ever collects a coarse age band by
+  design, so every call site could only ever pass an empty set. Kept as a documented, deliberate
+  design note in the module docstring rather than dead code implying coverage that never existed.
 
 ### Phase 2: Consent and notice (needs Decision 1; drafting can start once VPC method is chosen)
 
