@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and the Stage-0 safety-classifier calls (OpenAI Moderation, Google
   Perspective) in both the generation-time moderation pipeline and the
   node-edit review path (#304).
+- Cover images are now served exclusively via short-lived (1-hour) presigned
+  R2 URLs, generated fresh on every read from the deterministic
+  `{storybook_id}/{version}.webp` object key, instead of the permanent
+  public URL previously stored and returned as-is. Closes the standing
+  exposure where anyone who guessed or was handed a cover URL could view a
+  specific child's cover art indefinitely without authentication. No R2
+  object migration was needed (the key never changes); the stored
+  `cover_image_url` column is now audit-only.
 
 ### Documentation
 

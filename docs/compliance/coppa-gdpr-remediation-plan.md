@@ -125,11 +125,12 @@ child's registered name (the same scenario the generation path catches), the cov
 Google is not screened for it, because it is a completely separate code path from the guarded
 generation pipeline. This is the single largest gap in the "stories/app-info only" design
 intent as currently implemented, and it is an easy, contained fix (wrap `covers/service.py`'s
-prompt assembly in the same guard `generation/guarded.py` already provides). The R2 bucket
-being public with a guessable key is a second, independent issue (anyone who guesses or is
-handed a URL can view a specific child's cover art without authentication); it doesn't leak
-identifying data on its own since keys aren't derived from anything identifying, but it is
-still worth closing as part of the same work item since it is the same subsystem.
+prompt assembly in the same guard `generation/guarded.py` already provides; **done, Phase 1b**).
+The R2 bucket being public with a guessable key was a second, independent issue (anyone who
+guesses or is handed a URL could view a specific child's cover art without authentication); it
+didn't leak identifying data on its own since keys aren't derived from anything identifying, but
+closing it (**done, Phase 1d**: covers are now served via short-lived presigned URLs, never a
+permanent public one) removes the standing exposure regardless.
 
 ### "I'm not sure how Sentry is used."
 
@@ -229,8 +230,8 @@ whoever is assigned.
 
 ### Phase 1: Close the PII-egress gaps (engineering, no dependencies, start now)
 
-Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1b, 1c, 1e shipped
-(commit on `claude/gdpr-compliance-review-qzyvc2`); 1d deferred, see its entry below.**
+Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1b, 1c, 1d, 1e
+all shipped (commit on `claude/gdpr-compliance-review-qzyvc2`).**
 
 - **1a. DONE.** Pattern-based content screening (email, phone, street address) added to
   `generation/pii.py::assert_prompt_pii_safe`, the same chokepoint every provider call already
@@ -248,13 +249,23 @@ Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1
   second, identical gap found while fixing 1c, same pattern: an admin/guardian's edited node
   text reached the classifier call unguarded) now screen node text before the Stage-0 classifier
   calls.
-- **1d. Deferred, not done.** Closing this properly needs either a breaking return-contract
-  change (presigned URLs, which ripples into `api/covers.py`, `api/library.py`, and
-  `api/recommendations.py`, all three of which read `cover_image_url` today) or a
-  key-derivation change that would break retrieval of every already-published cover without a
-  live-R2 migration script to move existing objects to new keys. Both need integration/E2E
-  testing this sandbox cannot do (no Docker, no live R2 credentials). Recommend scheduling this
-  as its own change with a migration plan, rather than shipping either approach unverified.
+- **1d. DONE, via the presigned-URL route, with no R2 migration needed.** Every cover has always
+  been written to the same deterministic key (`{storybook_id}/{version}.webp`, both on fresh
+  upload and via `scripts/backfill_covers_r2.py`'s historical migration), so the object itself
+  never needed to move. `covers/storage.py::generate_presigned_cover_url`/
+  `generate_presigned_cover_urls` compute a fresh, short-lived (1-hour) signed GET URL from that
+  key on every read; `api/covers.py`, `api/library.py`, and `api/recommendations.py` all switched
+  from returning the stored `cover_image_url` column to calling these functions instead. The
+  stored column is kept, unchanged, purely as an upload-time audit value and for the backfill
+  script's own URL-classification logic; it is never served to a client again. Both functions
+  degrade to `None`/`{}` (logged, not raised) if R2 is unconfigured or a presign call fails, so a
+  storage hiccup shows a missing cover image rather than 500ing the whole library or
+  recommendations listing. **Operator action still required, outside this codebase**: the R2
+  bucket's public custom domain (or `r2.dev` public access) must be disabled in the Cloudflare
+  dashboard; presigned URLs only add security value once the bucket itself is not also publicly
+  readable by the old, permanent URL shape. Verified with unit tests (mocked boto3) and one
+  integration test exercising the full HTTP round-trip with a mocked R2 client; the migration
+  itself needed no live R2 credentials or Docker since no object ever moves.
 - **1e. DONE.** The birthdate-matching code path is removed outright (not just left unused):
   `ChildProfile` has no birthdate column and the product only ever collects a coarse age band by
   design, so every call site could only ever pass an empty set. Kept as a documented, deliberate

@@ -54,7 +54,7 @@ from sqlalchemy.orm import load_only
 from cyo_adventure.core.config import settings as _settings
 from cyo_adventure.core.database import get_session
 from cyo_adventure.covers.errors import CoverGenerationError
-from cyo_adventure.covers.storage import upload_cover
+from cyo_adventure.covers.storage import cover_object_key, upload_cover
 from cyo_adventure.db.models import StorybookVersion
 from cyo_adventure.utils.logging import get_logger, setup_logging
 
@@ -189,7 +189,7 @@ async def migrate_row(
     Returns:
         ``"migrated"``, ``"skipped"`` (dry-run only), or ``"failed"``.
     """
-    key = f"{row.storybook_id}/{row.version}.webp"
+    key = cover_object_key(row.storybook_id, row.version)
     original_url = row.cover_image_url
     # #ASSUME: data integrity: the caller only invokes this for rows already
     # classified "supabase" by classify_cover_url(), which only classifies

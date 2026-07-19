@@ -30,7 +30,9 @@ from sqlalchemy import and_, exists, or_, select, tuple_
 
 from cyo_adventure.api.deps import CurrentPrincipal, DbSession, authorize_profile
 from cyo_adventure.api.schemas import RecommendationItem, RecommendationsView
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
+from cyo_adventure.covers.storage import generate_presigned_cover_urls
 from cyo_adventure.db.models import (
     ChildProfile,
     FamilyConnection,
@@ -44,6 +46,7 @@ from cyo_adventure.publishing.state_machine import Visibility
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from sqlalchemy import ScalarResult
     from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/api/v1", tags=["recommendations"])
@@ -89,6 +92,37 @@ def _book_title(blob: Mapping[str, object], storybook_id: str) -> str:
     """
     title = blob.get("title")
     return title if isinstance(title, str) and title else storybook_id
+
+
+async def _titles_and_cover_urls(
+    version_rows: ScalarResult[StorybookVersion],
+) -> tuple[dict[str, str], dict[str, str]]:
+    """Build the per-storybook title and presigned-cover-URL maps.
+
+    Args:
+        version_rows: The pinned ``StorybookVersion`` rows for every book
+            visible to the requesting profile.
+
+    Returns:
+        tuple[dict[str, str], dict[str, str]]: ``(titles, covers)``, both
+        keyed by ``storybook_id``. ``covers`` holds an entry only for books
+        with a ready cover.
+    """
+    titles: dict[str, str] = {}
+    ready_covers: list[tuple[str, int]] = []
+    for row in version_rows:
+        titles[row.storybook_id] = _book_title(row.blob, row.storybook_id)
+        if row.cover_status == "ready":
+            ready_covers.append((row.storybook_id, row.version))
+    # #CRITICAL: security: covers are private-by-default in R2 (Phase 1d); the
+    # only way a client legitimately learns a cover's URL is a freshly
+    # generated, short-lived signed GET URL, never the stored (permanent,
+    # audit-only) cover_image_url column.
+    # #VERIFY: test_recommendations_api.py::
+    # test_recommendations_returns_presigned_cover_urls.
+    by_pair = await generate_presigned_cover_urls(ready_covers, settings)
+    covers = {storybook_id: url for (storybook_id, _version), url in by_pair.items()}
+    return titles, covers
 
 
 async def _visible_books(
@@ -242,11 +276,7 @@ async def get_recommendations(
             )
         )
     )
-    titles: dict[str, str] = {}
-    covers: dict[str, str | None] = {}
-    for row in version_rows:
-        titles[row.storybook_id] = _book_title(row.blob, row.storybook_id)
-        covers[row.storybook_id] = row.cover_image_url
+    titles, covers = await _titles_and_cover_urls(version_rows)
 
     # Ring 1: every OTHER profile in the caller's own family.
     family_rater_ids = set(
