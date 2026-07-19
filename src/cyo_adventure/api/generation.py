@@ -227,7 +227,7 @@ async def create_concept(
         )
     )
     child_names = frozenset(rows.all())
-    pii = PiiContext(child_names=child_names, birthdates=frozenset())
+    pii = PiiContext(child_names=child_names)
     assert_prompt_pii_safe(body.brief.model_dump_json(), forbidden=pii)
 
     concept = Concept(

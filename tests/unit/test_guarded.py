@@ -33,7 +33,7 @@ class _RecordingProvider:
 
 def _guard() -> tuple[_RecordingProvider, PiiGuardedProvider]:
     inner = _RecordingProvider()
-    forbidden = PiiContext(child_names=frozenset({_REAL_CHILD}), birthdates=frozenset())
+    forbidden = PiiContext(child_names=frozenset({_REAL_CHILD}))
     return inner, PiiGuardedProvider(inner, forbidden=forbidden)
 
 

@@ -98,7 +98,7 @@ def _make_brief(
 
 def _empty_pii() -> PiiContext:
     """Return a PiiContext with no forbidden tokens."""
-    return PiiContext(child_names=frozenset(), birthdates=frozenset())
+    return PiiContext(child_names=frozenset())
 
 
 def _passing_factory() -> Callable[[], MockProvider]:

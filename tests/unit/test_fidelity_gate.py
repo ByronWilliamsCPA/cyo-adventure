@@ -40,7 +40,7 @@ async def test_pure_code_failure_skips_the_semantic_call(monkeypatch) -> None:
     monkeypatch.setattr(
         "cyo_adventure.generation.fidelity_gate.build_review_provider", _fail_if_called
     )
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
 
     violations = await run_stage1_gate(
         original, filled, review_stage1_model=None, settings=Settings(), pii=pii
@@ -64,7 +64,7 @@ async def test_clean_pure_code_pass_runs_the_semantic_check(monkeypatch) -> None
         "cyo_adventure.generation.fidelity_gate.build_review_provider",
         lambda *a, **k: (_FlaggingProvider(), True),
     )
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
 
     violations = await run_stage1_gate(
         original, filled, review_stage1_model=None, settings=Settings(), pii=pii
@@ -104,7 +104,7 @@ async def test_omitted_review_stage1_model_falls_back_to_prep_model(
         "cyo_adventure.generation.fidelity_gate.build_review_provider",
         lambda *a, **k: (_PassingProvider(), True),
     )
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
 
     await run_stage1_gate(
         original,
@@ -144,7 +144,7 @@ async def test_explicit_review_stage1_model_takes_precedence_over_prep_model(
         "cyo_adventure.generation.fidelity_gate.build_review_provider",
         lambda *a, **k: (_PassingProvider(), True),
     )
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
 
     await run_stage1_gate(
         original,

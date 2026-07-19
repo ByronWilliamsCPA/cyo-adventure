@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Protocol
 
@@ -14,9 +15,16 @@ from cyo_adventure.covers.optimize import optimize_cover as _optimize_cover
 from cyo_adventure.covers.prompt import build_cover_prompt
 from cyo_adventure.covers.provider import generate_cover_image
 from cyo_adventure.covers.storage import upload_cover
-from cyo_adventure.db.models import Concept, GenerationJob, StorybookVersion
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Concept,
+    GenerationJob,
+    StorybookVersion,
+)
+from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 
 if TYPE_CHECKING:
+    import uuid
     from collections.abc import Awaitable, Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,27 +46,77 @@ class _OptimizeFn(Protocol):
     ) -> bytes: ...
 
 
-async def _recover_protagonist_name(
+@dataclass(frozen=True, slots=True)
+class _ConceptContext:
+    """The pieces of the owning concept a cover prompt/guard needs.
+
+    Attributes:
+        protagonist_name: The fictional protagonist name from the brief, or
+            None if it could not be recovered.
+        family_id: The owning family's id, or None if it could not be
+            recovered (e.g. no Concept/GenerationJob row links to this
+            storybook). A None family_id means the PII guard below has no
+            registered names to screen against; the pattern-based checks in
+            assert_prompt_pii_safe still run regardless.
+    """
+
+    protagonist_name: str | None
+    family_id: uuid.UUID | None
+
+
+async def _recover_concept_context(
     session: AsyncSession, storybook_id: str
-) -> str | None:
-    """Recover the protagonist name via storybook -> job -> concept.brief."""
+) -> _ConceptContext:
+    """Recover the protagonist name and owning family id via storybook -> job -> concept.
+
+    Both pieces come from the same Concept row, so they are fetched in one
+    query rather than two.
+    """
     # #ASSUME: data integrity: GenerationJob.storybook_id is not a FK and a story
     # may have >1 job row; take the earliest and degrade to None on any gap.
     # #VERIFY: ORDER BY created_at LIMIT 1 + isinstance guards at each hop.
-    brief = await session.scalar(
-        select(Concept.brief)
-        .join(GenerationJob, GenerationJob.concept_id == Concept.id)
-        .where(GenerationJob.storybook_id == storybook_id)
-        .order_by(GenerationJob.created_at)
-        .limit(1)
+    row = (
+        await session.execute(
+            select(Concept.brief, Concept.family_id)
+            .join(GenerationJob, GenerationJob.concept_id == Concept.id)
+            .where(GenerationJob.storybook_id == storybook_id)
+            .order_by(GenerationJob.created_at)
+            .limit(1)
+        )
+    ).first()
+    if row is None:
+        return _ConceptContext(protagonist_name=None, family_id=None)
+    brief, family_id = row
+    protagonist_name: str | None = None
+    if isinstance(brief, dict):
+        protagonist = brief.get("protagonist")
+        if isinstance(protagonist, dict):
+            name = protagonist.get("name")
+            protagonist_name = name if isinstance(name, str) and name else None
+    return _ConceptContext(
+        protagonist_name=protagonist_name,
+        family_id=family_id,
     )
-    if not isinstance(brief, dict):
-        return None
-    protagonist = brief.get("protagonist")
-    if not isinstance(protagonist, dict):
-        return None
-    name = protagonist.get("name")
-    return name if isinstance(name, str) and name else None
+
+
+async def _pii_context_for_family(
+    session: AsyncSession, family_id: uuid.UUID | None
+) -> PiiContext:
+    """Build a PiiContext from a family's registered real child display names.
+
+    Mirrors the same query shape used at concept-creation time
+    (api/generation.py::create_concept, story_requests/service.py::_build_concept)
+    so the cover-art path is screened against the same registered-identifier
+    set as every other egress point. A None family_id (context could not be
+    recovered) yields an empty-names context; the pattern-based checks in
+    assert_prompt_pii_safe still run regardless.
+    """
+    if family_id is None:
+        return PiiContext(child_names=frozenset())
+    rows = await session.scalars(
+        select(ChildProfile.display_name).where(ChildProfile.family_id == family_id)
+    )
+    return PiiContext(child_names=frozenset(rows.all()))
 
 
 def _maybe_backup(
@@ -110,9 +168,18 @@ async def generate_cover(
     row.cover_status = "generating"
     await session.commit()
     try:
-        protagonist = await _recover_protagonist_name(session, storybook_id)
+        concept_context = await _recover_concept_context(session, storybook_id)
         blob = row.blob if isinstance(row.blob, dict) else {}
-        prompt = build_cover_prompt(blob, protagonist)
+        prompt = build_cover_prompt(blob, concept_context.protagonist_name)
+        # #CRITICAL: security: PII egress guard -- the cover-art prompt is sent
+        # to an external image provider (Gemini) and, before this guard, was
+        # the one path in the generation pipeline with zero PII screening: it
+        # is built from story content (title, protagonist name, an excerpt),
+        # any of which could echo a real child's registered name. Screen it
+        # with the same guard every other provider call already goes through.
+        # #VERIFY: test_service.py::test_generate_cover_blocks_on_pii_in_prompt.
+        pii = await _pii_context_for_family(session, concept_context.family_id)
+        assert_prompt_pii_safe(prompt, forbidden=pii)
         source = await asyncio.to_thread(generate, prompt, settings)
         _maybe_backup(source, storybook_id, version, settings)
         optimized = await asyncio.to_thread(

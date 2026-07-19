@@ -570,7 +570,7 @@ def main() -> None:
             provider_name, model=model_override, fallback=fallback_enabled
         )
 
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    pii = PiiContext(child_names=frozenset())
     report = asyncio.run(
         run_yield(
             briefs,

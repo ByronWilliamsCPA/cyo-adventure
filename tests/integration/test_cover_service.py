@@ -226,6 +226,103 @@ async def test_backup_writes_full_res_copy_when_dir_configured(
 
 
 @pytest.mark.asyncio
+async def test_generate_cover_blocks_on_registered_child_name_in_prompt(sessions, seed):
+    # The concept's protagonist name matches the family's registered real
+    # child display name ("Reader A", seeded by the `seed` fixture). The PII
+    # guard added to generate_cover must block this before the provider is
+    # ever called, mirroring the same protection the text-generation path has
+    # always had.
+    generate_called = {"count": 0}
+
+    def counting_generate(prompt: str, settings: Settings) -> bytes:
+        generate_called["count"] += 1
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes: bytes, key: str, settings: Settings) -> str:
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    async with sessions() as s:
+        concept = Concept(
+            family_id=seed.family_id,
+            brief={"protagonist": {"name": "Reader A"}, "topic": "dragons"},
+        )
+        s.add(concept)
+        await s.flush()
+        s.add(
+            GenerationJob(
+                concept_id=concept.id,
+                storybook_id=seed.storybook_id,
+                status="passed",
+            )
+        )
+        await s.commit()
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=counting_generate,
+            optimize=lambda b, **kw: b"WEBP",
+            upload=fake_upload,
+        )
+    assert generate_called["count"] == 0
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_status == "failed"
+
+
+@pytest.mark.asyncio
+async def test_generate_cover_blocks_on_email_shaped_content_in_prompt(sessions, seed):
+    # Pattern-based screening (email/phone/address) applies here too, since
+    # the cover prompt is built from story content that could echo any
+    # free-text field a guardian typed, not just a registered display name.
+    generate_called = {"count": 0}
+
+    def counting_generate(prompt: str, settings: Settings) -> bytes:
+        generate_called["count"] += 1
+        return b"PNGSOURCE"
+
+    async def fake_upload(image_bytes: bytes, key: str, settings: Settings) -> str:
+        return f"https://p.supabase.co/storage/v1/object/public/covers/{key}"
+
+    async with sessions() as s:
+        concept = Concept(
+            family_id=seed.family_id,
+            brief={
+                "protagonist": {"name": "contact.us@example.com"},
+                "topic": "dragons",
+            },
+        )
+        s.add(concept)
+        await s.flush()
+        s.add(
+            GenerationJob(
+                concept_id=concept.id,
+                storybook_id=seed.storybook_id,
+                status="passed",
+            )
+        )
+        await s.commit()
+
+    async with sessions() as s:
+        await generate_cover(
+            seed.storybook_id,
+            seed.version,
+            session=s,
+            settings=Settings(),
+            generate=counting_generate,
+            optimize=lambda b, **kw: b"WEBP",
+            upload=fake_upload,
+        )
+    assert generate_called["count"] == 0
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row.cover_status == "failed"
+
+
+@pytest.mark.asyncio
 async def test_backup_failure_is_swallowed_and_job_still_succeeds(
     sessions, seed, tmp_path
 ):
