@@ -548,6 +548,12 @@ async def test_run_skeleton_fill_threads_stage1_params_into_fill_skeleton(
     """
     fake_skeleton: dict[str, object] = {"id": "s_x", "nodes": []}
     monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
+    # This test exercises the legacy (no-contract) fill path explicitly. The
+    # real slug it uses ("the-cave-of-echoes") now ships a theme contract
+    # (WS-2 Wave C0), so force the legacy dispatch branch rather than depend on
+    # the on-disk catalog state; the bound-path dispatch is covered by its own
+    # tests below.
+    monkeypatch.setattr(worker_module, "load_contract_for", lambda *_a, **_k: None)
 
     captured: dict[str, object] = {}
 

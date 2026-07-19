@@ -118,6 +118,25 @@ _CROSS_BAND_SKELETON_PATH = (
 )
 
 
+@pytest.fixture(autouse=True)
+def _force_legacy_skeleton_fill(  # pyright: ignore[reportUnusedFunction]
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Pin these worker-pipeline tests to the legacy free-text fill path.
+
+    The tests drive real catalog skeletons (``the-cave-of-echoes``,
+    ``the-sunspire-ascent``) that now ship WS-2 theme contracts, which would
+    otherwise route the worker through the bound (parameterized) dispatch and
+    its extra binding provider call the mocks here do not expect. This module
+    tests the legacy skeleton-fill pipeline end to end (persistence, cross-band
+    override, correlation); the bound dispatch path has dedicated unit coverage
+    in ``tests/unit/test_worker.py``. Forcing ``load_contract_for`` to ``None``
+    keeps the pipeline under test deterministic regardless of on-disk contract
+    sidecars.
+    """
+    monkeypatch.setattr(worker_module, "load_contract_for", lambda *_a, **_k: None)
+
+
 def _filled_skeleton_json_for(skeleton_path: Path) -> str:
     """Return a JSON string: the given skeleton with every FILL body replaced.
 
