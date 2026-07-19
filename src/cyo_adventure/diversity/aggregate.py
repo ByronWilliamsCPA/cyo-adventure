@@ -115,7 +115,10 @@ def _cosine(a: Counter[str], b: Counter[str]) -> float:
     dot = sum(count * b[token] for token, count in a.items() if token in b)
     norm_a = math.sqrt(sum(count * count for count in a.values()))
     norm_b = math.sqrt(sum(count * count for count in b.values()))
-    if norm_a == 0.0 or norm_b == 0.0:
+    # A vector norm is non-negative, so `<= 0.0` is the zero-norm guard without
+    # a float-equality comparison (SonarQube python:S1244); the earlier
+    # emptiness check already makes a zero norm unreachable here.
+    if norm_a <= 0.0 or norm_b <= 0.0:
         return 0.0
     return dot / (norm_a * norm_b)
 

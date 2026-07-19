@@ -680,7 +680,10 @@ def _check_structural_invariants(
     for pair in manifest.atg_pairs:
         key = _pair_key(pair.a, pair.b)
         distance = result.atg_pairs[key].structural_distance
-        if distance != 0.0:
+        # structural_distance is in [0, 1] and returns exactly 0.0 for a shared
+        # fingerprint, so `> 0.0` is the nonzero test without a float-equality
+        # comparison (SonarQube python:S1244).
+        if distance > 0.0:
             findings.append(
                 RegressionFinding(
                     rule="R5",
