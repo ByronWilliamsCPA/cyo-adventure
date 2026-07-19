@@ -21,8 +21,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `import_cli --series-id` links an imported book into a series on import;
   an L2-13 large-Tier-2 scale advisory in the validator; two new skeletons,
   `the-cinderwick-exchange` (10-13) and `the-blackwood-sanatorium` (16+) (#300).
+- Parameterized-skeleton theme contracts (WS-2, ADR-019): each production
+  skeleton now carries a `<slug>.contract.json` sidecar declaring per-slot
+  `{SLOT}` tokens (in beats guidance, ending titles, and choice-label
+  templates only, never final prose) with a machine-readable safety envelope,
+  and the full catalog is migrated. A deterministic slot validator
+  (`validator/slots.py`) enforces completeness, an LLM01 injection charset, a
+  word cap, versioned denylist bundles unioned with a band-mandatory floor,
+  and per-slot distinctness/legacy-leak checks; `binding.py` binds a theme and
+  fail-closed renders the bound skeleton (no residual tokens, structure
+  fingerprint preserved, gate not blocked, byte-preserved FILL directives).
+  New tooling: `scripts/parameterize_skeleton.py`, `scripts/bind_theme.py`,
+  and the `scripts/check_theme_contract.py` acceptance gate (#303).
 
 ### Changed
+
+- The generation worker now dispatches on theme-contract presence: a skeleton
+  with no sidecar takes the byte-identical WS-1 free-text fill path, while a
+  skeleton with a contract is bound, rendered, and bound-filled with a
+  `theme_contract` audit block, fail-closed with no free-text fallback (#303).
 
 - Choice labels are now diversity leaf content: excluded from the
   `structure_fingerprint` and folded into the anti-template guard's leaf

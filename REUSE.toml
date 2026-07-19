@@ -227,6 +227,7 @@ path = [
     "out/reports/*.md",         # Authoring-run summary reports
     "out/reports/**/*.md",      # Story design and compliance review reports
     "out/pilot/**/*.md",        # Parameterized-skeleton pilot notes and bindings
+    "out/ws2/**/*.txt",         # WS-2 gate/acceptance evidence logs
 ]
 SPDX-License-Identifier = "CC-BY-4.0"
 SPDX-FileCopyrightText = "2026 Byron Williams"
