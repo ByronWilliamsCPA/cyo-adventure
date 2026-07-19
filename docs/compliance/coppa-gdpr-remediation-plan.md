@@ -53,8 +53,9 @@ against zero-width/compatibility-form tricks) and would catch it even if a guard
 child's real registered name into the story's protagonist-name field, since the guard scans
 the whole assembled prompt text, not just isolated fields.
 
-**The gap**: the guard only knows about names/birthdates already on file as a `child_profile`
-row. It has no way to catch a sibling's name, a friend's name, a home address, a school name,
+**The gap**: the guard only knows about names already on file as a `child_profile` row (there is
+no birthdate to match against: `ChildProfile` has no birthdate column, by design; see 1e below).
+It has no way to catch a sibling's name, a friend's name, a home address, a school name,
 or a medical/family-circumstance detail a child or guardian types into the free-text story
 idea (`request_text`) or premise (`ConceptBrief.premise`). That free text becomes part of the
 generation prompt after it passes the exact-name check, so *that specific class* of
@@ -94,14 +95,20 @@ the *entire* assembled prompt (not just isolated fields) against registered real
 if a guardian sets the protagonist's name to a registered child's exact name, generation already
 blocks on it today; it does not need new work.
 
-**This means Phase 1a below should target `premise` and `special_constraints` specifically, at
-the earliest point they exist** (`story_requests/brief.py`/`concept.py`, when the `ConceptBrief`
-is constructed), rather than trying to build a general-purpose PII detector over the whole
-assembled prompt string. Screening at that boundary, instead of only at the final
-prompt-assembly guard, has a real advantage: a hit can be rejected (or sent back to the
-guardian for edit) before the text is even persisted to `story_request.request_text` and
-`concept.brief`, not just before it's sent to a provider, which also helps the retention
-picture in Phase 4 (nothing to purge later if it's never stored in the first place).
+**This means Phase 1a below should target `premise` and `special_constraints` specifically**,
+rather than trying to build a general-purpose PII detector over arbitrary text. Two ways to
+place that screening were on the table: at `ConceptBrief` construction time
+(`story_requests/brief.py`/`concept.py`), before `story_request.request_text` and
+`concept.brief` are ever persisted; or at the existing `assert_prompt_pii_safe` chokepoint every
+provider call already passes through. As shipped (see Phase 1a's status below), it landed at
+the chokepoint, not at construction time: that gives every call site the new coverage for free,
+including the cover-art and classifier paths added in 1b/1c, but it screens egress, not
+storage, so a PII hit is still written to `story_request.request_text`/`concept.brief` before
+being blocked from reaching a provider. Pre-persistence screening (so a hit is rejected, or sent
+back to the guardian for edit, before the text is stored at all, which would also mean nothing
+to purge later) remains an open follow-up, not something this phase delivered; Phase 4's
+retention/purge work (4b-4c) still needs to cover this data as retained, not assume it was
+screened out at intake.
 
 ### "Google [Gemini] and R2 contain stories and images, this is app info not user info."
 
@@ -180,34 +187,45 @@ should actually build. Recommended defaults are given where there is a reasonabl
 answer for a project at this stage; the rest are genuinely yours to make. Full context for each
 is in Section 5.
 
-1. **Verifiable parental consent (VPC) method.** *Open.* No paid tier exists, but guardian
-   registration is already a mandatory gate before any child can use the app, which gives Phase
-   2 a concrete attachment point regardless of which VPC method is chosen. See the expanded
-   options in Section 5, Decision 1.
-2. **Supabase project region.** *Resolved: stay US.* You've confirmed Supabase stays in the US,
-   with a possible future move from `us-east-1` to a US-west region. See Section 5, Decision 2
-   for why this is compliance-neutral and needs no further analysis.
-3. **Does the product intend children to appear as themselves (named) in their own stories?**
-   *Resolved: no, self-naming is disallowed by design.* See Section 5, Decision 4 for the
-   requested impact analysis of both routes, kept for reference in case this is revisited later.
-4. **Who signs off on and owns the compliance artifacts** (privacy notice, DPIA, DPAs), and
-   **when does privacy counsel get engaged?** *Open, no answer yet.* Needed before Phase 2 and
-   Phase 7 can start in earnest; the engineering work in Phases 1, 3, 4, and 6 does not depend on
-   this and can proceed regardless.
-5. **Retention windows per data category.** *Open, no answer yet.* A proposed starting table is
-   in Section 5, Decision 3, for you to react to rather than starting from a blank page.
-6. **DPO designation.** *Open, no answer yet.* Needs your projected user scale; can be assessed
-   in parallel with everything else and doesn't block any engineering work.
-7. **Zero-data-retention (ZDR) terms with OpenRouter and the other LLM/classifier vendors.**
-   *Open.* ADR-018 already calls this "standing Blocker 1"; needed before Phase 5 can close.
+- **VPC method.** *Open.* No paid tier exists. Per `PROJECT-PLAN.md`, there is currently no
+  onboarding/signup endpoint at all and `POST /profiles` is ungated (no consent precondition),
+  so guardian registration is not today an existing child-data gate; it is the *intended*
+  attachment point for one. Phase 2 must make profile creation and any child-data collection
+  blocked until a consent record exists, not assume registration already provides that gate. See
+  the expanded options in Section 5 ("VPC method").
+- **Supabase project region.** *Resolved: stay US.* You've confirmed Supabase stays in the US,
+  with a possible future move from `us-east-1` to a US-west region. See Section 5 ("Supabase
+  region") for why this is compliance-neutral and needs no further analysis.
+- **Does the product intend children to appear as themselves (named) in their own stories?**
+  *Resolved: no, self-naming is disallowed by design.* See Section 5 ("Self-naming") for the
+  requested impact analysis of both routes, kept for reference in case this is revisited later.
+- **Who signs off on and owns the compliance artifacts** (privacy notice, DPIA, DPAs)?
+  *Open, no answer yet.* Needed before Phase 7 can start in earnest. See Section 5 ("Artifact
+  owner").
+- **When does privacy counsel get engaged?** *Open, no answer yet.* Needed before Phase 2's
+  consent/notice language and Phase 7's DPIA can be finalized; the engineering work in Phases 1,
+  3, 4, and 6 does not depend on this and can proceed regardless. See Section 5 ("Counsel
+  timing").
+- **Retention windows per data category.** *Open, no answer yet.* A proposed starting table is
+  in Section 5 ("Retention windows"), for you to react to rather than starting from a blank page.
+- **DPO designation.** *Open, no answer yet.* Needs your projected user scale; can be assessed
+  in parallel with everything else and doesn't block any engineering work. See Section 5 ("DPO
+  designation").
+- **Zero-data-retention (ZDR) terms with OpenRouter and the other LLM/classifier vendors.**
+  *Open.* ADR-018 already calls this "standing Blocker 1"; needed before Phase 5 can close. See
+  Section 5 ("ZDR terms").
 
 ---
 
 ## 3. Phased implementation plan
 
-Phases 1, 3, 4, and 6 are pure engineering and can start immediately, in parallel, without
-waiting on any legal/business decision. Phase 2 needs decision 1 above. Phase 5 needs decision
-7. Phase 7 needs decisions 4 and 6, and drafting time from whoever is assigned.
+Phases 1, 3, and 6 are pure engineering and can start immediately, in parallel, without waiting
+on any legal/business decision. Phase 4 is split: 4a (Supabase region) and 4d (documenting the
+audit-log retention justification) can start now, since their gating decisions are already
+resolved or need no decision at all; 4b and 4c (the retention policy and purge jobs) need the
+retention-windows decision. Phase 2 needs the VPC method decision. Phase 5 needs the ZDR-terms
+decision. Phase 7 needs the artifact-owner and counsel-timing decisions, and drafting time from
+whoever is assigned.
 
 ### Phase 1: Close the PII-egress gaps (engineering, no dependencies, start now)
 
@@ -242,7 +260,7 @@ Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1
   design, so every call site could only ever pass an empty set. Kept as a documented, deliberate
   design note in the module docstring rather than dead code implying coverage that never existed.
 
-### Phase 2: Consent and notice (needs Decision 1; drafting can start once VPC method is chosen)
+### Phase 2: Consent and notice (needs the VPC-method decision; drafting can start once it's chosen)
 
 - **2a. Build the consent-capture flow.** Replace `onboarding.py`'s `_record_consent()` no-op
   stub with a real implementation: present the privacy notice, capture consent by the chosen
@@ -278,24 +296,27 @@ Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1
   delete it, and verify nothing referencing that family/profile survives outside what a
   documented retention exception (Phase 4) explicitly allows.
 
-### Phase 4: Retention, storage governance, and the Supabase decision (needs Decision 2 and 5)
+### Phase 4: Retention and storage governance (4a/4d startable now; 4b/4c need the retention-windows decision)
 
-- **4a. Execute the Supabase region decision** (Section 2, Decision 2) while data volume is
+- **4a. Execute the Supabase region decision** (already resolved, Section 2) while data volume is
   still small, since migrating a live project's region later is materially harder than choosing
-  correctly now.
+  correctly now. No decision gate: startable immediately.
 - **4b. Write and publish a retention policy** stating purpose and retention window per data
   category (reading state, completions, ratings, story requests including blocked/declined
-  ones, generation reports, audit/event log), per Decision 5.
+  ones, generation reports, audit/event log), per the retention-windows decision. Gated: needs
+  that decision confirmed or adjusted first.
 - **4c. Build the retention-purge jobs**: the already-designed `generation_job.report` pg_cron
   purge (ADR-007), plus a new purge/redaction path for blocked or declined `story_request` rows
   (currently retained at rest indefinitely even when blocked; only the API view layer redacts
-  them), plus expiry for stale `reading_state`.
+  them), plus expiry for stale `reading_state`. Gated: needs 4b's published windows to build
+  against.
 - **4d. Document an explicit Article 17(3) balancing justification** for why the
   `pipeline_event` audit log is exempted from erasure requests, rather than leaving that
   exemption implicit; this makes 3a-3b's deletion drill (3e) something you can point to during
-  a review rather than something you have to re-derive on demand.
+  a review rather than something you have to re-derive on demand. No decision gate: startable
+  immediately.
 
-### Phase 5: Processor paperwork (needs Decision 7 for the LLM vendors; the rest can start now)
+### Phase 5: Processor paperwork (needs the ZDR-terms decision for the LLM vendors; the rest can start now)
 
 - **5a. Confirm and execute a DPA (and SCCs, given every processor listed is US-hosted) with
   each processor**: Supabase, OpenRouter and downstream model providers, Anthropic-direct,
@@ -325,7 +346,7 @@ Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1
 - **6d. Correct `SECURITY.md`**, which currently asserts a "no persistent PII without explicit
   parental consent" control that doesn't exist yet, and is stale on the auth description.
 
-### Phase 7: Formal compliance documentation (needs Decisions 4 and 6)
+### Phase 7: Formal compliance documentation (needs the artifact-owner and counsel-timing decisions)
 
 - **7a. Assemble a Records of Processing Activities document (GDPR Article 30)** from material
   that already exists across the COPPA audit, the GDPR review, and `privacy-model.md`; this is
@@ -381,13 +402,17 @@ marked **(no default)** genuinely need your input.
 
 **Gates Phase 2 (consent):**
 
-1. **VPC method.** *Open, but now well-scoped: no paid tier exists, and a guardian must
-   register before any child can use the app.* That registration step is a real, existing
-   attachment point for consent (Phase 2's 2a already assumes it); what's still undecided is
-   *which* verification method runs at that step. Registration alone (an email/password or OAuth
-   signup) proves someone completed a signup, not that they're an adult, so it doesn't by itself
-   satisfy VPC under either COPPA 312.5 or GDPR Article 8(2). Options, since a payment-card
-   transaction isn't available without a paid tier:
+- **VPC method.** *Open, but now well-scoped: no paid tier exists, and the product's stated
+  design is that a guardian registers before any child can use the app.* That said, per
+  `PROJECT-PLAN.md` there is currently no onboarding/signup endpoint at all, and `POST /profiles`
+  is ungated today (no consent precondition). So guardian registration is not yet an existing
+  child-data gate; it's the intended attachment point for one, and Phase 2's 2a is exactly the
+  work that must make it one: block profile creation and any child-data collection until a
+  consent record exists at that step. What's still undecided is *which* verification method runs
+  there. Registration alone (an email/password or OAuth signup), even once gated, proves someone
+  completed a signup, not that they're an adult, so it doesn't by itself satisfy VPC under either
+  COPPA 312.5 or GDPR Article 8(2). Options, since a payment-card transaction isn't available
+  without a paid tier:
    - **A nominal, non-charging card-verification step** (e.g., a Stripe `SetupIntent`-style $0
      authorization, not an actual charge) at registration. This satisfies COPPA's enumerated
      "payment card" method without requiring you to sell anything or build billing; it only
@@ -414,34 +439,35 @@ marked **(no default)** genuinely need your input.
 
 **Gates Phase 4 (retention/storage):**
 
-2. **Supabase region.** *Resolved.* Staying on US infrastructure (with a possible future
-   `us-east-1` to a US-west region move) is compliance-neutral either way: both are non-EEA for
-   GDPR purposes, so the SCC/transfer-mechanism need in Phase 5 is identical regardless of which
-   US region is active, and an east-to-west move raises no new compliance question on its own.
-   One practical note for whenever that move happens: it's a natural point to also land any
-   schema-level retention/deletion changes from Phase 3/4 in the same maintenance window, since
-   you'll already be touching the data at rest.
-3. **Retention windows per data category.** *Open; here's a starting point since you don't have
-   one yet, rather than leaving this blank.* A draft table to react to and adjust, not a final
-   answer:
+- **Supabase region.** *Resolved.* Staying on US infrastructure (with a possible future
+  `us-east-1` to a US-west region move) is compliance-neutral either way: both are non-EEA for
+  GDPR purposes, so the SCC/transfer-mechanism need in Phase 5 is identical regardless of which
+  US region is active, and an east-to-west move raises no new compliance question on its own.
+  One practical note for whenever that move happens: it's a natural point to also land any
+  schema-level retention/deletion changes from Phase 3/4 in the same maintenance window, since
+  you'll already be touching the data at rest.
+- **Retention windows per data category.** *Open; here's a starting point since you don't have
+  one yet, rather than leaving this blank.* A draft table to react to and adjust, not a final
+  answer:
 
-   | Data category | Proposed window | Rationale |
-   |---|---|---|
-   | Active profile/reading data (reading state, completions, ratings) | Life of the active profile, plus 30-90 days after deactivation before purge | Grace period covers accidental deactivation/reactivation without permanent data loss |
-   | Approved/published story requests and their stories | Life of the active account (this is delivered content, not incidental collection) | Matches the product's core value; not "collection" in the retention-risk sense once it's the child's book |
-   | Blocked or declined story requests (raw `request_text`) | 30 days from decision, then purge raw text and keep only the redacted category/verdict | Short window covers guardian review/appeal; raw declined text has no ongoing purpose after that |
-   | `generation_job.report` (raw LLM output) | 30 days, or immediately on publish, whichever first | Already the ADR-007 design; just needs the pg_cron job built (Phase 4c) |
-   | Moderation reports | 1-2 years | Balances safety/audit value against indefinite retention |
-   | `pipeline_event` audit log | No fixed purge; retain under a documented Article 17(3)/312.10 safety-and-integrity justification (Phase 4d) | Already PII-scrubbed by allowlist contract (Section 3.5 of the COPPA audit), so the retention-risk profile is much lower than raw free text |
-   | Data after a deletion request | Purge within 30 days of the request | Comfortably inside GDPR's Article 12(3) one-month (extendable to three) response window |
+  | Data category | Proposed window | Rationale |
+  |---|---|---|
+  | Active profile/reading data (reading state, completions, ratings) | Life of the active profile, plus 30-90 days after deactivation before purge | Grace period covers accidental deactivation/reactivation without permanent data loss |
+  | Approved/published story requests and their stories | Life of the active account (this is delivered content, not incidental collection) | Matches the product's core value; not "collection" in the retention-risk sense once it's the child's book |
+  | Blocked or declined story requests (raw `request_text`) | 30 days from decision, then purge raw text and keep only the redacted category/verdict | Short window covers guardian review/appeal; raw declined text has no ongoing purpose after that |
+  | `generation_job.report` (raw LLM output) | 30 days, or immediately on publish, whichever first | Already the ADR-007 design; just needs the pg_cron job built (Phase 4c) |
+  | Moderation reports | 1-2 years | Balances safety/audit value against indefinite retention |
+  | `pipeline_event` audit log | No fixed purge; retain under a documented Article 17(3)/312.10 safety-and-integrity justification (Phase 4d) | Already PII-scrubbed by allowlist contract (Section 3.5 of the COPPA audit), so the retention-risk profile is much lower than raw free text |
+  | Erasure request: response to the guardian | Acknowledge and respond within 1 month of the request (GDPR Article 12(3)); may be extended by up to 2 further months for complex/numerous requests, but only if the guardian is notified of the extension and the reason within the initial 1-month window | This is the deadline to communicate *what action was taken*, a distinct obligation from the deletion itself |
+  | Erasure request: actual purge | Purge within 30 days of the request, well inside the Article 12(3) response window above | Article 17's "without undue delay" duty; the two deadlines (respond vs. purge) are tracked separately so a fast purge doesn't imply a fast *response* is optional, and vice versa |
 
-   **(needs your reaction to this table, not a from-scratch answer)**
+  **(needs your reaction to this table, not a from-scratch answer)**
 
 **Resolved, kept for reference:**
 
-4. **Will children ever appear as themselves (by their real name) as the protagonist of their
-   own story?** *Resolved: no, disallowed by design.* Since you asked for the impact of either
-   route for the record:
+- **Self-naming.** **Will children ever appear as themselves (by their real name) as the
+  protagonist of their own story?** *Resolved: no, disallowed by design.* Since you asked for the
+  impact of either route for the record:
 
    **Route A: disallow self-naming (your plan).**
    - The exact-match guard already enforces this today for registered display names, at no
@@ -477,46 +503,48 @@ marked **(no default)** genuinely need your input.
 
 **Gates Phase 5 (processor paperwork):**
 
-5. **Zero-data-retention terms with OpenRouter and the other LLM/classifier vendors.** Who
-   pursues this, and on what timeline? ADR-018 already calls it the standing blocker; it just
-   needs an owner and a deadline. **(no default; needs an owner assigned)**
+- **ZDR terms.** **Zero-data-retention terms with OpenRouter and the other LLM/classifier
+  vendors.** Who pursues this, and on what timeline? ADR-018 already calls it the standing
+  blocker; it just needs an owner and a deadline. **(no default; needs an owner assigned)**
 
-**Gates Phase 7 (formal documentation) and Decision 4/5 above:**
+**Gates Phase 7 (formal documentation), and the retention-windows decision above:**
 
-6. **Who owns and signs off on the compliance artifacts** (privacy notice, DPIA, DPA/SCC
-   execution, retention policy)? **(no default; needs a named owner, likely you or whoever you
-   designate)**
-7. **When does privacy counsel get engaged?** Given the "compliant from the start" goal, the
-   working recommendation is: now, in parallel with Phase 1/3/4/6 engineering work, so counsel's
-   review of the consent mechanism and notice language (Phase 2) and the DPIA (Phase 7) doesn't
-   become the critical-path bottleneck once the engineering is otherwise ready. **(recommend
-   engaging now; timing is your call)**
-8. **DPO designation.** Needs your projected user scale at whatever launch tier you're
-   planning toward; can be assessed in parallel with everything else. **(no default; needs
-   scale projections)**
+- **Artifact owner.** **Who owns and signs off on the compliance artifacts** (privacy notice,
+  DPIA, DPA/SCC execution, retention policy)? **(no default; needs a named owner, likely you or
+  whoever you designate)**
+- **Counsel timing.** **When does privacy counsel get engaged?** Given the "compliant from the
+  start" goal, the working recommendation is: now, in parallel with Phase 1/3/4/6 engineering
+  work, so counsel's review of the consent mechanism and notice language (Phase 2) and the DPIA
+  (Phase 7) doesn't become the critical-path bottleneck once the engineering is otherwise ready.
+  **(recommend engaging now; timing is your call)**
+- **DPO designation.** Needs your projected user scale at whatever launch tier you're
+  planning toward; can be assessed in parallel with everything else. **(no default; needs
+  scale projections)**
 
 ---
 
 ## 6. Suggested sequencing
 
 ```text
-Now, in parallel, no dependencies (Decisions 2 and 4 already resolved):
+Now, in parallel, no dependencies (Supabase region and self-naming already resolved):
   Phase 1 (PII-egress hardening, field-targeted per Section 1's parameterization note)
   Phase 3 (deletion cascades, export, access endpoints)
+  Phase 4a and 4d (Supabase region execution; audit-log retention justification)
   Phase 6 (security hardening)
-  Decision-gathering still open: 1 (VPC method), 3 (retention table reaction), 5 (ZDR owner),
-    6 (artifact owner), 7 (counsel timing), 8 (DPO)
+  Decision-gathering still open: VPC method, retention-table reaction, ZDR owner,
+    artifact owner, counsel timing, DPO
 
-Once Decision 1 (VPC method) lands:
-  Phase 2 (consent + notice build, attached to the existing mandatory guardian-registration step)
+Once the VPC-method decision lands:
+  Phase 2 (consent + notice build; Phase 2's 2a is what makes guardian registration an actual
+  gate on child-data collection, not just the intended attachment point it is today)
 
-Once Decision 3 (retention table, Section 5) is confirmed or adjusted:
-  Phase 4 (retention policy + purge jobs; Supabase region work is already resolved, no gate)
+Once the retention-table decision is confirmed or adjusted:
+  Phase 4b-4c (retention policy + purge jobs)
 
-Once Decision 5 (ZDR owner) lands, in parallel with the above:
+Once the ZDR-owner decision lands, in parallel with the above:
   Phase 5 (processor DPAs/SCCs)
 
-Once Decisions 6, 7 land and Phases 1-6 are substantially built:
+Once the artifact-owner and counsel-timing decisions land and Phases 1-6 are substantially built:
   Phase 7 (DPIA, Records of Processing, DPO assessment, ADR-018 D1-D4 closeout)
 
 Ongoing, once the above is stable:

@@ -24,6 +24,7 @@ from cyo_adventure.db.models import (
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 
 if TYPE_CHECKING:
+    import uuid
     from collections.abc import Awaitable, Callable
 
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -60,7 +61,7 @@ class _ConceptContext:
     """
 
     protagonist_name: str | None
-    family_id: str | None
+    family_id: uuid.UUID | None
 
 
 async def _recover_concept_context(
@@ -94,12 +95,12 @@ async def _recover_concept_context(
             protagonist_name = name if isinstance(name, str) and name else None
     return _ConceptContext(
         protagonist_name=protagonist_name,
-        family_id=str(family_id) if family_id is not None else None,
+        family_id=family_id,
     )
 
 
 async def _pii_context_for_family(
-    session: AsyncSession, family_id: str | None
+    session: AsyncSession, family_id: uuid.UUID | None
 ) -> PiiContext:
     """Build a PiiContext from a family's registered real child display names.
 

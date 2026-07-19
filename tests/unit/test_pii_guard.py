@@ -417,6 +417,22 @@ def test_street_address_short_form_in_prompt_raises() -> None:
         assert_prompt_pii_safe("42 Elm Ave is where the story starts.", forbidden=ctx)
 
 
+def test_phone_in_fullwidth_digits_is_matched_via_nfkc() -> None:
+    """A phone number written in full-width digits is caught after NFKC folding.
+
+    Pins the module docstring's claim that folding protects the pattern-based
+    checks too, not just name matching.
+    """
+    ctx = make_ctx()
+    # Full-width digits U+FF10..U+FF19 -> NFKC ASCII digits; "555-123-4567".
+    fullwidth_phone = "\uff15\uff15\uff15-\uff11\uff12\uff13-\uff14\uff15\uff16\uff17"
+    with pytest.raises(
+        ValidationError, match=r"prompt contains PII-shaped content"
+    ) as exc_info:
+        assert_prompt_pii_safe(f"Call us at {fullwidth_phone} please.", forbidden=ctx)
+    assert exc_info.value.details.get("kind") == "phone"
+
+
 def test_bare_number_does_not_raise_as_address() -> None:
     """A number with no street-suffix word does not falsely match as an address."""
     ctx = make_ctx()

@@ -63,8 +63,11 @@ matter for this project specifically:
   it in their region, use a VPN, or (most concretely for the *current* private/homelab tier)
   simply be a person the operator personally invited who happens to live in the EU. This is a
   pressure point, not a settled fact: see Section 4.1.
-- **GDPR imposes obligations absent from COPPA**: a mandatory Data Protection Impact
-  Assessment (DPIA) for large-scale processing of children's data (Article 35(3)(b)), a
+- **GDPR imposes obligations absent from COPPA**: a Data Protection Impact Assessment (DPIA)
+  this project's combined risk profile (children's data, profiling-adjacent moderation, and
+  confirmed special-category risk in free text) makes likely required under Article 35's
+  risk-based standard (Section 5.7 has the full analysis; Article 35(3)(b)'s automatic trigger
+  applies only if the special-category risk is confirmed at scale), a
   Records of Processing Activities document (Article 30), an international-transfer legal
   mechanism for every non-EEA processor (Articles 44-49, and this covers *all* of this
   project's processors, since Supabase, the LLM vendors, and Google are all US-hosted), a
@@ -96,7 +99,7 @@ open question and is flagged as Pressure Point P-1 (Section 6).
 | G-01 | No lawful basis is established or recorded for any processing activity | Critical (once GDPR applies) |
 | G-02 | No mechanism for verifiable parental/guardian consent, and none of the six Article 6 lawful bases is cleanly available as a substitute | Critical (once GDPR applies) |
 | G-03 | No Records of Processing Activities (Article 30) document exists | Critical (once GDPR applies) / paperwork item, low engineering cost |
-| G-04 | No Data Protection Impact Assessment for large-scale children's-data processing (Article 35(3)(b)) | Critical (once GDPR applies) |
+| G-04 | No Data Protection Impact Assessment; the combined risk profile makes one likely required under Article 35's risk-based standard | Critical (once GDPR applies) |
 | G-05 | No international-transfer mechanism (SCCs or equivalent) for any of the US-hosted processors (Supabase, OpenRouter/Anthropic, OpenAI, Google Perspective/Gemini, Sentry) | Critical (once GDPR applies) |
 | G-06 | No erasure/rectification/access/portability rights implemented for **guardian** data (distinct from the COPPA audit's C-03, which is scoped to child data) | High |
 | G-07 | No published privacy notice satisfying Articles 12-14's higher transparency bar (COPPA C-02 covers the same absence; GDPR's required content is broader) | Critical (once GDPR applies) |
@@ -167,11 +170,14 @@ of this review's commit. One GDPR-specific addition:
   a stricter lawful-basis requirement than ordinary personal data. A guardian requesting "a
   story to help my son process his parents' divorce" or "a story about a character who uses a
   wheelchair like my daughter" would put special-category-adjacent content into a
-  free-text field with **no field-level flag, no separate consent capture, and no restriction
-  on downstream LLM/moderation-vendor disclosure** beyond the same PII allowlist guard the
-  COPPA audit's M-01 already found to be a registered-name allowlist, not general PII/sensitive-
-  content detection. This is a genuine gap distinct from COPPA (which has no special-category
-  concept) and is not mentioned in the COPPA audit.
+  free-text field with **no field-level flag and no separate consent capture**. As of the Phase
+  1 hardening landed in the same pull request as this review (see
+  `docs/compliance/coppa-gdpr-remediation-plan.md`), the PII guard also screens every prompt for
+  email-, phone-, and street-address-shaped content, not just the registered-name allowlist
+  COPPA audit finding M-01 originally described; but that pattern-based screening does not, and
+  cannot, detect *semantic* special-category content like "divorce" or "wheelchair" that carries
+  no identifying pattern of its own. This residual risk is distinct from COPPA (which has no
+  special-category concept) and is not mentioned in the COPPA audit.
 
 ---
 
@@ -227,8 +233,7 @@ not complete, basis for this processing.
 
 ## 5. Requirement-by-requirement assessment
 
-Status legend: **Implemented**, **Partial**, **Not implemented**, **N/A (current tier)** ; 
-matching the COPPA audit's convention for direct comparability.
+Status legend: **Implemented**, **Partial**, **Not implemented**, **N/A (current tier)**; matching the COPPA audit's convention for direct comparability.
 
 ### 5.1 Lawful basis for processing (Article 6)
 
@@ -323,26 +328,39 @@ inventory, the third-party disclosure map (Section 4 of that audit), and
 `docs/planning/privacy-model.md`'s data-classification section together contain most of the
 raw material an Article 30 record needs (categories of data subjects, categories of data,
 purposes, recipients, retention, transfers) but it has never been assembled into the single
-document Article 30 requires controllers (above the Article 30(5) small-organization
-exemption threshold, which processing children's data on a regular basis disqualifies
-regardless of headcount) to maintain and produce to a supervisory authority on request. This
-is a paperwork/synthesis task, not new engineering; low cost, currently unstarted.
+document Article 30 requires controllers to maintain and produce to a supervisory authority on
+request. The Article 30(5) small-organization exemption (fewer than 250 employees) does not
+turn on children's data by itself; it is unavailable when the processing is likely to result in
+a risk to data subjects' rights and freedoms, is not occasional, or includes Article 9/10
+special-category or criminal-offence data. This project's processing of children's data is a
+plausible fit for at least the "likely risk" and "not occasional" prongs in practice (regular,
+ongoing collection of a child's reading activity and story requests), which is why the
+recommendation below stands, but the disqualification is a risk/frequency test, not an
+automatic children's-data carve-out. This is a paperwork/synthesis task, not new engineering;
+low cost, currently unstarted.
 
 ### 5.7 Data Protection Impact Assessment (Article 35)
 
 **Status: Not implemented; this has no COPPA counterpart and is likely mandatory here.**
 
-Article 35(3)(b) mandates a DPIA for "processing on a large scale of special categories of
-data" and Article 35(1) more generally for processing "likely to result in a high risk,"
-which EU supervisory-authority guidance (WP29/EDPB) and most member-state DPA guidance
-consistently list "large-scale processing of children's data" and "systematic evaluation
-including profiling" (arguably applicable to the moderation/classification pipeline scoring a
-child's content) as trigger criteria on their own, independent of whether the free-text
-special-category risk in Section 3.2 above materializes at scale. No DPIA exists in `docs/` or
-`src/`. This is a real gap, distinct from and not curable by anything COPPA requires, and
-should be scheduled alongside D1-D4 in ADR-018 rather than treated as a Phase-7 afterthought ; 
-a DPIA is often the document that *drives* the consent-mechanism and retention-policy design
-choices, not one that follows them.
+Article 35(3)(b)'s automatic DPIA trigger is specifically "processing on a large scale of
+special categories of data" (Article 9/10): a textual trigger this project meets only if the
+special-category risk in Section 3.2 above (health/family-circumstance content in free-text
+story requests) is confirmed to occur at scale, which is not yet established. Article 35(1)'s
+broader "likely to result in a high risk" standard is a risk-based assessment, not a checklist:
+EU supervisory-authority guidance (WP29/EDPB's nine-criteria list) and most member-state DPA
+guidance treat "large-scale processing of children's data" and "systematic evaluation including
+profiling" (arguably applicable to the moderation/classification pipeline scoring a child's
+content) as risk indicators that support a DPIA when several are present together, not as
+standalone automatic triggers in every case on their own. Taken together, this project's
+combined profile (children's data, profiling-adjacent moderation scoring, and the confirmed
+special-category risk in free text) makes a DPIA likely required under the Article 35(1)
+risk-based standard even without conceding an Article 35(3)(b) automatic trigger; that
+risk-based case, not an automatic-trigger claim, is the basis for the recommendation. No DPIA
+exists in `docs/` or `src/`. This is a real gap, distinct from and not curable by anything COPPA
+requires, and should be scheduled alongside D1-D4 in ADR-018 rather than treated as a Phase-7
+afterthought; a DPIA is often the document that *drives* the consent-mechanism and
+retention-policy design choices, not one that follows them.
 
 ### 5.8 Security of processing (Article 32)
 
@@ -440,17 +458,18 @@ compound: the same unscreened text is the evidentiary basis for both findings.
 
 **P-4: Does the `pipeline_event` audit log's indefinite retention survive an erasure
 request?** (G-12) Article 17(3)(b) allows retention despite an erasure request "for compliance
-with a legal obligation" or similar exceptions, and a safety/audit log plausibly qualifies ; 
-but that is a documented balancing test a controller is expected to perform and be able to
+with a legal obligation" or similar exceptions, and a safety/audit log plausibly qualifies; but that is a documented balancing test a controller is expected to perform and be able to
 show, not an automatic exemption. No such documented balancing test exists today.
 
-**P-5: Is the `PiiGuardedProvider` allowlist (COPPA's M-01) sufficient evidence of "appropriate
-technical measures" for Article 25/32 purposes, or does GDPR's broader standard push toward
-building the pattern-based PII/special-category detector M-01 already recommends sooner?**
+**P-5: Is the PII guard (registered-name matching plus the pattern-based email/phone/address
+screening shipped in the same PR as this review, superseding COPPA's M-01 as originally
+described) sufficient evidence of "appropriate technical measures" for Article 25/32 purposes,
+or does GDPR's broader standard push toward building semantic special-category detection too?**
 GDPR does not have a COPPA-style enumerated list of what counts as personal information; its
-broader definition (Article 4(1)) makes the registered-name-only allowlist look thinner as a
-control once special-category risk (Section 3.2) is factored in. This is a prioritization
-question for the COPPA roadmap's Gate 1 item 6, not a new work item.
+broader definition (Article 4(1)) makes even the now-expanded guard look thin once the
+special-category risk in Section 3.2 (content a pattern can't detect, like "divorce" or
+"wheelchair") is factored in. This is a prioritization question for a future hardening pass, not
+something this review can resolve on its own.
 
 ---
 
@@ -480,11 +499,12 @@ constitutes Article 8(2) "reasonable efforts."
 audit, `privacy-model.md`, and ADR-018. **Recommendation**: synthesize one document from
 existing sources (Section 5.6); assign an owner alongside ADR-018's D4.
 
-### G-04. No Data Protection Impact Assessment (Article 35(3)(b)) (Critical once GDPR applies)
+### G-04. No Data Protection Impact Assessment (Article 35) (Critical once GDPR applies)
 
-**Evidence**: none exists; no COPPA counterpart. **Recommendation**: commission a DPIA before,
-not after, D1's consent-mechanism build (Pressure Point P-2); use Section 5.5's Article-25
-strengths as the starting risk-mitigation inventory.
+**Evidence**: none exists; no COPPA counterpart; see Section 5.7 for the risk-based case (not an
+automatic Article 35(3)(b) trigger absent confirmed special-category processing at scale).
+**Recommendation**: commission a DPIA before, not after, D1's consent-mechanism build (Pressure
+Point P-2); use Section 5.5's Article-25 strengths as the starting risk-mitigation inventory.
 
 ### G-05. No international-transfer mechanism for any US-hosted processor (Critical once GDPR applies)
 
@@ -544,10 +564,10 @@ under Article 17(3), rather than leaving the exemption implicit.
 
 ### G-13. Special-category-data risk in free-text story requests (Medium, no COPPA counterpart)
 
-**Evidence**: Section 3.2. **Recommendation**: extend the PII-detection hardening COPPA's M-01
-already recommends to also flag likely special-category content (health, family-circumstance
-language) for additional handling, or at minimum document the residual risk and decide whether
-Article 9's stricter basis requirement is triggered in practice.
+**Evidence**: Section 3.2. **Recommendation**: extend the pattern-based PII detection shipped in
+this PR to also flag likely special-category content (health, family-circumstance language) for
+additional handling, or at minimum document the residual risk and decide whether Article 9's
+stricter basis requirement is triggered in practice.
 
 ---
 
