@@ -243,289 +243,289 @@ state cm_leave_mark #FFF9C4
 cm_leave_mark : choice · 92w
 state e_set_a_drawer #FFCDD2
 e_set_a_drawer : setback (negative)
-e_set_a_drawer : "The Split Drawer"
+e_set_a_drawer : "{A_DRAWER_END}"
 state e_set_a_brick #FFCDD2
 e_set_a_brick : setback (negative)
-e_set_a_brick : "The Fallen Brick"
+e_set_a_brick : "{A_BRICK_END}"
 state e_set_b_rail #FFCDD2
 e_set_b_rail : setback (negative)
-e_set_b_rail : "The Rotten Rail"
+e_set_b_rail : "{B_RAIL_END}"
 state e_set_c_tide #FFCDD2
 e_set_c_tide : setback (negative)
-e_set_c_tide : "The Rising Tide"
+e_set_c_tide : "{C_TIDE_END}"
 state e_set_c_stuck #FFCDD2
 e_set_c_stuck : setback (negative)
-e_set_c_stuck : "The Narrow Gap"
+e_set_c_stuck : "{C_GAP_END}"
 state e_set_d_loft #FFCDD2
 e_set_d_loft : setback (negative)
-e_set_d_loft : "The Broken Rung"
+e_set_d_loft : "{D_RUNG_END}"
 state e_set_d_storm #FFCDD2
 e_set_d_storm : setback (negative)
-e_set_d_storm : "The Slamming Door"
+e_set_d_storm : "{D_DOOR_END}"
 state e_set_cellar #FFCDD2
 e_set_cellar : setback (negative)
-e_set_cellar : "The Cellar Door"
+e_set_cellar : "{JR_CELLAR_END}"
 state e_set_stair #FFCDD2
 e_set_stair : setback (negative)
-e_set_stair : "The Hollow Step"
+e_set_stair : "{ST_STEP_END}"
 state e_set_shaft #FFCDD2
 e_set_shaft : setback (negative)
-e_set_shaft : "The Frayed Rope"
+e_set_shaft : "{LI_ROPE_END}"
 state e_set_fog #FFCDD2
 e_set_fog : setback (negative)
-e_set_fog : "Too Thick a Fog"
+e_set_fog : "{LI_FOG_END}"
 state e_set_door #FFCDD2
 e_set_door : setback (negative)
-e_set_door : "The Broken Ward"
+e_set_door : "{TN_WARD_END}"
 state e_set_beam #FFCDD2
 e_set_beam : setback (negative)
-e_set_beam : "Under the Beam"
+e_set_beam : "{TN_BEAM_END}"
 state e_set_gate #FFCDD2
 e_set_gate : setback (negative)
-e_set_gate : "The Flooded Gate"
+e_set_gate : "{TN_SEAGATE_END}"
 state e_set_token #FFCDD2
 e_set_token : setback (negative)
-e_set_token : "The Chiming Wire"
+e_set_token : "{CM_TOKEN_END}"
 state e_set_gears #FFCDD2
 e_set_gears : setback (negative)
-e_set_gears : "The Jammed Gears"
+e_set_gears : "{CM_GEARS_END}"
 state e_win_keeper_found #C8E6C9
 e_win_keeper_found : completion (positive)
-e_win_keeper_found : "The Keeper Found"
+e_win_keeper_found : "{KEEPER_FOUND_PRIZE}"
 state e_win_keeper_word #C8E6C9
 e_win_keeper_word : completion (positive)
-e_win_keeper_word : "Word to the Harbour"
+e_win_keeper_word : "{KEEPER_WORD_PRIZE}"
 state e_win_name_cleared #C8E6C9
 e_win_name_cleared : success (positive)
-e_win_name_cleared : "The Keeper's Name"
+e_win_name_cleared : "{NAME_CLEARED_PRIZE}"
 state e_win_promise #C8E6C9
 e_win_promise : success (positive)
-e_win_promise : "A Keeper's Promise"
+e_win_promise : "{PROMISE_PRIZE}"
 state e_win_smugglers #C8E6C9
 e_win_smugglers : success (positive)
-e_win_smugglers : "The Smugglers Caught"
+e_win_smugglers : "{SMUGGLERS_PRIZE}"
 state e_win_harbor #C8E6C9
 e_win_harbor : success (positive)
-e_win_harbor : "The Harbour Master"
+e_win_harbor : "{HARBOR_PRIZE}"
 state e_win_hoard #C8E6C9
 e_win_hoard : success (positive)
-e_win_hoard : "The Hidden Hoard"
+e_win_hoard : "{HOARD_PRIZE}"
 state e_win_light_restored #C8E6C9
 e_win_light_restored : completion (positive)
-e_win_light_restored : "The Light Restored"
+e_win_light_restored : "{LIGHT_RESTORED_PRIZE}"
 state e_win_rescue #C8E6C9
 e_win_rescue : success (positive)
-e_win_rescue : "The Call for Help"
+e_win_rescue : "{RESCUE_PRIZE}"
 state e_win_signal #C8E6C9
 e_win_signal : success (positive)
-e_win_signal : "The Signal Solved"
+e_win_signal : "{SIGNAL_PRIZE}"
 state e_neutral_letter #E0E0E0
 e_neutral_letter : discovery (neutral)
-e_neutral_letter : "The Sealed Letter"
+e_neutral_letter : "{LETTER_PRIZE}"
 state e_neutral_honest #E0E0E0
 e_neutral_honest : discovery (neutral)
-e_neutral_honest : "Clean Hands"
+e_neutral_honest : "{HONEST_PRIZE}"
 state e_neutral_town #E0E0E0
 e_neutral_town : discovery (neutral)
-e_neutral_town : "Back to Town"
+e_neutral_town : "{TOWN_PRIZE}"
 state e_neutral_evidence #E0E0E0
 e_neutral_evidence : discovery (neutral)
-e_neutral_evidence : "The Signpost"
+e_neutral_evidence : "{EVIDENCE_PRIZE}"
 state e_neutral_museum #E0E0E0
 e_neutral_museum : discovery (neutral)
-e_neutral_museum : "The Journal Home"
-n_start --> a_office1 : Try the keeper's cottage.
-n_start --> b_lamp1 : Climb the tower stair to the lamp room.
-n_start --> c_cave1 : Slip into the sea caves under the rock.
-n_start --> d_boat1 : Cross to the old boathouse.
-a_office1 --> a_desk : Search the roll-top desk.
-a_office1 --> a_shelf : Read along the crowded shelves.
-a_office1 --> a_hearth : Rake through the cold hearth.
-a_desk --> a_desk_log : Read the last log page.
-a_desk --> a_desk_drawer : Work at the locked drawer.
-a_desk_log --> a_corridor : Follow the hall toward the tower.
+e_neutral_museum : "{MUSEUM_PRIZE}"
+n_start --> a_office1 : Try {ROUTE_A_PLACE}.
+n_start --> b_lamp1 : Head for {ROUTE_B_PLACE}.
+n_start --> c_cave1 : Slip into {ROUTE_C_PLACE}.
+n_start --> d_boat1 : Cross to {ROUTE_D_PLACE}.
+a_office1 --> a_desk : Search {A_DESK}.
+a_office1 --> a_shelf : Read along {A_SHELF}.
+a_office1 --> a_hearth : Rake through {A_HEARTH}.
+a_desk --> a_desk_log : Read {A_LOG_PAGE}.
+a_desk --> a_desk_drawer : Work at {A_DESK_DRAWER}.
+a_desk_log --> a_corridor : Follow {A_CORRIDOR}.
 a_desk_drawer --> a_desk_pick : Pick the lock patiently.
-a_desk_drawer --> e_set_a_drawer : Wrench the drawer open.
-a_desk_pick --> a_corridor : Take the key and follow the plan.
-a_shelf --> a_shelf_bottle : Uncork the ship in the bottle.
-a_shelf --> a_shelf_books : Pull the worn logbook.
-a_shelf_bottle --> a_corridor : Head down the hall.
-a_shelf_books --> a_corridor : Take the note down the hall.
+a_desk_drawer --> e_set_a_drawer : Wrench {A_DESK_DRAWER} open.
+a_desk_pick --> a_corridor : Take {A_DESK_KEY} and follow the plan.
+a_shelf --> a_shelf_bottle : Uncork {A_BOTTLE}.
+a_shelf --> a_shelf_books : Pull {A_LOGBOOK}.
+a_shelf_bottle --> a_corridor : Head down {A_CORRIDOR}.
+a_shelf_books --> a_corridor : Take the note down {A_CORRIDOR}.
 a_hearth --> a_hearth_ash : Sift the unburned ash.
-a_hearth --> a_hearth_brick : Work the loose firebrick free.
-a_hearth_ash --> a_corridor : Carry the photo to the hall.
+a_hearth --> a_hearth_brick : Work {A_BRICK_GATE} free.
+a_hearth_ash --> a_corridor : Carry the photo to {A_CORRIDOR}.
 a_hearth_brick --> a_hearth_key : Ease the bundle out gently.
-a_hearth_brick --> e_set_a_brick : Yank the jammed brick.
-a_hearth_key --> a_corridor : Follow the hall with the key.
+a_hearth_brick --> e_set_a_brick : Yank {A_BRICK_GATE}.
+a_hearth_key --> a_corridor : Follow {A_CORRIDOR} with the key.
 a_corridor --> a_toward : Go straight to the tower door.
-a_corridor --> a_kitchen : Cut through the dark kitchen.
+a_corridor --> a_kitchen : Cut through {A_KITCHEN}.
 a_kitchen --> a_toward : Step up to the tower door.
-a_toward --> n_journal : Take the journal down.
-b_lamp1 --> b_lens : Examine the great glass lens.
-b_lamp1 --> b_gallery : Step toward the gallery walk.
-b_lamp1 --> b_clock : Study the clockwork weight.
-b_lens --> b_lens_crack : Look through the cracked panel.
-b_lens --> b_lens_reflect : Reach behind to the hidden reflector.
-b_lens_crack --> b_down : Take the stair down.
+a_toward --> n_journal : Take {JOURNAL} down.
+b_lamp1 --> b_lens : Examine {B_LENS}.
+b_lamp1 --> b_gallery : Step toward {B_GALLERY}.
+b_lamp1 --> b_clock : Study {B_CLOCK}.
+b_lens --> b_lens_crack : Look through {B_LENS_CRACK}.
+b_lens --> b_lens_reflect : Reach behind to {B_LENS_REFLECT}.
+b_lens_crack --> b_down : Take {B_DOWNSTAIR}.
 b_lens_reflect --> b_down : Descend to find the source.
 b_gallery --> b_gallery_out : Step out onto the walk.
 b_gallery --> b_gallery_fog : Peer through the fogged window instead.
-b_gallery_out --> b_down : Trust the rail and edge along.
-b_gallery_out --> e_set_b_rail : Feel the rail groan and shrink back.
-b_gallery_fog --> b_down : Head for the down stair.
+b_gallery_out --> b_down : Trust {B_RAIL_GATE} and edge along.
+b_gallery_out --> e_set_b_rail : Feel {B_RAIL_GATE} groan and shrink back...
+b_gallery_fog --> b_down : Head for {B_DOWNSTAIR}.
 b_clock --> b_clock_wind : Wind the stiff mechanism.
 b_clock --> b_clock_chain : Follow the chain down its shaft.
 b_clock_wind --> b_down : Go down the opened stair.
 b_clock_chain --> b_down : Take the maintenance stair down.
-b_down --> b_down_spiral : Wind down the spiral stair.
-b_down --> b_down_hatch : Drop through the service hatch.
-b_down_spiral --> n_journal : Pick up the journal.
-b_down_hatch --> n_journal : Take up the journal.
-c_cave1 --> c_pass : Follow the wet passage inland.
-c_cave1 --> c_pool : Search the glimmering tide pools.
-c_cave1 --> c_arch : Read the carved arch.
+b_down --> b_down_spiral : Wind down {B_SPIRAL}.
+b_down --> b_down_hatch : Drop through {B_HATCH}.
+b_down_spiral --> n_journal : Pick up {JOURNAL}.
+b_down_hatch --> n_journal : Take up {JOURNAL}.
+c_cave1 --> c_pass : Follow {C_PASSAGE}.
+c_cave1 --> c_pool : Search {C_POOLS}.
+c_cave1 --> c_arch : Read {C_ARCH}.
 c_pass --> c_pass_deep : Push deeper while she can.
-c_pass --> e_set_c_tide : Feel the water rise and hesitate.
-c_pass_deep --> c_gather : Take the slick steps up.
-c_pool --> c_pool_glow : Cup the glowing weed.
-c_pool --> c_pool_metal : Fish out the gleam of metal.
+c_pass --> e_set_c_tide : Feel {C_TIDE_GATE} rise and hesitate.
+c_pass_deep --> c_gather : Take {C_ROCKSTEPS} up.
+c_pool --> c_pool_glow : Cup {C_WEED}.
+c_pool --> c_pool_metal : Fish out {C_BADGE}.
 c_pool_glow --> c_gather : Follow the handrail up.
 c_pool_metal --> c_gather : Climb the rock stair.
-c_arch --> c_arch_marks : Study the carved marks.
-c_arch --> c_arch_gap : Squeeze through the narrow gap.
+c_arch --> c_arch_marks : Study {C_MARKS}.
+c_arch --> c_arch_gap : Squeeze through {C_GAP_GATE}.
 c_arch_marks --> c_gather : Head for the stair up.
 c_arch_gap --> c_gather : Wriggle all the way through.
 c_arch_gap --> e_set_c_stuck : Feel wedged and back out.
-c_gather --> c_steps : Take the slick worn steps.
-c_gather --> c_ladder : Climb the old iron ladder.
-c_steps --> n_journal : Pick up the journal.
-c_ladder --> n_journal : Take up the journal.
-d_boat1 --> d_dinghy : Search the beached dinghy.
-d_boat1 --> d_locker : Open the tool locker.
-d_boat1 --> d_loft : Climb to the loft.
+c_gather --> c_steps : Take {C_WORNSTEPS}.
+c_gather --> c_ladder : Climb {C_LADDER}.
+c_steps --> n_journal : Pick up {JOURNAL}.
+c_ladder --> n_journal : Take up {JOURNAL}.
+d_boat1 --> d_dinghy : Search {D_DINGHY}.
+d_boat1 --> d_locker : Open {D_LOCKER}.
+d_boat1 --> d_loft : Climb to {D_LOFT}.
 d_dinghy --> d_dinghy_tarp : Lift the tarp fully.
-d_dinghy --> d_dinghy_tin : Shake out the bailing tin.
-d_dinghy_tarp --> d_hatch : Cross to the floor hatch.
-d_dinghy_tin --> d_hatch : Go to the floor hatch.
-d_locker --> d_locker_rope : Take the coil of rope.
-d_locker --> d_locker_lantern : Take the rusted lantern.
-d_locker_rope --> d_hatch : Open the floor hatch.
-d_locker_lantern --> d_hatch : Lift the floor hatch.
+d_dinghy --> d_dinghy_tin : Shake out {D_TIN}.
+d_dinghy_tarp --> d_hatch : Cross to {D_HATCH}.
+d_dinghy_tin --> d_hatch : Go to {D_HATCH}.
+d_locker --> d_locker_rope : Take {D_ROPE}.
+d_locker --> d_locker_lantern : Take {D_LANTERN}.
+d_locker_rope --> d_hatch : Open {D_HATCH}.
+d_locker_lantern --> d_hatch : Lift {D_HATCH}.
 d_loft --> d_loft_up : Climb carefully, testing each rung.
-d_loft --> e_set_d_loft : Trust the cracked rung.
-d_loft_up --> d_hatch : Drop down to the floor hatch.
+d_loft --> e_set_d_loft : Trust {D_RUNG_GATE}.
+d_loft_up --> d_hatch : Drop down to {D_HATCH}.
 d_hatch --> d_hatch_down : Pry the hatch and go down.
-d_hatch --> e_set_d_storm : Turn as the door slams in the wind.
-d_hatch_down --> n_journal : Take up the journal.
-n_journal --> jr_light : Read the entries about the light.
-n_journal --> jr_smug : Study the ledger of night cargoes.
-n_journal --> jr_tunnel : Trace the sketch of the tunnel.
-jr_light --> jr_light_read : Read the careful description.
-jr_light --> jr_light_date : Check the column of dates.
-jr_light_read --> jr_light_join : Look for the hidden stair.
-jr_light_date --> jr_light_join : Find the hidden stair.
-jr_light_join --> n_stairs : Approach the hidden stair.
-jr_smug --> jr_smug_ledger : Copy the cargo figures.
-jr_smug --> jr_smug_names : Puzzle out the coded names.
+d_hatch --> e_set_d_storm : Turn as {D_DOOR_GATE} slams in the wind.
+d_hatch_down --> n_journal : Take up {JOURNAL}.
+n_journal --> jr_light : Read {JR_LIGHT_ENTRIES}.
+n_journal --> jr_smug : Study {JR_CARGO_LEDGER}.
+n_journal --> jr_tunnel : Trace {JR_TUNNEL_SKETCH}.
+jr_light --> jr_light_read : Read {JR_LIGHT_DESC}.
+jr_light --> jr_light_date : Check {JR_LIGHT_DATES}.
+jr_light_read --> jr_light_join : Look for {JR_HIDDEN_STAIR}.
+jr_light_date --> jr_light_join : Find {JR_HIDDEN_STAIR}.
+jr_light_join --> n_stairs : Approach {JR_HIDDEN_STAIR}.
+jr_smug --> jr_smug_ledger : Copy {JR_CARGO_FIGURES}.
+jr_smug --> jr_smug_names : Puzzle out {JR_CODED_NAMES}.
 jr_smug_ledger --> jr_smug_copy : Copy what figures remain.
-jr_smug_ledger --> jr_smug_torn : Search for the torn-out page.
-jr_smug_copy --> jr_smug_join : Head for the hidden stair.
-jr_smug_torn --> jr_smug_join : Make for the hidden stair.
-jr_smug_names --> jr_smug_join : Find the hidden stair.
-jr_smug_join --> n_stairs : Take the hidden stair.
-jr_smug_join --> e_set_cellar : Try the low cellar door.
-jr_tunnel --> jr_tun_sketch : Study the tunnel sketch.
-jr_tunnel --> jr_tun_stone : Test the marked flagstone.
-jr_tun_sketch --> jr_tun_join : Go to the hidden stair.
+jr_smug_ledger --> jr_smug_torn : Search for {JR_TORN_PAGE}.
+jr_smug_copy --> jr_smug_join : Head for {JR_HIDDEN_STAIR}.
+jr_smug_torn --> jr_smug_join : Make for {JR_HIDDEN_STAIR}.
+jr_smug_names --> jr_smug_join : Find {JR_HIDDEN_STAIR}.
+jr_smug_join --> n_stairs : Take {JR_HIDDEN_STAIR}.
+jr_smug_join --> e_set_cellar : Try {JR_CELLAR_GATE}.
+jr_tunnel --> jr_tun_sketch : Study {JR_TUNNEL_SKETCH}.
+jr_tunnel --> jr_tun_stone : Test {JR_FLAGSTONE}.
+jr_tun_sketch --> jr_tun_join : Go to {JR_HIDDEN_STAIR}.
 jr_tun_stone --> jr_tun_sketch : Give up and read the sketch instead.
-jr_tun_stone --> jr_tun_join : Heave the flagstone aside.
-jr_tun_join --> n_stairs : Approach the hidden stair.
-n_stairs --> st_wind : Take the tight winding stair.
-n_stairs --> st_outer : Climb the outer steps in the fog.
+jr_tun_stone --> jr_tun_join : Heave {JR_FLAGSTONE} aside.
+jr_tun_join --> n_stairs : Approach {JR_HIDDEN_STAIR}.
+n_stairs --> st_wind : Take {ST_WIND}.
+n_stairs --> st_outer : Climb {ST_OUTER}.
 st_wind --> st_wind_up : Climb steadily to the top.
-st_wind --> e_set_stair : Trust the hollow-sounding step.
-st_wind_up --> n_light : Open the frosted door.
+st_wind --> e_set_stair : Trust {ST_STEP_GATE}.
+st_wind_up --> n_light : Open {ST_DOOR}.
 st_outer --> st_outer_up : Push up through the fog.
 st_outer --> st_outer_wait : Wait for the wind to drop.
-st_outer_wait --> st_outer_up : Reach the frosted door.
-st_outer_up --> n_light : Open the frosted door.
-n_light --> li_stair : Descend the stone stair.
-n_light --> li_shaft : Climb down the service shaft.
-n_light --> li_ladder : Take the outer ladder down.
+st_outer_wait --> st_outer_up : Reach {ST_DOOR}.
+st_outer_up --> n_light : Open {ST_DOOR}.
+n_light --> li_stair : Descend {LI_STAIR}.
+n_light --> li_shaft : Climb down {LI_SHAFT}.
+n_light --> li_ladder : Take {LI_LADDER} down.
 li_stair --> li_stair_down : Descend steadily.
-li_stair --> li_stair_cup : Open the landing cupboard.
-li_stair_down --> n_tunnel : Enter the tunnel mouth.
-li_stair_cup --> li_cup_lens : Take the spare lens.
-li_stair_cup --> li_cup_coat : Search the keeper's coat.
-li_cup_lens --> n_tunnel : Go down to the tunnel.
-li_cup_coat --> n_tunnel : Descend to the tunnel.
-li_shaft --> li_shaft_down : Climb straight down the staples.
-li_shaft --> li_shaft_rope : Test the knotted rope first.
-li_shaft_down --> n_tunnel : Step into the tunnel.
-li_shaft_rope --> n_tunnel : Trust the rope down.
+li_stair --> li_stair_cup : Open {LI_CUPBOARD}.
+li_stair_down --> n_tunnel : Enter {LI_TUNNEL_MOUTH}.
+li_stair_cup --> li_cup_lens : Take {LI_LENS}.
+li_stair_cup --> li_cup_coat : Search {LI_COAT}.
+li_cup_lens --> n_tunnel : Go down to {LI_TUNNEL_MOUTH}.
+li_cup_coat --> n_tunnel : Descend to {LI_TUNNEL_MOUTH}.
+li_shaft --> li_shaft_down : Climb straight down {LI_STAPLES}.
+li_shaft --> li_shaft_rope : Test {LI_ROPE_GATE} first.
+li_shaft_down --> n_tunnel : Step into {LI_TUNNEL_MOUTH}.
+li_shaft_rope --> n_tunnel : Trust {LI_ROPE_GATE} down.
 li_shaft_rope --> e_set_shaft : Feel it fray and pull back.
 li_ladder --> li_ladder_down : Climb down through the fog.
-li_ladder --> e_set_fog : Judge the fog too thick.
+li_ladder --> e_set_fog : Judge {LI_FOG_GATE} too thick.
 li_ladder_down --> n_tunnel : Follow the tunnel in.
-n_tunnel --> tn_keeper : Go toward the sealed keeper's door.
-n_tunnel --> tn_store : Go toward the crate store.
-n_tunnel --> tn_gate : Go toward the barred sea gate.
-tn_keeper --> tn_keep_door : Try the brass key on the door.
-tn_keeper --> tn_keep_beam : Deal with the fallen beam.
-tn_keep_door --> tn_keep_open : Coax the key gently.
-tn_keep_door --> tn_keep_stuck : Shove the key hard.
-tn_keep_open --> n_chamber : Step into the keeper's room.
+n_tunnel --> tn_keeper : Go toward {TN_KEEPER_DOOR}.
+n_tunnel --> tn_store : Go toward {TN_STORE}.
+n_tunnel --> tn_gate : Go toward {TN_SEAGATE_GATE}.
+tn_keeper --> tn_keep_door : Try {TN_KEY} on the door.
+tn_keeper --> tn_keep_beam : Deal with {TN_BEAM_GATE}.
+tn_keep_door --> tn_keep_open : Coax {TN_KEY} gently.
+tn_keep_door --> tn_keep_stuck : Shove {TN_KEY} hard.
+tn_keep_open --> n_chamber : Step into {CM_ROOM}.
 tn_keep_stuck --> n_chamber : Ease it back and re-seat the key.
-tn_keep_stuck --> e_set_door : Force it and risk the wards.
-tn_keep_beam --> tn_keep_open : Lever the beam clear carefully.
-tn_keep_beam --> e_set_beam : Squeeze under the beam.
-tn_store --> tn_store_crate : Prise open a crate.
-tn_store --> tn_store_box : Take down the ledger box.
-tn_store_crate --> tn_store_join : Go on to the keeper's room.
+tn_keep_stuck --> e_set_door : Force it and risk {TN_WARD_GATE}.
+tn_keep_beam --> tn_keep_open : Lever {TN_BEAM_GATE} clear carefully.
+tn_keep_beam --> e_set_beam : Squeeze under {TN_BEAM_GATE}.
+tn_store --> tn_store_crate : Prise open {TN_CRATE}.
+tn_store --> tn_store_box : Take down {TN_LEDGERBOX}.
+tn_store_crate --> tn_store_join : Go on to {CM_ROOM}.
 tn_store_box --> tn_store_join : Carry the box onward.
-tn_store_join --> n_chamber : Press on before the lantern dies.
+tn_store_join --> n_chamber : Press on before {TN_LANTERN} dies.
 tn_store_join --> tn_store_relight : Stop to trim and relight it.
 tn_store_relight --> n_chamber : Follow the passage to the room.
-tn_gate --> tn_gate_open : Work the sea gate open.
+tn_gate --> tn_gate_open : Work {TN_SEAGATE_GATE} open.
 tn_gate --> e_set_gate : Watch the water climb and think twice.
 tn_gate_open --> n_chamber : Slip through the gap.
-tn_gate_open --> tn_gate_wait : Wait for the current to ease.
-tn_gate_wait --> n_chamber : Climb to the keeper's room.
-n_chamber --> cm_letter : Read the keeper's sealed letter.
-n_chamber --> cm_smug : Deal with the smugglers' store.
-n_chamber --> cm_light : Turn to the false-light rig.
+tn_gate_open --> tn_gate_wait : Wait for {TN_CURRENT} to ease.
+tn_gate_wait --> n_chamber : Climb to {CM_ROOM}.
+n_chamber --> cm_letter : Read {CM_LETTER}.
+n_chamber --> cm_smug : Deal with {CM_STORE}.
+n_chamber --> cm_light : Turn to {LAMP_RIG}.
 n_chamber --> cm_leave : Simply head back to town.
-cm_letter --> cm_letter_read : Read the letter to the end.
+cm_letter --> cm_letter_read : Read {CM_LETTER} to the end.
 cm_letter --> cm_letter_keep : Keep it sealed and leave.
-cm_letter_read --> cm_letter_map : Follow the map to the keeper.
-cm_letter_read --> cm_letter_conf : Read the signed confession.
-cm_letter_read --> cm_letter_plea : Answer the keeper's plea.
-cm_letter_map --> e_win_keeper_found : Go to the inland cottage.
-cm_letter_map --> e_win_keeper_word : Take word to the harbour office.
-cm_letter_conf --> e_win_name_cleared : Take the confession to the town.
-cm_letter_plea --> e_win_promise : Take up the keeper's task.
-cm_letter_keep --> e_neutral_letter : Carry the sealed letter out.
+cm_letter_read --> cm_letter_map : Follow {CM_MAP} to the keeper.
+cm_letter_read --> cm_letter_conf : Read {CM_CONFESSION}.
+cm_letter_read --> cm_letter_plea : Answer {CM_PLEA}.
+cm_letter_map --> e_win_keeper_found : Go to {CM_COTTAGE}.
+cm_letter_map --> e_win_keeper_word : Take word to {CM_HARBOUR_OFFICE}.
+cm_letter_conf --> e_win_name_cleared : Take {CM_CONFESSION} to the town.
+cm_letter_plea --> e_win_promise : Take up {KEEPER}'s task.
+cm_letter_keep --> e_neutral_letter : Carry {CM_LETTER} out.
 cm_smug --> cm_smug_photo : Photograph the evidence.
-cm_smug --> cm_smug_follow : Follow the store deeper.
-cm_smug_photo --> e_win_smugglers : Signal the coastguard.
-cm_smug_photo --> e_win_harbor : Take it to the harbour master.
+cm_smug --> cm_smug_follow : Follow {CM_STORE} deeper.
+cm_smug_photo --> e_win_smugglers : Signal {CM_COASTGUARD}.
+cm_smug_photo --> e_win_harbor : Take it to {CM_HARBOURMASTER}.
 cm_smug_follow --> cm_smug_hoard : Record the whole hidden hoard.
-cm_smug_follow --> cm_smug_token : Reach for the jewelled compass.
+cm_smug_follow --> cm_smug_token : Reach for {CM_COMPASS}.
 cm_smug_hoard --> e_win_hoard : Take the record to the authorities.
-cm_smug_token --> e_set_token : Pocket the compass and go.
+cm_smug_token --> e_set_token : Pocket {CM_COMPASS} and go.
 cm_smug_token --> e_neutral_honest : Leave it and photograph it instead.
 cm_light --> cm_light_relight : Relight the lamp as a true light.
-cm_light --> cm_light_study : Study the warning signal.
-cm_light_relight --> cm_light_true : Set the mirror true by the marks.
-cm_light_relight --> e_set_gears : Force the stiff gears.
+cm_light --> cm_light_study : Study {CM_SIGNAL_RIG}.
+cm_light_relight --> cm_light_true : Set {CM_MIRROR} true by the marks.
+cm_light_relight --> e_set_gears : Force {CM_GEARS_GATE}.
 cm_light_true --> e_win_light_restored : Send the light out to sea.
 cm_light_study --> e_win_rescue : Rig it to call for help.
 cm_light_study --> e_win_signal : Log the signal for the record.
 cm_leave --> cm_leave_town : Head straight back to town.
 cm_leave --> cm_leave_mark : Mark the way for others.
 cm_leave_town --> e_neutral_town : Set off for town.
-cm_leave_mark --> e_neutral_evidence : Leave the journal as a signpost.
-cm_leave_mark --> e_neutral_museum : Carry the journal into town.
+cm_leave_mark --> e_neutral_evidence : Leave {JOURNAL} as a signpost.
+cm_leave_mark --> e_neutral_museum : Carry {JOURNAL} into town.
 e_set_a_drawer --> [*]
 e_set_a_brick --> [*]
 e_set_b_rail --> [*]

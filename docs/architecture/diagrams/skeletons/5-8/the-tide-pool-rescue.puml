@@ -99,28 +99,28 @@ state n_picnic #FFF9C4
 n_picnic : choice · 75w
 state e_tide_star #E0E0E0
 e_tide_star : setback (neutral)
-e_tide_star : "The Tide Lends a Hand"
+e_tide_star : "{SETBACK1_PRIZE}"
 state e_tide_snail #E0E0E0
 e_tide_snail : setback (neutral)
-e_tide_snail : "The Periwinkle Rides the Waves"
+e_tide_snail : "{SETBACK2_PRIZE}"
 state e_cartwheel #C8E6C9
 e_cartwheel : success (positive)
-e_cartwheel : "Stella's Thank-You Cartwheel"
+e_cartwheel : "{Q1_PRIZE}"
 state e_race_win #C8E6C9
 e_race_win : success (positive)
-e_race_win : "Racing the Friendly Tide"
+e_race_win : "{RACE_PRIZE}"
 state e_hermit #C8E6C9
 e_hermit : discovery (positive)
-e_hermit : "The Hermit Crab Surprise"
+e_hermit : "{BONUS1_PRIZE}"
 state e_shell #C8E6C9
 e_shell : discovery (positive)
-e_shell : "The Glitter-Trail Shell"
+e_shell : "{BONUS2_PRIZE}"
 state e_song #C8E6C9
 e_song : completion (positive)
 e_song : "The Welcome-Home Song"
 state e_hooray #C8E6C9
 e_hooray : success (positive)
-e_hooray : "Three Cheers for the Sea"
+e_hooray : "Three Cheers for Everyone"
 state e_names #C8E6C9
 e_names : completion (positive)
 e_names : "Everyone Home"
@@ -129,75 +129,75 @@ e_toast : completion (positive)
 e_toast : "A Toast to the Rescue Team"
 state e_story #C8E6C9
 e_story : completion (positive)
-e_story : "The Best Beach Story"
+e_story : "{STORY_PRIZE}"
 state e_patrol #C8E6C9
 e_patrol : success (positive)
-e_patrol : "The Low-Tide Rescue Patrol"
-n_start --> n_walk : Follow Gran down the sandy path.
+e_patrol : "{PATROL_PRIZE}"
+n_start --> n_walk : Follow {COMPANION} down the sandy path.
 n_walk --> n_meet : Step out onto the flat low-tide rocks.
-n_meet --> st_scene : Hurry to the sea star on the high ledge.
+n_meet --> st_scene : Hurry to the {Q1_SPECIES} on the high le...
 st_scene --> st_meet : Climb the low steps for a closer look.
-st_meet --> st_plan : Think up a rescue plan for Stella.
+st_meet --> st_plan : Think up a rescue plan for {Q1_NAME}.
 st_plan --> st_flop_hands : Toss water up with your cupped hands.
-st_plan --> st_flop_bucket : Carry the full bucket up the little slop...
-st_plan --> st_win : Wet your hands and gently slide Stella d...
+st_plan --> st_flop_bucket : Carry {TOOL} up the little slope.
+st_plan --> st_win : Wet your hands and gently slide {Q1_NAME...
 st_flop_hands --> st_plan : Line up the plans and try again.
-st_flop_hands --> st_gran : Ask Gran for a tip.
+st_flop_hands --> st_gran : Ask {COMPANION} for a tip.
 st_flop_bucket --> st_plan : Shake off the splash and try again.
-st_flop_bucket --> st_gran : Ask Gran for a tip.
-st_gran --> st_win : Try Gran's gentle sliding idea.
+st_flop_bucket --> st_gran : Ask {COMPANION} for a tip.
+st_gran --> st_win : Try {COMPANION}'s gentle sliding idea.
 st_gran --> st_plan : Look over the plans once more.
-st_win --> st_thanks : Watch Stella settle into her pool.
+st_win --> st_thanks : Watch {Q1_NAME} settle into her pool.
 st_thanks --> t_st_fi : Hurry toward the flappy splashing sound.
 st_thanks --> e_tide_star : Sit with Gran and let the tide finish th...
 t_st_fi --> fi_scene : Kneel beside the shrinking puddle.
-fi_scene --> fi_meet : Lean in and say hello to the little fish...
-fi_meet --> fi_plan : Think up a plan to move Flick.
-fi_plan --> fi_flop_hands : Catch Flick with your bare hands.
-fi_plan --> fi_flop_dig : Dig a little river over to the big pool.
-fi_plan --> fi_win : Scoop water and fish up together in the ...
+fi_scene --> fi_meet : Lean in and say hello to the little {Q2_...
+fi_meet --> fi_plan : Think up a plan to move {Q2_NAME}.
+fi_plan --> fi_flop_hands : Catch {Q2_NAME} with your bare hands.
+fi_plan --> fi_flop_dig : Dig a little river over to {Q2_HOME}.
+fi_plan --> fi_win : Scoop water and {Q2_NAME} up together in...
 fi_flop_hands --> fi_plan : Line up the plans and try again.
-fi_flop_hands --> fi_gran : Ask Gran for a tip.
+fi_flop_hands --> fi_gran : Ask {COMPANION} for a tip.
 fi_flop_dig --> fi_plan : Smooth the sand and try again.
-fi_flop_dig --> fi_gran : Ask Gran for a tip.
-fi_gran --> fi_win : Scoop water and fish up together, Gran's...
+fi_flop_dig --> fi_gran : Ask {COMPANION} for a tip.
+fi_gran --> fi_win : Scoop water and {Q2_NAME} up together, {...
 fi_gran --> fi_plan : Look over the plans once more.
-fi_win --> fi_thanks : Watch Flick zoom around his big new pool...
+fi_win --> fi_thanks : Watch {Q2_NAME} zoom around his big new ...
 fi_thanks --> t_fi_cr : Follow the clack-clack sound to the seaw...
 t_fi_cr --> cr_scene : Cross the rocks to the seaweed patch.
-cr_scene --> cr_meet : Crouch down beside the tangled crab.
-cr_meet --> cr_plan : Think up a plan to untangle Pinch.
+cr_scene --> cr_meet : Crouch down beside the tangled {Q3_SPECI...
+cr_meet --> cr_plan : Think up a plan to untangle {Q3_NAME}.
 cr_plan --> cr_flop_tug : Give the seaweed one quick tug.
-cr_plan --> cr_flop_spoon : Hold out the picnic spoon for Pinch to g...
+cr_plan --> cr_flop_spoon : Hold out the picnic spoon for {Q3_NAME} ...
 cr_plan --> cr_win : Untangle one seaweed ribbon at a time.
 cr_flop_tug --> cr_plan : Stand up and try again.
-cr_flop_tug --> cr_gran : Ask Gran for a tip.
+cr_flop_tug --> cr_gran : Ask {COMPANION} for a tip.
 cr_flop_spoon --> cr_plan : Pocket the spoon and try again.
-cr_flop_spoon --> cr_gran : Ask Gran for a tip.
-cr_gran --> cr_win : Untangle one ribbon at a time, Gran's wa...
+cr_flop_spoon --> cr_gran : Ask {COMPANION} for a tip.
+cr_gran --> cr_win : Untangle one ribbon at a time, {COMPANIO...
 cr_gran --> cr_plan : Look over the plans once more.
-cr_win --> cr_thanks : Watch Pinch scuttle into the cool pool.
+cr_win --> cr_thanks : Watch {Q3_NAME} scuttle into the cool po...
 cr_thanks --> t_cr_pw : Head for the tiny shell far up the rock.
-cr_thanks --> e_tide_snail : Watch from Gran's towel while the tide f...
+cr_thanks --> e_tide_snail : Watch from {COMPANION}'s {TOWEL} while {...
 t_cr_pw --> pw_scene : Tiptoe up the dry rock to the tiny shell...
-pw_scene --> pw_meet : Bend down and greet the little periwinkl...
-pw_meet --> pw_plan : Think up a plan to bring Winnie home.
-pw_plan --> pw_flop_roll : Roll Winnie along like a tiny wheel.
-pw_plan --> pw_flop_cheer : Cheer for Winnie to walk faster.
-pw_plan --> pw_win : Offer Winnie a ride on your wet palm.
+pw_scene --> pw_meet : Bend down and greet the little {Q4_SPECI...
+pw_meet --> pw_plan : Think up a plan to bring {Q4_NAME} home.
+pw_plan --> pw_flop_roll : Roll {Q4_NAME} along like a tiny wheel.
+pw_plan --> pw_flop_cheer : Cheer for {Q4_NAME} to walk faster.
+pw_plan --> pw_win : Offer {Q4_NAME} a ride on your wet palm.
 pw_flop_roll --> pw_plan : Smile at the stubborn shell and try agai...
-pw_flop_roll --> pw_gran : Ask Gran for a tip.
+pw_flop_roll --> pw_gran : Ask {COMPANION} for a tip.
 pw_flop_cheer --> pw_plan : Line up the plans and try again.
-pw_flop_cheer --> pw_gran : Ask Gran for a tip.
-pw_gran --> pw_win : Offer Winnie a wet-palm ride, Gran's way...
+pw_flop_cheer --> pw_gran : Ask {COMPANION} for a tip.
+pw_gran --> pw_win : Offer {Q4_NAME} a wet-palm ride, {COMPAN...
 pw_gran --> pw_plan : Look over the plans once more.
-pw_win --> pw_thanks : Lower Winnie into her cool pool.
-pw_thanks --> n_alldone : Look up at the sparkling line of the sea...
+pw_win --> pw_thanks : Lower {Q4_NAME} into her cool pool.
+pw_thanks --> n_alldone : Look up at the sparkling line of {TIDE}.
 n_alldone --> n_tide : Watch the first wave-finger slide in.
-n_tide --> n_fill : Follow the tide from pool to pool.
-n_tide --> n_wave : Climb up beside Gran on the flat rock.
-n_tide --> n_picnic : Open the picnic basket to celebrate.
-n_fill --> e_cartwheel : Cheer as Stella's pool spills over.
+n_tide --> n_fill : Follow {TIDE} from pool to pool.
+n_tide --> n_wave : Climb up beside {COMPANION} on {ENTRANCE...
+n_tide --> n_picnic : Open {PICNIC} to celebrate.
+n_fill --> e_cartwheel : Cheer as {Q1_NAME}'s pool spills over.
 n_fill --> n_race : Race the foam line up the dry sand.
 n_fill --> n_check : Peek around for anyone else who needs he...
 n_race --> e_race_win : Run the last few splashy-sounding steps.
@@ -207,8 +207,8 @@ n_wave --> e_song : Sing the welcome-home song.
 n_wave --> e_hooray : Shout three hip-hip-hoorays.
 n_wave --> e_names : Call each friend's name as their pool fi...
 n_picnic --> e_toast : Raise juice cups to the rescue team.
-n_picnic --> e_story : Tell Gran the whole rescue story.
-n_picnic --> e_patrol : Plan the next low-tide rescue patrol.
+n_picnic --> e_story : Tell {COMPANION} the whole rescue story.
+n_picnic --> e_patrol : Plan the next {OPENING_MOMENT} rescue pa...
 e_tide_star --> [*]
 e_tide_snail --> [*]
 e_cartwheel --> [*]

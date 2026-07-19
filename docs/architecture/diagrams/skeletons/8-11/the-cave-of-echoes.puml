@@ -21,7 +21,7 @@ state la_grotto_app #FFF9C4
 la_grotto_app : choice · 100w
 state la_retreat_pool #FFCDD2
 la_retreat_pool : setback (negative)
-la_retreat_pool : "Back to the Mouth"
+la_retreat_pool : "Turned Back at {A1_GATE}"
 state la_squeeze #D1C4E9
 la_squeeze : rising · 95w
 state la_grotto #FFF9C4
@@ -30,14 +30,14 @@ state la_crystal_take #D1C4E9
 la_crystal_take : rising · 90w
 state la_crystal_out #C8E6C9
 la_crystal_out : success (positive)
-la_crystal_out : "The Glowing Crystal"
+la_crystal_out : "{A1_PRIZE1}"
 state la_crystal_deeper #D1C4E9
 la_crystal_deeper : rising · 95w
 state la_song_app #D1C4E9
 la_song_app : rising · 95w
 state la_song #C8E6C9
 la_song : completion (positive)
-la_song : "The Chamber That Sings"
+la_song : "{A1_PRIZE2}"
 state la_hum #D1C4E9
 la_hum : rising · 95w
 state la_hum2 #D1C4E9
@@ -46,7 +46,7 @@ state la_bell_app #FFF9C4
 la_bell_app : choice · 100w
 state la_hum_back #FFCDD2
 la_hum_back : setback (negative)
-la_hum_back : "Another Low Tide"
+la_hum_back : "Turned Back at {A2_GATE}"
 state la_bell #D1C4E9
 la_bell : rising · 95w
 state la_bell2 #D1C4E9
@@ -55,7 +55,7 @@ state la_bell3 #D1C4E9
 la_bell3 : rising · 90w
 state la_bell4 #C8E6C9
 la_bell4 : success (positive)
-la_bell4 : "The Bell of the Lost Ship"
+la_bell4 : "{A2_PRIZE}"
 state ra_drip #D1C4E9
 ra_drip : rising · 95w
 state ra_fork #FFF9C4
@@ -68,7 +68,7 @@ state ra_lake_app #FFF9C4
 ra_lake_app : choice · 105w
 state ra_lake_back #FFCDD2
 ra_lake_back : setback (negative)
-ra_lake_back : "The Weed-Slick Shelf"
+ra_lake_back : "Turned Back at {B1_GATE}"
 state ra_descend #D1C4E9
 ra_descend : rising · 95w
 state ra_lakeshore #FFF9C4
@@ -77,12 +77,12 @@ state ra_boat #D1C4E9
 ra_boat : rising · 95w
 state ra_row #C8E6C9
 ra_row : success (positive)
-ra_row : "Across the Hidden Lake"
+ra_row : "{B1_PRIZE1}"
 state ra_wade #D1C4E9
 ra_wade : rising · 95w
 state ra_islet #C8E6C9
 ra_islet : completion (positive)
-ra_islet : "The Glowing Islet"
+ra_islet : "{B1_PRIZE2}"
 state ra_pool_way #D1C4E9
 ra_pool_way : rising · 95w
 state ra_pool2 #D1C4E9
@@ -91,7 +91,7 @@ state ra_pool_app #FFF9C4
 ra_pool_app : choice · 100w
 state ra_pool_back #FFCDD2
 ra_pool_back : setback (negative)
-ra_pool_back : "Beat the Tide Back"
+ra_pool_back : "Turned Back at {B2_GATE}"
 state ra_pool_enter #D1C4E9
 ra_pool_enter : rising · 95w
 state ra_pool_chamber #FFF9C4
@@ -100,12 +100,12 @@ state ra_starfish #D1C4E9
 ra_starfish : rising · 95w
 state ra_starfish2 #C8E6C9
 ra_starfish2 : success (positive)
-ra_starfish2 : "The Rare Starfish"
+ra_starfish2 : "{B2_PRIZE1}"
 state ra_pool_deep #D1C4E9
 ra_pool_deep : rising · 95w
 state ra_pool_deep2 #C8E6C9
 ra_pool_deep2 : success (positive)
-ra_pool_deep2 : "The Great Spiral Shell"
+ra_pool_deep2 : "{B2_PRIZE2}"
 state da_dark #D1C4E9
 da_dark : rising · 95w
 state da_fork #FFF9C4
@@ -118,7 +118,7 @@ state da_bat_app #FFF9C4
 da_bat_app : choice · 105w
 state da_bat_back #FFCDD2
 da_bat_back : setback (negative)
-da_bat_back : "Let the Bats Sleep"
+da_bat_back : "Turned Back at {C1_GATE}"
 state da_bat_enter #D1C4E9
 da_bat_enter : rising · 95w
 state da_roost #D1C4E9
@@ -127,7 +127,7 @@ state da_roost2 #D1C4E9
 da_roost2 : rising · 90w
 state da_skylight #C8E6C9
 da_skylight : completion (positive)
-da_skylight : "The Skylight in the Meadow"
+da_skylight : "{C1_PRIZE}"
 state da_cache_way #D1C4E9
 da_cache_way : rising · 95w
 state da_cache2 #D1C4E9
@@ -136,7 +136,7 @@ state da_cache_app #FFF9C4
 da_cache_app : choice · 105w
 state da_cache_back #FFCDD2
 da_cache_back : setback (negative)
-da_cache_back : "Mark It on the Map"
+da_cache_back : "Turned Back at {C2_GATE}"
 state da_cache_enter #D1C4E9
 da_cache_enter : rising · 95w
 state da_cache_room #FFF9C4
@@ -145,75 +145,75 @@ state da_compass #D1C4E9
 da_compass : rising · 95w
 state da_compass2 #C8E6C9
 da_compass2 : success (positive)
-da_compass2 : "The Smuggler's Compass"
+da_compass2 : "{C2_PRIZE1}"
 state da_coins #D1C4E9
 da_coins : rising · 95w
 state da_coins2 #C8E6C9
 da_coins2 : success (positive)
-da_coins2 : "The Smuggler's Coins"
-n_start --> la_tunnel : Follow the humming echo to the left.
-n_start --> ra_drip : Follow the dripping echo to the right.
-n_start --> da_dark : Follow the whispering echo straight down...
+da_coins2 : "{C2_PRIZE2}"
+n_start --> la_tunnel : Follow {ROUTE_A_LURE} to the left.
+n_start --> ra_drip : Follow {ROUTE_B_LURE} to the right.
+n_start --> da_dark : Follow {ROUTE_C_LURE} straight down.
 la_tunnel --> la_fork : Press on toward the glow.
-la_fork --> la_glitter : Go toward the glittering wall.
-la_fork --> la_hum : Go toward the warm murmur.
+la_fork --> la_glitter : Go toward {A1_SIGN}.
+la_fork --> la_hum : Go toward {A2_SIGN}.
 la_glitter --> la_glitter2 : Follow the sloping floor down.
-la_glitter2 --> la_grotto_app : Approach the glowing crack.
-la_grotto_app --> la_squeeze : Squeeze through the glowing crack.
-la_grotto_app --> la_retreat_pool : Turn back before the water rises.
-la_squeeze --> la_grotto : Step into the shimmering room.
-la_grotto --> la_crystal_take : Gently take the loose crystal.
-la_grotto --> la_crystal_deeper : Follow the humming archway deeper.
-la_crystal_take --> la_crystal_out : Follow the crystal's light back up.
+la_glitter2 --> la_grotto_app : Approach {A1_GATE}.
+la_grotto_app --> la_squeeze : Squeeze through {A1_GATE}.
+la_grotto_app --> la_retreat_pool : Turn back before {DEADLINE_SIGN} rises.
+la_squeeze --> la_grotto : Step into {A1_ZONE}.
+la_grotto --> la_crystal_take : Gently take {A1_OFFER1}.
+la_grotto --> la_crystal_deeper : Follow {A1_OFFER2} deeper.
+la_crystal_take --> la_crystal_out : Follow {A1_OFFER1}'s light back up.
 la_crystal_deeper --> la_song_app : Follow the chord toward the sound.
-la_song_app --> la_song : Step into the ringing chamber.
-la_hum --> la_hum2 : Follow the ringing downward.
-la_hum2 --> la_bell_app : Climb down toward the chiming light.
-la_bell_app --> la_bell : Climb down the old rope ladder.
+la_song_app --> la_song : Step into {A1_PRIZE2_ZONE}.
+la_hum --> la_hum2 : Follow {A2_LANDMARK} downward.
+la_hum2 --> la_bell_app : Climb down toward {A2_ZONE_HINT}.
+la_bell_app --> la_bell : Climb down {A2_GATE}.
 la_bell_app --> la_hum_back : Scramble back up to be safe.
-la_bell --> la_bell2 : Walk up to the great bell.
-la_bell2 --> la_bell3 : Read the name and look behind the bell.
-la_bell3 --> la_bell4 : Take the lantern and rope and head out.
-ra_drip --> ra_fork : Follow the trickle deeper.
-ra_fork --> ra_lake_way : Head toward the lapping water.
-ra_fork --> ra_pool_way : Follow the briny smell.
-ra_lake_way --> ra_lake2 : Cross the wet pebbles.
-ra_lake2 --> ra_lake_app : Edge along the rocky shelf.
-ra_lake_app --> ra_descend : Climb down to the lake shore.
-ra_lake_app --> ra_lake_back : Back off the slippery shelf.
+la_bell --> la_bell2 : Walk up to {A2_FIND}.
+la_bell2 --> la_bell3 : Read {A2_DETAIL1} and look behind {A2_FI...
+la_bell3 --> la_bell4 : Take {A2_DETAIL2} and head out.
+ra_drip --> ra_fork : Follow {ROUTE_B_LURE} deeper.
+ra_fork --> ra_lake_way : Head toward {B1_SIGN}.
+ra_fork --> ra_pool_way : Follow {B2_SIGN}.
+ra_lake_way --> ra_lake2 : Cross {B1_LANDMARK1}.
+ra_lake2 --> ra_lake_app : Edge along {B1_LANDMARK2}.
+ra_lake_app --> ra_descend : Climb down to {B1_ZONE}.
+ra_lake_app --> ra_lake_back : Back off {B1_GATE}.
 ra_descend --> ra_lakeshore : Walk along the gravel shore.
-ra_lakeshore --> ra_boat : Examine the old rowboat.
-ra_lakeshore --> ra_wade : Wade into the glowing shallows.
+ra_lakeshore --> ra_boat : Examine {B1_OFFER1}.
+ra_lakeshore --> ra_wade : Wade into {B1_OFFER2}.
 ra_boat --> ra_row : Climb in and push off.
-ra_wade --> ra_islet : Follow the glowing shells.
-ra_pool_way --> ra_pool2 : Crouch through toward the pale light.
-ra_pool2 --> ra_pool_app : Follow the clear channel.
-ra_pool_app --> ra_pool_enter : Push through the weed curtain.
-ra_pool_app --> ra_pool_back : Hurry back before the channel fills.
-ra_pool_enter --> ra_pool_chamber : Kneel by the clear tide-pool.
-ra_pool_chamber --> ra_starfish : Look closely at the orange starfish.
-ra_pool_chamber --> ra_pool_deep : Follow the crab-track to the dark basin.
+ra_wade --> ra_islet : Follow {B1_PRIZE2_PATH}.
+ra_pool_way --> ra_pool2 : Crouch through toward {B2_LANDMARK1}.
+ra_pool2 --> ra_pool_app : Follow {B2_LANDMARK2}.
+ra_pool_app --> ra_pool_enter : Push through {B2_GATE}.
+ra_pool_app --> ra_pool_back : Hurry back before {DEADLINE_SIGN} rises.
+ra_pool_enter --> ra_pool_chamber : Kneel by {B2_ZONE}.
+ra_pool_chamber --> ra_starfish : Look closely at {B2_OFFER1}.
+ra_pool_chamber --> ra_pool_deep : Follow {B2_OFFER2}.
 ra_starfish --> ra_starfish2 : Finish the sketch and slip out.
 ra_pool_deep --> ra_pool_deep2 : Reach into the green basin.
 da_dark --> da_fork : Feel along the wall downward.
-da_fork --> da_bat_way : Go toward the squeaking and flutter.
-da_fork --> da_cache_way : Go toward the creaking wood.
-da_bat_way --> da_bat2 : Creep on under the hanging shapes.
-da_bat2 --> da_bat_app : Move quietly toward the grey light.
-da_bat_app --> da_bat_enter : Tiptoe across under the bats.
-da_bat_app --> da_bat_back : Back away and leave the bats be.
-da_bat_enter --> da_roost : Start up the fallen-rock stair.
-da_roost --> da_roost2 : Climb on past the old carving.
-da_roost2 --> da_skylight : Push up through the mossy funnel.
-da_cache_way --> da_cache2 : Approach the leaning plank door.
-da_cache2 --> da_cache_app : Peer into the walled-off hollow.
+da_fork --> da_bat_way : Go toward {C1_SIGN}.
+da_fork --> da_cache_way : Go toward {C2_SIGN}.
+da_bat_way --> da_bat2 : Creep on under {C1_LANDMARK}.
+da_bat2 --> da_bat_app : Move quietly toward {C1_ZONE_HINT}.
+da_bat_app --> da_bat_enter : Tiptoe across under {C1_LANDMARK}.
+da_bat_app --> da_bat_back : Back away and leave {C1_LANDMARK} be.
+da_bat_enter --> da_roost : Start up {C1_CLIMB1}.
+da_roost --> da_roost2 : Climb on past {C1_CLIMB2}.
+da_roost2 --> da_skylight : Push up through {C1_CLIMB3}.
+da_cache_way --> da_cache2 : Approach {C2_LANDMARK1}.
+da_cache2 --> da_cache_app : Peer into {C2_LANDMARK2}.
 da_cache_app --> da_cache_enter : Step in for a quick look.
-da_cache_app --> da_cache_back : Leave the cache and beat the tide.
+da_cache_app --> da_cache_back : Leave {C2_ZONE} before {DEADLINE_SIGN}.
 da_cache_enter --> da_cache_room : Open the two dry boxes.
-da_cache_room --> da_compass : Take the old brass compass.
-da_cache_room --> da_coins : Take the heavy rattling box.
-da_compass --> da_compass2 : Follow the compass out.
-da_coins --> da_coins2 : Carry the box out quickly.
+da_cache_room --> da_compass : Take {C2_OFFER1}.
+da_cache_room --> da_coins : Take {C2_OFFER2}.
+da_compass --> da_compass2 : Follow {C2_OFFER1} out.
+da_coins --> da_coins2 : Carry {C2_OFFER2} out quickly.
 la_retreat_pool --> [*]
 la_crystal_out --> [*]
 la_song --> [*]

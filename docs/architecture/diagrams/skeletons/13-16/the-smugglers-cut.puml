@@ -62,7 +62,7 @@ state yd_stair2 #FFF9C4
 yd_stair2 : choice · 68w
 state yd_stair_caught #FFCDD2
 yd_stair_caught : capture (negative)
-yd_stair_caught : "Behind the Clerk"
+yd_stair_caught : "{YD_STAIR_CAUGHT_TITLE}"
 state yd_dog1 #D1C4E9
 yd_dog1 : rising · 54w
 state yd_dog2 #FFF9C4
@@ -94,7 +94,7 @@ state land_counter #FFF9C4
 land_counter : choice · 66w
 state land_greed #FFCDD2
 land_greed : capture (negative)
-land_greed : "The Price of the Coin Tray"
+land_greed : "{LAND_GREED_TITLE}"
 state land_cross #D1C4E9
 land_cross : rising · 56w
 state g_vault #ECEFF1
@@ -137,7 +137,7 @@ state es_side2 #FFF9C4
 es_side2 : choice · 66w
 state es_side_drown #FFCDD2
 es_side_drown : death (negative)
-es_side_drown : "The Sluice-Race"
+es_side_drown : "{ES_SIDE_DROWN_TITLE}"
 state es_roof1 #D1C4E9
 es_roof1 : rising · 56w
 state es_roof2 #FFF9C4
@@ -155,7 +155,7 @@ state jn_basin #FFF9C4
 jn_basin : choice · 66w
 state jn_basin_caught #FFCDD2
 jn_basin_caught : capture (negative)
-jn_basin_caught : "Under the Watch-Post"
+jn_basin_caught : "{JN_BASIN_CAUGHT_TITLE}"
 state jn_cut #FFF9C4
 jn_cut : choice · 70w
 state jn_cut_drown #FFCDD2
@@ -165,13 +165,13 @@ state boat #ECEFF1
 boat : bottleneck · 82w
 state e_clean #C8E6C9
 e_clean : success (positive)
-e_clean : "A Clean Cut"
+e_clean : "{E_CLEAN_TITLE}"
 state e_cost #C8E6C9
 e_cost : completion (positive)
-e_cost : "The Cut That Counts"
+e_cost : "{E_COST_TITLE}"
 state e_walkaway #E0E0E0
 e_walkaway : completion (neutral)
-e_walkaway : "Clean Hands, Empty Hands"
+e_walkaway : "{E_WALKAWAY_TITLE}"
 state m1_p0a #D1C4E9
 m1_p0a : rising · 52w
 state m1_p0b #D1C4E9
@@ -641,12 +641,12 @@ m3_pfin_e : setback (negative)
 m3_pfin_e : "The Warren and the Bell"
 state m3_h9 #ECEFF1
 m3_h9 : hub · 66w
-n_start --> n_quay : Climb down to Coll and the skiff.
+n_start --> n_quay : Climb down to {COMPANION} and the skiff.
 n_quay --> n_drop : Slip into the water at the drop.
-n_drop --> n_approach : Start toward the counting-house.
-n_approach --> ap_cut1 : Run the open main cut, low and fast.
-n_approach --> ap_loft1 : Wade through the flooded sail-loft.
-n_approach --> ap_bridge : Cross over the watched third bridge.
+n_drop --> n_approach : Start toward the {TARGET}.
+n_approach --> ap_cut1 : Run the open {ROUTE_A_NAME}, low and fas...
+n_approach --> ap_loft1 : Wade through the flooded {ROUTE_B_NAME}.
+n_approach --> ap_bridge : Cross over the watched {ROUTE_C_NAME}.
 ap_cut1 --> ap_cut2 : Reach the moored lighter.
 ap_cut2 --> wg_gate : Duck under the lighter's hull.
 ap_cut2 --> ap_cut_caught : Go around it into the open lane.
@@ -654,18 +654,18 @@ ap_loft1 --> ap_loft2 : Look for the way across.
 ap_loft2 --> wg_gate : Take the high beam walk.
 ap_loft2 --> ap_loft_drown : Chance the low sluice as the bell tolls.
 wg_gate --> wg_under1 : Slip under the drowned bars.
-wg_gate --> wg_wicket1 : Work the wicket's crooked latch.
-wg_gate --> wg_chain1 : Force the rusted winch chain.
-wg_under1 --> wg_under2 : Deal with the snagged net.
+wg_gate --> wg_wicket1 : Work the wicket's {WG_WICKET_NAME}.
+wg_gate --> wg_chain1 : Force the rusted {WG_CHAIN_NAME}.
+wg_under1 --> wg_under2 : Deal with the {WG_NET_NAME}.
 wg_under2 --> yard : Cut yourself free and glide up calm.
 wg_under2 --> wg_under_drown : Thrash hard for the surface.
 wg_wicket1 --> yard : Ease into the yard.
 wg_chain1 --> yard : Ease the chain link by link.
 wg_chain1 --> wg_alarm : Haul the chain fast and hard.
 wg_alarm --> yard : Press into the yard, wary.
-yard --> yd_coal1 : Go down the coal hatch.
+yard --> yd_coal1 : Go down the {YD_COAL_NAME}.
 yard --> yd_stair1 : Climb the clerks' stair.
-yard --> yd_dog1 : Cross past the silent hound to the main ...
+yard --> yd_dog1 : Cross past the silent {YD_HAZARD} to the...
 yard --> m1_h1 : Search the outbuildings for another way.
 yd_coal1 --> yd_coal2 : Choose your way up.
 yd_coal2 --> hall : Pick the old iron grate.
@@ -673,12 +673,12 @@ yd_coal2 --> yd_coal_trap : Ride the blind coal-chute down.
 yd_stair1 --> yd_stair2 : Study the lit landing.
 yd_stair2 --> hall : Wait for the clerk to move off.
 yd_stair2 --> yd_stair_caught : Slip past behind the writing clerk.
-yd_dog1 --> yd_dog2 : Judge the hound's chain.
-yd_dog2 --> hall : Hug the wall past the hound's chain.
+yd_dog1 --> yd_dog2 : Judge the {YD_HAZARD}'s chain.
+yd_dog2 --> hall : Hug the wall past the {YD_HAZARD}'s chai...
 yd_dog2 --> yd_dog_bite : Cross straight for the door.
 hall --> hl_floor : Cross the open counting-floor.
-hall --> hl_stack1 : Work along the ledger-stacks.
-hall --> hl_mezz1 : Climb to the mezzanine hatch.
+hall --> hl_stack1 : Work along the {HL_STACK_NAME}.
+hall --> hl_mezz1 : Climb to the {HL_MEZZ_NAME} hatch.
 hall --> m2_h1 : Lose yourself among the record offices.
 hl_floor --> vlanding : Time the dark and cross on his turn.
 hl_floor --> hl_floor_caught : Hurry across now, in his light.
@@ -686,15 +686,15 @@ hl_stack1 --> hl_stack2 : Get past the leaning stack.
 hl_stack2 --> vlanding : Squeeze low under the stack.
 hl_stack2 --> hl_stack_fall : Climb over the top of the stack.
 hl_mezz1 --> hl_mezz2 : Cross toward the upper hatch.
-hl_mezz2 --> g_vault : Drop to the vault door.
+hl_mezz2 --> g_vault : Drop to the {VAULT_NAME} door.
 vlanding --> land_cross : Pick the cage gate's chain.
 vlanding --> land_counter : Go around by the counter.
 land_counter --> land_cross : Leave the coin and move on.
-land_counter --> land_greed : Sweep the counted coin tray.
-land_cross --> g_vault : Face the vault door.
-g_vault --> vk_work1 : Read the tide-lock and work the wards in...
+land_counter --> land_greed : Sweep the counted {LAND_COIN_NAME}.
+land_cross --> g_vault : Face the {VAULT_NAME} door.
+g_vault --> vk_work1 : Read the {LOCK_NAME} and work the wards ...
 g_vault --> vk_force : Force the door with your pry-bar.
-g_vault --> vk_ledger : Try the counting-ledger for the door's c...
+g_vault --> vk_ledger : Try the {LEDGER} for the door's cipher f...
 vk_work1 --> vk_work2 : Set the second ward.
 vk_work2 --> vk_open : Set the false gate gently.
 vk_work2 --> vk_snap : Turn the ward hard.
@@ -702,32 +702,32 @@ vk_force --> vk_work2 : Ease off and pick the wards instead.
 vk_force --> vk_force_bell : Throw your weight on the bar.
 vk_ledger --> vk_open : Trust the lock's true turn.
 vk_ledger --> vk_ledger_lock : Turn it the plain way the ledger reads.
-vk_open --> vk_secure1 : Turn for the water with the cut.
+vk_open --> vk_secure1 : Turn for the water with the {HAUL_NAME}.
 vk_secure1 --> vk_secure2 : Move for the way out.
 vk_secure2 --> h_escape : Choose the way back to the water.
-h_escape --> es_gate1 : Retrace to the water-gate.
-h_escape --> es_side1 : Out the coal hatch to the side canal.
-h_escape --> es_roof1 : Over the roof leads.
-h_escape --> m3_h1 : Cut through the canal warren below.
+h_escape --> es_gate1 : Retrace to the {GATE_NAME}.
+h_escape --> es_side1 : Out the {YD_COAL_NAME} to the side canal...
+h_escape --> es_roof1 : Over the {ES_ROOF_NAME}.
+h_escape --> m3_h1 : {HAUL_NAME} through the canal warren bel...
 es_gate1 --> es_gate2 : Judge the flooded gate.
 es_gate2 --> junction : Take the high wicket out.
 es_gate2 --> es_gate_drown : Duck the drowned bars as before.
 es_side1 --> es_side2 : Look for the crossing.
 es_side2 --> junction : Cross by the footbridge.
-es_side2 --> es_side_drown : Ride the sluice-race down.
+es_side2 --> es_side_drown : Ride the {ES_RACE_NAME} down.
 es_roof1 --> es_roof2 : Reach the roof's edge.
 es_roof2 --> junction : Climb down the drainpipe.
 es_roof2 --> es_roof_fall : Jump the gap to the next roof.
-junction --> jn_reed : Slip along the reed channel.
+junction --> jn_reed : Slip along the {JN_REED_NAME}.
 junction --> jn_basin : Sprint the open basin.
 junction --> jn_cut : Take the smuggler's cut under the road.
 jn_reed --> jn_reed2 : Follow the reeds around.
-jn_reed2 --> boat : Come out by the Drowned Oak.
+jn_reed2 --> boat : Come out by the {RENDEZVOUS}.
 jn_basin --> boat : Keep to the basin's shadowed rim.
 jn_basin --> jn_basin_caught : Cut straight across the open basin.
 jn_cut --> boat : Run the pipe now, ahead of the tide.
 jn_cut --> jn_cut_drown : Wait for the patrol, then run it.
-boat --> e_clean : Board and push off with the whole cut.
+boat --> e_clean : Board and push off with the whole {HAUL_...
 boat --> e_cost : Ditch the heavy strongbox, keep the ledg...
 boat --> e_walkaway : Sink the whole take and go clean before ...
 m1_p0a --> m1_p0b : Follow it further.

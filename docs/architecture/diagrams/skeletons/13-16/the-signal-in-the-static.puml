@@ -201,15 +201,15 @@ state f_st_answer #FFE0B2
 f_st_answer : climax · 145w
 state e_st_reunite #C8E6C9
 e_st_reunite : success (positive)
-e_st_reunite : "The Channel Answered"
+e_st_reunite : "{H1_PRIZE1}"
 state e_st_archive #C8E6C9
 e_st_archive : completion (positive)
-e_st_archive : "Nothing Is Erased"
+e_st_archive : "{H1_PRIZE2}"
 state f_st_power #FFE0B2
 f_st_power : climax · 140w
 state e_st_stabilize #C8E6C9
 e_st_stabilize : completion (positive)
-e_st_stabilize : "Bought More Time"
+e_st_stabilize : "{H1_PRIZE3}"
 state e_st_record #FFCDD2
 e_st_record : setback (negative)
 e_st_record : "One Word Saved"
@@ -222,7 +222,7 @@ state f_st_alder #FFE0B2
 f_st_alder : climax · 145w
 state e_st_alder_send #C8E6C9
 e_st_alder_send : success (positive)
-e_st_alder_send : "Live, After Thirty Years"
+e_st_alder_send : "{H2_PRIZE1}"
 state e_st_alder_refuse #FFCDD2
 e_st_alder_refuse : setback (negative)
 e_st_alder_refuse : "He Would Not Hope"
@@ -237,10 +237,10 @@ state f_re_boost #FFE0B2
 f_re_boost : climax · 140w
 state e_re_answer #C8E6C9
 e_re_answer : success (positive)
-e_re_answer : "A Voice Comes Back"
+e_re_answer : "{I1_PRIZE1}"
 state e_re_neighbor #C8E6C9
 e_re_neighbor : completion (positive)
-e_re_neighbor : "Carried Onward"
+e_re_neighbor : "{I1_PRIZE2}"
 state e_re_fuse #FFCDD2
 e_re_fuse : setback (negative)
 e_re_fuse : "Blue Smoke"
@@ -250,10 +250,10 @@ state f_re_net #FFE0B2
 f_re_net : climax · 140w
 state e_re_found #C8E6C9
 e_re_found : success (positive)
-e_re_found : "Two Ridges West"
+e_re_found : "{I2_PRIZE1}"
 state e_re_log #C8E6C9
 e_re_log : completion (positive)
-e_re_log : "A Hundred Searching Hands"
+e_re_log : "{I2_PRIZE2}"
 state e_re_message #FFCDD2
 e_re_message : setback (negative)
 e_re_message : "Left on the Recorder"
@@ -265,10 +265,10 @@ state f_he_act #FFE0B2
 f_he_act : climax · 140w
 state e_he_escort #C8E6C9
 e_he_escort : success (positive)
-e_he_escort : "Guided In"
+e_he_escort : "{J1_PRIZE1}"
 state e_he_safe #C8E6C9
 e_he_safe : completion (positive)
-e_he_safe : "Secured Before the Storm"
+e_he_safe : "{J1_PRIZE2}"
 state e_he_dismiss #FFCDD2
 e_he_dismiss : setback (negative)
 e_he_dismiss : "Filed Under Curiosities"
@@ -278,160 +278,160 @@ state f_he_join #FFE0B2
 f_he_join : climax · 140w
 state e_he_complete #C8E6C9
 e_he_complete : success (positive)
-e_he_complete : "Two People There"
+e_he_complete : "{J2_PRIZE1}"
 state e_he_takeover #FFCDD2
 e_he_takeover : setback (negative)
 e_he_takeover : "In Good Hands, Unknown End"
 state e_he_dead #FFCDD2
 e_he_dead : setback (negative)
 e_he_dead : "No One Left to Call"
-n_start --> r_coord_1 : Plot the coordinates the voice keeps rea...
-n_start --> r_relay_1 : Bike out to the abandoned relay station.
-n_start --> r_notes_1 : Dig out the previous listener logbook.
-r_coord_1 --> r_coord_harbor : Head down to the harbor.
-r_coord_1 --> r_coord_tower : Climb to the ridge water tower.
-r_coord_harbor --> r_coord_harbor_ask : Knock at the harbormaster hut.
-r_coord_harbor --> r_coord_harbor_shed : Cross to the tide-gauge shed.
-r_coord_harbor --> r_coord_notice : Check the pier notice-board.
-r_coord_notice --> r_coord_notice2 : Examine the card more closely.
-r_coord_notice2 --> r_coord_beat : Follow the pinned frequency slip.
+n_start --> r_coord_1 : Plot {ROUTE_A_CLUE} the voice keeps read...
+n_start --> r_relay_1 : Bike out to {THRESHOLD}.
+n_start --> r_notes_1 : Dig out {ROUTE_C_CLUE}.
+r_coord_1 --> r_coord_harbor : Head down to {A1_ZONE}.
+r_coord_1 --> r_coord_tower : Climb to {A2_ZONE}.
+r_coord_harbor --> r_coord_harbor_ask : Knock at {A1_OFFER1}.
+r_coord_harbor --> r_coord_harbor_shed : Cross to {A1_OFFER2}.
+r_coord_harbor --> r_coord_notice : Check {A1_LANDMARK}.
+r_coord_notice --> r_coord_notice2 : Examine {A1_FIND} more closely.
+r_coord_notice2 --> r_coord_beat : Follow {A1_FIND}.
 r_coord_notice2 --> e_coord_notice : Dismiss it as old junk and move on.
-r_coord_harbor_ask --> r_coord_beat : Follow the thread back to the relay.
+r_coord_harbor_ask --> r_coord_beat : Follow the thread back to {THRESHOLD}.
 r_coord_harbor_shed --> r_coord_shed_in : Force the warped door.
 r_coord_harbor_shed --> e_coord_shed_leave : Just log the frequency and leave.
-r_coord_shed_in --> r_coord_beat : Trace it to the headland source.
+r_coord_shed_in --> r_coord_beat : Trace it to {THRESHOLD}.
 r_coord_tower --> r_coord_climb : Climb toward the antenna.
-r_coord_tower --> r_coord_base : Search the service box at the base.
-r_coord_climb --> r_coord_beat : Follow the cable to the relay.
+r_coord_tower --> r_coord_base : Search {A2_OFFER2}.
+r_coord_climb --> r_coord_beat : Follow the cable to {THRESHOLD}.
 r_coord_base --> r_coord_base_in : Pry the rusted panel open.
-r_coord_base --> r_coord_base_out : Follow the stenciled arrow instead.
-r_coord_base_in --> r_coord_beat : Head for the headland relay.
+r_coord_base --> r_coord_base_out : Follow {A2_DETAIL2} instead.
+r_coord_base_in --> r_coord_beat : Head for {THRESHOLD}.
 r_coord_base_out --> r_coord_beat : Keep following the path.
 r_coord_beat --> r_coord_close : Close in on the source.
 r_coord_close --> n_b1 : Confront what is transmitting.
-r_relay_1 --> r_re_path : Take the coast path along the fence.
-r_relay_1 --> r_re_lane : Take the service lane behind.
-r_re_path --> r_re_gap : Slip through the peeled-back gap.
+r_relay_1 --> r_re_path : Take {B1_ZONE}.
+r_relay_1 --> r_re_lane : Take {B2_ZONE}.
+r_re_path --> r_re_gap : Slip through {B1_GATE}.
 r_re_path --> e_re_photo : Photograph the mast and turn back.
 r_re_gap --> r_relay_beat : Move toward the glowing window.
-r_re_lane --> r_re_gatehouse : Try the gatehouse and its log board.
-r_re_lane --> r_re_hut : Wade to the humming transformer hut.
-r_re_lane --> r_re_cellar : Duck into the flooded cellar entrance.
-r_re_cellar --> r_re_cellar2 : Reach for the taped note.
-r_re_cellar2 --> r_relay_beat : Salvage the taped operator note.
-r_re_cellar2 --> e_re_cellar : Retreat from the rising water.
-r_re_gatehouse --> r_re_log : Study the handwritten log board.
+r_re_lane --> r_re_gatehouse : Try {B2_OFFER1}.
+r_re_lane --> r_re_hut : Wade to {B2_OFFER2}.
+r_re_lane --> r_re_cellar : Duck into {B2_OFFER3}.
+r_re_cellar --> r_re_cellar2 : Reach for {B2_FIND}.
+r_re_cellar2 --> r_relay_beat : Salvage {B2_FIND}.
+r_re_cellar2 --> e_re_cellar : Retreat from {B2_GATE}.
+r_re_gatehouse --> r_re_log : Study {B2_DETAIL1}.
 r_re_gatehouse --> r_re_scrap : Grab a torn log page and slip away.
 r_re_log --> r_relay_beat : Carry the log toward the source.
-r_re_scrap --> r_relay_beat : Chase down who M might be.
-r_re_hut --> r_relay_beat : Follow the name Alder inward.
-r_relay_beat --> r_relay_close : Face the source of the signal.
+r_re_scrap --> r_relay_beat : Chase down who {LISTENER} might be.
+r_re_hut --> r_relay_beat : Follow {OPERATOR}'s name inward.
+r_relay_beat --> r_relay_close : Face the source of {SIGNAL}.
 r_relay_close --> n_b1 : Confront what is transmitting.
-r_notes_1 --> r_no_trunk : Open the cedar trunk in the attic.
-r_notes_1 --> r_no_shed : Search the radio shed.
-r_no_trunk --> r_no_book : Read the water-stained logbook.
-r_no_trunk --> r_no_cards : Sort through the QSL cards.
-r_no_trunk --> r_no_letters : Untie the ribboned bundle of letters.
+r_notes_1 --> r_no_trunk : Open {C1_ZONE}.
+r_notes_1 --> r_no_shed : Search {C2_ZONE}.
+r_no_trunk --> r_no_book : Read {C1_FIND1}.
+r_no_trunk --> r_no_cards : Sort through {C1_FIND2}.
+r_no_trunk --> r_no_letters : Untie {C1_FIND3}.
 r_no_letters --> r_no_letters2 : Read the letter more carefully.
-r_no_letters2 --> r_notes_beat : Read the letter that names Alder.
+r_no_letters2 --> r_notes_beat : Read the letter that names {OPERATOR}.
 r_no_letters2 --> e_no_letters : Feel it is too private and stop.
 r_no_book --> r_notes_beat : Take up the question he left.
-r_no_cards --> r_no_freq : Chase the card naming KX Alder.
+r_no_cards --> r_no_freq : Chase the card naming {OPERATOR}.
 r_no_cards --> e_no_cards_end : Set the postcards aside for now.
-r_no_freq --> r_notes_beat : Find out who Alder is.
-r_no_shed --> r_no_tuning : Read the pinned tuning notes.
-r_no_shed --> e_no_locked : Try to force the padlocked cabinet.
+r_no_freq --> r_notes_beat : Find out who {OPERATOR} is.
+r_no_shed --> r_no_tuning : Read {C2_OFFER1}.
+r_no_shed --> e_no_locked : Try to force {C2_OFFER2}.
 r_no_tuning --> r_notes_beat : Carry his work forward.
-r_notes_beat --> r_notes_close : Follow Alder thread to the source.
+r_notes_beat --> r_notes_close : Follow {OPERATOR}'s thread to the source...
 r_notes_close --> n_b1 : Confront what is transmitting.
 n_b1 --> n_b1_echo : Sit with what this means.
 n_b1_echo --> n_b1_choice : Decide how to dig deeper.
 n_b1_choice --> m_numbers_1 : Crack the coded numbers.
-n_b1_choice --> m_who_1 : Find out who Alder is.
-m_numbers_1 --> m_num_cipher : Test it as a book cipher.
-m_numbers_1 --> m_num_time : Test it as a countdown of timestamps.
-m_num_cipher --> m_num_cracked : Keep forcing the logbook key.
-m_num_cipher --> m_num_book2 : Switch to the underlined second book.
+n_b1_choice --> m_who_1 : Find out who {OPERATOR} is.
+m_numbers_1 --> m_num_cipher : Test it as {D_TOOL1}.
+m_numbers_1 --> m_num_time : Test it as {D_TOOL2}.
+m_num_cipher --> m_num_cracked : Keep forcing {D1_KEY1}.
+m_num_cipher --> m_num_book2 : Switch to {D1_KEY2}.
 m_num_cracked --> n_b2 : See what the count is measuring.
 m_num_book2 --> m_num_cracked2 : Trust the date she recovered.
 m_num_book2 --> e_num_gibberish : Admit the cipher has beaten her.
 m_num_cracked2 --> n_b2 : Learn what the clock ends on.
-m_num_time --> m_num_intervals : Keep timing the shrinking intervals.
-m_num_time --> m_num_pattern : Map the pattern onto a calendar.
+m_num_time --> m_num_intervals : Keep {D2_METHOD1}.
+m_num_time --> m_num_pattern : Try {D2_METHOD2}.
 m_num_intervals --> n_b2 : Find out what zero brings.
 m_num_pattern --> m_num_countdown : Commit to the date and push on.
 m_num_pattern --> e_num_giveup : Decide she is imagining the pattern.
 m_num_countdown --> n_b2 : Learn what finishes that night.
-m_who_1 --> m_who_film : Search the library microfilm.
-m_who_1 --> m_who_okafor : Ask Mrs. Okafor at the marina.
-m_who_film --> m_who_article : Read the decommission article closely.
+m_who_1 --> m_who_film : Search {E_SOURCE1}.
+m_who_1 --> m_who_okafor : Ask {E_SOURCE2}.
+m_who_film --> m_who_article : Read {E1_FIND} closely.
 m_who_film --> m_who_photo : Photograph the pages before it closes.
 m_who_article --> n_b2 : Understand why he stayed.
-m_who_photo --> n_b2 : Trace the loop long life.
+m_who_photo --> n_b2 : Trace {SIGNAL}'s long life.
 m_who_okafor --> m_who_story : Promise her you mean to help.
 m_who_okafor --> e_who_warn : Waver, and let her send you home.
 m_who_story --> n_b2 : Carry his promise forward.
 n_b2 --> n_b2_echo : Take in the weight of it.
 n_b2_echo --> n_b2_choice : Decide which question to chase.
-n_b2_choice --> mm_listener_1 : Find out who M is.
-n_b2_choice --> mm_count_1 : Find out what the countdown reaches.
-mm_listener_1 --> mm_list_family : Search Alder family for M.
-mm_listener_1 --> mm_list_place : Test M as a place on the map.
-mm_list_family --> mm_list_daughter : Trace the daughter, Marin.
-mm_list_family --> mm_list_sister : Trace the local sister instead.
-mm_list_daughter --> n_b3 : Fix on reaching Marin.
+n_b2_choice --> mm_listener_1 : Find out who {LISTENER} is.
+n_b2_choice --> mm_count_1 : Find out what {DEADLINE_SIGN} reaches.
+mm_listener_1 --> mm_list_family : Search {OPERATOR}'s family for {LISTENER...
+mm_listener_1 --> mm_list_place : Test {LISTENER} as a place on the map.
+mm_list_family --> mm_list_daughter : Trace the daughter, {LISTENER}.
+mm_list_family --> mm_list_sister : Trace {F1_LEAD2} instead.
+mm_list_daughter --> n_b3 : Fix on reaching {LISTENER}.
 mm_list_sister --> n_b3 : Race the sister long shot.
-mm_list_place --> mm_list_map : Check the mooring the chart shows.
+mm_list_place --> mm_list_map : Check {F2_LANDMARK}.
 mm_list_place --> e_list_deadend : Give up the map as a dead end.
-mm_list_map --> n_b3 : Turn the search toward Marin herself.
-mm_count_1 --> mm_count_time : Extrapolate the loop to zero.
-mm_count_1 --> mm_count_tide : Test it against the tide and weather.
-mm_count_time --> mm_count_extrap : Read zero as the power cell dying.
-mm_count_time --> mm_count_clock : Read zero as a final message firing.
+mm_list_map --> n_b3 : Turn the search toward {LISTENER} hersel...
+mm_count_1 --> mm_count_time : {G_METHOD1}.
+mm_count_1 --> mm_count_tide : {G_METHOD2}.
+mm_count_time --> mm_count_extrap : Read zero as {DEADLINE} failing.
+mm_count_time --> mm_count_clock : Read zero as {FAREWELL} firing.
 mm_count_extrap --> n_b3 : Weigh what dark forever means.
 mm_count_clock --> n_b3 : Resolve to catch it before it erases.
-mm_count_tide --> mm_count_warn : Warn someone about the storm and relay.
+mm_count_tide --> mm_count_warn : Warn someone about {G2_WEATHER} and the ...
 mm_count_tide --> e_count_wait : Hold back until she is certain.
 mm_count_warn --> n_b3 : Move before the window closes.
 n_b3 --> n_b3_echo : Decide how to spend that hour.
 n_b3_echo --> n_b3_choice : Choose an approach before zero.
-n_b3_choice --> f_station_1 : Race to the relay station.
-n_b3_choice --> f_relay_1 : Rebroadcast the message yourself.
+n_b3_choice --> f_station_1 : Race to {THRESHOLD}.
+n_b3_choice --> f_relay_1 : Rebroadcast {FAREWELL} yourself.
 n_b3_choice --> f_help_1 : Get help from people who can reach it.
-f_station_1 --> f_st_fence : Go over the fence into the yard.
-f_station_1 --> f_st_road : Take the service road to the back.
-f_st_fence --> f_st_control : Push straight for the control room.
+f_station_1 --> f_st_fence : Go over the fence into {H1_ZONE}.
+f_station_1 --> f_st_road : Take {H2_ZONE}.
+f_st_fence --> f_st_control : Push straight for {H1_ROOM}.
 f_st_fence --> e_st_hesitate : Freeze against the wind, hesitating.
-f_st_control --> f_st_answer : Seize the mic and answer the signal.
-f_st_control --> f_st_power : Try to stabilize the dying power cell.
-f_st_answer --> e_st_reunite : Bridge the line to Marin and play it.
-f_st_answer --> e_st_archive : Halt the wipe and save the archive.
+f_st_control --> f_st_answer : Seize {H1_CHOICE1} and answer {SIGNAL}.
+f_st_control --> f_st_power : Try to stabilize {DEADLINE}.
+f_st_answer --> e_st_reunite : Bridge the line to {LISTENER} and play i...
+f_st_answer --> e_st_archive : Halt the wipe and save {H1_ARCHIVE}.
 f_st_power --> e_st_stabilize : Splice in the spare and call it in.
-f_st_power --> e_st_record : Nurse the dying cell by hand.
-f_st_road --> f_st_alder : Find Alder himself at the console.
-f_st_road --> e_st_wait : Find the back door locked, and wait.
-f_st_alder --> e_st_alder_send : Convince Alder to send it live.
+f_st_power --> e_st_record : Nurse {DEADLINE} by hand.
+f_st_road --> f_st_alder : Find {OPERATOR} himself at {H1_ROOM}.
+f_st_road --> e_st_wait : Find {H2_GATE}, and wait.
+f_st_alder --> e_st_alder_send : Convince {OPERATOR} to send it live.
 f_st_alder --> e_st_alder_refuse : Fail to move him, and leave a note.
-f_relay_1 --> f_re_rig : Use your grandfather transmitter.
-f_relay_1 --> f_re_club : Call the town radio club net.
-f_re_rig --> f_re_boost : Boost the loop and call for Marin.
-f_re_rig --> e_re_fuse : Push the old rig past its limits.
+f_relay_1 --> f_re_rig : Use {KIN}'s transmitter.
+f_relay_1 --> f_re_club : Call {I_GROUP}'s net.
+f_re_rig --> f_re_boost : {I1_ACTION1}.
+f_re_rig --> e_re_fuse : {I1_ACTION2}.
 f_re_boost --> e_re_answer : Answer the carrier swelling back.
 f_re_boost --> e_re_neighbor : Trust a neighbor heard, and stop.
 f_re_club --> f_re_net : Push it onto the county net now.
 f_re_club --> e_re_message : Reach only the after-hours recorder.
 f_re_net --> e_re_found : Chase the lead two ridges west.
-f_re_net --> e_re_log : Log every lead for the club to follow.
-f_help_1 --> f_he_cg : Call the coast guard auxiliary.
-f_help_1 --> f_he_colleague : Find Alder old colleague.
+f_re_net --> e_re_log : Log every lead for {I_GROUP} to follow.
+f_help_1 --> f_he_cg : Call {J_METHOD1}.
+f_help_1 --> f_he_colleague : Find {J_METHOD2}.
 f_he_cg --> f_he_act : Convince him to dispatch a crew.
-f_he_cg --> e_he_dismiss : Watch him dismiss it as static.
-f_he_act --> e_he_escort : Have them trace and reach Marin.
-f_he_act --> e_he_safe : Have them secure and save the relay.
-f_he_colleague --> f_he_join : Team up with Ruiz to reach the relay.
+f_he_cg --> e_he_dismiss : Watch him dismiss it as {NOISE}.
+f_he_act --> e_he_escort : Have them trace and reach {LISTENER}.
+f_he_act --> e_he_safe : Have them secure and save {THRESHOLD}.
+f_he_colleague --> f_he_join : Team up with {J2_HELPER} to reach {THRES...
 f_he_colleague --> e_he_dead : Find the colleague long gone.
 f_he_join --> e_he_complete : Complete the transmission together.
-f_he_join --> e_he_takeover : Step back and let Ruiz finish it.
+f_he_join --> e_he_takeover : Step back and let {J2_HELPER} finish it.
 e_coord_notice --> [*]
 e_coord_shed_leave --> [*]
 e_re_photo --> [*]

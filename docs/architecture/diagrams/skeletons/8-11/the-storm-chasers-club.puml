@@ -37,12 +37,12 @@ state r_a_check2 #FFE0B2
 r_a_check2 : climax · 100w
 state r_end_clear #C8E6C9
 r_end_clear : success (positive)
-r_end_clear : "Loud and Clear"
+r_end_clear : "{A11_PRIZE1}"
 state r_a_mid #D1C4E9
 r_a_mid : rising · 96w
 state r_end_crackle #FFCDD2
 r_end_crackle : setback (negative)
-r_end_crackle : "The Crackle Comes Back"
+r_end_crackle : "{A11_PRIZE2}"
 state r_b_spool #D1C4E9
 r_b_spool : rising · 96w
 state r_b_crimp #D1C4E9
@@ -55,12 +55,12 @@ state r_b_scud #FFE0B2
 r_b_scud : climax · 100w
 state r_end_longway #C8E6C9
 r_end_longway : success (positive)
-r_end_longway : "The Long Way Around"
+r_end_longway : "{A12_PRIZE1}"
 state r_b_faint #D1C4E9
 r_b_faint : rising · 96w
 state r_end_quiet #FFCDD2
 r_end_quiet : setback (negative)
-r_end_quiet : "Too Quiet Out There"
+r_end_quiet : "{A12_PRIZE2}"
 state r_n_seat #D1C4E9
 r_n_seat : rising · 96w
 state r_n_line #D1C4E9
@@ -81,12 +81,12 @@ state r_h_deputy #FFE0B2
 r_h_deputy : climax · 100w
 state r_end_relay #C8E6C9
 r_end_relay : success (positive)
-r_end_relay : "Relay Received"
+r_end_relay : "{A21_PRIZE1}"
 state r_h_tower #FFE0B2
 r_h_tower : climax · 100w
 state r_end_voice #C8E6C9
 r_end_voice : completion (positive)
-r_end_voice : "The Voice in the Storm"
+r_end_voice : "{A21_PRIZE2}"
 state r_m_second #D1C4E9
 r_m_second : rising · 100w
 state r_m_task #FFF9C4
@@ -95,12 +95,12 @@ state r_m_pin #FFE0B2
 r_m_pin : climax · 100w
 state r_end_bearing #C8E6C9
 r_end_bearing : completion (positive)
-r_end_bearing : "Bearing True"
+r_end_bearing : "{A22_PRIZE1}"
 state r_m_log #D1C4E9
 r_m_log : rising · 96w
 state r_end_log #E0E0E0
 r_end_log : discovery (neutral)
-r_end_log : "The Storm in the Log"
+r_end_log : "{A22_PRIZE2}"
 state m_table #D1C4E9
 m_table : rising · 105w
 state m_plot #D1C4E9
@@ -125,12 +125,12 @@ state m_a_barns #FFE0B2
 m_a_barns : climax · 100w
 state m_end_343 #C8E6C9
 m_end_343 : success (positive)
-m_end_343 : "Three Forty-Three"
+m_end_343 : "{B11_PRIZE1}"
 state m_a_bold #FFE0B2
 m_a_bold : climax · 100w
 state m_end_sayit #C8E6C9
 m_end_sayit : completion (positive)
-m_end_sayit : "Say It, Then Show It"
+m_end_sayit : "{B11_PRIZE2}"
 state m_a_frames #D1C4E9
 m_a_frames : rising · 96w
 state m_a_stale #D1C4E9
@@ -141,12 +141,12 @@ state m_a_agree #FFE0B2
 m_a_agree : climax · 100w
 state m_end_agree #C8E6C9
 m_end_agree : success (positive)
-m_end_agree : "The Map and the Math Agree"
+m_end_agree : "{B12_PRIZE1}"
 state m_a_fuzzy #D1C4E9
 m_a_fuzzy : rising · 100w
 state m_end_fuzzy #FFCDD2
 m_end_fuzzy : setback (negative)
-m_end_fuzzy : "Fast but Fuzzy"
+m_end_fuzzy : "{B12_PRIZE2}"
 state m_b_board #D1C4E9
 m_b_board : rising · 100w
 state m_b_colors #D1C4E9
@@ -165,17 +165,17 @@ state m_b_gustfront #FFE0B2
 m_b_gustfront : climax · 96w
 state m_end_called #C8E6C9
 m_end_called : success (positive)
-m_end_called : "Called Before the Wind"
+m_end_called : "{B211_PRIZE1}"
 state m_b_deal #FFE0B2
 m_b_deal : climax · 96w
 state m_end_delay #C8E6C9
 m_end_delay : completion (positive)
-m_end_delay : "Rain Delay, Club Style"
+m_end_delay : "{B211_PRIZE2}"
 state m_b_note #D1C4E9
 m_b_note : rising · 100w
 state m_end_note #C8E6C9
 m_end_note : completion (positive)
-m_end_note : "The Hand-Carried Warning"
+m_end_note : "{B212_PRIZE}"
 state m_b_columns #D1C4E9
 m_b_columns : rising · 100w
 state m_b_conflict #FFF9C4
@@ -184,12 +184,12 @@ state m_b_tiebreak #FFE0B2
 m_b_tiebreak : climax · 96w
 state m_end_qmark #E0E0E0
 m_end_qmark : discovery (neutral)
-m_end_qmark : "The Question Mark Rule"
+m_end_qmark : "{B22_PRIZE1}"
 state m_b_wrong #D1C4E9
 m_b_wrong : rising · 100w
 state m_end_sure #FFCDD2
 m_end_sure : setback (negative)
-m_end_sure : "The Board Was Sure"
+m_end_sure : "{B22_PRIZE2}"
 state f_van #D1C4E9
 f_van : rising · 105w
 state f_load #D1C4E9
@@ -214,12 +214,12 @@ state f_g_inside #FFE0B2
 f_g_inside : climax · 100w
 state f_end_goats #C8E6C9
 f_end_goats : success (positive)
-f_end_goats : "Every Goat Counted"
+f_end_goats : "{C11_PRIZE1}"
 state f_g_cellar #FFE0B2
 f_g_cellar : climax · 100w
 state f_end_people #C8E6C9
 f_end_people : completion (positive)
-f_end_people : "People First"
+f_end_people : "{C11_PRIZE2}"
 state f_g_swap #D1C4E9
 f_g_swap : rising · 96w
 state f_g_horn #D1C4E9
@@ -230,12 +230,12 @@ state f_g_peel #FFE0B2
 f_g_peel : climax · 96w
 state f_end_dry #C8E6C9
 f_end_dry : completion (positive)
-f_end_dry : "Wet Hay, Dry People"
+f_end_dry : "{C12_PRIZE1}"
 state f_g_minute #D1C4E9
 f_g_minute : rising · 100w
 state f_end_margin #FFCDD2
 f_end_margin : setback (negative)
-f_end_margin : "Spent Margin"
+f_end_margin : "{C12_PRIZE2}"
 state f_h_hill #D1C4E9
 f_h_hill : rising · 100w
 state f_h_live #D1C4E9
@@ -254,12 +254,12 @@ state f_h_report #D1C4E9
 f_h_report : rising · 96w
 state f_end_58 #C8E6C9
 f_end_58 : success (positive)
-f_end_58 : "Fifty-Eight and Counting"
+f_end_58 : "{C21_PRIZE1}"
 state f_h_hand #D1C4E9
 f_h_hand : rising · 100w
 state f_end_gotaway #E0E0E0
 f_end_gotaway : discovery (neutral)
-f_end_gotaway : "The Peak That Got Away"
+f_end_gotaway : "{C21_PRIZE2}"
 state f_h_frame #D1C4E9
 f_h_frame : rising · 100w
 state f_h_van #FFF9C4
@@ -268,28 +268,28 @@ state f_h_ruler #FFE0B2
 f_h_ruler : climax · 96w
 state f_end_19mm #C8E6C9
 f_end_19mm : success (positive)
-f_end_19mm : "Nineteen Millimeters"
+f_end_19mm : "{C22_PRIZE1}"
 state f_h_light #FFE0B2
 f_h_light : climax · 96w
 state f_end_photo #FFCDD2
 f_end_photo : setback (negative)
-f_end_photo : "The Best Photo, the Lost Data"
+f_end_photo : "{C22_PRIZE2}"
 n_start --> n_brief : Head inside for the morning briefing.
 n_brief --> n_sort : Step up when she calls for volunteers.
-n_sort --> r_post : Join the RADIO team in the attic comms p...
-n_sort --> m_table : Join the MAPS team at the ops table.
-n_sort --> f_van : Join the FIELD KIT team in the club van.
+n_sort --> r_post : Join {ROUTE_A_TEAM} in {ROUTE_A_POST}.
+n_sort --> m_table : Join {ROUTE_B_TEAM} at {ROUTE_B_POST}.
+n_sort --> f_van : Join {ROUTE_C_TEAM} in {ROUTE_C_POST}.
 r_post --> r_net : Take the second seat and put on a headse...
 r_net --> r_split : Keep logging as the net wakes up.
 r_split --> r_a_trace : Help trace the crackling antenna cable.
 r_split --> r_n_seat : Take the logbook and run check-ins while...
 r_a_trace --> r_a_finds : Follow the line to where it moves the mo...
-r_a_finds --> r_a_pick : Weigh the two fixes with Marisol.
-r_a_pick --> r_a_fix : Clean and reseat the corroded window con...
+r_a_finds --> r_a_pick : Weigh the two fixes with {ROUTE_A_MENTOR...
+r_a_pick --> r_a_fix : Clean and reseat the corroded connector ...
 r_a_pick --> r_b_spool : Run the spare cable over the rafters to ...
 r_a_fix --> r_a_meter : Head back to the radio desk.
 r_a_meter --> r_a_test : Decide how much you trust your fix.
-r_a_test --> r_a_check1 : Run a radio check with far-off Pine Holl...
+r_a_test --> r_a_check1 : Run a radio check with far-off {PLACE_PI...
 r_a_test --> r_a_mid : Trust the meter and dive back into the n...
 r_a_check1 --> r_a_check2 : Rejoin the net with a proven antenna.
 r_a_check2 --> r_end_clear : Ride the storm at the radio until it pas...
@@ -305,14 +305,14 @@ r_n_seat --> r_n_line : Find your rhythm as the reports come in.
 r_n_line --> r_n_voice : Answer the next call on the repeater.
 r_n_voice --> r_n_call : Act the way the club trained you to.
 r_n_call --> r_h_copy : Answer the caller yourself, calm and slo...
-r_n_call --> r_m_second : Wave Marisol over and back her up on the...
+r_n_call --> r_m_second : Wave {ROUTE_A_MENTOR} over and back her ...
 r_h_copy --> r_h_name : Get the facts, one question at a time.
-r_h_name --> r_h_plan : Work out the fastest way to get Jordan s...
-r_h_plan --> r_h_card : Relay Jordan's position to the sheriff's...
-r_h_plan --> r_h_tower : Guide Jordan to the fire tower shelter b...
+r_h_name --> r_h_plan : Work out the fastest way to get {HIKER_N...
+r_h_plan --> r_h_card : Relay {HIKER_NAME}'s position to the she...
+r_h_plan --> r_h_tower : Guide {HIKER_NAME} to {LANDMARK_TOWER} s...
 r_h_card --> r_h_deputy : Hold the net steady while help rolls.
 r_h_deputy --> r_end_relay : Log the moment they meet.
-r_h_tower --> r_end_voice : Stay on the mic until Jordan is through ...
+r_h_tower --> r_end_voice : Stay on the mic until {HIKER_NAME} is th...
 r_m_second --> r_m_task : Make yourself exactly as useful as possi...
 r_m_task --> r_m_pin : Plot the landmarks and work out a bearin...
 r_m_task --> r_m_log : Keep the storm net alive on radio two.
@@ -342,7 +342,7 @@ m_a_fuzzy --> m_end_fuzzy : Help win the lost minutes back.
 m_b_board --> m_b_colors : Make the board even easier to read.
 m_b_colors --> m_b_gap : Say out loud what the board is showing.
 m_b_gap --> m_b_draft : Draft the warning and get it signed.
-m_b_gap --> m_b_columns : Hand the warning to Dev and keep the boa...
+m_b_gap --> m_b_columns : Hand the warning to {ROUTE_B_SIDEKICK} a...
 m_b_draft --> m_b_phone : Now get it to the right ears.
 m_b_phone --> m_b_ad : Track down the athletic director's cell ...
 m_b_phone --> m_b_note : Call the snack stand and send the warnin...
@@ -354,24 +354,24 @@ m_b_deal --> m_end_delay : Keep the club's side of the bargain.
 m_b_note --> m_end_note : Listen for the announcement.
 m_b_columns --> m_b_conflict : Hold the county picture together.
 m_b_conflict --> m_b_tiebreak : Plot both with question marks and ask fo...
-m_b_conflict --> m_b_wrong : Pick Bell Creek and keep the board clean...
+m_b_conflict --> m_b_wrong : Pick {PLACE_BELLCREEK} and keep the boar...
 m_b_tiebreak --> m_end_qmark : Notice what the question marks just did.
 m_b_wrong --> m_end_sure : Fix the board fast.
 f_van --> f_load : Roll out with the field team.
-f_load --> f_route : Check the route sheet with Ray.
-f_route --> f_g_stops : Start with the gauge run along Creek Roa...
-f_route --> f_h_hill : Set up the Windmill Hill post before the...
+f_load --> f_route : Check the route sheet with {ROUTE_C_MENT...
+f_route --> f_g_stops : Start with the gauge run along {C1_ROAD}...
+f_route --> f_h_hill : Set up the {C2_LANDMARK} post before the...
 f_g_stops --> f_g_farm : Head for the third farm.
 f_g_farm --> f_g_pick : Pile out and size it up.
 f_g_pick --> f_g_goats : Help with the animals and the tarp first...
 f_g_pick --> f_g_swap : Swap the gauge fast, then help the farm.
 f_g_goats --> f_g_tarp : Now the flapping tarp.
-f_g_tarp --> f_g_count : Help Mrs. Andersen count the goats.
+f_g_tarp --> f_g_count : Help {C1_FARMER} count the goats.
 f_g_count --> f_g_willow : Take a fast two-minute look at the willo...
 f_g_count --> f_g_cellar : Get everyone inside now, people before g...
-f_g_willow --> f_g_inside : Free her and run for the barn.
+f_g_willow --> f_g_inside : Look for {C1_GOAT} once the line has pas...
 f_g_inside --> f_end_goats : Watch the storm do its worst to a ready ...
-f_g_cellar --> f_end_people : Look for Butterscotch once the line has ...
+f_g_cellar --> f_end_people : Look for {C1_GOAT} once the line has pas...
 f_g_swap --> f_g_horn : Throw everything at the yard.
 f_g_horn --> f_g_tarp2 : Make the call on the tarp.
 f_g_tarp2 --> f_g_peel : Leave the tarp, everyone inside now.
@@ -384,7 +384,7 @@ f_h_job --> f_h_calls : Take the instruments and call the readin...
 f_h_job --> f_h_frame : Take the camera and document the storm.
 f_h_calls --> f_h_hail : Keep calling as the numbers climb.
 f_h_hail --> f_h_mast : Settle the mast question.
-f_h_mast --> f_h_peak : Leave the mast up till Ray's deadline an...
+f_h_mast --> f_h_peak : Leave the mast up till {ROUTE_C_MENTOR}'...
 f_h_mast --> f_h_hand : Strike the mast now and switch to the ha...
 f_h_peak --> f_h_report : Ride home with the number.
 f_h_report --> f_end_58 : Hand the data over.

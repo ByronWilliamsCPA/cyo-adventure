@@ -347,58 +347,58 @@ state vo50 #FFE0B2
 vo50 : climax · 134w
 state vo51 #C8E6C9
 vo51 : success (positive)
-vo51 : "The Weir Song, Carried"
+vo51 : "The {SIGNATURE_TUNE}, Carried"
 state vo52 #D1C4E9
 vo52 : rising · 138w
 state vo53 #C8E6C9
 vo53 : completion (positive)
-vo53 : "Two Voices, One Weir"
-n_start --> n_recital : Follow Brant up to the welcome recital.
+vo53 : "Two Voices, One {SIGNATURE_TUNE}"
+n_start --> n_recital : Follow {CUSTODIAN} up to the {OPENING_EV...
 n_recital --> n_sort : Join the line at the registrar's table.
-n_sort --> st01 : Sign for strings under Maestra Varga.
-n_sort --> cm01 : Sign for composition under Professor Tho...
-n_sort --> vo01 : Sign for voice under Director Osei.
-st01 --> st02 : Give the bar everything and shelve all e...
-st01 --> st38 : Work the bar but keep the margin tunes a...
+n_sort --> st01 : Sign for {ROUTE_A_STUDIO} under {TEACHER...
+n_sort --> cm01 : Sign for {ROUTE_B_STUDIO} under {TEACHER...
+n_sort --> vo01 : Sign for {ROUTE_C_STUDIO} under {TEACHER...
+st01 --> st02 : Give {ROUTE_A_DISCIPLINE} everything and...
+st01 --> st38 : Work {ROUTE_A_DISCIPLINE} but keep the m...
 st02 --> st03 : Keep at it until Thursday.
-st03 --> st04 : Take Petra's help and learn the trick.
+st03 --> st04 : Take {SENIOR_PEER}'s help and learn the ...
 st03 --> st25 : Thank her, and prove the bar alone.
-st04 --> st05 : Prepare for the seat challenge.
+st04 --> st05 : Prepare for {ROUTE_A_CHALLENGE}.
 st05 --> st06 : Play the blind hearing.
 st06 --> st07 : Walk into Monday.
 st07 --> st08 : Face the section on its worst day.
-st08 --> st09 : Speak for Petra, straight to Varga.
+st08 --> st09 : Speak for {SENIOR_PEER}, straight to {TE...
 st08 --> st13 : Say less, and re-check the facts yoursel...
 st09 --> st10 : Stand with the section at assembly.
-st10 --> st11 : Welcome Petra back.
-st11 --> st12 : Give December to the Cantata.
+st10 --> st11 : Welcome {SENIOR_PEER} back.
+st11 --> st12 : Give December to the {COMBINED_PIECE}.
 st13 --> st14 : Decide what to do with what you found.
-st14 --> st15 : Bring it all to Maestra Varga.
-st14 --> st18 : Climb to the organ loft tonight.
+st14 --> st15 : Bring it all to {TEACHER_A}.
+st14 --> st18 : Climb to the {HIDING_PLACE} tonight.
 st15 --> st16 : Watch the search turn kind.
 st16 --> st17 : Carry the term to its last Friday.
 st18 --> st19 : Choose what happens next.
 st19 --> st20 : Stay, and walk him to the truth.
-st19 --> st23 : Go to the Provost tonight.
+st19 --> st23 : Go to {PROVOST} tonight.
 st20 --> st21 : Let December do its work.
-st21 --> st22 : Take your desk for the Winter Concert.
+st21 --> st22 : Take your desk for the {CONCERT_EVENT}.
 st23 --> st24 : Finish the term honestly.
 st25 --> st26 : Decide what the ache is telling you.
 st26 --> st27 : Rest the wrist as told.
 st26 --> st34 : Practice through the ache.
-st27 --> st28 : Meet the Monday after first frost.
+st27 --> st28 : Meet the Monday after {FROST_MARKER}.
 st28 --> st29 : Hold steady through the accusation week.
 st29 --> st30 : Hear the truth on Friday.
 st30 --> st31 : Take the quartet chair.
 st31 --> st32 : Play the final rehearsal.
-st32 --> st33 : Walk out for the Winter Concert.
+st32 --> st33 : Walk out for the {CONCERT_EVENT}.
 st34 --> st35 : Let the term reshape itself.
 st35 --> st36 : Mark the parts for December.
 st36 --> st37 : Take your seat in the audience.
-st38 --> st39 : Stand there while Varga reads.
+st38 --> st39 : Stand there while {TEACHER_A} reads.
 st39 --> st40 : Play the tune truly.
-st40 --> st41 : Hear what Thorn is asking.
-st41 --> st42 : Give the tune to the Cantata.
+st40 --> st41 : Hear what {TEACHER_B} is asking.
+st41 --> st42 : Give the tune to the {COMBINED_PIECE}.
 st41 --> st49 : Keep it for the spring recital.
 st42 --> st43 : Keep working toward mid-term.
 st43 --> st44 : Watch the accusation week unfold.
@@ -410,11 +410,11 @@ st49 --> st49b : Carry the true bar into ensemble week.
 st49b --> st50 : Meet the frost Monday.
 st50 --> st51 : Decide what the thread is worth.
 st51 --> st52 : Let the kind search work.
-st52 --> st53 : Give December to the Caprice.
-st53 --> st54 : Play the Winter Concert.
+st52 --> st53 : Give December to the {SHOWCASE_PIECE}.
+st53 --> st54 : Play the {CONCERT_EVENT}.
 cm01 --> cm02 : Take the riddle back to your room.
-cm02 --> cm03 : Bring the drizzle to Thorn.
-cm03 --> cm04 : Ask Thorn straight out what the riddle m...
+cm02 --> cm03 : Bring the drizzle to {TEACHER_B}.
+cm03 --> cm04 : Ask {TEACHER_B} straight out what the ri...
 cm03 --> cm30 : Sit with the riddle another week.
 cm04 --> cm05 : Report to the workshop as copyist.
 cm05 --> cm06 : Keep copying toward mid-term.
@@ -423,10 +423,10 @@ cm07 --> cm08 : Sit with the studio in the wreckage.
 cm08 --> cm09 : Answer the riddle with facts.
 cm08 --> cm22 : Answer it with charity first.
 cm09 --> cm10 : Follow the key.
-cm10 --> cm11 : Stand at Thorn's three doors.
-cm11 --> cm12 : Go to Felix alone.
-cm11 --> cm15 : Bring Thorn with you.
-cm11 --> cm19 : Put it before Provost Hale.
+cm10 --> cm11 : Stand at {TEACHER_B}'s three doors.
+cm11 --> cm12 : Go to {CULPRIT} alone.
+cm11 --> cm15 : Bring {TEACHER_B} with you.
+cm11 --> cm19 : Put it before {PROVOST}.
 cm12 --> cm13 : Hear him to the end.
 cm13 --> cm14 : Give December to the middle movement.
 cm15 --> cm16 : Stand by while the truth walks.
@@ -441,17 +441,17 @@ cm25 --> cm26 : Speak to what he did.
 cm25 --> cm28 : Speak to why he did it.
 cm26 --> cm27 : Let the term mend toward December.
 cm28 --> cm29 : Carry both halves to December.
-cm30 --> cm31 : Bring the four bars back grown.
+cm30 --> cm31 : Bring {ROUTE_B_TASK} back grown.
 cm31 --> cm32 : Join the workshop.
 cm32 --> cm33 : Come in on the frost Monday.
 cm33 --> cm34 : Hold the studio together that week.
 cm34 --> cm35 : Take the riddle seriously.
 cm35 --> cm36 : Search where music sleeps.
 cm35 --> cm41 : Let the adults carry it, and write.
-cm36 --> cm37 : Carry it all to Thorn.
+cm36 --> cm37 : Carry it all to {TEACHER_B}.
 cm37 --> cm38 : Watch the bridge get written.
 cm38 --> cm39 : Come to concert day.
-cm39 --> cm40 : Hear the Cantata whole.
+cm39 --> cm40 : Hear the {COMBINED_PIECE} whole.
 cm41 --> cm42 : Meet the aftermath.
 cm42 --> cm43 : Face the commission question.
 cm43 --> cm44 : Accept the nomination.
@@ -460,26 +460,26 @@ cm44 --> cm45 : Rehearse it into the movement.
 cm45 --> cm46 : Take your seat for the concert.
 cm47 --> cm48 : Finish the movement with the studio.
 cm48 --> cm49 : Hear it played that way.
-vo01 --> vo02 : Learn the Evensong from the inside.
+vo01 --> vo02 : Learn the {CHORAL_PIECE} from the inside...
 vo02 --> vo03 : Settle into sectionals.
-vo03 --> vo04 : Audition for the descant line.
-vo03 --> vo34 : Anchor the alto seconds.
+vo03 --> vo04 : Audition for {ROUTE_C_TASK}.
+vo03 --> vo34 : Anchor {ROUTE_C_ANCHOR}.
 vo04 --> vo05 : Sing into the cold weeks.
 vo05 --> vo06 : Come in on Monday.
 vo06 --> vo07 : Gather with the choir at noon.
-vo07 --> vo08 : Help Osei answer the memo with facts.
+vo07 --> vo08 : Help {TEACHER_C} answer the memo with fa...
 vo07 --> vo25 : Rally the choir to re-mark scores overni...
 vo08 --> vo09 : Be in the office when the board writes b...
-vo09 --> vo10 : Urge Osei to sign and protect the progra...
+vo09 --> vo10 : Urge {TEACHER_C} to sign and protect the...
 vo09 --> vo17 : Urge her to wait for the infirmary log.
 vo10 --> vo11 : Own what traveled.
-vo11 --> vo12 : Apologize to Petra, face to face.
+vo11 --> vo12 : Apologize to {SENIOR_PEER}, face to face...
 vo11 --> vo15 : Let it fade into the term's noise.
 vo12 --> vo13 : Sing toward December.
-vo13 --> vo14 : Sing the Winter Concert.
+vo13 --> vo14 : Sing the {CONCERT_EVENT}.
 vo15 --> vo16 : Sing the concert with the letter sent.
 vo17 --> vo18 : Watch the politics turn.
-vo18 --> vo19 : Plan the argument with Osei.
+vo18 --> vo19 : Plan the argument with {TEACHER_C}.
 vo19 --> vo20 : Back the lantern verse.
 vo19 --> vo23 : Back the flawless program.
 vo20 --> vo21 : Come to concert night.
@@ -490,25 +490,25 @@ vo26 --> vo27 : Ask him, kindly, how he knows the markin...
 vo26 --> vo31 : Say nothing and finish the scores.
 vo27 --> vo28 : Hold the door open through the week.
 vo28 --> vo29 : Bring the scores home to December.
-vo29 --> vo30 : Sing the Winter Concert.
-vo31 --> vo32 : Carry the arithmetic to Osei.
+vo29 --> vo30 : Sing the {CONCERT_EVENT}.
+vo31 --> vo32 : Carry the arithmetic to {TEACHER_C}.
 vo32 --> vo33 : Sing the concert with clear eyes.
 vo34 --> vo35 : Sing into the schedule fight.
 vo35 --> vo36 : Come in on Monday.
 vo36 --> vo37 : Meet with the choir that evening.
-vo37 --> vo38 : Back Danil's plan.
-vo37 --> vo46 : Back Osei's patience.
+vo37 --> vo38 : Back {HEAD_CHORISTER}'s plan.
+vo37 --> vo46 : Back {TEACHER_C}'s patience.
 vo38 --> vo39 : Ride the ripples.
 vo39 --> vo40 : Weigh the compromise with the choir.
-vo40 --> vo41 : Pour everything into the Cantata.
+vo40 --> vo41 : Pour everything into the {COMBINED_PIECE...
 vo40 --> vo44 : Keep fighting the schedule fight.
 vo41 --> vo42 : Sing the final rehearsal.
-vo42 --> vo43 : Sing the Winter Concert.
+vo42 --> vo43 : Sing the {CONCERT_EVENT}.
 vo44 --> vo45 : Sing the concert you rehearsed.
 vo46 --> vo47 : Let the term turn under you.
-vo47 --> vo48 : Hear Osei's offer.
+vo47 --> vo48 : Hear {TEACHER_C}'s offer.
 vo48 --> vo49 : Take the solo verse.
-vo48 --> vo52 : Ask to sing it as a duet with Danil.
+vo48 --> vo52 : Ask to sing it as a duet with {HEAD_CHOR...
 vo49 --> vo50 : Walk out under the lanterns.
 vo50 --> vo51 : Finish the verse.
 vo52 --> vo53 : Sing it together.

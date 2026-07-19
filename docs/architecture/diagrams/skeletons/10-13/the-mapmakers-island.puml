@@ -21,7 +21,7 @@ state mg_farbank #D1C4E9
 mg_farbank : rising · 95w
 state e_mg_mud_trap #FFCDD2
 e_mg_mud_trap : setback (negative)
-e_mg_mud_trap : "The Tide Closes In"
+e_mg_mud_trap : "{A1_TITLE1}"
 state mg_highground #D1C4E9
 mg_highground : rising · 100w
 state mg_oyster #D1C4E9
@@ -30,7 +30,7 @@ state mg_turtle_note #FFF9C4
 mg_turtle_note : choice · 100w
 state e_mg_turtle_seen #E0E0E0
 e_mg_turtle_seen : discovery (neutral)
-e_mg_turtle_seen : "One Good Turn"
+e_mg_turtle_seen : "{A2_TITLE}"
 state mg_rockpath #D1C4E9
 mg_rockpath : rising · 95w
 state mg_seep #D1C4E9
@@ -39,7 +39,7 @@ state mg_overhang #ECEFF1
 mg_overhang : discovery · 100w
 state e_mg_shelter #FFCDD2
 e_mg_shelter : setback (negative)
-e_mg_shelter : "The Dry Shelter"
+e_mg_shelter : "{A_TITLE_SHELTER}"
 state mg_creek #D1C4E9
 mg_creek : rising · 100w
 state mg_otter #D1C4E9
@@ -50,7 +50,7 @@ state mg_gametrail #D1C4E9
 mg_gametrail : rising · 95w
 state e_mg_lost #FFCDD2
 e_mg_lost : setback (negative)
-e_mg_lost : "The Mangrove's Maze"
+e_mg_lost : "{A3_TITLE}"
 state cf_enter #D1C4E9
 cf_enter : rising · 110w
 state cf_switch #D1C4E9
@@ -69,7 +69,7 @@ state camp_ascent2 #FFF9C4
 camp_ascent2 : choice · 100w
 state e_ascent_daunted #FFCDD2
 e_ascent_daunted : setback (negative)
-e_ascent_daunted : "The Airy Ridge"
+e_ascent_daunted : "{F_TITLE1}"
 state camp_ascent3a #D1C4E9
 camp_ascent3a : rising · 95w
 state camp_ascent3b #D1C4E9
@@ -88,7 +88,7 @@ state cf_box #FFF9C4
 cf_box : choice · 95w
 state e_cf_locket #E0E0E0
 e_cf_locket : discovery (neutral)
-e_cf_locket : "The Brass Locket"
+e_cf_locket : "{B3_TITLE1}"
 state cf_notes #ECEFF1
 cf_notes : discovery · 100w
 state cv_enter #D1C4E9
@@ -99,7 +99,7 @@ state cv_arch #FFF9C4
 cv_arch : choice · 95w
 state e_cv_flood #FFCDD2
 e_cv_flood : setback (negative)
-e_cv_flood : "When the Cave Breathes Water"
+e_cv_flood : "{C1_TITLE1}"
 state cv_upflow #D1C4E9
 cv_upflow : rising · 100w
 state cv_glitter #ECEFF1
@@ -108,7 +108,7 @@ state cv_ochre #ECEFF1
 cv_ochre : discovery · 95w
 state e_cv_paintings #E0E0E0
 e_cv_paintings : discovery (neutral)
-e_cv_paintings : "The Oldest Map"
+e_cv_paintings : "{C2_TITLE1}"
 state cv_deepglow #D1C4E9
 cv_deepglow : rising · 100w
 state cv_warm #D1C4E9
@@ -117,7 +117,7 @@ state cv_pup #FFF9C4
 cv_pup : choice · 100w
 state e_cv_pup_fail #FFCDD2
 e_cv_pup_fail : setback (negative)
-e_cv_pup_fail : "Too Heavy Alone"
+e_cv_pup_fail : "{C3_TITLE1}"
 state cv_backout #D1C4E9
 cv_backout : rising · 90w
 state cv_tohigh #D1C4E9
@@ -128,7 +128,7 @@ state tw_ground #ECEFF1
 tw_ground : discovery · 100w
 state e_tw_log #E0E0E0
 e_tw_log : discovery (neutral)
-e_tw_log : "Alder's Last Entry"
+e_tw_log : "{D1_TITLE1}"
 state tw_salvage #FFF9C4
 tw_salvage : choice · 100w
 state tw_toridge #D1C4E9
@@ -137,7 +137,7 @@ state tw_stair #D1C4E9
 tw_stair : rising · 100w
 state e_tw_stair_fail #FFCDD2
 e_tw_stair_fail : setback (negative)
-e_tw_stair_fail : "The Broken Stair"
+e_tw_stair_fail : "{D2_TITLE1}"
 state tw_top #D1C4E9
 tw_top : rising · 105w
 state tw_ridgeway #D1C4E9
@@ -148,7 +148,7 @@ state tw_tube #FFF9C4
 tw_tube : choice · 95w
 state e_tw_draft #E0E0E0
 e_tw_draft : discovery (neutral)
-e_tw_draft : "Someone Else's Map"
+e_tw_draft : "{D3_TITLE1}"
 state tw_supplies #D1C4E9
 tw_supplies : rising · 95w
 state tf_enter #D1C4E9
@@ -157,7 +157,7 @@ state tf_sandbar #FFF9C4
 tf_sandbar : choice · 100w
 state e_tf_stranded #FFCDD2
 e_tf_stranded : setback (negative)
-e_tf_stranded : "The Tide Comes Back"
+e_tf_stranded : "{E1_TITLE1}"
 state tf_sketchrun #D1C4E9
 tf_sketchrun : rising · 100w
 state tf_gap #D1C4E9
@@ -172,26 +172,26 @@ state tf_bottle #FFF9C4
 tf_bottle : choice · 95w
 state e_tf_bottle #E0E0E0
 e_tf_bottle : discovery (neutral)
-e_tf_bottle : "A Note From the Sea"
+e_tf_bottle : "{E3_TITLE1}"
 state L_cove #D1C4E9
 L_cove : rising · 115w
 state e_cove_rest #FFCDD2
 e_cove_rest : setback (negative)
-e_cove_rest : "Lost in the Calm"
+e_cove_rest : "{COVE_TITLE1}"
 state cove_rise #D1C4E9
 cove_rise : rising · 100w
 state cove_starrock #ECEFF1
 cove_starrock : discovery · 95w
 state e_star_map #E0E0E0
 e_star_map : discovery (neutral)
-e_star_map : "The Map of Stars"
+e_star_map : "{COVE_TITLE2}"
 state cove_ridge #D1C4E9
 cove_ridge : rising · 95w
 state L_fresh #D1C4E9
 L_fresh : rising · 120w
 state e_fresh_linger #FFCDD2
 e_fresh_linger : setback (negative)
-e_fresh_linger : "Every Stream at Once"
+e_fresh_linger : "{SPRING_TITLE1}"
 state fresh_study #ECEFF1
 fresh_study : discovery · 100w
 state fresh_climb #D1C4E9
@@ -202,28 +202,28 @@ state fresh_cairn #ECEFF1
 fresh_cairn : discovery · 95w
 state e_fresh_cairn #FFCDD2
 e_fresh_cairn : setback (negative)
-e_fresh_cairn : "The Warm Meadow"
+e_fresh_cairn : "{SPRING_TITLE2}"
 state L_camp #D1C4E9
 L_camp : rising · 125w
 state camp_chart #FFF9C4
 camp_chart : choice · 105w
 state e_camp_copy #E0E0E0
 e_camp_copy : discovery (neutral)
-e_camp_copy : "The Lost Mapmaker's Story"
+e_camp_copy : "{F_TITLE2}"
 state camp_trunk #ECEFF1
 camp_trunk : discovery · 105w
 state camp_journal #ECEFF1
 camp_journal : discovery · 100w
 state e_camp_journal #E0E0E0
 e_camp_journal : discovery (neutral)
-e_camp_journal : "What Alder Left Behind"
+e_camp_journal : "{F_TITLE3}"
 state camp_ready #D1C4E9
 camp_ready : rising · 100w
 state camp_summitpath #D1C4E9
 camp_summitpath : rising · 105w
 state e_camp_scree #FFCDD2
 e_camp_scree : setback (negative)
-e_camp_scree : "The Sliding Scree"
+e_camp_scree : "{F_TITLE4}"
 state ridge_notch #D1C4E9
 ridge_notch : rising · 95w
 state wind_gap #D1C4E9
@@ -232,19 +232,19 @@ state L_summit #D1C4E9
 L_summit : rising · 125w
 state e_summit_gaze #FFCDD2
 e_summit_gaze : setback (negative)
-e_summit_gaze : "Too Big to Draw"
+e_summit_gaze : "{F_TITLE5}"
 state summit_survey #FFF9C4
 summit_survey : choice · 110w
 state e_ch_rush #FFCDD2
 e_ch_rush : setback (negative)
-e_ch_rush : "All at Once, and None of It"
+e_ch_rush : "{F_TITLE6}"
 state ch_sightings #D1C4E9
 ch_sightings : rising · 100w
 state ch_reef #D1C4E9
 ch_reef : rising · 105w
 state e_ch_reef #C8E6C9
 e_ch_reef : success (positive)
-e_ch_reef : "The Chart That Brings Ships Home"
+e_ch_reef : "{F_TITLE7}"
 state ch_gather #D1C4E9
 ch_gather : rising · 100w
 state ch_table #FFF9C4
@@ -255,28 +255,28 @@ state ch_pencil #D1C4E9
 ch_pencil : rising · 105w
 state e_ch_dusk #FFCDD2
 e_ch_dusk : setback (negative)
-e_ch_dusk : "One More Detail"
+e_ch_dusk : "{F_TITLE8}"
 state ch_double #D1C4E9
 ch_double : rising · 105w
 state ch_sign #FFF9C4
 ch_sign : choice · 105w
 state e_ch_alder_name #C8E6C9
 e_ch_alder_name : completion (positive)
-e_ch_alder_name : "Alder's Island"
+e_ch_alder_name : "{F_TITLE9}"
 state e_ch_both_name #C8E6C9
 e_ch_both_name : completion (positive)
-e_ch_both_name : "Two Hands, One Island"
+e_ch_both_name : "{F_TITLE10}"
 state e_ch_survey #C8E6C9
 e_ch_survey : completion (positive)
-e_ch_survey : "A Flawless Survey"
+e_ch_survey : "{F_TITLE11}"
 state ch_sign_double #FFF9C4
 ch_sign_double : choice · 100w
 state e_ch_double_win #C8E6C9
 e_ch_double_win : completion (positive)
-e_ch_double_win : "Never Just One Copy"
+e_ch_double_win : "{F_TITLE12}"
 state e_ch_spare #C8E6C9
 e_ch_spare : success (positive)
-e_ch_spare : "The Kept Copy"
+e_ch_spare : "{F_TITLE13}"
 state summit_signal #FFF9C4
 summit_signal : choice · 105w
 state signal_aim #D1C4E9
@@ -291,17 +291,17 @@ state meet_boat #FFF9C4
 meet_boat : choice · 100w
 state e_rescue_pup #C8E6C9
 e_rescue_pup : success (positive)
-e_rescue_pup : "The Pup and the Rising Tide"
+e_rescue_pup : "{F_TITLE17}"
 state e_rescue_turtle #C8E6C9
 e_rescue_turtle : success (positive)
-e_rescue_turtle : "Back to the Deep Water"
+e_rescue_turtle : "{F_TITLE18}"
 state mg_lagoon #D1C4E9
 mg_lagoon : rising · 105w
 state mg_canoe #FFF9C4
 mg_canoe : choice · 95w
 state e_mg_canoe #FFCDD2
 e_mg_canoe : setback (negative)
-e_mg_canoe : "The Leaky Dugout"
+e_mg_canoe : "{A4_TITLE1}"
 state mg_paddle #D1C4E9
 mg_paddle : rising · 95w
 state mg_lagfar #FFF9C4
@@ -310,352 +310,352 @@ state mg_ruin #ECEFF1
 mg_ruin : discovery · 100w
 state e_mg_village #E0E0E0
 e_mg_village : discovery (neutral)
-e_mg_village : "The Vanished Village"
+e_mg_village : "{A4_TITLE1B}"
 state mg_lagtunnel #D1C4E9
 mg_lagtunnel : rising · 95w
 state e_mg_tunnellost #FFCDD2
 e_mg_tunnellost : setback (negative)
-e_mg_tunnellost : "Under the Roots"
+e_mg_tunnellost : "{A4_TITLE2}"
 state mg_dam #ECEFF1
 mg_dam : discovery · 100w
 state e_mg_stake #E0E0E0
 e_mg_stake : discovery (neutral)
-e_mg_stake : "Alder's Survey Stake"
+e_mg_stake : "{A4_TITLE3}"
 state cf_falls #D1C4E9
 cf_falls : rising · 105w
 state cf_fallclimb #FFF9C4
 cf_fallclimb : choice · 95w
 state e_cf_slip #FFCDD2
 e_cf_slip : setback (negative)
-e_cf_slip : "The Slippery Falls"
+e_cf_slip : "{B4_TITLE1}"
 state cf_fallcross #D1C4E9
 cf_fallcross : rising · 95w
 state cf_fallpool #ECEFF1
 cf_fallpool : discovery · 100w
 state e_cf_gauge #E0E0E0
 e_cf_gauge : discovery (neutral)
-e_cf_gauge : "Alder's Water Gauge"
+e_cf_gauge : "{B4_TITLE2}"
 state cv_skylight #D1C4E9
 cv_skylight : rising · 105w
 state cv_chimney #FFF9C4
 cv_chimney : choice · 95w
 state e_cv_chimney #FFCDD2
 e_cv_chimney : setback (negative)
-e_cv_chimney : "The Narrow Chimney"
+e_cv_chimney : "{C4_TITLE1}"
 state cv_gallery #ECEFF1
 cv_gallery : discovery · 100w
 state e_cv_lantern #E0E0E0
 e_cv_lantern : discovery (neutral)
-e_cv_lantern : "The Frozen Forest"
+e_cv_lantern : "{C4_TITLE2}"
 state tw_quarters #D1C4E9
 tw_quarters : rising · 105w
 state tw_wallcharts #ECEFF1
 tw_wallcharts : discovery · 100w
 state e_tw_charts #E0E0E0
 e_tw_charts : discovery (neutral)
-e_tw_charts : "A Life of Islands"
+e_tw_charts : "{D4_TITLE1}"
 state tw_seachest #FFF9C4
 tw_seachest : choice · 95w
 state e_tw_drawing #E0E0E0
 e_tw_drawing : discovery (neutral)
-e_tw_drawing : "The Family Ashore"
+e_tw_drawing : "{D4_TITLE2}"
 state tf_mussel #D1C4E9
 tf_mussel : rising · 105w
 state tf_seals #ECEFF1
 tf_seals : discovery · 100w
 state e_tf_seals #E0E0E0
 e_tf_seals : discovery (neutral)
-e_tf_seals : "The Tangled Net"
+e_tf_seals : "{E4_TITLE1}"
 state tf_gully #FFF9C4
 tf_gully : choice · 95w
 state e_tf_gully #FFCDD2
 e_tf_gully : setback (negative)
-e_tf_gully : "The Flooding Gully"
+e_tf_gully : "{E4_TITLE2}"
 state ch_farshore #D1C4E9
 ch_farshore : rising · 100w
 state e_ch_farshore #C8E6C9
 e_ch_farshore : success (positive)
-e_ch_farshore : "The Coast No One Had Mapped"
+e_ch_farshore : "{F_TITLE14}"
 state ch_seal_final #FFF9C4
 ch_seal_final : choice · 100w
 state e_ch_living #C8E6C9
 e_ch_living : completion (positive)
-e_ch_living : "The Living Chart"
+e_ch_living : "{F_TITLE15}"
 state e_ch_clean #C8E6C9
 e_ch_clean : completion (positive)
-e_ch_clean : "A Clean, True Chart"
+e_ch_clean : "{F_TITLE16}"
 state mg_heron #D1C4E9
 mg_heron : rising · 105w
 state mg_blind #ECEFF1
 mg_blind : discovery · 100w
 state e_mg_tidetable #E0E0E0
 e_mg_tidetable : discovery (neutral)
-e_mg_tidetable : "Alder's Tide Table"
+e_mg_tidetable : "{A3_TITLE_TIDE}"
 state mg_mudbank #FFF9C4
 mg_mudbank : choice · 95w
 state e_mg_birdstorm #FFCDD2
 e_mg_birdstorm : setback (negative)
-e_mg_birdstorm : "A Storm of Wings"
+e_mg_birdstorm : "{A3_TITLE_STORM}"
 state mg_farchannel #D1C4E9
 mg_farchannel : rising · 95w
 state mg_rookery #ECEFF1
 mg_rookery : discovery · 95w
 state e_mg_chick #E0E0E0
 e_mg_chick : discovery (neutral)
-e_mg_chick : "The Heron Rookery"
+e_mg_chick : "{A3_TITLE_ROOKERY}"
 state cf_grove #D1C4E9
 cf_grove : rising · 105w
 state cf_canopy #FFF9C4
 cf_canopy : choice · 95w
 state e_cf_ladder #FFCDD2
 e_cf_ladder : setback (negative)
-e_cf_ladder : "The Frayed Ladder"
+e_cf_ladder : "{B_TITLE_LADDER}"
 state cf_treetop #ECEFF1
 cf_treetop : discovery · 100w
 state e_cf_canopy #E0E0E0
 e_cf_canopy : discovery (neutral)
-e_cf_canopy : "The Treetop Survey"
+e_cf_canopy : "{B_TITLE_CANOPY}"
 state cf_shrine #ECEFF1
 cf_shrine : discovery · 95w
 state e_cf_shrine #E0E0E0
 e_cf_shrine : discovery (neutral)
-e_cf_shrine : "The Grove Shrine"
+e_cf_shrine : "{B_TITLE_SHRINE}"
 state cv_lake #D1C4E9
 cv_lake : rising · 105w
 state cv_raft #FFF9C4
 cv_raft : choice · 95w
 state e_cv_raft #FFCDD2
 e_cv_raft : setback (negative)
-e_cv_raft : "The Black Lake"
+e_cv_raft : "{C1_TITLE2}"
 state cv_farcave #ECEFF1
 cv_farcave : discovery · 100w
 state e_cv_fish #E0E0E0
 e_cv_fish : discovery (neutral)
-e_cv_fish : "The Fish With No Eyes"
+e_cv_fish : "{C1_TITLE3}"
 state cv_lakebeach #ECEFF1
 cv_lakebeach : discovery · 95w
 state e_cv_prints #E0E0E0
 e_cv_prints : discovery (neutral)
-e_cv_prints : "Footprints in the Deep"
+e_cv_prints : "{C1_TITLE4}"
 state tw_beacon #D1C4E9
 tw_beacon : rising · 105w
 state tw_brazier #FFF9C4
 tw_brazier : choice · 95w
 state e_tw_nofuel #FFCDD2
 e_tw_nofuel : setback (negative)
-e_tw_nofuel : "The Cold Beacon"
+e_tw_nofuel : "{D2_TITLE4}"
 state tw_fuelstore #ECEFF1
 tw_fuelstore : discovery · 100w
 state e_tw_note #E0E0E0
 e_tw_note : discovery (neutral)
-e_tw_note : "Back by the Storm"
+e_tw_note : "{D2_TITLE2}"
 state tw_viewdial #ECEFF1
 tw_viewdial : discovery · 95w
 state e_tw_dial #E0E0E0
 e_tw_dial : discovery (neutral)
-e_tw_dial : "The Stone Compass"
+e_tw_dial : "{D2_TITLE3}"
 state tf_wreck #D1C4E9
 tf_wreck : rising · 105w
 state tf_hold #FFF9C4
 tf_hold : choice · 95w
 state e_tf_hold #FFCDD2
 e_tf_hold : setback (negative)
-e_tf_hold : "Caught in the Wreck"
+e_tf_hold : "{E5_TITLE1}"
 state tf_cargo #ECEFF1
 tf_cargo : discovery · 100w
 state e_tf_bell #E0E0E0
 e_tf_bell : discovery (neutral)
-e_tf_bell : "The Wreck of the Marigold"
+e_tf_bell : "{E5_TITLE2}"
 state tf_deck #ECEFF1
 tf_deck : discovery · 95w
 state e_tf_figurehead #E0E0E0
 e_tf_figurehead : discovery (neutral)
-e_tf_figurehead : "The Ship's Guardian"
+e_tf_figurehead : "{E5_TITLE3}"
 state cove_pools #D1C4E9
 cove_pools : rising · 105w
 state cove_seacave #ECEFF1
 cove_seacave : discovery · 100w
 state e_cove_tin #E0E0E0
 e_cove_tin : discovery (neutral)
-e_cove_tin : "A Friend Across the Years"
+e_cove_tin : "{COVE_TITLE3}"
 state cove_rockpool #ECEFF1
 cove_rockpool : discovery · 95w
 state e_cove_reefmap #E0E0E0
 e_cove_reefmap : discovery (neutral)
-e_cove_reefmap : "The Jewelled Reef"
+e_cove_reefmap : "{COVE_TITLE4}"
 state cv_rift #D1C4E9
 cv_rift : rising · 100w
 state cv_squeeze #FFF9C4
 cv_squeeze : choice · 90w
 state e_cv_squeeze #FFCDD2
 e_cv_squeeze : setback (negative)
-e_cv_squeeze : "The Tight Squeeze"
+e_cv_squeeze : "{C1_TITLE5}"
 state cv_glowworm #ECEFF1
 cv_glowworm : discovery · 95w
 state e_cv_glow #E0E0E0
 e_cv_glow : discovery (neutral)
-e_cv_glow : "The Underground Sky"
+e_cv_glow : "{C1_TITLE6}"
 state cf_dell #D1C4E9
 cf_dell : rising · 100w
 state e_cf_dell_lost #FFCDD2
 e_cf_dell_lost : setback (negative)
-e_cf_dell_lost : "The Secret Green Room"
+e_cf_dell_lost : "{B_TITLE_DELL}"
 state cf_dellspring #D1C4E9
 cf_dellspring : rising · 95w
 state cf_dellcarve #ECEFF1
 cf_dellcarve : discovery · 95w
 state e_cf_carve #E0E0E0
 e_cf_carve : discovery (neutral)
-e_cf_carve : "The Mapmakers' Bench"
+e_cf_carve : "{B_TITLE_BENCH}"
 state tw_slab #FFF9C4
 tw_slab : choice · 95w
 state e_tw_slab #FFCDD2
 e_tw_slab : setback (negative)
-e_tw_slab : "The Seized Lock"
+e_tw_slab : "{D1_TITLE2}"
 state tw_cache #ECEFF1
 tw_cache : discovery · 100w
 state e_tw_cache #E0E0E0
 e_tw_cache : discovery (neutral)
-e_tw_cache : "Alder's Letter"
+e_tw_cache : "{D1_TITLE3}"
 state tf_dune #FFF9C4
 tf_dune : choice · 95w
 state e_tf_dune #FFCDD2
 e_tf_dune : setback (negative)
-e_tf_dune : "The Sliding Dunes"
+e_tf_dune : "{E3_TITLE2}"
 state tf_marker #ECEFF1
 tf_marker : discovery · 100w
 state e_tf_marker #E0E0E0
 e_tf_marker : discovery (neutral)
-e_tf_marker : "The View From the Dunes"
-n_start --> mg_enter : Wade into the mangrove coast.
-n_start --> cf_enter : Climb toward the cloud-forest ridge.
-n_start --> cv_enter : Descend into the sink-hole caverns.
-n_start --> tw_enter : Cross to the ruined survey tower.
-n_start --> tf_enter : Walk out onto the tidal flats.
-mg_enter --> mg_bridge : Follow the log bridge upcoast.
-mg_enter --> mg_oyster : Pick along the oyster rocks downcoast.
-mg_enter --> mg_creek : Push inland up the hidden creek.
-mg_enter --> mg_lagoon : Wade toward the still green lagoon.
-mg_bridge --> mg_carve : Stop to copy the carved driftwood.
+e_tf_marker : "{E3_TITLE3}"
+n_start --> mg_enter : Wade into {ROUTE_A_CHAR}.
+n_start --> cf_enter : Climb toward {ROUTE_B_CHAR}.
+n_start --> cv_enter : Descend into {ROUTE_C_CHAR}.
+n_start --> tw_enter : Cross to {ROUTE_D_CHAR}.
+n_start --> tf_enter : Walk out onto {ROUTE_E_CHAR}.
+mg_enter --> mg_bridge : Follow {A1_SIGN} upcoast.
+mg_enter --> mg_oyster : Pick along {A2_SIGN} downcoast.
+mg_enter --> mg_creek : Push inland up {A3_SIGN}.
+mg_enter --> mg_lagoon : Wade toward {A4_SIGN}.
+mg_bridge --> mg_carve : Stop to copy {A1_LANDMARK1}.
 mg_bridge --> mg_farbank : Hurry across before the tide.
-mg_carve --> mg_highground : Trust the arrow toward high ground.
+mg_carve --> mg_highground : Trust the arrow toward {A_HIGHGROUND}.
 mg_carve --> mg_readmarks : Read the marks slowly for a message.
-mg_readmarks --> mg_highground : Head for high ground as Alder marked.
-mg_farbank --> e_mg_mud_trap : Cross the mud slick quickly.
-mg_farbank --> mg_highground : Keep to the firm palms.
-mg_highground --> L_cove : Take the goat track down to the cove.
-mg_highground --> mg_seep : Angle inland toward a spring gully.
-mg_oyster --> mg_turtle_note : Study the turtle and read the tide pools...
+mg_readmarks --> mg_highground : Head for {A_HIGHGROUND} as {PREDECESSOR}...
+mg_farbank --> e_mg_mud_trap : Cross {A1_GATE} quickly.
+mg_farbank --> mg_highground : Keep to {A1_ALT}.
+mg_highground --> L_cove : Take the goat track down to {COVE}.
+mg_highground --> mg_seep : Angle inland toward {A_SEEP}.
+mg_oyster --> mg_turtle_note : Study {A2_FIND} and read the tide pools.
 mg_oyster --> mg_rockpath : Search the rocks for a way inland.
-mg_turtle_note --> mg_rockpath : Mark the turtle and press on inland.
-mg_turtle_note --> e_mg_turtle_seen : Stop and right the turtle now.
+mg_turtle_note --> mg_rockpath : Mark {A2_FIND} and press on inland.
+mg_turtle_note --> e_mg_turtle_seen : Stop and right {A2_FIND} now.
 mg_rockpath --> mg_seep : Follow the clear seep upward.
-mg_seep --> L_fresh : Climb to the bright spring pool.
-mg_seep --> mg_overhang : Duck under the mossy overhang.
-mg_overhang --> cove_rise : Follow Alder's arrow toward the camp.
-mg_overhang --> e_mg_shelter : Copy the firepit shelter and rest a whil...
-mg_creek --> mg_otter : Follow the otters upstream.
+mg_seep --> L_fresh : Climb to {SPRING}.
+mg_seep --> mg_overhang : Duck under {A_OVERHANG}.
+mg_overhang --> cove_rise : Follow {PREDECESSOR}'s arrow toward {CAM...
+mg_overhang --> e_mg_shelter : Copy {A_CACHE} and rest a while.
+mg_creek --> mg_otter : Follow the {A3_CREATURE}.
 mg_creek --> mg_trees : Cut away from the water into the trees.
-mg_creek --> mg_heron : Pole across to the loud heron island.
+mg_creek --> mg_heron : Pole across to {A3_ZONE}.
 mg_otter --> mg_seep : Climb along the sweet water.
 mg_trees --> mg_highground : Climb toward the brightness.
-mg_trees --> mg_gametrail : Take the level game trail.
+mg_trees --> mg_gametrail : Take {A3_TRAIL}.
 mg_gametrail --> mg_highground : Backtrack toward the bright rise.
 mg_gametrail --> e_mg_lost : Gamble on one more bend.
-cf_enter --> cf_switch : Take the steep switchback up.
-cf_enter --> cf_traverse : Angle across the gentle traverse.
-cf_enter --> cf_hollow : Drop to the pale gleam in the hollow.
-cf_enter --> cf_falls : Follow the roar toward a hidden waterfal...
-cf_switch --> cf_ledge : Climb the bare rock rib.
-cf_switch --> cf_shelf : Follow the green shelf.
+cf_enter --> cf_switch : Take {B1_SIGN} up.
+cf_enter --> cf_traverse : Angle across {B2_SIGN}.
+cf_enter --> cf_hollow : Drop to the pale gleam in {B3_SIGN}.
+cf_enter --> cf_falls : Follow the roar toward {B4_SIGN}.
+cf_switch --> cf_ledge : Climb {B1_ROUTE1}.
+cf_switch --> cf_shelf : Follow {B1_ROUTE2}.
 cf_ledge --> cf_bench : Follow the ridge path higher.
 cf_shelf --> cf_bench : Join the ridge path.
 cf_bench --> cf_campapproach : Climb the stony trail toward the camp.
-cf_bench --> cf_grove : Detour into the grove of ancient trees.
-cf_campapproach --> camp_ascent1 : Follow the cairns onto the high ridge.
+cf_bench --> cf_grove : Detour into {B_GROVE_ZONE}.
+cf_campapproach --> camp_ascent1 : Follow {F_CAIRNS} onto the high ridge.
 camp_ascent1 --> camp_ascent2 : Push on along the cairned ridge.
-camp_ascent2 --> camp_ascent3a : Take the sheltered ledge.
-camp_ascent2 --> camp_ascent3b : Brave the airy crest.
+camp_ascent2 --> camp_ascent3a : Take {F_LEDGE}.
+camp_ascent2 --> camp_ascent3b : Brave {F_CREST}.
 camp_ascent2 --> e_ascent_daunted : Stop here, daunted by the height.
 camp_ascent3a --> camp_ascent4 : Rejoin the ridgeline.
 camp_ascent3b --> camp_ascent4 : Come down to the level shelf.
 camp_ascent4 --> camp_ascent5 : Make the final pull to the camp.
-camp_ascent5 --> L_camp : Step into Alder's camp.
+camp_ascent5 --> L_camp : Step into {CAMP}.
 cf_traverse --> L_fresh : Rest at the spring.
 cf_traverse --> cf_upper : Keep traversing along the slope.
-cf_traverse --> cf_dell : Follow a deer path to a hidden dell.
+cf_traverse --> cf_dell : Follow a deer path to {B_DELL_ZONE}.
 cf_upper --> cf_bench : Climb the faint path on.
 cf_upper --> cf_hollow : Drop to the pale gleam.
-cf_hollow --> cf_box : Open the tin box.
+cf_hollow --> cf_box : Open {B3_BOX}.
 cf_hollow --> cf_switch : Leave the box and climb back up.
 cf_box --> cf_notes : Read the field notes.
 cf_box --> e_cf_locket : Pocket the locket and hurry on.
 cf_notes --> cf_bench : Follow Alder's notes toward the camp.
-cv_enter --> cv_water : Follow the dripping water.
-cv_enter --> cv_glitter : Head toward the glitter.
-cv_enter --> cv_warm : Trace the warm breathing air.
-cv_enter --> cv_skylight : Climb toward a high hole of daylight.
-cv_water --> cv_arch : Wade the stream toward the arch.
+cv_enter --> cv_water : Follow the {C1_SIGN}.
+cv_enter --> cv_glitter : Head toward the {C2_SIGN}.
+cv_enter --> cv_warm : Trace the {C3_SIGN}.
+cv_enter --> cv_skylight : Climb toward {C4_SIGN}.
+cv_water --> cv_arch : Wade the stream toward {C1_GATE}.
 cv_water --> cv_upflow : Climb the stream upward against the flow...
 cv_water --> cv_rift : Explore a side rift lit with glowworms.
 cv_arch --> cv_deepglow : Edge along the dry ledge to the light.
-cv_arch --> e_cv_flood : Duck under the low arch.
+cv_arch --> e_cv_flood : Duck under {C1_GATE}.
 cv_upflow --> L_fresh : Climb the daylight shaft to the spring.
-cv_glitter --> cv_ochre : Copy the handprints carefully.
+cv_glitter --> cv_ochre : Copy {C2_FIND} carefully.
 cv_glitter --> cv_deepglow : Push past toward a further glow.
 cv_ochre --> cv_upflow : Follow the ochre mark toward the spring.
 cv_ochre --> e_cv_paintings : Fill a whole page with the old painting.
-cv_deepglow --> L_cove : Climb up into the cove.
+cv_deepglow --> L_cove : Climb up into {COVE}.
 cv_deepglow --> cv_lake : Follow the passage toward the lapping wa...
-cv_warm --> cv_pup : Study how the pup got in.
+cv_warm --> cv_pup : Study how {C3_FIND} got in.
 cv_warm --> cv_backout : Back away and leave the warm dark.
-cv_pup --> cv_tohigh : Mark the pup and climb toward the light.
-cv_pup --> e_cv_pup_fail : Try to coax the pup out alone now.
+cv_pup --> cv_tohigh : Mark {C3_FIND} and climb toward the ligh...
+cv_pup --> e_cv_pup_fail : Try to coax {C3_FIND} out alone now.
 cv_backout --> cv_tohigh : Squeeze out toward the daylight.
 cv_tohigh --> cf_campapproach : Make for the ridge camp.
-tw_enter --> tw_ground : Search the ground room.
-tw_enter --> tw_stair : Climb the outside stair.
-tw_enter --> tw_cellar : Lift the cellar hatch.
+tw_enter --> tw_ground : Search {D1_ZONE}.
+tw_enter --> tw_stair : Climb {D_STAIR}.
+tw_enter --> tw_cellar : Lift {D3_ZONE}.
 tw_enter --> tw_quarters : Explore the keeper's side quarters.
-tw_ground --> e_tw_log : Read the swollen logbook.
+tw_ground --> e_tw_log : Read {D1_LOG}.
 tw_ground --> tw_salvage : Salvage a working instrument.
 tw_ground --> tw_slab : Pry up a loose slab in the floor.
-tw_salvage --> tw_toridge : Take the alidade toward the ridge camp.
-tw_salvage --> tw_stair : Take it up the tower stair first.
+tw_salvage --> tw_toridge : Take {D1_TOOL} toward the ridge camp.
+tw_salvage --> tw_stair : Take it up {D_STAIR} first.
 tw_toridge --> cf_campapproach : Follow the headland path to the ridge.
-tw_stair --> tw_top : Stride boldly across the gap.
+tw_stair --> tw_top : Stride boldly across {D2_GATE}.
 tw_stair --> e_tw_stair_fail : Clamber the crumbling ledge.
 tw_top --> tw_ridgeway : Cross the ridge toward the camp.
-tw_top --> L_cove : Climb down toward the hidden cove.
-tw_top --> tw_beacon : Examine the old beacon brazier.
+tw_top --> L_cove : Climb down toward {COVE}.
+tw_top --> tw_beacon : Examine {D2_BEACON}.
 tw_ridgeway --> cf_campapproach : Join the camp trail.
-tw_cellar --> tw_tube : Open the leather tube.
+tw_cellar --> tw_tube : Open {D3_TUBE}.
 tw_cellar --> tw_supplies : Take rope and oil and climb back out.
 tw_tube --> tw_toridge : Follow the draft toward the ridge camp.
-tw_tube --> e_tw_draft : Sit and copy the ruined draft in full.
+tw_tube --> e_tw_draft : Sit and copy {D3_DRAFT} in full.
 tw_supplies --> cf_campapproach : Follow the chalk line to the ridge.
-tf_enter --> tf_sandbar : Wade toward the distant sandbar.
-tf_enter --> tf_channel : Trace the firm channel edges.
+tf_enter --> tf_sandbar : Wade toward {E1_SANDBAR}.
+tf_enter --> tf_channel : Trace {E_CHANNEL}.
 tf_enter --> tf_strand : Search the strand line near shore.
 tf_enter --> tf_mussel : Pick across the dark mussel beds.
 tf_sandbar --> tf_sketchrun : Sketch fast, then run for shore.
 tf_sandbar --> e_tf_stranded : Linger over the wreck too long.
-tf_sketchrun --> tf_gap : Follow the green gap inland.
+tf_sketchrun --> tf_gap : Follow {E_GAP} inland.
 tf_gap --> L_fresh : Climb the stream toward the falls.
-tf_channel --> tf_cliffgap : Follow the channels to the cliff gap.
-tf_channel --> tf_gap : Cut inland up a firm rise.
-tf_channel --> tf_wreck : Detour to the great wreck on the bar.
-tf_cliffgap --> L_cove : Explore the hidden cove.
-tf_strand --> tf_bottle : Open the bottle.
+tf_channel --> tf_cliffgap : Follow the channels to {E_CLIFFGAP}.
+tf_channel --> tf_gap : Cut inland toward {E_GAP}.
+tf_channel --> tf_wreck : Detour to {E5_WRECK}.
+tf_cliffgap --> L_cove : Explore {COVE}.
+tf_strand --> tf_bottle : Open {E3_BOTTLE}.
 tf_strand --> tf_channel : Leave it and read the shoreline.
-tf_strand --> tf_dune : Climb the grassy dunes behind the beach.
+tf_strand --> tf_dune : Climb {E3_DUNE}.
 tf_bottle --> tf_gap : Set out inland for the ridge camp.
 tf_bottle --> e_tf_bottle : Keep the note as a find and stop here.
-L_cove --> L_fresh : Map the cove, then climb the rill toward...
-L_cove --> cove_rise : Follow the compass rose up toward the ri...
+L_cove --> L_fresh : Map {COVE}, then climb {COVE_RILL} towar...
+L_cove --> cove_rise : Follow {COVE_MARK} up toward the ridge.
 L_cove --> cove_pools : Search the cove's tide pools and sea cav...
 L_cove --> e_cove_rest : Rest too long in the calm cove.
-cove_rise --> cove_starrock : Study the dotted slab.
+cove_rise --> cove_starrock : Study {COVE_SLAB}.
 cove_rise --> cove_ridge : Press straight on up to the ridge.
 cove_starrock --> cove_ridge : Copy it quickly and climb on.
 cove_starrock --> e_star_map : Copy it in full and go no further.
@@ -664,31 +664,31 @@ L_fresh --> fresh_climb : Fill the flask and climb toward the ridg...
 L_fresh --> fresh_study : Trace the streams to understand the whol...
 L_fresh --> e_fresh_linger : Linger mapping every single stream.
 fresh_study --> fresh_climb : Climb to the ridge camp with the water m...
-fresh_climb --> fresh_meadow : Cross the high meadow toward the camp.
+fresh_climb --> fresh_meadow : Cross {SPRING_MEADOW} toward the camp.
 fresh_meadow --> cf_campapproach : Cross the meadow to the camp trail.
-fresh_meadow --> fresh_cairn : Investigate the old boundary cairn.
+fresh_meadow --> fresh_cairn : Investigate {SPRING_CAIRN}.
 fresh_cairn --> cf_campapproach : Note the boundary mark and climb to the ...
 fresh_cairn --> e_fresh_cairn : Copy the boundary survey in full and res...
-L_camp --> camp_chart : Study Alder's chart at the table.
-L_camp --> camp_trunk : Open the tin trunk under the cot.
-L_camp --> camp_summitpath : Take Alder's chart and start for the sum...
+L_camp --> camp_chart : Study {ALDER_CHART} at the table.
+L_camp --> camp_trunk : Open {F_TRUNK} under the cot.
+L_camp --> camp_summitpath : Take {ALDER_CHART} and start for {SUMMIT...
 camp_chart --> camp_ready : Take up the tools and ready to finish it...
-camp_chart --> e_camp_copy : Simply copy Alder's half chart and call ...
+camp_chart --> e_camp_copy : Simply copy {ALDER_CHART} and call it do...
 camp_trunk --> camp_ready : Gather the tools and ready to climb on.
-camp_trunk --> camp_journal : Read the journal to its last page.
-camp_journal --> camp_ready : Carry Alder's wish on toward the summit.
-camp_journal --> e_camp_journal : Close the journal, moved, and simply kee...
-camp_ready --> camp_summitpath : Set out for the summit.
+camp_trunk --> camp_journal : Read {F_JOURNAL} to its last page.
+camp_journal --> camp_ready : Carry {PREDECESSOR}'s wish on toward {SU...
+camp_journal --> e_camp_journal : Close {F_JOURNAL}, moved, and simply kee...
+camp_ready --> camp_summitpath : Set out for {SUMMIT}.
 camp_summitpath --> ridge_notch : Follow the cairns the safe way.
-camp_summitpath --> e_camp_scree : Try the scree shortcut straight up.
+camp_summitpath --> e_camp_scree : Try {F_SCREE} shortcut straight up.
 ridge_notch --> wind_gap : Cross the boulder field to the rise.
-wind_gap --> L_summit : Stand up onto the summit.
+wind_gap --> L_summit : Stand up onto {SUMMIT}.
 L_summit --> summit_survey : Set up to survey the whole island now.
-L_summit --> summit_signal : Signal the far ship first with Alder's m...
+L_summit --> summit_signal : Signal the far ship first with {PREDECES...
 L_summit --> e_summit_gaze : Just stand and take it all in.
 summit_survey --> ch_sightings : Take careful sightings of every coast.
 summit_survey --> ch_reef : Fix the reef and cove for safe landings ...
-summit_survey --> ch_farshore : Turn the glass on the wild far shore.
+summit_survey --> ch_farshore : Turn the glass on {F_FARSHORE}.
 summit_survey --> e_ch_rush : Rush every detail at once.
 ch_sightings --> ch_gather : Gather the sketches to draw the final ch...
 ch_reef --> ch_gather : Push on toward the full masterwork.
@@ -701,7 +701,7 @@ ch_ink --> ch_sign : Sign the finished masterwork.
 ch_pencil --> ch_sign : Sign the detailed masterwork.
 ch_pencil --> e_ch_dusk : Fuss over one last detail as the sun sin...
 ch_double --> ch_sign_double : Sign both charts.
-ch_sign --> e_ch_alder_name : Name it for Alder who came before.
+ch_sign --> e_ch_alder_name : Name it for {PREDECESSOR} who came befor...
 ch_sign --> e_ch_both_name : Name it for both mapmakers together.
 ch_sign --> ch_seal_final : Ring the margins with the island's livin...
 ch_sign --> e_ch_survey : Leave the banner blank and sign the surv...
@@ -713,97 +713,97 @@ signal_aim --> signal_flash : Hold the flash steady and wait.
 signal_flash --> ship_turns : Keep signalling.
 ship_turns --> race_down : Race down toward the cove to meet the bo...
 race_down --> meet_boat : Meet the boat at the cove.
-meet_boat --> e_rescue_pup : Lead them to the seal pup in the cave.
-meet_boat --> e_rescue_turtle : Lead them to the turtle on the reef.
-mg_lagoon --> mg_canoe : Bail out the sunken canoe.
-mg_lagoon --> mg_lagtunnel : Take the root tunnel deeper.
-mg_lagoon --> mg_dam : Wade to the driftwood dam.
+meet_boat --> e_rescue_pup : Lead them to {C3_FIND} in the cave.
+meet_boat --> e_rescue_turtle : Lead them to {A2_FIND} on the reef.
+mg_lagoon --> mg_canoe : Bail out {A4_OFFER1}.
+mg_lagoon --> mg_lagtunnel : Take {A4_OFFER2}.
+mg_lagoon --> mg_dam : Wade to {A4_ZONE}.
 mg_canoe --> mg_paddle : Bail it and paddle across.
 mg_canoe --> e_mg_canoe : Trust it too far, too fast.
-mg_paddle --> mg_lagfar : Land and explore the cleared ground.
-mg_lagfar --> mg_ruin : Examine the stone mound and posts.
+mg_paddle --> mg_lagfar : Land and explore {A4_FIND1}.
+mg_lagfar --> mg_ruin : Examine {A4_ZONE2}.
 mg_lagfar --> mg_otter : Take the firm path up toward the creek.
-mg_ruin --> mg_highground : Record the vanished village and climb on...
-mg_ruin --> e_mg_village : Sit and map the whole village in loving ...
+mg_ruin --> mg_highground : Record {A4_FIND2} and climb on.
+mg_ruin --> e_mg_village : Sit and map {A4_FIND2} in loving detail.
 mg_lagtunnel --> mg_seep : Head for the brightening sky.
 mg_lagtunnel --> e_mg_tunnellost : Push deeper into the dark.
-mg_dam --> mg_creek : Note Alder's stake and follow the creek.
-mg_dam --> e_mg_stake : Prise the stake free as a keepsake.
+mg_dam --> mg_creek : Note {PREDECESSOR}'s stake and follow th...
+mg_dam --> e_mg_stake : Prise {A4_FIND3} free as a keepsake.
 cf_falls --> cf_fallclimb : Climb the wet rocks beside the falls.
 cf_falls --> cf_fallcross : Cross the mossy log above the lip.
-cf_falls --> cf_fallpool : Wade into the pool below.
+cf_falls --> cf_fallpool : Wade into {B4_POOL}.
 cf_fallclimb --> cf_traverse : Climb carefully, testing each hold.
 cf_fallclimb --> e_cf_slip : Scramble up fast and reckless.
 cf_fallcross --> cf_upper : Step off onto the upper traverse.
 cf_fallpool --> cf_fallclimb : Note the gauge and climb the falls.
-cf_fallpool --> e_cf_gauge : Copy the gauge stone in full detail.
+cf_fallpool --> e_cf_gauge : Copy {B4_GAUGE} in full detail.
 cv_skylight --> cv_chimney : Climb the rock slope toward the light.
-cv_skylight --> cv_gallery : Explore the gallery of formations.
+cv_skylight --> cv_gallery : Explore {C4_GALLERY}.
 cv_chimney --> cv_tohigh : Chimney up steadily to the surface.
 cv_chimney --> e_cv_chimney : Rush the chimney and tire too soon.
 cv_gallery --> cv_glitter : Follow where the searcher went, toward t...
 cv_gallery --> e_cv_lantern : Sketch the whole stone gallery.
 tw_quarters --> tw_wallcharts : Read the wall of pinned charts.
-tw_quarters --> tw_seachest : Open the sea chest at the bunk's foot.
-tw_wallcharts --> tw_stair : Take heart from Alder's life and climb t...
+tw_quarters --> tw_seachest : Open {D4_CHEST}.
+tw_wallcharts --> tw_stair : Take heart from {PREDECESSOR}'s life and...
 tw_wallcharts --> e_tw_charts : Study the wall of a mapmaker's whole lif...
-tw_seachest --> tw_stair : Take the working compass and climb on.
-tw_seachest --> e_tw_drawing : Sit with the child's drawing, undone.
-tf_mussel --> tf_seals : Approach the basking seals.
-tf_mussel --> tf_gully : Follow the deep gully toward the cliffs.
+tw_seachest --> tw_stair : Take {D4_COMPASS} and climb on.
+tw_seachest --> e_tw_drawing : Sit with {D4_DRAWING}, undone.
+tf_mussel --> tf_seals : Approach the basking {E4_SEALS}.
+tf_mussel --> tf_gully : Follow {E4_GULLY} toward the cliffs.
 tf_seals --> tf_channel : Mark the tangled pup to send help later.
-tf_seals --> e_tf_seals : Try to free the tangled pup yourself now...
+tf_seals --> e_tf_seals : Try to free {E4_PUP} yourself now.
 tf_gully --> tf_cliffgap : Hurry through the gully to the cliff gap...
 tf_gully --> e_tf_gully : Dawdle reading the weed lines too long.
 ch_farshore --> ch_gather : Add the far shore and gather the whole s...
 ch_farshore --> e_ch_farshore : Stop, thrilled, having charted the unkno...
 ch_seal_final --> e_ch_living : Add the living island to the margins.
 ch_seal_final --> e_ch_clean : Hand over the clean masterwork as it is.
-mg_heron --> mg_blind : Climb into the old watching blind.
-mg_heron --> mg_mudbank : Wade out onto the wide mud bank.
+mg_heron --> mg_blind : Climb into {A3_BLIND}.
+mg_heron --> mg_mudbank : Wade out onto {A3_MUDBANK}.
 mg_heron --> mg_rookery : Count the nests in the rookery.
 mg_blind --> mg_seep : Copy the bearings and take the plank wal...
 mg_blind --> e_mg_tidetable : Copy the entire carved tide table in ful...
 mg_mudbank --> mg_farchannel : Follow the firm ribbon to the far channe...
 mg_mudbank --> e_mg_birdstorm : Cut straight across and startle the floc...
-mg_farchannel --> mg_highground : Cross to the lookout rise.
+mg_farchannel --> mg_highground : Cross to {A_HIGHGROUND}.
 mg_rookery --> mg_mudbank : Sketch the rookery and cross to the mud ...
 mg_rookery --> e_mg_chick : Stay to watch the whole colony too long.
-cf_grove --> cf_canopy : Climb the old rope ladder into the canop...
-cf_grove --> cf_shrine : Kneel to the little cairn shrine.
+cf_grove --> cf_canopy : Climb {B_LADDER}.
+cf_grove --> cf_shrine : Kneel to {B_SHRINE}.
 cf_canopy --> cf_treetop : Climb steadily, testing every rung.
 cf_canopy --> e_cf_ladder : Trust the frayed upper rungs and hurry.
 cf_treetop --> cf_campapproach : Take bearings from the platform and clim...
 cf_treetop --> e_cf_canopy : Linger in the swaying green crown too lo...
 cf_shrine --> cf_campapproach : Record the shrine and climb on toward th...
 cf_shrine --> e_cf_shrine : Sit long in the green hush before the sh...
-cv_lake --> cv_raft : Pole the old raft across the black lake.
+cv_lake --> cv_raft : Pole {C1_RAFT} across the black lake.
 cv_lake --> cv_lakebeach : Search the pale sand beach.
 cv_raft --> cv_farcave : Pole across slow and steady.
 cv_raft --> e_cv_raft : Push off hard and pole in haste.
 cv_farcave --> cv_tohigh : Climb the flowstone stair toward the day...
-cv_farcave --> e_cv_fish : Stay to study the blind white fish.
+cv_farcave --> e_cv_fish : Stay to study {C1_FISH}.
 cv_lakebeach --> cv_tohigh : Record the stone footprints and climb ou...
 cv_lakebeach --> e_cv_prints : Map every ancient footprint on the beach...
-tw_beacon --> tw_brazier : Inspect the rusted brazier.
-tw_beacon --> tw_viewdial : Read the carved bearing dial.
-tw_brazier --> tw_fuelstore : Search along the headland for the fuel s...
+tw_beacon --> tw_brazier : Inspect {D2_BEACON}.
+tw_beacon --> tw_viewdial : Read {D2_DIAL}.
+tw_brazier --> tw_fuelstore : Search along the headland for {D2_FUEL}.
 tw_brazier --> e_tw_nofuel : Give up on the dead beacon and turn back...
 tw_fuelstore --> tw_ridgeway : Copy Alder's last message and cross to t...
 tw_fuelstore --> e_tw_note : Sit with Alder's unanswered message.
 tw_viewdial --> tw_ridgeway : Copy the dial's bearings and cross to th...
 tw_viewdial --> e_tw_dial : Copy every single bearing on the great d...
-tf_wreck --> tf_hold : Reach down into the flooded hold.
-tf_wreck --> tf_deck : Climb the tilted deck to the bow.
+tf_wreck --> tf_hold : Reach down into {E5_HOLD}.
+tf_wreck --> tf_deck : Climb {E5_DECK} to the bow.
 tf_hold --> tf_cargo : Wade in quickly for a look at the cargo.
 tf_hold --> e_tf_hold : Push your luck deep in the flooding hold...
 tf_cargo --> tf_cliffgap : Note the settler ship and wade on to the...
 tf_cargo --> e_tf_bell : Stay to read the whole story of the wrec...
 tf_deck --> tf_cliffgap : Sketch the flats from the high stern and...
-tf_deck --> e_tf_figurehead : Stay on the bow to draw the figurehead i...
-cove_pools --> cove_seacave : Explore the low sea cave.
+tf_deck --> e_tf_figurehead : Stay on the bow to draw {E5_FIGUREHEAD} ...
+cove_pools --> cove_seacave : Explore {COVE_CAVE}.
 cove_pools --> cove_rockpool : Study the jewelled tide pools.
-cove_seacave --> cove_rise : Take Alder's pencil and climb the cove p...
+cove_seacave --> cove_rise : Take {PREDECESSOR}'s pencil and climb {C...
 cove_seacave --> e_cove_tin : Sit with Alder's kind hidden note.
 cove_rockpool --> cove_rise : Add the reef edge and climb toward the r...
 cove_rockpool --> e_cove_reefmap : Map every last pool in jewelled detail.
@@ -814,16 +814,16 @@ cv_squeeze --> e_cv_squeeze : Force it in a panicky rush.
 cv_glowworm --> cv_upflow : Follow the easy way to the spring.
 cv_glowworm --> e_cv_glow : Stay lost in the glowing dark too long.
 cf_dell --> cf_dellspring : Follow the dell spring downhill.
-cf_dell --> cf_dellcarve : Examine the mossy carved bench.
+cf_dell --> cf_dellcarve : Examine {B_DELL_BENCH}.
 cf_dell --> e_cf_dell_lost : Doze in the secret green room.
 cf_dellspring --> L_fresh : Come out at the spring.
 cf_dellcarve --> cf_upper : Add your mark and climb to the upper rid...
 cf_dellcarve --> e_cf_carve : Read every name carved in the old bench.
 tw_slab --> tw_cache : Try the rusted key patiently.
 tw_slab --> e_tw_slab : Lever the seized lock by main force.
-tw_cache --> tw_stair : Take the tools and the letter and climb ...
-tw_cache --> e_tw_cache : Open and read Alder's sealed letter now.
-tf_dune --> tf_marker : Climb to the marker post for the view.
+tw_cache --> tw_stair : Take the tools and {D1_LETTER} and climb...
+tw_cache --> e_tw_cache : Open and read {D1_LETTER} now.
+tf_dune --> tf_marker : Climb to {E3_MARKER} for the view.
 tf_dune --> e_tf_dune : Wallow too long in the soft dunes.
 tf_marker --> tf_channel : Take the whole flats in one view and fol...
 tf_marker --> e_tf_marker : Stay on the breezy dune drawing every ch...
