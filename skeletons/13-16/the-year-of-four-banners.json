@@ -36,7 +36,7 @@
     {
       "id": "n_start",
       "is_ending": false,
-      "body": "<<FILL role=setup words=168 beats='the river kingdom of Veldmark on the Long Night of Midwinter, snow on the grey walls of Caldmere; King Emeric the Fourth is dead in the Heron Keep with no grown heir, only his grandson Prince Doran, nine years old, last of the House of Rell; the gold heron banner lowered to half its staff over the keep while three bells toll across the frozen Veld; you are a youth in service in the capital, old enough this year to be trusted with letters and secrets and too young to be blamed for either; a whole succession year is turning on the death of one old king and the childhood of one small boy, and men are already counting banners in the dark'>>",
+      "body": "<<FILL role=setup words=168 beats='the river kingdom of {KINGDOM} on the Long Night of Midwinter, snow on the {GREY_COLOR} walls of {CAPITAL}; {OLD_KING} is dead in the {ROYAL_SIGIL} Keep with no grown heir, only his grandson Prince {HEIR_NAME}, nine years old, last of the {HEIR_HOUSE}; the gold {ROYAL_SIGIL} banner lowered to half its staff over the keep while three bells toll across the frozen {RIVER_NAME}; you are a youth in service in the capital, old enough this year to be trusted with letters and secrets and too young to be blamed for either; a whole succession year is turning on the death of one old king and the childhood of one small boy, and men are already counting banners in the dark'>>",
       "choices": [
         {
           "id": "c_n_start_1",
@@ -48,7 +48,7 @@
     {
       "id": "n_council",
       "is_ending": false,
-      "body": "<<FILL role=rising words=172 beats='First Thaw; the great houses converge on Caldmere for the reading of the will and the naming of a regent; the Grey Banner of House Vane, a grey wolf, borne by Lord Steward Aldric Vane who held the old king household and now holds the capital; the Red Banner of House Corven, a red falcon, borne by Duke Halden Corven who rides in from the marches with a border army to honor a king he barely obeyed; the Green Banner of House Miren, a green thorn, borne by Lady Serai Miren who speaks for the river guilds and the drowned poor of the fords; above them all the empty gold heron of the boy who cannot yet rule; four banners for one throne, and the year has not even begun'>>",
+      "body": "<<FILL role=rising words=172 beats='First Thaw; the great houses converge on {CAPITAL} for the reading of the will and the naming of a regent; the {GREY_COLOR} Banner of House {GREY_LEADER}, a {GREY_COLOR} {GREY_SIGIL}, borne by Lord {GREY_TITLE} {GREY_LEADER_GIVEN} {GREY_LEADER} who held the old king household and now holds the capital; the {RED_COLOR} Banner of House {RED_LEADER}, a {RED_COLOR} {RED_SIGIL}, borne by {RED_TITLE} {RED_LEADER_GIVEN} {RED_LEADER} who rides in from the marches with a border army to honor a king he barely obeyed; the {GREEN_COLOR} Banner of House {GREEN_LEADER}, a {GREEN_COLOR} {GREEN_SIGIL}, borne by {GREEN_TITLE} {GREEN_LEADER_GIVEN} {GREEN_LEADER} who speaks for the river guilds and the drowned poor of the fords; above them all the empty gold {ROYAL_SIGIL} of the boy who cannot yet rule; four banners for one throne, and the year has not even begun'>>",
       "choices": [
         {
           "id": "c_n_council_1",
@@ -59,41 +59,41 @@
     },
     {
       "id": "n_sort",
-      "body": "<<FILL role=choice words=178 beats='the choosing that decides which betrayals you will witness and which you will never see; three households will take you in and each guards a different half of the year truth; serve under Steward Aldric Vane and hold the grey capital, where the old order keeps its secrets and spends what it must to survive; serve under Duke Halden Corven in the red war-camp, where ambition wears the mask of protection and you alone will learn what it hides; serve under Lady Serai Miren in the green chancery, where the river folk count their dead and the proof of everything passes through your ink; one banner, one vantage, one conscience, and whose do you carry into the year'>>",
+      "body": "<<FILL role=choice words=178 beats='the choosing that decides which betrayals you will witness and which you will never see; three households will take you in and each guards a different half of the year truth; serve under {GREY_TITLE} {GREY_LEADER_GIVEN} {GREY_LEADER} and hold the {GREY_COLOR} capital, where the old order keeps its secrets and spends what it must to survive; serve under {RED_TITLE} {RED_LEADER_GIVEN} {RED_LEADER} in the {RED_COLOR} war-camp, where ambition wears the mask of protection and you alone will learn what it hides; serve under {GREEN_TITLE} {GREEN_LEADER_GIVEN} {GREEN_LEADER} in the {GREEN_COLOR} chancery, where the river folk count their dead and the proof of everything passes through your ink; one banner, one vantage, one conscience, and whose do you carry into the year'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_sort_1",
-          "label": "Serve Steward Vane under the Grey Banner.",
+          "label": "Serve {GREY_TITLE} {GREY_LEADER} under the {GREY_COLOR} Banner.",
           "target": "g_a1"
         },
         {
           "id": "c_n_sort_2",
-          "label": "Serve Duke Corven under the Red Banner.",
+          "label": "Serve {RED_TITLE} {RED_LEADER} under the {RED_COLOR} Banner.",
           "target": "r_s1"
         },
         {
           "id": "c_n_sort_3",
-          "label": "Serve Lady Miren under the Green Banner.",
+          "label": "Serve {GREEN_TITLE} {GREEN_LEADER} under the {GREEN_COLOR} Banner.",
           "target": "gr_r1"
         }
       ]
     },
     {
       "id": "g_a1",
-      "body": "<<FILL role=rising words=150 beats='the Steward household in the old wing of the Heron Keep; you are Aldric Vane page, trusted with the wax and the seal-ring; Captain Roderic Sarn, grim and loyal, runs the wolf-banner guard; Vane is grey-haired, exact, a man who has served the crown so long he cannot tell where the crown ends and he begins'>>",
+      "body": "<<FILL role=rising words=150 beats='the {GREY_TITLE} household in the old wing of the {ROYAL_SIGIL} Keep; you are {GREY_LEADER_GIVEN} {GREY_LEADER} {GREY_ROLE}, trusted with the wax and the seal-ring; Captain Roderic {GUARD_CAPTAIN}, grim and loyal, runs the {GREY_SIGIL}-banner guard; {GREY_LEADER} is {GREY_COLOR}-haired, exact, a man who has served the crown so long he cannot tell where the crown ends and he begins'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_a1_1",
-          "label": "Read on into the grey keep.",
+          "label": "Read on into the {GREY_COLOR} keep.",
           "target": "g_a2"
         }
       ]
     },
     {
       "id": "g_a2",
-      "body": "<<FILL role=rising words=148 beats='the great houses gathering in the grey hall for the reading; the will sealed on the table under the founder portrait; Corven arriving with more guards than a mourner needs, Lady Miren with a folder of river-town petitions; the whole capital waiting to learn who will hold the boy-king and the year'>>",
+      "body": "<<FILL role=rising words=148 beats='the great houses gathering in the {GREY_COLOR} hall for the reading; the will sealed on the table under the founder portrait; {RED_LEADER} arriving with more guards than a mourner needs, {GREEN_TITLE} {GREEN_LEADER} with a folder of river-town petitions; the whole capital waiting to learn who will hold the boy-king and the year'>>",
       "is_ending": false,
       "choices": [
         {
@@ -105,19 +105,19 @@
     },
     {
       "id": "g_a3",
-      "body": "<<FILL role=rising words=150 beats='the will read aloud; it names Aldric Vane regent but binds the regency to a three-house co-signing of Doran protection, so no banner may hold the boy alone; Corven co-signs with a smile that does not reach his eyes; Lady Miren asks for a Council of Banners and is refused; Vane turns to you and asks, quietly, what posture the grey house should strike in the days to come'>>",
+      "body": "<<FILL role=rising words=150 beats='the will read aloud; it names {GREY_LEADER_GIVEN} {GREY_LEADER} regent but binds the regency to a three-house co-signing of {HEIR_NAME} protection, so no banner may hold the boy alone; {RED_LEADER} co-signs with a smile that does not reach his eyes; {GREEN_TITLE} {GREEN_LEADER} asks for a Council of Banners and is refused; {GREY_LEADER} turns to you and asks, quietly, what posture the {GREY_COLOR} house should strike in the days to come'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_a3_1",
-          "label": "Stand at the Steward shoulder as the will is read.",
+          "label": "Stand at the {GREY_TITLE} shoulder as the will is read.",
           "target": "g_will"
         }
       ]
     },
     {
       "id": "g_will",
-      "body": "<<FILL role=choice words=170 beats='the first counsel you help the Steward choose, and it will shape the whole grey year; hold the capital by strength and shut the gates against Corven border army before it can crowd the walls; keep strictly to the letter of the will and let law, not force, answer every challenge; or offer Corven a share of the regency now, buying peace with power before either turns to war; the honor rule of the grey house, spoken by Vane himself, is that a steward guards, he does not grasp, so remember it, because each road tests it differently'>>",
+      "body": "<<FILL role=choice words=170 beats='the first counsel you help the {GREY_TITLE} choose, and it will shape the whole {GREY_COLOR} year; hold the capital by strength and shut the gates against {RED_LEADER} border army before it can crowd the walls; keep strictly to the letter of the will and let law, not force, answer every challenge; or offer {RED_LEADER} a share of the regency now, buying peace with power before either turns to war; the honor rule of the {GREY_COLOR} house, spoken by {GREY_LEADER} himself, is that a steward guards, he does not grasp, so remember it, because each road tests it differently'>>",
       "is_ending": false,
       "choices": [
         {
@@ -132,26 +132,26 @@
         },
         {
           "id": "c_g_will_3",
-          "label": "Counsel him to offer Corven a shared regency.",
+          "label": "Counsel him to offer {RED_LEADER} a shared regency.",
           "target": "g_za1"
         }
       ]
     },
     {
       "id": "g_xa1",
-      "body": "<<FILL role=rising words=148 beats='the gates of Caldmere barred; Corven red army camped in the water-meadows across the Veld, close enough to hear their horns at dawn; Sarn speaks of the Kingsbridge, the one crossing that lets the border army reach the capital; the river runs high with the thaw and the old sluice-gate could be opened to flood the fords below the bridge'>>",
+      "body": "<<FILL role=rising words=148 beats='the gates of {CAPITAL} barred; {RED_LEADER} {RED_COLOR} army camped in the water-meadows across the {RIVER_NAME}, close enough to hear their horns at dawn; {GUARD_CAPTAIN} speaks of the {KINGSBRIDGE}, the one crossing that lets the border army reach the capital; the river runs high with the thaw and the old sluice-gate could be opened to flood the fords below the bridge'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_xa1_1",
-          "label": "Walk the closed walls with Captain Sarn.",
+          "label": "Walk the closed walls with Captain {GUARD_CAPTAIN}.",
           "target": "g_xa2"
         }
       ]
     },
     {
       "id": "g_xa2",
-      "body": "<<FILL role=rising words=146 beats='Sarn lays it out flat; open the gate, drown the fords, and Corven cannot cross for a week; but the fords carry a Green grain convoy and the river folk who work it, crossing at dusk, and the flood will take them; the Steward order is already written and waits only for a hand to carry it'>>",
+      "body": "<<FILL role=rising words=146 beats='{GUARD_CAPTAIN} lays it out flat; open the gate, drown the fords, and {RED_LEADER} cannot cross for a week; but the fords carry a {GREEN_COLOR} grain convoy and the river folk who work it, crossing at dusk, and the flood will take them; the {GREY_TITLE} order is already written and waits only for a hand to carry it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -163,17 +163,17 @@
     },
     {
       "id": "g_x_bridge",
-      "body": "<<FILL role=choice words=168 beats='the Kingsbridge crisis, and the grey house darkest hour; carry the Steward order to open the river-gate and drown the lower fords so Corven cannot cross, though a Green convoy and forty river folk are on the water; the honor rule stands plainly before you, a steward man does not spend the innocent to win a crossing; carry the order as given, or refuse it and warn the Steward what it truly costs'>>",
+      "body": "<<FILL role=choice words=168 beats='the {KINGSBRIDGE} crisis, and the {GREY_COLOR} house darkest hour; carry the {GREY_TITLE} order to open the river-gate and drown the lower fords so {RED_LEADER} cannot cross, though a {GREEN_COLOR} convoy and forty river folk are on the water; the honor rule stands plainly before you, a steward man does not spend the innocent to win a crossing; carry the order as given, or refuse it and warn the {GREY_TITLE} what it truly costs'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_x_bridge_1",
-          "label": "Carry Sarn order and open the river-gate.",
+          "label": "Carry {GUARD_CAPTAIN} order and open the river-gate.",
           "target": "gE1_t1"
         },
         {
           "id": "c_g_x_bridge_2",
-          "label": "Refuse, and warn the Steward what it will drown.",
+          "label": "Refuse, and warn the {GREY_TITLE} what it will drown.",
           "target": "g_xb1"
         }
       ],
@@ -184,7 +184,7 @@
     },
     {
       "id": "gE1_t1",
-      "body": "<<FILL role=consequence words=150 beats='the sluice hauled up in the dark; the Veld pouring brown over the lower fords; the Green convoy lanterns going out one by one downriver as the water climbs the pilings and the shouting stops'>>",
+      "body": "<<FILL role=consequence words=150 beats='the sluice hauled up in the dark; the {RIVER_NAME} pouring brown over the lower fords; the {GREEN_COLOR} convoy lanterns going out one by one downriver as the water climbs the pilings and the shouting stops'>>",
       "is_ending": false,
       "choices": [
         {
@@ -196,7 +196,7 @@
     },
     {
       "id": "gE1_t2",
-      "body": "<<FILL role=consequence words=146 beats='forty river folk taken by the flood that saved the capital a week of siege; Corven army turned back at the drowned crossing; the walls safe and the cost written on no ledger any lord will read aloud'>>",
+      "body": "<<FILL role=consequence words=146 beats='forty river folk taken by the flood that saved the capital a week of siege; {RED_LEADER} army turned back at the drowned crossing; the walls safe and the cost written on no ledger any lord will read aloud'>>",
       "is_ending": false,
       "choices": [
         {
@@ -208,7 +208,7 @@
     },
     {
       "id": "gE1_t3",
-      "body": "<<FILL role=consequence words=140 beats='Sarn will not meet your eyes on the wall the next morning; the Steward thanks you, and you learn thanks is the wage they pay for a thing that cannot be undone; you carry the wax back through a keep gone very quiet'>>",
+      "body": "<<FILL role=consequence words=140 beats='{GUARD_CAPTAIN} will not meet your eyes on the wall the next morning; the {GREY_TITLE} thanks you, and you learn thanks is the wage they pay for a thing that cannot be undone; you carry the wax back through a keep gone very quiet'>>",
       "is_ending": false,
       "choices": [
         {
@@ -220,7 +220,7 @@
     },
     {
       "id": "gE1",
-      "body": "<<FILL role=ending words=132 beats='the year the grey house won the bridge and lost its name; the capital safe, the fords a grave, and you the hand that turned the gate; no siege came, and no forgiveness either; you keep the Steward seal and the memory of lanterns going dark, and you know now what order costs when it is paid in other people lives'>>",
+      "body": "<<FILL role=ending words=132 beats='the year the {GREY_COLOR} house won the bridge and lost its name; the capital safe, the fords a grave, and you the hand that turned the gate; no siege came, and no forgiveness either; you keep the {GREY_TITLE} seal and the memory of lanterns going dark, and you know now what order costs when it is paid in other people lives'>>",
       "is_ending": true,
       "ending": {
         "id": "gE1",
@@ -235,19 +235,19 @@
     },
     {
       "id": "g_xb1",
-      "body": "<<FILL role=rising words=150 beats='you refuse Sarn and go straight to Vane with the whole of it, the convoy, the river folk, the forty who would drown for a week delay; the Steward hears you out in silence and for once looks his age; he lets the gate stay shut and the fords stay dry, and Corven army begins to cross the Kingsbridge unopposed'>>",
+      "body": "<<FILL role=rising words=150 beats='you refuse {GUARD_CAPTAIN} and go straight to {GREY_LEADER} with the whole of it, the convoy, the river folk, the forty who would drown for a week delay; the {GREY_TITLE} hears you out in silence and for once looks his age; he lets the gate stay shut and the fords stay dry, and {RED_LEADER} army begins to cross the {KINGSBRIDGE} unopposed'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_xb1_1",
-          "label": "Bring the true cost to the Steward.",
+          "label": "Bring the true cost to the {GREY_TITLE}.",
           "target": "g_xb2"
         }
       ]
     },
     {
       "id": "g_xb2",
-      "body": "<<FILL role=rising words=146 beats='the red columns on the near bank now, the easy crossing lost by choice; the capital must be held another way, with less time and no clever cruelty to buy it; Vane asks you to help him choose the last honest road, and there are only two of them left'>>",
+      "body": "<<FILL role=rising words=146 beats='the {RED_COLOR} columns on the near bank now, the easy crossing lost by choice; the capital must be held another way, with less time and no clever cruelty to buy it; {GREY_LEADER} asks you to help him choose the last honest road, and there are only two of them left'>>",
       "is_ending": false,
       "choices": [
         {
@@ -259,7 +259,7 @@
     },
     {
       "id": "g_x_council",
-      "body": "<<FILL role=choice words=160 beats='Corven red columns on the near bank and the capital decision forced; stand a siege behind Caldmere grey walls and make the border army pay for every stone; or yield the capital without a battle and slip the boy-king Doran out through the water-gate to a safer keep before the trap closes; the grey house will be remembered for one or the other, and there is no third road left now that the river runs free'>>",
+      "body": "<<FILL role=choice words=160 beats='{RED_LEADER} {RED_COLOR} columns on the near bank and the capital decision forced; stand a siege behind {CAPITAL} {GREY_COLOR} walls and make the border army pay for every stone; or yield the capital without a battle and slip the boy-king {HEIR_NAME} out through the water-gate to a safer keep before the trap closes; the {GREY_COLOR} house will be remembered for one or the other, and there is no third road left now that the river runs free'>>",
       "is_ending": false,
       "choices": [
         {
@@ -276,7 +276,7 @@
     },
     {
       "id": "gE2_t1",
-      "body": "<<FILL role=consequence words=150 beats='the gates shut and barred, the granaries counted grain by grain, the wells sounded, the grey wolf banner nailed to the highest tower where the whole meadow can see it stand'>>",
+      "body": "<<FILL role=consequence words=150 beats='the gates shut and barred, the granaries counted grain by grain, the wells sounded, the {GREY_COLOR} {GREY_SIGIL} banner nailed to the highest tower where the whole meadow can see it stand'>>",
       "is_ending": false,
       "choices": [
         {
@@ -288,19 +288,19 @@
     },
     {
       "id": "gE2_t2",
-      "body": "<<FILL role=consequence words=146 beats='Corven army settles to a siege in the water-meadows; horns at dawn and dusk, a ring of red tents, no storm and no yielding, only the slow arithmetic of which house runs out of winter first'>>",
+      "body": "<<FILL role=consequence words=146 beats='{RED_LEADER} army settles to a siege in the water-meadows; horns at dawn and dusk, a ring of {RED_COLOR} tents, no storm and no yielding, only the slow arithmetic of which house runs out of winter first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE2_t2_1",
-          "label": "Watch the red ring close around the walls.",
+          "label": "Watch the {RED_COLOR} ring close around the walls.",
           "target": "gE2_t3"
         }
       ]
     },
     {
       "id": "gE2_t3",
-      "body": "<<FILL role=consequence words=144 beats='short rations and shorter tempers; the boy-king kept to the inner rooms and told it is a long winter game; you carry the Steward orders down cold stairs and learn the weight of simply not losing'>>",
+      "body": "<<FILL role=consequence words=144 beats='short rations and shorter tempers; the boy-king kept to the inner rooms and told it is a long winter game; you carry the {GREY_TITLE} orders down cold stairs and learn the weight of simply not losing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -312,7 +312,7 @@
     },
     {
       "id": "gE2_t4",
-      "body": "<<FILL role=consequence words=140 beats='midwinter deep; a sally against the red lines that costs more than it wins; the walls hold; the household thins; the grey house learns to measure victory in mornings survived and nothing more'>>",
+      "body": "<<FILL role=consequence words=140 beats='midwinter deep; a sally against the {RED_COLOR} lines that costs more than it wins; the walls hold; the household thins; the {GREY_COLOR} house learns to measure victory in mornings survived and nothing more'>>",
       "is_ending": false,
       "choices": [
         {
@@ -324,7 +324,7 @@
     },
     {
       "id": "gE2_t5",
-      "body": "<<FILL role=consequence words=142 beats='first thaw; Corven army worn and hungry too, drawn off at last toward troubles on the marches it left unguarded; the ring of tents empties; the siege loosens more abandoned than lifted'>>",
+      "body": "<<FILL role=consequence words=142 beats='first thaw; {RED_LEADER} army worn and hungry too, drawn off at last toward troubles on the marches it left unguarded; the ring of tents empties; the siege loosens more abandoned than lifted'>>",
       "is_ending": false,
       "choices": [
         {
@@ -336,7 +336,7 @@
     },
     {
       "id": "gE2_t6",
-      "body": "<<FILL role=consequence words=138 beats='spring over Caldmere, the meadows bare of red tents; the boy-king still in the keep, still breathing, still the realm rightful heir; nothing won but survival, and survival held with both cold hands until the light came back'>>",
+      "body": "<<FILL role=consequence words=138 beats='spring over {CAPITAL}, the meadows bare of {RED_COLOR} tents; the boy-king still in the keep, still breathing, still the realm rightful heir; nothing won but survival, and survival held with both cold hands until the light came back'>>",
       "is_ending": false,
       "choices": [
         {
@@ -348,7 +348,7 @@
     },
     {
       "id": "gE2",
-      "body": "<<FILL role=ending words=134 beats='the year the grey capital simply refused to fall; no triumph, no rout, only a long siege outlasted and a small king kept alive behind grey stone; the war is not ended, the question of the throne not answered, but Caldmere stands and Doran breathes, and you learn that holding the line is its own quiet kind of victory'>>",
+      "body": "<<FILL role=ending words=134 beats='the year the {GREY_COLOR} capital simply refused to fall; no triumph, no rout, only a long siege outlasted and a small king kept alive behind {GREY_COLOR} stone; the war is not ended, the question of the throne not answered, but {CAPITAL} stands and {HEIR_NAME} breathes, and you learn that holding the line is its own quiet kind of victory'>>",
       "is_ending": true,
       "ending": {
         "id": "gE2",
@@ -359,7 +359,7 @@
     },
     {
       "id": "gE3_t1",
-      "body": "<<FILL role=consequence words=150 beats='the water-gate at the third bell of the night; Prince Doran woken and wrapped against the cold and told it is a game of quiet; the wolf-guard picked and few and sworn to the barge'>>",
+      "body": "<<FILL role=consequence words=150 beats='the water-gate at the third bell of the night; Prince {HEIR_NAME} woken and wrapped against the cold and told it is a game of quiet; the {GREY_SIGIL}-guard picked and few and sworn to the barge'>>",
       "is_ending": false,
       "choices": [
         {
@@ -371,7 +371,7 @@
     },
     {
       "id": "gE3_t2",
-      "body": "<<FILL role=consequence words=146 beats='down the river stairs to a waiting barge; the capital left behind for Corven to hold empty; its true prize slipping onto the black Veld while the red horns sleep in the meadows'>>",
+      "body": "<<FILL role=consequence words=146 beats='down the river stairs to a waiting barge; the capital left behind for {RED_LEADER} to hold empty; its true prize slipping onto the black {RIVER_NAME} while the {RED_COLOR} horns sleep in the meadows'>>",
       "is_ending": false,
       "choices": [
         {
@@ -383,7 +383,7 @@
     },
     {
       "id": "gE3_t3",
-      "body": "<<FILL role=consequence words=144 beats='the barge running silent past the sleeping fords, oars muffled, no lantern lit; the boy asleep against your shoulder before the first grey of dawn touches the water'>>",
+      "body": "<<FILL role=consequence words=144 beats='the barge running silent past the sleeping fords, oars muffled, no lantern lit; the boy asleep against your shoulder before the first {GREY_COLOR} of dawn touches the water'>>",
       "is_ending": false,
       "choices": [
         {
@@ -395,7 +395,7 @@
     },
     {
       "id": "gE3_t4",
-      "body": "<<FILL role=consequence words=140 beats='a chain of small grey keeps upriver, loyal to Vane by old oath and older debt, none of which will sell a child; the barge passed hand to hand up the friendly current'>>",
+      "body": "<<FILL role=consequence words=140 beats='a chain of small {GREY_COLOR} keeps upriver, loyal to {GREY_LEADER} by old oath and older debt, none of which will sell a child; the barge passed hand to hand up the friendly current'>>",
       "is_ending": false,
       "choices": [
         {
@@ -407,7 +407,7 @@
     },
     {
       "id": "gE3_t5",
-      "body": "<<FILL role=consequence words=142 beats='the upriver keep, gates open to the wolf banner at first light; Doran handed to guardians who owe the Steward their lives; Corven left ruling walls with no king inside them'>>",
+      "body": "<<FILL role=consequence words=142 beats='the upriver keep, gates open to the {GREY_SIGIL} banner at first light; {HEIR_NAME} handed to guardians who owe the {GREY_TITLE} their lives; {RED_LEADER} left ruling walls with no king inside them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -419,7 +419,7 @@
     },
     {
       "id": "gE3_t6",
-      "body": "<<FILL role=consequence words=138 beats='the grey house poorer by a city and richer by a crown it did not have to grasp to keep; you stand on the keep wall as the sun comes up and understand at last what a guardian is meant to guard'>>",
+      "body": "<<FILL role=consequence words=138 beats='the {GREY_COLOR} house poorer by a city and richer by a crown it did not have to grasp to keep; you stand on the keep wall as the sun comes up and understand at last what a guardian is meant to guard'>>",
       "is_ending": false,
       "choices": [
         {
@@ -431,7 +431,7 @@
     },
     {
       "id": "gE3",
-      "body": "<<FILL role=ending words=136 beats='the year the Steward gave away a capital to save a king; Caldmere lost, Doran safe and free among loyal keeps, the grey house proven a guardian and not a jailer; you rowed the heir out of a closing trap and kept the honor rule whole, a steward guards and does not grasp, and the realm still has a rightful crown to grow into'>>",
+      "body": "<<FILL role=ending words=136 beats='the year the {GREY_TITLE} gave away a capital to save a king; {CAPITAL} lost, {HEIR_NAME} safe and free among loyal keeps, the {GREY_COLOR} house proven a guardian and not a jailer; you rowed the heir out of a closing trap and kept the honor rule whole, a steward guards and does not grasp, and the realm still has a rightful crown to grow into'>>",
       "is_ending": true,
       "ending": {
         "id": "gE3",
@@ -442,19 +442,19 @@
     },
     {
       "id": "g_ya1",
-      "body": "<<FILL role=rising words=148 beats='you help Vane hold to the will to the letter; the three-house co-signing of Doran protection honored in full, every seal witnessed, every clause read aloud so no house can later claim it was tricked; it is slow and bloodless and it makes Corven grind his teeth'>>",
+      "body": "<<FILL role=rising words=148 beats='you help {GREY_LEADER} hold to the will to the letter; the three-house co-signing of {HEIR_NAME} protection honored in full, every seal witnessed, every clause read aloud so no house can later claim it was tricked; it is slow and bloodless and it makes {RED_LEADER} grind his teeth'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_ya1_1",
-          "label": "Keep the grey house to the law.",
+          "label": "Keep the {GREY_COLOR} house to the law.",
           "target": "g_ya2"
         }
       ]
     },
     {
       "id": "g_ya2",
-      "body": "<<FILL role=rising words=146 beats='you spend the spring carrying witnessed copies between the houses, binding each lord to the same written protection of the boy; the law becomes a slow net around the year; Corven signs everything and means none of it, and you learn to read a smile that agrees in order to betray later'>>",
+      "body": "<<FILL role=rising words=146 beats='you spend the spring carrying witnessed copies between the houses, binding each lord to the same written protection of the boy; the law becomes a slow net around the year; {RED_LEADER} signs everything and means none of it, and you learn to read a smile that agrees in order to betray later'>>",
       "is_ending": false,
       "choices": [
         {
@@ -466,7 +466,7 @@
     },
     {
       "id": "g_ya3",
-      "body": "<<FILL role=rising words=148 beats='Midsummer brings the Heron Feast, a truce feast where all banners sit at one table and the boy-king is shown to the realm; the hall bright, the wine poured, every house watching every other over the rims of their cups; Corven keeps his own taster very close and you note it without knowing yet why'>>",
+      "body": "<<FILL role=rising words=148 beats='Midsummer brings the {ROYAL_SIGIL} Feast, a truce feast where all banners sit at one table and the boy-king is shown to the realm; the hall bright, the wine poured, every house watching every other over the rims of their cups; {RED_LEADER} keeps his own taster very close and you note it without knowing yet why'>>",
       "is_ending": false,
       "choices": [
         {
@@ -478,7 +478,7 @@
     },
     {
       "id": "g_y_feast",
-      "body": "<<FILL role=choice words=166 beats='the Heron Feast turned to poison; Corven food-taster collapses and dies over the boy-king cup, and Corven rises to accuse the grey house of trying to poison the prince and pin it on the marches; you saw the cup was Corven own man, not Doran, but from the grey vantage you cannot yet prove the Duke staged it; the honor rule holds, the grey house answers with truth, not with a louder lie; demand proof and try to expose the staging, or let the Steward answer the charge with cold restraint and let the lie starve'>>",
+      "body": "<<FILL role=choice words=166 beats='the {ROYAL_SIGIL} Feast turned to poison; {RED_LEADER} food-taster collapses and dies over the boy-king cup, and {RED_LEADER} rises to accuse the {GREY_COLOR} house of trying to poison the prince and pin it on the marches; you saw the cup was {RED_LEADER} own man, not {HEIR_NAME}, but from the {GREY_COLOR} vantage you cannot yet prove the {RED_TITLE} staged it; the honor rule holds, the {GREY_COLOR} house answers with truth, not with a louder lie; demand proof and try to expose the staging, or let the {GREY_TITLE} answer the charge with cold restraint and let the lie starve'>>",
       "is_ending": false,
       "choices": [
         {
@@ -488,14 +488,14 @@
         },
         {
           "id": "c_g_y_feast_2",
-          "label": "Let the Steward answer with cold restraint.",
+          "label": "Let the {GREY_TITLE} answer with cold restraint.",
           "target": "gE6_t1"
         }
       ]
     },
     {
       "id": "g_yb1",
-      "body": "<<FILL role=rising words=150 beats='you work the feast-hall backward, the cup, the taster, the order of the pouring; every thread says the doctored cup was Corven own and never near the prince, but the proof stops at the edge of the Duke tent where no grey hand can reach; you have enough to clear the Steward and never enough to hang the Duke'>>",
+      "body": "<<FILL role=rising words=150 beats='you work the feast-hall backward, the cup, the taster, the order of the pouring; every thread says the doctored cup was {RED_LEADER} own and never near the prince, but the proof stops at the edge of the {RED_TITLE} tent where no {GREY_COLOR} hand can reach; you have enough to clear the {GREY_TITLE} and never enough to hang the {RED_TITLE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -507,7 +507,7 @@
     },
     {
       "id": "g_yb2",
-      "body": "<<FILL role=rising words=146 beats='half a truth in your hand and the council waiting; enough to clear a name, never enough to name a guilty man; what you do with it will decide how the realm reads the whole year, and Vane leaves the choosing to you because you are the one who gathered it'>>",
+      "body": "<<FILL role=rising words=146 beats='half a truth in your hand and the council waiting; enough to clear a name, never enough to name a guilty man; what you do with it will decide how the realm reads the whole year, and {GREY_LEADER} leaves the choosing to you because you are the one who gathered it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -519,7 +519,7 @@
     },
     {
       "id": "g_y_trial",
-      "body": "<<FILL role=choice words=156 beats='half a truth in your hand and the council waiting; bring what you have before the full Council of Banners and clear Vane name in the open, though you cannot name the Duke; or hold the proof close and use the threat of it to force Corven to a truce that spares the realm a war; clearing a name or keeping a peace, and you cannot do both'>>",
+      "body": "<<FILL role=choice words=156 beats='half a truth in your hand and the council waiting; bring what you have before the full Council of Banners and clear {GREY_LEADER} name in the open, though you cannot name the {RED_TITLE}; or hold the proof close and use the threat of it to force {RED_LEADER} to a truce that spares the realm a war; clearing a name or keeping a peace, and you cannot do both'>>",
       "is_ending": false,
       "choices": [
         {
@@ -536,7 +536,7 @@
     },
     {
       "id": "gE4_t1",
-      "body": "<<FILL role=consequence words=148 beats='the Council of Banners in full session; you lay out the cup, the taster, the pouring, enough to clear the Steward of any hand in the death; Corven sits stone-faced as the charge against grey collapses under the plain order of the evening'>>",
+      "body": "<<FILL role=consequence words=148 beats='the Council of Banners in full session; you lay out the cup, the taster, the pouring, enough to clear the {GREY_TITLE} of any hand in the death; {RED_LEADER} sits stone-faced as the charge against {GREY_COLOR} collapses under the plain order of the evening'>>",
       "is_ending": false,
       "choices": [
         {
@@ -548,19 +548,19 @@
     },
     {
       "id": "gE4_t2",
-      "body": "<<FILL role=consequence words=144 beats='Vane cleared, the grey house vindicated, the Duke untouched; the proof will not reach far enough to name him, and every lord in the room knows it and says nothing; a half-justice that keeps one honest name and lets a guilty man keep his sword'>>",
+      "body": "<<FILL role=consequence words=144 beats='{GREY_LEADER} cleared, the {GREY_COLOR} house vindicated, the {RED_TITLE} untouched; the proof will not reach far enough to name him, and every lord in the room knows it and says nothing; a half-justice that keeps one honest name and lets a guilty man keep his sword'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE4_t2_1",
-          "label": "Watch the Duke walk out uncondemned.",
+          "label": "Watch the {RED_TITLE} walk out uncondemned.",
           "target": "gE4_t3"
         }
       ]
     },
     {
       "id": "gE4_t3",
-      "body": "<<FILL role=consequence words=138 beats='you carry the record home knowing the difference now between the truth you hold and the truth you can hang a man with; the grey house honest and the red house free; the whole design locked in a vantage your ink could not reach'>>",
+      "body": "<<FILL role=consequence words=138 beats='you carry the record home knowing the difference now between the truth you hold and the truth you can hang a man with; the {GREY_COLOR} house honest and the {RED_COLOR} house free; the whole design locked in a vantage your ink could not reach'>>",
       "is_ending": false,
       "choices": [
         {
@@ -572,7 +572,7 @@
     },
     {
       "id": "gE4",
-      "body": "<<FILL role=ending words=132 beats='the year you cleared the Steward and could not touch the Duke; the grey house honest and the red house unpunished, the whole truth of the staged poisoning locked in a vantage you could not reach; you kept the honor rule and answered with proof, and you learned that a proven truth and a known truth are not the same weapon'>>",
+      "body": "<<FILL role=ending words=132 beats='the year you cleared the {GREY_TITLE} and could not touch the {RED_TITLE}; the {GREY_COLOR} house honest and the {RED_COLOR} house unpunished, the whole truth of the staged poisoning locked in a vantage you could not reach; you kept the honor rule and answered with proof, and you learned that a proven truth and a known truth are not the same weapon'>>",
       "is_ending": true,
       "ending": {
         "id": "gE4",
@@ -583,19 +583,19 @@
     },
     {
       "id": "gE5_t1",
-      "body": "<<FILL role=consequence words=148 beats='you take the half-proof to Corven privately, not to hang him but to bargain; enough that he knows the grey house could make the feast-poison stink follow the red banner all year if it chose; the Duke listens, and for once the smile is gone'>>",
+      "body": "<<FILL role=consequence words=148 beats='you take the half-proof to {RED_LEADER} privately, not to hang him but to bargain; enough that he knows the {GREY_COLOR} house could make the feast-poison stink follow the {RED_COLOR} banner all year if it chose; the {RED_TITLE} listens, and for once the smile is gone'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE5_t1_1",
-          "label": "Carry the sealed proof to the Duke tent.",
+          "label": "Carry the sealed proof to the {RED_TITLE} tent.",
           "target": "gE5_t2"
         }
       ]
     },
     {
       "id": "gE5_t2",
-      "body": "<<FILL role=consequence words=144 beats='a truce struck in the space between what you can prove and what he cannot deny; no war over the feast, no name cleared in the open either; the Steward keeps a peace and swallows a vindication in the same breath'>>",
+      "body": "<<FILL role=consequence words=144 beats='a truce struck in the space between what you can prove and what he cannot deny; no war over the feast, no name cleared in the open either; the {GREY_TITLE} keeps a peace and swallows a vindication in the same breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -607,7 +607,7 @@
     },
     {
       "id": "gE5_t3",
-      "body": "<<FILL role=consequence words=142 beats='the truce holds through the harvest; the red banner careful, the grey banner quiet, the realm buying a season of calm with a secret nobody outside the tent will ever read'>>",
+      "body": "<<FILL role=consequence words=142 beats='the truce holds through the harvest; the {RED_COLOR} banner careful, the {GREY_COLOR} banner quiet, the realm buying a season of calm with a secret nobody outside the tent will ever read'>>",
       "is_ending": false,
       "choices": [
         {
@@ -643,7 +643,7 @@
     },
     {
       "id": "gE5",
-      "body": "<<FILL role=ending words=130 beats='the year a secret bought a peace; the grey house never cleared in the open and never at war either, the Duke leashed by proof he could not let surface; you traded justice for calm and kept the honor rule whole by answering with truth instead of the sword, and the realm breathed easier for a season without ever knowing why'>>",
+      "body": "<<FILL role=ending words=130 beats='the year a secret bought a peace; the {GREY_COLOR} house never cleared in the open and never at war either, the {RED_TITLE} leashed by proof he could not let surface; you traded justice for calm and kept the honor rule whole by answering with truth instead of the sword, and the realm breathed easier for a season without ever knowing why'>>",
       "is_ending": true,
       "ending": {
         "id": "gE5",
@@ -654,19 +654,19 @@
     },
     {
       "id": "gE6_t1",
-      "body": "<<FILL role=consequence words=150 beats='Vane rises before the feast and answers Corven not with denial but with the will itself, read again clause by clause, the co-signing, the shared protection, the law that binds every banner including red; he does not accuse, he only stands inside the law and lets the false charge break against it'>>",
+      "body": "<<FILL role=consequence words=150 beats='{GREY_LEADER} rises before the feast and answers {RED_LEADER} not with denial but with the will itself, read again clause by clause, the co-signing, the shared protection, the law that binds every banner including {RED_COLOR}; he does not accuse, he only stands inside the law and lets the false charge break against it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE6_t1_1",
-          "label": "Watch the Steward answer with the law.",
+          "label": "Watch the {GREY_TITLE} answer with the law.",
           "target": "gE6_t2"
         }
       ]
     },
     {
       "id": "gE6_t2",
-      "body": "<<FILL role=consequence words=146 beats='Corven has a dead taster and no cup that ever touched the prince; the accusation curdles as the grey house simply refuses to shout back; the hall turns, slowly, from the accuser toward the accused'>>",
+      "body": "<<FILL role=consequence words=146 beats='{RED_LEADER} has a dead taster and no cup that ever touched the prince; the accusation curdles as the {GREY_COLOR} house simply refuses to shout back; the hall turns, slowly, from the accuser toward the accused'>>",
       "is_ending": false,
       "choices": [
         {
@@ -678,7 +678,7 @@
     },
     {
       "id": "gE6_t3",
-      "body": "<<FILL role=consequence words=144 beats='by the feast turning it is the Duke who looks the schemer and the Steward who looks the crown true servant; no blood spilled to prove it, only patience and the plain reading of a page every lord already signed'>>",
+      "body": "<<FILL role=consequence words=144 beats='by the feast turning it is the {RED_TITLE} who looks the schemer and the {GREY_TITLE} who looks the crown true servant; no blood spilled to prove it, only patience and the plain reading of a page every lord already signed'>>",
       "is_ending": false,
       "choices": [
         {
@@ -690,7 +690,7 @@
     },
     {
       "id": "gE6_t4",
-      "body": "<<FILL role=consequence words=142 beats='you keep near Doran through the rest of the feast, the small king pale and frightened by the shouting; the grey house closes quietly around him, guardian and not jailer, and the realm sees the difference'>>",
+      "body": "<<FILL role=consequence words=142 beats='you keep near {HEIR_NAME} through the rest of the feast, the small king pale and frightened by the shouting; the {GREY_COLOR} house closes quietly around him, guardian and not jailer, and the realm sees the difference'>>",
       "is_ending": false,
       "choices": [
         {
@@ -702,7 +702,7 @@
     },
     {
       "id": "gE6_t5",
-      "body": "<<FILL role=consequence words=140 beats='the feast ends with the three-house protection unbroken and the grey house the stronger for having stayed quiet; Corven withdraws his charge in all but words, and words are all he has left'>>",
+      "body": "<<FILL role=consequence words=140 beats='the feast ends with the three-house protection unbroken and the {GREY_COLOR} house the stronger for having stayed quiet; {RED_LEADER} withdraws his charge in all but words, and words are all he has left'>>",
       "is_ending": false,
       "choices": [
         {
@@ -714,7 +714,7 @@
     },
     {
       "id": "gE6_t6",
-      "body": "<<FILL role=consequence words=140 beats='the harvest comes in under a calmer sky; the law Vane read aloud stands as the year spine, the boy safe, the houses bound; you learn that the hardest answer to a lie is often no answer at all but the truth left standing'>>",
+      "body": "<<FILL role=consequence words=140 beats='the harvest comes in under a calmer sky; the law {GREY_LEADER} read aloud stands as the year spine, the boy safe, the houses bound; you learn that the hardest answer to a lie is often no answer at all but the truth left standing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -726,7 +726,7 @@
     },
     {
       "id": "gE6_t7",
-      "body": "<<FILL role=consequence words=138 beats='winter again, and the grey wolf banner flying over a realm that kept its head; the honor rule kept in the hardest place, where a lie begged to be answered with a lie and was answered only with the law'>>",
+      "body": "<<FILL role=consequence words=138 beats='winter again, and the {GREY_COLOR} {GREY_SIGIL} banner flying over a realm that kept its head; the honor rule kept in the hardest place, where a lie begged to be answered with a lie and was answered only with the law'>>",
       "is_ending": false,
       "choices": [
         {
@@ -738,7 +738,7 @@
     },
     {
       "id": "gE6_t8",
-      "body": "<<FILL role=consequence words=138 beats='the realm remembers the feast as the night the grey house would not stoop; you carry the Steward wax into another year knowing that a house can win by refusing the very weapon that was used against it'>>",
+      "body": "<<FILL role=consequence words=138 beats='the realm remembers the feast as the night the {GREY_COLOR} house would not stoop; you carry the {GREY_TITLE} wax into another year knowing that a house can win by refusing the very weapon that was used against it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -750,7 +750,7 @@
     },
     {
       "id": "gE6",
-      "body": "<<FILL role=ending words=138 beats='the year the grey house won by refusing to lie; Corven staged poisoning turned back on him by nothing but the plain law read aloud and the Steward cold patience; you helped an honest man hold his name without a sword or a counter-lie, and the realm saw which banner served the crown and which served itself'>>",
+      "body": "<<FILL role=ending words=138 beats='the year the {GREY_COLOR} house won by refusing to lie; {RED_LEADER} staged poisoning turned back on him by nothing but the plain law read aloud and the {GREY_TITLE} cold patience; you helped an honest man hold his name without a sword or a counter-lie, and the realm saw which banner served the crown and which served itself'>>",
       "is_ending": true,
       "ending": {
         "id": "gE6",
@@ -761,19 +761,19 @@
     },
     {
       "id": "g_za1",
-      "body": "<<FILL role=rising words=148 beats='you become the grey house go-between, carrying Vane offer of a shared regency to the other banners; to Lady Miren it sounds like the Council she has begged for; to Duke Corven it sounds like weakness he can widen; the honor rule whispers a warning you will need later, that Corven keeps whatever he is given and asks for more'>>",
+      "body": "<<FILL role=rising words=148 beats='you become the {GREY_COLOR} house go-between, carrying {GREY_LEADER} offer of a shared regency to the other banners; to {GREEN_TITLE} {GREEN_LEADER} it sounds like the Council she has begged for; to {RED_TITLE} {RED_LEADER} it sounds like weakness he can widen; the honor rule whispers a warning you will need later, that {RED_LEADER} keeps whatever he is given and asks for more'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_za1_1",
-          "label": "Carry the Steward offer between the banners.",
+          "label": "Carry the {GREY_TITLE} offer between the banners.",
           "target": "g_za2"
         }
       ]
     },
     {
       "id": "g_za2",
-      "body": "<<FILL role=rising words=146 beats='you spend a fortnight reading rooms; the green chancery hungry for any seat at the table, the red camp hungry for the whole table, the grey household weary and wanting only to keep the boy safe and the year quiet; three roads open from one offer and each ends the grey year in a different place'>>",
+      "body": "<<FILL role=rising words=146 beats='you spend a fortnight reading rooms; the {GREEN_COLOR} chancery hungry for any seat at the table, the {RED_COLOR} camp hungry for the whole table, the {GREY_COLOR} household weary and wanting only to keep the boy safe and the year quiet; three roads open from one offer and each ends the {GREY_COLOR} year in a different place'>>",
       "is_ending": false,
       "choices": [
         {
@@ -785,65 +785,65 @@
     },
     {
       "id": "g_za3",
-      "body": "<<FILL role=rising words=148 beats='you lay the choices before the Steward; ally openly with green and build a Council that binds even Corven, deal privately with the Duke house to house, or keep the grey house above every faction and hold the balance alone; Vane, tired, asks which road keeps the honor rule whole, and you are not certain any of them does'>>",
+      "body": "<<FILL role=rising words=148 beats='you lay the choices before the {GREY_TITLE}; ally openly with {GREEN_COLOR} and build a Council that binds even {RED_LEADER}, deal privately with the {RED_TITLE} house to house, or keep the {GREY_COLOR} house above every faction and hold the balance alone; {GREY_LEADER}, tired, asks which road keeps the honor rule whole, and you are not certain any of them does'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_za3_1",
-          "label": "Bring the three roads back to Vane.",
+          "label": "Bring the three roads back to {GREY_LEADER}.",
           "target": "g_z_offer"
         }
       ]
     },
     {
       "id": "g_z_offer",
-      "body": "<<FILL role=choice words=166 beats='the shared regency taking shape three ways; ally the grey house openly with Lady Miren green banner and press for a true Council of Banners that binds even Corven; or deal privately with the Duke, hand for hand, and settle the regency between the two strong houses over Miren head; or keep the Steward above every faction and let him hold the balance alone; the warning stands, Corven keeps what he is given, so weigh what you would hand him'>>",
+      "body": "<<FILL role=choice words=166 beats='the shared regency taking shape three ways; ally the {GREY_COLOR} house openly with {GREEN_TITLE} {GREEN_LEADER} {GREEN_COLOR} banner and press for a true Council of Banners that binds even {RED_LEADER}; or deal privately with the {RED_TITLE}, hand for hand, and settle the regency between the two strong houses over {GREEN_LEADER} head; or keep the {GREY_TITLE} above every faction and let him hold the balance alone; the warning stands, {RED_LEADER} keeps what he is given, so weigh what you would hand him'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_z_offer_1",
-          "label": "Ally openly with Lady Miren for a Council of Banners.",
+          "label": "Ally openly with {GREEN_TITLE} {GREEN_LEADER} for a Council of Banners.",
           "target": "gE7_t1"
         },
         {
           "id": "c_g_z_offer_2",
-          "label": "Deal privately with Duke Corven, house to house.",
+          "label": "Deal privately with {RED_TITLE} {RED_LEADER}, house to house.",
           "target": "gE8_t1"
         },
         {
           "id": "c_g_z_offer_3",
-          "label": "Keep the Steward above the factions.",
+          "label": "Keep the {GREY_TITLE} above the factions.",
           "target": "g_zb1"
         }
       ]
     },
     {
       "id": "gE7_t1",
-      "body": "<<FILL role=consequence words=150 beats='you carry the alliance back and forth until it holds; grey order and green legitimacy joined, the river guilds and the old household speaking with one voice; the two banners together outweigh the red at last'>>",
+      "body": "<<FILL role=consequence words=150 beats='you carry the alliance back and forth until it holds; {GREY_COLOR} order and {GREEN_COLOR} legitimacy joined, the river guilds and the old household speaking with one voice; the two banners together outweigh the {RED_COLOR} at last'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE7_t1_1",
-          "label": "Bind the grey and green banners together.",
+          "label": "Bind the {GREY_COLOR} and {GREEN_COLOR} banners together.",
           "target": "gE7_t2"
         }
       ]
     },
     {
       "id": "gE7_t2",
-      "body": "<<FILL role=consequence words=146 beats='for the first time the Duke meets a thing he cannot simply lean his weight against; grey and green interlocked, each covering the other blind side; the red house held not by a sword but by a knot it cannot pick'>>",
+      "body": "<<FILL role=consequence words=146 beats='for the first time the {RED_TITLE} meets a thing he cannot simply lean his weight against; {GREY_COLOR} and {GREEN_COLOR} interlocked, each covering the other blind side; the {RED_COLOR} house held not by a sword but by a knot it cannot pick'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE7_t2_1",
-          "label": "Watch Corven find a door he cannot widen.",
+          "label": "Watch {RED_LEADER} find a door he cannot widen.",
           "target": "gE7_t3"
         }
       ]
     },
     {
       "id": "gE7_t3",
-      "body": "<<FILL role=consequence words=144 beats='you sit up nights with the green scribes writing the shared regency, every power balanced against another, the boy-king made ward of all and prisoner of none; a document built to survive the men who signed it'>>",
+      "body": "<<FILL role=consequence words=144 beats='you sit up nights with the {GREEN_COLOR} scribes writing the shared regency, every power balanced against another, the boy-king made ward of all and prisoner of none; a document built to survive the men who signed it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -855,19 +855,19 @@
     },
     {
       "id": "gE7_t4",
-      "body": "<<FILL role=consequence words=142 beats='the Council of Banners convened in the Heron hall, every seat filled, the commons among the great for the first time in the realm memory; the war that hung over the fords all year folds up unfought before it starts'>>",
+      "body": "<<FILL role=consequence words=142 beats='the Council of Banners convened in the {ROYAL_SIGIL} hall, every seat filled, the commons among the great for the first time in the realm memory; the war that hung over the fords all year folds up unfought before it starts'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE7_t4_1",
-          "label": "Bring the houses to the Heron hall.",
+          "label": "Bring the houses to the {ROYAL_SIGIL} hall.",
           "target": "gE7_t5"
         }
       ]
     },
     {
       "id": "gE7_t5",
-      "body": "<<FILL role=consequence words=140 beats='Doran under the protection of a Council instead of a single grasping house; safe because no one banner can move him without the others; the honor rule kept and made into law, a steward guards and does not grasp'>>",
+      "body": "<<FILL role=consequence words=140 beats='{HEIR_NAME} under the protection of a Council instead of a single grasping house; safe because no one banner can move him without the others; the honor rule kept and made into law, a steward guards and does not grasp'>>",
       "is_ending": false,
       "choices": [
         {
@@ -879,7 +879,7 @@
     },
     {
       "id": "gE7_t6",
-      "body": "<<FILL role=consequence words=140 beats='the Steward private honor written now into the realm public rule, no house permitted to hold the boy alone; you helped turn one man restraint into a thing every banner must keep whether it wishes to or not'>>",
+      "body": "<<FILL role=consequence words=140 beats='the {GREY_TITLE} private honor written now into the realm public rule, no house permitted to hold the boy alone; you helped turn one man restraint into a thing every banner must keep whether it wishes to or not'>>",
       "is_ending": false,
       "choices": [
         {
@@ -891,7 +891,7 @@
     },
     {
       "id": "gE7_t7",
-      "body": "<<FILL role=consequence words=140 beats='Doran shown to the realm not as a prize between armies but as a ward of them all; the fear goes out of the small king shoulders by degrees through the autumn; you learn a crown guarded by many is a lighter thing to wear than one clutched by one'>>",
+      "body": "<<FILL role=consequence words=140 beats='{HEIR_NAME} shown to the realm not as a prize between armies but as a ward of them all; the fear goes out of the small king shoulders by degrees through the autumn; you learn a crown guarded by many is a lighter thing to wear than one clutched by one'>>",
       "is_ending": false,
       "choices": [
         {
@@ -903,7 +903,7 @@
     },
     {
       "id": "gE7_t8",
-      "body": "<<FILL role=consequence words=138 beats='winter again over a realm that chose a Council over a crown; the grey wolf and the green thorn flying together, the red falcon hemmed by both, the gold heron safe above them all; you learn that the strongest guard is many hands, not one fist'>>",
+      "body": "<<FILL role=consequence words=138 beats='winter again over a realm that chose a Council over a crown; the {GREY_COLOR} {GREY_SIGIL} and the {GREEN_COLOR} {GREEN_SIGIL} flying together, the {RED_COLOR} {RED_SIGIL} hemmed by both, the gold {ROYAL_SIGIL} safe above them all; you learn that the strongest guard is many hands, not one fist'>>",
       "is_ending": false,
       "choices": [
         {
@@ -915,7 +915,7 @@
     },
     {
       "id": "gE7",
-      "body": "<<FILL role=ending words=138 beats='the year grey and green built a Council no single banner could break; the boy-king warded by all houses and owned by none, Corven hemmed in by law instead of beaten by war; you carried the alliance that turned the Steward private honor into the realm public rule, and the crown is safer for it than a sword could make it'>>",
+      "body": "<<FILL role=ending words=138 beats='the year {GREY_COLOR} and {GREEN_COLOR} built a Council no single banner could break; the boy-king warded by all houses and owned by none, {RED_LEADER} hemmed in by law instead of beaten by war; you carried the alliance that turned the {GREY_TITLE} private honor into the realm public rule, and the crown is safer for it than a sword could make it'>>",
       "is_ending": true,
       "ending": {
         "id": "gE7",
@@ -926,31 +926,31 @@
     },
     {
       "id": "gE8_t1",
-      "body": "<<FILL role=consequence words=150 beats='you carry the private deal into Corven tent; the two strong houses to split the regency and leave Miren outside the door; the Duke agrees at once, too easily, and asks only that the grey house send a surety of good faith into his keeping, a hostage by a politer name'>>",
+      "body": "<<FILL role=consequence words=150 beats='you carry the private deal into {RED_LEADER} tent; the two strong houses to split the regency and leave {GREEN_LEADER} outside the door; the {RED_TITLE} agrees at once, too easily, and asks only that the {GREY_COLOR} house send a surety of good faith into his keeping, a hostage by a politer name'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE8_t1_1",
-          "label": "Shake hands with the Duke in his tent.",
+          "label": "Shake hands with the {RED_TITLE} in his tent.",
           "target": "gE8_t2"
         }
       ]
     },
     {
       "id": "gE8_t2",
-      "body": "<<FILL role=consequence words=146 beats='the ink is not dry before the Duke widens every clause; the surety becomes leverage, the shared regency becomes his in all but the writing, and the grey house finds itself the junior partner of a man who never keeps a bargain smaller than he can grow it'>>",
+      "body": "<<FILL role=consequence words=146 beats='the ink is not dry before the {RED_TITLE} widens every clause; the surety becomes leverage, the shared regency becomes his in all but the writing, and the {GREY_COLOR} house finds itself the junior partner of a man who never keeps a bargain smaller than he can grow it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE8_t2_1",
-          "label": "Learn what a gift becomes in Corven hands.",
+          "label": "Learn what a gift becomes in {RED_LEADER} hands.",
           "target": "gE8_t3"
         }
       ]
     },
     {
       "id": "gE8_t3",
-      "body": "<<FILL role=consequence words=140 beats='the warning was true and came too late; Corven keeps what he is given, and you gave him the grey house piece by piece, thinking each piece the last; by winter the Steward is a guest in his own regency and you the messenger who carried him there'>>",
+      "body": "<<FILL role=consequence words=140 beats='the warning was true and came too late; {RED_LEADER} keeps what he is given, and you gave him the {GREY_COLOR} house piece by piece, thinking each piece the last; by winter the {GREY_TITLE} is a guest in his own regency and you the messenger who carried him there'>>",
       "is_ending": false,
       "choices": [
         {
@@ -962,7 +962,7 @@
     },
     {
       "id": "gE8",
-      "body": "<<FILL role=ending words=132 beats='the year the grey house bargained itself into a cage; the private deal made Corven master of the regency and made the Steward his hostage in fact, Miren locked out and the boy-king a bargaining chip between two houses; the honor rule warned you plainly, Corven keeps what he is given, and you gave him the grey house one clause at a time'>>",
+      "body": "<<FILL role=ending words=132 beats='the year the {GREY_COLOR} house bargained itself into a cage; the private deal made {RED_LEADER} master of the regency and made the {GREY_TITLE} his hostage in fact, {GREEN_LEADER} locked out and the boy-king a bargaining chip between two houses; the honor rule warned you plainly, {RED_LEADER} keeps what he is given, and you gave him the {GREY_COLOR} house one clause at a time'>>",
       "is_ending": true,
       "ending": {
         "id": "gE8",
@@ -973,19 +973,19 @@
     },
     {
       "id": "g_zb1",
-      "body": "<<FILL role=rising words=150 beats='you help Vane refuse both the green alliance and the red deal, holding the grey house above the fray as the one banner that grasps at nothing; it is a lonely place and a proud one, and by the year end it costs; a crown held too tight cuts the hand, the old man says, half to himself, and you are not sure he still hears his own rule'>>",
+      "body": "<<FILL role=rising words=150 beats='you help {GREY_LEADER} refuse both the {GREEN_COLOR} alliance and the {RED_COLOR} deal, holding the {GREY_COLOR} house above the fray as the one banner that grasps at nothing; it is a lonely place and a proud one, and by the year end it costs; a crown held too tight cuts the hand, the old man says, half to himself, and you are not sure he still hears his own rule'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_g_zb1_1",
-          "label": "Hold the Steward clear of every faction.",
+          "label": "Hold the {GREY_TITLE} clear of every faction.",
           "target": "g_zb2"
         }
       ]
     },
     {
       "id": "g_zb2",
-      "body": "<<FILL role=rising words=146 beats='the year closes in around the Steward; the houses that were courted turn cold, the boy-king harder to protect alone, the grey house proud and isolated on its high ground; it all narrows to a single last question about how Aldric Vane will let go of the regency, or whether he will let go at all'>>",
+      "body": "<<FILL role=rising words=146 beats='the year closes in around the {GREY_TITLE}; the houses that were courted turn cold, the boy-king harder to protect alone, the {GREY_COLOR} house proud and isolated on its high ground; it all narrows to a single last question about how {GREY_LEADER_GIVEN} {GREY_LEADER} will let go of the regency, or whether he will let go at all'>>",
       "is_ending": false,
       "choices": [
         {
@@ -997,7 +997,7 @@
     },
     {
       "id": "g_z_end",
-      "body": "<<FILL role=choice words=158 beats='the last grey choice of the year; counsel the Steward to resign the regency into a Council hands while he still can, stepping down with the honor whole; or back him in clinging to the regency to the last, holding the boy and the crown alone against every other banner; the rule he taught you cuts both ways now, a steward guards and does not grasp, and a crown held too tight cuts the hand that will not open'>>",
+      "body": "<<FILL role=choice words=158 beats='the last {GREY_COLOR} choice of the year; counsel the {GREY_TITLE} to resign the regency into a Council hands while he still can, stepping down with the honor whole; or back him in clinging to the regency to the last, holding the boy and the crown alone against every other banner; the rule he taught you cuts both ways now, a steward guards and does not grasp, and a crown held too tight cuts the hand that will not open'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1014,7 +1014,7 @@
     },
     {
       "id": "gE9_t1",
-      "body": "<<FILL role=consequence words=150 beats='you help the Steward write his own stepping-down; the regency surrendered to a Council of Banners before any house can wrench it from him; Vane signs it steady-handed and looks, for the first time all year, unburdened'>>",
+      "body": "<<FILL role=consequence words=150 beats='you help the {GREY_TITLE} write his own stepping-down; the regency surrendered to a Council of Banners before any house can wrench it from him; {GREY_LEADER} signs it steady-handed and looks, for the first time all year, unburdened'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1026,7 +1026,7 @@
     },
     {
       "id": "gE9_t2",
-      "body": "<<FILL role=consequence words=146 beats='Doran handed to a Council instead of clutched by a fist; the grey house keeps the one thing it came in with, its honor, and loses only power, which the old man says was never his to keep in the first place'>>",
+      "body": "<<FILL role=consequence words=146 beats='{HEIR_NAME} handed to a Council instead of clutched by a fist; the {GREY_COLOR} house keeps the one thing it came in with, its honor, and loses only power, which the old man says was never his to keep in the first place'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1038,19 +1038,19 @@
     },
     {
       "id": "gE9_t3",
-      "body": "<<FILL role=consequence words=142 beats='the wolf banner lowered by choice, not by defeat; the old man walking out of the Heron Keep a private lord again, the crown left safer than he found it, the household quiet with a kind of relief'>>",
+      "body": "<<FILL role=consequence words=142 beats='the {GREY_SIGIL} banner lowered by choice, not by defeat; the old man walking out of the {ROYAL_SIGIL} Keep a private lord again, the crown left safer than he found it, the household quiet with a kind of relief'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE9_t3_1",
-          "label": "Walk the Steward out of the keep at dusk.",
+          "label": "Walk the {GREY_TITLE} out of the keep at dusk.",
           "target": "gE9_t4"
         }
       ]
     },
     {
       "id": "gE9_t4",
-      "body": "<<FILL role=consequence words=140 beats='you learn that the hardest guarding is knowing when to let the guarded thing go; the Steward taught you the rule with his life and kept it with his last act of office'>>",
+      "body": "<<FILL role=consequence words=140 beats='you learn that the hardest guarding is knowing when to let the guarded thing go; the {GREY_TITLE} taught you the rule with his life and kept it with his last act of office'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1062,7 +1062,7 @@
     },
     {
       "id": "gE9_t5",
-      "body": "<<FILL role=consequence words=138 beats='winter over a realm that got its Council without a war; the grey house smaller and cleaner than it began; you carry the seal into next year knowing exactly what it is worth, and what it is not worth keeping at any cost'>>",
+      "body": "<<FILL role=consequence words=138 beats='winter over a realm that got its Council without a war; the {GREY_COLOR} house smaller and cleaner than it began; you carry the seal into next year knowing exactly what it is worth, and what it is not worth keeping at any cost'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1074,7 +1074,7 @@
     },
     {
       "id": "gE9",
-      "body": "<<FILL role=ending words=134 beats='the year the Steward proved his own rule by keeping it; the regency laid down into a Council before it could be seized, the boy-king safe in shared hands, the grey house diminished in power and whole in honor; you helped an old man open his hand before the crown could cut it, and he walked out a guardian to the end'>>",
+      "body": "<<FILL role=ending words=134 beats='the year the {GREY_TITLE} proved his own rule by keeping it; the regency laid down into a Council before it could be seized, the boy-king safe in shared hands, the {GREY_COLOR} house diminished in power and whole in honor; you helped an old man open his hand before the crown could cut it, and he walked out a guardian to the end'>>",
       "is_ending": true,
       "ending": {
         "id": "gE9",
@@ -1085,7 +1085,7 @@
     },
     {
       "id": "gE10_t1",
-      "body": "<<FILL role=consequence words=150 beats='the Steward will not let go; he holds the regency and the boy alone against grey counsel and every other banner, and the houses close on him like weather; you stand at his shoulder to the last as the Council votes him down and the red and green banners take the keep between them'>>",
+      "body": "<<FILL role=consequence words=150 beats='the {GREY_TITLE} will not let go; he holds the regency and the boy alone against {GREY_COLOR} counsel and every other banner, and the houses close on him like weather; you stand at his shoulder to the last as the Council votes him down and the {RED_COLOR} and {GREEN_COLOR} banners take the keep between them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1097,19 +1097,19 @@
     },
     {
       "id": "gE10_t2",
-      "body": "<<FILL role=consequence words=146 beats='Aldric Vane broken by the year and the weight, dead of it before the spring, the household says of a stopped heart and the truer say of a hand that would not open; the regency lost, the boy passed to other keeping, the wolf banner furled; the death is recounted quietly, with the gravity a long service is owed'>>",
+      "body": "<<FILL role=consequence words=146 beats='{GREY_LEADER_GIVEN} {GREY_LEADER} broken by the year and the weight, dead of it before the spring, the household says of a stopped heart and the truer say of a hand that would not open; the regency lost, the boy passed to other keeping, the {GREY_SIGIL} banner furled; the death is recounted quietly, with the gravity a long service is owed'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gE10_t2_1",
-          "label": "Take up the seal from a fallen Steward.",
+          "label": "Take up the seal from a fallen {GREY_TITLE}.",
           "target": "gE10"
         }
       ]
     },
     {
       "id": "gE10",
-      "body": "<<FILL role=ending words=140 beats='the year the Steward could not let go and it killed him; the regency clutched to the last, the Council turned against him, the old man gone before spring with the crown still in his cold grip; you carry his seal and the lesson he taught and broke, a crown held too tight cuts the hand, and you bury a guardian who forgot to open his'>>",
+      "body": "<<FILL role=ending words=140 beats='the year the {GREY_TITLE} could not let go and it killed him; the regency clutched to the last, the Council turned against him, the old man gone before spring with the crown still in his cold grip; you carry his seal and the lesson he taught and broke, a crown held too tight cuts the hand, and you bury a guardian who forgot to open his'>>",
       "is_ending": true,
       "ending": {
         "id": "gE10",
@@ -1123,31 +1123,31 @@
     },
     {
       "id": "r_s1",
-      "body": "<<FILL role=rising words=150 beats='the Duke war-camp on the marches, red falcon banners snapping over a sea of tents; you are Halden Corven young herald, the boy who carries his words where they must not be written; the camp is all iron and appetite, and the Duke at its center is charming, generous, and never once idle'>>",
+      "body": "<<FILL role=rising words=150 beats='the {RED_TITLE} war-camp on the marches, {RED_COLOR} {RED_SIGIL} banners snapping over a sea of tents; you are {RED_LEADER_GIVEN} {RED_LEADER} young {RED_ROLE}, the boy who carries his words where they must not be written; the camp is all iron and appetite, and the {RED_TITLE} at its center is charming, generous, and never once idle'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_s1_1",
-          "label": "Ride into the red war-camp.",
+          "label": "Ride into the {RED_COLOR} war-camp.",
           "target": "r_s2"
         }
       ]
     },
     {
       "id": "r_s2",
-      "body": "<<FILL role=rising words=148 beats='Corven by the fire, naming the great houses for you like a man laying out a board; grey Vane the tired old guardian, green Miren the dreamer with her guilds, the boy-king Doran a crown on legs too short to run; the Duke says the realm needs a strong hand and lets you understand whose hand he means'>>",
+      "body": "<<FILL role=rising words=148 beats='{RED_LEADER} by the fire, naming the great houses for you like a man laying out a board; {GREY_COLOR} {GREY_LEADER} the tired old guardian, {GREEN_COLOR} {GREEN_LEADER} the dreamer with her guilds, the boy-king {HEIR_NAME} a crown on legs too short to run; the {RED_TITLE} says the realm needs a strong hand and lets you understand whose hand he means'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_s2_1",
-          "label": "Take the Duke measure by firelight.",
+          "label": "Take the {RED_TITLE} measure by firelight.",
           "target": "r_s3"
         }
       ]
     },
     {
       "id": "r_s3",
-      "body": "<<FILL role=rising words=148 beats='First Thaw; Corven rides for Caldmere at the head of the marches, banners forward, to honor a king he fought half his life; the army is too large for a funeral and everyone knows it; you carry his letters ahead, warm and dutiful on the page, and see the distance between what your master writes and what he means'>>",
+      "body": "<<FILL role=rising words=148 beats='First Thaw; {RED_LEADER} rides for {CAPITAL} at the head of the marches, banners forward, to honor a king he fought half his life; the army is too large for a funeral and everyone knows it; you carry his letters ahead, warm and dutiful on the page, and see the distance between what your master writes and what he means'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1159,19 +1159,19 @@
     },
     {
       "id": "r_s4",
-      "body": "<<FILL role=rising words=146 beats='the will read in the grey hall; it names Vane regent and binds the boy protection to all three houses; Corven signs it with a flourish and a smile, co-signing the very leash he means to slip; you watch him agree to everything he intends to break and file it with the other things you were not meant to see'>>",
+      "body": "<<FILL role=rising words=146 beats='the will read in the {GREY_COLOR} hall; it names {GREY_LEADER} regent and binds the boy protection to all three houses; {RED_LEADER} signs it with a flourish and a smile, co-signing the very leash he means to slip; you watch him agree to everything he intends to break and file it with the other things you were not meant to see'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_s4_1",
-          "label": "Watch the Duke co-sign the will.",
+          "label": "Watch the {RED_TITLE} co-sign the will.",
           "target": "r_s5"
         }
       ]
     },
     {
       "id": "r_s5",
-      "body": "<<FILL role=spine words=150 beats='a sealed letter pressed into your hand for a hard ride south to the Iron Fords, to the sellsword companies who fight for coin and no banner; you are told only to deliver it and forget it, but you saw the seal and you know the Fords, and you understand your master is buying an army under the table of a truce he just signed'>>",
+      "body": "<<FILL role=spine words=150 beats='a sealed letter pressed into your hand for a hard ride south to the {SELLSWORD_BASE}, to the sellsword companies who fight for coin and no banner; you are told only to deliver it and forget it, but you saw the seal and you know the {SELLSWORD_BASE}, and you understand your master is buying an army under the table of a truce he just signed'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1183,7 +1183,7 @@
     },
     {
       "id": "r_s6",
-      "body": "<<FILL role=spine words=150 beats='word comes of the Kingsbridge, the river-gate opened, the lower fords drowned, forty river folk and a grain convoy lost; the camp roars that Vane did it, and Corven believes it, cursing the grey house for butchers; the red vantage never learns the truth of the bridge, only the grey house wears that crime in secret; you carry a rage built on a fact you cannot check'>>",
+      "body": "<<FILL role=spine words=150 beats='word comes of the {KINGSBRIDGE}, the river-gate opened, the lower fords drowned, forty river folk and a grain convoy lost; the camp roars that {GREY_LEADER} did it, and {RED_LEADER} believes it, cursing the {GREY_COLOR} house for butchers; the {RED_COLOR} vantage never learns the truth of the bridge, only the {GREY_COLOR} house wears that crime in secret; you carry a rage built on a fact you cannot check'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1195,7 +1195,7 @@
     },
     {
       "id": "r_s7",
-      "body": "<<FILL role=spine words=146 beats='the border army halts within a day of the capital and the houses agree to a truce feast at Midsummer, the Heron Feast, where the boy-king will be shown and every banner will sit at one table and pretend; Corven grows quiet and busy in the days before, and the quiet is the kind you have learned to fear'>>",
+      "body": "<<FILL role=spine words=146 beats='the border army halts within a day of the capital and the houses agree to a truce feast at Midsummer, the {ROYAL_SIGIL} Feast, where the boy-king will be shown and every banner will sit at one table and pretend; {RED_LEADER} grows quiet and busy in the days before, and the quiet is the kind you have learned to fear'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1207,7 +1207,7 @@
     },
     {
       "id": "r_s8",
-      "body": "<<FILL role=spine words=150 beats='the second secret only the red vantage holds; you overhear Corven arranging it, his own taster to drink a doctored cup at the feast and die of it, so the Duke can cry that Vane tried to poison the prince and seize the boy as his protector; a staged murder of his own man to buy a child; you carry it out of the tent like a coal in your fist'>>",
+      "body": "<<FILL role=spine words=150 beats='the second secret only the {RED_COLOR} vantage holds; you overhear {RED_LEADER} arranging it, his own taster to drink a doctored cup at the feast and die of it, so the {RED_TITLE} can cry that {GREY_LEADER} tried to poison the prince and seize the boy as his protector; a staged murder of his own man to buy a child; you carry it out of the tent like a coal in your fist'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1223,7 +1223,7 @@
     },
     {
       "id": "r_s9",
-      "body": "<<FILL role=spine words=150 beats='the Heron Feast; the taster drinks and dies, though the staging goes wrong and the man dies harder and truer than planned; Corven rises white-faced and accuses the grey house of poisoning the prince; the hall erupts; you alone in all that room know the cup was the Duke own design, and you hold your tongue because a herald who speaks now does not leave the hall alive'>>",
+      "body": "<<FILL role=spine words=150 beats='the {ROYAL_SIGIL} Feast; the taster drinks and dies, though the staging goes wrong and the man dies harder and truer than planned; {RED_LEADER} rises white-faced and accuses the {GREY_COLOR} house of poisoning the prince; the hall erupts; you alone in all that room know the cup was the {RED_TITLE} own design, and you hold your tongue because a {RED_ROLE} who speaks now does not leave the hall alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1239,31 +1239,31 @@
     },
     {
       "id": "r_s10",
-      "body": "<<FILL role=spine words=148 beats='in the uproar Corven moves fast; he sweeps up Prince Doran under the banner of protection, claiming Vane cannot keep the child safe, and rides for the border fortress of Redwater with the boy and the gold heron in red hands; you ride in the column that carries a king away from his keepers'>>",
+      "body": "<<FILL role=spine words=148 beats='in the uproar {RED_LEADER} moves fast; he sweeps up Prince {HEIR_NAME} under the banner of protection, claiming {GREY_LEADER} cannot keep the child safe, and rides for the border fortress of {RED_FORTRESS} with the boy and the gold {ROYAL_SIGIL} in {RED_COLOR} hands; you ride in the column that carries a king away from his keepers'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_s10_1",
-          "label": "Ride guard as the Duke takes the boy.",
+          "label": "Ride guard as the {RED_TITLE} takes the boy.",
           "target": "r_s11"
         }
       ]
     },
     {
       "id": "r_s11",
-      "body": "<<FILL role=spine words=146 beats='Redwater on its crag above the marches, red falcons on every tower and the small gold heron flying below them now, a captured banner; Prince Doran lodged in the high rooms, guarded and gilded and alone; the realm splits clean, grey holding the empty capital, green holding the rivers, red holding the child'>>",
+      "body": "<<FILL role=spine words=146 beats='{RED_FORTRESS} on its crag above the marches, {RED_COLOR} falcons on every tower and the small gold {ROYAL_SIGIL} flying below them now, a captured banner; Prince {HEIR_NAME} lodged in the high rooms, guarded and gilded and alone; the realm splits clean, {GREY_COLOR} holding the empty capital, {GREEN_COLOR} holding the rivers, {RED_COLOR} holding the child'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_s11_1",
-          "label": "Come to the red fortress by the water.",
+          "label": "Come to the {RED_COLOR} fortress by the water.",
           "target": "r_s12"
         }
       ]
     },
     {
       "id": "r_s12",
-      "body": "<<FILL role=spine words=148 beats='winter closes on Redwater; Vane marches to recover the prince and Corven digs in to keep him, the boy the pivot of both; the Duke means to crown Doran under red protection or hold him as a shield, and you carry messages between men deciding a nine-year-old life like a move in a long game'>>",
+      "body": "<<FILL role=spine words=148 beats='winter closes on {RED_FORTRESS}; {GREY_LEADER} marches to recover the prince and {RED_LEADER} digs in to keep him, the boy the pivot of both; the {RED_TITLE} means to crown {HEIR_NAME} under {RED_COLOR} protection or hold him as a shield, and you carry messages between men deciding a nine-year-old life like a move in a long game'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1275,19 +1275,19 @@
     },
     {
       "id": "r_s13",
-      "body": "<<FILL role=spine words=150 beats='the eve of the siege; Vane grey host in the snow below and Redwater sealed above; Corven turns to you at last and asks plainly where your loyalty lies, herald, with the falcon or with your own conscience; the honor rule of the herald, the one thing you brought into this camp, is that a herald word is his house honor and must never carry a lie; every choice from here tests it'>>",
+      "body": "<<FILL role=spine words=150 beats='the eve of the siege; {GREY_LEADER} {GREY_COLOR} host in the snow below and {RED_FORTRESS} sealed above; {RED_LEADER} turns to you at last and asks plainly where your loyalty lies, {RED_ROLE}, with the {RED_SIGIL} or with your own conscience; the honor rule of the {RED_ROLE}, the one thing you brought into this camp, is that a {RED_ROLE} word is his house honor and must never carry a lie; every choice from here tests it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_s13_1",
-          "label": "Stand at the Duke side on the siege eve.",
+          "label": "Stand at the {RED_TITLE} side on the siege eve.",
           "target": "r_c1"
         }
       ]
     },
     {
       "id": "r_c1",
-      "body": "<<FILL role=choice words=160 beats='the first turn of the siege; Corven wants a forged proclamation that Prince Doran named him protector with the boy own seal, to make the capture look like the child wish; the honor rule is plain, a herald word is his house honor and must never carry a lie; forge the proclamation in the boy-king name, or refuse the lie and hold your word clean'>>",
+      "body": "<<FILL role=choice words=160 beats='the first turn of the siege; {RED_LEADER} wants a forged proclamation that Prince {HEIR_NAME} named him protector with the boy own seal, to make the capture look like the child wish; the honor rule is plain, a {RED_ROLE} word is his house honor and must never carry a lie; forge the proclamation in the boy-king name, or refuse the lie and hold your word clean'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1304,7 +1304,7 @@
     },
     {
       "id": "rE1_t1",
-      "body": "<<FILL role=consequence words=146 beats='you write it, the boy-king voice in your master design, the gold heron seal pressed to a lie; the proclamation goes out and the realm reads it as Doran own choosing; the herald word is spent and cannot be bought back, and you feel the honor you came in with go out of you like heat'>>",
+      "body": "<<FILL role=consequence words=146 beats='you write it, the boy-king voice in your master design, the gold {ROYAL_SIGIL} seal pressed to a lie; the proclamation goes out and the realm reads it as {HEIR_NAME} own choosing; the {RED_ROLE} word is spent and cannot be bought back, and you feel the honor you came in with go out of you like heat'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1316,7 +1316,7 @@
     },
     {
       "id": "rE1",
-      "body": "<<FILL role=ending words=130 beats='the year you signed away your only honor; the forged proclamation made the capture look like the child wish and made you the liar who wrote it; the rule you brought into the red camp is broken, a herald word is his house honor, and you carry the falcon now with nothing of your own left underneath it'>>",
+      "body": "<<FILL role=ending words=130 beats='the year you signed away your only honor; the forged proclamation made the capture look like the child wish and made you the liar who wrote it; the rule you brought into the {RED_COLOR} camp is broken, a {RED_ROLE} word is his house honor, and you carry the {RED_SIGIL} now with nothing of your own left underneath it'>>",
       "is_ending": true,
       "ending": {
         "id": "rE1",
@@ -1327,7 +1327,7 @@
     },
     {
       "id": "r_c2",
-      "body": "<<FILL role=choice words=156 beats='the second turn; the garrison mutters and you could break the whole siege with one sentence, the truth that the feast-poisoning was Corven own staging, a secret only you hold; speak it to the garrison and watch the red house turn on itself, though you will be named traitor first and fast; or keep the coal in your fist and stay useful and alive'>>",
+      "body": "<<FILL role=choice words=156 beats='the second turn; the garrison mutters and you could break the whole siege with one sentence, the truth that the feast-poisoning was {RED_LEADER} own staging, a secret only you hold; speak it to the garrison and watch the {RED_COLOR} house turn on itself, though you will be named traitor first and fast; or keep the coal in your fist and stay useful and alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1344,7 +1344,7 @@
     },
     {
       "id": "rE2_t1",
-      "body": "<<FILL role=consequence words=148 beats='you tell them, the taster, the doctored cup, the Duke own hand in the feast-murder that started this war; the yard goes silent and then loud; some believe you and more do not, and Corven men have you by the arms before the echo dies'>>",
+      "body": "<<FILL role=consequence words=148 beats='you tell them, the taster, the doctored cup, the {RED_TITLE} own hand in the feast-murder that started this war; the yard goes silent and then loud; some believe you and more do not, and {RED_LEADER} men have you by the arms before the echo dies'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1356,7 +1356,7 @@
     },
     {
       "id": "rE2_t2",
-      "body": "<<FILL role=consequence words=140 beats='branded a liar for telling the truth, cast out of the red house you exposed; the garrison half-split behind you and no thanks from any banner; you learn that a secret spoken from inside is heard as treason no matter how true, and the truth-teller pays before the truth does'>>",
+      "body": "<<FILL role=consequence words=140 beats='branded a liar for telling the truth, cast out of the {RED_COLOR} house you exposed; the garrison half-split behind you and no thanks from any banner; you learn that a secret spoken from inside is heard as treason no matter how true, and the truth-teller pays before the truth does'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1368,7 +1368,7 @@
     },
     {
       "id": "rE2",
-      "body": "<<FILL role=ending words=132 beats='the year you told the truth and it broke you first; the staged poisoning spoken aloud in the muster yard, the red house split, and you branded traitor for the one honest sentence of the year; you learn what only the red vantage could teach, that a true secret spoken from the inside is called betrayal by the very men it might have saved'>>",
+      "body": "<<FILL role=ending words=132 beats='the year you told the truth and it broke you first; the staged poisoning spoken aloud in the muster yard, the {RED_COLOR} house split, and you branded traitor for the one honest sentence of the year; you learn what only the {RED_COLOR} vantage could teach, that a true secret spoken from the inside is called betrayal by the very men it might have saved'>>",
       "is_ending": true,
       "ending": {
         "id": "rE2",
@@ -1379,12 +1379,12 @@
     },
     {
       "id": "r_c3",
-      "body": "<<FILL role=choice words=152 beats='the third turn; a rider could reach Lady Miren green chancery tonight with word of the sellsword letter you carried south, the proof that Corven bought an army under the truce; smuggle the word out to green and arm the one house that could prove it; or hold it, because a herald who leaks his own master is a herald no house will ever trust again'>>",
+      "body": "<<FILL role=choice words=152 beats='the third turn; a rider could reach {GREEN_TITLE} {GREEN_LEADER} {GREEN_COLOR} chancery tonight with word of the sellsword letter you carried south, the proof that {RED_LEADER} bought an army under the truce; smuggle the word out to {GREEN_COLOR} and arm the one house that could prove it; or hold it, because a {RED_ROLE} who leaks his own master is a {RED_ROLE} no house will ever trust again'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_c3_1",
-          "label": "Smuggle word of the sellsword letter to Lady Miren.",
+          "label": "Smuggle word of the sellsword letter to {GREEN_TITLE} {GREEN_LEADER}.",
           "target": "rE3_t1"
         },
         {
@@ -1396,7 +1396,7 @@
     },
     {
       "id": "rE3_t1",
-      "body": "<<FILL role=consequence words=146 beats='you get the word out, a whispered route to the green chancery, the sellsword companies named, the Duke under-the-table army exposed to the one house that keeps proof; you have handed green a weapon and handed yourself a truth you can never take back, that you are no longer only Corven man'>>",
+      "body": "<<FILL role=consequence words=146 beats='you get the word out, a whispered route to the {GREEN_COLOR} chancery, the sellsword companies named, the {RED_TITLE} under-the-table army exposed to the one house that keeps proof; you have handed {GREEN_COLOR} a weapon and handed yourself a truth you can never take back, that you are no longer only {RED_LEADER} man'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1408,7 +1408,7 @@
     },
     {
       "id": "rE3",
-      "body": "<<FILL role=ending words=130 beats='the year the red vantage armed the green; the sellsword secret carried out of Redwater to the one house that could prove it, the Duke bought army dragged toward the light; you kept no banner trust and served a truth larger than any of them, and you learned that the only loyalty left to you was to the fact itself'>>",
+      "body": "<<FILL role=ending words=130 beats='the year the {RED_COLOR} vantage armed the {GREEN_COLOR}; the sellsword secret carried out of {RED_FORTRESS} to the one house that could prove it, the {RED_TITLE} bought army dragged toward the light; you kept no banner trust and served a truth larger than any of them, and you learned that the only loyalty left to you was to the fact itself'>>",
       "is_ending": true,
       "ending": {
         "id": "rE3",
@@ -1419,7 +1419,7 @@
     },
     {
       "id": "r_c4",
-      "body": "<<FILL role=choice words=150 beats='the fourth turn; Vane herald comes under a white flag to parley, and Corven hands you his ultimatum to deliver, harsh enough to make the parley fail on purpose; carry the ultimatum exactly as the Duke wrote it and burn the truce, or soften it in the delivery and leave a door open, though a herald who edits his master words has broken his office'>>",
+      "body": "<<FILL role=choice words=150 beats='the fourth turn; {GREY_LEADER} {RED_ROLE} comes under a white flag to parley, and {RED_LEADER} hands you his ultimatum to deliver, harsh enough to make the parley fail on purpose; carry the ultimatum exactly as the {RED_TITLE} wrote it and burn the truce, or soften it in the delivery and leave a door open, though a {RED_ROLE} who edits his master words has broken his office'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1436,7 +1436,7 @@
     },
     {
       "id": "rE4_t1",
-      "body": "<<FILL role=consequence words=146 beats='you deliver it whole, every barbed clause, and watch the grey herald face close and the white flag come down; the parley dies as it was built to die and the siege hardens to the death; you kept your office and carried your master true meaning, and the meaning was war'>>",
+      "body": "<<FILL role=consequence words=146 beats='you deliver it whole, every barbed clause, and watch the {GREY_COLOR} {RED_ROLE} face close and the white flag come down; the parley dies as it was built to die and the siege hardens to the death; you kept your office and carried your master true meaning, and the meaning was war'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1448,7 +1448,7 @@
     },
     {
       "id": "rE4",
-      "body": "<<FILL role=ending words=128 beats='the year you carried a war in your mouth; the ultimatum delivered whole, the truce burned to the ground exactly as intended, the siege set to grind to its worst; you kept the herald rule to carry your master words unaltered and learned it can make you the faithful instrument of a thing you hate'>>",
+      "body": "<<FILL role=ending words=128 beats='the year you carried a war in your mouth; the ultimatum delivered whole, the truce burned to the ground exactly as intended, the siege set to grind to its worst; you kept the {RED_ROLE} rule to carry your master words unaltered and learned it can make you the faithful instrument of a thing you hate'>>",
       "is_ending": true,
       "ending": {
         "id": "rE4",
@@ -1459,7 +1459,7 @@
     },
     {
       "id": "r_c5",
-      "body": "<<FILL role=choice words=156 beats='the fifth turn, and the cruelest; Corven orders the boy-king shown on the wall in sight of Vane host, a nine-year-old made a shield to freeze the grey advance; the rule beneath every rule, a shield of children is no shield at all; obey and set the child on the battlements, or refuse and hide the boy where no order can reach him'>>",
+      "body": "<<FILL role=choice words=156 beats='the fifth turn, and the cruelest; {RED_LEADER} orders the boy-king shown on the wall in sight of {GREY_LEADER} host, a nine-year-old made a shield to freeze the {GREY_COLOR} advance; the rule beneath every rule, a shield of children is no shield at all; obey and set the child on the battlements, or refuse and hide the boy where no order can reach him'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1480,7 +1480,7 @@
     },
     {
       "id": "rE5_t1",
-      "body": "<<FILL role=consequence words=148 beats='you do it, the small king on the cold battlement in his gold cloak, a target dressed as a threat, and the grey host below goes still with horror; the advance freezes and Corven smiles and you understand you have made yourself the jailer of a child'>>",
+      "body": "<<FILL role=consequence words=148 beats='you do it, the small king on the cold battlement in his gold cloak, a target dressed as a threat, and the {GREY_COLOR} host below goes still with horror; the advance freezes and {RED_LEADER} smiles and you understand you have made yourself the jailer of a child'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1492,7 +1492,7 @@
     },
     {
       "id": "rE5_t2",
-      "body": "<<FILL role=consequence words=140 beats='the boy holds your hand and does not know why; when the reckoning comes, grey and green alike name the herald who set the child on the wall, and there is no honor rule left to hide behind; you obeyed, and obedience made you the thing the rule warned against'>>",
+      "body": "<<FILL role=consequence words=140 beats='the boy holds your hand and does not know why; when the reckoning comes, {GREY_COLOR} and {GREEN_COLOR} alike name the {RED_ROLE} who set the child on the wall, and there is no honor rule left to hide behind; you obeyed, and obedience made you the thing the rule warned against'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1519,12 +1519,12 @@
     },
     {
       "id": "r_c6",
-      "body": "<<FILL role=choice words=150 beats='the sixth turn; a grey captain offers you gold to open a postern gate by night and let Vane men into Redwater, a betrayal of the betrayers that would end the siege in blood in the dark; open the postern and sell the fortress from within, or keep faith with the walls you stand on even now, when the men behind them deserve so little'>>",
+      "body": "<<FILL role=choice words=150 beats='the sixth turn; a {GREY_COLOR} captain offers you gold to open a postern gate by night and let {GREY_LEADER} men into {RED_FORTRESS}, a betrayal of the betrayers that would end the siege in blood in the dark; open the postern and sell the fortress from within, or keep faith with the walls you stand on even now, when the men behind them deserve so little'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_c6_1",
-          "label": "Open the postern gate to Vane men by night.",
+          "label": "Open the postern gate to {GREY_LEADER} men by night.",
           "target": "rE6_t1"
         },
         {
@@ -1539,7 +1539,7 @@
     },
     {
       "id": "rE6_t1",
-      "body": "<<FILL role=consequence words=148 beats='you take the gold and turn the key; grey men pour through the postern in the black hour and the fortress falls from the inside in a confusion of blades; you have ended one betrayal with another and no house will call you anything but what you are now, a man who opens gates for coin, whichever side he wears'>>",
+      "body": "<<FILL role=consequence words=148 beats='you take the gold and turn the key; {GREY_COLOR} men pour through the postern in the black hour and the fortress falls from the inside in a confusion of blades; you have ended one betrayal with another and no house will call you anything but what you are now, a man who opens gates for coin, whichever side he wears'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1551,7 +1551,7 @@
     },
     {
       "id": "rE6",
-      "body": "<<FILL role=ending words=128 beats='the year you answered a betrayal with a betrayal; the postern sold, Redwater taken from within in the dark, the siege ended in blood you let inside; you traded one broken faith for another and came out the year with gold and no name worth keeping, a gate that opens for whoever pays the most'>>",
+      "body": "<<FILL role=ending words=128 beats='the year you answered a betrayal with a betrayal; the postern sold, {RED_FORTRESS} taken from within in the dark, the siege ended in blood you let inside; you traded one broken faith for another and came out the year with gold and no name worth keeping, a gate that opens for whoever pays the most'>>",
       "is_ending": true,
       "ending": {
         "id": "rE6",
@@ -1562,7 +1562,7 @@
     },
     {
       "id": "r_c7",
-      "body": "<<FILL role=choice words=152 beats='the seventh turn; a chance opens to broker a private surrender of Prince Doran into the keeping of a neutral Council, ending the siege without a storming and taking the boy out of every grasping hand; broker the quiet surrender and close the year with the child safe, or press on and keep the game running for a bigger prize'>>",
+      "body": "<<FILL role=choice words=152 beats='the seventh turn; a chance opens to broker a private surrender of Prince {HEIR_NAME} into the keeping of a neutral Council, ending the siege without a storming and taking the boy out of every grasping hand; broker the quiet surrender and close the year with the child safe, or press on and keep the game running for a bigger prize'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1579,7 +1579,7 @@
     },
     {
       "id": "rE7_t1",
-      "body": "<<FILL role=consequence words=148 beats='you spend three nights carrying terms between Corven and a neutral Council forming below, until the shape of it holds; the boy surrendered not to grey or red but to a shared keeping, the siege lifted, the fortress spared a storming'>>",
+      "body": "<<FILL role=consequence words=148 beats='you spend three nights carrying terms between {RED_LEADER} and a neutral Council forming below, until the shape of it holds; the boy surrendered not to {GREY_COLOR} or {RED_COLOR} but to a shared keeping, the siege lifted, the fortress spared a storming'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1591,7 +1591,7 @@
     },
     {
       "id": "rE7_t2",
-      "body": "<<FILL role=consequence words=140 beats='the terms signed, the grey host withdrawing, the red falcons lowered by agreement instead of defeat; Doran taken from Redwater to a Council care; the year ends not with a winner but with a boy alive and a war unfought'>>",
+      "body": "<<FILL role=consequence words=140 beats='the terms signed, the {GREY_COLOR} host withdrawing, the {RED_COLOR} falcons lowered by agreement instead of defeat; {HEIR_NAME} taken from {RED_FORTRESS} to a Council care; the year ends not with a winner but with a boy alive and a war unfought'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1603,7 +1603,7 @@
     },
     {
       "id": "rE7",
-      "body": "<<FILL role=ending words=132 beats='the year the herald ended a siege with words instead of a wall; Prince Doran surrendered into a neutral Council keeping, the fortress spared, no banner crowned and none defeated; you used everything the red vantage taught you to broker a quiet close, and the child walked out of the game alive, which was the only prize worth taking'>>",
+      "body": "<<FILL role=ending words=132 beats='the year the {RED_ROLE} ended a siege with words instead of a wall; Prince {HEIR_NAME} surrendered into a neutral Council keeping, the fortress spared, no banner crowned and none defeated; you used everything the {RED_COLOR} vantage taught you to broker a quiet close, and the child walked out of the game alive, which was the only prize worth taking'>>",
       "is_ending": true,
       "ending": {
         "id": "rE7",
@@ -1614,12 +1614,12 @@
     },
     {
       "id": "r_c8",
-      "body": "<<FILL role=choice words=152 beats='the eighth turn; you could confront Corven himself with what you alone know, the staged poisoning, the sellswords, the whole rotten frame of the year, and force the Duke to see his own reflection; confront him with the truth of his staging and see what a shamed man does, or swallow it one more time and keep your place'>>",
+      "body": "<<FILL role=choice words=152 beats='the eighth turn; you could confront {RED_LEADER} himself with what you alone know, the staged poisoning, the sellswords, the whole rotten frame of the year, and force the {RED_TITLE} to see his own reflection; confront him with the truth of his staging and see what a shamed man does, or swallow it one more time and keep your place'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_c8_1",
-          "label": "Confront Corven with the truth of his staging.",
+          "label": "Confront {RED_LEADER} with the truth of his staging.",
           "target": "rE8_t1"
         },
         {
@@ -1631,35 +1631,35 @@
     },
     {
       "id": "rE8_t1",
-      "body": "<<FILL role=consequence words=150 beats='you say it all in the high room, the taster, the doctored cup, the letter to the Iron Fords, the child on the wall, and for once Corven has no charm to answer with; the Duke sits a long time with his own reflection, and something in the year bends; he relents part way, pulls the boy off the wall, lets the parley live, not from mercy but because a man seen clearly cannot look away as easily'>>",
+      "body": "<<FILL role=consequence words=150 beats='you say it all in the high room, the taster, the doctored cup, the letter to the {SELLSWORD_BASE}, the child on the wall, and for once {RED_LEADER} has no charm to answer with; the {RED_TITLE} sits a long time with his own reflection, and something in the year bends; he relents part way, pulls the boy off the wall, lets the parley live, not from mercy but because a man seen clearly cannot look away as easily'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rE8_t1_1",
-          "label": "Name the Duke crimes to his own face.",
+          "label": "Name the {RED_TITLE} crimes to his own face.",
           "target": "rE8"
         }
       ]
     },
     {
       "id": "rE8",
-      "body": "<<FILL role=ending words=134 beats='the year the herald held a mirror to a duke; every private crime of the red vantage named to Corven own face, the staging and the sellswords and the shield of children, and the Duke bent a little under being seen; you changed nothing you could prove and something you could not, and learned that a witness is its own kind of power'>>",
+      "body": "<<FILL role=ending words=134 beats='the year the {RED_ROLE} held a mirror to a duke; every private crime of the {RED_COLOR} vantage named to {RED_LEADER} own face, the staging and the sellswords and the shield of children, and the {RED_TITLE} bent a little under being seen; you changed nothing you could prove and something you could not, and learned that a witness is its own kind of power'>>",
       "is_ending": true,
       "ending": {
         "id": "rE8",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Mirror Held to the Duke"
+        "title": "The Mirror Held to the {RED_TITLE}"
       }
     },
     {
       "id": "r_c9",
-      "body": "<<FILL role=choice words=150 beats='the ninth turn; Corven means to crown Doran a puppet king under red protection, a small hollow crown with the Duke hand inside it, and asks you to stage the crowning; help crown the puppet and give the year a king who is a shadow, or move to stop the false crowning before it sets'>>",
+      "body": "<<FILL role=choice words=150 beats='the ninth turn; {RED_LEADER} means to crown {HEIR_NAME} a puppet king under {RED_COLOR} protection, a small hollow crown with the {RED_TITLE} hand inside it, and asks you to stage the crowning; help crown the puppet and give the year a king who is a shadow, or move to stop the false crowning before it sets'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_c9_1",
-          "label": "Help crown Doran a puppet under red protection.",
+          "label": "Help crown {HEIR_NAME} a puppet under {RED_COLOR} protection.",
           "target": "rE9_t1"
         },
         {
@@ -1671,7 +1671,7 @@
     },
     {
       "id": "rE9_t1",
-      "body": "<<FILL role=consequence words=148 beats='you help stage it, the boy-king crowned in Redwater with red falcons at every pillar, a real crown on a child who will rule nothing while Corven rules through him; the realm has its king again and he is a shadow of one, and you the herald who called the ceremony true'>>",
+      "body": "<<FILL role=consequence words=148 beats='you help stage it, the boy-king crowned in {RED_FORTRESS} with {RED_COLOR} falcons at every pillar, a real crown on a child who will rule nothing while {RED_LEADER} rules through him; the realm has its king again and he is a shadow of one, and you the {RED_ROLE} who called the ceremony true'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1683,23 +1683,23 @@
     },
     {
       "id": "rE9",
-      "body": "<<FILL role=ending words=132 beats='the year the realm got back a king who was a shadow; Doran crowned in Redwater under the red falcon, the throne filled and empty at once, Corven hand inside the small gold crown; you closed the year with a coronation that settled everything and healed nothing, and you know exactly whose reign you helped begin'>>",
+      "body": "<<FILL role=ending words=132 beats='the year the realm got back a king who was a shadow; {HEIR_NAME} crowned in {RED_FORTRESS} under the {RED_COLOR} {RED_SIGIL}, the throne filled and empty at once, {RED_LEADER} hand inside the small gold crown; you closed the year with a coronation that settled everything and healed nothing, and you know exactly whose reign you helped begin'>>",
       "is_ending": true,
       "ending": {
         "id": "rE9",
         "valence": "neutral",
         "kind": "completion",
-        "title": "The Hollow Crown of Redwater"
+        "title": "The Hollow Crown of {RED_FORTRESS}"
       }
     },
     {
       "id": "r_c10",
-      "body": "<<FILL role=choice words=152 beats='the tenth turn, deep in the year and the walls; a narrow window opens to spirit Prince Doran out of Redwater to true hiding, out of red hands and grey reach alike, a child hidden until he is old enough to be his own king; take the risk and steal the boy away to safety, or stay the course and keep him a piece on the board'>>",
+      "body": "<<FILL role=choice words=152 beats='the tenth turn, deep in the year and the walls; a narrow window opens to spirit Prince {HEIR_NAME} out of {RED_FORTRESS} to true hiding, out of {RED_COLOR} hands and {GREY_COLOR} reach alike, a child hidden until he is old enough to be his own king; take the risk and steal the boy away to safety, or stay the course and keep him a piece on the board'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_c10_1",
-          "label": "Spirit Doran out of Redwater to true hiding.",
+          "label": "Spirit {HEIR_NAME} out of {RED_FORTRESS} to true hiding.",
           "target": "rE10_t1"
         },
         {
@@ -1711,7 +1711,7 @@
     },
     {
       "id": "rE10_t1",
-      "body": "<<FILL role=consequence words=150 beats='you go in the small hours, the boy in a servant cloak, down the water-stair and out past the falcons who never guard the herald; you carry Doran into the marshes and the hidden keeps beyond every banner map, a child taken out of the game entirely to be kept until he is grown'>>",
+      "body": "<<FILL role=consequence words=150 beats='you go in the small hours, the boy in a servant cloak, down the water-stair and out past the falcons who never guard the {RED_ROLE}; you carry {HEIR_NAME} into the marshes and the hidden keeps beyond every banner map, a child taken out of the game entirely to be kept until he is grown'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1723,7 +1723,7 @@
     },
     {
       "id": "rE10_t2",
-      "body": "<<FILL role=consequence words=140 beats='the boy delivered to guardians who owe no house and want no throne; the war at Redwater loses its prize and its point; the herald who stole a king walks out of the story into a long quiet, his word spent to save a child and never for a lie'>>",
+      "body": "<<FILL role=consequence words=140 beats='the boy delivered to guardians who owe no house and want no throne; the war at {RED_FORTRESS} loses its prize and its point; the {RED_ROLE} who stole a king walks out of the story into a long quiet, his word spent to save a child and never for a lie'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1735,7 +1735,7 @@
     },
     {
       "id": "rE10",
-      "body": "<<FILL role=ending words=138 beats='the year the herald stole a king to save him; Doran carried out of Redwater and hidden past every banner reach, the war robbed of its prize, the child kept safe to grow into his own crown; you spent everything the red vantage gave you on the one honest act it made possible, and your word came out of the year clean'>>",
+      "body": "<<FILL role=ending words=138 beats='the year the {RED_ROLE} stole a king to save him; {HEIR_NAME} carried out of {RED_FORTRESS} and hidden past every banner reach, the war robbed of its prize, the child kept safe to grow into his own crown; you spent everything the {RED_COLOR} vantage gave you on the one honest act it made possible, and your word came out of the year clean'>>",
       "is_ending": true,
       "ending": {
         "id": "rE10",
@@ -1746,12 +1746,12 @@
     },
     {
       "id": "r_c11",
-      "body": "<<FILL role=choice words=152 beats='the eleventh turn; you could turn the Redwater garrison itself, the captains sick of the year, and force Corven at his own sword-point to accept a Council of Banners; turn the garrison and end the Duke grip from inside, or hold and let the siege decide it by blood outside the walls'>>",
+      "body": "<<FILL role=choice words=152 beats='the eleventh turn; you could turn the {RED_FORTRESS} garrison itself, the captains sick of the year, and force {RED_LEADER} at his own sword-point to accept a Council of Banners; turn the garrison and end the {RED_TITLE} grip from inside, or hold and let the siege decide it by blood outside the walls'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_c11_1",
-          "label": "Turn the garrison to force Corven to a Council.",
+          "label": "Turn the garrison to force {RED_LEADER} to a Council.",
           "target": "rE11_t1"
         },
         {
@@ -1763,7 +1763,7 @@
     },
     {
       "id": "rE11_t1",
-      "body": "<<FILL role=consequence words=150 beats='you spend a week turning captains one by one, the man who lost a brother at the feast, the woman who will not guard a child on a wall, until the garrison stands with you; Corven wakes to his own house arrayed against him and no army left to give an order to; the Duke accepts a Council of Banners at the point of his own men swords'>>",
+      "body": "<<FILL role=consequence words=150 beats='you spend a week turning captains one by one, the man who lost a brother at the feast, the woman who will not guard a child on a wall, until the garrison stands with you; {RED_LEADER} wakes to his own house arrayed against him and no army left to give an order to; the {RED_TITLE} accepts a Council of Banners at the point of his own men swords'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1775,7 +1775,7 @@
     },
     {
       "id": "rE11",
-      "body": "<<FILL role=ending words=136 beats='the year the herald turned a fortress against its own duke; the Redwater garrison brought over one grief at a time until Corven had no one left to command, forced to a Council of Banners by his own men; you ended the Duke grip with conscience instead of blood, and the boy-king passed to safe and shared keeping'>>",
+      "body": "<<FILL role=ending words=136 beats='the year the {RED_ROLE} turned a fortress against its own duke; the {RED_FORTRESS} garrison brought over one grief at a time until {RED_LEADER} had no one left to command, forced to a Council of Banners by his own men; you ended the {RED_TITLE} grip with conscience instead of blood, and the boy-king passed to safe and shared keeping'>>",
       "is_ending": true,
       "ending": {
         "id": "rE11",
@@ -1786,24 +1786,24 @@
     },
     {
       "id": "r_c12",
-      "body": "<<FILL role=choice words=156 beats='the last turn of the red year; the siege breaks one way or another and Corven asks which banner you raise over Redwater when the smoke clears; raise the gold heron for the child and set the crown back where it belongs, free; or raise the red falcon, let the Duke keep what he took, and live the rest of your life inside that choice'>>",
+      "body": "<<FILL role=choice words=156 beats='the last turn of the {RED_COLOR} year; the siege breaks one way or another and {RED_LEADER} asks which banner you raise over {RED_FORTRESS} when the smoke clears; raise the gold {ROYAL_SIGIL} for the child and set the crown back where it belongs, free; or raise the {RED_COLOR} {RED_SIGIL}, let the {RED_TITLE} keep what he took, and live the rest of your life inside that choice'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_c12_1",
-          "label": "Raise the gold heron over Redwater, for the child.",
+          "label": "Raise the gold {ROYAL_SIGIL} over {RED_FORTRESS}, for the child.",
           "target": "rE12_t1"
         },
         {
           "id": "c_r_c12_2",
-          "label": "Raise the red falcon, and live with it.",
+          "label": "Raise the {RED_COLOR} {RED_SIGIL}, and live with it.",
           "target": "rE13_t1"
         }
       ]
     },
     {
       "id": "rE12_t1",
-      "body": "<<FILL role=consequence words=150 beats='when it ends you climb the highest tower and haul down the red falcon and raise the small gold heron over Redwater, free and rightful; the realm sees whose banner won the year, not the strongest house but the true crown; Doran passed at last into keeping that guards and does not grasp'>>",
+      "body": "<<FILL role=consequence words=150 beats='when it ends you climb the highest tower and haul down the {RED_COLOR} {RED_SIGIL} and raise the small gold {ROYAL_SIGIL} over {RED_FORTRESS}, free and rightful; the realm sees whose banner won the year, not the strongest house but the true crown; {HEIR_NAME} passed at last into keeping that guards and does not grasp'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1815,7 +1815,7 @@
     },
     {
       "id": "rE12_t2",
-      "body": "<<FILL role=consequence words=140 beats='the gold heron over the marches at winter end, the boy-king safe and free, the red ambition folded, the honor rule kept whole; your word carried no lie out of the year and your hand raised the one banner worth raising'>>",
+      "body": "<<FILL role=consequence words=140 beats='the gold {ROYAL_SIGIL} over the marches at winter end, the boy-king safe and free, the {RED_COLOR} ambition folded, the honor rule kept whole; your word carried no lie out of the year and your hand raised the one banner worth raising'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1827,30 +1827,30 @@
     },
     {
       "id": "rE12",
-      "body": "<<FILL role=ending words=138 beats='the year the herald raised the true banner; the gold heron flown free over Redwater, the boy-king restored and safe, Corven ambition undone from the inside by the one man who knew all of it; you carried every red secret through the year and spent it to set a right crown back where it belonged, your word clean and your banner true'>>",
+      "body": "<<FILL role=ending words=138 beats='the year the {RED_ROLE} raised the true banner; the gold {ROYAL_SIGIL} flown free over {RED_FORTRESS}, the boy-king restored and safe, {RED_LEADER} ambition undone from the inside by the one man who knew all of it; you carried every {RED_COLOR} secret through the year and spent it to set a right crown back where it belonged, your word clean and your banner true'>>",
       "is_ending": true,
       "ending": {
         "id": "rE12",
         "valence": "positive",
         "kind": "success",
-        "title": "The Gold Heron Over Redwater"
+        "title": "The Gold {ROYAL_SIGIL} Over {RED_FORTRESS}"
       }
     },
     {
       "id": "rE13_t1",
-      "body": "<<FILL role=consequence words=148 beats='you run the red falcon up over Redwater and let the Duke keep the boy and the year; Corven wins, the crown becomes his shadow to move, and you stand in the victory knowing exactly what it is built on, the taster, the letter, the child on the wall, all of it yours to carry'>>",
+      "body": "<<FILL role=consequence words=148 beats='you run the {RED_COLOR} {RED_SIGIL} up over {RED_FORTRESS} and let the {RED_TITLE} keep the boy and the year; {RED_LEADER} wins, the crown becomes his shadow to move, and you stand in the victory knowing exactly what it is built on, the taster, the letter, the child on the wall, all of it yours to carry'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rE13_t1_1",
-          "label": "Raise the falcon and count the cost.",
+          "label": "Raise the {RED_SIGIL} and count the cost.",
           "target": "rE13"
         }
       ]
     },
     {
       "id": "rE13",
-      "body": "<<FILL role=ending words=134 beats='the year the herald raised the banner of the lie; the red falcon flown over Redwater, Corven master of a puppet crown, the whole rotten year made permanent by the one man who could have unmade it; you kept your place and your reward and lost your word, and you close the year won and hollow, carrying every secret you refused to spend'>>",
+      "body": "<<FILL role=ending words=134 beats='the year the {RED_ROLE} raised the banner of the lie; the {RED_COLOR} {RED_SIGIL} flown over {RED_FORTRESS}, {RED_LEADER} master of a puppet crown, the whole rotten year made permanent by the one man who could have unmade it; you kept your place and your reward and lost your word, and you close the year won and hollow, carrying every secret you refused to spend'>>",
       "is_ending": true,
       "ending": {
         "id": "rE13",
@@ -1861,31 +1861,31 @@
     },
     {
       "id": "gr_r1",
-      "body": "<<FILL role=rising words=148 beats='Lady Serai Miren chancery in the river-city of Wend, ink and river-light and the smell of wet rope; you are her youngest scribe, quick with a pen and quicker with a memory; the green thorn banner over the guild-halls, the commons and the river folk who feed the whole realm and are counted last in every hall'>>",
+      "body": "<<FILL role=rising words=148 beats='{GREEN_TITLE} {GREEN_LEADER_GIVEN} {GREEN_LEADER} chancery in the river-city of {GREEN_CITY}, ink and river-light and the smell of wet rope; you are her youngest {GREEN_ROLE}, quick with a pen and quicker with a memory; the {GREEN_COLOR} {GREEN_SIGIL} banner over the guild-halls, the commons and the river folk who feed the whole realm and are counted last in every hall'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_r1_1",
-          "label": "Enter the green chancery.",
+          "label": "Enter the {GREEN_COLOR} chancery.",
           "target": "gr_r2"
         }
       ]
     },
     {
       "id": "gr_r2",
-      "body": "<<FILL role=rising words=148 beats='Lady Miren by lamplight, plain-spoken and patient, teaching you the cause; not a crown for any house but a Council where the river guilds sit with the great banners; the boy-king Doran to be warded by all, owned by none; the honor rule of the chancery, that the green house wins with proof and not with the sword, because the commons cannot afford a war and will pay for it first'>>",
+      "body": "<<FILL role=rising words=148 beats='{GREEN_TITLE} {GREEN_LEADER} by lamplight, plain-spoken and patient, teaching you the cause; not a crown for any house but a Council where the river guilds sit with the great banners; the boy-king {HEIR_NAME} to be warded by all, owned by none; the honor rule of the chancery, that the {GREEN_COLOR} house wins with proof and not with the sword, because the commons cannot afford a war and will pay for it first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_r2_1",
-          "label": "Learn the shape of the green cause.",
+          "label": "Learn the shape of the {GREEN_COLOR} cause.",
           "target": "gr_r3"
         }
       ]
     },
     {
       "id": "gr_r3",
-      "body": "<<FILL role=rising words=146 beats='your first weeks in green ink; petitions, grievances, the long ledger of promises the great houses made the commons and never kept; you learn the river country by its complaints and its patience, and you begin to understand why Lady Miren trusts proof more than any lord word'>>",
+      "body": "<<FILL role=rising words=146 beats='your first weeks in {GREEN_COLOR} ink; petitions, grievances, the long ledger of promises the great houses made the commons and never kept; you learn the river country by its complaints and its patience, and you begin to understand why {GREEN_TITLE} {GREEN_LEADER} trusts proof more than any lord word'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1897,19 +1897,19 @@
     },
     {
       "id": "gr_r4",
-      "body": "<<FILL role=rising words=144 beats='Lady Miren takes you down to the wharves where the grain barges load, the guild masters and the ferry families who are the green cause made flesh; she names them for you one by one, and you understand the seat she wants at the Council is not for herself but for every hand on that quay; the succession year has not touched them yet, and it will'>>",
+      "body": "<<FILL role=rising words=144 beats='{GREEN_TITLE} {GREEN_LEADER} takes you down to the wharves where the grain barges load, the guild masters and the ferry families who are the {GREEN_COLOR} cause made flesh; she names them for you one by one, and you understand the seat she wants at the Council is not for herself but for every hand on that quay; the succession year has not touched them yet, and it will'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_r4_1",
-          "label": "Walk the wharves of Wend before the year turns.",
+          "label": "Walk the wharves of {GREEN_CITY} before the year turns.",
           "target": "gr_petition"
         }
       ]
     },
     {
       "id": "gr_petition",
-      "body": "<<FILL role=choice words=158 beats='the first draft of the year; Lady Miren means to petition the Council for a share of the regency, and how you help her word it sets the green tone; draft it moderate, a careful request the great houses can grant without losing face; or draft it bold, a demand that names the commons owed and dares the banners to refuse; the chancery rule stands, green wins with proof and patience, so weigh how loud the first word should be'>>",
+      "body": "<<FILL role=choice words=158 beats='the first draft of the year; {GREEN_TITLE} {GREEN_LEADER} means to petition the Council for a share of the regency, and how you help her word it sets the {GREEN_COLOR} tone; draft it moderate, a careful request the great houses can grant without losing face; or draft it bold, a demand that names the commons owed and dares the banners to refuse; the chancery rule stands, {GREEN_COLOR} wins with proof and patience, so weigh how loud the first word should be'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1926,7 +1926,7 @@
     },
     {
       "id": "gr_m1",
-      "body": "<<FILL role=rising words=146 beats='you draft it moderate, every clause a door left open, the demand dressed as a request; Lady Miren reads it and nods, this is how the weak speak to the strong and still keep their feet; the petition goes north to the Council and the river-city holds its breath'>>",
+      "body": "<<FILL role=rising words=146 beats='you draft it moderate, every clause a door left open, the demand dressed as a request; {GREEN_TITLE} {GREEN_LEADER} reads it and nods, this is how the weak speak to the strong and still keep their feet; the petition goes north to the Council and the river-city holds its breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1938,7 +1938,7 @@
     },
     {
       "id": "gr_m2",
-      "body": "<<FILL role=rising words=146 beats='the Kingsbridge, the river-gate opened in the night, the lower fords drowned; a green grain convoy and forty river folk of your own guilds taken by the flood; the city reels; every banner blames another and the truth is somewhere in the current; the green vantage alone will be able to trace where the gate-order truly came from'>>",
+      "body": "<<FILL role=rising words=146 beats='the {KINGSBRIDGE}, the river-gate opened in the night, the lower fords drowned; a {GREEN_COLOR} grain convoy and forty river folk of your own guilds taken by the flood; the city reels; every banner blames another and the truth is somewhere in the current; the {GREEN_COLOR} vantage alone will be able to trace where the gate-order truly came from'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1954,7 +1954,7 @@
     },
     {
       "id": "gr_bridge",
-      "body": "<<FILL role=choice words=162 beats='the drowned fords and the green house in mourning; you can follow the flood back to its source, quiet inquiries among the lock-keepers and the surviving ferry folk who saw who worked the gate; or you can set inquiry aside and pour everything into holding the river-towns together through the grief and the hunger the flood has brought; the green vantage is the only one that can ever learn the truth of the bridge, so choose what the truth is worth right now'>>",
+      "body": "<<FILL role=choice words=162 beats='the drowned fords and the {GREEN_COLOR} house in mourning; you can follow the flood back to its source, quiet inquiries among the lock-keepers and the surviving ferry folk who saw who worked the gate; or you can set inquiry aside and pour everything into holding the river-towns together through the grief and the hunger the flood has brought; the {GREEN_COLOR} vantage is the only one that can ever learn the truth of the bridge, so choose what the truth is worth right now'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1974,7 +1974,7 @@
     },
     {
       "id": "gr_p1",
-      "body": "<<FILL role=rising words=148 beats='you work it like a ledger, the lock-keepers, the timing of the gate, the survivors who saw grey uniforms on the sluice; the trail runs to Captain Roderic Sarn and past him toward the grey Steward own order, the truth the red house will never see and the grey house will never admit, that Vane spent the fords to deny Corven a crossing'>>",
+      "body": "<<FILL role=rising words=148 beats='you work it like a ledger, the lock-keepers, the timing of the gate, the survivors who saw {GREY_COLOR} uniforms on the sluice; the trail runs to Captain Roderic {GUARD_CAPTAIN} and past him toward the {GREY_COLOR} {GREY_TITLE} own order, the truth the {RED_COLOR} house will never see and the {GREY_COLOR} house will never admit, that {GREY_LEADER} spent the fords to deny {RED_LEADER} a crossing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1986,7 +1986,7 @@
     },
     {
       "id": "gr_p2",
-      "body": "<<FILL role=rising words=146 beats='the proof assembles, thin but real, the grey house hand on the gate that drowned your own people; the green vantage alone holds it; what you do with it can start a war or force a peace, and Lady Miren will not decide it without you, because you gathered it and you know how far it truly reaches'>>",
+      "body": "<<FILL role=rising words=146 beats='the proof assembles, thin but real, the {GREY_COLOR} house hand on the gate that drowned your own people; the {GREEN_COLOR} vantage alone holds it; what you do with it can start a war or force a peace, and {GREEN_TITLE} {GREEN_LEADER} will not decide it without you, because you gathered it and you know how far it truly reaches'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1998,12 +1998,12 @@
     },
     {
       "id": "gr_proof",
-      "body": "<<FILL role=choice words=156 beats='the proof of the bridge in green hands and the whole year hanging on how it is used; name Sarn and the Steward openly and let the river-city cry murder to the sky; or carry the proof quietly to the Council table and use it to force a truce and a hearing for the commons; the rule warns you, proof shouted becomes a sword and the commons bleed first under it, so choose how the drowned are answered'>>",
+      "body": "<<FILL role=choice words=156 beats='the proof of the bridge in {GREEN_COLOR} hands and the whole year hanging on how it is used; name {GUARD_CAPTAIN} and the {GREY_TITLE} openly and let the river-city cry murder to the sky; or carry the proof quietly to the Council table and use it to force a truce and a hearing for the commons; the rule warns you, proof shouted becomes a sword and the commons bleed first under it, so choose how the drowned are answered'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_proof_1",
-          "label": "Name Sarn and the Steward openly to the city.",
+          "label": "Name {GUARD_CAPTAIN} and the {GREY_TITLE} openly to the city.",
           "target": "gnE1_t1"
         },
         {
@@ -2015,7 +2015,7 @@
     },
     {
       "id": "gnE1_t1",
-      "body": "<<FILL role=consequence words=148 beats='you name them from the steps, Sarn and Vane and the drowning-order, and the river-city roars; the grief becomes a mob and the mob becomes a rising, and the grey house answers a shout with soldiers'>>",
+      "body": "<<FILL role=consequence words=148 beats='you name them from the steps, {GUARD_CAPTAIN} and {GREY_LEADER} and the drowning-order, and the river-city roars; the grief becomes a mob and the mob becomes a rising, and the {GREY_COLOR} house answers a shout with soldiers'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2027,7 +2027,7 @@
     },
     {
       "id": "gnE1_t2",
-      "body": "<<FILL role=consequence words=140 beats='the proof shouted became a sword exactly as the rule warned, and it is the commons, unarmed and furious, who fall on it first; you meant to answer the drowned and instead you gave the grey house a reason to drown more'>>",
+      "body": "<<FILL role=consequence words=140 beats='the proof shouted became a sword exactly as the rule warned, and it is the commons, unarmed and furious, who fall on it first; you meant to answer the drowned and instead you gave the {GREY_COLOR} house a reason to drown more'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2039,7 +2039,7 @@
     },
     {
       "id": "gnE1",
-      "body": "<<FILL role=ending words=130 beats='the year the truth became a riot; the bridge-order named from the guild-hall steps, the river-city risen in grief and cut down by grey soldiers, the commons bleeding first as the rule foretold; you answered the drowned with a shout and the shout became a sword, and green learned again that the weak pay first for the truths they cannot arm'>>",
+      "body": "<<FILL role=ending words=130 beats='the year the truth became a riot; the bridge-order named from the guild-hall steps, the river-city risen in grief and cut down by {GREY_COLOR} soldiers, the commons bleeding first as the rule foretold; you answered the drowned with a shout and the shout became a sword, and {GREEN_COLOR} learned again that the weak pay first for the truths they cannot arm'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE1",
@@ -2054,7 +2054,7 @@
     },
     {
       "id": "gnE2_t1",
-      "body": "<<FILL role=consequence words=150 beats='you carry it north quietly, not to the mob but to the banners, and set it before the Council closed-door; the grey house cannot deny its own hand and cannot afford it known; the room goes very still around a page of names'>>",
+      "body": "<<FILL role=consequence words=150 beats='you carry it north quietly, not to the mob but to the banners, and set it before the Council closed-door; the {GREY_COLOR} house cannot deny its own hand and cannot afford it known; the room goes very still around a page of names'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2066,7 +2066,7 @@
     },
     {
       "id": "gnE2_t2",
-      "body": "<<FILL role=consequence words=146 beats='the price of your silence is a truce and a hearing for the commons; the grey house pays it to keep the bridge secret buried, and green takes the coin it never had, a seat at the table bought with the grief of the fords'>>",
+      "body": "<<FILL role=consequence words=146 beats='the price of your silence is a truce and a hearing for the commons; the {GREY_COLOR} house pays it to keep the bridge secret buried, and {GREEN_COLOR} takes the coin it never had, a seat at the table bought with the grief of the fords'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2078,7 +2078,7 @@
     },
     {
       "id": "gnE2_t3",
-      "body": "<<FILL role=consequence words=144 beats='you carry the truce back down the Veld; the war that hung over the summer folded before it opened; the drowned answered not with more blood but with a foothold the commons never held before'>>",
+      "body": "<<FILL role=consequence words=144 beats='you carry the truce back down the {RIVER_NAME}; the war that hung over the summer folded before it opened; the drowned answered not with more blood but with a foothold the commons never held before'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2090,7 +2090,7 @@
     },
     {
       "id": "gnE2_t4",
-      "body": "<<FILL role=consequence words=142 beats='green keeps the bridge-proof locked and the grey house leashed by it all year; you learn the weight of a truth carried quietly, heavier than one shouted, and steadier'>>",
+      "body": "<<FILL role=consequence words=142 beats='{GREEN_COLOR} keeps the bridge-proof locked and the {GREY_COLOR} house leashed by it all year; you learn the weight of a truth carried quietly, heavier than one shouted, and steadier'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2102,7 +2102,7 @@
     },
     {
       "id": "gnE2_t5",
-      "body": "<<FILL role=consequence words=140 beats='the fords still a grave, the commons still poor, but seated now where they were never seated; the chancery rule kept, green wins with proof and patience, and you turned a drowning into a door'>>",
+      "body": "<<FILL role=consequence words=140 beats='the fords still a grave, the commons still poor, but seated now where they were never seated; the chancery rule kept, {GREEN_COLOR} wins with proof and patience, and you turned a drowning into a door'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2126,7 +2126,7 @@
     },
     {
       "id": "gnE2",
-      "body": "<<FILL role=ending words=132 beats='the year the drowned bought a seat at the table; the bridge-proof carried quietly to the Council instead of shouted to the mob, the grey house leashed by its own secret, a truce and a commons hearing traded for silence; you kept the chancery rule, green wins with proof and patience, and turned a grief into a foothold without spilling more blood'>>",
+      "body": "<<FILL role=ending words=132 beats='the year the drowned bought a seat at the table; the bridge-proof carried quietly to the Council instead of shouted to the mob, the {GREY_COLOR} house leashed by its own secret, a truce and a commons hearing traded for silence; you kept the chancery rule, {GREEN_COLOR} wins with proof and patience, and turned a grief into a foothold without spilling more blood'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE2",
@@ -2137,7 +2137,7 @@
     },
     {
       "id": "gr_h1",
-      "body": "<<FILL role=rising words=146 beats='you set the inquiry aside and give the green house to the living; the flooded towns, the lost granaries, the river folk with nowhere dry to sleep; Lady Miren works the guild-halls day and night and you work beside her, and the truth of the gate waits in a drawer while the year presses harder needs on you'>>",
+      "body": "<<FILL role=rising words=146 beats='you set the inquiry aside and give the {GREEN_COLOR} house to the living; the flooded towns, the lost granaries, the river folk with nowhere dry to sleep; {GREEN_TITLE} {GREEN_LEADER} works the guild-halls day and night and you work beside her, and the truth of the gate waits in a drawer while the year presses harder needs on you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2149,7 +2149,7 @@
     },
     {
       "id": "gr_h2",
-      "body": "<<FILL role=rising words=146 beats='harvest thin, the fords still broken, the great houses drawing armies through the river country and eating it bare as they pass; the commons look to green to keep them alive through a year the banners are fighting over their heads; the choice narrows to how the river folk survive, not who is blamed for the water'>>",
+      "body": "<<FILL role=rising words=146 beats='harvest thin, the fords still broken, the great houses drawing armies through the river country and eating it bare as they pass; the commons look to {GREEN_COLOR} to keep them alive through a year the banners are fighting over their heads; the choice narrows to how the river folk survive, not who is blamed for the water'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2161,7 +2161,7 @@
     },
     {
       "id": "gr_hold",
-      "body": "<<FILL role=choice words=154 beats='the hungry season and the green house its only shield; open the guild granaries and feed the river-towns first, even if it leaves nothing to bargain with; or ration hard and arm the river folk to hold their own country against the armies trampling it; feeding or arming, mercy or teeth, and the commons live or die by which you choose'>>",
+      "body": "<<FILL role=choice words=154 beats='the hungry season and the {GREEN_COLOR} house its only shield; open the guild granaries and feed the river-towns first, even if it leaves nothing to bargain with; or ration hard and arm the river folk to hold their own country against the armies trampling it; feeding or arming, mercy or teeth, and the commons live or die by which you choose'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2183,14 +2183,14 @@
       "choices": [
         {
           "id": "c_gnE3_t1_1",
-          "label": "Throw open every green granary.",
+          "label": "Throw open every {GREEN_COLOR} granary.",
           "target": "gnE3_t2"
         }
       ]
     },
     {
       "id": "gnE3_t2",
-      "body": "<<FILL role=consequence words=146 beats='you spend the autumn moving grain by barge and cart to the towns the flood ruined; the work thankless and endless and the only work that matters; the green stores empty as the winter deepens'>>",
+      "body": "<<FILL role=consequence words=146 beats='you spend the autumn moving grain by barge and cart to the towns the flood ruined; the work thankless and endless and the only work that matters; the {GREEN_COLOR} stores empty as the winter deepens'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2202,7 +2202,7 @@
     },
     {
       "id": "gnE3_t3",
-      "body": "<<FILL role=consequence words=144 beats='the river country thins but does not break; no town lost to hunger, though green ends the year with empty granaries and no coin of leverage left to spend on any lord'>>",
+      "body": "<<FILL role=consequence words=144 beats='the river country thins but does not break; no town lost to hunger, though {GREEN_COLOR} ends the year with empty granaries and no coin of leverage left to spend on any lord'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2214,7 +2214,7 @@
     },
     {
       "id": "gnE3_t4",
-      "body": "<<FILL role=consequence words=142 beats='spring, and the fords still broken but the people not; the green house poorer by every granary and richer by a whole country loyalty, chosen first for once and not forgetting it'>>",
+      "body": "<<FILL role=consequence words=142 beats='spring, and the fords still broken but the people not; the {GREEN_COLOR} house poorer by every granary and richer by a whole country loyalty, chosen first for once and not forgetting it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2226,7 +2226,7 @@
     },
     {
       "id": "gnE3_t5",
-      "body": "<<FILL role=consequence words=138 beats='Lady Miren spent her bargaining bread to keep the commons breathing, and the commons will stand for green now in any hall; you learn the cause was never the seat at the table but the lives the seat was meant to feed'>>",
+      "body": "<<FILL role=consequence words=138 beats='{GREEN_TITLE} {GREEN_LEADER} spent her bargaining bread to keep the commons breathing, and the commons will stand for {GREEN_COLOR} now in any hall; you learn the cause was never the seat at the table but the lives the seat was meant to feed'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2238,7 +2238,7 @@
     },
     {
       "id": "gnE3",
-      "body": "<<FILL role=ending words=136 beats='the year green fed the commons before it fed the cause; every guild granary thrown open, the river country carried alive through a war fought over its head, nothing kept for leverage and everything spent on bread; you chose the living over the advantage and won a country loyalty by counting it first for once, the chancery rule kept in mercy'>>",
+      "body": "<<FILL role=ending words=136 beats='the year {GREEN_COLOR} fed the commons before it fed the cause; every guild granary thrown open, the river country carried alive through a war fought over its head, nothing kept for leverage and everything spent on bread; you chose the living over the advantage and won a country loyalty by counting it first for once, the chancery rule kept in mercy'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE3",
@@ -2249,7 +2249,7 @@
     },
     {
       "id": "gnE4_t1",
-      "body": "<<FILL role=consequence words=150 beats='you ration the grain hard and arm the river folk to hold their own banks; the commons become a militia, the green thorn grown teeth, the river country a place the armies no longer cross for free'>>",
+      "body": "<<FILL role=consequence words=150 beats='you ration the grain hard and arm the river folk to hold their own banks; the commons become a militia, the {GREEN_COLOR} {GREEN_SIGIL} grown teeth, the river country a place the armies no longer cross for free'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2261,7 +2261,7 @@
     },
     {
       "id": "gnE4_t2",
-      "body": "<<FILL role=consequence words=140 beats='rationed towns go hungry to feed the pikes; the green house that meant to spare a war has raised a smaller one of its own along every bank; you kept the country from being trampled and turned it into a battlefield'>>",
+      "body": "<<FILL role=consequence words=140 beats='rationed towns go hungry to feed the pikes; the {GREEN_COLOR} house that meant to spare a war has raised a smaller one of its own along every bank; you kept the country from being trampled and turned it into a battlefield'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2273,7 +2273,7 @@
     },
     {
       "id": "gnE4",
-      "body": "<<FILL role=ending words=130 beats='the year the thorn grew teeth and drew blood; the river folk armed and rationed, the banks held against the great armies but held hungry, the green house that swore off the sword raising one along every ford; you kept the country from being trampled and turned it into a battlefield of its own, mercy traded for teeth and the commons paying in bread'>>",
+      "body": "<<FILL role=ending words=130 beats='the year the {GREEN_SIGIL} grew teeth and drew blood; the river folk armed and rationed, the banks held against the great armies but held hungry, the {GREEN_COLOR} house that swore off the sword raising one along every ford; you kept the country from being trampled and turned it into a battlefield of its own, mercy traded for teeth and the commons paying in bread'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE4",
@@ -2284,7 +2284,7 @@
     },
     {
       "id": "gr_b1",
-      "body": "<<FILL role=rising words=146 beats='you draft it bold, the commons named owed, the great houses dared to refuse; Lady Miren reads it twice and lets it stand, sometimes the weak must speak loudly to be counted at all; the petition goes north like a thrown stone, and the Council will not be able to pretend it did not hear'>>",
+      "body": "<<FILL role=rising words=146 beats='you draft it bold, the commons named owed, the great houses dared to refuse; {GREEN_TITLE} {GREEN_LEADER} reads it twice and lets it stand, sometimes the weak must speak loudly to be counted at all; the petition goes north like a thrown stone, and the Council will not be able to pretend it did not hear'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2296,19 +2296,19 @@
     },
     {
       "id": "gr_b2",
-      "body": "<<FILL role=rising words=146 beats='you travel with Lady Miren to the Council of Banners, the green thorn among the grey wolf and the red falcon; the great houses circle the boy-king and the regency and would sooner not see green at all; the bold petition on the table between them like a challenge'>>",
+      "body": "<<FILL role=rising words=146 beats='you travel with {GREEN_TITLE} {GREEN_LEADER} to the Council of Banners, the {GREEN_COLOR} {GREEN_SIGIL} among the {GREY_COLOR} {GREY_SIGIL} and the {RED_COLOR} {RED_SIGIL}; the great houses circle the boy-king and the regency and would sooner not see {GREEN_COLOR} at all; the bold petition on the table between them like a challenge'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_b2_1",
-          "label": "Ride north to the Council in green.",
+          "label": "Ride north to the Council in {GREEN_COLOR}.",
           "target": "gr_council"
         }
       ]
     },
     {
       "id": "gr_council",
-      "body": "<<FILL role=choice words=154 beats='the Council in session and the green house standing bold; confront the banners to their faces and demand the Council of Banners now, in the open, or walk out of the great-house game entirely and build a coalition of guilds and river-towns that answers to no crown; press the powerful or gather the many, and the year turns on which strength green trusts'>>",
+      "body": "<<FILL role=choice words=154 beats='the Council in session and the {GREEN_COLOR} house standing bold; confront the banners to their faces and demand the Council of Banners now, in the open, or walk out of the great-house game entirely and build a coalition of guilds and river-towns that answers to no crown; press the powerful or gather the many, and the year turns on which strength {GREEN_COLOR} trusts'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2325,19 +2325,19 @@
     },
     {
       "id": "gr_c1",
-      "body": "<<FILL role=rising words=146 beats='Lady Miren on her feet before the Council, demanding the boy-king warded by all houses and the commons seated among them; the grey Steward wary, the red Duke amused, the room deciding whether to grant a thorn a chair; you at her shoulder with the record, every broken promise ready to read aloud'>>",
+      "body": "<<FILL role=rising words=146 beats='{GREEN_TITLE} {GREEN_LEADER} on her feet before the Council, demanding the boy-king warded by all houses and the commons seated among them; the {GREY_COLOR} {GREY_TITLE} wary, the {RED_COLOR} {RED_TITLE} amused, the room deciding whether to grant a {GREEN_SIGIL} a chair; you at her shoulder with the record, every broken promise ready to read aloud'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_c1_1",
-          "label": "Stand green up before the great banners.",
+          "label": "Stand {GREEN_COLOR} up before the great banners.",
           "target": "gr_c2"
         }
       ]
     },
     {
       "id": "gr_c2",
-      "body": "<<FILL role=rising words=146 beats='the Council will not say yes and cannot quite say no; some lords fear the guilds, some court them; the demand hangs unanswered and the green house must decide whether to force the vote or to press it harder still, knowing the boy-king fate is already sliding toward the strong houses while the weak ones talk'>>",
+      "body": "<<FILL role=rising words=146 beats='the Council will not say yes and cannot quite say no; some lords fear the guilds, some court them; the demand hangs unanswered and the {GREEN_COLOR} house must decide whether to force the vote or to press it harder still, knowing the boy-king fate is already sliding toward the strong houses while the weak ones talk'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2349,7 +2349,7 @@
     },
     {
       "id": "gr_confront",
-      "body": "<<FILL role=choice words=152 beats='the demand on the floor and the hall divided; call the vote now and force the banners to seat the commons or refuse them in the open where all can see; or lead a walkout of the guild delegates and rally the river-city behind green outside the Council doors; a vote in the hall or a rising in the streets, and each answers the year differently'>>",
+      "body": "<<FILL role=choice words=152 beats='the demand on the floor and the hall divided; call the vote now and force the banners to seat the commons or refuse them in the open where all can see; or lead a walkout of the guild delegates and rally the river-city behind {GREEN_COLOR} outside the Council doors; a vote in the hall or a rising in the streets, and each answers the year differently'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2378,7 +2378,7 @@
     },
     {
       "id": "gnE5_t2",
-      "body": "<<FILL role=consequence words=146 beats='the Council of Banners granted, narrowly, grudgingly, real; the boy-king becomes its ward and green wins a chair that no later year can easily unmake, a foothold written into the realm own record'>>",
+      "body": "<<FILL role=consequence words=146 beats='the Council of Banners granted, narrowly, grudgingly, real; the boy-king becomes its ward and {GREEN_COLOR} wins a chair that no later year can easily unmake, a foothold written into the realm own record'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2402,7 +2402,7 @@
     },
     {
       "id": "gnE5_t4",
-      "body": "<<FILL role=consequence words=142 beats='every clause witnessed, every seat named, the commons written into the protection of the crown; the chancery rule kept, green won with proof and patience and daylight and not one drawn sword'>>",
+      "body": "<<FILL role=consequence words=142 beats='every clause witnessed, every seat named, the commons written into the protection of the crown; the chancery rule kept, {GREEN_COLOR} won with proof and patience and daylight and not one drawn sword'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2426,7 +2426,7 @@
     },
     {
       "id": "gnE5",
-      "body": "<<FILL role=ending words=132 beats='the year green forced the hall to choose in the open; the vote called with the realm watching, the great houses unable to refuse the commons a chair without wearing the tyrant name, a Council of Banners granted narrow and real; you won the commons a seat by proof and patience and daylight, the chancery rule kept, the boy-king warded by all'>>",
+      "body": "<<FILL role=ending words=132 beats='the year {GREEN_COLOR} forced the hall to choose in the open; the vote called with the realm watching, the great houses unable to refuse the commons a chair without wearing the tyrant name, a Council of Banners granted narrow and real; you won the commons a seat by proof and patience and daylight, the chancery rule kept, the boy-king warded by all'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE5",
@@ -2437,19 +2437,19 @@
     },
     {
       "id": "gnE6_t1",
-      "body": "<<FILL role=consequence words=148 beats='you walk the guilds out of the Council and into the streets, and the river-city rises green behind you, not in a riot but in a wall of ordinary people the banners cannot ignore or afford to fight'>>",
+      "body": "<<FILL role=consequence words=148 beats='you walk the guilds out of the Council and into the streets, and the river-city rises {GREEN_COLOR} behind you, not in a riot but in a wall of ordinary people the banners cannot ignore or afford to fight'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gnE6_t1_1",
-          "label": "Lead the green delegates out the great doors.",
+          "label": "Lead the {GREEN_COLOR} delegates out the great doors.",
           "target": "gnE6_t2"
         }
       ]
     },
     {
       "id": "gnE6_t2",
-      "body": "<<FILL role=consequence words=140 beats='the great houses learn the commons can simply withdraw the country they all stand on; a lesson taught without a sword, and the year listens; green discovers a strength it always had and never counted'>>",
+      "body": "<<FILL role=consequence words=140 beats='the great houses learn the commons can simply withdraw the country they all stand on; a lesson taught without a sword, and the year listens; {GREEN_COLOR} discovers a strength it always had and never counted'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2461,7 +2461,7 @@
     },
     {
       "id": "gnE6",
-      "body": "<<FILL role=ending words=130 beats='the year the commons discovered their own weight; the green delegates walked out and the river-city rose behind them, peaceful and immovable, the great houses learning the country they fought over could withdraw itself; you taught the banners a truth green always knew, that the many hold up the few, and the lesson landed without a single blade'>>",
+      "body": "<<FILL role=ending words=130 beats='the year the commons discovered their own weight; the {GREEN_COLOR} delegates walked out and the river-city rose behind them, peaceful and immovable, the great houses learning the country they fought over could withdraw itself; you taught the banners a truth {GREEN_COLOR} always knew, that the many hold up the few, and the lesson landed without a single blade'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE6",
@@ -2472,36 +2472,36 @@
     },
     {
       "id": "gr_q1",
-      "body": "<<FILL role=rising words=146 beats='you leave the Council to its circling and build beneath it, guild by guild, river-town by river-town, a coalition that owes the great houses nothing; the work is slow ink and long roads, and it is where the green vantage comes into its own; and it is on these roads that the letter finds you'>>",
+      "body": "<<FILL role=rising words=146 beats='you leave the Council to its circling and build beneath it, guild by guild, river-town by river-town, a coalition that owes the great houses nothing; the work is slow ink and long roads, and it is where the {GREEN_COLOR} vantage comes into its own; and it is on these roads that the letter finds you'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_q1_1",
-          "label": "Build green outside the great hall.",
+          "label": "Build {GREEN_COLOR} outside the great hall.",
           "target": "gr_q2"
         }
       ]
     },
     {
       "id": "gr_q2",
-      "body": "<<FILL role=rising words=148 beats='a courier of the Iron Fords, bought and frightened, brings you Corven own sealed letter to the sellsword companies, the Duke under-the-table army written in his own hand; the red vantage sent it and the grey house only suspects it, but green alone can prove it now; the whole year could turn on a single page in your keeping'>>",
+      "body": "<<FILL role=rising words=148 beats='a courier of the {SELLSWORD_BASE}, bought and frightened, brings you {RED_LEADER} own sealed letter to the sellsword companies, the {RED_TITLE} under-the-table army written in his own hand; the {RED_COLOR} vantage sent it and the {GREY_COLOR} house only suspects it, but {GREEN_COLOR} alone can prove it now; the whole year could turn on a single page in your keeping'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_q2_1",
-          "label": "Come into the proof only green can hold.",
+          "label": "Come into the proof only {GREEN_COLOR} can hold.",
           "target": "gr_letter"
         }
       ]
     },
     {
       "id": "gr_letter",
-      "body": "<<FILL role=choice words=158 beats='Corven sellsword letter in green hands, the one proof the red house cannot deny and the grey house cannot match; publish it to the whole realm and expose the Duke bought war, though a truth loosed cannot be recalled and the realm may burn for it; or hold it close and trade on it, brokering a Council of Banners with the leverage no one else has; a truth loosed or a truth spent, and the year answers to which'>>",
+      "body": "<<FILL role=choice words=158 beats='{RED_LEADER} sellsword letter in {GREEN_COLOR} hands, the one proof the {RED_COLOR} house cannot deny and the {GREY_COLOR} house cannot match; publish it to the whole realm and expose the {RED_TITLE} bought war, though a truth loosed cannot be recalled and the realm may burn for it; or hold it close and trade on it, brokering a Council of Banners with the leverage no one else has; a truth loosed or a truth spent, and the year answers to which'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_letter_1",
-          "label": "Publish the letter and expose the Duke.",
+          "label": "Publish the letter and expose the {RED_TITLE}.",
           "target": "gr_pub1"
         },
         {
@@ -2513,19 +2513,19 @@
     },
     {
       "id": "gr_pub1",
-      "body": "<<FILL role=rising words=148 beats='you copy it out, seal and clause and the Iron Fords named, and Lady Miren weighs how widely to loose it; a truth this size cannot be half-told, and once told it belongs to everyone; the red house will call it forgery and the grey house will use it and the commons will pay for whichever war it starts'>>",
+      "body": "<<FILL role=rising words=148 beats='you copy it out, seal and clause and the {SELLSWORD_BASE} named, and {GREEN_TITLE} {GREEN_LEADER} weighs how widely to loose it; a truth this size cannot be half-told, and once told it belongs to everyone; the {RED_COLOR} house will call it forgery and the {GREY_COLOR} house will use it and the commons will pay for whichever war it starts'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gr_pub1_1",
-          "label": "Set the Duke letter before the realm.",
+          "label": "Set the {RED_TITLE} letter before the realm.",
           "target": "gr_publish"
         }
       ]
     },
     {
       "id": "gr_publish",
-      "body": "<<FILL role=choice words=152 beats='the letter about to leave your hands for good; publish it to the whole realm, criers and copies in every town, and brace the river country for the war the truth will light; or publish it only to the houses, privately, a proof shown to the banners alone to shame Corven without setting the commons alight; loud or quiet, and the rule stands, a truth loosed cannot be recalled'>>",
+      "body": "<<FILL role=choice words=152 beats='the letter about to leave your hands for good; publish it to the whole realm, criers and copies in every town, and brace the river country for the war the truth will light; or publish it only to the houses, privately, a proof shown to the banners alone to shame {RED_LEADER} without setting the commons alight; loud or quiet, and the rule stands, a truth loosed cannot be recalled'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2542,7 +2542,7 @@
     },
     {
       "id": "gnE7_t1",
-      "body": "<<FILL role=consequence words=150 beats='the letter goes everywhere at once, criers and copies in every market; the realm learns Corven bought a war under a truce and the realm catches fire; the red house cries forgery, the grey house marches, and the river country, ground between them, pays first and most'>>",
+      "body": "<<FILL role=consequence words=150 beats='the letter goes everywhere at once, criers and copies in every market; the realm learns {RED_LEADER} bought a war under a truce and the realm catches fire; the {RED_COLOR} house cries forgery, the {GREY_COLOR} house marches, and the river country, ground between them, pays first and most'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2566,7 +2566,7 @@
     },
     {
       "id": "gnE7",
-      "body": "<<FILL role=ending words=132 beats='the year the truth set the realm alight; Corven sellsword letter loosed to every street, the Duke exposed and the country at open war over it, the river folk ground first between grey and red; you loosed a real truth and it could not be recalled, exactly as the rule warned, and the commons paid the price of the daylight'>>",
+      "body": "<<FILL role=ending words=132 beats='the year the truth set the realm alight; {RED_LEADER} sellsword letter loosed to every street, the {RED_TITLE} exposed and the country at open war over it, the river folk ground first between {GREY_COLOR} and {RED_COLOR}; you loosed a real truth and it could not be recalled, exactly as the rule warned, and the commons paid the price of the daylight'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE7",
@@ -2581,7 +2581,7 @@
     },
     {
       "id": "gnE8_t1",
-      "body": "<<FILL role=consequence words=148 beats='you loose it only to the houses, a proof laid before grey and red and the Council behind closed doors; Corven cannot deny his own seal and cannot afford it public, and the grey house holds the same knife; the Duke is shamed and leashed without a crier ever shouting'>>",
+      "body": "<<FILL role=consequence words=148 beats='you loose it only to the houses, a proof laid before {GREY_COLOR} and {RED_COLOR} and the Council behind closed doors; {RED_LEADER} cannot deny his own seal and cannot afford it public, and the {GREY_COLOR} house holds the same knife; the {RED_TITLE} is shamed and leashed without a crier ever shouting'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2593,7 +2593,7 @@
     },
     {
       "id": "gnE8",
-      "body": "<<FILL role=ending words=130 beats='the year green shamed a duke in the dark; the sellsword letter shown only to the banners, Corven leashed by his own seal without a public fire, the war kept off the commons; you learned the difference between a truth thrown and a truth spent, and spent this one so the river country would not have to burn to be believed'>>",
+      "body": "<<FILL role=ending words=130 beats='the year {GREEN_COLOR} shamed a duke in the dark; the sellsword letter shown only to the banners, {RED_LEADER} leashed by his own seal without a public fire, the war kept off the commons; you learned the difference between a truth thrown and a truth spent, and spent this one so the river country would not have to burn to be believed'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE8",
@@ -2604,7 +2604,7 @@
     },
     {
       "id": "gr_br1",
-      "body": "<<FILL role=rising words=148 beats='you hold the letter and let its weight do the work; Lady Miren carries the leverage no other house has to the Council table, the one proof that can bind Corven, and asks in return the thing green wanted all year; the boy-king warded by a Council, the commons seated, the war unfought; the last green choice is what to buy with the leverage'>>",
+      "body": "<<FILL role=rising words=148 beats='you hold the letter and let its weight do the work; {GREEN_TITLE} {GREEN_LEADER} carries the leverage no other house has to the Council table, the one proof that can bind {RED_LEADER}, and asks in return the thing {GREEN_COLOR} wanted all year; the boy-king warded by a Council, the commons seated, the war unfought; the last {GREEN_COLOR} choice is what to buy with the leverage'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2616,7 +2616,7 @@
     },
     {
       "id": "gr_broker",
-      "body": "<<FILL role=choice words=154 beats='the leverage of Corven letter in hand and a whole year to close; spend it to convene the Council of Banners at the fords, binding every house and seating the commons at last; or spend it narrower and surer, trading the letter directly for Prince Doran safety into a shared keeping; the wide win or the sure one, the Council or the child, and green cannot buy both with one page'>>",
+      "body": "<<FILL role=choice words=154 beats='the leverage of {RED_LEADER} letter in hand and a whole year to close; spend it to convene the Council of Banners at the fords, binding every house and seating the commons at last; or spend it narrower and surer, trading the letter directly for Prince {HEIR_NAME} safety into a shared keeping; the wide win or the sure one, the Council or the child, and {GREEN_COLOR} cannot buy both with one page'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2633,7 +2633,7 @@
     },
     {
       "id": "gnE9_t1",
-      "body": "<<FILL role=consequence words=150 beats='you call the Council to the very fords that drowned in the spring, and the leverage of the letter holds every house to the table; grey bound by the bridge-proof, red bound by the sellsword letter, green holding both'>>",
+      "body": "<<FILL role=consequence words=150 beats='you call the Council to the very fords that drowned in the spring, and the leverage of the letter holds every house to the table; {GREY_COLOR} bound by the bridge-proof, {RED_COLOR} bound by the sellsword letter, {GREEN_COLOR} holding both'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2657,7 +2657,7 @@
     },
     {
       "id": "gnE9_t3",
-      "body": "<<FILL role=consequence words=142 beats='the great houses leashed to one another and to the commons, the boy-king warded by all and grasped by none, the war folded before it opened; Lady Miren spent one page to buy the thing green never had'>>",
+      "body": "<<FILL role=consequence words=142 beats='the great houses leashed to one another and to the commons, the boy-king warded by all and grasped by none, the war folded before it opened; {GREEN_TITLE} {GREEN_LEADER} spent one page to buy the thing {GREEN_COLOR} never had'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2693,18 +2693,18 @@
     },
     {
       "id": "gnE9",
-      "body": "<<FILL role=ending words=138 beats='the year green built the Council on a grave; Corven letter spent to bind every house to the table at the drowned fords, grey leashed by the bridge and red by the sellswords, the commons seated at last and the boy-king warded by all; you won the whole green cause with one page and no war, proof and patience over the sword, the year written into law'>>",
+      "body": "<<FILL role=ending words=138 beats='the year {GREEN_COLOR} built the Council on a grave; {RED_LEADER} letter spent to bind every house to the table at the drowned fords, {GREY_COLOR} leashed by the bridge and {RED_COLOR} by the sellswords, the commons seated at last and the boy-king warded by all; you won the whole {GREEN_COLOR} cause with one page and no war, proof and patience over the sword, the year written into law'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE9",
         "valence": "positive",
         "kind": "success",
-        "title": "The Council Convened at the Fords"
+        "title": "The Council Convened at the {KINGSBRIDGE}"
       }
     },
     {
       "id": "gnE10_t1",
-      "body": "<<FILL role=consequence words=150 beats='you spend the letter not on the Council but on the boy; the leverage traded straight across for Prince Doran passed out of every grasping hand into a shared, guarded keeping; green gives up the wider win and takes the surer one'>>",
+      "body": "<<FILL role=consequence words=150 beats='you spend the letter not on the Council but on the boy; the leverage traded straight across for Prince {HEIR_NAME} passed out of every grasping hand into a shared, guarded keeping; {GREEN_COLOR} gives up the wider win and takes the surer one'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2716,7 +2716,7 @@
     },
     {
       "id": "gnE10_t2",
-      "body": "<<FILL role=consequence words=144 beats='a child safe now rather than a cause won maybe; Lady Miren signs it without regret, because the commons taught her which lives count first, and a boy off the board is worth more than a clause on a page'>>",
+      "body": "<<FILL role=consequence words=144 beats='a child safe now rather than a cause won maybe; {GREEN_TITLE} {GREEN_LEADER} signs it without regret, because the commons taught her which lives count first, and a boy off the board is worth more than a clause on a page'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2728,7 +2728,7 @@
     },
     {
       "id": "gnE10_t3",
-      "body": "<<FILL role=consequence words=140 beats='Doran out of Redwater and every trap, warded and breathing, the wider Council let go for another year; you learn that green highest law was never the seat but the life, and you kept it'>>",
+      "body": "<<FILL role=consequence words=140 beats='{HEIR_NAME} out of {RED_FORTRESS} and every trap, warded and breathing, the wider Council let go for another year; you learn that {GREEN_COLOR} highest law was never the seat but the life, and you kept it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2740,7 +2740,7 @@
     },
     {
       "id": "gnE10",
-      "body": "<<FILL role=ending words=132 beats='the year green spent its one card on a child; Corven letter traded straight for Prince Doran safety into shared keeping, the wider Council let go for the surer rescue, the boy out of every grasping hand at last; you chose the certain life over the possible cause and closed the year with a king safe, the chancery rule kept in mercy again'>>",
+      "body": "<<FILL role=ending words=132 beats='the year {GREEN_COLOR} spent its one card on a child; {RED_LEADER} letter traded straight for Prince {HEIR_NAME} safety into shared keeping, the wider Council let go for the surer rescue, the boy out of every grasping hand at last; you chose the certain life over the possible cause and closed the year with a king safe, the chancery rule kept in mercy again'>>",
       "is_ending": true,
       "ending": {
         "id": "gnE10",

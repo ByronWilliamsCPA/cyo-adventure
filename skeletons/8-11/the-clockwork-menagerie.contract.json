@@ -1,0 +1,1521 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-clockwork-menagerie",
+  "age_band": "8-11",
+  "legacy_lexicon": [
+    "Nia",
+    "Tock",
+    "Fettle",
+    "Windvale",
+    "Windvale Museum",
+    "clockwork menagerie",
+    "menagerie"
+  ],
+  "default_binding": {
+    "HERO": "Nia",
+    "COMPANION": "her wind-up mouse Tock",
+    "THRESHOLD": "the Windvale Museum of Clockwork Animals",
+    "ENTRANCE": "the dark entrance hall",
+    "OPENING_MOMENT": "missing the last bus",
+    "DEADLINE": "her candle stub burning down",
+    "DEADLINE_SIGN": "the sky lightening toward grey dawn",
+    "GOAL": "the caretaker master key",
+    "CARETAKER": "keeper Fettle",
+    "CRISIS": "the great mainspring",
+    "SPARE": "a coiled spare mainspring",
+    "ROTUNDA": "the central rotunda",
+    "WORKROOM": "the great spring-room",
+    "WORKSHOP": "the caretaker's hidden workshop",
+    "CLOCK": "the great museum clock",
+    "LETTER": "keeper Fettle's letter",
+    "ROUTE_A_ZONE": "the brass aviary",
+    "ROUTE_A_DOOR": "the aviary door",
+    "ROUTE_B_ZONE": "the tin savanna",
+    "ROUTE_B_DOOR": "the savanna arch",
+    "ROUTE_C_ZONE": "the copper deep-sea hall",
+    "ROUTE_C_DOOR": "the round door of the deep-sea hall",
+    "ROUTE_D_ZONE": "the crystal insect conservatory",
+    "ROUTE_D_DOOR": "the conservatory arch",
+    "A1_ZONE": "the songbird alcove",
+    "A1_FIND": "a dusty music-box set into the wall",
+    "A1_CLUE": "a small brass card",
+    "A1_PATH": "a keeper walkway behind the display cases",
+    "A1_DOOR": "a low service door marked with a clock",
+    "A2_ZONE": "the raptor roost",
+    "A2_FIND": "a single fallen feather shaped like a key",
+    "A2_SIGN": "the owl's pointing wing",
+    "A2_PATH": "a short keeper stair",
+    "A_GATE": "a thin metal rung that cracks underfoot",
+    "A_STUCK": "the high nesting boxes",
+    "B1_ZONE": "the elephant herd around the tin watering hole",
+    "B1_FIND": "a tin baobab tree",
+    "B1_PATH": "a worn keeper trail marked with oil-drips",
+    "B1_DOOR": "a plain door in the savanna wall",
+    "B2_ZONE": "the giraffe grove",
+    "B2_FIND": "a ring raised on a rope pulley",
+    "B2_SIGN": "a painted arrow",
+    "B2_DOOR": "a keeper door",
+    "B_GATE": "the lurching clockwork elephant blocking the way",
+    "C1_ZONE": "the coral cabinet",
+    "C1_FIND": "a brass valve that hums at a touch",
+    "C1_CLUE": "a folded chart of the whole museum",
+    "C1_DOOR": "a round copper door like a porthole",
+    "C2_ZONE": "the deep trench diorama",
+    "C2_FIND": "an anglerfish lamp with a little wind left",
+    "C2_HATCH": "a low hatch set in the trench wall",
+    "C2_SIGN": "a sign painted with an arrow",
+    "C2_PATH": "a snug copper passage",
+    "C_GATE": "a loose whale-rib swinging free over the gap",
+    "C_STUCK": "the dark deep-sea hall",
+    "D1_ZONE": "the butterfly vault",
+    "D1_FIND": "a tiny winder left on a stand",
+    "D1_CLUE": "a card telling of one master key",
+    "D1_PATH": "the painted path out of the vault",
+    "D1_DOOR": "a mirrored door edged with brass",
+    "D2_ZONE": "the beetle corner",
+    "D2_FIND": "a folded map in a half-open drawer",
+    "D2_SIGN": "a drawn beetle pointing its feelers",
+    "D2_PATH": "the mapped way between the glass cases",
+    "D_GATE": "a glass panel shifting loose on the rail",
+    "D_STUCK": "the glass gallery",
+    "KEY_LADDER": "a little keeper ladder",
+    "K_A_ZONE": "the great spring-room doors",
+    "K_B_ZONE": "the gallery of old keeper portraits",
+    "K_C_ZONE": "the narrow back stairs",
+    "KA_ROOM": "the vast machine room",
+    "KA_GANTRY": "a gantry between the still gears",
+    "KA_DRUM": "a great silent drum",
+    "KA_WORKS": "the master works of the entire menagerie",
+    "KB_PORTRAIT": "the last portrait, a kind old man",
+    "KC_GATE": "a keeper turnstile, its lock stiff with age",
+    "KC_PASSAGE": "a low passage beyond the turnstile",
+    "S_A_ZONE": "the keeper toolbox",
+    "S_B_ZONE": "the wall of repair manuals",
+    "S_C_ZONE": "the scratched patch of floor",
+    "SA_FIND": "a heavy, unfamiliar tool",
+    "SA_CLUE": "a card of keeper repair instructions",
+    "SB_CLUE": "the mending book's picture of a hidden workshop",
+    "SC_GATE": "a heavy, half-braced gear over the panel",
+    "SC_PASSAGE": "a low crawlspace behind the machine",
+    "S_DOOR": "a low door half-hidden behind the great machine",
+    "P_A_ZONE": "the open repair manual",
+    "P_B_ZONE": "the spare mainspring's peg",
+    "PB_CART": "the little keeper cart",
+    "PC_GATE": "a rusted shortcut lever for the cart",
+    "ANIMAL_BIRD": "the brass lark",
+    "ANIMAL_LION": "the tin lion",
+    "ANIMAL_WHALE": "the great copper whale",
+    "ANIMAL_FLY": "a clockwork butterfly",
+    "ANIMAL_ELEPH": "the once-lurching tin elephant",
+    "SEC_JOURNAL": "keeper Fettle's private journal",
+    "SEC_MOUSE": "a second clockwork mouse, twin to Tock",
+    "SEC_MOUSE_NEST": "a hidden nest of clockwork mice",
+    "SEC_CABINET_ZONE": "the one locked cabinet in the workshop",
+    "SEC_CABINET_KEYS": "the tiny keys on the master ring",
+    "SEC_RABBIT": "a small worn brass rabbit",
+    "DAWN_NOTE": "a keeper pad",
+    "DAWN_CLEANER": "the early cleaner"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A single kid-relatable explorer (name or role); capable but not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COMPANION"
+        ]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The hero's small companion animal who travels with them throughout.",
+      "guidance": "Loyal, non-speaking or lightly-expressive sidekick; never a source of peril; reacts to mood.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the story happens inside.",
+      "guidance": "One building, four internal wings, self-contained; wonder over dread; no lethal hazards, no toxic air.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The starting hall the four wings open off of.",
+      "guidance": "A safe, ordinary starting point; always reachable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The situation that traps the hero inside overnight.",
+      "guidance": "A benign accident (missed transport, locked door), never anyone's fault, never dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The non-lethal time pressure that closes the safe night-time window.",
+      "guidance": "A survivable deadline: morning opening, not a fatal event; being caught by it means an ordinary, safe discovery, never harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The recurring sensory sign the deadline (dawn) is arriving.",
+      "guidance": "A visible, gradual cue (light, sky colour); gives fair warning and escalates slowly.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The central object the hero seeks and later uses: the one key that winds the museum.",
+      "guidance": "A single, benign mechanical key; never a weapon; central macguffin of the first half.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CARETAKER",
+      "scope": "global",
+      "meaning": "The offstage adult who built and tends the museum; never appears in person.",
+      "guidance": "A kind, elderly, harmless figure known only through portrait, letter, journal, and reputation.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CRISIS",
+      "scope": "global",
+      "meaning": "The central mechanical problem blocking the goal: the broken part at the heart of the museum.",
+      "guidance": "A repairable mechanical fault, not a danger to the hero; the obstacle the whole second half solves.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SPARE",
+      "scope": "global",
+      "meaning": "The replacement part the hero must find and fetch to fix the crisis.",
+      "guidance": "A heavy but safe, carriable object.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROTUNDA",
+      "scope": "global",
+      "meaning": "The central hall every wing converges on.",
+      "guidance": "A safe, well-lit meeting point at the building's heart.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WORKROOM",
+      "scope": "global",
+      "meaning": "The room housing the broken crisis object.",
+      "guidance": "Safe, industrial-flavoured, no live hazards beyond the retreatable gates already declared.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WORKSHOP",
+      "scope": "global",
+      "meaning": "The caretaker's hidden supply room.",
+      "guidance": "Snug, warm, safe; contains only benign tools and supplies.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CLOCK",
+      "scope": "global",
+      "meaning": "The great timepiece at the building's heart, near which the goal is found.",
+      "guidance": "A benign, wondrous machine.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LETTER",
+      "scope": "global",
+      "meaning": "The caretaker's letter, explaining the crisis and hinting at a secret.",
+      "guidance": "A warm, handwritten note; never distressing content.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_ZONE",
+      "scope": "route",
+      "meaning": "Wing A's identity, chosen first at the entrance branch.",
+      "guidance": "A distinct, welcoming wing; distinguishable from B, C, D.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_B_ZONE",
+          "ROUTE_C_ZONE",
+          "ROUTE_D_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_DOOR",
+      "scope": "route",
+      "meaning": "The door where wing A's two tracks reconverge toward the rotunda.",
+      "guidance": "A safe, ordinary door.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_ZONE",
+      "scope": "route",
+      "meaning": "Wing B's identity.",
+      "guidance": "Distinct from A, C, D.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_ZONE",
+          "ROUTE_C_ZONE",
+          "ROUTE_D_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_DOOR",
+      "scope": "route",
+      "meaning": "The door where wing B's two tracks reconverge.",
+      "guidance": "Safe, ordinary.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_ZONE",
+      "scope": "route",
+      "meaning": "Wing C's identity.",
+      "guidance": "Distinct from A, B, D.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_ZONE",
+          "ROUTE_B_ZONE",
+          "ROUTE_D_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_DOOR",
+      "scope": "route",
+      "meaning": "The door where wing C's two tracks reconverge.",
+      "guidance": "Safe, ordinary.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_ZONE",
+      "scope": "route",
+      "meaning": "Wing D's identity.",
+      "guidance": "Distinct from A, B, C.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_ZONE",
+          "ROUTE_B_ZONE",
+          "ROUTE_C_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_DOOR",
+      "scope": "route",
+      "meaning": "The door where wing D's two tracks reconverge.",
+      "guidance": "Safe, ordinary.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_ZONE",
+      "scope": "track",
+      "meaning": "Wing A's first sub-area.",
+      "guidance": "A safe, wonder-filled nook; distinct from A2.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "A2_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "A1_FIND",
+      "scope": "track",
+      "meaning": "The notable object discovered in A1.",
+      "guidance": "A benign discovery; never a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_CLUE",
+      "scope": "track",
+      "meaning": "The physical clue object naming the master key, found in A1.",
+      "guidance": "A small, readable clue.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_PATH",
+      "scope": "track",
+      "meaning": "The connecting passage from A1 toward the rotunda.",
+      "guidance": "A safe walkway.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_DOOR",
+      "scope": "track",
+      "meaning": "The door at the end of the A1 track.",
+      "guidance": "Safe, ordinary.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_ZONE",
+      "scope": "track",
+      "meaning": "Wing A's second sub-area (also the risky high route's destination).",
+      "guidance": "Distinct from A1; elevated, a little precarious but not lethal.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "A1_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "A2_FIND",
+      "scope": "track",
+      "meaning": "A decoy object found in A2 that resembles the goal but is not it.",
+      "guidance": "A harmless red herring.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_SIGN",
+      "scope": "track",
+      "meaning": "The real directional cue found in A2.",
+      "guidance": "A benign visual cue.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_PATH",
+      "scope": "track",
+      "meaning": "The connecting passage from A2 toward the rotunda.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back obstacle on wing A's risky high route (climb on vs retreat).",
+      "guidance": "Non-lethal; a cracking stair rung; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "B_GATE",
+          "C_GATE",
+          "D_GATE",
+          "KC_GATE",
+          "SC_GATE",
+          "PC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "A_STUCK",
+      "scope": "ending",
+      "meaning": "The place the hero is safely stranded if she presses past A_GATE.",
+      "guidance": "A safe, if precarious, perch; rescue always comes at opening time.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_ZONE",
+      "scope": "track",
+      "meaning": "Wing B's first sub-area.",
+      "guidance": "Distinct from B2.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "B2_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "B1_FIND",
+      "scope": "track",
+      "meaning": "The hiding spot the hero uses to let the elephant settle.",
+      "guidance": "A safe hiding place.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_PATH",
+      "scope": "track",
+      "meaning": "The connecting passage from B1 toward the rotunda.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_DOOR",
+      "scope": "track",
+      "meaning": "The door at the end of the B1 track.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_ZONE",
+      "scope": "track",
+      "meaning": "Wing B's second sub-area.",
+      "guidance": "Distinct from B1.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "B1_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "B2_FIND",
+      "scope": "track",
+      "meaning": "A decoy container found in B2 that is not the goal.",
+      "guidance": "A harmless red herring.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_SIGN",
+      "scope": "track",
+      "meaning": "The real directional cue found in B2.",
+      "guidance": "A benign visual cue.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DOOR",
+      "scope": "track",
+      "meaning": "The door at the end of the B2 track.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back obstacle on wing B's risky walkway (the lurching elephant blocking the way).",
+      "guidance": "Non-lethal; a large, slow, blind animal; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "C_GATE",
+          "D_GATE",
+          "KC_GATE",
+          "SC_GATE",
+          "PC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C1_ZONE",
+      "scope": "track",
+      "meaning": "Wing C's first sub-area.",
+      "guidance": "Distinct from C2.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "C2_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "C1_FIND",
+      "scope": "track",
+      "meaning": "The notable object discovered in C1.",
+      "guidance": "A benign discovery.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_CLUE",
+      "scope": "track",
+      "meaning": "The physical clue object naming the rotunda, found in C1.",
+      "guidance": "A readable clue.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_DOOR",
+      "scope": "track",
+      "meaning": "The door at the end of the C1 track.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_ZONE",
+      "scope": "track",
+      "meaning": "Wing C's second sub-area.",
+      "guidance": "Distinct from C1.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "C1_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "C2_FIND",
+      "scope": "track",
+      "meaning": "The light source found in C2.",
+      "guidance": "A benign, safe light.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_HATCH",
+      "scope": "track",
+      "meaning": "The passage entry uncovered in C2.",
+      "guidance": "Safe to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_SIGN",
+      "scope": "track",
+      "meaning": "The directional cue found in C2.",
+      "guidance": "A benign visual cue.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_PATH",
+      "scope": "track",
+      "meaning": "The connecting passage from C2 toward the rotunda.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back obstacle on wing C's risky catwalk (a swinging gap to jump).",
+      "guidance": "Non-lethal; a swaying rib over a padded hall; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "B_GATE",
+          "D_GATE",
+          "KC_GATE",
+          "SC_GATE",
+          "PC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C_STUCK",
+      "scope": "ending",
+      "meaning": "The place the hero is safely stranded if she presses past C_GATE.",
+      "guidance": "A safe, if dark, perch above soft netting; rescue always comes at opening time.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_ZONE",
+      "scope": "track",
+      "meaning": "Wing D's first sub-area.",
+      "guidance": "Distinct from D2.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "D2_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "D1_FIND",
+      "scope": "track",
+      "meaning": "The notable object discovered in D1.",
+      "guidance": "A benign discovery.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_CLUE",
+      "scope": "track",
+      "meaning": "The physical clue object naming the master key, found in D1.",
+      "guidance": "A readable clue.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_PATH",
+      "scope": "track",
+      "meaning": "The connecting passage from D1 toward the rotunda.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_DOOR",
+      "scope": "track",
+      "meaning": "The door shared by both D-wing tracks.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D2_ZONE",
+      "scope": "track",
+      "meaning": "Wing D's second sub-area.",
+      "guidance": "Distinct from D1.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "D1_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "D2_FIND",
+      "scope": "track",
+      "meaning": "The map found in D2.",
+      "guidance": "A benign, helpful object.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D2_SIGN",
+      "scope": "track",
+      "meaning": "The directional cue found in D2.",
+      "guidance": "A benign visual cue.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D2_PATH",
+      "scope": "track",
+      "meaning": "The connecting passage from D2 toward the rotunda.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back obstacle on wing D's risky gallery (a shifting glass panel).",
+      "guidance": "Non-lethal; a loose glass panel that never actually breaks; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "B_GATE",
+          "C_GATE",
+          "KC_GATE",
+          "SC_GATE",
+          "PC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "D_STUCK",
+      "scope": "ending",
+      "meaning": "The place the hero is safely shut in if she presses past D_GATE.",
+      "guidance": "A safe, bright little dead end; rescue always comes at opening time.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEY_LADDER",
+      "scope": "track",
+      "meaning": "The ladder used to lift the goal down.",
+      "guidance": "A safe, small tool.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_A_ZONE",
+      "scope": "route",
+      "meaning": "The first of three routes leading from the rotunda toward the crisis room.",
+      "guidance": "A grand, safe passage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_B_ZONE",
+      "scope": "route",
+      "meaning": "The second of three routes leading from the rotunda.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_C_ZONE",
+      "scope": "route",
+      "meaning": "The third of three routes leading from the rotunda (has its own risky gate).",
+      "guidance": "Safe but cramped.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KA_ROOM",
+      "scope": "track",
+      "meaning": "The great machine room behind route K_A.",
+      "guidance": "Safe; wonder-filled machinery, no live hazard beyond context.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KA_GANTRY",
+      "scope": "track",
+      "meaning": "The walkway through the machine room.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KA_DRUM",
+      "scope": "track",
+      "meaning": "A large silent mechanism seen from the gantry.",
+      "guidance": "Inert, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KA_WORKS",
+      "scope": "track",
+      "meaning": "The biggest mechanism at the heart of the museum.",
+      "guidance": "Inert, safe to view.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KB_PORTRAIT",
+      "scope": "track",
+      "meaning": "The final portrait in the K_B gallery, of the caretaker.",
+      "guidance": "A warm, respectful image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KC_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back obstacle on route K_C (a stiff turnstile).",
+      "guidance": "Non-lethal; squeezing through is safe, forcing it only delays the hero. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "B_GATE",
+          "C_GATE",
+          "D_GATE",
+          "SC_GATE",
+          "PC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "KC_PASSAGE",
+      "scope": "track",
+      "meaning": "The passage beyond the K_C turnstile.",
+      "guidance": "Safe, low, narrow.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "S_A_ZONE",
+      "scope": "route",
+      "meaning": "The first of three places to search for repair help.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "S_B_ZONE",
+      "scope": "route",
+      "meaning": "The second of three places to search.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "S_C_ZONE",
+      "scope": "route",
+      "meaning": "The third of three places to search (has its own risky gate).",
+      "guidance": "Safe but cluttered.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SA_FIND",
+      "scope": "track",
+      "meaning": "The tool found in S_A.",
+      "guidance": "A benign, unfamiliar tool.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SA_CLUE",
+      "scope": "track",
+      "meaning": "The instructions found alongside SA_FIND.",
+      "guidance": "A readable how-to.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SB_CLUE",
+      "scope": "track",
+      "meaning": "The picture found in the S_B manuals.",
+      "guidance": "A readable, helpful picture.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SC_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back obstacle on route S_C (a half-braced gear over a crawlspace).",
+      "guidance": "Non-lethal; easing it is safe, yanking it only blocks the way. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "B_GATE",
+          "C_GATE",
+          "D_GATE",
+          "KC_GATE",
+          "PC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "SC_PASSAGE",
+      "scope": "track",
+      "meaning": "The crawlspace beyond SC_GATE.",
+      "guidance": "Safe, low, narrow.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "S_DOOR",
+      "scope": "track",
+      "meaning": "The shared door all three S-routes lead to.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "P_A_ZONE",
+      "scope": "route",
+      "meaning": "The first of three things calling to the hero in the workshop.",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "P_B_ZONE",
+      "scope": "route",
+      "meaning": "The second of three things (where the spare part rests).",
+      "guidance": "Safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PB_CART",
+      "scope": "ending",
+      "meaning": "The keeper cart used to move the spare part.",
+      "guidance": "A safe, simple cart.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PC_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back obstacle on the letter's shortcut route (a rusted lever).",
+      "guidance": "Non-lethal; carrying by hand is safe, the lever only misfires. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "B_GATE",
+          "C_GATE",
+          "D_GATE",
+          "KC_GATE",
+          "SC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ANIMAL_BIRD",
+      "scope": "ending",
+      "meaning": "The small songbird the hero can choose to wake.",
+      "guidance": "A gentle, joyful creature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ANIMAL_LION",
+          "ANIMAL_WHALE",
+          "ANIMAL_FLY",
+          "ANIMAL_ELEPH"
+        ]
+      }
+    },
+    {
+      "id": "ANIMAL_LION",
+      "scope": "ending",
+      "meaning": "The lion the hero can choose to wake.",
+      "guidance": "A grand but gentle creature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ANIMAL_BIRD",
+          "ANIMAL_WHALE",
+          "ANIMAL_FLY",
+          "ANIMAL_ELEPH"
+        ]
+      }
+    },
+    {
+      "id": "ANIMAL_WHALE",
+      "scope": "ending",
+      "meaning": "The whale the hero can choose to wake.",
+      "guidance": "A wondrous, gentle creature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ANIMAL_BIRD",
+          "ANIMAL_LION",
+          "ANIMAL_FLY",
+          "ANIMAL_ELEPH"
+        ]
+      }
+    },
+    {
+      "id": "ANIMAL_FLY",
+      "scope": "ending",
+      "meaning": "The butterfly the hero can choose to wake.",
+      "guidance": "A delicate, gentle creature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ANIMAL_BIRD",
+          "ANIMAL_LION",
+          "ANIMAL_WHALE",
+          "ANIMAL_ELEPH"
+        ]
+      }
+    },
+    {
+      "id": "ANIMAL_ELEPH",
+      "scope": "ending",
+      "meaning": "The elephant (the same one from wing B's risky route) the hero can choose to wake.",
+      "guidance": "The once-lurching creature, now understood to be gentle.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ANIMAL_BIRD",
+          "ANIMAL_LION",
+          "ANIMAL_WHALE",
+          "ANIMAL_FLY"
+        ]
+      }
+    },
+    {
+      "id": "SEC_JOURNAL",
+      "scope": "track",
+      "meaning": "The caretaker's private journal.",
+      "guidance": "A warm, personal record; never distressing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SEC_MOUSE",
+      "scope": "track",
+      "meaning": "A second small clockwork companion, twin to the hero's own.",
+      "guidance": "Playful, never a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SEC_MOUSE_NEST",
+      "scope": "track",
+      "meaning": "The hidden nest of small companions the mouse leads to.",
+      "guidance": "A safe, sweet surprise.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SEC_CABINET_ZONE",
+      "scope": "ending",
+      "meaning": "The one locked cabinet in the workshop.",
+      "guidance": "Safe; opening it gently succeeds, forcing it only jams it. Distinct from the risky gates: nothing traps the hero here, only the object.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SEC_CABINET_KEYS",
+      "scope": "track",
+      "meaning": "The small keys the hero tries on the cabinet.",
+      "guidance": "Benign, fiddly little keys.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SEC_RABBIT",
+      "scope": "track",
+      "meaning": "The caretaker's first-ever creation, found in the cabinet.",
+      "guidance": "A precious, gentle keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DAWN_NOTE",
+      "scope": "track",
+      "meaning": "The written note the hero can leave for the morning staff.",
+      "guidance": "A clear, helpful note.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DAWN_CLEANER",
+      "scope": "ending",
+      "meaning": "The early museum staff member who locks a gate, not knowing a child is there.",
+      "guidance": "A harmless case of mistaken timing; never threatening.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    }
+  ]
+}

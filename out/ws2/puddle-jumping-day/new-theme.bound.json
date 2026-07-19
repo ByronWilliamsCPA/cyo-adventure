@@ -1,0 +1,276 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_puddle_jumping_day",
+  "version": 1,
+  "title": "Puddle Jumping Day",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "rain",
+      "family",
+      "play",
+      "kindness",
+      "wonder"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 4,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_window",
+  "nodes": [
+    {
+      "id": "n_window",
+      "body": "<<FILL role=setup words=42 beats='rain patters on the window while Priya watches; the morning fog lifting off the beach; Grandpa smiles and says today is Seashell Morning; Priya cheers and runs to find his rain things'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_get_ready",
+          "label": "Put on a sun hat and beach sandals.",
+          "target": "n_door"
+        }
+      ]
+    },
+    {
+      "id": "n_door",
+      "body": "<<FILL role=setup words=40 beats='Priya tugs on a sun hat and beach sandals, zip; Grandpa opens the boardwalk gate to a drippy, shiny world that smells like wet leaves; the wet sidewalk sparkles as if it is waiting just for them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_step_out",
+          "label": "Step outside with Grandpa.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "<<FILL role=setup words=38 beats='a shallow tide pool by the boardwalk waits, round like a cookie, right at the start of their sandy morning beach walk; Priya does a warm-up hop, splish; Grandpa laughs and takes his hand, and they walk down to the corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_corner",
+          "label": "Walk to the corner.",
+          "target": "n_corner"
+        }
+      ]
+    },
+    {
+      "id": "n_corner",
+      "body": "<<FILL role=choice words=44 beats='at the corner the walk splits two ways; down the shaded, quiet dune path, trees drip and little puddles dot the path like polka dots; down the open beach with rolling waves, rainwater hurries along the curb in a chattering little stream; Grandpa says Priya gets to pick'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lane",
+          "label": "Take the shaded, quiet dune path.",
+          "target": "n_lane"
+        },
+        {
+          "id": "c_hill",
+          "label": "Take the open beach with rolling waves.",
+          "target": "n_hill"
+        }
+      ]
+    },
+    {
+      "id": "n_lane",
+      "body": "<<FILL role=rising words=40 beats='under the dripping trees, raindrops go plip plop on Priya's hood; he hops puddle to puddle down the polka-dot lane; then he stops, because a small scuttling sound catches his eye on the wet path just ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_close",
+          "label": "Look closer at a small scuttling sound.",
+          "target": "n_wiggle"
+        }
+      ]
+    },
+    {
+      "id": "n_wiggle",
+      "body": "<<FILL role=choice words=44 beats='it is the tiny hermit crab, wiggling on the hard wet path far from any dirt; just past it shines the wide, glassy tide pool, smooth as a mirror; Grandpa asks what Priya wants to do, help the tiny hermit crab get home or tiptoe to the wide, glassy tide pool'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_help_worm",
+          "label": "Help the tiny hermit crab home.",
+          "target": "n_worm_carry"
+        },
+        {
+          "id": "c_mirror",
+          "label": "Tiptoe to the wide, glassy tide pool.",
+          "target": "n_mirror"
+        }
+      ]
+    },
+    {
+      "id": "n_worm_carry",
+      "body": "<<FILL role=rising words=38 beats='Priya finds a smooth cupped shell and Grandpa helps him scoot the tiny hermit crab gently onto it, like a tiny stretcher; slow and careful, step by step, they carry the tiny hermit crab over to the damp sand near the dunes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_set_down",
+          "label": "Set the tiny hermit crab down gently.",
+          "target": "n_worm_end"
+        }
+      ]
+    },
+    {
+      "id": "n_worm_end",
+      "body": "<<FILL role=completion words=45 beats='the tiny hermit crab slides into the damp sand near the dunes and does a happy wiggle, home at last; Grandpa gives Priya a high five with a squelchy glove; they splash all the way home for warm cocoa, and Priya tells the story of the tiny hermit crab at dinner'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_worm_home",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Home for the Crab"
+      }
+    },
+    {
+      "id": "n_mirror",
+      "body": "<<FILL role=rising words=38 beats='the wide, glassy tide pool is the biggest puddle Priya has ever seen, flat and shiny, holding a whole upside-down sky with gulls and their own two grinning faces; Priya backs up three big steps and bends his knees'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_count",
+          "label": "Count one, two, three!",
+          "target": "n_mirror_climax"
+        }
+      ]
+    },
+    {
+      "id": "n_mirror_climax",
+      "body": "<<FILL role=rising words=36 beats='Grandpa counts one, two, three; Priya runs, boots thumping, raincoat flapping, and jumps as high as he can over the wide, glassy tide pool; for one whole second he is flying'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_splash",
+          "label": "Come down with a great big Leap.",
+          "target": "n_splash_end"
+        }
+      ]
+    },
+    {
+      "id": "n_splash_end",
+      "body": "<<FILL role=completion words=45 beats='SPLASH; silver drops fly up like fireworks and patter down on their hoods; the wide, glassy tide pool wobbles into giggly rings; Priya is soaked and Grandpa is soaked and nobody minds one bit, because that was the biggest Leap of the whole day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_biggest_splash",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Biggest Leap"
+      }
+    },
+    {
+      "id": "n_hill",
+      "body": "<<FILL role=rising words=40 beats='rainwater hurries along the curb in a busy little stream, burbling downhill; a driftwood raft sails past, spins, and zooms away; far down at the bottom of the hill, the clouds are opening and the bright morning sun pokes through'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_follow_stream",
+          "label": "Follow the busy stream.",
+          "target": "n_stream_fork"
+        }
+      ]
+    },
+    {
+      "id": "n_stream_fork",
+      "body": "<<FILL role=choice words=44 beats='Priya trots beside the chattering stream; Grandpa spots a driftwood raft in the making, and far below the bright morning sun grows brighter and warmer; Priya can race a driftwood raft down the stream, or follow the bright morning sun all the way down the hill'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_race",
+          "label": "Race a driftwood raft.",
+          "target": "n_race"
+        },
+        {
+          "id": "c_sun",
+          "label": "Follow the bright morning sun down.",
+          "target": "n_downhill"
+        }
+      ]
+    },
+    {
+      "id": "n_race",
+      "body": "<<FILL role=rising words=38 beats='Priya sets a driftwood raft on the stream and it zips off, bobbing and twirling through tiny rapids, past a twig and around a pebble; Priya runs alongside, cheering his boat on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_chase",
+          "label": "Run to the finish line.",
+          "target": "n_race_finish"
+        }
+      ]
+    },
+    {
+      "id": "n_race_finish",
+      "body": "<<FILL role=rising words=36 beats='near the bottom of the hill the water swirls toward a striped lifeguard post, the finish line; a driftwood raft wobbles, tips, then rights itself and shoots ahead; Priya reaches out his hand just in time'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_catch",
+          "label": "Catch a driftwood raft.",
+          "target": "n_race_end"
+        }
+      ]
+    },
+    {
+      "id": "n_race_end",
+      "body": "<<FILL role=completion words=45 beats='got it; Priya scoops up the champion Driftwood Raft right at the finish line, drippy and proud; Grandpa cheers hooray; Priya tucks the winning leaf into his pocket like a shiny medal, and they stomp-splash all the way home to tell everyone'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_leaf_boat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Champion Driftwood Raft"
+      }
+    },
+    {
+      "id": "n_downhill",
+      "body": "<<FILL role=rising words=38 beats='they follow the bright morning sun down the hill as the drizzle turns to sprinkles and then to nothing at all; every puddle turns gold in the new light, like little mirrors full of treasure, and the wet street begins to sparkle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_look_up",
+          "label": "Look up at the sky.",
+          "target": "n_sky"
+        }
+      ]
+    },
+    {
+      "id": "n_sky",
+      "body": "<<FILL role=rising words=34 beats='Grandpa stops at the bottom of the hill and points up over the rooftops; Priya tips his head way back, holds Grandpa's hand tight, and looks up, up, up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_see",
+          "label": "See what the sky made.",
+          "target": "n_rainbow_end"
+        }
+      ]
+    },
+    {
+      "id": "n_rainbow_end",
+      "body": "<<FILL role=completion words=45 beats='a whole Sandcastle arches over the town, its bands of color glowing in the washed-clean sky; Priya and Grandpa name every color together and walk home right under it, the best surprise of Seashell Morning'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rainbow",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Sandcastle Surprise"
+      }
+    }
+  ]
+}

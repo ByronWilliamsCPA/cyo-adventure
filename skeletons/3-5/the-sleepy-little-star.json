@@ -34,19 +34,19 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=42 beats='the sun slips down and the sky turns soft purple over the sleepy meadow; high above, Twinkle the littlest star wakes up in her fluffy cloud bed and rubs her eyes; tonight is her very first night to shine all by herself'>>",
+      "body": "<<FILL role=setup words=42 beats='{OPENING_MOMENT} over {THRESHOLD}; high above, {HERO}, {HERO_ROLE}, wakes up in {HOME} and rubs her eyes; tonight is her very first night to shine all by herself'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_start_peek",
-          "label": "Peek out at the evening sky.",
+          "label": "Peek out at {THRESHOLD}.",
           "target": "n_moon"
         }
       ]
     },
     {
       "id": "n_moon",
-      "body": "<<FILL role=setup words=40 beats='kind round Moon rises slowly and smiles at Twinkle; Moon whispers that the big quiet sky is waiting for her little light; Twinkle feels fluttery and shy in her tummy, so she squeezes her points tight and gets ready to be brave'>>",
+      "body": "<<FILL role=setup words=40 beats='{COMPANION} rises slowly and smiles at {HERO}; {COMPANION} whispers that {THRESHOLD} is waiting for her little light; {HERO} feels fluttery and shy in her tummy, so she squeezes her {HERO_FEATURE} tight and gets ready to be brave'>>",
       "is_ending": false,
       "choices": [
         {
@@ -58,34 +58,34 @@
     },
     {
       "id": "n_ready",
-      "body": "<<FILL role=choice words=40 beats='Twinkle floats to her very own spot in the sky and wonders how to start shining; she could hide behind the fluffy cloud first, or do a big wiggle to wake up her sparkle, or scoot down low to peek at the world below'>>",
+      "body": "<<FILL role=choice words=40 beats='{HERO} floats to {ENTRANCE} and wonders how to start shining; she could hide behind {ROUTE_A_CHAR} first, or do {ROUTE_B_CHAR} to wake up her sparkle, or scoot down to peek at {ROUTE_C_CHAR}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ready_cloud",
-          "label": "Hide behind the fluffy cloud.",
+          "label": "Hide behind {ROUTE_A_CHAR}.",
           "target": "n_cloud"
         },
         {
           "id": "c_ready_wiggle",
-          "label": "Do a big sparkle wiggle.",
+          "label": "Do {ROUTE_B_CHAR}.",
           "target": "n_wiggle"
         },
         {
           "id": "c_ready_low",
-          "label": "Scoot down low to peek at the world.",
+          "label": "Scoot down to peek at {ROUTE_C_CHAR}.",
           "target": "n_slide"
         }
       ]
     },
     {
       "id": "n_cloud",
-      "body": "<<FILL role=choice words=40 beats='Twinkle tucks herself behind the fluffy cloud so only the very tip of her glow peeks out; the cloud is soft and cozy, but her spot in the sky stays dark and empty; she can snuggle deeper into the fluff or peek out one tiny sparkle'>>",
+      "body": "<<FILL role=choice words=40 beats='{HERO} tucks herself behind {ROUTE_A_CHAR} so only the very tip of her glow peeks out; {ROUTE_A_CHAR} is soft and cozy, but {ENTRANCE} stays dark and empty; she can snuggle deeper into {ROUTE_A_CHAR} or peek out one tiny sparkle'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cloud_snuggle",
-          "label": "Snuggle deeper into the cloud.",
+          "label": "Snuggle deeper into {ROUTE_A_CHAR}.",
           "target": "n_cozy_retry"
         },
         {
@@ -97,7 +97,7 @@
     },
     {
       "id": "n_cozy_retry",
-      "body": "<<FILL role=rising words=38 beats='deep in the cozy cloud Twinkle rests a little while and Moon hums one soft low note; the cloud fluff tickles her nose and she giggles a tiny giggle; the rest makes her feel a little braver, so she floats back toward her spot to try again'>>",
+      "body": "<<FILL role=rising words=38 beats='deep in {ROUTE_A_CHAR} {HERO} rests a little while and {COMPANION} hums one soft low note; {ROUTE_A_CHAR} tickles her nose and she giggles a tiny giggle; the rest makes her feel a little braver, so she floats back toward {ENTRANCE} to try again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -109,7 +109,7 @@
     },
     {
       "id": "n_peek",
-      "body": "<<FILL role=rising words=38 beats='one tiny sparkle slips out and drifts all the way down to the dark meadow, where a firefly blinks hello back up at her; Twinkle gasps with joy, her little light reached somebody; her glow steadies and grows a bit warmer and bolder'>>",
+      "body": "<<FILL role=rising words=38 beats='one tiny sparkle slips out and drifts all the way down to {THRESHOLD}, where {A2_FIND} blinks hello back up at her; {HERO} gasps with joy, her little light reached somebody; her glow steadies and grows a bit warmer and bolder'>>",
       "is_ending": false,
       "choices": [
         {
@@ -121,7 +121,7 @@
     },
     {
       "id": "n_wiggle",
-      "body": "<<FILL role=choice words=40 beats='Twinkle wiggles and jiggles to wake up her sparkle, and gold glitter shakes off her points in every direction; it is very fun but very wobbly, and her light flickers like a hiccup; she can wiggle even faster or slow down and sway like a lullaby'>>",
+      "body": "<<FILL role=choice words=40 beats='{HERO} wiggles and jiggles to wake up her sparkle, and {WIGGLE_GLITTER} shakes off her {HERO_FEATURE} in every direction; it is very fun but very wobbly, and her light flickers like a hiccup; she can wiggle even faster or slow down and sway like a lullaby'>>",
       "is_ending": false,
       "choices": [
         {
@@ -138,7 +138,7 @@
     },
     {
       "id": "n_giggle_retry",
-      "body": "<<FILL role=rising words=38 beats='Twinkle wiggles so fast she spins in a dizzy circle and plops onto a puff of cloud, giggling; her sparkle goes all fizzy like tiny bubbles; Moon chuckles kindly and says gently does it, little one, so she dusts off her points and floats back to try again'>>",
+      "body": "<<FILL role=rising words=38 beats='{HERO} wiggles so fast she spins in a dizzy circle and plops onto {B1_LANDING}, giggling; her sparkle goes all fizzy like tiny bubbles; {COMPANION} chuckles kindly and says gently does it, little one, so she dusts off her {HERO_FEATURE} and floats back to try again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -150,24 +150,24 @@
     },
     {
       "id": "n_sway",
-      "body": "<<FILL role=rising words=36 beats='Twinkle sways slowly, side to side, like the tall grass in the meadow far below; her sparkle settles into one warm, steady glow; the swaying feels just like a lullaby and she hums along softly, calm and ready at last'>>",
+      "body": "<<FILL role=rising words=36 beats='{HERO} sways slowly, side to side, like {B2_SCENE}; her sparkle settles into one warm, steady glow; the swaying feels just like a lullaby and she hums along softly, calm and ready at last'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_sway_spot",
-          "label": "Glide to her shining spot.",
+          "label": "Glide to {ENTRANCE}.",
           "target": "n_almost"
         }
       ]
     },
     {
       "id": "n_slide",
-      "body": "<<FILL role=choice words=40 beats='Twinkle scoots down the dark blue sky to peek at the world, but whoops, the sky is slippery tonight and she slides down, down, down to just above the treetops; she can grab a silvery moonbeam and climb right back up, or take a little peek around from down low'>>",
+      "body": "<<FILL role=choice words=40 beats='{HERO} scoots down {THRESHOLD} to peek at {ROUTE_C_CHAR}, but whoops, {THRESHOLD} is slippery tonight and she slides down, down, down to just above {SLIDE_LOW}; she can grab a {CLIMB_AID} and climb right back up, or take a little peek around from down low'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_slide_climb",
-          "label": "Climb the moonbeam back up.",
+          "label": "Climb the {CLIMB_AID} back up.",
           "target": "n_ready"
         },
         {
@@ -179,19 +179,19 @@
     },
     {
       "id": "n_low",
-      "body": "<<FILL role=rising words=40 beats='from down low Twinkle sees little houses with warm yellow windows, and children in pajamas peeking up, waiting for the very first star; her heart glows warm as toast; the children need her light tonight, so she floats up and up toward her spot in the sky'>>",
+      "body": "<<FILL role=rising words=40 beats='from down low {HERO} sees {LOW_HOUSES}, and {CHILDREN} peeking up, waiting for {HERO_ROLE}; her heart glows warm as toast; {CHILDREN} need her light tonight, so she floats up and up toward {ENTRANCE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_low_up",
-          "label": "Float up to her spot in the sky.",
+          "label": "Float up to {ENTRANCE}.",
           "target": "n_almost"
         }
       ]
     },
     {
       "id": "n_almost",
-      "body": "<<FILL role=choice words=40 beats='back at her very own spot, the sky finally feels just right, soft and dark and quiet as a blanket; Moon nods proudly and the whole night seems to wait; Twinkle can try one tiny practice sparkle first, or hold onto a moonbeam and shine all at once'>>",
+      "body": "<<FILL role=choice words=40 beats='back at {ENTRANCE}, {THRESHOLD} finally feels just right, soft and dark and quiet as a blanket; {COMPANION} nods proudly and the whole night seems to wait; {HERO} can try one tiny practice sparkle first, or hold onto a {CLIMB_AID} and shine all at once'>>",
       "is_ending": false,
       "choices": [
         {
@@ -201,14 +201,14 @@
         },
         {
           "id": "c_almost_all",
-          "label": "Hold a moonbeam and shine all at once.",
+          "label": "Hold a {CLIMB_AID} and shine all at once.",
           "target": "n_shine"
         }
       ]
     },
     {
       "id": "n_first_sparkle",
-      "body": "<<FILL role=rising words=36 beats='Twinkle lets out one small practice sparkle and it glows steady and bright, not wobbly at all; she laughs out loud with happy surprise; her shyness floats away like a little cloud, and now she is truly ready to shine her whole light'>>",
+      "body": "<<FILL role=rising words=36 beats='{HERO} lets out one small practice sparkle and it glows steady and bright, not wobbly at all; she laughs out loud with happy surprise; her shyness floats away like a little cloud, and now she is truly ready to shine her whole light'>>",
       "is_ending": false,
       "choices": [
         {
@@ -220,57 +220,57 @@
     },
     {
       "id": "n_shine",
-      "body": "<<FILL role=choice words=42 beats='Twinkle takes the biggest breath of all and shines, and her silver light spills soft and bright across the whole quiet sky; Moon beams with pride; now Twinkle can wink goodnight to the children below, or sing a twinkle song with Moon, or invite the other little stars to shine along'>>",
+      "body": "<<FILL role=choice words=42 beats='{HERO} takes the biggest breath of all and shines, and her silver light spills soft and bright across {THRESHOLD}; {COMPANION} beams with pride; now {HERO} can wink goodnight to {CHILDREN} below, or sing {LULLABY_SONG} with {COMPANION}, or invite {OTHER_STARS} to shine along'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_shine_wink",
-          "label": "Wink goodnight to the children.",
+          "label": "Wink goodnight to {CHILDREN}.",
           "target": "e_goodnight"
         },
         {
           "id": "c_shine_song",
-          "label": "Sing a twinkle song with Moon.",
+          "label": "Sing {LULLABY_SONG} with {COMPANION}.",
           "target": "e_lullaby"
         },
         {
           "id": "c_shine_stars",
-          "label": "Invite the other little stars.",
+          "label": "Invite {OTHER_STARS}.",
           "target": "e_friends"
         }
       ]
     },
     {
       "id": "e_goodnight",
-      "body": "<<FILL role=completion words=44 beats='Twinkle twinkles a slow, gentle goodnight wink, and far below the children wave from their windows and snuggle into their beds; the meadow grows quiet and dreamy under her soft silver light; Twinkle shines calm and proud, the littlest star, right where she belongs'>>",
+      "body": "<<FILL role=completion words=44 beats='{HERO} twinkles a slow, gentle goodnight wink, and far below {CHILDREN} wave from their windows and snuggle into their beds; {THRESHOLD} grows quiet and dreamy under her soft silver light; {HERO} shines calm and proud, {HERO_ROLE}, right where she belongs'>>",
       "is_ending": true,
       "ending": {
         "id": "end_goodnight",
         "valence": "positive",
         "kind": "completion",
-        "title": "Goodnight, Little World"
+        "title": "Goodnight, {GOODNIGHT_PRIZE}"
       }
     },
     {
       "id": "e_lullaby",
-      "body": "<<FILL role=completion words=44 beats='Twinkle and Moon hum a soft twinkle-twinkle song together while the sky rocks slow and gentle like a cradle; her light glows in time with the tune; down below, sleepy eyes close one by one; Twinkle sings the whole world to sleep and is not one bit shy anymore'>>",
+      "body": "<<FILL role=completion words=44 beats='{HERO} and {COMPANION} hum {LULLABY_SONG} together while {THRESHOLD} rocks slow and gentle like a cradle; her light glows in time with the tune; down below, sleepy eyes close one by one; {HERO} sings the whole world to sleep and is not one bit shy anymore'>>",
       "is_ending": true,
       "ending": {
         "id": "end_lullaby",
         "valence": "positive",
         "kind": "success",
-        "title": "The Twinkle Lullaby"
+        "title": "The {HERO} {LULLABY_PRIZE}"
       }
     },
     {
       "id": "e_friends",
-      "body": "<<FILL role=completion words=44 beats='Twinkle calls out softly and one by one the other little stars pop out beside her, blinking hello until the sky is full of friendly lights; shining is easy with friends all around; Twinkle glows happiest of all, the sleepy little star who lit up the whole night'>>",
+      "body": "<<FILL role=completion words=44 beats='{HERO} calls out softly and one by one {OTHER_STARS} pop out beside her, blinking hello until {THRESHOLD} is full of friendly lights; shining is easy with friends all around; {HERO} glows happiest of all, {HERO_ROLE} who lit up the whole night'>>",
       "is_ending": true,
       "ending": {
         "id": "end_friends",
         "valence": "positive",
         "kind": "success",
-        "title": "A Sky Full of Friends"
+        "title": "{FRIENDS_PRIZE}"
       }
     }
   ]

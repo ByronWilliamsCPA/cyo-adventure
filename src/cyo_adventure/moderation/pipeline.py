@@ -18,6 +18,7 @@ from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.moderation.classifiers import run_classifiers
+from cyo_adventure.moderation.leaf_diversity import run_leaf_diversity_check
 from cyo_adventure.moderation.repair import attempt_repair
 from cyo_adventure.moderation.report import (
     Finding,
@@ -151,6 +152,14 @@ async def run_moderation_pipeline(
             )
         )
 
+    # Advisory leaf-diversity guard (WS-1): deterministic, local, fail-open.
+    # Runs BEFORE the soft gate so an ATG FAIL's per-node FLAGs ride the same
+    # single bounded repair as any stage flag; skipped when a hard block has
+    # already decided routing (has_soft_flag would ignore the FLAGs anyway).
+    await _apply_leaf_diversity_findings(
+        session=session, storybook=storybook, version_row=version_row, report=report
+    )
+
     # Soft gate: one bounded auto-repair, then re-moderate once.
     if report.has_soft_flag and not report.has_hard_block:
         revised = await attempt_repair(
@@ -245,6 +254,33 @@ async def run_moderation_pipeline(
             "counts": _verdict_counts(report),
         },
     )
+
+
+async def _apply_leaf_diversity_findings(
+    *,
+    session: AsyncSession,
+    storybook: Storybook,
+    version_row: StorybookVersion,
+    report: ModerationReport,
+) -> None:
+    """Append the leaf-diversity guard's findings to ``report``, if any.
+
+    Skipped entirely when a hard block has already decided routing: the
+    guard is advisory and ``has_soft_flag`` would ignore its FLAGs anyway,
+    so running it would spend two DB reads for no observable effect.
+
+    Args:
+        session: The pipeline's own open async session.
+        storybook: The db row under moderation.
+        version_row: The persisted version under moderation.
+        report: The accumulating report; findings are added in place.
+    """
+    if report.has_hard_block:
+        return
+    for finding in await run_leaf_diversity_check(
+        session=session, storybook=storybook, version_row=version_row
+    ):
+        report.add(finding)
 
 
 def _tier_of(blob: dict[str, object]) -> object:

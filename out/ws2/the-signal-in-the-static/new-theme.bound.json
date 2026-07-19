@@ -1,0 +1,1760 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_signal_in_the_static",
+  "version": 1,
+  "title": "The Signal in the Static",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "mystery",
+      "suspense",
+      "perseverance",
+      "connection"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 32,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=155 beats='Priya cannot sleep, so she climbs to the attic and switches on her late aunt's old radio set; out of the static comes the drift she heard last night, a voice reading a string of numbers, then a slow rising chime pattern that resets and begins again; three threads tug at her, the bearing numbers buried in the numbers, the abandoned lighthouse station, and her aunt's weather log her late aunt kept'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Plot the bearing numbers the voice keeps reading.",
+          "target": "r_coord_1"
+        },
+        {
+          "id": "c_n_start_2",
+          "label": "Bike out to the abandoned lighthouse station.",
+          "target": "r_relay_1"
+        },
+        {
+          "id": "c_n_start_3",
+          "label": "Dig out her aunt's weather log.",
+          "target": "r_notes_1"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_1",
+      "body": "<<FILL role=rising words=140 beats='Priya copies the numbers onto graph paper and treats them as the bearing numbers; two of them resolve to places she knows, the marina down the hill and the clock tower on the ridge, and she has to pick which to walk to before her handheld radio's batteries run out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_1_1",
+          "label": "Head down to the marina.",
+          "target": "r_coord_harbor"
+        },
+        {
+          "id": "c_r_coord_1_2",
+          "label": "Climb to the clock tower.",
+          "target": "r_coord_tower"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_harbor",
+      "body": "<<FILL role=choice words=135 beats='the marina is asleep, ropes ticking against masts; the bearing numbers point between the dockmaster's office, where a light still burns, and the old customs shed that everyone says was shut years ago'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_harbor_1",
+          "label": "Knock at the dockmaster's office.",
+          "target": "r_coord_harbor_ask"
+        },
+        {
+          "id": "c_r_coord_harbor_2",
+          "label": "Cross to the old customs shed.",
+          "target": "r_coord_harbor_shed"
+        },
+        {
+          "id": "c_r_coord_harbor_3",
+          "label": "Check the marina bulletin board.",
+          "target": "r_coord_notice"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_notice",
+      "body": "<<FILL role=rising words=120 beats='the marina bulletin board is layered with faded flyers, but a taped index card is newer than the rest, inked by a careful hand with words claiming the drift is real; someone has been leaving breadcrumbs for anyone who listens hard enough'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_notice_1",
+          "label": "Examine a taped index card more closely.",
+          "target": "r_coord_notice2"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_notice2",
+      "body": "<<FILL role=choice words=125 beats='a taped index card's frequency matches the drift exactly, and the ink is barely dry; Priya can follow the slip as the deliberate clue it plainly is, or she can decide a weathered card proves nothing and let the wind have it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_notice2_1",
+          "label": "Follow a taped index card.",
+          "target": "r_coord_beat"
+        },
+        {
+          "id": "c_r_coord_notice2_2",
+          "label": "Dismiss it as old junk and move on.",
+          "target": "e_coord_notice"
+        }
+      ]
+    },
+    {
+      "id": "e_coord_notice",
+      "body": "<<FILL role=failure words=110 beats='Priya tells herself a scrap of card means nothing and lets it flap loose into the dark; only later does she wonder whose careful hand wrote it, and by then the drift is just a sound she used to chase'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coord_notice",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Scrap of Card"
+      }
+    },
+    {
+      "id": "r_coord_harbor_ask",
+      "body": "<<FILL role=rising words=130 beats='the dockmaster listens to the drift on Priya's phone and frowns; he says a signal like that used to run off the abandoned lighthouse station, and that whoever kept it going was stubborn as barnacles, then he points her toward the truth without quite meaning to'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_harbor_ask_1",
+          "label": "Follow the thread back to the abandoned lighthouse station.",
+          "target": "r_coord_beat"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_harbor_shed",
+      "body": "<<FILL role=choice words=130 beats='the old customs shed is padlocked but the window is cracked; inside, a battered receiver blinks in time with the drift, proof it reaches here too, and Priya weighs forcing the warped door against simply logging the frequency and going home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_harbor_shed_1",
+          "label": "Force the warped door.",
+          "target": "r_coord_shed_in"
+        },
+        {
+          "id": "c_r_coord_harbor_shed_2",
+          "label": "Just log the frequency and leave.",
+          "target": "e_coord_shed_leave"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_shed_in",
+      "body": "<<FILL role=rising words=130 beats='The door gives with a groan; a battered receiver is wired to a hand-drawn card reading relay VR, and Priya realizes this set is only an echo of something broadcasting from the abandoned lighthouse station'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_shed_in_1",
+          "label": "Trace it to the abandoned lighthouse station.",
+          "target": "r_coord_beat"
+        }
+      ]
+    },
+    {
+      "id": "e_coord_shed_leave",
+      "body": "<<FILL role=failure words=115 beats='Priya writes the frequency neatly in her notebook and walks home, telling herself she will come back with a plan; she never quite does, and the drift keeps counting down to no one, a light blinking over an empty the marina'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coord_leave",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Filed and Forgotten"
+      }
+    },
+    {
+      "id": "r_coord_tower",
+      "body": "<<FILL role=choice words=135 beats='the clock tower stands rusted against the stars, a stub of antenna still bolted to its cap; the drift is stronger here, and Priya can either climb the iron stairwell or search the locked utility panel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_tower_1",
+          "label": "Climb toward the antenna.",
+          "target": "r_coord_climb"
+        },
+        {
+          "id": "c_r_coord_tower_2",
+          "label": "Search the locked utility panel.",
+          "target": "r_coord_base"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_climb",
+      "body": "<<FILL role=rising words=140 beats='Halfway up the iron stairwell the wind shoves at Priya, but from the cap she sees a coiled wire toward the point running toward the dark shape of the abandoned lighthouse station; the drift is not here, it only passes through'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_climb_1",
+          "label": "Follow the cable to the abandoned lighthouse station.",
+          "target": "r_coord_beat"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_base",
+      "body": "<<FILL role=choice words=130 beats='the locked utility panel is furred with rust; one panel is loose enough to pry, though it might take her whole night, while a painted directional mark simply points along the ridge toward the abandoned lighthouse station'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_base_1",
+          "label": "Pry the rusted panel open.",
+          "target": "r_coord_base_in"
+        },
+        {
+          "id": "c_r_coord_base_2",
+          "label": "Follow a painted directional mark instead.",
+          "target": "r_coord_base_out"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_base_in",
+      "body": "<<FILL role=rising words=125 beats='Inside the locked utility panel is a junction and a laminated tag reading VR RELAY, DO NOT DISCONNECT; the clock tower is only a repeater, and the real transmitter is further out at the abandoned lighthouse station'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_base_in_1",
+          "label": "Head for the abandoned lighthouse station.",
+          "target": "r_coord_beat"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_base_out",
+      "body": "<<FILL role=rising words=120 beats='a painted directional mark leads Priya along a cracked service path toward the abandoned lighthouse station; whoever laid this trail wanted it followed, and the drift grows steadier with every step'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_base_out_1",
+          "label": "Keep following the path.",
+          "target": "r_coord_beat"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_beat",
+      "body": "<<FILL role=rising words=130 beats='Priya pieces together every clue on her graph paper; every arrow, every echo, points to one source at the abandoned lighthouse station, and a slow rising chime pattern feels suddenly less like noise and more like a message with an address'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_beat_1",
+          "label": "Close in on the source.",
+          "target": "r_coord_close"
+        }
+      ]
+    },
+    {
+      "id": "r_coord_close",
+      "body": "<<FILL role=rising words=120 beats='The last leg of the bearing numbers's trail brings Priya to a wind-scoured overlook above the abandoned lighthouse station; the drift is loudest here, unmistakably alive, and whatever it is, it is close enough now to touch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_coord_close_1",
+          "label": "Confront what is transmitting.",
+          "target": "n_b1"
+        }
+      ]
+    },
+    {
+      "id": "r_relay_1",
+      "body": "<<FILL role=rising words=140 beats='Priya wheels her bike toward the abandoned lighthouse station; it squats at the cliff edge, its mast a black needle against the moon, and two ways lead in, the cliffside trail or the tidal causeway that curves behind the compound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_relay_1_1",
+          "label": "Take the cliffside trail.",
+          "target": "r_re_path"
+        },
+        {
+          "id": "c_r_relay_1_2",
+          "label": "Take the tidal causeway.",
+          "target": "r_re_lane"
+        }
+      ]
+    },
+    {
+      "id": "r_re_path",
+      "body": "<<FILL role=choice words=130 beats='the cliffside trail runs a hands-width from the fence above a long drop; the wind is vicious, and Priya spots a loose section of railing, though part of her says to photograph the mast and retreat before she is blown off the ledge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_re_path_1",
+          "label": "Slip through a loose section of railing.",
+          "target": "r_re_gap"
+        },
+        {
+          "id": "c_r_re_path_2",
+          "label": "Photograph the mast and turn back.",
+          "target": "e_re_photo"
+        }
+      ]
+    },
+    {
+      "id": "r_re_gap",
+      "body": "<<FILL role=rising words=130 beats='Priya squeezes through a loose section of railing into the compound; a rusted warning placard reads RELAY VR, and a dim flickering lamp, the same rhythm as the drift, someone or something inside still keeping it alive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_re_gap_1",
+          "label": "Move toward the glowing window.",
+          "target": "r_relay_beat"
+        }
+      ]
+    },
+    {
+      "id": "e_re_photo",
+      "body": "<<FILL role=failure words=115 beats='The gust nearly takes Priya off her feet, so she snaps three blurred photos and pedals home, heart hammering; the pictures show only a dark tower, and the drift plays on without her, a mystery she can describe but never solve'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_relay_photo",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Blurred Photograph"
+      }
+    },
+    {
+      "id": "r_re_lane",
+      "body": "<<FILL role=choice words=130 beats='the tidal causeway is half under seawater but sheltered from the wind; ahead sits the lit keeper's cottage with a handwritten watch log visible through the glass, while a side track detours to the buzzing generator shed humming louder than the tide, and another path ducks into the half-flooded storeroom'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_re_lane_1",
+          "label": "Try the lit keeper's cottage.",
+          "target": "r_re_gatehouse"
+        },
+        {
+          "id": "c_r_re_lane_2",
+          "label": "Wade to the buzzing generator shed.",
+          "target": "r_re_hut"
+        },
+        {
+          "id": "c_r_re_lane_3",
+          "label": "Duck into the half-flooded storeroom.",
+          "target": "r_re_cellar"
+        }
+      ]
+    },
+    {
+      "id": "r_re_cellar",
+      "body": "<<FILL role=rising words=120 beats='the half-flooded storeroom's steps drop into ankle-deep seawater and brine; taped above the waterline is a sleeve holding a sealed waterproof note, and the water keeps rising with every wave outside'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_re_cellar_1",
+          "label": "Reach for a sealed waterproof note.",
+          "target": "r_re_cellar2"
+        }
+      ]
+    },
+    {
+      "id": "r_re_cellar2",
+      "body": "<<FILL role=choice words=125 beats='a sealed waterproof note reads a vow to keep the channel open, signed with the call sign VR; Priya can peel it free and pocket the proof, or she can feel the climbing tide inside the storeroom climbing past her knees and scramble back before the cellar fills'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_re_cellar2_1",
+          "label": "Salvage a sealed waterproof note.",
+          "target": "r_relay_beat"
+        },
+        {
+          "id": "c_r_re_cellar2_2",
+          "label": "Retreat from the climbing tide inside the storeroom.",
+          "target": "e_re_cellar"
+        }
+      ]
+    },
+    {
+      "id": "e_re_cellar",
+      "body": "<<FILL role=failure words=110 beats='the climbing tide inside the storeroom wins the argument; Priya backs up the streaming steps as the cellar swallows a sealed waterproof note whole, and she stands dripping with nothing to show but a glimpse of a call sign and the certainty she was one wave too slow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_re_cellar",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "One Wave Too Slow"
+      }
+    },
+    {
+      "id": "r_re_gatehouse",
+      "body": "<<FILL role=choice words=130 beats='the lit keeper's cottage is unlocked and warm, as if just left; a handwritten watch log logs transmissions by hand, the last line only hours old, when a gull shrieking nearby sounds somewhere in the dark and Priya must decide to read on or grab what she can and slip out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_re_gatehouse_1",
+          "label": "Study a handwritten watch log.",
+          "target": "r_re_log"
+        },
+        {
+          "id": "c_r_re_gatehouse_2",
+          "label": "Grab a torn log page and slip away.",
+          "target": "r_re_scrap"
+        }
+      ]
+    },
+    {
+      "id": "r_re_log",
+      "body": "<<FILL role=rising words=130 beats='a handwritten watch log is decades deep in one patient hand; the final entries repeat a single note, still no answer, and Priya understands the drift is not automatic at all but tended by a real, waiting person'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_re_log_1",
+          "label": "Carry the log toward the source.",
+          "target": "r_relay_beat"
+        }
+      ]
+    },
+    {
+      "id": "r_re_scrap",
+      "body": "<<FILL role=rising words=120 beats='Priya pockets a torn page and ducks out; under a streetlight she reads a single line addressed to Noor, still holding, and the drift stops being a machine and becomes a message somebody meant for someone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_re_scrap_1",
+          "label": "Chase down who Noor might be.",
+          "target": "r_relay_beat"
+        }
+      ]
+    },
+    {
+      "id": "r_re_hut",
+      "body": "<<FILL role=rising words=125 beats='the buzzing generator shed throbs with power feeding the mast; a faded service tag names Salvatore Reyes, in handwriting Priya has already seen tonight on a dozen faded cards'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_re_hut_1",
+          "label": "Follow Salvatore Reyes's name inward.",
+          "target": "r_relay_beat"
+        }
+      ]
+    },
+    {
+      "id": "r_relay_beat",
+      "body": "<<FILL role=rising words=130 beats='Standing in the dripping compound, Priya gathers what the abandoned lighthouse station has told her; the drift is deliberate, tended, addressed, and it is counting toward something a real person set in motion and is still, somewhere, waiting on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_relay_beat_1",
+          "label": "Face the source of the drift.",
+          "target": "r_relay_close"
+        }
+      ]
+    },
+    {
+      "id": "r_relay_close",
+      "body": "<<FILL role=rising words=120 beats='Priya wipes the rain from her eyes and steps toward the one lit window; the drift pulses through the wall in time with the glow, and she knows beyond this glass is the person who has been broadcasting into the dark all along'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_relay_close_1",
+          "label": "Confront what is transmitting.",
+          "target": "n_b1"
+        }
+      ]
+    },
+    {
+      "id": "r_notes_1",
+      "body": "<<FILL role=rising words=140 beats='Back home, Priya hunts for her aunt's weather log; her late aunt listened to the airwaves for forty years and wrote it all down, and it could be in the attic chest or out in the boat shed with its wall of pinned notes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_notes_1_1",
+          "label": "Open the attic chest.",
+          "target": "r_no_trunk"
+        },
+        {
+          "id": "c_r_notes_1_2",
+          "label": "Search the boat shed.",
+          "target": "r_no_shed"
+        }
+      ]
+    },
+    {
+      "id": "r_no_trunk",
+      "body": "<<FILL role=choice words=130 beats='the attic chest breathes out cedar and old paper; inside lie a weathered ship's log and a stack of postcards, plus a bundle of unopened letters, and Priya can only read one carefully before her eyes give out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_no_trunk_1",
+          "label": "Read a weathered ship's log.",
+          "target": "r_no_book"
+        },
+        {
+          "id": "c_r_no_trunk_2",
+          "label": "Sort through a stack of postcards.",
+          "target": "r_no_cards"
+        },
+        {
+          "id": "c_r_no_trunk_3",
+          "label": "Untie a bundle of unopened letters.",
+          "target": "r_no_letters"
+        }
+      ]
+    },
+    {
+      "id": "r_no_letters",
+      "body": "<<FILL role=rising words=120 beats='Under the cards lies a bundle of unopened letters, letters her late aunt never sent, all addressed to the abandoned lighthouse station; the top one begs Salvatore Reyes to keep the channel open, and Priya realizes the two old men shared this vigil for years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_no_letters_1",
+          "label": "Read the letter more carefully.",
+          "target": "r_no_letters2"
+        }
+      ]
+    },
+    {
+      "id": "r_no_letters2",
+      "body": "<<FILL role=choice words=125 beats='The letter names Salvatore Reyes plainly and pleads with him not to give up on Noor; it feels like reading a stranger's heart, and Priya can press on because the drift needs an answer, or she can retie the ribbon, deciding some grief is not hers to open'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_no_letters2_1",
+          "label": "Read the letter that names Salvatore Reyes.",
+          "target": "r_notes_beat"
+        },
+        {
+          "id": "c_r_no_letters2_2",
+          "label": "Feel it is too private and stop.",
+          "target": "e_no_letters"
+        }
+      ]
+    },
+    {
+      "id": "e_no_letters",
+      "body": "<<FILL role=failure words=110 beats='Priya reknots the ribbon and sets the letters gently back, unwilling to pry into two old men's sorrow; it is a kind choice and a final one, for the names and frequencies she needed were folded inside, and the trail simply ends'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_no_letters",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Some Grief Stays Closed"
+      }
+    },
+    {
+      "id": "r_no_book",
+      "body": "<<FILL role=rising words=135 beats='her late aunt logged the drift for years, always with the same underlined note asking why Salvatore Reyes was still transmitting; the last page, dated the week he died, simply asks whether anyone will finally answer the poor man'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_no_book_1",
+          "label": "Take up the question he left.",
+          "target": "r_notes_beat"
+        }
+      ]
+    },
+    {
+      "id": "r_no_cards",
+      "body": "<<FILL role=choice words=130 beats='a stack of postcards are from listeners all over the coast, all logging the same stubborn signal; one card, heavier than the rest, names an exact frequency and a underlined call sign, while the others are only friendly postcards she could set aside'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_no_cards_1",
+          "label": "Chase the card naming Salvatore Reyes.",
+          "target": "r_no_freq"
+        },
+        {
+          "id": "c_r_no_cards_2",
+          "label": "Set the postcards aside for now.",
+          "target": "e_no_cards_end"
+        }
+      ]
+    },
+    {
+      "id": "r_no_freq",
+      "body": "<<FILL role=rising words=125 beats='a underlined call sign gives Priya a name to hang the mystery on, and a frequency matching the drift to the decimal; whoever Salvatore Reyes is, the whole coast of listeners has quietly heard him for years and no one ever answered'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_no_freq_1",
+          "label": "Find out who Salvatore Reyes is.",
+          "target": "r_notes_beat"
+        }
+      ]
+    },
+    {
+      "id": "e_no_cards_end",
+      "body": "<<FILL role=failure words=110 beats='Priya stacks the postcards back in the attic chest and closes the lid, meaning to come back when she is less tired; morning brings school and ordinary noise, and the cards, and the drift, slip quietly back into the past'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_notes_cards",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Back in the Trunk"
+      }
+    },
+    {
+      "id": "r_no_shed",
+      "body": "<<FILL role=choice words=130 beats='the boat shed smells of solder and dust; a row of pinned charts are pinned in ranks across one wall, but a padlocked filing cabinet is out of reach, and Priya weighs reading the pinned charts against forcing the locked tool chest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_no_shed_1",
+          "label": "Read the pinned charts.",
+          "target": "r_no_tuning"
+        },
+        {
+          "id": "c_r_no_shed_2",
+          "label": "Try to force the locked tool chest.",
+          "target": "e_no_locked"
+        }
+      ]
+    },
+    {
+      "id": "r_no_tuning",
+      "body": "<<FILL role=rising words=130 beats='One yellowed note among a row of pinned charts is circled twice, naming the abandoned lighthouse station and Salvatore Reyes, do not give up on him; her late aunt had been trying to reach the sender for decades, and now the task, unfinished, has passed to Priya'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_no_tuning_1",
+          "label": "Carry his work forward.",
+          "target": "r_notes_beat"
+        }
+      ]
+    },
+    {
+      "id": "e_no_locked",
+      "body": "<<FILL role=failure words=110 beats='the locked tool chest will not yield and the hasp is screwed tight; without the key it keeps its secrets, and by the time Priya thinks to search for it the trail has gone cold, the drift just one more thing her late aunt understood and she never will'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_notes_locked",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Cabinet"
+      }
+    },
+    {
+      "id": "r_notes_beat",
+      "body": "<<FILL role=rising words=130 beats='Everything Priya has found among her late aunt's papers converges on one stubborn fact, Salvatore Reyes has been transmitting from the abandoned lighthouse station for a lifetime, and she is holding the only thread that leads back to him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_notes_beat_1",
+          "label": "Follow Salvatore Reyes's thread to the source.",
+          "target": "r_notes_close"
+        }
+      ]
+    },
+    {
+      "id": "r_notes_close",
+      "body": "<<FILL role=rising words=120 beats='Papers spread across her late aunt's desk, Priya traces the last line of his research to its end; there is nothing left to read and only one thing left to do, go to the abandoned lighthouse station and face the man her late aunt could never quite reach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_notes_close_1",
+          "label": "Confront what is transmitting.",
+          "target": "n_b1"
+        }
+      ]
+    },
+    {
+      "id": "n_b1",
+      "body": "<<FILL role=discovery words=150 beats='However she got here, Priya arrives at the same certainty; the drift is no accident and no machine left running, it is the deliberate work of one person, Salvatore Reyes, the abandoned lighthouse station's last operator, looping the same numbers and a slow rising chime pattern for years because nobody has ever answered back; the who is settled, and it only sharpens the harder questions'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_b1_1",
+          "label": "Sit with what this means.",
+          "target": "n_b1_echo"
+        }
+      ]
+    },
+    {
+      "id": "n_b1_echo",
+      "body": "<<FILL role=rising words=130 beats='Priya pins Salvatore Reyes's name to her corkboard beside the frequency she has traced; the drift cycles again in her headphones, patient and sad, and two ways forward open, to crack the coded numbers themselves or to learn who Salvatore Reyes really is'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_b1_echo_1",
+          "label": "Decide how to dig deeper.",
+          "target": "n_b1_choice"
+        }
+      ]
+    },
+    {
+      "id": "n_b1_choice",
+      "body": "<<FILL role=choice words=130 beats='The mystery has a person at its center now, but a person is not an answer; Priya can bend her attention to the numbers Salvatore Reyes reads, hunting the code hidden in them, or she can chase Salvatore Reyes himself through the town records and the people who remember him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_b1_choice_1",
+          "label": "Crack the coded numbers.",
+          "target": "m_numbers_1"
+        },
+        {
+          "id": "c_n_b1_choice_2",
+          "label": "Find out who Salvatore Reyes is.",
+          "target": "m_who_1"
+        }
+      ]
+    },
+    {
+      "id": "m_numbers_1",
+      "body": "<<FILL role=choice words=135 beats='Priya writes the number string out in full and stares; it could be a grid cipher keyed to a text she already owns, her aunt's weather log maybe, or it could be a tidal countdown, ticking toward one fixed moment, and each theory needs a different tool'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_numbers_1_1",
+          "label": "Test it as a grid cipher.",
+          "target": "m_num_cipher"
+        },
+        {
+          "id": "c_m_numbers_1_2",
+          "label": "Test it as a tidal countdown.",
+          "target": "m_num_time"
+        }
+      ]
+    },
+    {
+      "id": "m_num_cipher",
+      "body": "<<FILL role=choice words=130 beats='Using the weather log's page marks, Priya maps each figure to a word; fragments surface, a quiet plea to keep watching and the letter Noor, enough to feel real, but one cluster stays gibberish and she must decide whether to keep forcing the weather log's page marks or switch to a second dog-eared almanac'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_num_cipher_1",
+          "label": "Keep forcing the weather log's page marks.",
+          "target": "m_num_cracked"
+        },
+        {
+          "id": "c_m_num_cipher_2",
+          "label": "Switch to a second dog-eared almanac.",
+          "target": "m_num_book2"
+        }
+      ]
+    },
+    {
+      "id": "m_num_cracked",
+      "body": "<<FILL role=rising words=130 beats='the weather log's page marks holds; the numbers resolve into a plain, aching sentence, a quiet plea to keep watching for Noor, and the final group is not a word at all but a running count, the drift is measuring how long is left'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_num_cracked_1",
+          "label": "See what the count is measuring.",
+          "target": "n_b2"
+        }
+      ]
+    },
+    {
+      "id": "m_num_book2",
+      "body": "<<FILL role=choice words=130 beats='a second dog-eared almanac is battered, and against it the stubborn cluster finally speaks, a date and an hour; but the rest turns to noise on this key, and Priya must judge whether she has enough or has hit a wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_num_book2_1",
+          "label": "Trust the date she recovered.",
+          "target": "m_num_cracked2"
+        },
+        {
+          "id": "c_m_num_book2_2",
+          "label": "Admit the cipher has beaten her.",
+          "target": "e_num_gibberish"
+        }
+      ]
+    },
+    {
+      "id": "m_num_cracked2",
+      "body": "<<FILL role=rising words=125 beats='a second dog-eared almanac gives Priya a single decoded certainty, a date and hour only days away, wrapped around a quiet plea to keep watching for Noor; the numbers are a clock, and the clock is nearly run down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_num_cracked2_1",
+          "label": "Learn what the clock ends on.",
+          "target": "n_b2"
+        }
+      ]
+    },
+    {
+      "id": "e_num_gibberish",
+      "body": "<<FILL role=failure words=115 beats='The cipher slips through Priya's fingers, every new key spitting out fresh nonsense until the numbers blur together; she closes her notebooks well past midnight, no closer to the meaning, the drift still counting in the dark toward a total she cannot read'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_num_gibberish",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cipher Wins"
+      }
+    },
+    {
+      "id": "m_num_time",
+      "body": "<<FILL role=choice words=130 beats='Treating the string as a tidal countdown, Priya logs the intervals between broadcasts; they are shrinking, each cycle a little shorter than the last, and she can either keep clocking the narrowing gaps to project its end or charting the gaps against the season against the pattern'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_num_time_1",
+          "label": "Keep clocking the narrowing gaps.",
+          "target": "m_num_intervals"
+        },
+        {
+          "id": "c_m_num_time_2",
+          "label": "Try charting the gaps against the season.",
+          "target": "m_num_pattern"
+        }
+      ]
+    },
+    {
+      "id": "m_num_intervals",
+      "body": "<<FILL role=rising words=125 beats='The intervals are collapsing on a curve; Priya plots them and the line drives toward zero within the week, the drift is not eternal after all, it is counting down, and something happens when it reaches the bottom'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_num_intervals_1",
+          "label": "Find out what zero brings.",
+          "target": "n_b2"
+        }
+      ]
+    },
+    {
+      "id": "m_num_pattern",
+      "body": "<<FILL role=choice words=130 beats='Laid over a calendar the intervals lock onto one date, and beside it in the drift sits the repeated letter Noor; Priya can commit to that reading and push on, or she can decide she is forcing a pattern that is not really there and stop'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_num_pattern_1",
+          "label": "Commit to the date and push on.",
+          "target": "m_num_countdown"
+        },
+        {
+          "id": "c_m_num_pattern_2",
+          "label": "Decide she is imagining the pattern.",
+          "target": "e_num_giveup"
+        }
+      ]
+    },
+    {
+      "id": "m_num_countdown",
+      "body": "<<FILL role=rising words=125 beats='Priya circles the date twice; the drift is a countdown to that exact night, threaded through with a name, and whatever Salvatore Reyes set in motion is meant to finish then whether anyone is listening or not'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_num_countdown_1",
+          "label": "Learn what finishes that night.",
+          "target": "n_b2"
+        }
+      ]
+    },
+    {
+      "id": "e_num_giveup",
+      "body": "<<FILL role=failure words=115 beats='Doubt wins; Priya decides she has been reading shapes into the static, the way people see faces in clouds, and she puts her charts away for good; the drift keeps its rhythm without her, and she never learns she was right all along'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_num_giveup",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Seeing Faces in Static"
+      }
+    },
+    {
+      "id": "m_who_1",
+      "body": "<<FILL role=choice words=135 beats='To find Salvatore Reyes, Priya needs someone who remembers; the harbor museum archive goes back a century, and a retired ferry captain has known that headland since before the abandoned lighthouse station was built'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_who_1_1",
+          "label": "Search the harbor museum archive.",
+          "target": "m_who_film"
+        },
+        {
+          "id": "c_m_who_1_2",
+          "label": "Ask a retired ferry captain.",
+          "target": "m_who_okafor"
+        }
+      ]
+    },
+    {
+      "id": "m_who_film",
+      "body": "<<FILL role=choice words=130 beats='The reader whirs; Priya finds a closure announcement, the abandoned lighthouse station closed, its staff let go, and a photograph of a lone technician who refused a transfer, but the harbor museum archive is shutting within the hour and she cannot read every reel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_who_film_1",
+          "label": "Read a closure announcement closely.",
+          "target": "m_who_article"
+        },
+        {
+          "id": "c_m_who_film_2",
+          "label": "Photograph the pages before it closes.",
+          "target": "m_who_photo"
+        }
+      ]
+    },
+    {
+      "id": "m_who_article",
+      "body": "<<FILL role=rising words=130 beats='The article names him, Salvatore Reyes, the one operator who stayed on unpaid after the shutdown, insisting the abandoned lighthouse station still had a job to do; the reporter thought it a sad eccentricity, but Priya reads the drift underneath it now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_who_article_1",
+          "label": "Understand why he stayed.",
+          "target": "n_b2"
+        }
+      ]
+    },
+    {
+      "id": "m_who_photo",
+      "body": "<<FILL role=rising words=125 beats='Priya shoots the pages just as the lights dim; later, zooming in, she reads the caption naming Salvatore Reyes, and a margin note wondering if he ever stopped broadcasting, which tells her the drift has outlived the whole town's memory'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_who_photo_1",
+          "label": "Trace the drift's long life.",
+          "target": "n_b2"
+        }
+      ]
+    },
+    {
+      "id": "m_who_okafor",
+      "body": "<<FILL role=choice words=130 beats='a retired ferry captain hands Priya a mug of tea and studies her a long moment; she knew Salvatore Reyes, she says, knew what the keeper never stopped mourning, then she pauses, weighing whether the girl truly wants to carry this or should be sent gently home to bed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_who_okafor_1",
+          "label": "Promise her you mean to help.",
+          "target": "m_who_story"
+        },
+        {
+          "id": "c_m_who_okafor_2",
+          "label": "Waver, and let her send you home.",
+          "target": "e_who_warn"
+        }
+      ]
+    },
+    {
+      "id": "m_who_story",
+      "body": "<<FILL role=rising words=135 beats='Satisfied, a retired ferry captain tells it plain; Salvatore Reyes's daughter left after a terrible quarrel and never wrote, and he swore he would keep a channel open for her until she answered, a promise he has kept alone for thirty years'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m_who_story_1",
+          "label": "Carry his promise forward.",
+          "target": "n_b2"
+        }
+      ]
+    },
+    {
+      "id": "e_who_warn",
+      "body": "<<FILL role=failure words=115 beats='Priya hesitates a beat too long, and a retired ferry captain kindly decides the past is too heavy for a school night; she walks Priya to the door with a pat and a thermos, and the story of Salvatore Reyes stays sealed in an old woman's memory, the drift still calling in the cold'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_who_warn",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sent Home to Bed"
+      }
+    },
+    {
+      "id": "n_b2",
+      "body": "<<FILL role=discovery words=150 beats='The threads knot into one answer; the drift repeats because it is a countdown that resets every time it goes unanswered, and it is not broadcast to the world at all, it is addressed, aimed at a single listener marked only Noor in Salvatore Reyes's logs; for thirty years he has held a channel open for someone who never called back, restarting the drift each time the silence won'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_b2_1",
+          "label": "Take in the weight of it.",
+          "target": "n_b2_echo"
+        }
+      ]
+    },
+    {
+      "id": "n_b2_echo",
+      "body": "<<FILL role=rising words=130 beats='Priya sits back, headphones warm against her ears, the drift suddenly unbearably human; two questions remain and they braid together, who exactly is Noor, and what happens when this newest countdown finally reaches zero'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_b2_echo_1",
+          "label": "Decide which question to chase.",
+          "target": "n_b2_choice"
+        }
+      ]
+    },
+    {
+      "id": "n_b2_choice",
+      "body": "<<FILL role=choice words=130 beats='She cannot answer a signal she does not understand; Priya can hunt down who Noor really is, the one Salvatore Reyes has waited a lifetime for, or she can work out exactly what the shrinking countdown is racing toward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_b2_choice_1",
+          "label": "Find out who Noor is.",
+          "target": "mm_listener_1"
+        },
+        {
+          "id": "c_n_b2_choice_2",
+          "label": "Find out what a slow rising chime pattern reaches.",
+          "target": "mm_count_1"
+        }
+      ]
+    },
+    {
+      "id": "mm_listener_1",
+      "body": "<<FILL role=choice words=135 beats='Noor could be a person or a place; Priya can try searching the keeper's family history, or she can testing whether the name marks a place instead, a landfall he keeps naming for a ship or a soul that never arrives'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_listener_1_1",
+          "label": "Search Salvatore Reyes's family for Noor.",
+          "target": "mm_list_family"
+        },
+        {
+          "id": "c_mm_listener_1_2",
+          "label": "Test Noor as a place on the map.",
+          "target": "mm_list_place"
+        }
+      ]
+    },
+    {
+      "id": "mm_list_family",
+      "body": "<<FILL role=choice words=130 beats='the missing nephew's public listing shows a daughter gone from the county three decades back; there is also a cousin still living nearby, still local, and Priya must choose which lead to pin her hope on with the clock already shrinking'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_list_family_1",
+          "label": "Trace the daughter, Noor.",
+          "target": "mm_list_daughter"
+        },
+        {
+          "id": "c_mm_list_family_2",
+          "label": "Trace a cousin still living nearby instead.",
+          "target": "mm_list_sister"
+        }
+      ]
+    },
+    {
+      "id": "mm_list_daughter",
+      "body": "<<FILL role=rising words=130 beats='Noor is Salvatore Reyes's daughter, who walked out after their last fight and has drifted from town to town since; the drift is his standing apology, broadcast on the frequency they once shared, waiting for the day she tunes back in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_list_daughter_1",
+          "label": "Fix on reaching Noor.",
+          "target": "n_b3"
+        }
+      ]
+    },
+    {
+      "id": "mm_list_sister",
+      "body": "<<FILL role=rising words=125 beats='a cousin still living nearby, reached by phone, weeps softly; she confirms Noor is Salvatore Reyes's only child, and gives Priya the last address she has, a long shot two towns west, and one plea before it is too late for them both'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_list_sister_1",
+          "label": "Race the sister long shot.",
+          "target": "n_b3"
+        }
+      ]
+    },
+    {
+      "id": "mm_list_place",
+      "body": "<<FILL role=choice words=130 beats='On the chart, Noor could mark a small memorial marker off the headland where a boat once went down; Priya can chase that reading, or she can admit the map is leading her in circles while the real answer is a person, not a place'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_list_place_1",
+          "label": "Check a small memorial marker.",
+          "target": "mm_list_map"
+        },
+        {
+          "id": "c_mm_list_place_2",
+          "label": "Give up the map as a dead end.",
+          "target": "e_list_deadend"
+        }
+      ]
+    },
+    {
+      "id": "mm_list_map",
+      "body": "<<FILL role=rising words=125 beats='a small memorial marker's plaque carries a name, Noor, painted the year Salvatore Reyes's daughter vanished; Noor is not a place after all but a person the whole headland has quietly mourned, and she may yet be alive to hear him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_list_map_1",
+          "label": "Turn the search toward Noor herself.",
+          "target": "n_b3"
+        }
+      ]
+    },
+    {
+      "id": "e_list_deadend",
+      "body": "<<FILL role=failure words=115 beats='Priya chases the map in widening circles until every lead folds back on itself; exhausted, she saves a clean recording of the drift to her phone and lets the search go, carrying a mystery she can play for people but never finish'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_list_deadend",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Circles on the Chart"
+      }
+    },
+    {
+      "id": "mm_count_1",
+      "body": "<<FILL role=choice words=135 beats='To pin the countdown target, Priya can try projecting the drift straight to zero, or she can test her hunch it is timed to the coast itself, to a building squall swelling toward the headland this very week'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_count_1_1",
+          "label": "projecting the drift straight to zero.",
+          "target": "mm_count_time"
+        },
+        {
+          "id": "c_mm_count_1_2",
+          "label": "checking it against the tide charts.",
+          "target": "mm_count_tide"
+        }
+      ]
+    },
+    {
+      "id": "mm_count_time",
+      "body": "<<FILL role=choice words=130 beats='The math lands the zero point on a night only days off; but a countdown needs a thing to reach, and Priya must decide whether zero marks the buoy's failing solar cell finally failing or a locked message set to broadcast once playing automatically when the wait runs out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_count_time_1",
+          "label": "Read zero as the buoy's failing solar cell failing.",
+          "target": "mm_count_extrap"
+        },
+        {
+          "id": "c_mm_count_time_2",
+          "label": "Read zero as a locked message set to broadcast once firing.",
+          "target": "mm_count_clock"
+        }
+      ]
+    },
+    {
+      "id": "mm_count_extrap",
+      "body": "<<FILL role=rising words=125 beats='the abandoned lighthouse station runs on the buoy's failing solar cell, and Priya's extrapolation matches its rated end almost to the hour; when it fails the drift fails with it, and Salvatore Reyes's thirty-year channel to Noor goes dark unless someone acts first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_count_extrap_1",
+          "label": "Weigh what dark forever means.",
+          "target": "n_b3"
+        }
+      ]
+    },
+    {
+      "id": "mm_count_clock",
+      "body": "<<FILL role=rising words=125 beats='Buried in the logs Priya finds it, a locked message set to broadcast once, Salvatore Reyes's goodbye to Noor, set to speak once into the dark and be gone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_count_clock_1",
+          "label": "Resolve to catch it before it erases.",
+          "target": "n_b3"
+        }
+      ]
+    },
+    {
+      "id": "mm_count_tide",
+      "body": "<<FILL role=choice words=130 beats='The countdown does align with a building squall forecast for the headland; that could mean the storm will simply swamp the abandoned lighthouse station, and Priya can raise the alarm or hold back, unsure she has the story right'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_count_tide_1",
+          "label": "Warn someone about a building squall and the relay.",
+          "target": "mm_count_warn"
+        },
+        {
+          "id": "c_mm_count_tide_2",
+          "label": "Hold back until she is certain.",
+          "target": "e_count_wait"
+        }
+      ]
+    },
+    {
+      "id": "mm_count_warn",
+      "body": "<<FILL role=rising words=125 beats='Priya connects it, a building squall will swamp the headland the same night the buoy's failing solar cell fails, ending the drift twice over; the countdown is real and physical now, weather and machinery closing on one hour, and the window to act is almost shut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mm_count_warn_1",
+          "label": "Move before the window closes.",
+          "target": "n_b3"
+        }
+      ]
+    },
+    {
+      "id": "e_count_wait",
+      "body": "<<FILL role=failure words=115 beats='Priya decides she needs to be sure before she troubles anyone, so she waits one more night to double-check her figures; in the morning the drift is gone, only clean the static where the countdown used to be, the abandoned lighthouse station silenced while she hesitated'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_count_wait",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "One Night Too Long"
+      }
+    },
+    {
+      "id": "n_b3",
+      "body": "<<FILL role=discovery words=155 beats='Everything Priya has gathered snaps into one clear, ticking shape; the countdown ends this coming night, when the buoy's failing solar cell finally fails, and the moment it does a locked message set to broadcast once will play, Salvatore Reyes's recorded farewell to the one he has waited so long to reach, and then erase itself into silence with a building squall rolling in behind it; thirty years of waiting come down to one hour, and Priya is the only person who knows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_b3_1",
+          "label": "Decide how to spend that hour.",
+          "target": "n_b3_echo"
+        }
+      ]
+    },
+    {
+      "id": "n_b3_echo",
+      "body": "<<FILL role=rising words=130 beats='Rain begins to freckle the window as Priya weighs her options; the abandoned lighthouse station is a bike ride away, her late aunt's transmitter still works, and the town has people who could move faster than she can, but every path runs against the same shrinking clock'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_b3_echo_1",
+          "label": "Choose an approach before zero.",
+          "target": "n_b3_choice"
+        }
+      ]
+    },
+    {
+      "id": "n_b3_choice",
+      "body": "<<FILL role=climax words=140 beats='One hour, three ways to spend it; Priya can race to the abandoned lighthouse station itself and answer the drift at its source, she can use her late aunt's rig to rebroadcast a locked message set to broadcast once wide enough that Noor might hear it, or she can rouse people who could reach the headland faster and surer than a girl on a bike in a gale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_b3_choice_1",
+          "label": "Race to the abandoned lighthouse station.",
+          "target": "f_station_1"
+        },
+        {
+          "id": "c_n_b3_choice_2",
+          "label": "Rebroadcast a locked message set to broadcast once yourself.",
+          "target": "f_relay_1"
+        },
+        {
+          "id": "c_n_b3_choice_3",
+          "label": "Get help from people who can reach it.",
+          "target": "f_help_1"
+        }
+      ]
+    },
+    {
+      "id": "f_station_1",
+      "body": "<<FILL role=climax words=140 beats='Priya pedals into a building squall and reaches the rusted lighthouse gate; the mast light pulses with the drift above her, minutes left on the clock, and she can go over the rattling fence into the flooded courtyard past the gate or gamble on the sheltered access stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_station_1_1",
+          "label": "Go over the fence into the flooded courtyard past the gate.",
+          "target": "f_st_fence"
+        },
+        {
+          "id": "c_f_station_1_2",
+          "label": "Take the sheltered access stair.",
+          "target": "f_st_road"
+        }
+      ]
+    },
+    {
+      "id": "f_st_fence",
+      "body": "<<FILL role=climax words=140 beats='Priya tops the fence and drops into the flooded courtyard past the gate; the lamp room's door hangs ajar ahead, spilling faint light, but the exposed climb has cost her precious minutes and the spray soaking the walkway is trying to peel her off the concrete, so she can push straight for that door or catch her breath first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_st_fence_1",
+          "label": "Push straight for the lamp room.",
+          "target": "f_st_control"
+        },
+        {
+          "id": "c_f_st_fence_2",
+          "label": "Freeze against the wind, hesitating.",
+          "target": "e_st_hesitate"
+        }
+      ]
+    },
+    {
+      "id": "f_st_control",
+      "body": "<<FILL role=climax words=145 beats='Inside, the lamp room is a shrine of dials and one glowing console counting down in red; Priya can seize the hand-crank transmitter and answer the transmitter directly, or she can see the buoy's failing solar cell guttering and try to stabilize it before it fails mid-message'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_st_control_1",
+          "label": "Seize the hand-crank transmitter and answer the drift.",
+          "target": "f_st_answer"
+        },
+        {
+          "id": "c_f_st_control_2",
+          "label": "Try to stabilize the buoy's failing solar cell.",
+          "target": "f_st_power"
+        }
+      ]
+    },
+    {
+      "id": "f_st_answer",
+      "body": "<<FILL role=climax words=145 beats='The countdown reads under a minute; Priya finds Salvatore Reyes's contact list open on the desk, the nephew's circled number never dialed, and she can bridge that line and let a locked message set to broadcast once finally reach a living ear, or simply key the transmitter to halt the wipe and save the whole logbook archive'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_st_answer_1",
+          "label": "Bridge the line to Noor and play it.",
+          "target": "e_st_reunite"
+        },
+        {
+          "id": "c_f_st_answer_2",
+          "label": "Halt the wipe and save the whole logbook archive.",
+          "target": "e_st_archive"
+        }
+      ]
+    },
+    {
+      "id": "e_st_reunite",
+      "body": "<<FILL role=success words=130 beats='Priya dials the nephew's circled number and patches it through as the counter hits zero; across three towns a phone rings, a startled woman answers, and her father's recorded voice, thirty years patient, fills the line, still holding the channel open for Noor, and this time somebody is there to hear it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_st_reunite",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Line Reconnects"
+      }
+    },
+    {
+      "id": "e_st_archive",
+      "body": "<<FILL role=completion words=125 beats='Priya keys the override a breath before the wipe; the countdown freezes, the drift steadies, and thirty years of Salvatore Reyes's logs and messages are saved intact, the whole logbook archive preserved so that when Noor is found, every word he sent will still be waiting for her'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_st_archive",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Every Log Kept Safe"
+      }
+    },
+    {
+      "id": "f_st_power",
+      "body": "<<FILL role=climax words=140 beats='the buoy's failing solar cell is a corroded brick barely holding voltage; Priya remembers her late aunt's spare battery in her pack and can splice it in to buy the abandoned lighthouse station hours and then call the whole thing in properly, or she can nurse it by hand and pray it lasts through one last broadcast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_st_power_1",
+          "label": "Splice in the spare and call it in.",
+          "target": "e_st_stabilize"
+        },
+        {
+          "id": "c_f_st_power_2",
+          "label": "Nurse the buoy's failing solar cell by hand.",
+          "target": "e_st_record"
+        }
+      ]
+    },
+    {
+      "id": "e_st_stabilize",
+      "body": "<<FILL role=completion words=125 beats='The spliced cell catches and the console steadies; Priya gets the abandoned lighthouse station stable, then phones the harbor radio society with the whole story, and by dawn Salvatore Reyes's loop is safe on backup power while volunteers begin the search for Noor, the countdown stopped and the waiting handed on to people who can finish it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_st_stabilize",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Little More Time"
+      }
+    },
+    {
+      "id": "e_st_record",
+      "body": "<<FILL role=failure words=120 beats='Priya's hands are steady but the buoy's failing solar cell is too far gone; it fails with a small final click just as a locked message set to broadcast once begins, cutting Salvatore Reyes's farewell to a single word, Noor, before the room goes dark and silent, though Priya's clean recording of that last word is all that survives the night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_st_record",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "One Word Saved"
+      }
+    },
+    {
+      "id": "e_st_hesitate",
+      "body": "<<FILL role=failure words=115 beats='Pinned by the spray soaking the walkway, Priya loses her nerve and her seconds together; by the time she forces herself to the door the console has already gone dark, the countdown spent, and she is left in a dead the lamp room with a mystery solved one minute too late'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_st_hesitate",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "One Minute Too Late"
+      }
+    },
+    {
+      "id": "f_st_road",
+      "body": "<<FILL role=climax words=140 beats='the sheltered access stair is longer but sheltered, and Priya pedals hard around to a back door standing open; a lamp burns inside, and there, hunched over the console he has tended for thirty years, is Salvatore Reyes himself, or she finds the bolted service hatch after all and time bleeding away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_st_road_1",
+          "label": "Find Salvatore Reyes himself at the lamp room.",
+          "target": "f_st_alder"
+        },
+        {
+          "id": "c_f_st_road_2",
+          "label": "Find the bolted service hatch, and wait.",
+          "target": "e_st_wait"
+        }
+      ]
+    },
+    {
+      "id": "f_st_alder",
+      "body": "<<FILL role=climax words=145 beats='Salvatore Reyes turns, startled to find a girl dripping in his doorway; Priya blurts everything she has pieced together, the drift, the countdown, Noor, and she can beg him to let a locked message set to broadcast once go out live tonight while there is still power, or watch him shake his head, certain after thirty years no one is really listening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_st_alder_1",
+          "label": "Convince Salvatore Reyes to send it live.",
+          "target": "e_st_alder_send"
+        },
+        {
+          "id": "c_f_st_alder_2",
+          "label": "Fail to move him, and leave a note.",
+          "target": "e_st_alder_refuse"
+        }
+      ]
+    },
+    {
+      "id": "e_st_alder_send",
+      "body": "<<FILL role=success words=130 beats='Something in Priya's certainty reaches the old man; Salvatore Reyes wipes his eyes, leans to the hand-crank transmitter, and instead of the recording speaks live for the first time in decades, telling the open channel he is still here, still sorry, still waiting, and two towns west Noor, who never stopped listening, finally lifts the handset'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_st_alder_send",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Speaking After All These Years"
+      }
+    },
+    {
+      "id": "e_st_alder_refuse",
+      "body": "<<FILL role=failure words=120 beats='Salvatore Reyes only shakes his head; thirty years of silence have convinced him no answer is coming, and he will not risk hoping again tonight, not even for a stranger. Priya leaves her notebook of everything she found on his desk and bikes home in the rain, the choice, and the drift, left in his tired hands'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_st_alder_refuse",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "He Would Not Hope"
+      }
+    },
+    {
+      "id": "e_st_wait",
+      "body": "<<FILL role=failure words=115 beats='the bolted service hatch is bolted and no knock brings anyone; Priya huddles under the eave counting the minutes until the mast light stutters and goes still, the countdown finished on the far side of a locked door, so close she could hear the last tone fade through the wall'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_st_wait",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "On the Wrong Side of the Door"
+      }
+    },
+    {
+      "id": "f_relay_1",
+      "body": "<<FILL role=climax words=140 beats='Priya stays home and runs for the attic instead; if she cannot reach the abandoned lighthouse station in time, she can amplify a locked message set to broadcast once so far and wide that Noor might stumble on it, using her late aunt's own transmitter, or she can wake the harbor radio society to throw it across the whole county net'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_relay_1_1",
+          "label": "Use her late aunt's transmitter.",
+          "target": "f_re_rig"
+        },
+        {
+          "id": "c_f_relay_1_2",
+          "label": "Call the harbor radio society's net.",
+          "target": "f_re_club"
+        }
+      ]
+    },
+    {
+      "id": "f_re_rig",
+      "body": "<<FILL role=climax words=140 beats='her late aunt's rig hums to life under Priya's hands, warm and familiar; she can boost the drift and splice Noor's name across every band she can legally reach, praying it carries, or she can push the old set past its limits for more range than it was ever built to give'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_re_rig_1",
+          "label": "boosting the drift and naming the listener.",
+          "target": "f_re_boost"
+        },
+        {
+          "id": "c_f_re_rig_2",
+          "label": "pushing the antenna past its rating.",
+          "target": "e_re_fuse"
+        }
+      ]
+    },
+    {
+      "id": "f_re_boost",
+      "body": "<<FILL role=climax words=140 beats='Priya rebroadcasts a locked message set to broadcast once on a steady boost, Noor's name riding the drift out across the dark coast; for a long minute there is only the static, and then she must decide whether the faint carrier swelling back is truly an answer or just her own hope, and whether to keep calling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_re_boost_1",
+          "label": "Answer the carrier swelling back.",
+          "target": "e_re_answer"
+        },
+        {
+          "id": "c_f_re_boost_2",
+          "label": "Trust a neighbor heard, and stop.",
+          "target": "e_re_neighbor"
+        }
+      ]
+    },
+    {
+      "id": "e_re_answer",
+      "body": "<<FILL role=success words=130 beats='The carrier resolves into a voice, hesitant and disbelieving, asking who is broadcasting her name; Priya explains in a rush, her father, the abandoned lighthouse station, thirty years, and hands the channel to the drift, and Noor listens to her father's waiting message with a stranger girl as witness, the silence finally, gently broken'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_re_answer",
+        "valence": "positive",
+        "kind": "success",
+        "title": "An Answer on the Wire"
+      }
+    },
+    {
+      "id": "e_re_neighbor",
+      "body": "<<FILL role=completion words=125 beats='No answer comes for Noor, but a neighbor two streets over hears the whole broadcast and calls, shaken, promising to spread it through every relay and club she knows; Priya has not closed the drift herself, yet she has thrown a locked message set to broadcast once far past the abandoned lighthouse station, and now a hundred listeners will carry it on'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_re_neighbor",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Passed From Hand to Hand"
+      }
+    },
+    {
+      "id": "e_re_fuse",
+      "body": "<<FILL role=failure words=115 beats='Priya pushes the old rig too hard and it dies in a wisp of blue smoke and the smell of scorched solder; the attic goes quiet, her late aunt's transmitter finished the same night as Salvatore Reyes's loop, and she is left with a dark set and a message she could not send'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_re_fuse",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Blue Smoke"
+      }
+    },
+    {
+      "id": "f_re_club",
+      "body": "<<FILL role=climax words=140 beats='Priya rings the harbor radio society's emergency line; a drowsy overnight volunteer answers, then wakes fully as the story spills out, and he can throw a locked message set to broadcast once onto the county-wide net at once for maximum reach, or she can hear that no one is on shift and only a recorder is listening at this hour'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_re_club_1",
+          "label": "Push it onto the county net now.",
+          "target": "f_re_net"
+        },
+        {
+          "id": "c_f_re_club_2",
+          "label": "Reach only the after-hours recorder.",
+          "target": "e_re_message"
+        }
+      ]
+    },
+    {
+      "id": "f_re_net",
+      "body": "<<FILL role=climax words=140 beats='the harbor radio society fires a locked message set to broadcast once across the whole county net, dozens of stations relaying Noor's name into a building squall; within minutes reports trickle back, and Priya must judge whether a strong reading from the next inlet is the lead she has prayed for or a coincidence to chase'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_re_net_1",
+          "label": "Chase the lead two ridges west.",
+          "target": "e_re_found"
+        },
+        {
+          "id": "c_f_re_net_2",
+          "label": "Log every lead for the harbor radio society to follow.",
+          "target": "e_re_log"
+        }
+      ]
+    },
+    {
+      "id": "e_re_found",
+      "body": "<<FILL role=success words=130 beats='The lead is real; the woman two ridges west is Noor, up late and idly scanning the bands she abandoned decades ago, and the sound of her own name in her father's old loop stops her cold. the harbor radio society patches her through to the abandoned lighthouse station, and Salvatore Reyes's thirty-year wait ends in a single trembling hello'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_re_found",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Found at the Next Inlet"
+      }
+    },
+    {
+      "id": "e_re_log",
+      "body": "<<FILL role=completion words=125 beats='Priya cannot be sure any single lead is Noor, so she logs them all and hands the harbor radio society a complete file, the frequency, the story, every promising callback; the net keeps a locked message set to broadcast once circulating night after night, and though Priya does not see the ending herself, Salvatore Reyes's loop is finally in a hundred searching hands'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_re_log",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Dozen Watching Ears"
+      }
+    },
+    {
+      "id": "e_re_message",
+      "body": "<<FILL role=failure words=115 beats='Only the after-hours recorder answers, and Priya leaves the whole story into the void, hoping someone plays it back at dawn; but dawn is after the countdown, and by the time a club volunteer hears her message the abandoned lighthouse station's loop has already fallen silent, her call arriving a night too late'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_re_message",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Left on the Recorder"
+      }
+    },
+    {
+      "id": "f_help_1",
+      "body": "<<FILL role=climax words=140 beats='Priya decides she cannot do this alone against the clock; she can phone the harbor patrol, who treat any headland beacon seriously and can reach the abandoned lighthouse station by road in minutes, or she can track down the keeper's old first mate, a man who would understand every word of what she has found'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_help_1_1",
+          "label": "Call the harbor patrol.",
+          "target": "f_he_cg"
+        },
+        {
+          "id": "c_f_help_1_2",
+          "label": "Find the keeper's old first mate.",
+          "target": "f_he_colleague"
+        }
+      ]
+    },
+    {
+      "id": "f_he_cg",
+      "body": "<<FILL role=climax words=140 beats='the patrol dispatcher takes Priya seriously the moment she says a beacon on the headland is counting down in a building squall; he can dispatch a crew to the abandoned lighthouse station to secure it as a live signal, or he can hesitate, unable to log a mystery loop as a real emergency without more than a schoolgirl's word'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_he_cg_1",
+          "label": "Convince him to dispatch a crew.",
+          "target": "f_he_act"
+        },
+        {
+          "id": "c_f_he_cg_2",
+          "label": "Watch him dismiss it as the static.",
+          "target": "e_he_dismiss"
+        }
+      ]
+    },
+    {
+      "id": "f_he_act",
+      "body": "<<FILL role=climax words=140 beats='A crew rolls for the headland with Priya guiding them by phone; reaching the abandoned lighthouse station ahead of a building squall, they radio back that the console is alive and counting, and Priya must tell them what matters most in the last minute, to trace a locked message set to broadcast once's intended listener or to preserve the failing station whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_he_act_1",
+          "label": "Have them trace and reach Noor.",
+          "target": "e_he_escort"
+        },
+        {
+          "id": "c_f_he_act_2",
+          "label": "Have them secure and save the abandoned lighthouse station.",
+          "target": "e_he_safe"
+        }
+      ]
+    },
+    {
+      "id": "e_he_escort",
+      "body": "<<FILL role=success words=130 beats='The crew patches Priya straight into the abandoned lighthouse station, and with their gear behind Salvatore Reyes's thirty-year loop the signal leaps its old limits; they trace the return call to Noor within the hour and hold the channel open until father and daughter are, at last and across all that silence, speaking to each other'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_he_escort",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Brought Safely In"
+      }
+    },
+    {
+      "id": "e_he_safe",
+      "body": "<<FILL role=completion words=125 beats='The crew secures the abandoned lighthouse station minutes before a building squall hits, swapping the buoy's failing solar cell and locking the drift safely onto backup power; nothing is lost, and with the station stable the harbor patrol opens a proper search for Noor, crediting the whole discovery to the girl who would not let a strange signal go'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_he_safe",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Secured Ahead of the Squall"
+      }
+    },
+    {
+      "id": "e_he_dismiss",
+      "body": "<<FILL role=failure words=115 beats='Without a real emergency to log, the patrol dispatcher thanks Priya politely and files her call under curiosities; no crew rolls, and out on the headland the countdown runs down unwatched, the drift dying in a building squall while the one report that could have saved it sits closed in a duty logbook'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_he_dismiss",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Filed Under Curiosities"
+      }
+    },
+    {
+      "id": "f_he_colleague",
+      "body": "<<FILL role=climax words=140 beats='Priya tracks down the retired first mate nearby; he goes quiet when she describes the drift, then says he always feared Salvatore Reyes would do this, and he can drive out to help her reach the abandoned lighthouse station in time, or she can learn his number is years dead and the man long moved away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_he_colleague_1",
+          "label": "Team up with the retired first mate nearby to reach the abandoned lighthouse station.",
+          "target": "f_he_join"
+        },
+        {
+          "id": "c_f_he_colleague_2",
+          "label": "Find the colleague long gone.",
+          "target": "e_he_dead"
+        }
+      ]
+    },
+    {
+      "id": "f_he_join",
+      "body": "<<FILL role=climax words=140 beats='the retired first mate nearby meets Priya at the rusted lighthouse gate with keys he never returned; he knows the console cold, and together they can complete Salvatore Reyes's scheduled transmission the right way before the buoy's failing solar cell fails, or Priya can step back and let the old professional take it from here, her part in the search already done'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_f_he_join_1",
+          "label": "Complete the transmission together.",
+          "target": "e_he_complete"
+        },
+        {
+          "id": "c_f_he_join_2",
+          "label": "Step back and let the retired first mate nearby finish it.",
+          "target": "e_he_takeover"
+        }
+      ]
+    },
+    {
+      "id": "e_he_complete",
+      "body": "<<FILL role=success words=130 beats='Side by side, Priya and the retired first mate nearby bring the abandoned lighthouse station to full power and send a locked message set to broadcast once out clean and strong on the exact frequency Noor once knew; when the answer comes, faint then sure, the retired first mate nearby grips Priya's shoulder, and the drift, which counted down alone for thirty years, ends with two people there to hear it land'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_he_complete",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Two Old Friends Together"
+      }
+    },
+    {
+      "id": "e_he_takeover",
+      "body": "<<FILL role=failure words=120 beats='Priya hands the retired first mate nearby the story and steps back, and he takes over with the ease of a man who built the place; she bikes home certain it is in good hands, yet she never hears how it ends, whether Noor answered or the drift simply stopped, her long night closing on a question she will always carry'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_he_takeover",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "In Good Hands, Unknown End"
+      }
+    },
+    {
+      "id": "e_he_dead",
+      "body": "<<FILL role=failure words=115 beats='The number rings out to a stranger; the retired first mate nearby moved away years ago and left no forwarding line, and every other name from the relay days has scattered or passed on. Priya sits with the dead phone as the clock runs down, the one person who could have helped her already gone beyond reach'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_he_dead",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "No One Left to Call"
+      }
+    }
+  ]
+}

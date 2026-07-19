@@ -1,0 +1,869 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_tide_pool_rescue",
+  "version": 1,
+  "title": "The Tide Pool Rescue",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "kindness",
+      "helping",
+      "perseverance",
+      "friendship"
+    ],
+    "estimated_minutes": 7,
+    "ending_count": 12,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=85 beats='Juniper and Pop arrive at the mountainside on a bright morning at the morning snowmelt, Pop in his wide sun hat carrying the snack tin and Juniper swinging his canvas satchel; the sea has gone way out and left the rocks shiny and dotted with tide pools; Pop says the water always comes back, like a friend coming home; Juniper cannot wait to explore the flower-covered mountain meadow; warm, sunny, and excited, never worried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_go",
+          "label": "Follow Pop down the sandy path.",
+          "target": "n_walk"
+        }
+      ]
+    },
+    {
+      "id": "n_walk",
+      "body": "<<FILL role=rising words=75 beats='Pop leads the way down the sandy path and spreads his wool blanket on Pop's picnic rock where she can see everything; she reminds Juniper of the beach rules, stay on the dry rocks, wet feet are fine, and call if you ever want a hand; Juniper promises with a salute and turns toward the shining pools'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_walk_rocks",
+          "label": "Step out onto the flat low-tide rocks.",
+          "target": "n_meet"
+        }
+      ]
+    },
+    {
+      "id": "n_meet",
+      "body": "<<FILL role=rising words=80 beats='out on the rocks Juniper hears tiny voices; the morning snowmelt has left some tide-pool friends stranded too high and dry, a marmot stranded on a high boulder ledge, a butterfly trapped in a shrinking puddle of melting snow, a rabbit tangled up in twisting wildflower vines, and a snail stranded far up a sunny dry boulder; far off the darkening clouds gathering over the peak; Juniper decides to help everyone before the afternoon storm clouds rolling in, starting with the marmot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meet_star",
+          "label": "Hurry to the marmot on the high ledge.",
+          "target": "st_scene"
+        }
+      ]
+    },
+    {
+      "id": "st_scene",
+      "body": "<<FILL role=rising words=70 beats='Juniper reaches the tall rock where Nib the marmot sits stranded on a high boulder ledge above his head; her five arms droop like a tired star sticker; she calls down that the ledge is getting warm and she would very much like to be back in her cool den burrow below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_scene",
+          "label": "Climb the low steps for a closer look.",
+          "target": "st_meet"
+        }
+      ]
+    },
+    {
+      "id": "st_meet",
+      "body": "<<FILL role=rising words=75 beats='Juniper climbs two safe flat steps and says hello; Nib perks up one arm to wave; the ledge is dry as toast and her cool den burrow waits just below; Nib says any rescue plan is fine with her, she is a very patient marmot; Juniper looks at his canvas satchel, at his own two hands, and at the little slope'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_meet",
+          "label": "Think up a rescue plan for Nib.",
+          "target": "st_plan"
+        }
+      ]
+    },
+    {
+      "id": "st_plan",
+      "body": "<<FILL role=choice words=80 beats='Juniper lines up his ideas while Nib waves cheerfully from her dry ledge; he could toss a handful of grass up to her, climb up and carry her down himself to pour her a waterfall, or coax her onto a stone and lower her himself; Pop watches from Pop's picnic rock, ready with a tip whenever he wants one; must read the same on a first visit and on any try-again visit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_plan_hands",
+          "label": "Toss water up with your cupped hands.",
+          "target": "st_flop_hands"
+        },
+        {
+          "id": "c_st_plan_bucket",
+          "label": "Carry his canvas satchel up the little slope.",
+          "target": "st_flop_bucket"
+        },
+        {
+          "id": "c_st_plan_slide",
+          "label": "Wet your hands and gently slide Nib down.",
+          "target": "st_win"
+        }
+      ]
+    },
+    {
+      "id": "st_flop_hands",
+      "body": "<<FILL role=choice words=75 beats='Juniper scoops sea water in his cupped hands and tosses it up toward the ledge, but the water rains straight back down on his own head, plip plop; Nib giggles so hard her arms wiggle; Juniper laughs and shakes his wet hair like a puppy; no harm done, just a soggy fringe; he can line the plans up again or trot over and ask Pop for a tip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_hands_again",
+          "label": "Line up the plans and try again.",
+          "target": "st_plan"
+        },
+        {
+          "id": "c_st_hands_gran",
+          "label": "Ask Pop for a tip.",
+          "target": "st_gran"
+        }
+      ]
+    },
+    {
+      "id": "st_flop_bucket",
+      "body": "<<FILL role=choice words=75 beats='Juniper fills his canvas satchel and starts up the little slope, but it wobbles, tips, and whooshes every drop over his own shoes; his toes squelch; Nib claps two arms for the amazing splash; Juniper grins and wiggles his soggy toes; nothing lost, the storm has plenty more water; he can go back to his plans or ask Pop for a tip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_bucket_again",
+          "label": "Shake off the splash and try again.",
+          "target": "st_plan"
+        },
+        {
+          "id": "c_st_bucket_gran",
+          "label": "Ask Pop for a tip.",
+          "target": "st_gran"
+        }
+      ]
+    },
+    {
+      "id": "st_gran",
+      "body": "<<FILL role=choice words=65 beats='Pop tips back his wide sun hat and smiles; marmots like slow and gentle, she says, wet your hands first so Nib can hold on comfy, then slide her down to her cool den burrow like a little slide ride; Juniper can try the gentle sliding idea right away or look over his plans once more; reads the same on any visit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_gran_try",
+          "label": "Try Pop's gentle sliding idea.",
+          "target": "st_win"
+        },
+        {
+          "id": "c_st_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "st_plan"
+        }
+      ]
+    },
+    {
+      "id": "st_win",
+      "body": "<<FILL role=rising words=75 beats='Juniper dips his hands in the pool until they are cool and wet, reaches up, and Nib holds on with all five arms; slow and gentle, he carries her down the rock into her cool den burrow with a soft ploop; Nib stretches every arm wide, like a happy dance underwater'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_win",
+          "label": "Watch Nib settle into her pool.",
+          "target": "st_thanks"
+        }
+      ]
+    },
+    {
+      "id": "st_thanks",
+      "body": "<<FILL role=choice words=60 beats='Nib presses one arm up against the glassy top of the water like a high five and burbles thank you; just then a soft fluttering sound comes from a puddle across the rocks; someone else needs help; Juniper can hurry toward the sound, or sit with Pop and let the storm finish the rescuing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_st_next",
+          "label": "Hurry toward the flappy splashing sound.",
+          "target": "t_st_fi"
+        },
+        {
+          "id": "c_st_rest",
+          "label": "Sit with Gran and let the tide finish the rescuing.",
+          "target": "e_tide_star"
+        }
+      ]
+    },
+    {
+      "id": "t_st_fi",
+      "body": "<<FILL role=rising words=60 beats='Juniper hops carefully from flat rock to flat rock toward the splashing; out past the pools the storm has crept one sparkly step closer, glittering as it comes; Pop waves his wide sun hat from Pop's picnic rock; the splashing gets louder in a puddle no bigger than a dinner plate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1",
+          "label": "Kneel beside the shrinking puddle.",
+          "target": "fi_scene"
+        }
+      ]
+    },
+    {
+      "id": "fi_scene",
+      "body": "<<FILL role=rising words=70 beats='in the little puddle a small silver butterfly zips in busy circles; the puddle is only as deep as a soup bowl and the warm sun is sipping it smaller; he pops his mouth up and says his name is Dot and he would very much like a bigger pool please; hopeful and chatty, never scared'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_scene",
+          "label": "Lean in and say hello to the little butterfly.",
+          "target": "fi_meet"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fi_meet",
+      "body": "<<FILL role=rising words=75 beats='Juniper tells Dot that help is here; the sunny wildflower patch waits just two hops away, calm and shady; Dot zooms an excited lap around his puddle; Juniper looks from his two quick hands to the strip of sand between the puddles to his canvas satchel, three ways this rescue might go'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_meet",
+          "label": "Think up a plan to move Dot.",
+          "target": "fi_plan"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "fi_plan",
+      "body": "<<FILL role=choice words=80 beats='Juniper studies the puddle while Dot swims hopeful loops; he could try to catch her with his bare hands, blow her gently toward the flowers so the puddle can flow to the sunny wildflower patch, or scoop her up gently in the satchel; Dot blows a bubble that seems to say you can do it; must read the same on a first visit and on any try-again visit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_plan_hands",
+          "label": "Catch Dot with your bare hands.",
+          "target": "fi_flop_hands"
+        },
+        {
+          "id": "c_fi_plan_dig",
+          "label": "Dig a little river over to the sunny wildflower patch.",
+          "target": "fi_flop_dig"
+        },
+        {
+          "id": "c_fi_plan_scoop",
+          "label": "Scoop water and Dot up together in his canvas satchel.",
+          "target": "fi_win"
+        }
+      ]
+    },
+    {
+      "id": "fi_flop_hands",
+      "body": "<<FILL role=choice words=75 beats='Juniper cups his hands and reaches in, but Dot is quicker than a sneeze; he zips between Juniper's fingers, tickles his thumb, and splashes a tiny wave right up Juniper's nose; Juniper snorts with laughter and Dot does a proud little flip; no harm done to anyone; Juniper can pick a plan again or ask Pop for a tip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_hands_again",
+          "label": "Line up the plans and try again.",
+          "target": "fi_plan"
+        },
+        {
+          "id": "c_fi_hands_gran",
+          "label": "Ask Pop for a tip.",
+          "target": "fi_gran"
+        }
+      ]
+    },
+    {
+      "id": "fi_flop_dig",
+      "body": "<<FILL role=choice words=75 beats='Juniper drags his finger through the sand to dig a little river, but the thirsty sand drinks the water down with a polite glug before it travels anywhere; the channel just sits there, damp and empty; Juniper pats the sand and giggles at his disappearing river; Dot shrugs his fins; Juniper can pick a plan again or ask Pop for a tip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_dig_again",
+          "label": "Smooth the sand and try again.",
+          "target": "fi_plan"
+        },
+        {
+          "id": "c_fi_dig_gran",
+          "label": "Ask Pop for a tip.",
+          "target": "fi_gran"
+        }
+      ]
+    },
+    {
+      "id": "fi_gran",
+      "body": "<<FILL role=choice words=65 beats='Pop leans forward on Pop's picnic rock and smiles; butterflys do not like to be squeezed, she says, but they do love to swim; scoop her up gently in the satchel and he can ride to the sunny wildflower patch swimming the whole way; Juniper can try the gentle scoop or look over his plans once more; reads the same on any visit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_gran_try",
+          "label": "Scoop water and Dot up together, Pop's way.",
+          "target": "fi_win"
+        },
+        {
+          "id": "c_fi_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "fi_plan"
+        }
+      ]
+    },
+    {
+      "id": "fi_win",
+      "body": "<<FILL role=rising words=75 beats='Juniper lowers his canvas satchel slowly into the puddle and Dot swims right in, riding his very own cupful of sea; two careful hops later Juniper tips his canvas satchel at the edge of the sunny wildflower patch and Dot pours out with the water, zooming one giant loop around his cool new home'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_win",
+          "label": "Watch Dot zoom around his big new pool.",
+          "target": "fi_thanks"
+        }
+      ]
+    },
+    {
+      "id": "fi_thanks",
+      "body": "<<FILL role=rising words=60 beats='Dot leaps one sparkling thank-you hop and races another lap; from over by the seaweed patch comes quiet thumps in the grass, like tiny castanets; someone else is stuck; Juniper waves goodbye to Dot and turns toward the sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fi_next",
+          "label": "Follow the clack-clack sound to the seaweed.",
+          "target": "t_fi_cr"
+        }
+      ]
+    },
+    {
+      "id": "t_fi_cr",
+      "body": "<<FILL role=rising words=60 beats='Juniper crosses the rocks toward the clacking; behind him the storm has slid another sparkly step up the sand, filling the farthest pools first like little cups; the seaweed patch ahead is green and shiny, and something in the middle of it is waving'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2",
+          "label": "Cross the rocks to the seaweed patch.",
+          "target": "cr_scene"
+        }
+      ]
+    },
+    {
+      "id": "cr_scene",
+      "body": "<<FILL role=rising words=70 beats='in the seaweed patch a small rabbit is tangled up in twisting wildflower vines like a present that tied itself; he clacks his claws hello and says his name is Buck; he was climbing through when the seaweed flopped over, and now his legs are in a friendly muddle; cheerful, not frightened'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_scene",
+          "label": "Crouch down beside the tangled rabbit.",
+          "target": "cr_meet"
+        }
+      ]
+    },
+    {
+      "id": "cr_meet",
+      "body": "<<FILL role=rising words=75 beats='Juniper crouches close and Buck wiggles to show which legs are stuck; the seaweed is shiny and slippery as wet noodles; Buck promises his claws only pinch things that poke too fast; Juniper looks at the tangle, then at the picnic spoon peeking out of his pocket, and starts to think'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_meet",
+          "label": "Think up a plan to untangle Buck.",
+          "target": "cr_plan"
+        }
+      ]
+    },
+    {
+      "id": "cr_plan",
+      "body": "<<FILL role=choice words=80 beats='Juniper considers the seaweed muddle while Buck waits, waving one free claw like a tiny flag; Juniper could give the vines one quick pull, hold out a stick for him to grab, or loosen one vine at a time, slowly; Pop hums a beach tune from Pop's picnic rock nearby; must read the same on a first visit and on any try-again visit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_plan_tug",
+          "label": "Give the seaweed one quick tug.",
+          "target": "cr_flop_tug"
+        },
+        {
+          "id": "c_cr_plan_spoon",
+          "label": "Hold out the picnic spoon for Buck to grab.",
+          "target": "cr_flop_spoon"
+        },
+        {
+          "id": "c_cr_plan_ribbon",
+          "label": "Untangle one seaweed ribbon at a time.",
+          "target": "cr_win"
+        }
+      ]
+    },
+    {
+      "id": "cr_flop_tug",
+      "body": "<<FILL role=choice words=75 beats='Juniper grips the slippery seaweed and gives one quick tug; the wet ribbon slides straight through his fingers and Juniper sits down plop in a shallow warm puddle; Buck waves both claws as if to say whoa, nice splash; Juniper laughs and stands up dripping and completely fine; the tangle is still tangled; he can pick a plan again or ask Pop for a tip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_tug_again",
+          "label": "Stand up and try again.",
+          "target": "cr_plan"
+        },
+        {
+          "id": "c_cr_tug_gran",
+          "label": "Ask Pop for a tip.",
+          "target": "cr_gran"
+        }
+      ]
+    },
+    {
+      "id": "cr_flop_spoon",
+      "body": "<<FILL role=choice words=75 beats='Juniper holds out the picnic spoon and Buck grabs it, but instead of climbing free the rabbit pinches on tight and waves the spoon around like a shiny trophy; Juniper has a gentle giggly tug-of-war just to get his spoon back and tucks it safely in his pocket; the tangle is still tangled; he can pick a plan again or ask Pop for a tip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_spoon_again",
+          "label": "Pocket the spoon and try again.",
+          "target": "cr_plan"
+        },
+        {
+          "id": "c_cr_spoon_gran",
+          "label": "Ask Pop for a tip.",
+          "target": "cr_gran"
+        }
+      ]
+    },
+    {
+      "id": "cr_gran",
+      "body": "<<FILL role=choice words=65 beats='Pop calls over softly from Pop's picnic rock; tangles hate hurrying, she says, hum a slow song and loosen one vine at a time, slowly, and the whole knot will give up all by itself; Juniper can try the slow ribbon-by-ribbon way or look over his plans once more; reads the same on any visit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_gran_try",
+          "label": "Untangle one ribbon at a time, Pop's way.",
+          "target": "cr_win"
+        },
+        {
+          "id": "c_cr_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "cr_plan"
+        }
+      ]
+    },
+    {
+      "id": "cr_win",
+      "body": "<<FILL role=rising words=75 beats='Juniper hums a slow beach song and loosens one green ribbon, then another, then another; the tangle gives up with a soft slurp and Buck steps out, stretching each leg one by one like a tiny gym class; the burrow beneath the old pine is deep and ready for him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_win",
+          "label": "Watch Buck scuttle into the cool pool.",
+          "target": "cr_thanks"
+        }
+      ]
+    },
+    {
+      "id": "cr_thanks",
+      "body": "<<FILL role=choice words=60 beats='Buck clacks a happy drumroll on a pebble and scuttles a thank-you circle around his pool; high on the dry rock above, something tiny glinting in the sunshine, a snail shell a long way from any water; Juniper can head up to help, or watch from Pop's his wool blanket while the storm fetches the little snail itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cr_next",
+          "label": "Head for the tiny shell far up the rock.",
+          "target": "t_cr_pw"
+        },
+        {
+          "id": "c_cr_rest",
+          "label": "Watch from Pop's his wool blanket while the storm fetches the snail.",
+          "target": "e_tide_snail"
+        }
+      ]
+    },
+    {
+      "id": "t_cr_pw",
+      "body": "<<FILL role=rising words=60 beats='Juniper tiptoes up the dry rock, keeping his feet on the rough gray parts the way Pop likes; the storm is closer now, filling pool after pool behind him with happy gurgles; near the top, a shell no bigger than a button sits all alone in the sunshine'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3",
+          "label": "Tiptoe up the dry rock to the tiny shell.",
+          "target": "pw_scene"
+        }
+      ]
+    },
+    {
+      "id": "pw_scene",
+      "body": "<<FILL role=rising words=70 beats='near the top of the dry rock sits a snail shell no bigger than a button, far from any water; a tiny voice inside gives a tiny polite cough; the sun is warm, the rock is very dry, and the shell is a very long walk from home for someone so small'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_scene",
+          "label": "Bend down and greet the little snail.",
+          "target": "pw_meet"
+        }
+      ]
+    },
+    {
+      "id": "pw_meet",
+      "body": "<<FILL role=rising words=75 beats='Juniper bends down and the tiny shell peeks out; her name is Shelly, and she went exploring at the morning snowmelt and wandered much too far; her mossy log down the slope is way down the rock, and snails are the slowest walkers on the whole beach; Juniper dips one hand in a nearby pool while he thinks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_meet",
+          "label": "Think up a plan to bring Shelly home.",
+          "target": "pw_plan"
+        }
+      ]
+    },
+    {
+      "id": "pw_plan",
+      "body": "<<FILL role=choice words=80 beats='Juniper thinks it over while Shelly waits, snug in her shell; he could roll her along like a tiny wheel, cheer her on to move faster, or offer her a slow ride on his hand; Shelly says any way is fine, she is in no hurry at all, though the storm rather is; must read the same on a first visit and on any try-again visit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_plan_roll",
+          "label": "Roll Shelly along like a tiny wheel.",
+          "target": "pw_flop_roll"
+        },
+        {
+          "id": "c_pw_plan_cheer",
+          "label": "Cheer for Shelly to walk faster.",
+          "target": "pw_flop_cheer"
+        },
+        {
+          "id": "c_pw_plan_palm",
+          "label": "Offer Shelly a ride on your wet palm.",
+          "target": "pw_win"
+        }
+      ]
+    },
+    {
+      "id": "pw_flop_roll",
+      "body": "<<FILL role=choice words=75 beats='Juniper gives Shelly the gentlest nudge to start her rolling like a tiny wheel, but Shelly tucks herself snugly into her shell and simply will not budge, stuck fast as a pebble glued to the rock; no rolling today, thank you, says a tiny muffled voice; Juniper laughs at his silly fizzled idea, and Shelly peeks back out, completely comfy; he can pick a plan again or ask Pop for a tip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_roll_again",
+          "label": "Smile at the stubborn shell and try again.",
+          "target": "pw_plan"
+        },
+        {
+          "id": "c_pw_roll_gran",
+          "label": "Ask Pop for a tip.",
+          "target": "pw_gran"
+        }
+      ]
+    },
+    {
+      "id": "pw_flop_cheer",
+      "body": "<<FILL role=choice words=75 beats='Juniper claps and cheers, go Shelly go; Shelly tries her very fastest, and after one whole minute of mighty effort she has traveled the width of a single pebble; she puffs proudly; at this speed they might arrive by next Tuesday; Juniper cheers once more anyway, because trying deserves a cheer; he can pick a plan again or ask Pop for a tip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_cheer_again",
+          "label": "Line up the plans and try again.",
+          "target": "pw_plan"
+        },
+        {
+          "id": "c_pw_cheer_gran",
+          "label": "Ask Pop for a tip.",
+          "target": "pw_gran"
+        }
+      ]
+    },
+    {
+      "id": "pw_gran",
+      "body": "<<FILL role=choice words=65 beats='Pop cups her hands around her mouth and calls up gently; little snails ride better than they roll, she says, wet your palm so it feels like home, let Shelly hold on tight, and walk her down slow as a Sunday; Juniper can offer the wet-palm ride or look over his plans once more; reads the same on any visit'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_gran_try",
+          "label": "Offer Shelly a wet-palm ride, Pop's way.",
+          "target": "pw_win"
+        },
+        {
+          "id": "c_pw_gran_back",
+          "label": "Look over the plans once more.",
+          "target": "pw_plan"
+        }
+      ]
+    },
+    {
+      "id": "pw_win",
+      "body": "<<FILL role=rising words=75 beats='Juniper wets his palm in a pool and lays his hand flat beside Shelly; she slides aboard and holds on snug; this is the longest, highest, most careful rescue of the whole day, step by slow step down the big rock while the storm gurgles behind him like a cheering crowd, until he kneels at the edge of her mossy log down the slope'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_win",
+          "label": "Lower Shelly into her cool pool.",
+          "target": "pw_thanks"
+        }
+      ]
+    },
+    {
+      "id": "pw_thanks",
+      "body": "<<FILL role=rising words=60 beats='Shelly settles onto her favorite green stone with a tiny happy squeak, home at last; just then a bright gurgle runs all along the rocks; the storm is arriving, filling the pools like a friend opening every door on the street; Juniper lifts his head'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pw_done",
+          "label": "Look up at the sparkling line of the storm.",
+          "target": "n_alldone"
+        }
+      ]
+    },
+    {
+      "id": "n_alldone",
+      "body": "<<FILL role=rising words=80 beats='Juniper stands tall on the flat rocks; every friend is safe, Nib stretched out in her pool, Dot zooming in the deep one, Buck drumming by the seaweed, Shelly snug on her green stone; the storm sweeps closer in sparkly stripes, warm and friendly, coming to welcome everyone home; Pop gives Juniper a proud thumbs up from Pop's picnic rock'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_alldone",
+          "label": "Watch the first wave-finger slide in.",
+          "target": "n_tide"
+        }
+      ]
+    },
+    {
+      "id": "n_tide",
+      "body": "<<FILL role=choice words=85 beats='the first thin finger of the storm slides across the rocks and fills the nearest pool right up to its brim; the water is home and the whole rescue is complete; the pools fizz and sparkle like a celebration; Juniper can follow the storm from pool to pool to see each friend greet it, climb up beside Pop on Pop's picnic rock to watch it all at once, or open the snack tin to celebrate the rescue team'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tide_follow",
+          "label": "Follow the storm from pool to pool.",
+          "target": "n_fill"
+        },
+        {
+          "id": "c_tide_gran",
+          "label": "Climb up beside Pop on Pop's picnic rock.",
+          "target": "n_wave"
+        },
+        {
+          "id": "c_tide_picnic",
+          "label": "Open the snack tin to celebrate.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_fill",
+      "body": "<<FILL role=choice words=75 beats='Juniper trots beside the storm as it fills pool after pool like a row of tea cups; Nib's pool is next and already trembling at the brim; Juniper can stay and cheer as Nib's pool spills over, race the soft foam line up the dry sand just for fun, or peek around for anyone else who might still need a hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fill_cheer",
+          "label": "Cheer as Nib's pool spills over.",
+          "target": "e_cartwheel"
+        },
+        {
+          "id": "c_fill_race",
+          "label": "Race the foam line up the dry sand.",
+          "target": "n_race"
+        },
+        {
+          "id": "c_fill_check",
+          "label": "Peek around for anyone else who needs help.",
+          "target": "n_check"
+        }
+      ]
+    },
+    {
+      "id": "n_race",
+      "body": "<<FILL role=rising words=60 beats='Juniper lines up his toes on the dry sand, well ahead of the water, and waits for the soft foam line to catch up; Pop calls ready, steady, go from Pop's picnic rock; the storm whooshes gently forward and Juniper takes off giggling along the dry sand beside it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_race_go",
+          "label": "Run the last few splashy-sounding steps.",
+          "target": "e_race_win"
+        }
+      ]
+    },
+    {
+      "id": "n_check",
+      "body": "<<FILL role=choice words=70 beats='Juniper shades his eyes and looks over the busy, filling pools; nobody calls for help, but under a shadowy ledge something small is bobbing on the new water, and along the wet sand a glittery trail winds toward a heap of shining pebbles; both look like tiny mysteries worth one last look before the snack tin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_check_ledge",
+          "label": "Peek under the shadowy ledge.",
+          "target": "e_hermit"
+        },
+        {
+          "id": "c_check_trail",
+          "label": "Follow the glittery trail.",
+          "target": "e_shell"
+        }
+      ]
+    },
+    {
+      "id": "n_wave",
+      "body": "<<FILL role=choice words=75 beats='Juniper climbs up beside Pop on Pop's picnic rock and she wraps him in the warm corner of his wool blanket; below them the storm fills every pool one by one while the friends wave, splash, and clack; Pop asks how the rescue team would like to celebrate; they could sing a welcome-home song, shout three hip-hip-hoorays, or call each friend by name as their pool fills'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wave_song",
+          "label": "Sing the welcome-home song.",
+          "target": "e_song"
+        },
+        {
+          "id": "c_wave_cheer",
+          "label": "Shout three hip-hip-hoorays.",
+          "target": "e_hooray"
+        },
+        {
+          "id": "c_wave_names",
+          "label": "Call each friend's name as their pool fills.",
+          "target": "e_names"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "<<FILL role=choice words=75 beats='Pop opens the snack tin on Pop's picnic rock, crackers, berries, and two little cups of juice; below them the storm sparkles into the last pools while the friends splash hello to it; Juniper can raise juice cups in a toast to the rescue team, tell Pop the whole story of the rescue day, or start planning the next the morning snowmelt rescue patrol'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_toast",
+          "label": "Raise juice cups to the rescue team.",
+          "target": "e_toast"
+        },
+        {
+          "id": "c_picnic_story",
+          "label": "Tell Pop the whole rescue story.",
+          "target": "e_story"
+        },
+        {
+          "id": "c_picnic_patrol",
+          "label": "Plan the next the morning snowmelt rescue patrol.",
+          "target": "e_patrol"
+        }
+      ]
+    },
+    {
+      "id": "e_tide_star",
+      "body": "<<FILL role=ending words=80 beats='Juniper snuggles next to Pop on his wool blanket and shares crackers while the storm slides in; the water reaches Dot and his puddle grows into a lake, unwraps Buck from his seaweed, and carries Shelly gently home, doing the rest of the rescuing all by itself; Juniper waves to each friend as they float free and happy; one rescue by Juniper and three by the storm, says Pop, what a fine team; Juniper snuggles deeper into the warm towel, proud of Nib's rescue and already excited to come back and visit the brimming pools'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tide_star",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Storm Lends a Hand"
+      }
+    },
+    {
+      "id": "e_tide_snail",
+      "body": "<<FILL role=ending words=80 beats='from Pop's his wool blanket Juniper watches sparkly the storm climb the rock, higher and higher, until it reaches tiny Shelly's shell and lifts her like a leaf on a stream; the little snail sails down to her pool in style, and a tiny faraway wheee floats across the rocks; three rescues by Juniper and one by the storm, says Pop, sounds like a fine team; Juniper waves until the little shell settles safely into deep cool water'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_tide_snail",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "The Snail Rides the Runoff Home"
+      }
+    },
+    {
+      "id": "e_cartwheel",
+      "body": "<<FILL role=completion words=85 beats='the storm tips over the rim of Nib's pool and the water rises around her like a big cool hug; Nib does a slow magnificent underwater cartwheel of thank you, all five arms sparkling; Juniper cheers, Pop cheers from Pop's picnic rock, and the storm keeps rolling gently in, welcoming every rescued friend home; best the morning snowmelt ever, Juniper decides, and Nib cartwheels once more as if she completely agrees'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_cartwheel",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Nib's Thank-You Somersault"
+      }
+    },
+    {
+      "id": "e_race_win",
+      "body": "<<FILL role=completion words=85 beats='Juniper and the foam line race up the beach and Juniper wins by exactly one giggling toe; the storm pit-pats little wave-claps behind him and fills the last pools while Pop shouts hooray; Juniper takes a big bow to the storm, and it seems to bow back with one soft sparkly wave; every friend is home, the water is back where it belongs, and Juniper is the fastest rescuer on the whole the mountainside'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_race_win",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Racing the Rolling Thunder"
+      }
+    },
+    {
+      "id": "e_hermit",
+      "body": "<<FILL role=completion words=80 beats='under the shadowy ledge bobs a chipmunk in a curled leaf nest, already floating home on the new water and needing no rescue at all; he tips his shell to Juniper exactly the way Pop tips his wide sun hat; Juniper tips an invisible hat right back; a new friend to wave to as the storm carries him past the rocks, while all the rescued friends settle happily into their brimming pools'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hermit",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Chipmunk Surprise"
+      }
+    },
+    {
+      "id": "e_shell",
+      "body": "<<FILL role=completion words=80 beats='the glittery trail winds between two pebbles and stops at a smooth stone striped like a rainbow, polished smooth by the storm; Pop says it is a thank-you gift from the mountainside for a hard-working rescuer; Juniper holds it to his ear and hears the storm inside, whooshing home; he carries it back in his canvas satchel, a treasure to remember the rescue day forever'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_shell",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Rainbow Stone"
+      }
+    },
+    {
+      "id": "e_song",
+      "body": "<<FILL role=completion words=85 beats='Juniper and Pop make up a welcome-home song right there on Pop's picnic rock, with a happy sound for Nib, for Dot, for Buck, and for Shelly; the friends join in from their brimming pools, splashing along in time, and the storm keeps the beat with soft whooshes; the song floats out over the water until every pool is full and everybody is home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Welcome-Home Song"
+      }
+    },
+    {
+      "id": "e_hooray",
+      "body": "<<FILL role=completion words=80 beats='hip hip hooray, hip hip hooray, hip hip hooray; Juniper and Pop shout three big cheers as the storm rolls home across the rocks, and the friends answer with splashes, bubbles, and claw-clacks from their pools; the storm fills the very last pool with a happy gulp; every friend is safe, every pool is brimming, and the whole the mountainside feels like it is clapping along'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_hooray",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Three Cheers for Everyone"
+      }
+    },
+    {
+      "id": "e_names",
+      "body": "<<FILL role=completion words=80 beats='as each pool fills, Juniper calls its friend by name; welcome home, Nib; welcome home, Dot; welcome home, Buck; welcome home, Shelly; each friend pops up and waves an arm or a fin or a claw or a tiny shell, then settles snug into deep cool water; Pop squeezes Juniper's shoulder; every single friend is home, and Juniper is the reason why'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_names",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Everyone Home"
+      }
+    },
+    {
+      "id": "e_toast",
+      "body": "<<FILL role=completion words=85 beats='Juniper and Pop clink their little juice cups together on Pop's picnic rock; to the rescue team, says Pop, to Nib, Dot, Buck, and Shelly, and to the helper who never gave up; below them the storm sparkles into every pool while the friends splash a fizzy toast of their own; Juniper sips his juice and decides that rescue days taste especially sweet'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_toast",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Toast to the Rescue Team"
+      }
+    },
+    {
+      "id": "e_story",
+      "body": "<<FILL role=completion words=85 beats='Juniper tells Pop the whole story of the rescue day, being stranded on a high boulder ledge, trapped in a shrinking puddle of melting snow, tangled up in twisting wildflower vines, and the long slow ride home for the littlest shell; Pop listens under his wide sun hat and declares it the best the mountainside story she has ever heard; below them the full pools sparkle and the friends splash, as if adding their own favorite parts to the tale'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Best Meadow Story"
+      }
+    },
+    {
+      "id": "e_patrol",
+      "body": "<<FILL role=completion words=80 beats='Juniper and Pop plan the next the morning snowmelt rescue patrol with cracker-crumb maps on his wool blanket; Pop will bring his wide sun hat and the snack tin, Juniper will bring his canvas satchel and his gentle wet hands; below them the storm tucks every friend into deep cool water for the afternoon; the storm will go out again someday, Pop says, and when it does, the rescue patrol will be ready'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_patrol",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Snowmelt Rescue Patrol"
+      }
+    }
+  ]
+}

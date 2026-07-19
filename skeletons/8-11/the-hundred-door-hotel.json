@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=120 beats='June Voss, eleven, stands in the rain-washed dusk before the Meridian Hotel, a hundred dark windows and one grand door; her family inherited it yesterday from Great-Aunt Vera, its last keeper, and it has been closed for forty years; Mom and Dad are downstairs in the office arguing happily with paperwork, so June is the one holding the brass ring of one hundred numbered keys and the candle lantern; the hotel does not feel empty, it feels like a held breath; she decides someone should say hello to it properly, tonight'>>",
+      "body": "<<FILL role=setup words=120 beats='{HERO} {HERO_SURNAME}, eleven, stands in the rain-washed dusk before the {THRESHOLD} Hotel, a hundred dark windows and one grand door; her family inherited it yesterday from {PRIOR_KEEPER}, its last keeper, and it has been closed for forty years; Mom and Dad are downstairs in the office arguing happily with paperwork, so {HERO} is the one holding the brass ring of one hundred numbered keys and the candle lantern; the hotel does not feel empty, it feels like a held breath; she decides someone should say hello to it properly, tonight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -46,7 +46,7 @@
     },
     {
       "id": "n_doors",
-      "body": "<<FILL role=setup words=110 beats='the lobby by lantern light, marble and dust sheets, a chandelier asleep in canvas, a staircase wide enough for a parade; June's footsteps wake little echoes that seem pleased about it; and at the far end, impossibly, one small lamp is burning at the long front desk, polished amid the dust, as if the hotel kept one corner ready all these years; warm curiosity, a delicious shiver, never dread'>>",
+      "body": "<<FILL role=setup words=110 beats='the lobby by lantern light, marble and dust sheets, a {FIN_CHANDELIER} asleep in canvas, a staircase wide enough for a parade; {HERO}'s footsteps wake little echoes that seem pleased about it; and at the far end, impossibly, one small lamp is burning at the long front desk, polished amid the dust, as if the hotel kept one corner ready all these years; warm curiosity, a delicious shiver, never dread'>>",
       "is_ending": false,
       "choices": [
         {
@@ -58,7 +58,7 @@
     },
     {
       "id": "n_pearl",
-      "body": "<<FILL role=setup words=128 beats='behind the desk stands a small silver-haired woman June can see the wallpaper through, straightening a register with see-through hands; she is Pearl, and she is kind and glad and utterly unsurprising about being a ghost; she explains gently: her family built and kept the Meridian, five of them in all, and on the night of the hotel's hundredth-birthday ball a great storm shut everything down and the evening was never finished; in the forty quiet years since, her family has faded apart across the floors and forgotten one another, even their names, even her; she keeps the desk so the lights stay on for them; she asks June for one great favor, find them, and help finish the evening at last, one grand night in the ballroom'>>",
+      "body": "<<FILL role=setup words=128 beats='behind the desk stands a small silver-haired woman {HERO} can see the wallpaper through, straightening a register with see-through hands; she is {MATRIARCH}, and she is kind and glad and utterly unsurprising about being a ghost; she explains gently: her family built and kept the {THRESHOLD}, five of them in all, and on the night of the hotel's {OCCASION} a great storm shut everything down and the evening was never finished; in the forty quiet years since, her family has faded apart across the floors and forgotten one another, even their names, even her; she keeps the desk so the lights stay on for them; she asks {HERO} for one great favor, find them, and help finish the evening at last, one grand night in the {FINALE_ZONE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -70,71 +70,71 @@
     },
     {
       "id": "n_hub",
-      "body": "<<FILL role=choice words=108 beats='the grand staircase landing, the crossroads of the whole Meridian; from here the hotel spreads out like an opened hand: below, the lamplit lobby wing behind the front desk; along one corridor, the double doors of the kitchens breathing a faint warm smell; behind frosted glass, the green glow of the winter garden; above, the numbered guest floors where something quick is laughing; higher still, the narrow stair to the rooftop observatory; and straight across, the shut grand doors of the ballroom itself; keep this scene general so it reads naturally on a first visit or on any return trip between wings'>>",
+      "body": "<<FILL role=choice words=108 beats='the grand staircase landing, the crossroads of the whole {THRESHOLD}; from here the hotel spreads out like an opened hand: below, the lamplit {ROUTE_L_ZONE} behind the front desk; along one corridor, the double doors of the {ROUTE_K_ZONE} breathing a faint warm smell; behind frosted glass, the green glow of the {ROUTE_G_ZONE}; above, the {ROUTE_F_ZONE} where something quick is laughing; higher still, the narrow stair to the {ROUTE_R_ZONE}; and straight across, the shut grand doors of the {FINALE_ZONE} itself; keep this scene general so it reads naturally on a first visit or on any return trip between wings'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hub_lobby",
-          "label": "Go back down into the lobby wing, where Pearl keeps the desk.",
+          "label": "Go back down into the {ROUTE_L_ZONE}, where {MATRIARCH} keeps the desk.",
           "target": "lb_gate"
         },
         {
           "id": "c_hub_kitchen",
-          "label": "Follow the warm bread smell to the kitchens.",
+          "label": "Follow the warm bread smell to the {ROUTE_K_ZONE}.",
           "target": "kt_doors"
         },
         {
           "id": "c_hub_garden",
-          "label": "Push through the frosted doors of the winter garden.",
+          "label": "Push through the frosted doors of the {ROUTE_G_ZONE}.",
           "target": "wg_doors"
         },
         {
           "id": "c_hub_floors",
-          "label": "Climb to the numbered guest floors and that quick laughter.",
+          "label": "Climb to the {ROUTE_F_ZONE} and that quick laughter.",
           "target": "gf_stairs"
         },
         {
           "id": "c_hub_roof",
-          "label": "Take the narrow stair up toward the rooftop observatory.",
+          "label": "Take the narrow stair up toward the {ROUTE_R_ZONE}.",
           "target": "ob_stairs"
         },
         {
           "id": "c_hub_ballroom",
-          "label": "Cross to the grand ballroom doors.",
+          "label": "Cross to the grand {FINALE_ZONE} doors.",
           "target": "fin_approach"
         }
       ]
     },
     {
       "id": "lb_gate",
-      "body": "<<FILL role=choice words=96 beats='the lobby wing by lantern light, seen from the foot of the stairs: dust sheets draped like sleeping swans, tall windows striped with moonlight, and the long front desk with its one faithful lamp where Pearl keeps her post; behind the counter a doorway shows a wall of pigeonhole mailboxes, and a side door stands ajar on a room of brass sockets and cords; keep this arrival general so it reads naturally on a first visit or any return'>>",
+      "body": "<<FILL role=choice words=96 beats='the {ROUTE_L_ZONE} by lantern light, seen from the foot of the stairs: dust sheets draped like sleeping swans, tall windows striped with moonlight, and the long front desk with its one faithful lamp where {MATRIARCH} keeps her post; behind the counter a doorway shows a wall of pigeonhole mailboxes, and a side door stands ajar on a room of brass sockets and cords; keep this arrival general so it reads naturally on a first visit or any return'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lbg_desk",
-          "label": "Go to Pearl at the glowing desk.",
+          "label": "Go to {MATRIARCH} at the glowing desk.",
           "target": "lb_desk"
         },
         {
           "id": "c_lbg_mail",
-          "label": "Slip behind the counter to the pigeonhole mail wall.",
+          "label": "Slip behind the counter to the {L_MAILROOM}.",
           "target": "lb_mail"
         },
         {
           "id": "c_lbg_switch",
-          "label": "Ease open the side door to the old switchboard room.",
+          "label": "Ease open the side door to the old {L_SWITCHBOARD}.",
           "target": "lb_switch"
         }
       ]
     },
     {
       "id": "lb_desk",
-      "body": "<<FILL role=choice words=100 beats='Pearl at her desk, polishing the silver call bell in small patient circles; she brightens at June's company like a lamp turned up; write her welcome warm and general, the kind that works the same whether this is June's first stop after the staircase or the fifth time tonight she has drifted back to the desk; behind Pearl a wall of one hundred numbered key hooks gleams, every key polished though no guest has come in forty years'>>",
+      "body": "<<FILL role=choice words=100 beats='{MATRIARCH} at her desk, polishing the silver call bell in small patient circles; she brightens at {HERO}'s company like a lamp turned up; write her welcome warm and general, the kind that works the same whether this is {HERO}'s first stop after the staircase or the fifth time tonight she has drifted back to the desk; behind {MATRIARCH} a {L_KEYWALL} gleams, every key polished though no guest has come in forty years'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lbd_family",
-          "label": "Ask Pearl about her family.",
+          "label": "Ask {MATRIARCH} about her family.",
           "target": "lb_ask"
         },
         {
@@ -151,24 +151,24 @@
     },
     {
       "id": "lb_ask",
-      "body": "<<FILL role=choice words=104 beats='Pearl tries to remember her family and comes back with everything except the people: someone who smelled of bread and thyme, someone who hummed to plants, two small someones who were never not running; the names and faces slide away like water off glass, and her lamp dims a shade before she straightens and brightens it herself; everything the Meridian ever knew is written down somewhere, she says, that is what a hotel is, a building that keeps track of its people'>>",
+      "body": "<<FILL role=choice words=104 beats='{MATRIARCH} tries to remember her family and comes back with everything except the people: someone who smelled of bread and thyme, someone who hummed to plants, two small someones who were never not running; the names and faces slide away like water off glass, and her lamp dims a shade before she straightens and brightens it herself; everything the {THRESHOLD} ever knew is written down somewhere, she says, that is what a hotel is, a building that keeps track of its people'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lba_mail",
-          "label": "Search the pigeonhole mail wall for what the hotel kept.",
+          "label": "Search the {L_MAILROOM} for what the hotel kept.",
           "target": "lb_mail"
         },
         {
           "id": "c_lba_office",
-          "label": "Try the manager's office behind the desk.",
+          "label": "Try the {L_OFFICE} behind the desk.",
           "target": "lb_office"
         }
       ]
     },
     {
       "id": "lb_ball",
-      "body": "<<FILL role=choice words=100 beats='Pearl lights up telling the preparations for the hundredth-birthday ball: a cake taller than the two smallest members of staff, gardenia buttonholes ordered by the hundred, a brand-new waltz written just for the night; then she reaches for who the cake was shaped like and who wrote the waltz, and the memory slips, and she laughs at herself sadly, a hostess who has mislaid her own party'>>",
+      "body": "<<FILL role=choice words=100 beats='{MATRIARCH} lights up telling the preparations for the {OCCASION}: a {K_CAKE} taller than the two smallest members of staff, gardenia buttonholes ordered by the hundred, a brand-new waltz written just for the night; then she reaches for who the {K_CAKE} was shaped like and who wrote the waltz, and the memory slips, and she laughs at herself sadly, a hostess who has mislaid her own party'>>",
       "is_ending": false,
       "choices": [
         {
@@ -178,14 +178,14 @@
         },
         {
           "id": "c_lbb_office",
-          "label": "Go look for the reservation book in the manager's office.",
+          "label": "Go look for the reservation book in the {L_OFFICE}.",
           "target": "lb_office"
         }
       ]
     },
     {
       "id": "lb_storm",
-      "body": "<<FILL role=choice words=102 beats='the storm, told the way Pearl remembers it, in sounds: rain like gravel on the tall windows, the lights failing between one dance and the next, guests laughing at first and then hurrying, doors shutting one hundred times; we always meant to finish it, she says, we kept saying soon; write her telling entry-neutral, the same story fresh on a first hearing or turned over deeper on a return, never a one-time confession'>>",
+      "body": "<<FILL role=choice words=102 beats='the storm, told the way {MATRIARCH} remembers it, in sounds: rain like gravel on the tall windows, the lights failing between one dance and the next, guests laughing at first and then hurrying, doors shutting one hundred times; we always meant to finish it, she says, we kept saying soon; write her telling entry-neutral, the same story fresh on a first hearing or turned over deeper on a return, never a one-time confession'>>",
       "is_ending": false,
       "choices": [
         {
@@ -195,14 +195,14 @@
         },
         {
           "id": "c_lbs_mail",
-          "label": "Check what the mail wall still holds from that night.",
+          "label": "Check what the {L_MAILROOM} still holds from that night.",
           "target": "lb_mail"
         }
       ]
     },
     {
       "id": "lb_keywall",
-      "body": "<<FILL role=choice words=96 beats='Pearl walks June down the wall of hooks like a captain showing her ship: every key polished every night, room by room, because habits are how you love a building; her hand hovers over hook 100 at the end, a key smaller and brighter than the rest, and for a moment she cannot say why polishing that one always takes the longest'>>",
+      "body": "<<FILL role=choice words=96 beats='{MATRIARCH} walks {HERO} down the {L_KEYWALL} like a captain showing her ship: every key polished every night, room by room, because habits are how you love a building; her hand hovers over hook 100 at the end, a key smaller and brighter than the rest, and for a moment she cannot say why polishing that one always takes the longest'>>",
       "is_ending": false,
       "choices": [
         {
@@ -212,14 +212,14 @@
         },
         {
           "id": "c_lbk_office",
-          "label": "Slip into the manager's office behind the desk.",
+          "label": "Slip into the {L_OFFICE} behind the desk.",
           "target": "lb_office"
         }
       ]
     },
     {
       "id": "lb_mail",
-      "body": "<<FILL role=choice words=98 beats='the mail room: one hundred pigeonholes floor to ceiling, most empty, a few still holding shapes that make June's lantern hand slow down; box 9 has a yellowed envelope that smells faintly of thyme; box 44 bristles with folded paper darts; and the top row, up a wheeled ladder, keeps its secrets in shadow'>>",
+      "body": "<<FILL role=choice words=98 beats='the {L_MAILROOM}: one hundred pigeonholes floor to ceiling, most empty, a few still holding shapes that make {HERO}'s lantern hand slow down; box 9 has a yellowed envelope that smells faintly of thyme; box 44 bristles with folded {L_DARTS}; and the top row, up a {L_LADDER}, keeps its secrets in shadow'>>",
       "is_ending": false,
       "choices": [
         {
@@ -229,7 +229,7 @@
         },
         {
           "id": "c_lbm_dart",
-          "label": "Unfold the paper darts in box 44.",
+          "label": "Unfold the {L_DARTS} in box 44.",
           "target": "lb_box44"
         },
         {
@@ -241,41 +241,41 @@
     },
     {
       "id": "lb_box9",
-      "body": "<<FILL role=rising words=96 beats='the envelope holds a menu card in careful cursive: seven courses for the Hundredth Night, each dish named like a member of an orchestra, and at the bottom, underlined twice, FOR MAMA'S HUNDREDTH-YEAR TOAST; whoever cooked for this hotel was not staff only, he was somebody's son, and the kitchen was where he said so'>>",
+      "body": "<<FILL role=rising words=96 beats='the envelope holds a {L_MENU} in careful cursive: seven courses for the {OCCASION}, each dish named like a member of an orchestra, and at the bottom, underlined twice, FOR {MATRIARCH}'S {OCCASION}; whoever cooked for this hotel was not staff only, he was somebody's son, and the kitchen was where he said so'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lb9_show",
-          "label": "Carry the menu card to Pearl at the desk.",
+          "label": "Carry the {L_MENU} to {MATRIARCH} at the desk.",
           "target": "lb_show"
         },
         {
           "id": "c_lb9_switch",
-          "label": "Check the switchboard room too.",
+          "label": "Check the {L_SWITCHBOARD} too.",
           "target": "lb_switch"
         }
       ]
     },
     {
       "id": "lb_box44",
-      "body": "<<FILL role=rising words=94 beats='the darts are folded from luggage tags, creased sharp by practiced small fingers, and tucked behind them is a score sheet in two different scrawls, M VS M, BEST OF 1000, GAME PAUSED; the pause has lasted a very long time; June smooths one dart flat and folds it back better than she found it'>>",
+      "body": "<<FILL role=rising words=94 beats='the darts are folded from luggage tags, creased sharp by practiced small fingers, and tucked behind them is a {L_SCORESHEET} in two different scrawls, M VS M, BEST OF 1000, GAME PAUSED; the pause has lasted a very long time; {HERO} smooths one dart flat and folds it back better than she found it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lb44_show",
-          "label": "Take a dart and the score sheet to Pearl.",
+          "label": "Take a dart and the {L_SCORESHEET} to {MATRIARCH}.",
           "target": "lb_show"
         },
         {
           "id": "c_lb44_switch",
-          "label": "Check the switchboard room too.",
+          "label": "Check the {L_SWITCHBOARD} too.",
           "target": "lb_switch"
         }
       ]
     },
     {
       "id": "lb_ladder",
-      "body": "<<FILL role=choice words=92 beats='the wheeled ladder grumbles along its rail; the top row of pigeonholes sits in forty years of soft gray dust, all except one box whose front is wiped clean in a neat circle, as if someone small once polished a porthole to look through; the ladder wobbles cheerfully under June's sneakers, opinionated but willing'>>",
+      "body": "<<FILL role=choice words=92 beats='the {L_LADDER} grumbles along its rail; the top row of pigeonholes sits in forty years of soft gray dust, all except one box whose front is wiped clean in a neat circle, as if someone small once polished a porthole to look through; the ladder wobbles cheerfully under {HERO}'s sneakers, opinionated but willing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -292,24 +292,24 @@
     },
     {
       "id": "lb_topbox",
-      "body": "<<FILL role=rising words=94 beats='inside lies a flat box lined with tissue: one pressed gardenia, still faintly sweet, and a note in a round green-inked hand, FOR THE BUTTONHOLES, FROM THE WINTER GARDEN, WITH LOVE, W; the flower is forty years old and looks ready to be worn tonight; somebody grew things for this family the way other people write letters'>>",
+      "body": "<<FILL role=rising words=94 beats='inside lies a flat box lined with tissue: one {L_GARDENIA_KEEPSAKE}, still faintly sweet, and a note in a round green-inked hand, FOR THE BUTTONHOLES, FROM THE WINTER GARDEN, WITH LOVE, W; the flower is forty years old and looks ready to be worn tonight; somebody grew things for this family the way other people write letters'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lbt_show",
-          "label": "Bring the pressed gardenia down to Pearl.",
+          "label": "Bring the {L_GARDENIA_KEEPSAKE} down to {MATRIARCH}.",
           "target": "lb_show"
         },
         {
           "id": "c_lbt_switch",
-          "label": "Look into the switchboard room as well.",
+          "label": "Look into the {L_SWITCHBOARD} as well.",
           "target": "lb_switch"
         }
       ]
     },
     {
       "id": "lb_switch",
-      "body": "<<FILL role=choice words=98 beats='the switchboard room: a wall of brass sockets and cloth-wrapped cords, a headset on a hook, and a speaking horn like a great ear trumpet aimed at the whole hotel; one socket, room by room long dead, still carries a faint furry buzz, a line that never quite hung up; June's fingers itch toward the cords'>>",
+      "body": "<<FILL role=choice words=98 beats='the {L_SWITCHBOARD}: a wall of brass sockets and cloth-wrapped cords, a headset on a hook, and a {L_HORN} like a great ear trumpet aimed at the whole hotel; one socket, room by room long dead, still carries a faint furry buzz, a line that never quite hung up; {HERO}'s fingers itch toward the cords'>>",
       "is_ending": false,
       "choices": [
         {
@@ -319,19 +319,19 @@
         },
         {
           "id": "c_lbw_horn",
-          "label": "Page the whole hotel through the speaking horn.",
+          "label": "Page the whole hotel through the {L_HORN}.",
           "target": "lb_horn"
         },
         {
           "id": "c_lbw_office",
-          "label": "Leave it and try the manager's office.",
+          "label": "Leave it and try the {L_OFFICE}.",
           "target": "lb_office"
         }
       ]
     },
     {
       "id": "lb_plug",
-      "body": "<<FILL role=choice words=100 beats='the line opens like a seashell held to her ear: not voices but the hotel itself, faraway and alive, a whisk ticking a bowl, a watering can filling, quick feet on carpet, the slow creak of something dome-shaped turning; every sound a floor, every floor still busy in its faded way; June holds her breath so as not to interrupt'>>",
+      "body": "<<FILL role=choice words=100 beats='the line opens like a seashell held to her ear: not voices but the hotel itself, faraway and alive, a whisk ticking a bowl, a {G_CAN} filling, quick feet on carpet, the slow creak of something dome-shaped turning; every sound a floor, every floor still busy in its faded way; {HERO} holds her breath so as not to interrupt'>>",
       "is_ending": false,
       "choices": [
         {
@@ -348,12 +348,12 @@
     },
     {
       "id": "lb_listen",
-      "body": "<<FILL role=rising words=92 beats='she sorts the sounds like a detective: the whisk lives below the warm smell, the watering can behind the frosted glass, the running feet own the numbered floors, the creak turns under the stars; four corners, four faded someones keeping their old posts, exactly as Pearl said; the hotel has been holding its family all along'>>",
+      "body": "<<FILL role=rising words=92 beats='she sorts the sounds like a detective: the whisk lives below the warm smell, the {G_CAN} behind the frosted glass, the running feet own the numbered floors, the creak turns under the stars; four corners, four faded someones keeping their old posts, exactly as {MATRIARCH} said; the hotel has been holding its family all along'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lbli_show",
-          "label": "Go tell Pearl what the line just told you.",
+          "label": "Go tell {MATRIARCH} what the line just told you.",
           "target": "lb_show"
         },
         {
@@ -365,12 +365,12 @@
     },
     {
       "id": "lb_speak",
-      "body": "<<FILL role=rising words=94 beats='June leans to the mouthpiece and says the truest thing she has: Pearl is at the desk, and she misses you; the buzz goes very still, the whole line listening; then, faint as a music box under a pillow, the line hums three bars of a waltz back to her before settling into a warmer kind of quiet; message received, somewhere'>>",
+      "body": "<<FILL role=rising words=94 beats='{HERO} leans to the mouthpiece and says the truest thing she has: {MATRIARCH} is at the desk, and she misses you; the buzz goes very still, the whole line listening; then, faint as a music box under a pillow, the line hums three bars of a waltz back to her before settling into a warmer kind of quiet; message received, somewhere'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lbsp_show",
-          "label": "Tell Pearl what the line hummed.",
+          "label": "Tell {MATRIARCH} what the line hummed.",
           "target": "lb_show"
         },
         {
@@ -382,12 +382,12 @@
     },
     {
       "id": "lb_horn",
-      "body": "<<FILL role=choice words=98 beats='June clears her throat and pages the Meridian: good evening, this is the front desk, Pearl is here and the lights are on; her voice rolls away down a hundred corridors and fades; a long hush; then, far and faint, four answers come one after another, a pot lid clashed like a cymbal, a tap-tap on tin, two knocks in perfect unison, a whistle down a stairwell; heard, heard, heard, and heard'>>",
+      "body": "<<FILL role=choice words=98 beats='{HERO} clears her throat and pages the {THRESHOLD}: good evening, this is the front desk, {MATRIARCH} is here and the lights are on; her voice rolls away down a hundred corridors and fades; a long hush; then, far and faint, four answers come one after another, a pot lid clashed like a cymbal, a tap-tap on tin, two knocks in perfect unison, a whistle down a stairwell; heard, heard, heard, and heard'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lbh_show",
-          "label": "Run and tell Pearl the whole hotel answered.",
+          "label": "Run and tell {MATRIARCH} the whole hotel answered.",
           "target": "lb_show"
         },
         {
@@ -399,7 +399,7 @@
     },
     {
       "id": "lb_office",
-      "body": "<<FILL role=choice words=100 beats='the manager's office behind the desk: a rolltop desk with a stubborn latch, a framed portrait turned to face the wall, a mantel clock stopped and dusty, and a lower drawer packed with letters in rubber bands gone brittle; the room smells of ink and quiet; everything in it seems to be waiting to be asked a question'>>",
+      "body": "<<FILL role=choice words=100 beats='the {L_OFFICE} behind the desk: a rolltop desk with a stubborn latch, a {L_PORTRAIT} turned to face the wall, a {L_CLOCK} stopped and dusty, and a lower drawer packed with letters in rubber bands gone brittle; the room smells of ink and quiet; everything in it seems to be waiting to be asked a question'>>",
       "is_ending": false,
       "choices": [
         {
@@ -414,14 +414,14 @@
         },
         {
           "id": "c_lbo_letters",
-          "label": "Slip the rubber band off the bundle of letters.",
+          "label": "Slip the rubber band off the {L_LETTERBUNDLE}.",
           "target": "e_lb_letters"
         }
       ]
     },
     {
       "id": "lb_portrait",
-      "body": "<<FILL role=choice words=98 beats='the painting shows five figures on the hotel's front steps on some bright opening day, but time has softened every face to a warm blur, as if even paint can fade apart; the shapes still tell their story, a tall figure in cook's whites, one in gardening gloves and a sun hat, two small ones in bellhop uniforms mid-fidget, and at the center a woman with a little silver bell in her painted hand'>>",
+      "body": "<<FILL role=choice words=98 beats='the {L_PORTRAIT} shows five figures on the hotel's front steps on some bright opening day, but time has softened every face to a warm blur, as if even paint can fade apart; the shapes still tell their story, a tall figure in cook's whites, one in gardening gloves and a sun hat, two small ones in bellhop uniforms mid-fidget, and at the center a woman with a little silver bell in her painted hand'>>",
       "is_ending": false,
       "choices": [
         {
@@ -431,14 +431,14 @@
         },
         {
           "id": "c_lbpo_show",
-          "label": "Carry the portrait out to Pearl.",
+          "label": "Carry the portrait out to {MATRIARCH}.",
           "target": "lb_show"
         }
       ]
     },
     {
       "id": "lb_rolltop",
-      "body": "<<FILL role=choice words=100 beats='the latch gives and the rolltop rattles up over the one book June has been hoping for, the reservation ledger for the Hundredth Night; the guest list opens flat, and the top five lines are written in Pearl's own copperplate, OTTO, FAMILY; WREN, FAMILY; MILO, FAMILY; MIN, FAMILY; and last, smaller, PEARL, FAMILY FIRST, GUESTS AFTER; five names, safe in ink all along'>>",
+      "body": "<<FILL role=choice words=100 beats='the latch gives and the rolltop rattles up over the one book {HERO} has been hoping for, the {L_LEDGER} for the {OCCASION}; the guest list opens flat, and the top five lines are written in {MATRIARCH}'s own copperplate, {COOK}, FAMILY; {GARDENER}, FAMILY; {TWIN_A}, FAMILY; {TWIN_B}, FAMILY; and last, smaller, {MATRIARCH}, FAMILY FIRST, GUESTS AFTER; five names, safe in ink all along'>>",
       "is_ending": false,
       "choices": [
         {
@@ -448,31 +448,31 @@
         },
         {
           "id": "c_lbr_show",
-          "label": "Carry the ledger straight to Pearl.",
+          "label": "Carry the ledger straight to {MATRIARCH}.",
           "target": "lb_show"
         }
       ]
     },
     {
       "id": "lb_names",
-      "body": "<<FILL role=choice words=94 beats='Otto, Wren, Milo, Min, Pearl; June reads them slowly, like ringing five small bells, and the office listens; the lamp flame stands taller, dust motes swirl up in a slow glad spiral like confetti practicing, and somewhere out in the lobby the desk bell gives one bright unstruck ding; on the mantel the stopped dusty clock seems to lean toward the sound, wanting to join in; names have weight in this hotel'>>",
+      "body": "<<FILL role=choice words=94 beats='{COOK}, {GARDENER}, {TWIN_A}, {TWIN_B}, {MATRIARCH}; {HERO} reads them slowly, like ringing five small bells, and the office listens; the lamp flame stands taller, dust motes swirl up in a slow glad spiral like confetti practicing, and somewhere out in the lobby the desk bell gives one bright unstruck ding; on the mantel the stopped dusty clock seems to lean toward the sound, wanting to join in; names have weight in this hotel'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lbn_show",
-          "label": "Bring the ledger and the names to Pearl.",
+          "label": "Bring the ledger and the names to {MATRIARCH}.",
           "target": "lb_show"
         },
         {
           "id": "c_lbn_clock",
-          "label": "First, wind the stopped mantel clock back to life.",
+          "label": "First, wind the stopped {L_CLOCK} back to life.",
           "target": "lb_clock"
         }
       ]
     },
     {
       "id": "lb_clock",
-      "body": "<<FILL role=choice words=94 beats='the mantel clock winds sweetly and starts with a tick like a heartbeat found; when it chimes the hour, other clocks answer from far rooms one by one, late by seconds, like sleepy voices joining a song, until the whole dark hotel is agreeing softly about the time; a building synchronizing itself around one small act of care'>>",
+      "body": "<<FILL role=choice words=94 beats='the {L_CLOCK} winds sweetly and starts with a tick like a heartbeat found; when it chimes the hour, other clocks answer from far rooms one by one, late by seconds, like sleepy voices joining a song, until the whole dark hotel is agreeing softly about the time; a building synchronizing itself around one small act of care'>>",
       "is_ending": false,
       "choices": [
         {
@@ -482,14 +482,14 @@
         },
         {
           "id": "c_lbc_show",
-          "label": "Go show Pearl what you have found tonight.",
+          "label": "Go show {MATRIARCH} what you have found tonight.",
           "target": "lb_show"
         }
       ]
     },
     {
       "id": "lb_show",
-      "body": "<<FILL role=rising words=104 beats='June spreads tonight's lobby findings across the desk blotter; write this general, whatever she happens to carry this trip, a menu, a paper dart, a pressed flower, a ledger, or only news, so it reads true on any path; Pearl touches each find or each word like a keeper checking room by room, and her lamp burns warmer with every one; the hotel kept track of us, she whispers, I knew it would; her eyes come up bright and resolved'>>",
+      "body": "<<FILL role=rising words=104 beats='{HERO} spreads tonight's lobby findings across the desk blotter; write this general, whatever she happens to carry this trip, a menu, a paper dart, a pressed flower, a ledger, or only news, so it reads true on any path; {MATRIARCH} touches each find or each word like a keeper checking room by room, and her lamp burns warmer with every one; the hotel kept track of us, she whispers, I knew it would; her eyes come up bright and resolved'>>",
       "is_ending": false,
       "choices": [
         {
@@ -501,7 +501,7 @@
     },
     {
       "id": "lb_story",
-      "body": "<<FILL role=choice words=106 beats='Pearl's story, told steady and warm, entry-neutral, the full truth fresh on a first hearing or the same truth going deeper on a return: the storm that stopped the ball, the years the family kept the hotel anyway, the slow fading that came after the doors closed, each of them drifting to the floor they loved best until even names wore thin; and the desk, kept so anyone finding their way home would see the lights on; it is not the hotel that needs reopening, she finishes, it is the evening that needs finishing'>>",
+      "body": "<<FILL role=choice words=106 beats='{MATRIARCH}'s story, told steady and warm, entry-neutral, the full truth fresh on a first hearing or the same truth going deeper on a return: the storm that stopped the ball, the years the family kept the hotel anyway, the slow fading that came after the doors closed, each of them drifting to the floor they loved best until even names wore thin; and the desk, kept so anyone finding their way home would see the lights on; it is not the hotel that needs reopening, she finishes, it is the evening that needs finishing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -518,7 +518,7 @@
     },
     {
       "id": "lb_door100",
-      "body": "<<FILL role=rising words=94 beats='door 100, Pearl says, and her voice goes soft as flannel: the family suite at the top of the house, the one door we kept for ourselves; the plan was always to end the hundredth night up there, all five of us on its balcony over the town; she polishes its small bright key without looking, the habit older than the forgetting'>>",
+      "body": "<<FILL role=rising words=94 beats='door 100, {MATRIARCH} says, and her voice goes soft as flannel: the family suite at the top of the house, the one door we kept for ourselves; the plan was always to end the {OCCASION} up there, all five of us on its balcony over the town; she polishes its small bright key without looking, the habit older than the forgetting'>>",
       "is_ending": false,
       "choices": [
         {
@@ -530,7 +530,7 @@
     },
     {
       "id": "lb_promise",
-      "body": "<<FILL role=choice words=100 beats='June gives her word as the new keeper of the hundred keys, and Pearl stands straighter than lamplight, sets her cap, and begins polishing the silver bell for the big night; write the parting general so it reads the same however June got here; the grand staircase waits through the archway, and across the landing the ballroom doors wait for someone with a key and a promise'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} gives her word as the new keeper of the hundred keys, and {MATRIARCH} stands straighter than lamplight, sets her cap, and begins polishing the silver bell for the big night; write the parting general so it reads the same however {HERO} got here; the grand staircase waits through the archway, and across the landing the {FINALE_ZONE} doors wait for someone with a key and a promise'>>",
       "is_ending": false,
       "choices": [
         {
@@ -540,19 +540,19 @@
         },
         {
           "id": "c_lbpr_fin",
-          "label": "Go straight to the ballroom and begin.",
+          "label": "Go straight to the {FINALE_ZONE} and begin.",
           "target": "fin_approach"
         },
         {
           "id": "c_lbpr_stay",
-          "label": "Stay a while and sort the hundred keys with Pearl.",
+          "label": "Stay a while and sort the hundred keys with {MATRIARCH}.",
           "target": "e_lb_keys"
         }
       ]
     },
     {
       "id": "e_lb_ladder",
-      "body": "<<FILL role=ending words=96 beats='the ladder has opinions about tiptoes; it glides grandly sideways with June aboard like a slow parade float, and she rides it all the way to the wall with a squawk, upsetting three pigeonholes of ancient postcards on the way; no bruises, only a blizzard of forty-year-old mail to gather by lantern light, and by the time the last card is boxed the windows are going gray; Pearl walks her to the door, ruffles her hair, and calls her the best help in decades; tomorrow night, the top row, with both hands on the rungs'>>",
+      "body": "<<FILL role=ending words=96 beats='the ladder has opinions about tiptoes; it glides grandly sideways with {HERO} aboard like a slow parade float, and she rides it all the way to the wall with a squawk, upsetting three pigeonholes of ancient postcards on the way; no bruises, only a blizzard of forty-year-old mail to gather by lantern light, and by the time the last card is boxed the windows are going gray; {MATRIARCH} walks her to the door, ruffles her hair, and calls her the best help in decades; tomorrow night, the top row, with both hands on the rungs'>>",
       "is_ending": true,
       "ending": {
         "id": "end_lb_ladder",
@@ -563,7 +563,7 @@
     },
     {
       "id": "e_lb_horn",
-      "body": "<<FILL role=ending words=94 beats='June waits by the horn, chin on her fists, listening to the hotel settle; the answers do not come down, not tonight, faded feet are slow feet, and the big carpeted dark between floors is a long way for a thin memory to travel; she wakes at dawn in the switchboard chair under a blanket she does not remember, the headset hung neatly back on its hook, and a peppermint on the ledger beside her; not a failure, a first hello; next time she will bring the party to them'>>",
+      "body": "<<FILL role=ending words=94 beats='{HERO} waits by the horn, chin on her fists, listening to the hotel settle; the answers do not come down, not tonight, faded feet are slow feet, and the big carpeted dark between floors is a long way for a thin memory to travel; she wakes at dawn in the switchboard chair under a blanket she does not remember, the headset hung neatly back on its hook, and a peppermint on the ledger beside her; not a failure, a first hello; next time she will bring the party to them'>>",
       "is_ending": true,
       "ending": {
         "id": "end_lb_horn",
@@ -574,7 +574,7 @@
     },
     {
       "id": "e_lb_chimes",
-      "body": "<<FILL role=ending words=98 beats='June follows the chiming up through the dark, winding every clock she finds, the grandfather on the mezzanine, the little enamel clock in the card room, the drum-bellied kitchen timer that makes her jump; by dawn the Meridian ticks in one voice for the first time in forty years, and June knows the whole building the way you know a song; the party is not tonight, but a hotel that agrees about the time is a hotel getting ready; she sleeps till noon and dreams in ticks and chimes'>>",
+      "body": "<<FILL role=ending words=98 beats='{HERO} follows the chiming up through the dark, winding every clock she finds, the grandfather on the mezzanine, the little enamel clock in the card room, the drum-bellied kitchen timer that makes her jump; by dawn the {THRESHOLD} ticks in one voice for the first time in forty years, and {HERO} knows the whole building the way you know a song; the party is not tonight, but a hotel that agrees about the time is a hotel getting ready; she sleeps till noon and dreams in ticks and chimes'>>",
       "is_ending": true,
       "ending": {
         "id": "end_lb_chimes",
@@ -585,7 +585,7 @@
     },
     {
       "id": "e_lb_letters",
-      "body": "<<FILL role=ending words=96 beats='the letters are Great-Aunt Vera's, one a year for forty years, all addressed simply TO THE MERIDIAN: news of the town, pressed flowers, apologies for the long closing, and in every single one the same closing line, KEEP THEM COMPANY TILL SOMEONE YOUNGER COMES; June reads by lantern until the sky pinks, understanding at last that she was not an accident of paperwork, she was expected; she walks home holding the last letter like a ticket to something that has already begun'>>",
+      "body": "<<FILL role=ending words=96 beats='the letters are {PRIOR_KEEPER}'s, one a year for forty years, all addressed simply TO THE {THRESHOLD}: news of the town, pressed flowers, apologies for the long closing, and in every single one the same closing line, KEEP THEM COMPANY TILL SOMEONE YOUNGER COMES; {HERO} reads by lantern until the sky pinks, understanding at last that she was not an accident of paperwork, she was expected; she walks home holding the last letter like a ticket to something that has already begun'>>",
       "is_ending": true,
       "ending": {
         "id": "end_lb_letters",
@@ -596,7 +596,7 @@
     },
     {
       "id": "e_lb_keys",
-      "body": "<<FILL role=ending words=98 beats='they sort the hundred keys together, and every key turns out to be a story Pearl can still tell, the honeymooners of room 12, the opera singer in 61 who practiced into the wardrobe, the dog that was smuggled into 27 inside a hatbox and smuggled out three sizes bigger; the stories last until the windows silver, and when June finally yawns her way home the ring in her pocket no longer feels like metal, it feels like a book; the party will keep for one more night, the stories nearly did not'>>",
+      "body": "<<FILL role=ending words=98 beats='they sort the hundred keys together, and every key turns out to be a story {MATRIARCH} can still tell, the honeymooners of room 12, the opera singer in 61 who practiced into the wardrobe, the dog that was smuggled into 27 inside a hatbox and smuggled out three sizes bigger; the stories last until the windows silver, and when {HERO} finally yawns her way home the ring in her pocket no longer feels like metal, it feels like a book; the party will keep for one more night, the stories nearly did not'>>",
       "is_ending": true,
       "ending": {
         "id": "end_lb_keys",
@@ -629,7 +629,7 @@
     },
     {
       "id": "kt_main",
-      "body": "<<FILL role=choice words=104 beats='the great kitchen: a city of copper pots, a stove glowing with ghost-light, and at its heart a broad transparent man in cook's whites, tasting from a long spoon and humming; write him general and re-entry-safe, a cook mid-shift whether June is seeing him for the first time or the third, he takes a midnight visitor in easy stride, kitchens are never closed to hungry children; steam that is not quite steam curls up through him and he salts it anyway'>>",
+      "body": "<<FILL role=choice words=104 beats='the great kitchen: a city of copper pots, a stove glowing with ghost-light, and at its heart a broad transparent man in cook's whites, tasting from a long spoon and humming; write him general and re-entry-safe, a cook mid-shift whether {HERO} is seeing him for the first time or the third, he takes a midnight visitor in easy stride, {ROUTE_K_ZONE} are never closed to hungry children; steam that is not quite steam curls up through him and he salts it anyway'>>",
       "is_ending": false,
       "choices": [
         {
@@ -646,7 +646,7 @@
     },
     {
       "id": "kt_hello",
-      "body": "<<FILL role=choice words=96 beats='the cook beams like an oven door opening, waves June onto a stool at the worktable, and is three sentences into the secret of proper soup before she has sat down; he talks recipes the way other people talk about their families, which may be exactly what he is doing; midway he reaches for the name of whoever taught him the thyme trick, and the sentence just, softly, runs out'>>",
+      "body": "<<FILL role=choice words=96 beats='the cook beams like an oven door opening, waves {HERO} onto a stool at the worktable, and is three sentences into the secret of proper soup before she has sat down; he talks recipes the way other people talk about their families, which may be exactly what he is doing; midway he reaches for the name of whoever taught him the thyme trick, and the sentence just, softly, runs out'>>",
       "is_ending": false,
       "choices": [
         {
@@ -663,7 +663,7 @@
     },
     {
       "id": "kt_soup",
-      "body": "<<FILL role=choice words=94 beats='the soup steams like real soup and tastes like memory, warm and buttery and somehow exactly like the best birthday June ever had; she says so and the cook goes pink with pride clear through; food remembers, he says, tapping his nose, even when cooks forget; the word forget lands on the table between them, quiet as a dropped napkin'>>",
+      "body": "<<FILL role=choice words=94 beats='the soup steams like real soup and tastes like memory, warm and buttery and somehow exactly like the best birthday {HERO} ever had; she says so and the cook goes pink with pride clear through; food remembers, he says, tapping his nose, even when cooks forget; the word forget lands on the table between them, quiet as a dropped napkin'>>",
       "is_ending": false,
       "choices": [
         {
@@ -680,7 +680,7 @@
     },
     {
       "id": "kt_watch",
-      "body": "<<FILL role=choice words=100 beats='from the doorway June watches him plate seven beautiful courses, carry them to the long staff table, set them down just so, wait with his hands folded, sigh, clear them, and begin again; it is the saddest, kindest loop she has ever seen, a meal kept ready for people who never come; on the order rail above the pass one yellowed ticket flutters, and the staff table's five chairs sit in a row'>>",
+      "body": "<<FILL role=choice words=100 beats='from the doorway {HERO} watches him plate seven beautiful courses, carry them to the long {K_STAFFTABLE}, set them down just so, wait with his hands folded, sigh, clear them, and begin again; it is the saddest, kindest loop she has ever seen, a meal kept ready for people who never come; on the order rail above the pass one {K_TICKET} flutters, and the {K_STAFFTABLE}'s five chairs sit in a row'>>",
       "is_ending": false,
       "choices": [
         {
@@ -690,19 +690,19 @@
         },
         {
           "id": "c_ktw_ticket",
-          "label": "Quietly read the yellowed ticket on the rail.",
+          "label": "Quietly read the {K_TICKET} on the rail.",
           "target": "kt_ticket"
         },
         {
           "id": "c_ktw_chairs",
-          "label": "Look closer at the five chairs at the staff table.",
+          "label": "Look closer at the five chairs at the {K_STAFFTABLE}.",
           "target": "kt_chairs"
         }
       ]
     },
     {
       "id": "kt_chairs",
-      "body": "<<FILL role=choice words=94 beats='five places, set perfectly; five chairs, each worn its own way, two nicked low down by swinging feet, one dusted forever with flour, one with a folded gardening glove left over the back like a bookmark, and one tall stool at the head with a cushion flattened by years of somebody small and upright; a family table with the family missing, and the cook still setting it'>>",
+      "body": "<<FILL role=choice words=94 beats='five places, set perfectly; five chairs, each worn its own way, two nicked low down by swinging feet, one dusted forever with flour, one with a folded gardening glove left over the back like a bookmark, and one tall stool at the head with a cushion flattened by years of somebody small and upright; a {FIN_TABLE} with the family missing, and the cook still setting it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -712,14 +712,14 @@
         },
         {
           "id": "c_ktc_ticket",
-          "label": "Read the yellowed ticket on the order rail.",
+          "label": "Read the {K_TICKET} on the order rail.",
           "target": "kt_ticket"
         }
       ]
     },
     {
       "id": "kt_ticket",
-      "body": "<<FILL role=rising words=92 beats='the ticket, in copperplate June has seen the like of at the front desk: SEVEN COURSES FOR THE HUNDREDTH NIGHT, FAMILY TABLE FIRST, and a single initial, P; the order that was never cancelled, so the kitchen never stopped; forty years of soup kept warm because nobody rang down to say otherwise'>>",
+      "body": "<<FILL role=rising words=92 beats='the ticket, in copperplate {HERO} has seen the like of at the front desk: SEVEN COURSES FOR THE {OCCASION}, FAMILY TABLE FIRST, and a single initial, P; the order that was never cancelled, so the kitchen never stopped; forty years of soup kept warm because nobody rang down to say otherwise'>>",
       "is_ending": false,
       "choices": [
         {
@@ -753,7 +753,7 @@
     },
     {
       "id": "kt_for",
-      "body": "<<FILL role=choice words=96 beats='for the family table, he says at once, then stops, ladle in the air; whoever they are; the order never came down to cancel, you see, so I keep it warm; forty years, he agrees, is a long time to keep a meal warm, but you do not stop cooking for your people just because you have mislaid them; June's chest aches in the good sad way'>>",
+      "body": "<<FILL role=choice words=96 beats='for the {FIN_TABLE}, he says at once, then stops, ladle in the air; whoever they are; the order never came down to cancel, you see, so I keep it warm; forty years, he agrees, is a long time to keep a meal warm, but you do not stop cooking for your people just because you have mislaid them; {HERO}'s chest aches in the good sad way'>>",
       "is_ending": false,
       "choices": [
         {
@@ -763,19 +763,19 @@
         },
         {
           "id": "c_ktf_ticket",
-          "label": "Go find the original order ticket on the rail.",
+          "label": "Go find the original {K_TICKET} on the rail.",
           "target": "kt_ticket"
         }
       ]
     },
     {
       "id": "kt_cook",
-      "body": "<<FILL role=choice words=100 beats='aprons on, and June is stirring while the cook narrates like a kindly storm; and a strange thing happens as they work: the busier his hands, the closer his memory creeps; the bread smell, he murmurs, my mother baked on Sundays even with a full brigade downstairs, and her name, her name was right there on the tip of the ladle; write this beat re-entry-safe, a memory circling nearer, never a one-time confession'>>",
+      "body": "<<FILL role=choice words=100 beats='aprons on, and {HERO} is stirring while the cook narrates like a kindly storm; and a strange thing happens as they work: the busier his hands, the closer his memory creeps; the bread smell, he murmurs, my mother baked on Sundays even with a full brigade downstairs, and her name, her name was right there on the tip of the ladle; write this beat re-entry-safe, a memory circling nearer, never a one-time confession'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ktk_tell",
-          "label": "Tell him the lady at the front desk is called Pearl.",
+          "label": "Tell him the lady at the front desk is called {MATRIARCH}.",
           "target": "kt_tell"
         },
         {
@@ -787,7 +787,7 @@
     },
     {
       "id": "kt_tell",
-      "body": "<<FILL role=rising words=100 beats='Pearl; the name goes through the kitchen like a struck bell, every copper pot ringing faintly in answer; write this re-entry-safe, the name striking fresh on a first telling and ringing deeper on a return, never a one-time revelation; the cook grips the worktable, eyes wide, whispering it twice, and for a moment he is bright as noon; he unties his apron to go to her, and falters at the doors, faded too thin to cross the dark alone; cooks come when dinner is called, he says finally, call a proper dinner, small guest, and I will come to her through any dark in this house'>>",
+      "body": "<<FILL role=rising words=100 beats='{MATRIARCH}; the name goes through the kitchen like a struck bell, every copper pot ringing faintly in answer; write this re-entry-safe, the name striking fresh on a first telling and ringing deeper on a return, never a one-time revelation; the cook grips the worktable, eyes wide, whispering it twice, and for a moment he is bright as noon; he unties his apron to go to her, and falters at the doors, faded too thin to cross the dark alone; cooks come when dinner is called, he says finally, call a proper dinner, small guest, and I will come to her through any dark in this house'>>",
       "is_ending": false,
       "choices": [
         {
@@ -799,7 +799,7 @@
     },
     {
       "id": "kt_gentle",
-      "body": "<<FILL role=rising words=96 beats='June holds her tongue and stirs; the cook works the memory like dough, thyme, the thyme came from under glass, from the garden, from, and his face opens like a window, my sister grew the thyme, I have a sister, a sister with a sun hat and opinions about my parsley; he laughs out loud at the ceiling, one name closer to whole, and the stove burns brighter for it'>>",
+      "body": "<<FILL role=rising words=96 beats='{HERO} holds her tongue and stirs; the cook works the memory like dough, thyme, the thyme came from under glass, from the garden, from, and his face opens like a window, my sister grew the thyme, I have a sister, a sister with a sun hat and opinions about my parsley; he laughs out loud at the ceiling, one name closer to whole, and the stove burns brighter for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -816,12 +816,12 @@
     },
     {
       "id": "kt_show",
-      "body": "<<FILL role=rising words=96 beats='he holds the ticket the way you hold a photograph, and reads the initial with his thumb; P, he says, P rang the bell at the desk, P kept the whole house in her apron pocket, P is, and the word Mama arrives before the name does, which is somehow better; he presses the ticket flat over his heart, then pins it back on the rail, top of the queue, where an order about to be filled belongs'>>",
+      "body": "<<FILL role=rising words=96 beats='he holds the ticket the way you hold a photograph, and reads the initial with his thumb; P, he says, P rang the bell at the desk, P kept the whole house in her apron pocket, P is, and the word {MATRIARCH} arrives before the name does, which is somehow better; he presses the ticket flat over his heart, then pins it back on the rail, top of the queue, where an order about to be filled belongs'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ktsh_promise",
-          "label": "Promise him the Hundredth Night will finally be called.",
+          "label": "Promise him the {OCCASION} will finally be called.",
           "target": "kt_promise"
         }
       ]
@@ -850,29 +850,29 @@
     },
     {
       "id": "kt_cold",
-      "body": "<<FILL role=choice words=98 beats='inside the cold room, glowing faintly with its own winter, stands the cake; five tiers, sugar gardenias, MERIDIAN 100 in silver script, candles set but never lit, kept perfect all this time by frost and stubborn love; on the middle tier stand five small sugar figures, a cook, a gardener in a sun hat, two tiny bellhops, and a woman with a speck of a silver bell'>>",
+      "body": "<<FILL role=choice words=98 beats='inside the cold room, glowing faintly with its own winter, stands the {K_CAKE}; five tiers, sugar gardenias, {THRESHOLD} 100 in silver script, candles set but never lit, kept perfect all this time by frost and stubborn love; on the middle tier stand five small {K_CAKE_FIGURES}, a cook, a gardener in a sun hat, two tiny bellhops, and a woman with a speck of a silver bell'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ktcold_fig",
-          "label": "Lean close and study the five sugar figures.",
+          "label": "Lean close and study the five {K_CAKE_FIGURES}.",
           "target": "kt_figures"
         },
         {
           "id": "c_ktcold_main",
-          "label": "Go find the cook and ask about the cake.",
+          "label": "Go find the cook and ask about the {K_CAKE}.",
           "target": "kt_main"
         }
       ]
     },
     {
       "id": "kt_figures",
-      "body": "<<FILL role=choice words=96 beats='June memorizes the sugar family: the cook's proud chest, the gardener's tipped hat, the twins caught mid-shove, the small upright woman with the bell; whoever iced this cake knew these five by heart and put that heart on the middle tier where everyone would see; a portrait in sugar, waiting forty years to be cut and shared'>>",
+      "body": "<<FILL role=choice words=96 beats='{HERO} memorizes the sugar family: the cook's proud chest, the gardener's tipped hat, the twins caught mid-shove, the small upright woman with the bell; whoever iced this {K_CAKE} knew these five by heart and put that heart on the middle tier where everyone would see; a portrait in sugar, waiting forty years to be cut and shared'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ktfig_chef",
-          "label": "Bring the cook to see his own cake.",
+          "label": "Bring the cook to see his own {K_CAKE}.",
           "target": "kt_cakechef"
         },
         {
@@ -884,7 +884,7 @@
     },
     {
       "id": "kt_cakechef",
-      "body": "<<FILL role=rising words=100 beats='the cook stands before the cake with his hat pressed to his chest; write this re-entry-safe, awe that reads the same on any visit; I made this, he says, I remember the icing, three nights, and the little figures last of all; he touches the sugar woman's bell with one enormous gentle finger; five of us, he counts, wonder growing, five, and the candles never lit; well; a cake this patient deserves its party, and a cook who remembers how many he loves is halfway to remembering who'>>",
+      "body": "<<FILL role=rising words=100 beats='the cook stands before the {K_CAKE} with his hat pressed to his chest; write this re-entry-safe, awe that reads the same on any visit; I made this, he says, I remember the icing, three nights, and the little figures last of all; he touches the sugar woman's bell with one enormous gentle finger; five of us, he counts, wonder growing, five, and the candles never lit; well; a {K_CAKE} this patient deserves its party, and a cook who remembers how many he loves is halfway to remembering who'>>",
       "is_ending": false,
       "choices": [
         {
@@ -896,7 +896,7 @@
     },
     {
       "id": "kt_shelf",
-      "body": "<<FILL role=choice words=92 beats='the high shelves hold ranked preserve jars, and a row labeled in the round green hand, W'S PLUMS, TRADE FOR PASTRY, AS ALWAYS; a barter older than June, plums down from some garden, pastry up in exchange, a family economy still visible in glass and paper; one jar sits out of rank, lid loose, as if someone meant to check it'>>",
+      "body": "<<FILL role=choice words=92 beats='the high shelves hold ranked preserve jars, and a row labeled in the round green hand, W'S PLUMS, TRADE FOR PASTRY, AS ALWAYS; a barter older than {HERO}, plums down from some garden, pastry up in exchange, a family economy still visible in glass and paper; one jar sits out of rank, lid loose, as if someone meant to check it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -906,14 +906,14 @@
         },
         {
           "id": "c_ktsl_jar",
-          "label": "Reach up and check the loose-lidded jar.",
+          "label": "Reach up and check the {K_JAR}.",
           "target": "e_kt_jam"
         }
       ]
     },
     {
       "id": "kt_bakery",
-      "body": "<<FILL role=choice words=94 beats='the bakery: an oven warm with no fire, dough rising under a cloth like a slow breath, flour handprints on the table edge, and floury footprints crossing the tiles; on the worktable a loaf is braided in a five-strand plait, and carved neat into the table's edge, ONE STRAND FOR EACH OF US; the room smells like Sunday morning in the middle of the night'>>",
+      "body": "<<FILL role=choice words=94 beats='the bakery: an oven warm with no fire, dough rising under a cloth like a slow breath, flour handprints on the table edge, and floury footprints crossing the tiles; on the worktable a loaf is braided in a {K_LOAF}, and carved neat into the table's edge, ONE STRAND FOR EACH OF US; the room smells like Sunday morning in the middle of the night'>>",
       "is_ending": false,
       "choices": [
         {
@@ -930,7 +930,7 @@
     },
     {
       "id": "kt_oven",
-      "body": "<<FILL role=choice words=94 beats='inside, a tray of birthday buns shaped like stars, golden, fragrant, and never quite finished, because you do not serve the party bread before the party; the oven has been holding them at almost-ready for forty years, the most patient oven in the world; from deeper in the kitchens drifts a hummed tune, three-four time, kept low like a secret'>>",
+      "body": "<<FILL role=choice words=94 beats='inside, a {K_BUNS} shaped like stars, golden, fragrant, and never quite finished, because you do not serve the party bread before the party; the oven has been holding them at almost-ready for forty years, the most patient oven in the world; from deeper in the {ROUTE_K_ZONE} drifts a hummed tune, three-four time, kept low like a secret'>>",
       "is_ending": false,
       "choices": [
         {
@@ -947,12 +947,12 @@
     },
     {
       "id": "kt_song",
-      "body": "<<FILL role=choice words=96 beats='the humming is the cook's, a waltz worked into his kneading, push and turn and fold in three-four time; caught at it, he chuckles; my mother's waltz, he says, she wound the gramophone every, and he frowns at his floury hands, every what, every when; the tune knows its occasion even if he cannot name it; write him re-entry-safe, the same warm puzzlement on any visit'>>",
+      "body": "<<FILL role=choice words=96 beats='the humming is the cook's, a waltz worked into his kneading, push and turn and fold in three-four time; caught at it, he chuckles; my mother's waltz, he says, she wound the {FIN_GRAMOPHONE} every, and he frowns at his floury hands, every what, every when; the tune knows its occasion even if he cannot name it; write him re-entry-safe, the same warm puzzlement on any visit'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ktso_tell",
-          "label": "Tell him the lady at the desk is called Pearl.",
+          "label": "Tell him the lady at the desk is called {MATRIARCH}.",
           "target": "kt_tell"
         },
         {
@@ -964,7 +964,7 @@
     },
     {
       "id": "kt_flour",
-      "body": "<<FILL role=choice words=92 beats='the footprints loop the worktable, pause at the five-strand loaf, and end at a little brass door in the wall, a dumbwaiter, which chooses that moment to rattle politely, arriving; the kitchens, June is learning, are never empty and never still, only quiet, the way a heart is quiet between beats'>>",
+      "body": "<<FILL role=choice words=92 beats='the footprints loop the worktable, pause at the {K_LOAF}, and end at a little brass door in the wall, a {K_DUMBWAITER}, which chooses that moment to rattle politely, arriving; the {ROUTE_K_ZONE}, {HERO} is learning, are never empty and never still, only quiet, the way a heart is quiet between beats'>>",
       "is_ending": false,
       "choices": [
         {
@@ -974,14 +974,14 @@
         },
         {
           "id": "c_ktfl_dumb",
-          "label": "Open the little brass dumbwaiter door.",
+          "label": "Open the little brass {K_DUMBWAITER} door.",
           "target": "kt_dumb"
         }
       ]
     },
     {
       "id": "kt_dumb",
-      "body": "<<FILL role=choice words=96 beats='the dumbwaiter holds a tray: one cocoa, still steaming, and a folded note, FOR THE SMALL GUEST, UP LATE; the hotel knows she is here, and the kitchen has opinions about children and bedtime; the little lift waits, rope creaking gently, big enough, just barely, for a curious eleven-year-old with poor impulse control'>>",
+      "body": "<<FILL role=choice words=96 beats='the {K_DUMBWAITER} holds a tray: one cocoa, still steaming, and a folded note, FOR THE SMALL GUEST, UP LATE; the hotel knows she is here, and the kitchen has opinions about children and bedtime; the little lift waits, rope creaking gently, big enough, just barely, for a curious eleven-year-old with poor impulse control'>>",
       "is_ending": false,
       "choices": [
         {
@@ -996,14 +996,14 @@
         },
         {
           "id": "c_ktdu_ride",
-          "label": "Climb in and ride the dumbwaiter.",
+          "label": "Climb in and ride the {K_DUMBWAITER}.",
           "target": "e_kt_ride"
         }
       ]
     },
     {
       "id": "kt_note",
-      "body": "<<FILL role=rising words=92 beats='June prints her best letters, THANK YOU, PEARL IS AT THE DESK AND MISSES YOU ALL, COME TO THE BALLROOM WHEN YOU HEAR THE CALL, and sets the note on the tray; the dumbwaiter rises like a held breath, and a moment later, somewhere above, there is a clatter of pure joy, pans rung like churchbells; message delivered'>>",
+      "body": "<<FILL role=rising words=92 beats='{HERO} prints her best letters, THANK YOU, {MATRIARCH} IS AT THE DESK AND MISSES YOU ALL, COME TO THE {FINALE_ZONE} WHEN YOU HEAR THE CALL, and sets the note on the tray; the {K_DUMBWAITER} rises like a held breath, and a moment later, somewhere above, there is a clatter of pure joy, pans rung like churchbells; message delivered'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1015,7 +1015,7 @@
     },
     {
       "id": "kt_promise",
-      "body": "<<FILL role=choice words=102 beats='the cook ties on a fresh apron with the snap of a man who has been waiting forty years for exactly this; write the scene general, whichever memories stirred tonight, so it reads the same on any path; he begins prepping the Hundredth Night feast in earnest, seven courses and star buns and the cake's hundred candles counted twice, and his orders to June are simple: ready the hall, then call dinner, and no cook in this world or the next will be late'>>",
+      "body": "<<FILL role=choice words=102 beats='the cook ties on a fresh apron with the snap of a man who has been waiting forty years for exactly this; write the scene general, whichever memories stirred tonight, so it reads the same on any path; he begins prepping the {OCCASION} feast in earnest, seven courses and star buns and the {K_CAKE}'s hundred candles counted twice, and his orders to {HERO} are simple: ready the hall, then call dinner, and no cook in this world or the next will be late'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1025,7 +1025,7 @@
         },
         {
           "id": "c_ktpr_fin",
-          "label": "Go straight to the ballroom and begin.",
+          "label": "Go straight to the {FINALE_ZONE} and begin.",
           "target": "fin_approach"
         },
         {
@@ -1037,7 +1037,7 @@
     },
     {
       "id": "e_kt_jam",
-      "body": "<<FILL role=ending words=96 beats='the jar comes willingly but its shelf-mates come too, a slow tipping avalanche of forty-year-old plum jam that June catches, juggles, and mostly wears; nothing breaks but her dignity; the cook appears at the crash, takes in the purple catastrophe, and laughs until the pots ring, then hands her a cloth and scrubs beside her, telling jam stories till the windows pale; she squelches home at dawn smelling of plums, with one rescued jar for breakfast and orders to come back hungry; the pantry keeps score, but kindly'>>",
+      "body": "<<FILL role=ending words=96 beats='the jar comes willingly but its shelf-mates come too, a slow tipping avalanche of forty-year-old plum jam that {HERO} catches, juggles, and mostly wears; nothing breaks but her dignity; the cook appears at the crash, takes in the purple catastrophe, and laughs until the pots ring, then hands her a cloth and scrubs beside her, telling jam stories till the windows pale; she squelches home at dawn smelling of plums, with one rescued jar for breakfast and orders to come back hungry; the pantry keeps score, but kindly'>>",
       "is_ending": true,
       "ending": {
         "id": "end_kt_jam",
@@ -1048,7 +1048,7 @@
     },
     {
       "id": "e_kt_cocoa",
-      "body": "<<FILL role=ending words=94 beats='the cocoa is the warmest thing June has ever held, and drinking it is like being tucked in from the inside; she sits down on the flour sacks just for a minute, just to finish it, and the bakery's bread-warm dark does the rest; she wakes at dawn floury and deeply rested, a clean apron spread over her like a blanket and a note pinned to her sleeve, BREAKFAST AT EIGHT, SMALL GUEST; the party will need another night, but somewhere in this hotel, someone tucks people in on principle'>>",
+      "body": "<<FILL role=ending words=94 beats='the cocoa is the warmest thing {HERO} has ever held, and drinking it is like being tucked in from the inside; she sits down on the flour sacks just for a minute, just to finish it, and the bakery's bread-warm dark does the rest; she wakes at dawn floury and deeply rested, a clean apron spread over her like a blanket and a note pinned to her sleeve, BREAKFAST AT EIGHT, SMALL GUEST; the party will need another night, but somewhere in this hotel, someone tucks people in on principle'>>",
       "is_ending": true,
       "ending": {
         "id": "end_kt_cocoa",
@@ -1059,7 +1059,7 @@
     },
     {
       "id": "e_kt_ride",
-      "body": "<<FILL role=ending words=96 beats='the dumbwaiter accepts her weight with a doubtful creak and rises exactly one floor and a half before stopping dead between floors, June folded up like a letter in a very small envelope, more embarrassed than scared; unseen hands crank her gently back down, and the tray returns her to the kitchen with a new note in flour-dusted capitals, STAIRS EXIST; she laughs till her ears burn, promises the empty air to use them, and takes those stairs home at dawn, dignity in her pocket, grinning the whole way'>>",
+      "body": "<<FILL role=ending words=96 beats='the {K_DUMBWAITER} accepts her weight with a doubtful creak and rises exactly one floor and a half before stopping dead between floors, {HERO} folded up like a letter in a very small envelope, more embarrassed than scared; unseen hands crank her gently back down, and the tray returns her to the kitchen with a new note in flour-dusted capitals, STAIRS EXIST; she laughs till her ears burn, promises the empty air to use them, and takes those stairs home at dawn, dignity in her pocket, grinning the whole way'>>",
       "is_ending": true,
       "ending": {
         "id": "end_kt_ride",
@@ -1070,7 +1070,7 @@
     },
     {
       "id": "e_kt_sketch",
-      "body": "<<FILL role=ending words=96 beats='June sketches the five sugar figures into her pocket notebook by lantern light, the proud cook, the tipped sun hat, the mid-shove twins, the small upright woman with her bell, until her fingers are cold and the candle is a thumb of wax; when she finally slips home at dawn she knows the Meridian's family by heart, the way you know faces you love; whoever she meets in this hotel from now on, she will recognize them on sight, and that feels like the real beginning of the rescue'>>",
+      "body": "<<FILL role=ending words=96 beats='{HERO} sketches the five {K_CAKE_FIGURES} into her pocket notebook by lantern light, the proud cook, the tipped sun hat, the mid-shove twins, the small upright woman with her bell, until her fingers are cold and the candle is a thumb of wax; when she finally slips home at dawn she knows the {THRESHOLD}'s family by heart, the way you know faces you love; whoever she meets in this hotel from now on, she will recognize them on sight, and that feels like the real beginning of the rescue'>>",
       "is_ending": true,
       "ending": {
         "id": "end_kt_sketch",
@@ -1081,7 +1081,7 @@
     },
     {
       "id": "e_kt_feast",
-      "body": "<<FILL role=ending words=98 beats='she stays, and it becomes a feast of one guest and seven courses, each dish arriving with its story, the soup that won a bet, the fish that once impressed a duchess, the star buns invented for two small people who demanded edible constellations; June tastes everything and hears everything, and the cook glows brighter with every told tale; the windows silver before the dessert course, so they shake hands across the worktable like colleagues, the feast will be finished on the night itself, and she will not eat lunch for a week'>>",
+      "body": "<<FILL role=ending words=98 beats='she stays, and it becomes a feast of one guest and seven courses, each dish arriving with its story, the soup that won a bet, the fish that once impressed a duchess, the star buns invented for two small people who demanded edible constellations; {HERO} tastes everything and hears everything, and the cook glows brighter with every told tale; the windows silver before the dessert course, so they shake hands across the worktable like colleagues, the feast will be finished on the night itself, and she will not eat lunch for a week'>>",
       "is_ending": true,
       "ending": {
         "id": "end_kt_feast",
@@ -1092,7 +1092,7 @@
     },
     {
       "id": "wg_doors",
-      "body": "<<FILL role=choice words=98 beats='the frosted double doors of the winter garden breathe warm green air into the cold corridor, and stepping through is stepping into another season: glass arching high overhead, palms and ferns crowding the lantern light, tiny moths of glow drifting between leaves; keep this arrival general so it reads naturally on a first visit or any return; ahead a main path disappears under a small indoor rain, a side door shows a potting shed, and somewhere unseen, water is singing'>>",
+      "body": "<<FILL role=choice words=98 beats='the frosted double doors of the {ROUTE_G_ZONE} breathe warm green air into the cold corridor, and stepping through is stepping into another season: glass arching high overhead, palms and ferns crowding the lantern light, tiny moths of glow drifting between leaves; keep this arrival general so it reads naturally on a first visit or any return; ahead a main path disappears under a small indoor rain, a side door shows a {G_SHED}, and somewhere unseen, water is singing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1102,7 +1102,7 @@
         },
         {
           "id": "c_wgd_shed",
-          "label": "Try the side door to the potting shed.",
+          "label": "Try the side door to the {G_SHED}.",
           "target": "wg_shed"
         },
         {
@@ -1114,7 +1114,7 @@
     },
     {
       "id": "wg_mist",
-      "body": "<<FILL role=choice words=92 beats='the glasshouse makes its own weather: a cloud the size of a rowboat drifts under the ridgepole, raining a fine warm rain on a bed of ferns that lean into it gratefully; June holds out a palm and the rain is real, or real enough; somebody, or something, is minding the seasons in here, forty years after the boilers died'>>",
+      "body": "<<FILL role=choice words=92 beats='the glasshouse makes its own weather: a cloud the size of a rowboat drifts under the ridgepole, raining a fine warm rain on a bed of ferns that lean into it gratefully; {HERO} holds out a palm and the rain is real, or real enough; somebody, or something, is minding the seasons in here, forty years after the boilers died'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1131,7 +1131,7 @@
     },
     {
       "id": "wg_leaf",
-      "body": "<<FILL role=choice words=90 beats='from under a leaf as big as an umbrella June watches the cloud make its rounds, watering bed after bed in a patient circuit, pausing longest over the seedlings; weather does not behave like this on its own; weather behaves like this when a gardener asks it nicely for forty years running'>>",
+      "body": "<<FILL role=choice words=90 beats='from under a leaf as big as an umbrella {HERO} watches the cloud make its rounds, watering bed after bed in a patient circuit, pausing longest over the seedlings; weather does not behave like this on its own; weather behaves like this when a gardener asks it nicely for forty years running'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1148,12 +1148,12 @@
     },
     {
       "id": "wg_path",
-      "body": "<<FILL role=choice words=96 beats='the palm path glows with night-bloomers, flowers that open for the moon and moths; and ahead, unmistakably, a watering can is walking, or rather tipping itself along the beds in small careful pours, floating at exactly the height a hand would hold it; write the sight re-entry-safe, wonder without alarm, the garden's ordinary miracle on any visit'>>",
+      "body": "<<FILL role=choice words=96 beats='the palm path glows with night-bloomers, flowers that open for the moon and moths; and ahead, unmistakably, a {G_CAN} is walking, or rather tipping itself along the beds in small careful pours, floating at exactly the height a hand would hold it; write the sight re-entry-safe, wonder without alarm, the garden's ordinary miracle on any visit'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wgp_follow",
-          "label": "Follow the walking watering can quietly.",
+          "label": "Follow the walking {G_CAN} quietly.",
           "target": "wg_follow"
         },
         {
@@ -1165,12 +1165,12 @@
     },
     {
       "id": "wg_follow",
-      "body": "<<FILL role=rising words=92 beats='June trails the can from bed to bed; it waters in a pattern, thorough as a nurse's rounds, and its route bends steadily toward a bed at the garden's heart where white buds glow in ranks like small moons; whoever holds that can is heading for the gardenias, and June's feet decide to arrive there too'>>",
+      "body": "<<FILL role=rising words=92 beats='{HERO} trails the can from bed to bed; it waters in a pattern, thorough as a nurse's rounds, and its route bends steadily toward a bed at the garden's heart where white buds glow in ranks like small moons; whoever holds that can is heading for the gardenias, and {HERO}'s feet decide to arrive there too'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wgf_gard",
-          "label": "Slip ahead to the gardenia bed.",
+          "label": "Slip ahead to the {G_GARDENBED}.",
           "target": "wg_gardenias"
         }
       ]
@@ -1194,7 +1194,7 @@
     },
     {
       "id": "wg_grow",
-      "body": "<<FILL role=choice words=96 beats='gardenias, mostly, she says, nodding at the ranked white buds, a hundred buttonholes' worth; there is to be an evening, you know; when June asks when the evening is, the gardener's face does the thing June is learning to recognize, reaching for a fact that has worn through; soon, she settles on, it has been soon for a good while now; the order is older than dust and she keeps it fresh anyway'>>",
+      "body": "<<FILL role=choice words=96 beats='gardenias, mostly, she says, nodding at the ranked white buds, a hundred buttonholes' worth; there is to be an evening, you know; when {HERO} asks when the evening is, the gardener's face does the thing {HERO} is learning to recognize, reaching for a fact that has worn through; soon, she settles on, it has been soon for a good while now; the order is older than dust and she keeps it fresh anyway'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1211,7 +1211,7 @@
     },
     {
       "id": "wg_water",
-      "body": "<<FILL role=choice words=98 beats='they water together down the long beds, and the gardener introduces her plants like family, because, June slowly realizes, that is what they are; the pepper plant by the warm wall is Otto, likes the cooking smells, that one; the climbing rose is Pearl, blooms best when the lobby bell rings; and two vines racing up one trellis are Milo and Min, tie themselves in knots, those two; she cannot say why the names are those names; her hands remember the family her mind lost'>>",
+      "body": "<<FILL role=choice words=98 beats='they water together down the long beds, and the gardener introduces her plants like family, because, {HERO} slowly realizes, that is what they are; the {G_PEPPER} by the warm wall is {COOK}, likes the cooking smells, that one; the {G_ROSE} is {MATRIARCH}, blooms best when the lobby bell rings; and two vines racing up one trellis are {TWIN_A} and {TWIN_B}, tie themselves in knots, those two; she cannot say why the names are those names; her hands remember the family her mind lost'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1228,7 +1228,7 @@
     },
     {
       "id": "wg_plants",
-      "body": "<<FILL role=choice words=96 beats='the tour: the Otto pepper leans hard toward the kitchen vent and fruits spicy; the Pearl rose has climbed forty years toward the lobby door and rings faintly, petal against petal, when the wind is right; the twin vines finish their race up the trellis in a dead heat every single season, tied in a fair-and-square knot at the top; a whole family, kept alive in green'>>",
+      "body": "<<FILL role=choice words=96 beats='the tour: the {COOK} pepper leans hard toward the kitchen vent and fruits spicy; the {MATRIARCH} rose has climbed forty years toward the lobby door and rings faintly, petal against petal, when the wind is right; the {G_VINES} finish their race up the trellis in a dead heat every single season, tied in a fair-and-square knot at the top; a whole family, kept alive in green'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1245,7 +1245,7 @@
     },
     {
       "id": "wg_trellis",
-      "body": "<<FILL role=choice words=92 beats='up close the twin vines' knot is a careful thing, two stems crossed and recrossed into a handshake at the trellis top, no winner, no loser, every year the same; they would have wanted it that way, the gardener says fondly, and then stops, trowel in the air, wondering aloud who they are; the question hangs in the green air like a moth'>>",
+      "body": "<<FILL role=choice words=92 beats='up close the {G_VINES}' knot is a careful thing, two stems crossed and recrossed into a handshake at the trellis top, no winner, no loser, every year the same; they would have wanted it that way, the gardener says fondly, and then stops, trowel in the air, wondering aloud who they are; the question hangs in the green air like a moth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1262,7 +1262,7 @@
     },
     {
       "id": "wg_rose",
-      "body": "<<FILL role=rising words=92 beats='the Pearl rose grows against the glass nearest the lobby, every bloom faced the same way like a choir facing its conductor, toward the front desk somewhere beyond the frost; when June leans close the petals brush together with the smallest silver sound, a bell heard through a wall of years; the gardener pats the stem like a shoulder'>>",
+      "body": "<<FILL role=rising words=92 beats='the {MATRIARCH} rose grows against the glass nearest the lobby, every bloom faced the same way like a choir facing its conductor, toward the front desk somewhere beyond the frost; when {HERO} leans close the petals brush together with the smallest silver sound, a bell heard through a wall of years; the gardener pats the stem like a shoulder'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1272,14 +1272,14 @@
         },
         {
           "id": "c_wgr_gard",
-          "label": "Walk on to the gardenia bed.",
+          "label": "Walk on to the {G_GARDENBED}.",
           "target": "wg_gardenias"
         }
       ]
     },
     {
       "id": "wg_tell",
-      "body": "<<FILL role=rising words=100 beats='June says it plain and kind, using only what she knows for certain: this garden has been keeping a family, a family of five, and one of them, a small silver-haired lady called Pearl, is downstairs at the front desk right now, keeping the lights on and missing them all; the gardener goes very still; a wind moves through the shut glasshouse, every leaf turning as if the whole garden looked up at once; write her wonder re-entry-safe, the truth landing fresh on a first telling and settling deeper on a return, never a one-time confession; then the evening is finally coming, she whispers, and the buds along the bed tremble like held applause'>>",
+      "body": "<<FILL role=rising words=100 beats='{HERO} says it plain and kind, using only what she knows for certain: this garden has been keeping a family, a family of five, and one of them, a small silver-haired lady called {MATRIARCH}, is downstairs at the front desk right now, keeping the lights on and missing them all; the gardener goes very still; a wind moves through the shut glasshouse, every leaf turning as if the whole garden looked up at once; write her wonder re-entry-safe, the truth landing fresh on a first telling and settling deeper on a return, never a one-time confession; then the evening is finally coming, she whispers, and the buds along the bed tremble like held applause'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1291,7 +1291,7 @@
     },
     {
       "id": "wg_order",
-      "body": "<<FILL role=choice words=94 beats='she keeps the order under a flowerpot like treasure under a mattress: a slip in faded copperplate, ONE HUNDRED GARDENIAS FOR THE HUNDREDTH NIGHT, FAMILY BUTTONHOLES FIRST, FIVE, and the single initial P; five first, she repeats, tapping the word, I have kept five bushes best of all and never once known why; she looks toward the heart of the garden'>>",
+      "body": "<<FILL role=choice words=94 beats='she keeps the order under a flowerpot like treasure under a mattress: a slip in faded copperplate, ONE HUNDRED GARDENIAS FOR THE {OCCASION}, FAMILY BUTTONHOLES FIRST, FIVE, and the single initial P; five first, she repeats, tapping the word, I have kept five bushes best of all and never once known why; she looks toward the heart of the garden'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1308,7 +1308,7 @@
     },
     {
       "id": "wg_gardenias",
-      "body": "<<FILL role=choice words=96 beats='the gardenia bed at the garden's heart: a hundred buds closed tight as promises, ranked and ready, and at the center a ring of five older bushes, glossier, deeper, tended like the crown jewels; keep this bed general and re-entry-safe, it reads the same whether June wandered here alone or was led; the five bushes stand in a circle like people holding hands'>>",
+      "body": "<<FILL role=choice words=96 beats='the {G_GARDENBED} at the garden's heart: a hundred buds closed tight as promises, ranked and ready, and at the center a ring of five older bushes, glossier, deeper, tended like the crown jewels; keep this bed general and re-entry-safe, it reads the same whether {HERO} wandered here alone or was led; the five bushes stand in a circle like people holding hands'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1325,7 +1325,7 @@
     },
     {
       "id": "wg_five",
-      "body": "<<FILL role=choice words=94 beats='planted the year the hotel turned one hundred, she says, or was to; one for each of, and the sentence frays exactly there, the way worn cloth gives at the same seam every time; the five bushes lean in as if listening for the end of it; their roots, June notices, have grown together underground, five plants sharing one grip on the earth'>>",
+      "body": "<<FILL role=choice words=94 beats='planted the year the hotel turned one hundred, she says, or was to; one for each of, and the sentence frays exactly there, the way worn cloth gives at the same seam every time; the five bushes lean in as if listening for the end of it; their roots, {HERO} notices, have grown together underground, five plants sharing one grip on the earth'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1342,12 +1342,12 @@
     },
     {
       "id": "wg_fountain",
-      "body": "<<FILL role=choice words=96 beats='the fountain court: a stone basin dry for decades that nonetheless sounds of water, and in its empty bowl swim goldfish made of soft light, circling, flicking, entirely content in their remembered pond; coins glint among the leaves at the bottom, and an old brass tap crusted green hides under the rim; the singing is the fish, or the memory of water, or both'>>",
+      "body": "<<FILL role=choice words=96 beats='the {G_FOUNTAIN}: a stone basin dry for decades that nonetheless sounds of water, and in its empty bowl swim goldfish made of soft light, circling, flicking, entirely content in their remembered pond; coins glint among the leaves at the bottom, and an old brass tap crusted green hides under the rim; the singing is the fish, or the memory of water, or both'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wgfo_fish",
-          "label": "Dip a hand among the light-fish.",
+          "label": "Dip a hand among the {G_FISH}.",
           "target": "wg_fish"
         },
         {
@@ -1364,17 +1364,17 @@
     },
     {
       "id": "wg_fish",
-      "body": "<<FILL role=choice words=92 beats='the fish nibble her fingers with tiny harmless sparks, ticklish as soda bubbles, then school up in a bright arrow and hold the shape, pointing insistently along the path toward the heart of the garden; fish with opinions; June laughs out loud and the arrow wags, pleased with itself'>>",
+      "body": "<<FILL role=choice words=92 beats='the fish nibble her fingers with tiny harmless sparks, ticklish as soda bubbles, then school up in a bright arrow and hold the shape, pointing insistently along the path toward the heart of the garden; fish with opinions; {HERO} laughs out loud and the arrow wags, pleased with itself'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wgfi_follow",
-          "label": "Follow the fish-arrow toward the gardenia bed.",
+          "label": "Follow the fish-arrow toward the {G_GARDENBED}.",
           "target": "wg_gardenias"
         },
         {
           "id": "c_wgfi_stay",
-          "label": "Stay and play with the light-fish a while.",
+          "label": "Stay and play with the {G_FISH} a while.",
           "target": "e_wg_fish"
         }
       ]
@@ -1398,7 +1398,7 @@
     },
     {
       "id": "wg_wish",
-      "body": "<<FILL role=choice words=96 beats='we wished, she says slowly, hat brim low, together, that the evening would never end; and gently, June understands the trick of it: the evening never began, so the wish is still out there, unspent, waiting like a coin in the air; wishes keep, in fountains, the gardener says, that is what fountains are for; her eyes come up under the hat brim, brighter than they were'>>",
+      "body": "<<FILL role=choice words=96 beats='we wished, she says slowly, hat brim low, together, that the evening would never end; and gently, {HERO} understands the trick of it: the evening never began, so the wish is still out there, unspent, waiting like a coin in the air; wishes keep, in fountains, the gardener says, that is what fountains are for; her eyes come up under the hat brim, brighter than they were'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1408,24 +1408,24 @@
         },
         {
           "id": "c_wgwi_gard",
-          "label": "Walk with her to the gardenia bed.",
+          "label": "Walk with her to the {G_GARDENBED}.",
           "target": "wg_gardenias"
         }
       ]
     },
     {
       "id": "wg_shed",
-      "body": "<<FILL role=choice words=96 beats='the potting shed: seed drawers labeled in the round green hand, two child-size gloves hung on one peg like small salutes, an espalier chart marked O TRADES PASTRY FOR PLUMS, FAIR IS FAIR, and up through the roof, magnificently, a great fig tree has grown, taking the shed with it as if the building agreed to become a treehouse; a planting ledger lies open on the bench'>>",
+      "body": "<<FILL role=choice words=96 beats='the {G_SHED}: seed drawers labeled in the round green hand, two child-size gloves hung on one peg like small salutes, an espalier chart marked O TRADES PASTRY FOR PLUMS, FAIR IS FAIR, and up through the roof, magnificently, a great {G_FIGTREE} has grown, taking the shed with it as if the building agreed to become a treehouse; a {G_LEDGER} lies open on the bench'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wgs_ledger",
-          "label": "Read the open planting ledger.",
+          "label": "Read the open {G_LEDGER}.",
           "target": "wg_ledger"
         },
         {
           "id": "c_wgs_fig",
-          "label": "Climb the ladder into the fig tree's branches.",
+          "label": "Climb the ladder into the {G_FIGTREE}'s branches.",
           "target": "wg_fig"
         },
         {
@@ -1454,12 +1454,12 @@
     },
     {
       "id": "wg_seeds",
-      "body": "<<FILL role=choice words=92 beats='the drawer marked FOR THE NEXT KEEPER holds easy seeds in labeled packets, radish, sunflower, thyme, and instructions written in three different hands taking polite turns on the same card, copperplate, green scrawl, twin squiggles; a starter garden, prepared long ago for somebody exactly like June; her name is not on it, and it is still unmistakably addressed to her'>>",
+      "body": "<<FILL role=choice words=92 beats='the drawer marked FOR THE NEXT KEEPER holds easy seeds in labeled packets, radish, sunflower, thyme, and instructions written in three different hands taking polite turns on the same card, copperplate, green scrawl, twin squiggles; a starter garden, prepared long ago for somebody exactly like {HERO}; her name is not on it, and it is still unmistakably addressed to her'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_wgse_ledger",
-          "label": "Read the planting ledger next.",
+          "label": "Read the {G_LEDGER} next.",
           "target": "wg_ledger"
         },
         {
@@ -1471,7 +1471,7 @@
     },
     {
       "id": "wg_fig",
-      "body": "<<FILL role=choice words=92 beats='up the ladder into the fig's crown, where a plank platform is wedged among branches, child-built and child-sized, with a biscuit tin of treasures and a brass spyglass lashed to a limb, aimed out through a clear pane at the night; a crow's nest in a tree in a shed in a hotel; two particular children, June suspects, are behind every comfortable inch of it'>>",
+      "body": "<<FILL role=choice words=92 beats='up the ladder into the {G_FIGTREE_CROWN}, where a plank platform is wedged among branches, child-built and child-sized, with a biscuit tin of treasures and a brass spyglass lashed to a limb, aimed out through a clear pane at the night; a crow's nest in a tree in a shed in a hotel; two particular children, {HERO} suspects, are behind every comfortable inch of it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1481,14 +1481,14 @@
         },
         {
           "id": "c_wgfg_higher",
-          "label": "Climb higher into the fig's crown.",
+          "label": "Climb higher into the {G_FIGTREE_CROWN}.",
           "target": "e_wg_climb"
         }
       ]
     },
     {
       "id": "wg_spy",
-      "body": "<<FILL role=choice words=90 beats='the spyglass is aimed, dead steady, at the rooftop observatory dome across the night, and painted on that far dome, faint with years, a five-pointed star; five again; the whole hotel is signed with fives, like a family writing its initials everywhere it loved; June lowers the spyglass thinking hard'>>",
+      "body": "<<FILL role=choice words=90 beats='the spyglass is aimed, dead steady, at the {ROUTE_R_ZONE} dome across the night, and painted on that far dome, faint with years, a five-pointed star; five again; the whole hotel is signed with fives, like a family writing its initials everywhere it loved; {HERO} lowers the spyglass thinking hard'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1505,7 +1505,7 @@
     },
     {
       "id": "wg_promise",
-      "body": "<<FILL role=choice words=100 beats='the gardener snips five almost-open gardenias and stands them in a jar of water like white flames; for the buttonholes, she says, cut the rest the moment you call us down, and mind you open the glasshouse doors wide that night, gardens hate to miss a party; write the parting general so it reads the same however June got here; she is already deadheading the hundred-bud bed, humming in three-four time, a gardener with a deadline at last'>>",
+      "body": "<<FILL role=choice words=100 beats='the gardener snips five almost-open gardenias and stands them in a jar of water like white flames; for the buttonholes, she says, cut the rest the moment you call us down, and mind you open the glasshouse doors wide that night, gardens hate to miss a party; write the parting general so it reads the same however {HERO} got here; she is already deadheading the hundred-bud bed, humming in three-four time, a gardener with a deadline at last'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1515,7 +1515,7 @@
         },
         {
           "id": "c_wgpr_fin",
-          "label": "Go straight to the ballroom and begin.",
+          "label": "Go straight to the {FINALE_ZONE} and begin.",
           "target": "fin_approach"
         },
         {
@@ -1527,7 +1527,7 @@
     },
     {
       "id": "e_wg_tap",
-      "body": "<<FILL role=ending words=94 beats='the tap grinds a quarter turn and the garden's ancient sprinklers all fire at once, every bed, every path, a jubilant indoor rainstorm forty years in the pipes; June is soaked to the eyebrows in three seconds flat; the gardener appears through the downpour laughing like a kettle, wrestles the tap home, wraps June in clean burlap like a prize marrow, and walks her to the doors; come back dry, she orders fondly; the garden drips and gleams all night, cleaner and greener for the accident, and June squelches home grinning'>>",
+      "body": "<<FILL role=ending words=94 beats='the tap grinds a quarter turn and the garden's ancient sprinklers all fire at once, every bed, every path, a jubilant indoor rainstorm forty years in the pipes; {HERO} is soaked to the eyebrows in three seconds flat; the gardener appears through the downpour laughing like a kettle, wrestles the tap home, wraps {HERO} in clean burlap like a prize marrow, and walks her to the doors; come back dry, she orders fondly; the garden drips and gleams all night, cleaner and greener for the accident, and {HERO} squelches home grinning'>>",
       "is_ending": true,
       "ending": {
         "id": "end_wg_tap",
@@ -1538,7 +1538,7 @@
     },
     {
       "id": "e_wg_fish",
-      "body": "<<FILL role=ending words=96 beats='June stays with the light-fish, and the light-fish approve; she teaches them to loop, they teach her their circling game, and the empty basin becomes the best aquarium in the world, no water required; when the glass overhead silvers toward dawn the fish tuck themselves under the leaves like coins going back in a purse, and one, the smallest, laps her wrist twice in plain goodbye; she walks home glowing faintly about the fingers, and if you ask her, completely certain they will remember her, because some things in this hotel never once forgot how'>>",
+      "body": "<<FILL role=ending words=96 beats='{HERO} stays with the {G_FISH}, and the {G_FISH} approve; she teaches them to loop, they teach her their circling game, and the empty basin becomes the best aquarium in the world, no water required; when the glass overhead silvers toward dawn the fish tuck themselves under the leaves like coins going back in a purse, and one, the smallest, laps her wrist twice in plain goodbye; she walks home glowing faintly about the fingers, and if you ask her, completely certain they will remember her, because some things in this hotel never once forgot how'>>",
       "is_ending": true,
       "ending": {
         "id": "end_wg_fish",
@@ -1549,7 +1549,7 @@
     },
     {
       "id": "e_wg_climb",
-      "body": "<<FILL role=ending words=92 beats='one branch higher proves one branch too many; the fig dips, June swings, and the compost heap below receives her like a warm brown pillow that has been expecting guests; nothing hurt but leaf-litter pride; the gardener picks her out, tuts leaves from her hair, and pronounces the climb nearly excellent, footwork wants practice; scrubbed at the potting sink and sent home under a graying sky, June leaves with an official invitation to learn the tree properly, lowest branch first, in daylight, like a gardener'>>",
+      "body": "<<FILL role=ending words=92 beats='one branch higher proves one branch too many; the fig dips, {HERO} swings, and the compost heap below receives her like a warm brown pillow that has been expecting guests; nothing hurt but leaf-litter pride; the gardener picks her out, tuts leaves from her hair, and pronounces the climb nearly excellent, footwork wants practice; scrubbed at the potting sink and sent home under a graying sky, {HERO} leaves with an official invitation to learn the tree properly, lowest branch first, in daylight, like a gardener'>>",
       "is_ending": true,
       "ending": {
         "id": "end_wg_climb",
@@ -1560,7 +1560,7 @@
     },
     {
       "id": "e_wg_plant",
-      "body": "<<FILL role=ending words=96 beats='June plants the starter row by lantern light, radish, sunflower, thyme, with the gardener's ghost hands hovering over hers, tilting the trowel, spacing the seeds, pressing the earth down like tucking in a bed; it takes hours and it takes no time at all; when the sky pales she stands up stiff and dirt-kneed over her first garden, hers, in soil her family now keeps; the party waits one more night, but something of June is growing in the Meridian now, and that changes what the hotel is to her forever'>>",
+      "body": "<<FILL role=ending words=96 beats='{HERO} plants the starter row by lantern light, radish, sunflower, thyme, with the gardener's ghost hands hovering over hers, tilting the trowel, spacing the seeds, pressing the earth down like tucking in a bed; it takes hours and it takes no time at all; when the sky pales she stands up stiff and dirt-kneed over her first garden, hers, in soil her family now keeps; the party waits one more night, but something of {HERO} is growing in the {THRESHOLD} now, and that changes what the hotel is to her forever'>>",
       "is_ending": true,
       "ending": {
         "id": "end_wg_plant",
@@ -1571,7 +1571,7 @@
     },
     {
       "id": "e_wg_bloom",
-      "body": "<<FILL role=ending words=98 beats='the night-blooming hour comes at three, and the whole glasshouse opens at once, a hundred gardenias and every moonflower with them, petals unfolding in slow applause until the air is white and sweet and snowing petals under glass; the gardener stands hat-off in the middle of it, and June stands beside her, and neither says a word because some hours are for watching; when it ends at first light, June is given one bloom for her buttonhole and an escort to the doors; the rest, the gardener says, are saving themselves for the evening'>>",
+      "body": "<<FILL role=ending words=98 beats='the night-blooming hour comes at three, and the whole glasshouse opens at once, a hundred gardenias and every moonflower with them, petals unfolding in slow applause until the air is white and sweet and snowing petals under glass; the gardener stands hat-off in the middle of it, and {HERO} stands beside her, and neither says a word because some hours are for watching; when it ends at first light, {HERO} is given one bloom for her buttonhole and an escort to the doors; the rest, the gardener says, are saving themselves for the evening'>>",
       "is_ending": true,
       "ending": {
         "id": "end_wg_bloom",
@@ -1582,7 +1582,7 @@
     },
     {
       "id": "gf_stairs",
-      "body": "<<FILL role=choice words=98 beats='the numbered guest floors, landing after landing spiraling up into the dark, doors 10 to 99 asleep behind their brass numbers; from somewhere above come running feet, a service bell rung on the move, ding-ding-ding, and two-part giggling; keep this arrival general so it reads naturally on a first visit or any return; a caged service lift waits on the landing, and the stair climbs on toward the quiet ninth floor at the top'>>",
+      "body": "<<FILL role=choice words=98 beats='the {ROUTE_F_ZONE}, landing after landing spiraling up into the dark, doors 10 to 99 asleep behind their brass numbers; from somewhere above come running feet, a service bell rung on the move, ding-ding-ding, and two-part giggling; keep this arrival general so it reads naturally on a first visit or any return; a caged {F_LIFT} waits on the landing, and the stair climbs on toward the quiet ninth floor at the top'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1592,7 +1592,7 @@
         },
         {
           "id": "c_gfs_lift",
-          "label": "Ride the caged service lift.",
+          "label": "Ride the caged {F_LIFT}.",
           "target": "gf_lift"
         },
         {
@@ -1604,12 +1604,12 @@
     },
     {
       "id": "gf_three",
-      "body": "<<FILL role=choice words=96 beats='floor three's corridor stretches long and carpeted, doors 30 to 39 standing at attention; a luggage trolley rockets past all by itself, takes the corner on two wheels like a getaway pony, and stops dead outside a plain door marked LINEN; the giggling has gone suspiciously silent, which any detective knows means an audience is hoped for; write the corridor re-entry-safe, the game freshly afoot on any visit'>>",
+      "body": "<<FILL role=choice words=96 beats='floor three's corridor stretches long and carpeted, doors 30 to 39 standing at attention; a {F_TROLLEY} rockets past all by itself, takes the corner on two wheels like a getaway pony, and stops dead outside a plain door marked LINEN; the giggling has gone suspiciously silent, which any detective knows means an audience is hoped for; write the corridor re-entry-safe, the game freshly afoot on any visit'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gf3_chase",
-          "label": "Chase after the runaway trolley.",
+          "label": "Chase after the {F_TROLLEY}.",
           "target": "gf_chase"
         },
         {
@@ -1621,7 +1621,7 @@
     },
     {
       "id": "gf_chase",
-      "body": "<<FILL role=choice words=96 beats='the chase ends at the corridor's turn: trolley parked, innocent as a choirboy, and behind the window curtains two lumps are being extremely still in exactly the shapes of two children holding their breath; June has played this game; the only question is how to play it best; a service door also stands ajar nearby, breathing the shortcut smell of back corridors'>>",
+      "body": "<<FILL role=choice words=96 beats='the chase ends at the corridor's turn: trolley parked, innocent as a choirboy, and behind the window curtains two lumps are being extremely still in exactly the shapes of two children holding their breath; {HERO} has played this game; the only question is how to play it best; a service door also stands ajar nearby, breathing the shortcut smell of back corridors'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1643,7 +1643,7 @@
     },
     {
       "id": "gf_playalong",
-      "body": "<<FILL role=choice words=98 beats='June strolls the corridor lamenting theatrically, no bellhops anywhere, and her with all this heavy invisible luggage; the curtains detonate; two bellhop kids tumble out mid-bow, caps crooked, delighted beyond containment, A GUEST, FINALLY, do you have BAGS, can we CARRY them; write the pair entry-neutral, they greet any audience with the same joyous ceremony whether June is brand new or back for more'>>",
+      "body": "<<FILL role=choice words=98 beats='{HERO} strolls the corridor lamenting theatrically, no bellhops anywhere, and her with all this heavy invisible luggage; the curtains detonate; two bellhop kids tumble out mid-bow, caps crooked, delighted beyond containment, A GUEST, FINALLY, do you have BAGS, can we CARRY them; write the pair entry-neutral, they greet any audience with the same joyous ceremony whether {HERO} is brand new or back for more'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1660,7 +1660,7 @@
     },
     {
       "id": "gf_yank",
-      "body": "<<FILL role=choice words=92 beats='the curtain whips back on, nothing, two bellhop caps spinning on the rod and the giggling now directly behind her; reversed, outmaneuvered, June spins to an empty corridor and a trolley that has crept a foot closer on its own; somewhere a grandfather clock chuckles, or possibly that is also them; this floor plays tag at tournament level'>>",
+      "body": "<<FILL role=choice words=92 beats='the curtain whips back on, nothing, two bellhop caps spinning on the rod and the giggling now directly behind her; reversed, outmaneuvered, {HERO} spins to an empty corridor and a trolley that has crept a foot closer on its own; somewhere a grandfather clock chuckles, or possibly that is also them; this floor plays tag at tournament level'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1677,7 +1677,7 @@
     },
     {
       "id": "gf_tag",
-      "body": "<<FILL role=rising words=94 beats='the wildest game of tag in June's career, up one corridor and down the service stair, laughter always one doorway ahead, until all three of them collapse on the landing carpet at once, breathless and even; the two fade in properly then, bellhop uniforms, crooked caps, faces bright as struck matches, and shake her hand twice each, formal and backwards'>>",
+      "body": "<<FILL role=rising words=94 beats='the wildest game of tag in {HERO}'s career, up one corridor and down the service stair, laughter always one doorway ahead, until all three of them collapse on the landing carpet at once, breathless and even; the two fade in properly then, bellhop uniforms, crooked caps, faces bright as struck matches, and shake her hand twice each, formal and backwards'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1694,7 +1694,7 @@
     },
     {
       "id": "gf_wait",
-      "body": "<<FILL role=rising words=92 beats='June sits cross-legged in the middle of the corridor and counts to twenty out loud, calm as Sunday; at fourteen two heads emerge from the next doorway, impressed despite themselves, she is GOOD; formal introductions follow, bellhop style, caps doffed in unison, at your service and ALSO at your service; write their ceremony entry-neutral, performed with full delight on any visit'>>",
+      "body": "<<FILL role=rising words=92 beats='{HERO} sits cross-legged in the middle of the corridor and counts to twenty out loud, calm as Sunday; at fourteen two heads emerge from the next doorway, impressed despite themselves, she is GOOD; formal introductions follow, bellhop style, caps doffed in unison, at your service and ALSO at your service; write their ceremony entry-neutral, performed with full delight on any visit'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1711,7 +1711,7 @@
     },
     {
       "id": "gf_ask",
-      "body": "<<FILL role=choice words=100 beats='they are bellhops, the best in the building, on shift a while now, which is bellhop for forty years; they keep the floors warmed up for the guests who will come for the big night, whenever that is; they bunk in the linen room; and there is a rule, the grandmother rule, NO RUNNING IN THE LOBBY, which is why they never go downstairs at all, or we would LOSE THE GAME; asked who made the rule, they go quiet in stereo, reaching for a face that will not come'>>",
+      "body": "<<FILL role=choice words=100 beats='they are bellhops, the best in the building, on shift a while now, which is bellhop for forty years; they keep the floors warmed up for the guests who will come for the big night, whenever that is; they bunk in the {F_LINEN}; and there is a rule, the grandmother rule, NO RUNNING IN THE LOBBY, which is why they never go downstairs at all, or we would LOSE THE GAME; asked who made the rule, they go quiet in stereo, reaching for a face that will not come'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1728,7 +1728,7 @@
     },
     {
       "id": "gf_rule",
-      "body": "<<FILL role=choice words=96 beats='someone with a silver bell made the rule, they say, someone who ran the whole hotel and smelled of Sunday baking; you do not break HER rules, she was the entire Meridian in one apron; they miss her without remembering her, which is the saddest trick time knows; both caps droop, then rally, because sad is against bellhop regulations'>>",
+      "body": "<<FILL role=choice words=96 beats='someone with a silver bell made the rule, they say, someone who ran the whole hotel and smelled of Sunday baking; you do not break HER rules, she was the entire {THRESHOLD} in one apron; they miss her without remembering her, which is the saddest trick time knows; both caps droop, then rally, because sad is against bellhop regulations'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1745,7 +1745,7 @@
     },
     {
       "id": "gf_tellp",
-      "body": "<<FILL role=choice words=100 beats='June tells them what she knows first-hand from tonight: at the front desk, right now, sits a small silver-haired lady named Pearl, polishing a silver bell and keeping the lights on; the name lands like a dropped tea tray; both twins flicker cap-bright, PEARL, and then, in a rush, does she still keep peppermints in the third drawer down; they remember drawers, sweets, rules, everything but her face, and they are suddenly desperate to fix that'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO} tells them what she knows first-hand from tonight: at the front desk, right now, sits a small silver-haired lady named {MATRIARCH}, polishing a silver bell and keeping the lights on; the name lands like a dropped tea tray; both twins flicker cap-bright, {MATRIARCH}, and then, in a rush, does she still keep peppermints in the third drawer down; they remember drawers, sweets, rules, everything but her face, and they are suddenly desperate to fix that'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1762,7 +1762,7 @@
     },
     {
       "id": "gf_game",
-      "body": "<<FILL role=choice words=98 beats='the Great Corridor Game, explained at speed with both twins talking in relay: doors are goals, rolled towels are balls, the trolley is the chariot, banking shots off the lucky dent in door 36 is legal and encouraged; behind door 33 they show her the score wall, tally marks flooding the paint floor to ceiling, M VS M, BEST OF 1000, and the score frozen at 499 to 499'>>",
+      "body": "<<FILL role=choice words=98 beats='the Great Corridor Game, explained at speed with both twins talking in relay: doors are goals, rolled towels are balls, the trolley is the chariot, banking shots off the lucky dent in door 36 is legal and encouraged; behind door 33 they show her the {F_SCOREWALL}, tally marks flooding the paint floor to ceiling, M VS M, BEST OF 1000, and the score frozen at 499 to 499'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1801,7 +1801,7 @@
     },
     {
       "id": "gf_play",
-      "body": "<<FILL role=choice words=96 beats='a practice round, then, guest versus house; June rides the trolley-chariot while one twin pushes and the other defends door 35 with a pillow shield, and the towel-ball sails and bounces and the corridor thunders with entirely safe mayhem; June learns the bank shot off the lucky dent, the underarm lob, the sacred rule that hitting the chandelier is a do-over; she has not laughed this hard all year'>>",
+      "body": "<<FILL role=choice words=96 beats='a practice round, then, guest versus house; {HERO} rides the {F_TROLLEY} while one twin pushes and the other defends door 35 with a pillow shield, and the towel-ball sails and bounces and the corridor thunders with entirely safe mayhem; {HERO} learns the bank shot off the lucky dent, the underarm lob, the sacred rule that hitting the {FIN_CHANDELIER} is a do-over; she has not laughed this hard all year'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1847,7 +1847,7 @@
     },
     {
       "id": "gf_lift",
-      "body": "<<FILL role=choice words=94 beats='the service lift is a brass birdcage that remembers being grand; its panel carries buttons one to nine polished by decades of thumbs, and at the top, set apart, one unnumbered button of pearl shell, unlabeled and lovelier than the rest; the cage smells of oil and peppermint; somewhere above, the running feet cross a landing and fade'>>",
+      "body": "<<FILL role=choice words=94 beats='the {F_LIFT} is a brass birdcage that remembers being grand; its panel carries buttons one to nine polished by decades of thumbs, and at the top, set apart, one unnumbered button of pearl shell, unlabeled and lovelier than the rest; the cage smells of oil and peppermint; somewhere above, the running feet cross a landing and fade'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1869,7 +1869,7 @@
     },
     {
       "id": "gf_pearlbtn",
-      "body": "<<FILL role=rising words=92 beats='the lift hums, considers, and does not move; instead a little enamel sign flips over behind the grille, hand-painted, FAMILY FLOOR, PARTY GUESTS ONLY, OPENS ON THE HUNDREDTH NIGHT; the hotel is saving a floor the way you save the top of the wedding cake; June rests a finger on the pearl button a moment, promising it an occasion'>>",
+      "body": "<<FILL role=rising words=92 beats='the lift hums, considers, and does not move; instead a little enamel sign flips over behind the grille, hand-painted, FAMILY FLOOR, PARTY GUESTS ONLY, OPENS ON THE {OCCASION}; the hotel is saving a floor the way you save the top of the wedding {K_CAKE}; {HERO} rests a finger on the pearl button a moment, promising it an occasion'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1903,7 +1903,7 @@
     },
     {
       "id": "gf_keyhole",
-      "body": "<<FILL role=choice words=94 beats='none of the hundred keys fits, not even the small bright one that looks most hopeful; but the keyhole warms under June's fingers like a hand closing around hers, and scratched in the plaster beneath, half worn away, she reads OPENS FOR ALL FIVE TOGETHER; a door that requires a family, in a hotel that lost track of one; June sits back on her heels, understanding something enormous'>>",
+      "body": "<<FILL role=choice words=94 beats='none of the hundred keys fits, not even the small bright one that looks most hopeful; but the keyhole warms under {HERO}'s fingers like a hand closing around hers, and scratched in the plaster beneath, half worn away, she reads OPENS FOR ALL FIVE TOGETHER; a door that requires a family, in a hotel that lost track of one; {HERO} sits back on her heels, understanding something enormous'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1920,7 +1920,7 @@
     },
     {
       "id": "gf_ear",
-      "body": "<<FILL role=rising words=92 beats='through the wall, faint as a music box in a snowstorm, June hears a waltz playing, and under it five voices laughing at once, a party sealed in the plaster like summer sealed in a jar; the wall is warm as a sleeping animal; whatever waits behind the hundredth door, it is not gone, it is kept; she steps back with her heart drumming softly'>>",
+      "body": "<<FILL role=rising words=92 beats='through the wall, faint as a music box in a snowstorm, {HERO} hears a waltz playing, and under it five voices laughing at once, a party sealed in the plaster like summer sealed in a jar; the wall is warm as a sleeping animal; whatever waits behind the hundredth door, it is not gone, it is kept; she steps back with her heart drumming softly'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1937,29 +1937,29 @@
     },
     {
       "id": "gf_linen",
-      "body": "<<FILL role=choice words=96 beats='the linen room is the twins' den, and it is magnificent: a blanket fort of hotel sheets rigged like a schooner, a bottle-cap collection ranked on the shelf like medals, a shoe-shine kit arranged as an altar to professionalism, and on the wall a drawing in old butcher paper, five figures holding hands, kid-drawn, the faces gone soft with forty years of looking; a laundry chute door gleams in the corner'>>",
+      "body": "<<FILL role=choice words=96 beats='the {F_LINEN} is the twins' den, and it is magnificent: a {F_FORT} of hotel sheets rigged like a schooner, a {F_BOTTLECAPS} collection ranked on the shelf like medals, a shoe-shine kit arranged as an altar to professionalism, and on the wall a drawing in old butcher paper, five figures holding hands, kid-drawn, the faces gone soft with forty years of looking; a {F_CHUTE} door gleams in the corner'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gfln_draw",
-          "label": "Look closely at the five-figure drawing.",
+          "label": "Look closely at the {F_DRAWING}.",
           "target": "gf_drawing"
         },
         {
           "id": "c_gfln_caps",
-          "label": "Admire the bottle-cap museum properly.",
+          "label": "Admire the {F_BOTTLECAPS} museum properly.",
           "target": "gf_caps"
         },
         {
           "id": "c_gfln_chute",
-          "label": "Peek down the gleaming laundry chute.",
+          "label": "Peek down the gleaming {F_CHUTE}.",
           "target": "e_gf_chute"
         }
       ]
     },
     {
       "id": "gf_drawing",
-      "body": "<<FILL role=choice words=94 beats='the drawing's five figures hold hands in a row before a hundred-windowed hotel; the labels underneath have worn to ghosts, all but one word under the tall center figure, GRAN; behind June two voices arrive mid-scold, HEY, that is PRIVATE, and then, smaller, in duet, do you know who they are, we forgot; the question is offered up like a towel-ball, hopeful and brave'>>",
+      "body": "<<FILL role=choice words=94 beats='the drawing's five figures hold hands in a row before a hundred-windowed hotel; the labels underneath have worn to ghosts, all but one word under the tall center figure, {MATRIARCH}; behind {HERO} two voices arrive mid-scold, HEY, that is PRIVATE, and then, smaller, in duet, do you know who they are, we forgot; the question is offered up like a towel-ball, hopeful and brave'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1969,19 +1969,19 @@
         },
         {
           "id": "c_gfdr_caps",
-          "label": "First, ask about the bottle-cap medals.",
+          "label": "First, ask about the {F_BOTTLECAPS} medals.",
           "target": "gf_caps"
         }
       ]
     },
     {
       "id": "gf_caps",
-      "body": "<<FILL role=choice words=92 beats='the bottle caps are ranked by campaign, they explain, medals from the dumbwaiter, which sends them up with snacks when nobody is looking; HE saves them for us, they say, and cannot say who HE is, only that the caps keep coming, forty years of tribute riding up a rope in the dark; a family still passing notes it cannot read, and never once missing a delivery'>>",
+      "body": "<<FILL role=choice words=92 beats='the bottle caps are ranked by campaign, they explain, medals from the {K_DUMBWAITER}, which sends them up with snacks when nobody is looking; HE saves them for us, they say, and cannot say who HE is, only that the caps keep coming, forty years of tribute riding up a rope in the dark; a family still passing notes it cannot read, and never once missing a delivery'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gfcp_draw",
-          "label": "Ask about the five-figure drawing on the wall.",
+          "label": "Ask about the {F_DRAWING} on the wall.",
           "target": "gf_drawing"
         },
         {
@@ -1993,7 +1993,7 @@
     },
     {
       "id": "gf_promise",
-      "body": "<<FILL role=choice words=98 beats='send-off, bellhop style: caps straightened, trolley parked in its bay and polished for the big night, and June escorted to the stair landing with full honors, one twin marching before her and one behind; write the parting general so it reads the same however tonight's games unfolded; at the rail they salute in unison and remind her, loudly, whispering, that they will be listening for the call with both ears each'>>",
+      "body": "<<FILL role=choice words=98 beats='send-off, bellhop style: caps straightened, trolley parked in its bay and polished for the big night, and {HERO} escorted to the stair landing with full honors, one twin marching before her and one behind; write the parting general so it reads the same however tonight's games unfolded; at the rail they salute in unison and remind her, loudly, whispering, that they will be listening for the call with both ears each'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2003,19 +2003,19 @@
         },
         {
           "id": "c_gfpr_fin",
-          "label": "Go straight to the ballroom and begin.",
+          "label": "Go straight to the {FINALE_ZONE} and begin.",
           "target": "fin_approach"
         },
         {
           "id": "c_gfpr_fort",
-          "label": "Stay for the blanket-fort midnight feast first.",
+          "label": "Stay for the {F_FORT} midnight feast first.",
           "target": "e_gf_fort"
         }
       ]
     },
     {
       "id": "e_gf_lost",
-      "body": "<<FILL role=ending words=96 beats='the service corridors are a maze with a sense of humor; June pops out of the laundry-chute room, a shoe-shine nook, and a cupboard of two hundred lampshades, while invisible giggles conduct her along on a game of warmer-colder she is definitely losing; by the time she finds a window the sky is gray and her lantern is yawning; on her sleeve, discovered at the door, somebody has pinned a hand-drawn map of every shortcut on the floor, labeled FOR NEXT TIME, SO IT IS FAIR; a defeat, sportingly refereed'>>",
+      "body": "<<FILL role=ending words=96 beats='the service corridors are a maze with a sense of humor; {HERO} pops out of the laundry-chute room, a shoe-shine nook, and a cupboard of two hundred lampshades, while invisible giggles conduct her along on a game of warmer-colder she is definitely losing; by the time she finds a window the sky is gray and her lantern is yawning; on her sleeve, discovered at the door, somebody has pinned a hand-drawn map of every shortcut on the floor, labeled FOR NEXT TIME, SO IT IS FAIR; a defeat, sportingly refereed'>>",
       "is_ending": true,
       "ending": {
         "id": "end_gf_lost",
@@ -2026,7 +2026,7 @@
     },
     {
       "id": "e_gf_early",
-      "body": "<<FILL role=ending words=96 beats='they look at each other, and because June asked with her whole heart, they play it, point one thousand, in an empty corridor with no bell to start it; the towel-ball arcs, banks, drops, perfect, and lands with no sound at all, and everybody feels it at once, the point does not count, the corridor knows, the wall will not take the mark; by morning the tally reads 499 to 499 again, and the twins are relieved instead of sad, told you, party point; June heads home at dawn owing them an audience, and meaning to pay'>>",
+      "body": "<<FILL role=ending words=96 beats='they look at each other, and because {HERO} asked with her whole heart, they play it, point one thousand, in an empty corridor with no bell to start it; the towel-ball arcs, banks, drops, perfect, and lands with no sound at all, and everybody feels it at once, the point does not count, the corridor knows, the wall will not take the mark; by morning the tally reads 499 to 499 again, and the twins are relieved instead of sad, told you, party point; {HERO} heads home at dawn owing them an audience, and meaning to pay'>>",
       "is_ending": true,
       "ending": {
         "id": "end_gf_early",
@@ -2037,7 +2037,7 @@
     },
     {
       "id": "e_gf_rounds",
-      "body": "<<FILL role=ending words=98 beats='one more round becomes five becomes thirty; the corridor game has no natural ending and neither do the twins, and June plays until her arms are noodles and her laugh is cracked and the windows have gone traitorously pale; she surrenders on the carpet, honorable and destroyed, and the twins tuck her in the wing chair by the landing window like champions honoring the fallen; she wakes to her dad calling her name up the stairwell, one real peppermint on the chair arm, and the score wall, she notices, now carries one small new column marked J'>>",
+      "body": "<<FILL role=ending words=98 beats='one more round becomes five becomes thirty; the corridor game has no natural ending and neither do the twins, and {HERO} plays until her arms are noodles and her laugh is cracked and the windows have gone traitorously pale; she surrenders on the carpet, honorable and destroyed, and the twins tuck her in the wing chair by the landing window like champions honoring the fallen; she wakes to her dad calling her name up the stairwell, one real peppermint on the chair arm, and the {F_SCOREWALL}, she notices, now carries one small new column marked J'>>",
       "is_ending": true,
       "ending": {
         "id": "end_gf_rounds",
@@ -2048,7 +2048,7 @@
     },
     {
       "id": "e_gf_chute",
-      "body": "<<FILL role=ending words=96 beats='the chute sighs warm air like a sleeping whale, and June's lantern lid clatters off down its throat, which means an expedition; three floors of spiral dark deliver her to the basement laundry, where clean sheets are folding themselves midair in stacks, unbothered by the century; they take one look at the tired child in their doorway and fold her in too, snug as an envelope, in the world's best-made bed; she wakes at dawn in room 31 with the door propped open and sun on the carpet, tucked in by experts, her lantern lid polished on the nightstand'>>",
+      "body": "<<FILL role=ending words=96 beats='the chute sighs warm air like a sleeping whale, and {HERO}'s lantern lid clatters off down its throat, which means an expedition; three floors of spiral dark deliver her to the basement laundry, where clean sheets are folding themselves midair in stacks, unbothered by the century; they take one look at the tired child in their doorway and fold her in too, snug as an envelope, in the world's best-made bed; she wakes at dawn in room 31 with the door propped open and sun on the carpet, tucked in by experts, her lantern lid polished on the nightstand'>>",
       "is_ending": true,
       "ending": {
         "id": "end_gf_chute",
@@ -2059,13 +2059,13 @@
     },
     {
       "id": "e_gf_fort",
-      "body": "<<FILL role=ending words=98 beats='the blanket-fort feast is crackers, forty-year peppermints in perfect condition, and secrets by lantern light: which doors stick, which floors sing, where the good echoes live, how to ride a trolley without squeaking the wheel; June trades them the outside world, buses, television, the existence of new peppermints, and their eyes go round as coins; the fort sails on till the windows pale, and she leaves knowing the hotel like a crewmate, sworn in with a bottle-cap medal of her very own pinned over her heart'>>",
+      "body": "<<FILL role=ending words=98 beats='the {F_FORT} feast is crackers, forty-year peppermints in perfect condition, and secrets by lantern light: which doors stick, which floors sing, where the good echoes live, how to ride a trolley without squeaking the wheel; {HERO} trades them the outside world, buses, television, the existence of new peppermints, and their eyes go round as coins; the fort sails on till the windows pale, and she leaves knowing the hotel like a crewmate, sworn in with a {F_BOTTLECAPS} medal of her very own pinned over her heart'>>",
       "is_ending": true,
       "ending": {
         "id": "end_gf_fort",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Sworn Into the Blanket Fort"
+        "title": "Sworn Into the {F_FORT}"
       }
     },
     {
@@ -2104,17 +2104,17 @@
     },
     {
       "id": "ob_dome",
-      "body": "<<FILL role=choice words=100 beats='the observatory dome: a great brass telescope aimed through the half-open shutter at a slice of stars, charts papering the curved walls, and five stools of five heights in a tidy row, tallest to smallest to one with a cushion; the dome hums in the wind like a shell remembering the sea; keep this room general and re-entry-safe, the same waiting wonder on any visit'>>",
+      "body": "<<FILL role=choice words=100 beats='the observatory dome: a great brass telescope aimed through the half-open shutter at a slice of stars, {R_CHARTS} papering the curved walls, and five stools of five heights in a tidy row, tallest to smallest to one with a cushion; the dome hums in the wind like a shell remembering the sea; keep this room general and re-entry-safe, the same waiting wonder on any visit'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_obd_scope",
-          "label": "Look through the great telescope.",
+          "label": "Look through the {R_TELESCOPE}.",
           "target": "ob_scope"
         },
         {
           "id": "c_obd_charts",
-          "label": "Study the charts on the curved wall.",
+          "label": "Study the {R_CHARTS} on the curved wall.",
           "target": "ob_charts"
         },
         {
@@ -2136,36 +2136,36 @@
         },
         {
           "id": "c_obsc_charts",
-          "label": "Take the five initials to the charts.",
+          "label": "Take the five initials to the {R_CHARTS}.",
           "target": "ob_charts"
         }
       ]
     },
     {
       "id": "ob_perseids",
-      "body": "<<FILL role=rising words=92 beats='the eyepiece frames a modest patch of sky, unremarkable until you know it: the radiant of the Perseids, the meteor shower that returns every August like a family visit; the chart pinned nearest the scope counts the days in a childish tally, and June does the arithmetic twice with her heart speeding up, the shower is due back this very week; the sky has scheduled the party'>>",
+      "body": "<<FILL role=rising words=92 beats='the eyepiece frames a modest patch of sky, unremarkable until you know it: the radiant of the Perseids, the meteor shower that returns every August like a family visit; the chart pinned nearest the scope counts the days in a childish tally, and {HERO} does the arithmetic twice with her heart speeding up, the shower is due back this very week; the sky has scheduled the party'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_obp_charts",
-          "label": "Check the wall charts against the date.",
+          "label": "Check the wall {R_CHARTS} against the date.",
           "target": "ob_charts"
         },
         {
           "id": "c_obp_book",
-          "label": "Open the observation log on the desk.",
+          "label": "Open the observation {R_LOG} on the desk.",
           "target": "ob_book"
         }
       ]
     },
     {
       "id": "ob_charts",
-      "body": "<<FILL role=choice words=96 beats='the charts are annotated in five hands taking turns: copperplate noting WISH MADE beside a meteor's path, grease pencil marking SUPPER AT MOONRISE, round green ink reminding that SEEDS WANT MOONLIGHT TOO, and two rival scrawls keeping meteor count down the margin, 51 against 51, tied, of course; one wall, one sky, one family all over it'>>",
+      "body": "<<FILL role=choice words=96 beats='the {R_CHARTS} are annotated in five hands taking turns: copperplate noting WISH MADE beside a meteor's path, grease pencil marking SUPPER AT MOONRISE, round green ink reminding that SEEDS WANT MOONLIGHT TOO, and two rival scrawls keeping meteor count down the margin, 51 against 51, tied, of course; one wall, one sky, one family all over it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_obc_book",
-          "label": "Open the leather observation log on the desk.",
+          "label": "Open the leather observation {R_LOG} on the desk.",
           "target": "ob_book"
         },
         {
@@ -2182,7 +2182,7 @@
       "choices": [
         {
           "id": "c_obn_book",
-          "label": "Find that last date in the observation log.",
+          "label": "Find that last date in the observation {R_LOG}.",
           "target": "ob_book"
         },
         {
@@ -2194,7 +2194,7 @@
     },
     {
       "id": "ob_book",
-      "body": "<<FILL role=choice words=98 beats='the log's last entry, forty years old, in copperplate: HUNDREDTH-BIRTHDAY BALL TOMORROW, ALL FIVE OF US TOO EXCITED TO SLEEP, WATCHED AN EARLY METEOR AND MADE OUR WISH TOGETHER; WHATEVER HAPPENS, WE END EVERY GREAT EVENING ON THIS ROOF; June reads it twice and closes the book gently, like tucking it in; now she knows how a Meridian evening is supposed to end'>>",
+      "body": "<<FILL role=choice words=98 beats='the {R_LOG}'s last entry, forty years old, in copperplate: {OCCASION} TOMORROW, ALL FIVE OF US TOO EXCITED TO SLEEP, WATCHED AN EARLY METEOR AND MADE OUR WISH TOGETHER; WHATEVER HAPPENS, WE END EVERY GREAT EVENING ON THIS ROOF; {HERO} reads it twice and closes the book gently, like tucking it in; now she knows how a {THRESHOLD} evening is supposed to end'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2204,14 +2204,14 @@
         },
         {
           "id": "c_obb_orrery",
-          "label": "Wind the little brass machine beside the log.",
+          "label": "Wind the little brass machine beside the {R_LOG}.",
           "target": "ob_orrery"
         }
       ]
     },
     {
       "id": "ob_orrery",
-      "body": "<<FILL role=choice words=96 beats='the little brass machine is an orrery, but its sun is the Meridian itself, a tiny hotel at the center, and its planets are five small figures that glide around it when wound: one circling the desk, one the kitchens, one the garden, two chasing along the floors, and then, once each turn, all five meeting at the ballroom and rising together to the roof before beginning again; the family's whole year, in clockwork, still running true'>>",
+      "body": "<<FILL role=choice words=96 beats='the little brass machine is an {R_ORRERY}, but its sun is the {THRESHOLD} itself, a tiny hotel at the center, and its planets are five small figures that glide around it when wound: one circling the desk, one the {ROUTE_K_ZONE}, one the garden, two chasing along the floors, and then, once each turn, all five meeting at the {FINALE_ZONE} and rising together to the roof before beginning again; the family's whole year, in clockwork, still running true'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2228,7 +2228,7 @@
     },
     {
       "id": "ob_crank",
-      "body": "<<FILL role=choice words=92 beats='the shutter crank grinds, groans, gives, and the dome's whole slice of sky yawns wide, stars pouring in; better, the dome itself rotates on its rail with a carousel-smooth glide when the crank turns, the heavens wheeling politely past the telescope; June, being eleven, immediately understands the possibilities of a room that spins'>>",
+      "body": "<<FILL role=choice words=92 beats='the shutter crank grinds, groans, gives, and the dome's whole slice of sky yawns wide, stars pouring in; better, the dome itself rotates on its rail with a carousel-smooth glide when the crank turns, the heavens wheeling politely past the telescope; {HERO}, being eleven, immediately understands the possibilities of a room that spins'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2245,12 +2245,12 @@
     },
     {
       "id": "ob_roof",
-      "body": "<<FILL role=choice words=98 beats='the roof walk: a wide boarded path behind a high safe rail, the town asleep far below, wind fresh off the dark; overhead looms the hotel's great unlit sign, THE MERIDIAN in a hundred cold bulbs, and along the boards the paint is worn in a curious pattern of scuffs; at the walk's end a small flag turret stands with its locker; keep the rooftop general and re-entry-safe on any visit'>>",
+      "body": "<<FILL role=choice words=98 beats='the roof walk: a wide boarded path behind a high safe rail, the town asleep far below, wind fresh off the dark; overhead looms the hotel's great unlit sign, THE {THRESHOLD} in a hundred cold bulbs, and along the boards the paint is worn in a curious pattern of scuffs; at the walk's end a small {R_TURRET} stands with its locker; keep the rooftop general and re-entry-safe on any visit'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_obr_sign",
-          "label": "Find the sign's switch box.",
+          "label": "Find the sign's {R_SWITCHBOX}.",
           "target": "ob_sign"
         },
         {
@@ -2260,14 +2260,14 @@
         },
         {
           "id": "c_obr_turret",
-          "label": "Walk to the flag turret at the end.",
+          "label": "Walk to the {R_TURRET} at the end.",
           "target": "ob_turret"
         }
       ]
     },
     {
       "id": "ob_moon",
-      "body": "<<FILL role=rising words=90 beats='the scuffs trace a repeating square with a little swing at each corner, and June has seen this diagram at school, it is a waltz, worn into the boards, danced here so many times the roof kept the steps; standing in the worn marks she can almost hear the tune arriving up the stairwells; they danced up here too, after; everything in this hotel ends in three-four time'>>",
+      "body": "<<FILL role=rising words=90 beats='the scuffs trace a repeating square with a little swing at each corner, and {HERO} has seen this diagram at school, it is a waltz, worn into the boards, danced here so many times the roof kept the steps; standing in the worn marks she can almost hear the tune arriving up the stairwells; they danced up here too, after; everything in this hotel ends in three-four time'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2277,14 +2277,14 @@
         },
         {
           "id": "c_obm_sign",
-          "label": "Go find the sign's switch box.",
+          "label": "Go find the sign's {R_SWITCHBOX}.",
           "target": "ob_sign"
         }
       ]
     },
     {
       "id": "ob_sign",
-      "body": "<<FILL role=choice words=94 beats='the switch box is brass and serious, two switches inside: one furred with corrosion and labeled EVERY NIGHT, long dead, and one polished bright as new, labeled OCCASIONS, THE FAMILY WILL KNOW; forty years of dust everywhere except that one bright toggle, which somebody keeps ready; write this find general, reading the same on any visit; June's thumb hovers'>>",
+      "body": "<<FILL role=choice words=94 beats='the {R_SWITCHBOX} is brass and serious, two switches inside: one furred with corrosion and labeled EVERY NIGHT, long dead, and one polished bright as new, labeled OCCASIONS, THE FAMILY WILL KNOW; forty years of dust everywhere except that one bright toggle, which somebody keeps ready; write this find general, reading the same on any visit; {HERO}'s thumb hovers'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2301,12 +2301,12 @@
     },
     {
       "id": "ob_flip",
-      "body": "<<FILL role=rising words=96 beats='one bulb answers, just one, the lamp at the center of the big M, warming to a soft ember-glow and holding there, patient, like a banked fire saying not yet, soon; and deep in the building beneath her feet June feels more than hears four faint far answers rise, a bell-note, a pot lid, a tap on tin, a double knock; the switch works; it is simply waiting, like everything here, for the real occasion; she eases it back with enormous respect'>>",
+      "body": "<<FILL role=rising words=96 beats='one bulb answers, just one, the lamp at the center of the big M, warming to a soft ember-glow and holding there, patient, like a banked fire saying not yet, soon; and deep in the building beneath her feet {HERO} feels more than hears four faint far answers rise, a bell-note, a pot lid, a tap on tin, a double knock; the switch works; it is simply waiting, like everything here, for the real occasion; she eases it back with enormous respect'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_obf_turret",
-          "label": "Walk on to the flag turret.",
+          "label": "Walk on to the {R_TURRET}.",
           "target": "ob_turret"
         },
         {
@@ -2318,7 +2318,7 @@
     },
     {
       "id": "ob_turret",
-      "body": "<<FILL role=choice words=92 beats='the flag turret's locker opens on party rigging: a line of a hundred little pennants rolled tight, a coil of halyard, and beneath them a cedar chest with brass corners breathing out the smell of ginger and wool; the turret rail overlooks the whole dark roof walk and the hundred-bulb sign; a crow's nest waiting for a festival'>>",
+      "body": "<<FILL role=choice words=92 beats='the {R_TURRET}'s locker opens on party rigging: a line of a hundred little pennants rolled tight, a coil of halyard, and beneath them a {R_CHEST} with brass corners breathing out the smell of ginger and wool; the turret rail overlooks the whole dark roof walk and the hundred-bulb sign; a crow's nest waiting for a festival'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2328,19 +2328,19 @@
         },
         {
           "id": "c_obt_chest",
-          "label": "Open the cedar chest.",
+          "label": "Open the {R_CHEST}.",
           "target": "ob_chest"
         }
       ]
     },
     {
       "id": "ob_pennants",
-      "body": "<<FILL role=choice words=94 beats='a dozen pennants run up the halyard and the wind snaps them bright and chattering against the stars, the first festival colors this roof has flown in forty years; and behind her, soft but unmistakable, comes a patter of applause with no hands in sight, warm as a lit window; June bows to the dark, which seems only polite, and the applause dissolves into wind that has clearly enjoyed itself'>>",
+      "body": "<<FILL role=choice words=94 beats='a dozen pennants run up the halyard and the wind snaps them bright and chattering against the stars, the first festival colors this roof has flown in forty years; and behind her, soft but unmistakable, comes a patter of applause with no hands in sight, warm as a lit window; {HERO} bows to the dark, which seems only polite, and the applause dissolves into wind that has clearly enjoyed itself'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_obpe_chest",
-          "label": "Open the cedar chest next.",
+          "label": "Open the {R_CHEST} next.",
           "target": "ob_chest"
         },
         {
@@ -2352,12 +2352,12 @@
     },
     {
       "id": "ob_chest",
-      "body": "<<FILL role=choice words=96 beats='the cedar chest is the family's roof kit, packed by someone who loved them: five rolled deck chairs with name tags worn blank, two of them small; a biscuit tin, empty but still gingery; one blanket sized for five people who sit close; and on top, a brass whistle on a lanyard, its little tag reading SUPPER'S READY, THREE BLASTS; June holds forty years of family evenings in one chest and breathes the ginger smell'>>",
+      "body": "<<FILL role=choice words=96 beats='the {R_CHEST} is the family's roof kit, packed by someone who loved them: five rolled deck chairs with name tags worn blank, two of them small; a biscuit tin, empty but still gingery; one blanket sized for five people who sit close; and on top, a {R_WHISTLE} on a lanyard, its little tag reading SUPPER'S READY, THREE BLASTS; {HERO} holds forty years of family evenings in one chest and breathes the ginger smell'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_obch_whistle",
-          "label": "Try one soft blast on the brass whistle.",
+          "label": "Try one soft blast on the {R_WHISTLE}.",
           "target": "ob_whistle"
         },
         {
@@ -2369,7 +2369,7 @@
     },
     {
       "id": "ob_whistle",
-      "body": "<<FILL role=choice words=94 beats='one soft blast, hardly more than a breath, and the whole building exhales beneath her: doors settle in their frames, pipes hum one warm note, and up from four far corners come the answers, a pot lid, a watering-can tap, two knocks in unison, and last, faint and silver, a bell; June laughs out loud, alone on a roof at midnight, because the Meridian is a family that still answers supper calls, and she is the one holding the whistle'>>",
+      "body": "<<FILL role=choice words=94 beats='one soft blast, hardly more than a breath, and the whole building exhales beneath her: doors settle in their frames, pipes hum one warm note, and up from four far corners come the answers, a pot lid, a watering-can tap, two knocks in unison, and last, faint and silver, a bell; {HERO} laughs out loud, alone on a roof at midnight, because the {THRESHOLD} is a family that still answers supper calls, and she is the one holding the whistle'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2386,7 +2386,7 @@
     },
     {
       "id": "ob_promise",
-      "body": "<<FILL role=choice words=98 beats='June squares the roof away like a keeper: pennant line coiled to run free, whistle on its hook, switch box closed over its one bright toggle, chest latched but unlocked; the roof is ready to end a great evening the way this family always ended them; write this tidy-up general so it reads the same however tonight's climb unfolded; below her feet a hundred dark rooms wait for the party that starts everything'>>",
+      "body": "<<FILL role=choice words=98 beats='{HERO} squares the roof away like a keeper: pennant line coiled to run free, whistle on its hook, {R_SWITCHBOX} closed over its one bright toggle, chest latched but unlocked; the roof is ready to end a great evening the way this family always ended them; write this tidy-up general so it reads the same however tonight's climb unfolded; below her feet a hundred dark rooms wait for the party that starts everything'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2396,19 +2396,19 @@
         },
         {
           "id": "c_obpr_fin",
-          "label": "Go straight down to the ballroom and begin.",
+          "label": "Go straight down to the {FINALE_ZONE} and begin.",
           "target": "fin_approach"
         },
         {
           "id": "c_obpr_plan",
-          "label": "Stay and write the after-party plan into the observation log.",
+          "label": "Stay and write the after-party plan into the observation {R_LOG}.",
           "target": "e_ob_plan"
         }
       ]
     },
     {
       "id": "e_ob_ride",
-      "body": "<<FILL role=ending words=94 beats='the dome takes June's enthusiasm and runs with it; the crank handle pops off in her hand mid-spin and the great shell carries on, two stately full laps of the heavens with June riding the rail like a very slow comet, before winding itself down with a satisfied clunk; taped inside the empty handle socket she finds a note in two rival scrawls, IT DOES THAT, and under it, SO DID WE; she reattaches the handle, dizzy and grinning, and takes the stairs down to bed while the stars stop revolving; the sky will hold its place until tomorrow'>>",
+      "body": "<<FILL role=ending words=94 beats='the dome takes {HERO}'s enthusiasm and runs with it; the crank handle pops off in her hand mid-spin and the great shell carries on, two stately full laps of the heavens with {HERO} riding the rail like a very slow comet, before winding itself down with a satisfied clunk; taped inside the empty handle socket she finds a note in two rival scrawls, IT DOES THAT, and under it, SO DID WE; she reattaches the handle, dizzy and grinning, and takes the stairs down to bed while the stars stop revolving; the sky will hold its place until tomorrow'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ob_ride",
@@ -2419,7 +2419,7 @@
     },
     {
       "id": "e_ob_banner",
-      "body": "<<FILL role=ending words=96 beats='the grand 100 banner is not a pennant, it is a sail, and the night wind has been waiting forty years for exactly this; the banner fills, hauls, and turns June into an anchor with her heels braced and her hat gone to the harbor, feet never leaving the boards but every button tested; she wrestles it down, folds it breathless, and lays it back in the locker, where it settles with the smugness of fabric that has made its point: the grand banner flies on the grand night, in company, with more hands; dawn is graying as she climbs down, windburned and wiser'>>",
+      "body": "<<FILL role=ending words=96 beats='the grand 100 banner is not a pennant, it is a sail, and the night wind has been waiting forty years for exactly this; the banner fills, hauls, and turns {HERO} into an anchor with her heels braced and her hat gone to the harbor, feet never leaving the boards but every button tested; she wrestles it down, folds it breathless, and lays it back in the locker, where it settles with the smugness of fabric that has made its point: the grand banner flies on the grand night, in company, with more hands; dawn is graying as she climbs down, windburned and wiser'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ob_banner",
@@ -2430,7 +2430,7 @@
     },
     {
       "id": "e_ob_camp",
-      "body": "<<FILL role=ending words=96 beats='she sets the five chairs in their worn dents facing the Perseid patch, spreads the big blanket, and keeps the family's watch for them; the roof is quiet, the town sleeps, the stars wheel at their own pace; and near dawn one early meteor goes over, bright and brief, and June, sitting in the smallest chair, makes the family's wish for them since they cannot be here to make it; she will not say what it was, but walking home under a paling sky she is certain it is already coming true'>>",
+      "body": "<<FILL role=ending words=96 beats='she sets the five chairs in their worn dents facing the Perseid patch, spreads the big blanket, and keeps the family's watch for them; the roof is quiet, the town sleeps, the stars wheel at their own pace; and near dawn one early meteor goes over, bright and brief, and {HERO}, sitting in the smallest chair, makes the family's wish for them since they cannot be here to make it; she will not say what it was, but walking home under a paling sky she is certain it is already coming true'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ob_camp",
@@ -2441,7 +2441,7 @@
     },
     {
       "id": "e_ob_orrery",
-      "body": "<<FILL role=ending words=96 beats='June winds the little brass hotel again and again until the pattern lives in her hands: desk, kitchen, garden, floors, and then everyone to the ballroom, everyone to the roof, around and around, a year of love with a crank on the side; by the time the windows pale she can close her eyes and walk the whole family through their whole day in her head; the party waits one more night, but June comes down the stairs carrying the Meridian's heartbeat, and a keeper who knows the heartbeat can never really get lost'>>",
+      "body": "<<FILL role=ending words=96 beats='{HERO} winds the little brass hotel again and again until the pattern lives in her hands: desk, kitchen, garden, floors, and then everyone to the {FINALE_ZONE}, everyone to the roof, around and around, a year of love with a crank on the side; by the time the windows pale she can close her eyes and walk the whole family through their whole day in her head; the party waits one more night, but {HERO} comes down the stairs carrying the {THRESHOLD}'s heartbeat, and a keeper who knows the heartbeat can never really get lost'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ob_orrery",
@@ -2452,7 +2452,7 @@
     },
     {
       "id": "e_ob_plan",
-      "body": "<<FILL role=ending words=96 beats='she opens the log to the first blank page in forty years and writes the plan in her best hand: chairs so, blanket so, whistle at moonrise, pennants up, one meteor minimum, everybody stays till the ginger tin is empty; the pen moves easy, as if the page had been saving itself; she signs it JUNE, NEWEST KEEPER, and under her name, in the morning, she will swear the ink added five small initials of its own; the log goes back on the desk, pointed at the door, ready'>>",
+      "body": "<<FILL role=ending words=96 beats='she opens the {R_LOG} to the first blank page in forty years and writes the plan in her best hand: chairs so, blanket so, whistle at moonrise, pennants up, one meteor minimum, everybody stays till the ginger tin is empty; the pen moves easy, as if the page had been saving itself; she signs it JUNE, NEWEST KEEPER, and under her name, in the morning, she will swear the ink added five small initials of its own; the {R_LOG} goes back on the desk, pointed at the door, ready'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ob_plan",
@@ -2463,12 +2463,12 @@
     },
     {
       "id": "fin_approach",
-      "body": "<<FILL role=choice words=122 beats='the ballroom's grand doors, tall as trees, carved with the number 100 in a wreath of gardenias; this is the room Pearl asked for, the evening that was never finished, and the proof is right here on site: through the crack between the doors June can see a banner sagging in the dark, sheeted tables still waiting, a chandelier hung with forty years of quiet; write this so it reads naturally whether the ballroom is June's first stop of the night or her last, whatever wings she has already wandered; the ring of hundred keys holds one stamped BALLROOM, warm in her fingers'>>",
+      "body": "<<FILL role=choice words=122 beats='the {FINALE_ZONE}'s grand doors, tall as trees, carved with the number 100 in a wreath of gardenias; this is the room {MATRIARCH} asked for, the evening that was never finished, and the proof is right here on site: through the crack between the doors {HERO} can see a banner sagging in the dark, sheeted tables still waiting, a {FIN_CHANDELIER} hung with forty years of quiet; write this so it reads naturally whether the {FINALE_ZONE} is {HERO}'s first stop of the night or her last, whatever wings she has already wandered; the ring of hundred keys holds one stamped {FINALE_ZONE}, warm in her fingers'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fin_unlock",
-          "label": "Fit the BALLROOM key and unlock the grand doors.",
+          "label": "Fit the {FINALE_ZONE} key and unlock the grand doors.",
           "target": "fin_doors"
         },
         {
@@ -2480,7 +2480,7 @@
     },
     {
       "id": "fin_peek",
-      "body": "<<FILL role=rising words=96 beats='through the crack, the whole story stands frozen mid-party: THE MERIDIAN IS 100 on a banner, chairs angled toward a stage, a gramophone with its arm lifted as if interrupted between one note and the next; nothing spooky moves; it is a room that has been holding its breath politely for forty years, waiting for someone to come finish it; June's shiver turns into resolve'>>",
+      "body": "<<FILL role=rising words=96 beats='through the crack, the whole story stands frozen mid-party: THE {THRESHOLD} IS 100 on a banner, chairs angled toward a stage, a {FIN_GRAMOPHONE} with its arm lifted as if interrupted between one note and the next; nothing spooky moves; it is a room that has been holding its breath politely for forty years, waiting for someone to come finish it; {HERO}'s shiver turns into resolve'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2492,7 +2492,7 @@
     },
     {
       "id": "fin_doors",
-      "body": "<<FILL role=rising words=92 beats='the BALLROOM key turns like it was oiled yesterday, and the doors swing wide without a creak, as if they had been practicing; lantern light rolls down a hall vast as a ship, over parquet dim with dust and mirrors gone cloudy; the air smells faintly of candle wax and gardenias, kept safe all this time; the room seems to straighten up, hopeful'>>",
+      "body": "<<FILL role=rising words=92 beats='the {FINALE_ZONE} key turns like it was oiled yesterday, and the doors swing wide without a creak, as if they had been practicing; lantern light rolls down a hall vast as a ship, over parquet dim with dust and mirrors gone cloudy; the air smells faintly of candle wax and gardenias, kept safe all this time; the room seems to straighten up, hopeful'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2504,41 +2504,41 @@
     },
     {
       "id": "fin_hall",
-      "body": "<<FILL role=choice words=104 beats='June stands in the middle of the great floor and thinks like a keeper: a party needs light, music, and a table; the chandelier hangs dark in its canvas with candle boxes stacked by the winch; the little stage holds a gramophone and a record cabinet; the long family table sleeps under dust sheets by the windows; keep this survey general, whichever corners already glow from earlier work, so it reads the same on a first pass or a return trip'>>",
+      "body": "<<FILL role=choice words=104 beats='{HERO} stands in the middle of the great floor and thinks like a keeper: a party needs light, music, and a table; the {FIN_CHANDELIER} hangs dark in its canvas with candle boxes stacked by the winch; the little stage holds a {FIN_GRAMOPHONE} and a record cabinet; the {FIN_TABLE} sleeps under dust sheets by the windows; keep this survey general, whichever corners already glow from earlier work, so it reads the same on a first pass or a return trip'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hall_light",
-          "label": "See to the chandelier and its hundred candles.",
+          "label": "See to the {FIN_CHANDELIER} and its hundred candles.",
           "target": "fp_light1"
         },
         {
           "id": "c_hall_music",
-          "label": "See to the gramophone on the little stage.",
+          "label": "See to the {FIN_GRAMOPHONE} on the little stage.",
           "target": "fp_music1"
         },
         {
           "id": "c_hall_table",
-          "label": "See to the long family table.",
+          "label": "See to the {FIN_TABLE}.",
           "target": "fp_table1"
         }
       ]
     },
     {
       "id": "fp_light1",
-      "body": "<<FILL role=rising words=94 beats='the chandelier winch wakes with a groan and lets the great crystal ring float down to June's height; the candle boxes hold one hundred pale candles, wrapped in paper like presents; she works steadily, setting each candle in its cup, and the crystals chime softly as if counting along with her'>>",
+      "body": "<<FILL role=rising words=94 beats='the {FIN_CHANDELIER} winch wakes with a groan and lets the great crystal ring float down to {HERO}'s height; the candle boxes hold one hundred pale candles, wrapped in paper like presents; she works steadily, setting each candle in its cup, and the crystals chime softly as if counting along with her'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_light_up",
-          "label": "Hoist the chandelier home and light the hundred candles.",
+          "label": "Hoist the {FIN_CHANDELIER} home and light the hundred candles.",
           "target": "fp_light2"
         }
       ]
     },
     {
       "id": "fp_light2",
-      "body": "<<FILL role=rising words=90 beats='the winch carries the blazing ring back up to the ceiling and the ballroom catches fire with gold, candlelight doubled in the cloudy mirrors and tripled in the polished floor where June's footprints have swept lanes through the dust; shadows scurry to the corners and settle there like well-behaved guests; the room is waking'>>",
+      "body": "<<FILL role=rising words=90 beats='the winch carries the blazing ring back up to the ceiling and the {FINALE_ZONE} catches fire with gold, candlelight doubled in the cloudy mirrors and tripled in the polished floor where {HERO}'s footprints have swept lanes through the dust; shadows scurry to the corners and settle there like well-behaved guests; the room is waking'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2550,7 +2550,7 @@
     },
     {
       "id": "fp_music1",
-      "body": "<<FILL role=rising words=96 beats='on the stage the gramophone's brass horn is dusty but whole, and in the record cabinet one sleeve stands apart from the rest, marked in careful copperplate, PEARL'S WALTZ, FOR THE HUNDREDTH NIGHT; June winds the crank slow and steady, the way you wind something precious, and the turntable begins to breathe'>>",
+      "body": "<<FILL role=rising words=96 beats='on the stage the {FIN_GRAMOPHONE}'s brass horn is dusty but whole, and in the record cabinet one sleeve stands apart from the rest, marked in careful copperplate, {MATRIARCH}'S WALTZ, FOR THE {OCCASION}; {HERO} winds the crank slow and steady, the way you wind something precious, and the turntable begins to breathe'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2562,7 +2562,7 @@
     },
     {
       "id": "fp_music2",
-      "body": "<<FILL role=rising words=92 beats='one bar of the waltz swells out of the horn and the whole room leans toward it; dust lifts off the chairs like held breath let go; somewhere far off in the hotel something answers, a soft thump, a clink, a patter, then hush; June lifts the needle gently, saving the song for the moment it belongs to'>>",
+      "body": "<<FILL role=rising words=92 beats='one bar of the waltz swells out of the horn and the whole room leans toward it; dust lifts off the chairs like held breath let go; somewhere far off in the hotel something answers, a soft thump, a clink, a patter, then hush; {HERO} lifts the needle gently, saving the song for the moment it belongs to'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2574,7 +2574,7 @@
     },
     {
       "id": "fp_table1",
-      "body": "<<FILL role=rising words=94 beats='the dust sheets come off the long table like sails coming down, and underneath the linen is still crisp and white, set and abandoned in the same hour forty years ago; at the head of the table five places stand slightly apart from the rest, the family's seats, kept first before any guest, just as Pearl said there were five'>>",
+      "body": "<<FILL role=rising words=94 beats='the dust sheets come off the long table like sails coming down, and underneath the linen is still crisp and white, set and abandoned in the same hour forty years ago; at the head of the table five places stand slightly apart from the rest, the family's seats, kept first before any guest, just as {MATRIARCH} said there were five'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2586,7 +2586,7 @@
     },
     {
       "id": "fp_table2",
-      "body": "<<FILL role=rising words=96 beats='June sets the five places with the best of everything the sideboard offers, candlesticks, folded napkins, polished silver; rather than guess which of the five belongs at which seat, she writes one card in her best letters for all of them together and stands it at the center, THE FAMILY, MERIDIAN 100; the five chairs seem to square their shoulders'>>",
+      "body": "<<FILL role=rising words=96 beats='{HERO} sets the five places with the best of everything the sideboard offers, candlesticks, folded napkins, polished silver; rather than guess which of the five belongs at which seat, she writes one card in her best letters for all of them together and stands it at the center, THE FAMILY, {THRESHOLD} 100; the five chairs seem to square their shoulders'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2598,7 +2598,7 @@
     },
     {
       "id": "fin_ready",
-      "body": "<<FILL role=choice words=98 beats='June turns a slow circle in the great hall; corner by corner the ballroom is coming back to life, and the parts still waiting look eager rather than sad; write this moment general, whichever task she has just finished, one more corner glowing than before; the question now is whether the room wants more hands or whether it is time to call the family home'>>",
+      "body": "<<FILL role=choice words=98 beats='{HERO} turns a slow circle in the great hall; corner by corner the {FINALE_ZONE} is coming back to life, and the parts still waiting look eager rather than sad; write this moment general, whichever task she has just finished, one more corner glowing than before; the question now is whether the room wants more hands or whether it is time to call the family home'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2615,17 +2615,17 @@
     },
     {
       "id": "fin_summon",
-      "body": "<<FILL role=choice words=106 beats='by the service door June finds the hotel's three voices, kept side by side for occasions: a great bronze dinner gong with its mallet on a velvet hook, a braided bell-wire labeled FRONT DESK that runs away into the wall, and the gramophone waiting on stage with the doors of the ballroom standing open to the dark hotel; three honest ways to call a faded family to one bright room; June weighs them with her heart thudding'>>",
+      "body": "<<FILL role=choice words=106 beats='by the service door {HERO} finds the hotel's three voices, kept side by side for occasions: a great bronze {FIN_GONG} with its mallet on a velvet hook, a braided {FIN_BELLWIRE} labeled FRONT DESK that runs away into the wall, and the {FIN_GRAMOPHONE} waiting on stage with the doors of the {FINALE_ZONE} standing open to the dark hotel; three honest ways to call a faded family to one bright room; {HERO} weighs them with her heart thudding'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_sum_gong",
-          "label": "Strike the great dinner gong.",
+          "label": "Strike the great {FIN_GONG}.",
           "target": "fs_gong"
         },
         {
           "id": "c_sum_bell",
-          "label": "Pull the bell-wire that rings at Pearl's desk.",
+          "label": "Pull the {FIN_BELLWIRE} that rings at {MATRIARCH}'s desk.",
           "target": "fs_bell"
         },
         {
@@ -2637,7 +2637,7 @@
     },
     {
       "id": "fs_gong",
-      "body": "<<FILL role=rising words=92 beats='the gong's bronze note rolls out of the ballroom and down every pipe and shaft and stairwell like warm thunder; the building carries it gladly to its farthest floors; and back through the same pipes come answers, a clang of pot lids, a tap on a watering can, a double knock, a whistle down a stair; the Meridian's family has heard dinner called'>>",
+      "body": "<<FILL role=rising words=92 beats='the gong's bronze note rolls out of the {FINALE_ZONE} and down every pipe and shaft and stairwell like warm thunder; the building carries it gladly to its farthest floors; and back through the same pipes come answers, a clang of pot lids, a tap on a {G_CAN}, a double knock, a whistle down a stair; the {THRESHOLD}'s family has heard dinner called'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2649,7 +2649,7 @@
     },
     {
       "id": "fs_bell",
-      "body": "<<FILL role=rising words=92 beats='June pulls the braided wire and far below the silver bell at the front desk begins to ring, and then, strangely and wonderfully, it keeps ringing on its own, ring for ring, as if a practiced hand has taken over; the sound multiplies up the stairwells until the whole hotel is one soft carillon saying the same word, home, home, home'>>",
+      "body": "<<FILL role=rising words=92 beats='{HERO} pulls the braided wire and far below the silver bell at the front desk begins to ring, and then, strangely and wonderfully, it keeps ringing on its own, ring for ring, as if a practiced hand has taken over; the sound multiplies up the stairwells until the whole hotel is one soft carillon saying the same word, home, home, home'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2661,7 +2661,7 @@
     },
     {
       "id": "fs_waltz",
-      "body": "<<FILL role=rising words=94 beats='June sets the needle down and lets PEARL'S WALTZ pour out of the horn, through the flung-wide doors, into the dark halls like lamplight spilling; the hotel becomes an instrument around the song, banisters humming, chandelier chiming the melody back; no one who ever loved this tune could sleep through it, however faded they have grown'>>",
+      "body": "<<FILL role=rising words=94 beats='{HERO} sets the needle down and lets {MATRIARCH}'S WALTZ pour out of the horn, through the flung-wide doors, into the dark halls like lamplight spilling; the hotel becomes an instrument around the song, banisters humming, {FIN_CHANDELIER} chiming the melody back; no one who ever loved this tune could sleep through it, however faded they have grown'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2673,31 +2673,31 @@
     },
     {
       "id": "fin_gather",
-      "body": "<<FILL role=rising words=126 beats='and they come; a warmth of bread and thyme arrives ahead of a broad cook with his sleeves rolled, wiping his hands on a fresh apron; a smell of rain and leaves arrives with a woman in a sun hat, a jar of white buds against her hip; two bellhop caps come racing each other down the banister and land in a tumble of giggles at the door; write each arrival so it reads warmly whether June already met them in tonight's wandering or is seeing them for the very first time, strangers to her or friends, they are plainly, achingly, a family arriving at a party; yet all four hesitate at the threshold, looking toward the one empty place at the head of the table'>>",
+      "body": "<<FILL role=rising words=126 beats='and they come; a warmth of bread and thyme arrives ahead of a broad cook with his sleeves rolled, wiping his hands on a fresh apron; a smell of rain and leaves arrives with a woman in a sun hat, a jar of white buds against her hip; two bellhop caps come racing each other down the banister and land in a tumble of giggles at the door; write each arrival so it reads warmly whether {HERO} already met them in tonight's wandering or is seeing them for the very first time, strangers to her or friends, they are plainly, achingly, a family arriving at a party; yet all four hesitate at the threshold, looking toward the one empty place at the head of the table'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gather_pearl",
-          "label": "Run down and bring Pearl from her desk.",
+          "label": "Run down and bring {MATRIARCH} from her desk.",
           "target": "fin_pearl"
         }
       ]
     },
     {
       "id": "fin_pearl",
-      "body": "<<FILL role=rising words=100 beats='June takes the lobby stairs two at a time; Pearl is at her desk, straightening the register like always, but her lamp is trembling; your family is in the ballroom, June says, and they are waiting for you; Pearl closes the book, picks up her silver bell, smooths her collar with see-through hands, and steps out from behind the desk for the first time in forty years; every lamp in the lobby rises to meet her'>>",
+      "body": "<<FILL role=rising words=100 beats='{HERO} takes the lobby stairs two at a time; {MATRIARCH} is at her desk, straightening the register like always, but her lamp is trembling; your family is in the {FINALE_ZONE}, {HERO} says, and they are waiting for you; {MATRIARCH} closes the book, picks up her silver bell, smooths her collar with see-through hands, and steps out from behind the desk for the first time in forty years; every lamp in the lobby rises to meet her'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pearl_walk",
-          "label": "Walk her up to the ballroom doors.",
+          "label": "Walk her up to the {FINALE_ZONE} doors.",
           "target": "fin_reunion"
         }
       ]
     },
     {
       "id": "fin_reunion",
-      "body": "<<FILL role=rising words=122 beats='at the doors, recognition returns the way candles catch, one wick lighting the next; the cook's face crumples and clears, Mama, he says, I am Otto, I never stopped keeping your supper warm; the gardener laughs through tears, Wren, she says, I grew your buttonholes every year; the twins collide into Pearl's skirts shouting Milo and Min and both at once; and Pearl says every name back like setting down heavy luggage at last; as they remember one another the fading runs backward, color climbing into their edges, five ghosts growing bright as lanterns; June stands in the doorway of the reunion she built'>>",
+      "body": "<<FILL role=rising words=122 beats='at the doors, recognition returns the way candles catch, one wick lighting the next; the cook's face crumples and clears, {MATRIARCH}, he says, I am {COOK}, I never stopped keeping your supper warm; the gardener laughs through tears, {GARDENER}, she says, I grew your buttonholes every year; the twins collide into {MATRIARCH}'s skirts shouting {TWIN_A} and {TWIN_B} and both at once; and {MATRIARCH} says every name back like setting down heavy luggage at last; as they remember one another the fading runs backward, color climbing into their edges, five ghosts growing bright as lanterns; {HERO} stands in the doorway of the reunion she built'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2709,7 +2709,7 @@
     },
     {
       "id": "fin_evening",
-      "body": "<<FILL role=rising words=118 beats='the hundredth-birthday evening, forty years late and not one bit spoiled; the waltz plays and Pearl dances with each of her family in turn; a feast arrives course by course as if it had been kept warm all this time; gardenias appear at every buttonhole, June's too; there are corridor games that spill in and out of the doorway, and a cake with a hundred candles that light themselves when the family laughs; June is passed from dance to dance like a guest of honor, which, everyone agrees, she is; the clock across the hall begins to gather itself toward midnight'>>",
+      "body": "<<FILL role=rising words=118 beats='the {OCCASION}, forty years late and not one bit spoiled; the waltz plays and {MATRIARCH} dances with each of her family in turn; a feast arrives course by course as if it had been kept warm all this time; gardenias appear at every buttonhole, {HERO}'s too; there are corridor games that spill in and out of the doorway, and a {K_CAKE} with a hundred candles that light themselves when the family laughs; {HERO} is passed from dance to dance like a guest of honor, which, everyone agrees, she is; the clock across the hall begins to gather itself toward midnight'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2721,7 +2721,7 @@
     },
     {
       "id": "fin_midnight",
-      "body": "<<FILL role=choice words=124 beats='at the first stroke of midnight the five stand together glowing their brightest, and Pearl takes June's hands in her cool bright ones; the evening is finished at last, she says, and a finished evening frees a family to choose; we can rest now, all together, the way we always meant to end a great night, or we can stay and keep the Meridian with your family as it wakes again; and because you gave us back to each other, newest keeper of the hundred keys, we would like you to help us choose; the clock strikes on, unhurried, while June looks from face to bright face'>>",
+      "body": "<<FILL role=choice words=124 beats='at the first stroke of midnight the five stand together glowing their brightest, and {MATRIARCH} takes {HERO}'s hands in her cool bright ones; the evening is finished at last, she says, and a finished evening frees a family to choose; we can rest now, all together, the way we always meant to end a great night, or we can stay and keep the {THRESHOLD} with your family as it wakes again; and because you gave us back to each other, newest keeper of the hundred keys, we would like you to help us choose; the clock strikes on, unhurried, while {HERO} looks from face to bright face'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2731,7 +2731,7 @@
         },
         {
           "id": "c_mid_stay",
-          "label": "Ask them to stay and help wake the Meridian.",
+          "label": "Ask them to stay and help wake the {THRESHOLD}.",
           "target": "fr_stay"
         },
         {
@@ -2743,7 +2743,7 @@
     },
     {
       "id": "fr_rest",
-      "body": "<<FILL role=choice words=104 beats='Pearl nods as if June has passed a final, gentle test; then we end it properly, she says, we always finish a great evening on the roof, under the stars, all of us; the family climbs the hotel together, June in the middle of them, up through the sleeping floors to the rooftop where the night is clear and enormous and the deck chairs wait in their old worn dents facing the meteor sky'>>",
+      "body": "<<FILL role=choice words=104 beats='{MATRIARCH} nods as if {HERO} has passed a final, gentle test; then we end it properly, she says, we always finish a great evening on the roof, under the stars, all of us; the family climbs the hotel together, {HERO} in the middle of them, up through the sleeping floors to the rooftop where the night is clear and enormous and the deck chairs wait in their old worn dents facing the meteor sky'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2760,7 +2760,7 @@
     },
     {
       "id": "fr_stay",
-      "body": "<<FILL role=choice words=102 beats='the twins cheer so hard their caps fall off, Otto is already planning breakfast menus, and Wren declares the winter garden will need a bigger gate for guests; Pearl rings her silver bell once, softly, to make it official; the Meridian will reopen with two families keeping it, one you can see through and one you cannot; there is only one question left, and everyone looks at June to settle it'>>",
+      "body": "<<FILL role=choice words=102 beats='the twins cheer so hard their caps fall off, {COOK} is already planning breakfast menus, and {GARDENER} declares the {ROUTE_G_ZONE} will need a bigger gate for guests; {MATRIARCH} rings her silver bell once, softly, to make it official; the {THRESHOLD} will reopen with two families keeping it, one you can see through and one you cannot; there is only one question left, and everyone looks at {HERO} to settle it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2777,7 +2777,7 @@
     },
     {
       "id": "fr_each",
-      "body": "<<FILL role=choice words=106 beats='Pearl smiles the way grandmothers smile when a child says something older than its years; then each heart chooses its own door, she agrees; the family joins hands in the candlelight, June's hands folded into the circle too, and they decide to speak their wishes somewhere fitting; the twins vote loudly for the roof and the stars; Pearl looks toward the top floor, where a door-shaped outline waits at the end of the ninth-floor corridor, the hundredth door that never was'>>",
+      "body": "<<FILL role=choice words=106 beats='{MATRIARCH} smiles the way grandmothers smile when a child says something older than its years; then each heart chooses its own door, she agrees; the family joins hands in the candlelight, {HERO}'s hands folded into the circle too, and they decide to speak their wishes somewhere fitting; the twins vote loudly for the roof and the stars; {MATRIARCH} looks toward the top floor, where a door-shaped outline waits at the end of the ninth-floor corridor, the hundredth door that never was'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2794,7 +2794,7 @@
     },
     {
       "id": "e_rest_stars",
-      "body": "<<FILL role=ending words=112 beats='they watch the sky in a row of creaking deck chairs, one blanket over ten knees, and when the first meteor crosses the Perseid patch the family brightens with it, laughing, waving to June, growing lighter and gladder until they are the same silver as the starlight, resting at last, together, mid-joy; the hotel below them exhales forty years of held breath; June walks down through a building that now feels like a blessing instead of a mystery, and every August after, when the meteors return, the Meridian's windows seem to shine a little on their own, like family visiting'>>",
+      "body": "<<FILL role=ending words=112 beats='they watch the sky in a row of creaking deck chairs, one blanket over ten knees, and when the first meteor crosses the Perseid patch the family brightens with it, laughing, waving to {HERO}, growing lighter and gladder until they are the same silver as the starlight, resting at last, together, mid-joy; the hotel below them exhales forty years of held breath; {HERO} walks down through a building that now feels like a blessing instead of a mystery, and every August after, when the meteors return, the {THRESHOLD}'s windows seem to shine a little on their own, like family visiting'>>",
       "is_ending": true,
       "ending": {
         "id": "end_rest_stars",
@@ -2805,18 +2805,18 @@
     },
     {
       "id": "e_rest_waltz",
-      "body": "<<FILL role=ending words=110 beats='the gramophone's song drifts all the way up the stairwells, and on the roof walk the family dances, Pearl with Otto, Wren with both twins at once, and every one of them with June in turn, her sneakers finding the waltz worn into the boards; at the final turn of the final bar they bow to her, all five, and fade the way candle flames settle when the wick is done and the room is warm; morning finds the ballroom bright, the hundred keys polished on their ring, and one white gardenia laid on the front desk beside a silver bell at rest'>>",
+      "body": "<<FILL role=ending words=110 beats='the {FIN_GRAMOPHONE}'s song drifts all the way up the stairwells, and on the roof walk the family dances, {MATRIARCH} with {COOK}, {GARDENER} with both twins at once, and every one of them with {HERO} in turn, her sneakers finding the waltz worn into the boards; at the final turn of the final bar they bow to her, all five, and fade the way candle flames settle when the wick is done and the room is warm; morning finds the {FINALE_ZONE} bright, the hundred keys polished on their ring, and one white gardenia laid on the front desk beside a silver bell at rest'>>",
       "is_ending": true,
       "ending": {
         "id": "end_rest_waltz",
         "valence": "positive",
         "kind": "success",
-        "title": "The Last Waltz of the Meridian"
+        "title": "The Last Waltz of the {THRESHOLD}"
       }
     },
     {
       "id": "e_stay_secret",
-      "body": "<<FILL role=ending words=108 beats='the Meridian reopens in June, banner and brass band, and becomes gently famous for things nobody can quite explain: luggage that arrives before the guest does, suppers kept perfectly warm, gardenias that appear on bad days exactly when needed, a front desk where late arrivals always find one lamp lit; the guests say the hotel feels like being remembered; only June's family knows why, and on quiet nights June does her homework at the front desk while a silver bell rings itself, softly, just to keep her company'>>",
+      "body": "<<FILL role=ending words=108 beats='the {THRESHOLD} reopens in {HERO}, banner and brass band, and becomes gently famous for things nobody can quite explain: luggage that arrives before the guest does, suppers kept perfectly warm, gardenias that appear on bad days exactly when needed, a front desk where late arrivals always find one lamp lit; the guests say the hotel feels like being remembered; only {HERO}'s family knows why, and on quiet nights {HERO} does her homework at the front desk while a silver bell rings itself, softly, just to keep her company'>>",
       "is_ending": true,
       "ending": {
         "id": "end_stay_secret",
@@ -2827,7 +2827,7 @@
     },
     {
       "id": "e_stay_open",
-      "body": "<<FILL role=ending words=112 beats='they reopen as exactly what they are, THE HUNDRED-DOOR HOTEL, FAMILY RUN FOR ONE HUNDRED AND FORTY YEARS, SOME STAFF SEE-THROUGH, ALL STAFF KIND; children write letters asking if the twins will race them down the corridor, and the twins always win but carry the loser's bag like champions; Otto's dining room needs booking a season ahead; Wren teaches a gardening club under glass; Pearl greets every guest by name on the second visit; and at the end of the ninth-floor corridor a hundredth door stands where the outline used to be, marked FAMILY, always warm to the touch'>>",
+      "body": "<<FILL role=ending words=112 beats='they reopen as exactly what they are, THE HUNDRED-DOOR HOTEL, FAMILY RUN FOR ONE HUNDRED AND FORTY YEARS, SOME STAFF SEE-THROUGH, ALL STAFF KIND; children write letters asking if the twins will race them down the corridor, and the twins always win but carry the loser's bag like champions; {COOK}'s dining room needs booking a season ahead; {GARDENER} teaches a gardening club under glass; {MATRIARCH} greets every guest by name on the second visit; and at the end of the ninth-floor corridor a hundredth door stands where the outline used to be, marked FAMILY, always warm to the touch'>>",
       "is_ending": true,
       "ending": {
         "id": "end_stay_open",
@@ -2838,7 +2838,7 @@
     },
     {
       "id": "e_each_wishes",
-      "body": "<<FILL role=ending words=110 beats='under the meteor sky each of them speaks; the twins choose to stay, being nowhere near done playing; Otto stays, because a kitchen is never closed; Wren will winter with her garden and summer with the stars, half and half, like a bulb; and Pearl chooses rest, but rest the way grandmothers rest, nearby, with the door ajar; none of it is goodbye, she tells June, family is a door that stays on the ring; when the Meridian reopens, its keys hang bright at the desk, and five of them are always polished brightest'>>",
+      "body": "<<FILL role=ending words=110 beats='under the meteor sky each of them speaks; the twins choose to stay, being nowhere near done playing; {COOK} stays, because a kitchen is never closed; {GARDENER} will winter with her garden and summer with the stars, half and half, like a bulb; and {MATRIARCH} chooses rest, but rest the way grandmothers rest, nearby, with the door ajar; none of it is goodbye, she tells {HERO}, family is a door that stays on the ring; when the {THRESHOLD} reopens, its keys hang bright at the desk, and five of them are always polished brightest'>>",
       "is_ending": true,
       "ending": {
         "id": "end_each_wishes",
@@ -2849,7 +2849,7 @@
     },
     {
       "id": "e_each_door",
-      "body": "<<FILL role=ending words=114 beats='at the end of the ninth-floor corridor they whisper, one by one, into the little keyhole in the door-shaped outline, and under June's hand the hundredth door becomes real, swings wide, and opens on their own best evening, kept the way the hotel keeps everything, warm and ready: the ballroom golden, the waltz mid-turn, the cake mid-laugh; now whenever any of them wishes, to visit, to rest a while, to come back and dance, the door is there, and June holds its key; the Meridian reopens that summer with a hundred doors for guests and one door, the best one, for family'>>",
+      "body": "<<FILL role=ending words=114 beats='at the end of the ninth-floor corridor they whisper, one by one, into the little keyhole in the door-shaped outline, and under {HERO}'s hand the hundredth door becomes real, swings wide, and opens on their own best evening, kept the way the hotel keeps everything, warm and ready: the {FINALE_ZONE} golden, the waltz mid-turn, the {K_CAKE} mid-laugh; now whenever any of them wishes, to visit, to rest a while, to come back and dance, the door is there, and {HERO} holds its key; the {THRESHOLD} reopens that summer with a hundred doors for guests and one door, the best one, for family'>>",
       "is_ending": true,
       "ending": {
         "id": "end_each_door",

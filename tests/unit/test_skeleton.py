@@ -118,6 +118,11 @@ def _discover_production_skeletons() -> list[str]:
 
     found: list[str] = []
     for path in sorted(Path("skeletons").glob("*/*.json")):
+        # Skip WS-2 theme-contract sidecars: they share the .json suffix and
+        # this band-directory glob, but they are not skeletons (see
+        # generation/skeleton_match.py, which skips them the same way).
+        if path.name.endswith(".contract.json"):
+            continue
         data = json.loads(path.read_text(encoding="utf-8"))
         if is_production_eligible(data):
             found.append(str(path))

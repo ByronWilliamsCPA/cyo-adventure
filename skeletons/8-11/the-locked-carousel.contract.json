@@ -1,0 +1,706 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-locked-carousel",
+  "age_band": "8-11",
+  "legacy_lexicon": [
+    "Nell",
+    "Nell Marlow",
+    "Marlow",
+    "Edith",
+    "Edith Marlow",
+    "Gran",
+    "E. Marlow",
+    "Ondine",
+    "Sorrel",
+    "Mr. Sorrel",
+    "S. Sorrel",
+    "carousel",
+    "funfair",
+    "pier",
+    "ticket booth",
+    "hall of mirrors",
+    "organ loft",
+    "boardwalk",
+    "caravan",
+    "ghost train",
+    "kingpost",
+    "tide",
+    "sea mare",
+    "midway"
+  ],
+  "default_binding": {
+    "HERO": "Nell Marlow",
+    "ANCESTOR": "her grandmother Edith",
+    "ANCESTOR_NAME": "E. Marlow",
+    "ANCESTOR_TRADE": "carver",
+    "ANCESTOR_MOTTO": "Measure Twice, Love Always",
+    "GUARDIAN": "the fair's old caretaker",
+    "GUARDIAN_NAME": "Mr. Sorrel",
+    "THRESHOLD": "the shut funfair on the pier",
+    "ENTRANCE": "the loose plank in the perimeter fence",
+    "OPENING_MOMENT": "a moonlit night at low tide",
+    "DEADLINE": "the tide turning and creeping back in",
+    "DEADLINE_SIGN": "cold water rising over the sand",
+    "MONUMENT": "the antique carousel",
+    "FLAW": "a cracked kingpost beam",
+    "KEEPSAKE": "Gran's brass key ring with its rose charm",
+    "MAKERS_MARK": "a small carved rose",
+    "CREATURE_KIND": "horse",
+    "ICON": "the sea mare",
+    "ICON_NAME": "Ondine",
+    "GOAL": "Gran's hidden repair drawings",
+    "COMMUNITY_MOTTO": "many hands make this light",
+    "FESTIVAL_TITLE": "The Carousel Turns Again",
+    "ROUTE_TB": "the shuttered ticket booth",
+    "ROUTE_HM": "the hall of mirrors",
+    "ROUTE_WS": "the lean-to carving workshop",
+    "ROUTE_BW": "the boardwalk steps to the sand",
+    "ROUTE_CV": "the caretaker's lamplit caravan",
+    "ROUTE_OL": "the stairs up to the loft",
+    "TB_SMELL": "old paper, brass polish, and peppermints",
+    "TB_YEAR": "1968",
+    "TB_OLD_HINT": "my measures stay with the herd",
+    "HM_DOOR_ART": "a faded painted jester",
+    "HM_STARTLE": "a dust-sheeted fortune-teller dummy",
+    "HM_SWEETHEART_INITIALS": "A.S.",
+    "HM_SECRET_NOTE": "the mare keeps her own secrets",
+    "HM_ROOF_TEAR": "a torn flap of roof canvas",
+    "WS_SMELL": "linseed oil and sawdust",
+    "WS_CHISEL": "a rose chisel worn to fit a hand",
+    "WS_BENCH_HINT": "safe with O.",
+    "CV_CHIMES": "wind chimes made of old brass rings",
+    "CV_CLIPPINGS": "newspaper clippings about the fair",
+    "OL_INSTRUMENT": "the fairground organ",
+    "OL_PROGRAM": "an old printed fairground program",
+    "OL_ROLL_LABEL": "for the mare who keeps my measures",
+    "OL_CREST_FIND": "wiring, dust, and an abandoned nest",
+    "OL_TRACING": "a tracing of the saddle rose seam",
+    "BW_UNDER": "a barnacled forest of timber legs"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A single kid-relatable explorer (name or role); capable, curious, not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ANCESTOR",
+          "GUARDIAN",
+          "ICON_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ANCESTOR",
+      "scope": "global",
+      "meaning": "The hero's deceased grandmother, the maker whose legacy drives the mystery.",
+      "guidance": "A beloved relative-maker, gone a year; referenced with warmth, never as a source of fear.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "GUARDIAN"
+        ]
+      }
+    },
+    {
+      "id": "ANCESTOR_NAME",
+      "scope": "global",
+      "meaning": "The ancestor's formal/credit name, used on stamps, ledgers, and labels.",
+      "guidance": "A short formal or initialed name distinct from the hero's and the guardian's.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GUARDIAN_NAME",
+          "ICON_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ANCESTOR_TRADE",
+      "scope": "global",
+      "meaning": "The ancestor's craft or trade.",
+      "guidance": "A single benign skilled trade (e.g. carver, weaver, glassblower).",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ANCESTOR_MOTTO",
+      "scope": "global",
+      "meaning": "The ancestor's short handwritten motto, reused as one ending's title.",
+      "guidance": "A warm, short maker's-motto phrase; reads naturally as a title on its own.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GUARDIAN",
+      "scope": "global",
+      "meaning": "The site's caretaker, a secondary helper figure who loves the place.",
+      "guidance": "An older, kind caretaker figure; never a threat; quietly devoted to the monument.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "ANCESTOR"
+        ]
+      }
+    },
+    {
+      "id": "GUARDIAN_NAME",
+      "scope": "global",
+      "meaning": "The caretaker's name, as it appears on his door sign.",
+      "guidance": "A short formal name distinct from the hero's and the ancestor's.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ANCESTOR_NAME",
+          "ICON_NAME"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the story happens inside.",
+      "guidance": "One shut site with several distinct rooms/zones and one entrance; wonder over dread; no toxic air, no lethal hazards.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single entry/exit point the hero uses to slip in and out.",
+      "guidance": "A small, known way in (a gap, a loose board); always reachable and safe to reach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The recurring, non-lethal condition that makes tonight's visit possible.",
+      "guidance": "A repeatable, safe night-time window; must not read as a one-off.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The non-lethal time pressure that will eventually close the visit.",
+      "guidance": "A survivable natural deadline; being caught by it means an inconvenient retreat, never harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The sensory sign the deadline is arriving.",
+      "guidance": "A visible, gradual cue that gives fair warning to retreat safely.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MONUMENT",
+      "scope": "global",
+      "meaning": "The endangered structure at the heart of the mystery (a short name).",
+      "guidance": "A short 2-4 word name for the beloved threatened landmark; used in beats and ending titles alike.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FLAW",
+      "scope": "global",
+      "meaning": "The specific structural damage threatening the monument.",
+      "guidance": "A short, named structural weakness that reads as fixable, never as an imminent collapse hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEEPSAKE",
+      "scope": "global",
+      "meaning": "The inherited object the hero carries all night.",
+      "guidance": "A small carried keepsake from the ancestor, safe to hold and use gently.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MAKERS_MARK",
+      "scope": "global",
+      "meaning": "The ancestor's recurring carved/painted signature motif.",
+      "guidance": "A small recurring decorative signature mark, found in several places.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CREATURE_KIND",
+      "scope": "global",
+      "meaning": "The general animal/figure type the monument's carved figures depict.",
+      "guidance": "A single benign animal or figure type (e.g. horse, swan, dragon).",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ICON",
+      "scope": "global",
+      "meaning": "The generic descriptor for the monument's single lead/star figure.",
+      "guidance": "A short descriptive phrase naming the standout figure (not its proper name).",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ICON_NAME",
+      "scope": "global",
+      "meaning": "The lead figure's proper given name.",
+      "guidance": "A single proper name, distinct from every character's name in this contract.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ANCESTOR_NAME",
+          "GUARDIAN_NAME"
+        ]
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The hidden object the hero is ultimately searching for.",
+      "guidance": "The ancestor's hidden repair plans/instructions; a benign paper object.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COMMUNITY_MOTTO",
+      "scope": "global",
+      "meaning": "The ancestor's one-line community-repair philosophy, written on the plans.",
+      "guidance": "A short, warm line about many hands sharing the work.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FESTIVAL_TITLE",
+      "scope": "ending",
+      "meaning": "Ending: the full title naming the monument's restoration (success).",
+      "guidance": "A short, positive whole-title phrase naming the monument coming back to life.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_TB",
+      "scope": "route",
+      "meaning": "The identity of one of the six rooms/zones off the central hub.",
+      "guidance": "A short, distinct named room or zone within the threshold; must read as clearly different from its five siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_HM",
+          "ROUTE_WS",
+          "ROUTE_BW",
+          "ROUTE_CV",
+          "ROUTE_OL"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_HM",
+      "scope": "route",
+      "meaning": "The identity of one of the six rooms/zones off the central hub.",
+      "guidance": "A short, distinct named room or zone within the threshold; must read as clearly different from its five siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_TB",
+          "ROUTE_WS",
+          "ROUTE_BW",
+          "ROUTE_CV",
+          "ROUTE_OL"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_WS",
+      "scope": "route",
+      "meaning": "The identity of one of the six rooms/zones off the central hub.",
+      "guidance": "A short, distinct named room or zone within the threshold; must read as clearly different from its five siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_TB",
+          "ROUTE_HM",
+          "ROUTE_BW",
+          "ROUTE_CV",
+          "ROUTE_OL"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_BW",
+      "scope": "route",
+      "meaning": "The identity of one of the six rooms/zones off the central hub.",
+      "guidance": "A short, distinct named room or zone within the threshold; must read as clearly different from its five siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_TB",
+          "ROUTE_HM",
+          "ROUTE_WS",
+          "ROUTE_CV",
+          "ROUTE_OL"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_CV",
+      "scope": "route",
+      "meaning": "The identity of one of the six rooms/zones off the central hub.",
+      "guidance": "A short, distinct named room or zone within the threshold; must read as clearly different from its five siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_TB",
+          "ROUTE_HM",
+          "ROUTE_WS",
+          "ROUTE_BW",
+          "ROUTE_OL"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_OL",
+      "scope": "route",
+      "meaning": "The identity of one of the six rooms/zones off the central hub.",
+      "guidance": "A short, distinct named room or zone within the threshold; must read as clearly different from its five siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_TB",
+          "ROUTE_HM",
+          "ROUTE_WS",
+          "ROUTE_BW",
+          "ROUTE_CV"
+        ]
+      }
+    },
+    {
+      "id": "TB_SMELL",
+      "scope": "track",
+      "meaning": "The distinctive smell inside the ticket-booth-equivalent room.",
+      "guidance": "A short benign smell descriptor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TB_YEAR",
+      "scope": "track",
+      "meaning": "The founding year stamped in the oldest ledger.",
+      "guidance": "A single 4-digit-style year token.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TB_OLD_HINT",
+      "scope": "track",
+      "meaning": "The ancestor's handwritten margin clue in the old ledger.",
+      "guidance": "A short cryptic-but-benign handwritten clue phrase.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HM_DOOR_ART",
+      "scope": "track",
+      "meaning": "The painted decoration on the mirror-room door.",
+      "guidance": "A short whimsical painted figure/motif.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HM_STARTLE",
+      "scope": "track",
+      "meaning": "The harmless prop that startles the hero in the tall mirrors.",
+      "guidance": "A short benign startle prop, clearly harmless once seen.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HM_SWEETHEART_INITIALS",
+      "scope": "track",
+      "meaning": "The second set of initials found chalked beside the ancestor's.",
+      "guidance": "A short two-letter initials token.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HM_SECRET_NOTE",
+      "scope": "track",
+      "meaning": "The short chalk note found beneath the poster.",
+      "guidance": "A short cryptic, benign note phrase.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HM_ROOF_TEAR",
+      "scope": "track",
+      "meaning": "The torn roof material that causes the flicker.",
+      "guidance": "A short benign roof/covering-tear descriptor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WS_SMELL",
+      "scope": "track",
+      "meaning": "The workshop's characteristic smell.",
+      "guidance": "A short benign craft-material smell descriptor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WS_CHISEL",
+      "scope": "track",
+      "meaning": "The small hand tool sized just for the hero.",
+      "guidance": "A short benign hand tool descriptor sized for a child.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WS_BENCH_HINT",
+      "scope": "track",
+      "meaning": "The short handwritten clue found in the workshop bench drawer.",
+      "guidance": "A short cryptic-but-benign clue phrase.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CV_CHIMES",
+      "scope": "track",
+      "meaning": "The wind chimes outside the caretaker's home.",
+      "guidance": "A short benign wind-chime descriptor, ideally echoing the monument's material.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CV_CLIPPINGS",
+      "scope": "track",
+      "meaning": "The keepsakes covering the caretaker's table.",
+      "guidance": "A short benign collection of keepsakes/mementos.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OL_INSTRUMENT",
+      "scope": "track",
+      "meaning": "The instrument/mechanism housed in the loft room.",
+      "guidance": "A short name for a benign mechanical or musical fixture.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OL_PROGRAM",
+      "scope": "track",
+      "meaning": "The old printed program the hero finds.",
+      "guidance": "A short benign printed-keepsake descriptor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OL_ROLL_LABEL",
+      "scope": "track",
+      "meaning": "The short label on the heaviest music/record roll.",
+      "guidance": "A short handwritten dedication phrase.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OL_CREST_FIND",
+      "scope": "track",
+      "meaning": "The harmless contents found behind the crest panel.",
+      "guidance": "A short benign, slightly funny dead-end find.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OL_TRACING",
+      "scope": "track",
+      "meaning": "The tracing paper diagram found with the roll.",
+      "guidance": "A short benign technical-drawing descriptor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BW_UNDER",
+      "scope": "track",
+      "meaning": "The underside/undercroft beneath the monument.",
+      "guidance": "A short benign underside/undercroft descriptor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    }
+  ]
+}

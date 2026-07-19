@@ -1,0 +1,1075 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-vanishing-orchard",
+  "age_band": "13-16",
+  "legacy_lexicon": [
+    "Rowan Ashby",
+    "Rowan",
+    "Teo",
+    "Odile Fenn",
+    "Odile",
+    "Alderwick",
+    "Mabb Hill",
+    "the Quiet",
+    "Mr Hallet",
+    "Enid",
+    "deed hall",
+    "cider house",
+    "pie stall",
+    "orchard-keeper",
+    "orchard",
+    "the black spring",
+    "bakery",
+    "cellar",
+    "frost"
+  ],
+  "default_binding": {
+    "HERO_FULL": "Rowan Ashby",
+    "HERO": "Rowan",
+    "COUSIN": "Teo",
+    "GRANDMOTHER": "grandmother",
+    "KEE_CHAR_FULL": "Odile Fenn",
+    "KEE_CHAR": "Odile",
+    "REC_CHAR": "clerk",
+    "NEIGHBOR_GIRL": "neighbour girl",
+    "B1C_NEIGHBOR_NAME": "Mr Hallet",
+    "B1C_NEIGHBOR_SPOUSE": "Enid",
+    "FOUNDERS": "founders",
+    "KEEPER_ROLE": "keeper",
+    "ORCHARD": "orchard",
+    "TOWN": "Alderwick",
+    "TOWN_SQUARE": "square",
+    "BAKERY": "bakery",
+    "WAR_MEMORIAL": "war memorial",
+    "CIDER_HOUSE": "cider house",
+    "CELLAR": "cellar",
+    "SPRING": "spring",
+    "OLDEST_TREE": "oldest tree",
+    "REC_LOCATION": "deed hall",
+    "KEE_LOCATION": "Mabb Hill",
+    "PHO_LOCATION": "attic",
+    "B1C_NEIGHBOR_SHOP": "pie stall",
+    "ROOT": "root",
+    "PHENOMENON": "the Quiet",
+    "TOKEN_SEED": "seed",
+    "KEEPER_CORD": "cord",
+    "REC_DOCUMENT": "register",
+    "REC_B_LEDGER": "ledger",
+    "REC_PHOTO": "class photograph",
+    "PHO_MEDIUM": "photograph",
+    "PHO_ALBUM": "album",
+    "PHO_KEEPSAKE": "a dried apple blossom and a lock of pale hair",
+    "CEL_SEAL": "barklocked",
+    "B1B_CLAY": "clay",
+    "B2T_LANE": "lane",
+    "B3V_GAME": "conkers",
+    "DEADLINE": "frost",
+    "ALL_FLOOD_SETBACK": "The Flood Unsteered",
+    "ALL_GRANDMOTHER_PRIZE": "Her Grandmother Returned",
+    "ALL_RESTORE_PRIZE": "The Town Made Whole",
+    "ALL_REST_PRIZE": "One Kept, All Restored",
+    "B1A_SETBACK": "Too Long in the Water",
+    "B1B_SETBACK": "The Wall That Failed",
+    "B1C_SETBACK": "Shouting to No One",
+    "B2K_A_SETBACK": "No One to Anchor",
+    "B2K_B_SETBACK": "The Knot Tied Early",
+    "B2T_A_SETBACK": "Keeping It All",
+    "B2T_B_SETBACK": "A Trade Too Deep",
+    "B3U_N_OUTCOME": "Peace With the Quiet",
+    "B3U_S_SETBACK": "The Chain Snapped Early",
+    "B3V_N_OUTCOME": "The Name She Learned",
+    "B3V_S_SETBACK": "The Bargain Refused Her",
+    "B3W_N_OUTCOME": "An Even Trade",
+    "B3W_S_SETBACK": "A Truth Too Heavy",
+    "CEL_A_SETBACK": "The Door Rebarred",
+    "CEL_B_SETBACK": "Drained on the Stair",
+    "KEE_A_SETBACK": "Sent Down the Hill",
+    "KEE_B_SETBACK": "The Severed Cord",
+    "ONE_CONTENT_PRIZE": "Enough to Save One",
+    "ONE_HESITATE_SETBACK": "The Frost Came First",
+    "ONE_SAVED_PRIZE": "One Soul Lifted",
+    "PHO_A_SETBACK": "Ash of the Forgotten",
+    "PHO_B_SETBACK": "The Sealed Album",
+    "REC_A_SETBACK": "The Bolted Hall",
+    "REC_B_SETBACK": "The Blank Page",
+    "SHARE_LOST_SETBACK": "The Vow Unspoken",
+    "TRADE_EVEN_OUTCOME": "A Fair Exchange",
+    "TRADE_GREED_SETBACK": "Grasping for More",
+    "TRADE_KEEPER_OUTCOME": "The Yearly Keeper",
+    "TRADE_PHOTO_SETBACK": "One Photograph Kept"
+  },
+  "slots": [
+    {
+      "id": "ALL_FLOOD_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: the shared flood of memory overwhelms the hero (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ALL_GRANDMOTHER_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the grandmother is also recovered (success).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ALL_RESTORE_PRIZE",
+          "ALL_REST_PRIZE",
+          "ONE_CONTENT_PRIZE",
+          "ONE_SAVED_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "ALL_RESTORE_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the whole town's memory is restored (success/completion).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ALL_GRANDMOTHER_PRIZE",
+          "ALL_REST_PRIZE",
+          "ONE_CONTENT_PRIZE",
+          "ONE_SAVED_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "ALL_REST_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the town is restored, the grandmother left at peace (completion).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ALL_GRANDMOTHER_PRIZE",
+          "ALL_RESTORE_PRIZE",
+          "ONE_CONTENT_PRIZE",
+          "ONE_SAVED_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "B1A_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: holding the spring's water too long (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1B_CLAY",
+      "scope": "track",
+      "meaning": "The material the hero tries to wall the root off with.",
+      "guidance": "An ordinary building material that fails against the root.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1B_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: the attempt to wall off the root fails (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1C_NEIGHBOR_NAME",
+      "scope": "track",
+      "meaning": "A named townsperson confronted in the square.",
+      "guidance": "An ordinary elderly resident; used once to make the forgetting concrete.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1C_NEIGHBOR_SPOUSE"
+        ]
+      }
+    },
+    {
+      "id": "B1C_NEIGHBOR_SHOP",
+      "scope": "track",
+      "meaning": "The vanished shop named to jog a neighbour's memory.",
+      "guidance": "A small, everyday livelihood; used once for concreteness.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1C_NEIGHBOR_SPOUSE",
+      "scope": "track",
+      "meaning": "The forgotten spouse named in that confrontation.",
+      "guidance": "The person the town has already forgotten; named once.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1C_NEIGHBOR_NAME"
+        ]
+      }
+    },
+    {
+      "id": "B1C_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: shouting the town's names reaches no one (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2K_A_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: refusing the empty keeper's place outright (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2K_B_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: taking the keeper's place too hastily (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2T_A_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: refusing to risk any memory at all (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2T_B_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: giving up too precious a memory (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2T_LANE",
+      "scope": "track",
+      "meaning": "The vanished street the root can temporarily restore.",
+      "guidance": "A concrete, walkable stretch of the town, lent rather than given.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3U_N_OUTCOME",
+      "scope": "ending",
+      "meaning": "Ending: the town makes peace with its losses instead (neutral).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3U_S_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: the shared ritual begins before the town has gathered (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3V_GAME",
+      "scope": "track",
+      "meaning": "The specific childhood game recalled about the neighbour girl.",
+      "guidance": "A small, ordinary detail that makes the lost girl vivid.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3V_N_OUTCOME",
+      "scope": "ending",
+      "meaning": "Ending: learning who would be saved, without paying (neutral).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3V_S_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: trying to take without giving anything (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3W_N_OUTCOME",
+      "scope": "ending",
+      "meaning": "Ending: accepting a single fair trade for understanding (neutral).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3W_S_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: forcing the whole truth onto the town at once (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BAKERY",
+      "scope": "global",
+      "meaning": "A specific vanished shop, the story's first concrete proof of loss.",
+      "guidance": "A small, homely, everyday place; its disappearance must read as mundane, not sinister.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CELLAR",
+      "scope": "global",
+      "meaning": "The below-ground room beneath the cider house.",
+      "guidance": "Cold, old, sealed; the physical threshold to the spring.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CEL_A_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: rebarring the cellar door backfires (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CEL_B_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: retreating up the cellar stair backfires (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CEL_SEAL",
+      "scope": "route",
+      "meaning": "The adjective describing how the cellar door/bar is sealed shut.",
+      "guidance": "A living, grown-over seal; unlocked by force, not a key.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CIDER_HOUSE",
+      "scope": "global",
+      "meaning": "The building over the cellar where the climax takes place.",
+      "guidance": "A working, disused outbuilding; unremarkable from outside.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "REC_LOCATION",
+          "KEE_LOCATION",
+          "PHO_LOCATION"
+        ]
+      }
+    },
+    {
+      "id": "COUSIN",
+      "scope": "global",
+      "meaning": "The hero's local cousin, a recurring ally.",
+      "guidance": "Warm, loyal, increasingly unsettled as the town's memory frays.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "GRANDMOTHER",
+          "KEE_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The recurring seasonal deadline pressing on every route.",
+      "guidance": "A natural, survivable turning point, not a hard cutoff; never lethal.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FOUNDERS",
+      "scope": "global",
+      "meaning": "The town's founding generation, who first struck the bargain.",
+      "guidance": "A collective, sympathetic ancestor-figure, not villains.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GRANDMOTHER",
+      "scope": "global",
+      "meaning": "The hero's deceased grandmother, the previous keeper.",
+      "guidance": "Never on-page alive; present only in memory, records, and the spring.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "COUSIN",
+          "KEE_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The protagonist, referred to by first name throughout.",
+      "guidance": "A teenager returning to a place tied to their family; observant, stubborn.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COUSIN",
+          "GRANDMOTHER",
+          "KEE_CHAR",
+          "NEIGHBOR_GIRL"
+        ]
+      }
+    },
+    {
+      "id": "HERO_FULL",
+      "scope": "global",
+      "meaning": "The protagonist's full name, used once at the opening.",
+      "guidance": "First and family name together; only appears in the opening line.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "KEE_CHAR_FULL"
+        ]
+      }
+    },
+    {
+      "id": "KEEPER_CORD",
+      "scope": "global",
+      "meaning": "The tallied artifact recording every past keeper.",
+      "guidance": "A cord or equivalent tally object with one knot/mark per keeper.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEEPER_ROLE",
+      "scope": "global",
+      "meaning": "The generic title for whoever tends the bargain with the root.",
+      "guidance": "A role, not a name; used for 'the last _', 'empty _ knot', etc.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEE_A_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: vowing to starve the root backfires (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEE_B_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: cutting the keeper cord backfires (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEE_CHAR",
+      "scope": "route",
+      "meaning": "The current keeper, referred to by first name thereafter.",
+      "guidance": "Wise, blunt, physically frail but sure of the myth's rules.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "COUSIN",
+          "GRANDMOTHER"
+        ]
+      }
+    },
+    {
+      "id": "KEE_CHAR_FULL",
+      "scope": "route",
+      "meaning": "The current keeper's full name, used once on first mention.",
+      "guidance": "First and family name; an elderly, blind orchard-keeper.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO_FULL"
+        ]
+      }
+    },
+    {
+      "id": "KEE_LOCATION",
+      "scope": "route",
+      "meaning": "Where the hero climbs to find the keeper.",
+      "guidance": "An exposed, wind-worn high place; distinct from the other three sites.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "REC_LOCATION",
+          "PHO_LOCATION",
+          "CIDER_HOUSE"
+        ]
+      }
+    },
+    {
+      "id": "NEIGHBOR_GIRL",
+      "scope": "global",
+      "meaning": "A specific lost child the hero can choose to save.",
+      "guidance": "A named-in-spirit but unnamed neighbour, remembered by a small vivid detail.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OLDEST_TREE",
+      "scope": "global",
+      "meaning": "The single ancient tree whose root drinks the town's memory.",
+      "guidance": "The living source of the whole myth; ancient, not overtly monstrous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ONE_CONTENT_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: choosing one certain rescue over a bigger risk (success).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ALL_GRANDMOTHER_PRIZE",
+          "ALL_RESTORE_PRIZE",
+          "ALL_REST_PRIZE",
+          "ONE_SAVED_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "ONE_HESITATE_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: hesitating too long costs the rescue (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ONE_SAVED_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: one lost person is restored to the town (success).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "ALL_GRANDMOTHER_PRIZE",
+          "ALL_RESTORE_PRIZE",
+          "ALL_REST_PRIZE",
+          "ONE_CONTENT_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "ORCHARD",
+      "scope": "global",
+      "meaning": "The grove/land that gives the town its identity and economy.",
+      "guidance": "The town's defining feature; source of both its livelihood and its myth.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PHENOMENON",
+      "scope": "global",
+      "meaning": "The named curse/mystery: the town's slow, selective forgetting.",
+      "guidance": "A proper-noun-like name for the amnesia itself, spoken with familiarity.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PHO_ALBUM",
+      "scope": "track",
+      "meaning": "The one album that never changes.",
+      "guidance": "A bound collection, notably heavier/stranger than the rest.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PHO_A_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: burning the fading prints backfires (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PHO_B_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: sealing away the strange album backfires (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PHO_KEEPSAKE",
+      "scope": "track",
+      "meaning": "A pressed keepsake found inside the strange album.",
+      "guidance": "A small, personal, non-photographic memento.",
+      "constraints": {
+        "max_words": 12,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PHO_LOCATION",
+      "scope": "route",
+      "meaning": "Where the hero examines the family photographs.",
+      "guidance": "A private, domestic space; distinct from the other three sites.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "REC_LOCATION",
+          "KEE_LOCATION",
+          "CIDER_HOUSE"
+        ]
+      }
+    },
+    {
+      "id": "PHO_MEDIUM",
+      "scope": "route",
+      "meaning": "The recurring picture medium at the heart of this route.",
+      "guidance": "Ordinary family photographs/prints; some change, some do not.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "REC_A_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: pressing the records clerk backfires (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "REC_B_LEDGER",
+      "scope": "track",
+      "meaning": "The centuries-old lease ledger read in the second approach.",
+      "guidance": "A legal record spanning generations; distinct from the register.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "REC_B_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: stealing the founding lease backfires (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "REC_CHAR",
+      "scope": "route",
+      "meaning": "The records-office clerk the hero questions.",
+      "guidance": "A minor official losing his own grip on the archive; anxious, not sinister.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "REC_DOCUMENT",
+      "scope": "route",
+      "meaning": "The vital-records book with blanked-out entries.",
+      "guidance": "A register of births/deaths; entries fade rather than being crossed out.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "REC_LOCATION",
+      "scope": "route",
+      "meaning": "Where the hero searches official records.",
+      "guidance": "A civic archive; distinct from the other three investigation sites.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "KEE_LOCATION",
+          "PHO_LOCATION",
+          "CIDER_HOUSE"
+        ]
+      }
+    },
+    {
+      "id": "REC_PHOTO",
+      "scope": "track",
+      "meaning": "A specific class photograph with faces scratched out.",
+      "guidance": "A concrete, disturbing artifact proving deliberate past loss.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROOT",
+      "scope": "global",
+      "meaning": "The antagonist force: the tree's root that drinks memory.",
+      "guidance": "Patient, exacting, not malicious; a force to bargain with, not defeat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SHARE_LOST_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: the crowd's shared vow collapses at the last moment (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SPRING",
+      "scope": "global",
+      "meaning": "The pool of water at the root's heart where bargains are struck.",
+      "guidance": "Not merely water: it holds and can return lost memories.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TOKEN_SEED",
+      "scope": "global",
+      "meaning": "The physical token marking someone who may bargain at the spring.",
+      "guidance": "A small carried object; its state (withered/greening) is plot, kept outside the slot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TOWN",
+      "scope": "global",
+      "meaning": "The town itself, the bounded community the story happens in.",
+      "guidance": "A small, close-knit place; used both by name and as 'the town'.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TOWN_SQUARE",
+      "scope": "global",
+      "meaning": "The town's central public gathering place.",
+      "guidance": "Where the community can be seen and addressed at once.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TRADE_EVEN_OUTCOME",
+      "scope": "ending",
+      "meaning": "Ending: a fair, bittersweet one-for-one trade (neutral).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TRADE_GREED_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: asking the root for more than it will give (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TRADE_KEEPER_OUTCOME",
+      "scope": "ending",
+      "meaning": "Ending: becoming a light, recurring keeper (neutral).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TRADE_PHOTO_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending: refusing to trade anything, keeping the town diminished (setback).",
+      "guidance": "Holds this ending's full title text as one unit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WAR_MEMORIAL",
+      "scope": "global",
+      "meaning": "A civic monument whose names no one can place anymore.",
+      "guidance": "A public record of names, used once to open the mystery.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    }
+  ]
+}

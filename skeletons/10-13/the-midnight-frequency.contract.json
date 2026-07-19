@@ -1,0 +1,911 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-midnight-frequency",
+  "age_band": "10-13",
+  "legacy_lexicon": [
+    "Mari",
+    "Mari Vega",
+    "Teo",
+    "Vega",
+    "Pilar",
+    "Pilar Vega",
+    "Grandma Pilar",
+    "Wren",
+    "Nightjar",
+    "Nightjars",
+    "Nightjar Radio Club",
+    "Okafor",
+    "Kettle",
+    "the Wren's Nest",
+    "the Nest",
+    "Orpheum",
+    "Beacon Hill",
+    "the Midnight Matinee",
+    "the Midnight Frequency",
+    "First Light",
+    "shortwave field set",
+    "field set",
+    "Milepost 7"
+  ],
+  "default_binding": {
+    "HERO": "Mari",
+    "COMPANION": "her brother Teo",
+    "GUARDIAN": "their mother",
+    "ANCESTOR": "their late grandmother",
+    "FAMILY_NAME": "Vega",
+    "THRESHOLD": "their sleeping hometown",
+    "ENTRANCE": "the town square",
+    "OPENING_MOMENT": "midnight, when the timer wakes",
+    "DEADLINE": "First Light",
+    "DEADLINE_SIGN": "the sky paling to gray",
+    "GOAL": "the Nest",
+    "TONE_MOTIF": "Five wrens sing",
+    "CALLSIGN": "Wren",
+    "DEVICE": "the old shortwave field set",
+    "BROADCAST": "the patient midnight broadcast",
+    "GUIDE_LOG": "grandma's operating logbook",
+    "CIPHER": "the logbook's letter grid",
+    "ANTENNA": "the rotating loop antenna",
+    "CLUB_NAME": "the Nightjar Radio Club",
+    "MEMBER_TERM": "Nightjar",
+    "STORY_MOTIF": "the Midnight Frequency",
+    "MARKER": "diamond",
+    "ROUTE_A_LURE": "the water tower",
+    "ROUTE_A_APPROACH": "the orchard lane",
+    "ROUTE_A_GATE": "caged ladder",
+    "ROUTE_A_DETAIL1": "a low ringing note",
+    "ROUTE_A_FIND": "a hinged junction box",
+    "ROUTE_A_CLUE": "a paint-shelf sketch card",
+    "ROUTE_A_ZONE": "the tower maintenance shed",
+    "ROUTE_A_CACHE": "a hand-lettered paint can",
+    "ROUTE_A_TAG": "Every",
+    "ROUTE_B_LURE": "the shuttered Orpheum",
+    "ROUTE_B_APPROACH": "the unlatched stage door",
+    "ROUTE_B_GATE": "soft board",
+    "ROUTE_B_DETAIL1": "a polished brass seat-plate",
+    "ROUTE_B_DETAIL2": "a porthole window",
+    "ROUTE_B_FIND": "an out-of-line film tin",
+    "ROUTE_B_PRIZE": "The Midnight Matinee",
+    "ROUTE_B_TAG": "Voice",
+    "ROUTE_C_LURE": "the buoy shed",
+    "ROUTE_C_APPROACH": "the harbor wall",
+    "ROUTE_C_GATE": "waterlogged dinghy",
+    "ROUTE_C_FIND": "a sun-warmed brass key",
+    "ROUTE_C_TAG": "Finds",
+    "ROUTE_D_LURE": "the library map room",
+    "ROUTE_D_APPROACH": "the dew-wet green",
+    "ROUTE_D_GATE": "bell",
+    "ROUTE_D_FIND": "the founding-year drawer",
+    "ROUTE_D_TAG": "Its",
+    "ROUTE_E_LURE": "the mast on Beacon Hill",
+    "ROUTE_E_APPROACH": "the cinder path",
+    "ROUTE_E_GATE": "loose scree chute",
+    "ROUTE_E_DETAIL1": "long steel notes",
+    "ROUTE_E_DETAIL2": "an old survey pillar",
+    "ROUTE_E_FIND": "a brass bolt head",
+    "ROUTE_E_TAG": "Home",
+    "FIN_KEYBOX": "a weathered wren birdhouse",
+    "FIN_GATE1": "painted-shut sash window"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist and narrator's POV.",
+      "guidance": "A single kid-relatable explorer (name or role); capable, not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COMPANION"
+        ]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The hero's older sibling/companion who travels with them all night.",
+      "guidance": "An older, protective sibling or friend who leads on the physical legs of the journey; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "GUARDIAN",
+      "scope": "global",
+      "meaning": "The parent who sets the ground rules and is called on at the finale.",
+      "guidance": "A trusted adult who grants supervised freedom under clear safety rules; appears at the start and may appear again at the finale.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ANCESTOR",
+      "scope": "global",
+      "meaning": "The deceased relative who built the whole night's hunt as a legacy.",
+      "guidance": "A beloved, resourceful elder whose voice and handwriting recur throughout; her death is backstory, never depicted as harm.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FAMILY_NAME",
+      "scope": "global",
+      "meaning": "The family surname used as a proud, recurring callback.",
+      "guidance": "A short surname other characters can invoke ('a Vega would...').",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the night's hunt happens inside.",
+      "guidance": "A single town/neighborhood at night, self-contained and walkable by bike; wonder over dread; no lethal hazards anywhere in it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The central hub the hero returns to between sites and after a setback.",
+      "guidance": "Always reachable and safe; the anchor point every route starts and ends at.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The recurring moment/condition that opens the night's mystery.",
+      "guidance": "A repeatable, non-lethal window (an annual or nightly trigger); must be repeatable so 'next year' or 'next time' reads true.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The non-lethal time pressure that closes the night's safe window.",
+      "guidance": "A survivable deadline: dawn/sunrise or an equivalent; being caught by it means a missed chance, never harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The sensory sign the deadline is arriving, used at retreats.",
+      "guidance": "A visible, gradual cue that escalates slowly enough to retreat safely by.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The name of the final destination the whole hunt converges on.",
+      "guidance": "A cozy, safe, named destination; the hunt's true endpoint.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TONE_MOTIF",
+      "scope": "global",
+      "meaning": "The opening clause of the recurring call-and-response refrain.",
+      "guidance": "A short, singable phrase repeated at every site's discovery; pairs with GOAL to complete the refrain ('..., then come home to {GOAL}').",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CALLSIGN",
+      "scope": "global",
+      "meaning": "The ancestor's on-air nickname/handle and the family's endearment.",
+      "guidance": "A short, warm handle used both as a radio callsign and as an affectionate term of address.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEVICE",
+      "scope": "global",
+      "meaning": "The physical device that receives the mystery broadcast.",
+      "guidance": "An old, inherited receiver small enough to carry on a bike; benign, no batteries/hazards implied.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BROADCAST",
+      "scope": "global",
+      "meaning": "The recurring recorded voice/signal that drives the whole plot.",
+      "guidance": "A calm, patient recorded transmission; never distressing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GUIDE_LOG",
+      "scope": "global",
+      "meaning": "The notebook that holds the decoding key and the ancestor's notes.",
+      "guidance": "A worn notebook in the ancestor's hand; the primary decoding aid.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CIPHER",
+      "scope": "global",
+      "meaning": "The decoding system that turns broadcast groups into place names.",
+      "guidance": "A simple, kid-solvable substitution grid or key.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ANTENNA",
+      "scope": "global",
+      "meaning": "The direction-finding tool that points toward the final site.",
+      "guidance": "A hand-turned antenna on the device; points steadily toward GOAL.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CLUB_NAME",
+      "scope": "global",
+      "meaning": "The full name of the ancestor's old amateur-radio club.",
+      "guidance": "A warm, community, night-shift-adjacent club name.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MEMBER_TERM",
+      "scope": "global",
+      "meaning": "The singular demonym for a member of CLUB_NAME.",
+      "guidance": "Used for 'a Nightjar', 'old Nightjars'; must derive naturally from CLUB_NAME.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STORY_MOTIF",
+      "scope": "global",
+      "meaning": "The story's own title-phrase, echoed inside two ending titles.",
+      "guidance": "A evocative two-to-three word phrase naming the whole phenomenon (the broadcast/mystery collectively).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MARKER",
+      "scope": "global",
+      "meaning": "The recurring personal signature/waypoint mark the ancestor left at every site.",
+      "guidance": "A single plain noun (a shape or symbol) reused as a bare word so it can pluralize ('{MARKER}s') and combine with articles freely.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LURE",
+      "scope": "route",
+      "meaning": "The hub choice's destination name for site A.",
+      "guidance": "A short, evocative site name, distinct from the other four sites.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_APPROACH",
+      "scope": "route",
+      "meaning": "The path from the hub to site A.",
+      "guidance": "A short, safe approach path/street name.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_GATE",
+      "scope": "ending",
+      "meaning": "Site A's commit-or-turn-back obstacle (climb the frozen cage vs. trust the other clue); names the setback ending.",
+      "guidance": "Non-lethal; a locked, frost-slicked obstacle. Retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "ROUTE_E_GATE",
+          "FIN_GATE1"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_DETAIL1",
+      "scope": "track",
+      "meaning": "The sensory clue found by tapping the legs (the 'tap' sub-path).",
+      "guidance": "A benign sound cue.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_FIND",
+      "scope": "track",
+      "meaning": "The small container discovered on the singing leg.",
+      "guidance": "An inert, safe container; no danger to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CLUE",
+      "scope": "track",
+      "meaning": "The puzzle card found inside ROUTE_A_FIND.",
+      "guidance": "A hand-drawn clue card pointing to the next spot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_ZONE",
+      "scope": "track",
+      "meaning": "The unlocked room holding the site's hiding spot.",
+      "guidance": "Safe, dusty, unremarkable; an ordinary utility room.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CACHE",
+      "scope": "track",
+      "meaning": "The specific hiding container found on the shed's shelf.",
+      "guidance": "A light, obviously-not-really-paint container; safe to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_TAG",
+      "scope": "ending",
+      "meaning": "The single word found on site A's collectible tag; the first word of the finale's assembled sign-off phrase.",
+      "guidance": "One plain word, Title Case; combines with the other four TAG slots in reading order to form the finale's closing phrase.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_B_TAG",
+          "ROUTE_C_TAG",
+          "ROUTE_D_TAG",
+          "ROUTE_E_TAG"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_LURE",
+      "scope": "route",
+      "meaning": "The hub choice's destination name for site B.",
+      "guidance": "A short, evocative site name, distinct from the other four sites.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_APPROACH",
+      "scope": "route",
+      "meaning": "The entry point into site B.",
+      "guidance": "A short, always-open side entrance.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_GATE",
+      "scope": "ending",
+      "meaning": "Site B's commit-or-turn-back obstacle (the weakened stage floor); names the setback ending.",
+      "guidance": "Non-lethal; a hazardous-but-survivable floor patch. Retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "ROUTE_E_GATE",
+          "FIN_GATE1"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_DETAIL1",
+      "scope": "track",
+      "meaning": "The engraved plate found under/on the named seat.",
+      "guidance": "A small, safe, curiously well-kept fixture.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_DETAIL2",
+      "scope": "track",
+      "meaning": "The viewing window into the projection booth.",
+      "guidance": "A safe way to preview the booth before entering.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_FIND",
+      "scope": "track",
+      "meaning": "The single tin that stands out among the shelved reels.",
+      "guidance": "An inert, labeled container; safe to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_PRIZE",
+      "scope": "ending",
+      "meaning": "Site B's alternate positive/discovery ending name (watching the old reel instead of continuing the hunt).",
+      "guidance": "Positive; a shared, wondrous experience, not a physical keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_TAG",
+      "scope": "ending",
+      "meaning": "The single word found on site B's collectible tag.",
+      "guidance": "One plain word, Title Case; second word of the assembled phrase.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_TAG",
+          "ROUTE_C_TAG",
+          "ROUTE_D_TAG",
+          "ROUTE_E_TAG"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_LURE",
+      "scope": "route",
+      "meaning": "The hub choice's destination name for site C.",
+      "guidance": "A short, evocative site name, distinct from the other four sites.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_D_LURE",
+          "ROUTE_E_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_APPROACH",
+      "scope": "route",
+      "meaning": "The path from the hub to site C.",
+      "guidance": "A short, safe waterfront approach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_GATE",
+      "scope": "ending",
+      "meaning": "Site C's risky-shortcut obstacle (rowing an unseaworthy boat); names the setback ending.",
+      "guidance": "Non-lethal; the boat swamps in shallow water near the shore, never open water peril. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_D_GATE",
+          "ROUTE_E_GATE",
+          "FIN_GATE1"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_FIND",
+      "scope": "track",
+      "meaning": "The key handed over by the site's helpful adult.",
+      "guidance": "A warm, given-not-stolen key; the harbormaster's trust token.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_TAG",
+      "scope": "ending",
+      "meaning": "The single word found on site C's collectible tag.",
+      "guidance": "One plain word, Title Case; third word of the assembled phrase.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_TAG",
+          "ROUTE_B_TAG",
+          "ROUTE_D_TAG",
+          "ROUTE_E_TAG"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_LURE",
+      "scope": "route",
+      "meaning": "The hub choice's destination name for site D.",
+      "guidance": "A short, evocative site name, distinct from the other four sites.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_E_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_APPROACH",
+      "scope": "route",
+      "meaning": "The path from the hub to site D.",
+      "guidance": "A short, safe approach across open ground.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_GATE",
+      "scope": "ending",
+      "meaning": "Site D's commit-or-turn-back obstacle (the night alarm over the door); names the setback ending.",
+      "guidance": "Non-lethal; a loud alarm, not a hazard. Retreat/being caught is always safe, just embarrassing. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_E_GATE",
+          "FIN_GATE1"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_FIND",
+      "scope": "track",
+      "meaning": "The specific archive drawer holding the site's discovery.",
+      "guidance": "An ordinary flat-file drawer; safe to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_D_TAG",
+      "scope": "ending",
+      "meaning": "The single word found on site D's collectible tag.",
+      "guidance": "One plain word, Title Case; fourth word of the assembled phrase.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_TAG",
+          "ROUTE_B_TAG",
+          "ROUTE_C_TAG",
+          "ROUTE_E_TAG"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_E_LURE",
+      "scope": "route",
+      "meaning": "The hub choice's destination name for site E.",
+      "guidance": "A short, evocative site name, distinct from the other four sites.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE",
+          "ROUTE_D_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_E_APPROACH",
+      "scope": "route",
+      "meaning": "The path from the hub up to site E.",
+      "guidance": "A short, safe uphill approach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_E_GATE",
+      "scope": "ending",
+      "meaning": "Site E's risky-shortcut obstacle (a steep loose-stone shortcut); names the setback ending.",
+      "guidance": "Non-lethal; a slither-and-scrape hazard, never a fall from height. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "FIN_GATE1"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_E_DETAIL1",
+      "scope": "track",
+      "meaning": "The sound the wind makes on the mast's guy-wires.",
+      "guidance": "A benign, musical sensory detail.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_E_DETAIL2",
+      "scope": "track",
+      "meaning": "The benchmark pillar beside the third anchor block.",
+      "guidance": "A safe, climbable-adjacent landmark.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_E_FIND",
+      "scope": "track",
+      "meaning": "The single greased, markable bolt among the anchor's plate.",
+      "guidance": "An inert, hand-turnable fastener.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_E_TAG",
+      "scope": "ending",
+      "meaning": "The single word found on site E's collectible tag.",
+      "guidance": "One plain word, Title Case; fifth word of the assembled phrase.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_TAG",
+          "ROUTE_B_TAG",
+          "ROUTE_C_TAG",
+          "ROUTE_D_TAG"
+        ]
+      }
+    },
+    {
+      "id": "FIN_KEYBOX",
+      "scope": "track",
+      "meaning": "The hiding spot for the finale's door key.",
+      "guidance": "A small, safe, weatherproofed birdhouse-like container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FIN_GATE1",
+      "scope": "ending",
+      "meaning": "The finale's risky-shortcut obstacle (stretching for a stuck window instead of finding the key); names its setback ending.",
+      "guidance": "Non-lethal; a short overreach and safe recovery, never a fall from height. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "ROUTE_E_GATE"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,578 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-snow-day-expedition",
+  "age_band": "5-8",
+  "legacy_lexicon": [
+    "June",
+    "Max",
+    "Duchess",
+    "Mount Snowpile",
+    "Snowpile",
+    "Frozen Flats",
+    "Base Camp One",
+    "the Great Igloo",
+    "Great Igloo",
+    "Arctic",
+    "snow day"
+  ],
+  "default_binding": {
+    "HERO": "June",
+    "COMPANION": "her little brother Max",
+    "THRESHOLD": "the backyard Arctic",
+    "THRESHOLD_DETAIL": "the swing set",
+    "OPENING_MOMENT": "the overnight snow",
+    "ENTRANCE": "Base Camp One",
+    "PREP_SITE": "the mudroom",
+    "TEAM_NAME": "the explorers",
+    "GUARDIAN": "Mom",
+    "HOME_BASE": "mission control",
+    "TREAT": "cocoa",
+    "LOG_ITEM": "the expedition notebook",
+    "SNACK_ITEM": "the baby carrots",
+    "DIG_TOOL": "the flat shovel",
+    "SUPPLY_VEHICLE": "the sled",
+    "ROUTE_A_LANDMARK": "Mount Snowpile",
+    "ROUTE_A_CHAR": "icy cliffs and crusty snow",
+    "ROUTE_B_LANDMARK": "the Frozen Flats",
+    "ROUTE_B_CHAR": "deep, smooth, perfect packing snow",
+    "A2_SIGN": "a line of mysterious paw prints",
+    "B2_SIGN": "the birdbath iceberg",
+    "B2_TARGET": "the toy penguins",
+    "A1_GEAR": "the jump rope from the sledge",
+    "A1_CLIMB": "icy ledges and secret handholds",
+    "A1_GATE": "the snow-swirl storm",
+    "A1_PRIZE1": "Flag on the Summit",
+    "A1_PRIZE2": "The Great Summit Sled Run",
+    "A1_MARKER": "a broom-handle flag with a red mitten",
+    "A1_PEAK": "the summit",
+    "A2_TRAIL": "small, round paw prints",
+    "A2_HIDEOUT": "the old holly bush",
+    "A2_PRIZE1": "The Snow Leopard's Den",
+    "A2_PRIZE2": "The Hidden Rabbit Base",
+    "A2_CREATURE1": "Duchess, the neighbor's fluffy gray cat",
+    "A2_CREATURE2": "a plump brown rabbit",
+    "B1_LANDMARK": "the Great Igloo",
+    "B1_PRIZE1": "Base Camp Igloo",
+    "B1_PRIZE2": "The Grand Snow Tunnel",
+    "B2_GATE": "a cocoa-melting mishap",
+    "B2_PRIZE1": "Penguin Hospital Heroes",
+    "B2_PRIZE2": "The Great Rescue Parade"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The older-sibling child protagonist who leads the expedition.",
+      "guidance": "A single kid-relatable leader (name or role); capable, imaginative, gentle with her companion.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["COMPANION"]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The hero's younger sibling companion who travels with her throughout.",
+      "guidance": "A younger, eager sidekick; never a source of peril; reacts with wonder and small worries (cold nose, tired toes).",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole imagined world the backyard becomes for the day's play.",
+      "guidance": "A cozy, bounded, familiar-turned-fantastic place; wonder over dread; no lethal hazards, no toxic air, nothing that cannot be safely left at any moment.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD_DETAIL",
+      "scope": "global",
+      "meaning": "A familiar yard object transformed by the day's condition, seen from the window at the very start.",
+      "guidance": "A small, homey detail (playground equipment, a garden feature); purely decorative, never hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The condition or event that makes today's play possible (school closed, weather change, etc.).",
+      "guidance": "A benign, recurring-in-spirit condition; the reason today is special and free for imaginative play.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The named staging point the team departs from and always returns to.",
+      "guidance": "A safe, always-reachable home base for the expedition (a porch, a doorway); never itself hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PREP_SITE",
+      "scope": "global",
+      "meaning": "The indoor spot where the team gears up before heading out.",
+      "guidance": "A mundane household room repurposed as a gear-up spot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TEAM_NAME",
+      "scope": "global",
+      "meaning": "The collective imaginative role the children take on for the day.",
+      "guidance": "A single kid-friendly team identity (explorers, pirates, astronauts) used throughout as their group name.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GUARDIAN",
+      "scope": "global",
+      "meaning": "The supervising adult who equips, checks on, and celebrates with the team.",
+      "guidance": "A warm, present, off-adventure adult presence (never joins the imaginative peril).",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HOME_BASE",
+      "scope": "global",
+      "meaning": "The team's nickname for the real-world room the guardian works from (usually the kitchen).",
+      "guidance": "A playful mission-control-style nickname for an ordinary household room.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TREAT",
+      "scope": "global",
+      "meaning": "The warm comfort drink or snack that fuels the expedition and rewards a retreat.",
+      "guidance": "A short, cozy comfort food/drink word; never itself a hazard.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LOG_ITEM",
+      "scope": "global",
+      "meaning": "The notebook the team records discoveries and field notes in.",
+      "guidance": "A simple recording item (notebook, logbook, map roll).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SNACK_ITEM",
+      "scope": "global",
+      "meaning": "The small snack the team carries and later gives away as a kind gesture.",
+      "guidance": "A simple, shareable snack item; harmless to give to wildlife in the story's imaginative logic.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DIG_TOOL",
+      "scope": "global",
+      "meaning": "The hand tool repurposed as a building/carving tool throughout the expedition.",
+      "guidance": "A blunt household tool (shovel, trowel, scoop); a builder's tool, not a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SUPPLY_VEHICLE",
+      "scope": "global",
+      "meaning": "The wheeled or sliding vehicle repurposed as cargo carrier, ambulance, and parade float across branches.",
+      "guidance": "A simple household vehicle (sled, wagon, wheelbarrow); always safe to ride or pull.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LANDMARK",
+      "scope": "route",
+      "meaning": "The imagined landmark visible to the east/first route, reached by the mountain-climb and tracking tracks.",
+      "guidance": "A striking, climbable-looking feature built from an ordinary yard mound; distinct from route B's landmark.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["ROUTE_B_LANDMARK"]
+      }
+    },
+    {
+      "id": "ROUTE_A_CHAR",
+      "scope": "route",
+      "meaning": "The climbable texture/character of route A's landmark up close.",
+      "guidance": "A safe, passable climbing texture (ledges, ridges); no dead-end hazards.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_LANDMARK",
+      "scope": "route",
+      "meaning": "The imagined open expanse visible to the west/second route, reached by the fort-building and rescue tracks.",
+      "guidance": "A wide, safe, open play surface; distinct from route A's landmark.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["ROUTE_A_LANDMARK"]
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "The texture/quality of route B's expanse that makes it suited to building.",
+      "guidance": "A safe, workable surface quality (soft, packable, smooth).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_SIGN",
+      "scope": "track",
+      "meaning": "The visible clue that hints at and lures toward the tracking track (A2).",
+      "guidance": "A benign trail/sign noticed from a distance; distinct from B2's sign.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["B2_SIGN"]
+      }
+    },
+    {
+      "id": "B2_SIGN",
+      "scope": "track",
+      "meaning": "The visible clue that hints at and lures toward the rescue track (B2).",
+      "guidance": "A benign visual landmark noticed from a distance; distinct from A2's sign.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["A2_SIGN"]
+      }
+    },
+    {
+      "id": "B2_TARGET",
+      "scope": "track",
+      "meaning": "The small toy figures found frozen in place that the rescue track (B2) is about saving.",
+      "guidance": "Small, harmless toy figures; the peril is only imaginative (being 'stuck'), never real danger to them.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_GEAR",
+      "scope": "track",
+      "meaning": "The improvised climbing aid the team ropes up with at the start of the mountain track.",
+      "guidance": "A safe household object repurposed as climbing gear (rope, cord); no real climbing risk.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_CLIMB",
+      "scope": "track",
+      "meaning": "The imagined climbable character of the mountain up close (ledges and handholds).",
+      "guidance": "A passable, climbable texture; no true fall hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_GATE",
+      "scope": "ending",
+      "meaning": "The mid-climb weather obstacle that forces the push-on-or-retreat choice; names the retreat ending.",
+      "guidance": "A brief, non-lethal weather flurry; retreat is always safe and easy. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic", "weapon"],
+        "distinct_from": ["B2_GATE"]
+      }
+    },
+    {
+      "id": "A1_PEAK",
+      "scope": "track",
+      "meaning": "The name for the top of the climbed landmark, reused across the summit sequence and both success endings.",
+      "guidance": "A short, triumphant name for 'the top'.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_MARKER",
+      "scope": "track",
+      "meaning": "The improvised marker planted at the peak in the flag-success ending.",
+      "guidance": "A simple household-object flag/marker assembly; purely decorative, plantable.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: planting the marker at the peak (success).",
+      "guidance": "A short, proud, positive ending name naming the marker-planting achievement.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE2",
+          "A2_PRIZE1",
+          "A2_PRIZE2",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A1_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: riding the vehicle down from the peak (success).",
+      "guidance": "A short, joyful, positive ending name naming the descent achievement.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A2_PRIZE1",
+          "A2_PRIZE2",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A2_TRAIL",
+      "scope": "track",
+      "meaning": "The small tracks the team follows through the tracking track.",
+      "guidance": "Small, neat animal-style tracks; harmless curiosity, not a threat sign.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_HIDEOUT",
+      "scope": "track",
+      "meaning": "The yard feature the trail leads to and hides under/behind.",
+      "guidance": "A safe, enterable yard feature (a bush, a low structure).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: discovering the first creature at the end of the tracking track (discovery).",
+      "guidance": "A short, wonder-filled discovery name; the creature is real and harmless (a neighborhood pet or common animal), never treated as a captured trophy.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic", "capture"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE2",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A2_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: discovering the second creature family at the end of the alternate tracking branch (discovery).",
+      "guidance": "A short, wonder-filled discovery name; the creature family is real and harmless, never treated as captured.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic", "capture"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE1",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "A2_CREATURE1",
+      "scope": "track",
+      "meaning": "The first real animal discovered at the end of the tracking trail (a neighborhood pet reimagined as an exotic creature).",
+      "guidance": "A familiar, harmless neighborhood animal; never harmed or frightened.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["capture"],
+        "distinct_from": ["A2_CREATURE2"]
+      }
+    },
+    {
+      "id": "A2_CREATURE2",
+      "scope": "track",
+      "meaning": "The second real animal family discovered on the alternate tracking branch.",
+      "guidance": "A familiar, harmless small wild animal and her young; never harmed or frightened.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["capture"],
+        "distinct_from": ["A2_CREATURE1"]
+      }
+    },
+    {
+      "id": "B1_LANDMARK",
+      "scope": "track",
+      "meaning": "The fort the team builds over the course of the building track.",
+      "guidance": "A cozy, safe snow/sand/found-material fort; never structurally dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: finishing the fort as a cozy base (completion).",
+      "guidance": "A short, cozy completion name for the finished fort-as-base.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE1",
+          "A2_PRIZE2",
+          "B1_PRIZE2",
+          "B2_PRIZE1",
+          "B2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B1_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: finishing the fort with a secret entrance tunnel (success).",
+      "guidance": "A short, proud success name for the finished secret tunnel.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE1",
+          "A2_PRIZE2",
+          "B1_PRIZE1",
+          "B2_PRIZE1",
+          "B2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B2_GATE",
+      "scope": "ending",
+      "meaning": "The messy misstep during the rescue that forces a retreat; names the retreat ending.",
+      "guidance": "A minor, non-lethal mess or mishap (a melted, re-frozen puddle); retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic", "weapon"],
+        "distinct_from": ["A1_GATE"]
+      }
+    },
+    {
+      "id": "B2_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: caring for the rescued figures at a makeshift hospital (completion).",
+      "guidance": "A short, warm completion name for the caretaking finish.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE1",
+          "A2_PRIZE2",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE2"
+        ]
+      }
+    },
+    {
+      "id": "B2_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: celebrating the rescue with a parade (success).",
+      "guidance": "A short, celebratory success name for the parade finish.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": [
+          "A1_PRIZE1",
+          "A1_PRIZE2",
+          "A2_PRIZE1",
+          "A2_PRIZE2",
+          "B1_PRIZE1",
+          "B1_PRIZE2",
+          "B2_PRIZE1"
+        ]
+      }
+    }
+  ]
+}

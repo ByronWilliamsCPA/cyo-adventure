@@ -12,6 +12,7 @@ import pytest
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import Concept, GenerationJob, StorybookVersion
 from cyo_adventure.generation import import_story as import_story_module
+from cyo_adventure.generation.binding import load_contract_for, render_bound_skeleton
 from cyo_adventure.generation.fidelity import parse_fill_directive
 from cyo_adventure.generation.import_story import resume_manual_fill
 from cyo_adventure.generation.skeleton import load_skeleton
@@ -52,6 +53,27 @@ _CROSS_BAND_SKELETON_PATH = (
 )
 
 
+def _reference_skeleton_for(skeleton_path: Path) -> dict[str, object]:
+    """Return the skeleton a resumed fill's Stage 1 gate compares against.
+
+    For a WS-2 parameterized skeleton (a ``<slug>.contract.json`` sidecar
+    exists) the raw skeleton still carries ``{SLOT}`` tokens in its
+    beats/title/label surfaces, so the Stage 1 reference is the BOUND skeleton
+    rendered from the contract's ``default_binding`` -- exactly what
+    ``import_story._stage1_reference_skeleton`` builds when the parked job
+    records no ``slot_bindings``. A legacy skeleton with no contract is
+    returned unchanged. Building the fixture blob from this bound skeleton is
+    what keeps the fill's leaf surfaces (bound labels, bound ending titles)
+    aligned with the reference the gate uses, rather than leaving raw
+    ``{SLOT}`` tokens a real skill-authored fill would never emit.
+    """
+    skeleton = load_skeleton(skeleton_path)
+    contract = load_contract_for(skeleton_path, skeleton)
+    if contract is None:
+        return skeleton
+    return render_bound_skeleton(skeleton, contract.default_binding)
+
+
 def _filled_blob_for(skeleton_path: Path) -> dict[str, object]:
     """Return the given skeleton with every FILL body replaced by placeholder prose.
 
@@ -60,9 +82,11 @@ def _filled_blob_for(skeleton_path: Path) -> dict[str, object]:
     top-level metadata) is left untouched, matching the cyo-author skill's own
     "never change id/structure" contract (.claude/skills/cyo-author/SKILL.md).
     This keeps the blob's top-level "id" identical to the skeleton's, which
-    the Stage 1 structural check requires.
+    the Stage 1 structural check requires. For a parameterized skeleton the
+    base is the BOUND skeleton (see :func:`_reference_skeleton_for`), so the
+    blob's leaf surfaces match the Stage 1 reference the resume path builds.
     """
-    skeleton = load_skeleton(skeleton_path)
+    skeleton = _reference_skeleton_for(skeleton_path)
     filled = copy.deepcopy(skeleton)
     for node in cast("list[dict[str, object]]", filled["nodes"]):
         body = node.get("body")
@@ -193,6 +217,16 @@ async def test_resume_survives_skeleton_file_deleted_after_persist(
     test_slug = f"tmp-delete-test-{uuid.uuid4().hex[:8]}"
     test_skeleton_path = _SKELETON_PATH.parent / f"{test_slug}.json"
     test_skeleton_path.write_bytes(_SKELETON_PATH.read_bytes())
+    # The real skeleton is a WS-2 parameterized one, so its contract sidecar
+    # must travel with the throwaway copy: the Stage 1 reference is the BOUND
+    # skeleton (import_story._stage1_reference_skeleton), and load_contract_for
+    # re-reads this sidecar AFTER persisting. Only the .json is deleted
+    # mid-resume below (reproducing #128); the contract stays so the gate can
+    # still bind the pre-persist skeleton snapshot and find the seeded
+    # word-count violation.
+    _source_contract_path = _SKELETON_PATH.parent / f"{_SKELETON_SLUG}.contract.json"
+    test_contract_path = _SKELETON_PATH.parent / f"{test_slug}.contract.json"
+    test_contract_path.write_bytes(_source_contract_path.read_bytes())
 
     try:
         async with sessions() as session:
@@ -264,6 +298,7 @@ async def test_resume_survives_skeleton_file_deleted_after_persist(
             assert job.version == 1
     finally:
         test_skeleton_path.unlink(missing_ok=True)
+        test_contract_path.unlink(missing_ok=True)
 
 
 async def test_resume_cross_band_override_loads_stored_band(

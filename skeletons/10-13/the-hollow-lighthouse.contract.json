@@ -1,0 +1,2252 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-hollow-lighthouse",
+  "age_band": "10-13",
+  "legacy_lexicon": [
+    "Mira",
+    "Ferris",
+    "Hollow Lighthouse",
+    "lighthouse",
+    "the keeper's cottage",
+    "the boathouse",
+    "sea cave",
+    "sea caves",
+    "tide pool",
+    "tide pools",
+    "harbour",
+    "coastguard",
+    "smuggler",
+    "smugglers",
+    "lamp room",
+    "gallery walk",
+    "sea gate"
+  ],
+  "default_binding": {
+    "HERO": "Mira",
+    "KEEPER": "old keeper Ferris",
+    "THRESHOLD": "the Hollow Lighthouse",
+    "OPENING_MOMENT": "the last bus gone as fog closes in",
+    "LIGHT_MOTIF": "a pale light in the dark lamp room",
+    "JOURNAL": "the keeper's battered journal",
+    "LAMP_RIG": "a lantern and a rig of angled mirrors",
+    "ROUTE_A_PLACE": "the keeper's cottage",
+    "ROUTE_B_PLACE": "the tower stair to the lamp",
+    "ROUTE_C_PLACE": "the sea caves under the rock",
+    "ROUTE_D_PLACE": "the old boathouse",
+    "A_ASH_PHOTO": "a scorched photograph",
+    "A_BOTTLE": "the ship in the bottle",
+    "A_CORRIDOR": "the hall to the tower's inner door",
+    "A_DESK": "the roll-top desk",
+    "A_DESK_KEY": "a brass key wrapped in oilcloth",
+    "A_HEARTH": "the cold hearth",
+    "A_HEARTH_KEY": "an oilcloth-wrapped brass key",
+    "A_KITCHEN": "the dark kitchen",
+    "A_LOGBOOK": "the worn logbook",
+    "A_LOG_PAGE": "the last log page",
+    "A_SHELF": "the wall of crowded shelves",
+    "A_DESK_DRAWER": "a small locked drawer",
+    "A_BRICK_GATE": "the loose firebrick",
+    "A_DRAWER_END": "The Split Drawer",
+    "A_BRICK_END": "The Fallen Brick",
+    "B_CLOCK": "the clockwork weight",
+    "B_DOWNSTAIR": "the stair down into the tower's core",
+    "B_GALLERY": "the narrow gallery walk",
+    "B_HATCH": "the service hatch",
+    "B_LENS": "the great glass lens",
+    "B_LENS_CRACK": "the cracked panel",
+    "B_LENS_REFLECT": "the hidden reflector",
+    "B_SPIRAL": "the spiral stair",
+    "B_RAIL_GATE": "the rusted iron rail",
+    "B_RAIL_END": "The Rotten Rail",
+    "C_ARCH": "the carved arch",
+    "C_BADGE": "a brass tide-badge",
+    "C_LADDER": "the old iron ladder",
+    "C_MARKS": "the carved tally marks",
+    "C_PASSAGE": "the wet passage inland",
+    "C_POOLS": "the glimmering tide pools",
+    "C_ROCKSTEPS": "the slick steps cut into the rock",
+    "C_WEED": "the glowing cave-weed",
+    "C_WORNSTEPS": "the slick worn steps",
+    "C_TIDE_GATE": "the rising tide",
+    "C_GAP_GATE": "the narrow gap",
+    "C_TIDE_END": "The Rising Tide",
+    "C_GAP_END": "The Narrow Gap",
+    "D_CHART": "a chart of the coast",
+    "D_DINGHY": "the beached dinghy",
+    "D_HATCH": "the floor hatch",
+    "D_LANTERN": "the rusted storm lantern",
+    "D_LOCKER": "the tool locker",
+    "D_LOFT": "the loft",
+    "D_ROPE": "the coil of rope",
+    "D_TIN": "the bailing tin",
+    "D_RUNG_GATE": "the cracked rung",
+    "D_DOOR_GATE": "the loose boathouse door",
+    "D_RUNG_END": "The Broken Rung",
+    "D_DOOR_END": "The Slamming Door",
+    "JR_CARGO_FIGURES": "the cargo figures",
+    "JR_CARGO_LEDGER": "the ledger of night cargoes",
+    "JR_CODED_NAMES": "the coded names",
+    "JR_FLAGSTONE": "the marked flagstone",
+    "JR_HIDDEN_STAIR": "the hidden stair",
+    "JR_LIGHT_DATES": "the column of odd dates",
+    "JR_LIGHT_DESC": "a careful description",
+    "JR_LIGHT_ENTRIES": "the light entries",
+    "JR_TORN_PAGE": "the torn-out page",
+    "JR_TUNNEL_SKETCH": "the sketch of the tunnel",
+    "JR_CELLAR_GATE": "the low cellar door",
+    "JR_CELLAR_END": "The Cellar Door",
+    "ST_DOOR": "the frosted glass door",
+    "ST_OUTER": "the outer steps",
+    "ST_WIND": "the tight winding stair",
+    "ST_STEP_GATE": "the hollow-sounding step",
+    "ST_STEP_END": "The Hollow Step",
+    "LI_COAT": "the keeper's storm coat",
+    "LI_CUPBOARD": "the landing cupboard",
+    "LI_LADDER": "the outer ladder",
+    "LI_LENS": "the spare lens",
+    "LI_SHAFT": "the service shaft",
+    "LI_STAIR": "the stone stair",
+    "LI_STAPLES": "the iron staples",
+    "LI_TUNNEL_MOUTH": "the tunnel mouth",
+    "LI_ROPE_GATE": "the knotted rope",
+    "LI_FOG_GATE": "the closing fog",
+    "LI_ROPE_END": "The Frayed Rope",
+    "LI_FOG_END": "Too Thick a Fog",
+    "TN_CRATE": "a prised-open crate",
+    "TN_CURRENT": "the strong cold current",
+    "TN_KEEPER_DOOR": "the sealed keeper's door",
+    "TN_KEY": "the brass key",
+    "TN_LANTERN": "the carried lantern",
+    "TN_LEDGERBOX": "the locked ledger box",
+    "TN_STORE": "the crate store",
+    "TN_BEAM_GATE": "the fallen beam",
+    "TN_WARD_GATE": "the jammed old wards",
+    "TN_SEAGATE_GATE": "the barred sea gate",
+    "TN_BEAM_END": "Under the Beam",
+    "TN_WARD_END": "The Broken Ward",
+    "TN_SEAGATE_END": "The Flooded Gate",
+    "CM_COASTGUARD": "the coastguard",
+    "CM_COMPASS": "a jewelled compass",
+    "CM_CONFESSION": "a signed confession",
+    "CM_COTTAGE": "a shepherd's cottage on the inland moor",
+    "CM_HARBOURMASTER": "the harbour master",
+    "CM_HARBOUR_OFFICE": "the harbour office",
+    "CM_LETTER": "the sealed letter",
+    "CM_MAP": "a map to his cottage",
+    "CM_MIRROR": "the mirror",
+    "CM_PLEA": "a plea to make it right",
+    "CM_ROOM": "the keeper's sealed room",
+    "CM_SIGNAL_RIG": "the signal rig",
+    "CM_STORE": "the smugglers' store",
+    "CM_GEARS_GATE": "the stiff gears",
+    "CM_TOKEN_END": "The Chiming Wire",
+    "CM_GEARS_END": "The Jammed Gears",
+    "KEEPER_FOUND_PRIZE": "The Keeper Found",
+    "KEEPER_WORD_PRIZE": "Word to the Harbour",
+    "NAME_CLEARED_PRIZE": "The Keeper's Name",
+    "PROMISE_PRIZE": "A Keeper's Promise",
+    "SMUGGLERS_PRIZE": "The Smugglers Caught",
+    "HARBOR_PRIZE": "The Harbour Master",
+    "HOARD_PRIZE": "The Hidden Hoard",
+    "LIGHT_RESTORED_PRIZE": "The Light Restored",
+    "RESCUE_PRIZE": "The Call for Help",
+    "SIGNAL_PRIZE": "The Signal Solved",
+    "LETTER_PRIZE": "The Sealed Letter",
+    "HONEST_PRIZE": "Clean Hands",
+    "TOWN_PRIZE": "Back to Town",
+    "EVIDENCE_PRIZE": "The Signpost",
+    "MUSEUM_PRIZE": "The Journal Home"
+  },
+  "slots": [
+    {
+      "id": "A_ASH_PHOTO",
+      "scope": "track",
+      "meaning": "The clue recovered from the hearth's ash.",
+      "guidance": "A salvaged image or document; safe, no burns implied.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_BOTTLE",
+      "scope": "track",
+      "meaning": "One of two searchable shelf items.",
+      "guidance": "A curio hiding a clue; harmless to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "A_LOGBOOK"
+        ]
+      }
+    },
+    {
+      "id": "A_BRICK_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the fallen brick.",
+      "guidance": "Names a safe, unharmed retreat after a forced brick collapses.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_BRICK_GATE",
+      "scope": "track",
+      "meaning": "The loose hearth brick offering a careful-open-vs-force choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "Forcing it only causes dust and rubble; never a source of injury.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_CORRIDOR",
+      "scope": "track",
+      "meaning": "The hallway route A's clues all lead toward.",
+      "guidance": "A safe, passable hall connecting the cottage to the tower.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_DESK",
+      "scope": "track",
+      "meaning": "The furniture searched first in the cottage office.",
+      "guidance": "A container of clues (desk/bureau); nothing hazardous inside.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "A_HEARTH",
+          "A_SHELF"
+        ]
+      }
+    },
+    {
+      "id": "A_DESK_DRAWER",
+      "scope": "track",
+      "meaning": "The stuck drawer offering a careful-open-vs-force choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "Forcing it only damages furniture and ends the route for the night; never a source of injury.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_DESK_KEY",
+      "scope": "track",
+      "meaning": "The key recovered from the desk drawer.",
+      "guidance": "A small metal keepsake; opens a door later.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_DRAWER_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the split drawer.",
+      "guidance": "Names a safe, unharmed retreat after a forced drawer breaks.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_HEARTH",
+      "scope": "track",
+      "meaning": "The third searchable furniture in the office.",
+      "guidance": "A cold, safe fireplace or equivalent; ash, not embers.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "A_DESK",
+          "A_SHELF"
+        ]
+      }
+    },
+    {
+      "id": "A_HEARTH_KEY",
+      "scope": "track",
+      "meaning": "The key recovered from behind the hearth brick.",
+      "guidance": "A small metal keepsake; opens a door later.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_KITCHEN",
+      "scope": "track",
+      "meaning": "The alternate side-passage off the corridor.",
+      "guidance": "A dim but safe room; a shortcut, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_LOGBOOK",
+      "scope": "track",
+      "meaning": "The other searchable shelf item.",
+      "guidance": "A record book hiding a clue; harmless to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "A_BOTTLE"
+        ]
+      }
+    },
+    {
+      "id": "A_LOG_PAGE",
+      "scope": "track",
+      "meaning": "The document found in the desk.",
+      "guidance": "A short written clue; safe to read.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_SHELF",
+      "scope": "track",
+      "meaning": "The second searchable furniture in the office.",
+      "guidance": "A container of clues (shelving/books); nothing hazardous inside.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "A_DESK",
+          "A_HEARTH"
+        ]
+      }
+    },
+    {
+      "id": "B_CLOCK",
+      "scope": "track",
+      "meaning": "The clockwork mechanism in the lamp room.",
+      "guidance": "A dormant mechanical device; safe to examine or wind.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "B_GALLERY",
+          "B_LENS"
+        ]
+      }
+    },
+    {
+      "id": "B_DOWNSTAIR",
+      "scope": "track",
+      "meaning": "The descent route inside the tower's core.",
+      "guidance": "A safe stairway or shaft leading further down.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_GALLERY",
+      "scope": "track",
+      "meaning": "The outdoor walkway around the lamp room.",
+      "guidance": "An exterior walk with a railing; safe if the rail is trusted carefully.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "B_CLOCK",
+          "B_LENS"
+        ]
+      }
+    },
+    {
+      "id": "B_HATCH",
+      "scope": "track",
+      "meaning": "The alternate quick way down from the lamp room.",
+      "guidance": "A safe service opening; a shortcut down.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_LENS",
+      "scope": "track",
+      "meaning": "The great optical apparatus in the lamp room.",
+      "guidance": "A large, inert optical fixture; not lit by any real flame.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "B_CLOCK",
+          "B_GALLERY"
+        ]
+      }
+    },
+    {
+      "id": "B_LENS_CRACK",
+      "scope": "track",
+      "meaning": "The flaw in the lens revealing the truth.",
+      "guidance": "A visual clue; safe to look through.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_LENS_REFLECT",
+      "scope": "track",
+      "meaning": "The hidden fitting behind the lens.",
+      "guidance": "A concealed mechanism; safe to examine.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_RAIL_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the rotten rail.",
+      "guidance": "Names a safe, unharmed retreat after the rail proves untrustworthy.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_RAIL_GATE",
+      "scope": "track",
+      "meaning": "The rusted gallery rail offering a trust-it-or-retreat choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "A shaky rail that can always be safely abandoned by stepping back inside; never gives way with the hero on it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_SPIRAL",
+      "scope": "track",
+      "meaning": "The main stairway down from the lamp room.",
+      "guidance": "A safe, winding stairway.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "B_HATCH"
+        ]
+      }
+    },
+    {
+      "id": "CM_COASTGUARD",
+      "scope": "track",
+      "meaning": "One of two authorities to alert.",
+      "guidance": "A helpful rescue authority.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "CM_HARBOURMASTER"
+        ]
+      }
+    },
+    {
+      "id": "CM_COMPASS",
+      "scope": "track",
+      "meaning": "The valuable object found in the hidden hoard.",
+      "guidance": "A beautiful, tempting keepsake; the moral choice is whether to take it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CM_CONFESSION",
+      "scope": "track",
+      "meaning": "The second thing at the end of the letter.",
+      "guidance": "A written confession; safe to read and share.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "CM_MAP",
+          "CM_PLEA"
+        ]
+      }
+    },
+    {
+      "id": "CM_COTTAGE",
+      "scope": "track",
+      "meaning": "The destination the map points to.",
+      "guidance": "A safe, remote dwelling.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "CM_HARBOUR_OFFICE"
+        ]
+      }
+    },
+    {
+      "id": "CM_GEARS_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the jammed gears.",
+      "guidance": "Names a safe, unsolved-but-unharmed outcome after the gears jam.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CM_GEARS_GATE",
+      "scope": "track",
+      "meaning": "The stiff lamp gears offering an align-gently-or-force choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "Old gears that jam if forced, never causing injury.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CM_HARBOURMASTER",
+      "scope": "track",
+      "meaning": "The other authority to alert.",
+      "guidance": "A helpful local official.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "CM_COASTGUARD"
+        ]
+      }
+    },
+    {
+      "id": "CM_HARBOUR_OFFICE",
+      "scope": "track",
+      "meaning": "The alternate destination for the map.",
+      "guidance": "A safe, staffed office in town.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "CM_COTTAGE"
+        ]
+      }
+    },
+    {
+      "id": "CM_LETTER",
+      "scope": "track",
+      "meaning": "The central document found in the sealed room.",
+      "guidance": "A sealed letter explaining the whole mystery; safe to read or carry.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "CM_STORE"
+        ]
+      }
+    },
+    {
+      "id": "CM_MAP",
+      "scope": "track",
+      "meaning": "One of three things at the end of the letter.",
+      "guidance": "A hand-drawn map; safe to follow.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "CM_CONFESSION",
+          "CM_PLEA"
+        ]
+      }
+    },
+    {
+      "id": "CM_MIRROR",
+      "scope": "track",
+      "meaning": "The optical part realigned to relight the lamp.",
+      "guidance": "A safe mechanical part to adjust.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CM_PLEA",
+      "scope": "track",
+      "meaning": "The third thing at the end of the letter.",
+      "guidance": "A heartfelt written request; safe to read.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "CM_CONFESSION",
+          "CM_MAP"
+        ]
+      }
+    },
+    {
+      "id": "CM_ROOM",
+      "scope": "track",
+      "meaning": "The final sealed room every route converges on.",
+      "guidance": "A snug, dry, safe room under the sea.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CM_SIGNAL_RIG",
+      "scope": "track",
+      "meaning": "The signalling device studied as an alternative.",
+      "guidance": "A safe, clever signalling mechanism.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CM_STORE",
+      "scope": "track",
+      "meaning": "One of the sealed room's three follow-up threads.",
+      "guidance": "The smugglers' hidden store; safe to investigate.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "CM_LETTER"
+        ]
+      }
+    },
+    {
+      "id": "CM_TOKEN_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: pocketing the compass triggers an alarm.",
+      "guidance": "Names a consequence (being caught, questions asked) that is awkward, never harmful.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_ARCH",
+      "scope": "track",
+      "meaning": "The carved cave archway.",
+      "guidance": "A stone archway with old markings; safe to study.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "C_PASSAGE",
+          "C_POOLS"
+        ]
+      }
+    },
+    {
+      "id": "C_BADGE",
+      "scope": "track",
+      "meaning": "The metal object found in the pools.",
+      "guidance": "A small lost keepsake; safe to retrieve.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C_WEED"
+        ]
+      }
+    },
+    {
+      "id": "C_GAP_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the narrow gap.",
+      "guidance": "Names a safe, unharmed retreat from the tight squeeze.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_GAP_GATE",
+      "scope": "track",
+      "meaning": "The narrow squeeze offering a push-on-or-back-out choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "A tight but passable gap; backing out is always available and safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_LADDER",
+      "scope": "track",
+      "meaning": "The other way up from the cave gathering point.",
+      "guidance": "An old but sound ladder.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C_WORNSTEPS"
+        ]
+      }
+    },
+    {
+      "id": "C_MARKS",
+      "scope": "track",
+      "meaning": "The tally marks carved at the arch.",
+      "guidance": "A readable clue carved in stone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_PASSAGE",
+      "scope": "track",
+      "meaning": "The inland cave passage.",
+      "guidance": "A safe but narrowing tidal passage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "C_ARCH",
+          "C_POOLS"
+        ]
+      }
+    },
+    {
+      "id": "C_POOLS",
+      "scope": "track",
+      "meaning": "The glimmering cave tide pools.",
+      "guidance": "A shallow, safe pool area, no deep water.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "C_ARCH",
+          "C_PASSAGE"
+        ]
+      }
+    },
+    {
+      "id": "C_ROCKSTEPS",
+      "scope": "track",
+      "meaning": "The rock-cut steps beyond the passage.",
+      "guidance": "Slick but climbable steps.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_TIDE_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the rising tide.",
+      "guidance": "Names a safe, unharmed retreat from the rising water.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_TIDE_GATE",
+      "scope": "track",
+      "meaning": "The rising tide offering a push-on-or-retreat choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "The tide rises slowly enough that retreat is always possible; never traps or submerges the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_WEED",
+      "scope": "track",
+      "meaning": "The glowing weed found in the pools.",
+      "guidance": "A harmless bioluminescent plant.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "C_BADGE"
+        ]
+      }
+    },
+    {
+      "id": "C_WORNSTEPS",
+      "scope": "track",
+      "meaning": "One of two ways up from the cave gathering point.",
+      "guidance": "Worn but safe steps.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "C_LADDER"
+        ]
+      }
+    },
+    {
+      "id": "D_CHART",
+      "scope": "track",
+      "meaning": "The map found under the dinghy's cover.",
+      "guidance": "A useful navigational document.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "D_TIN"
+        ]
+      }
+    },
+    {
+      "id": "D_DINGHY",
+      "scope": "track",
+      "meaning": "The small boat searched in the boathouse.",
+      "guidance": "A safe, beached vessel with hidden compartments.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "D_LOCKER",
+          "D_LOFT"
+        ]
+      }
+    },
+    {
+      "id": "D_DOOR_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the slamming door.",
+      "guidance": "Names a safe, unharmed retreat when the storm interrupts.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_DOOR_GATE",
+      "scope": "track",
+      "meaning": "The wind-loosened boathouse door disrupting the hatch choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "A banging door that startles but never harms; always safe to step back from.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_HATCH",
+      "scope": "track",
+      "meaning": "The floor opening leading toward the tower.",
+      "guidance": "A safe, if stiff, floor hatch.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_LANTERN",
+      "scope": "track",
+      "meaning": "The other useful tool in the locker.",
+      "guidance": "A workable light source.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "D_ROPE"
+        ]
+      }
+    },
+    {
+      "id": "D_LOCKER",
+      "scope": "track",
+      "meaning": "The tool storage searched in the boathouse.",
+      "guidance": "A safe storage container with useful gear.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "D_DINGHY",
+          "D_LOFT"
+        ]
+      }
+    },
+    {
+      "id": "D_LOFT",
+      "scope": "track",
+      "meaning": "The elevated storage searched in the boathouse.",
+      "guidance": "A safe upper storage area, reached by a rickety ladder.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "D_DINGHY",
+          "D_LOCKER"
+        ]
+      }
+    },
+    {
+      "id": "D_ROPE",
+      "scope": "track",
+      "meaning": "One of two useful tools in the locker.",
+      "guidance": "A coil of usable rope.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "D_LANTERN"
+        ]
+      }
+    },
+    {
+      "id": "D_RUNG_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the broken rung.",
+      "guidance": "Names a safe, unharmed retreat after the rung gives way.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_RUNG_GATE",
+      "scope": "track",
+      "meaning": "The cracked loft rung offering a careful-climb-or-trust-it choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "A weak rung that gives a short, harmless fall if trusted; never causes real injury.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_TIN",
+      "scope": "track",
+      "meaning": "The container found in the dinghy's bow.",
+      "guidance": "A small container holding a clue.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "D_CHART"
+        ]
+      }
+    },
+    {
+      "id": "EVIDENCE_PRIZE",
+      "scope": "ending",
+      "meaning": "Neutral ending: a trail is left for others to follow.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "HARBOR_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the harbour authority acts on the evidence.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A single kid-relatable explorer (name or role); capable but not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "KEEPER"
+        ]
+      }
+    },
+    {
+      "id": "HOARD_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the hidden hoard is documented for the law.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "HONEST_PRIZE",
+      "scope": "ending",
+      "meaning": "Neutral ending: the hero leaves a temptation behind.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "JOURNAL",
+      "scope": "global",
+      "meaning": "The recurring clue-document every route eventually leads to.",
+      "guidance": "A found record (diary, log, journal) that carries the mystery's threads; safe to read and carry.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "JR_CARGO_FIGURES",
+      "scope": "track",
+      "meaning": "One of two smuggling-thread sub-clues.",
+      "guidance": "A ledger's numeric entries; safe to read.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "JR_CODED_NAMES"
+        ]
+      }
+    },
+    {
+      "id": "JR_CARGO_LEDGER",
+      "scope": "track",
+      "meaning": "The journal's thread about smuggling.",
+      "guidance": "A written clue thread; safe to read.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "JR_LIGHT_ENTRIES",
+          "JR_TUNNEL_SKETCH"
+        ]
+      }
+    },
+    {
+      "id": "JR_CELLAR_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the cellar door.",
+      "guidance": "Names a safe, unharmed retreat from the dark cellar.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "JR_CELLAR_GATE",
+      "scope": "track",
+      "meaning": "The locked cellar door tempting a detour off the smuggling thread. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "A door that only opens onto darkness; stepping back is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "JR_CODED_NAMES",
+      "scope": "track",
+      "meaning": "The other smuggling-thread sub-clue.",
+      "guidance": "A coded list of names; safe to puzzle out.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "JR_CARGO_FIGURES"
+        ]
+      }
+    },
+    {
+      "id": "JR_FLAGSTONE",
+      "scope": "track",
+      "meaning": "The marked floor stone in the tunnel thread.",
+      "guidance": "A heavy but movable floor stone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "JR_HIDDEN_STAIR",
+      "scope": "track",
+      "meaning": "The convergence stair all three journal threads point toward.",
+      "guidance": "A concealed but safe stairway.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "JR_LIGHT_DATES",
+      "scope": "track",
+      "meaning": "The other light-thread sub-clue.",
+      "guidance": "A list of dates; safe to read.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "JR_LIGHT_DESC"
+        ]
+      }
+    },
+    {
+      "id": "JR_LIGHT_DESC",
+      "scope": "track",
+      "meaning": "One of two light-thread sub-clues.",
+      "guidance": "A written description; safe to read.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "JR_LIGHT_DATES"
+        ]
+      }
+    },
+    {
+      "id": "JR_LIGHT_ENTRIES",
+      "scope": "track",
+      "meaning": "The journal's thread about the light.",
+      "guidance": "A written clue thread; safe to read.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "JR_CARGO_LEDGER",
+          "JR_TUNNEL_SKETCH"
+        ]
+      }
+    },
+    {
+      "id": "JR_TORN_PAGE",
+      "scope": "track",
+      "meaning": "The missing ledger page, later found.",
+      "guidance": "A recovered document fragment; safe to read.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "JR_TUNNEL_SKETCH",
+      "scope": "track",
+      "meaning": "The journal's thread about the tunnel.",
+      "guidance": "A drawn clue thread; safe to study.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "JR_CARGO_LEDGER",
+          "JR_LIGHT_ENTRIES"
+        ]
+      }
+    },
+    {
+      "id": "KEEPER",
+      "scope": "global",
+      "meaning": "The vanished figure whose disappearance is the mystery's origin.",
+      "guidance": "A backstory adult, never physically present as a threat; benign, sympathetic, missing rather than menacing.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "KEEPER_FOUND_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the vanished keeper found alive (fullest completion).",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "KEEPER_WORD_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: word reaches help and the keeper is rescued.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "LAMP_RIG",
+      "scope": "global",
+      "meaning": "The mechanism behind the mystery light, discovered and later reused for good.",
+      "guidance": "A clever, benign device (rig, mechanism, apparatus); never a weapon or hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LETTER_PRIZE",
+      "scope": "ending",
+      "meaning": "Neutral ending: the letter is carried out unread.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "LIGHT_MOTIF",
+      "scope": "global",
+      "meaning": "The recurring mystery signal that draws the hero on.",
+      "guidance": "An ambient, wondrous cue (a light, a sound, a glow); ultimately revealed as made, not supernatural or hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LIGHT_RESTORED_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the true lamp is relit for good.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "LI_COAT",
+      "scope": "track",
+      "meaning": "The other item in the landing cupboard.",
+      "guidance": "A worn coat holding a clue in its pocket.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "LI_LENS"
+        ]
+      }
+    },
+    {
+      "id": "LI_CUPBOARD",
+      "scope": "track",
+      "meaning": "The storage cupboard on the stone-stair landing.",
+      "guidance": "A safe storage cupboard with keeper's keepsakes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LI_FOG_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: too thick a fog.",
+      "guidance": "Names a safe, unharmed retreat from the thickening fog.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LI_FOG_GATE",
+      "scope": "track",
+      "meaning": "The thickening fog on the outer ladder offering a push-on-or-wait choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "Fog that only obscures visibility; retreat up the ladder is always available.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LI_LADDER",
+      "scope": "track",
+      "meaning": "The third descent from the light chamber.",
+      "guidance": "An exterior ladder, safe if fog is respected.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "LI_SHAFT",
+          "LI_STAIR"
+        ]
+      }
+    },
+    {
+      "id": "LI_LENS",
+      "scope": "track",
+      "meaning": "One of two items in the landing cupboard.",
+      "guidance": "A spare optical part; safe to carry.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "LI_COAT"
+        ]
+      }
+    },
+    {
+      "id": "LI_ROPE_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the frayed rope.",
+      "guidance": "Names a safe, unharmed retreat after the rope frays.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LI_ROPE_GATE",
+      "scope": "track",
+      "meaning": "The knotted rope offering a trust-it-or-use-staples choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "A fraying rope; failure only means climbing back to the staples, never a fall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LI_SHAFT",
+      "scope": "track",
+      "meaning": "The second descent from the light chamber.",
+      "guidance": "A vertical service shaft with a safe climbing aid.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "LI_LADDER",
+          "LI_STAIR"
+        ]
+      }
+    },
+    {
+      "id": "LI_STAIR",
+      "scope": "track",
+      "meaning": "One of three descents from the light chamber.",
+      "guidance": "A broad, safe stone stairway.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "LI_LADDER",
+          "LI_SHAFT"
+        ]
+      }
+    },
+    {
+      "id": "LI_STAPLES",
+      "scope": "track",
+      "meaning": "The fixed climbing aid in the service shaft.",
+      "guidance": "Sturdy iron rungs set in the shaft wall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LI_TUNNEL_MOUTH",
+      "scope": "track",
+      "meaning": "The tunnel entrance all three descents converge on.",
+      "guidance": "A safe, dry passage entrance.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MUSEUM_PRIZE",
+      "scope": "ending",
+      "meaning": "Neutral ending: the journal is handed to the town.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "NAME_CLEARED_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the keeper's name is publicly cleared.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The circumstance that strands the hero here at nightfall.",
+      "guidance": "An ordinary mishap (missed transport, bad weather) that is inconvenient, never dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PROMISE_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the hero vows to honor the keeper's plea.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "RESCUE_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the signal rig calls in outside help.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_PLACE",
+      "scope": "route",
+      "meaning": "The named place explored down route A.",
+      "guidance": "A distinct, self-contained area of the threshold; safe to enter; distinguishable from the other three routes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_B_PLACE",
+          "ROUTE_C_PLACE",
+          "ROUTE_D_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_PLACE",
+      "scope": "route",
+      "meaning": "The named place explored down route B.",
+      "guidance": "A distinct, self-contained area of the threshold; safe to enter; distinguishable from the other three routes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_C_PLACE",
+          "ROUTE_D_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_PLACE",
+      "scope": "route",
+      "meaning": "The named place explored down route C.",
+      "guidance": "A distinct, self-contained area of the threshold; safe to enter; distinguishable from the other three routes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_B_PLACE",
+          "ROUTE_D_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_PLACE",
+      "scope": "route",
+      "meaning": "The named place explored down route D.",
+      "guidance": "A distinct, self-contained area of the threshold; safe to enter; distinguishable from the other three routes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_B_PLACE",
+          "ROUTE_C_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "SIGNAL_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the signal mechanism is fully understood.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SMUGGLERS_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "SMUGGLERS_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: the smugglers are caught in the act.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "TOWN_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "ST_DOOR",
+      "scope": "track",
+      "meaning": "The door both stair options converge on.",
+      "guidance": "A safe door glowing with the mystery light beyond.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST_OUTER",
+      "scope": "track",
+      "meaning": "The exterior stair option at the second bottleneck.",
+      "guidance": "An exposed but sound exterior stairway.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ST_WIND"
+        ]
+      }
+    },
+    {
+      "id": "ST_STEP_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the hollow step.",
+      "guidance": "Names a safe, unharmed retreat after the step gives way.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST_STEP_GATE",
+      "scope": "track",
+      "meaning": "The hollow-sounding step offering a trust-it-or-careful-climb choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "A step that gives underfoot but never causes real harm; recovery is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ST_WIND",
+      "scope": "track",
+      "meaning": "The interior stair option at the second bottleneck.",
+      "guidance": "A dark but sound interior stairway.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ST_OUTER"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the story happens inside.",
+      "guidance": "One landmark with several ways in; self-contained; wonder over dread; no lethal hazards, no toxic/unbreathable air.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TN_BEAM_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: under the beam.",
+      "guidance": "Names a safe, unharmed retreat after the beam shifts.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TN_BEAM_GATE",
+      "scope": "track",
+      "meaning": "The fallen beam blocking the keeper's-door branch. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "A heavy but liftable beam; a near miss at worst, never an injury.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TN_CRATE",
+      "scope": "track",
+      "meaning": "One of two searchable containers in the store.",
+      "guidance": "A crate hiding contraband; safe to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "TN_LEDGERBOX"
+        ]
+      }
+    },
+    {
+      "id": "TN_CURRENT",
+      "scope": "track",
+      "meaning": "The water movement at the sea gate.",
+      "guidance": "A strong but survivable current; never sweeps the hero away.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TN_KEEPER_DOOR",
+      "scope": "track",
+      "meaning": "One of three tunnel branches: the sealed room door.",
+      "guidance": "A sealed, safe door blocking the keeper's private room.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "TN_SEAGATE_GATE",
+          "TN_STORE"
+        ]
+      }
+    },
+    {
+      "id": "TN_KEY",
+      "scope": "track",
+      "meaning": "The key used at the keeper's door.",
+      "guidance": "A brass key; a tool, not a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TN_LANTERN",
+      "scope": "track",
+      "meaning": "The light source carried through the store passage.",
+      "guidance": "A carried lantern running low on fuel; no fire hazard implied.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TN_LEDGERBOX",
+      "scope": "track",
+      "meaning": "The other searchable container in the store.",
+      "guidance": "A locked record box; safe to open.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "TN_CRATE"
+        ]
+      }
+    },
+    {
+      "id": "TN_SEAGATE_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the flooded gate.",
+      "guidance": "Names a safe, unharmed retreat from the rising water at the gate.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TN_SEAGATE_GATE",
+      "scope": "track",
+      "meaning": "The barred sea gate offering an open-it-or-retreat choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "A tidal gate that floods slowly; retreat to the dry passage is always available.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TN_STORE",
+      "scope": "track",
+      "meaning": "The second tunnel branch: the smugglers' store.",
+      "guidance": "A safe storage chamber full of contraband.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "TN_KEEPER_DOOR",
+          "TN_SEAGATE_GATE"
+        ]
+      }
+    },
+    {
+      "id": "TN_WARD_END",
+      "scope": "ending",
+      "meaning": "Setback ending title: the broken ward.",
+      "guidance": "Names a safe, unharmed retreat after the lock jams for good.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TN_WARD_GATE",
+      "scope": "track",
+      "meaning": "The stuck lock wards offering a coax-or-force choice. (commit-or-turn-back obstacle; must read as safely retreatable)",
+      "guidance": "Old mechanical wards; forcing them only jams the lock, never harms the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TOWN_PRIZE",
+      "scope": "ending",
+      "meaning": "Neutral ending: the hero heads home, mystery unresolved.",
+      "guidance": "Positive or neutral discovery; a real resolution, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "EVIDENCE_PRIZE",
+          "HARBOR_PRIZE",
+          "HOARD_PRIZE",
+          "HONEST_PRIZE",
+          "KEEPER_FOUND_PRIZE",
+          "KEEPER_WORD_PRIZE",
+          "LETTER_PRIZE",
+          "LIGHT_RESTORED_PRIZE",
+          "MUSEUM_PRIZE",
+          "NAME_CLEARED_PRIZE",
+          "PROMISE_PRIZE",
+          "RESCUE_PRIZE",
+          "SIGNAL_PRIZE",
+          "SMUGGLERS_PRIZE"
+        ]
+      }
+    }
+  ]
+}

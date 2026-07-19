@@ -1,0 +1,2383 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-salt-archive",
+  "age_band": "16+",
+  "legacy_lexicon": [
+    "Maren Coll",
+    "Maren",
+    "Saltmere",
+    "Elias Verrin",
+    "Nan Ostler",
+    "Salt Archive",
+    "salt archive",
+    "tide",
+    "brine",
+    "tideline"
+  ],
+  "default_binding": {
+    "HERO": "Maren Coll",
+    "TOWN": "Saltmere",
+    "FOUNDER": "Elias Verrin",
+    "CONTRIBUTOR": "Nan Ostler",
+    "THRESHOLD": "the Salt Archive",
+    "OPENING_MOMENT": "the night the low tide comes in wrong",
+    "DEADLINE": "the tide",
+    "DEADLINE_SIGN": "the water",
+    "ROUTE_A_APPROACH": "the catalogue of the flooding lowest vaults",
+    "ROUTE_A_GATE": "The Flooding Vaults",
+    "ROUTE_B_APPROACH": "Nan Ostler, the last living contributor",
+    "ROUTE_B_GATE": "The Last Contributor",
+    "ROUTE_C_APPROACH": "the founder's sealed ledger",
+    "ROUTE_C_GATE": "The Sealed Ledger",
+    "ROUTE_D_APPROACH": "the reclaiming tide against the cliff",
+    "ROUTE_D_GATE": "The Reclaiming Tide",
+    "ROUTE_MA_THREAD": "the drowned marriage records",
+    "MA_LOST": "The Vows the Town Forgot",
+    "MA_KEPT": "A Ledger Kept Silent But Whole",
+    "ROUTE_MB_THREAD": "Nan Ostler's withheld pages",
+    "MB_LOST": "The Pages She Never Shared",
+    "MB_KEPT": "the Pages",
+    "ROUTE_MC_THREAD": "the struck muster rolls",
+    "MC_LOST": "The Names the Town Erased",
+    "MC_KEPT": "A Register Preserved Without a Name",
+    "ROUTE_MD_THREAD": "the erased baptismal register",
+    "MD_LOST": "The Births the Town Denied",
+    "MD_KEPT": "the Register of Births",
+    "ROUTE_NA_CONFIDANT": "the founder's folded confession",
+    "NA_GATE": "What the Founder Left Unsaid",
+    "ROUTE_NB_CONFIDANT": "Nan Ostler at her window",
+    "NB_GATE": "The Last Voice in the Archive",
+    "ROUTE_NC_CONFIDANT": "the sea's own record against the glass",
+    "NC_GATE": "What the Tide Wrote",
+    "ROUTE_R1_RESOLVE": "reconciling Saltmere with what it chose to forget",
+    "R1_OUTCOME_A": "Bore It Alone and the Town Held",
+    "R1_OUTCOME_B": "Broke From the Founder and Made It New",
+    "R1_OUTCOME_C": "The Town Remembers and Is Not Broken",
+    "R1_OUTCOME_D": "Held the Line and Kept the Vault",
+    "R1_OUTCOME_E": "Carried the Truth Into the Storm",
+    "R1_OUTCOME_F": "Sealed the Truth for a Kinder Year",
+    "R1_OUTCOME_G": "Signed It True and the Water Fell",
+    "R1_OUTCOME_H": "Left It Unclaimed and the Town Chose",
+    "ROUTE_R2_RESOLVE": "saving the one irreplaceable record of Saltmere",
+    "R2_OUTCOME_A": "Saved the Ledger Alone",
+    "R2_OUTCOME_B": "Broke the Seal and Carried It Out",
+    "R2_OUTCOME_C": "Spoke It and Saved the Page",
+    "R2_OUTCOME_D": "Guarded the One Surviving Book",
+    "R2_OUTCOME_E": "Ran the Ledger Through the Storm",
+    "R2_OUTCOME_F": "Sealed It and Lost the Rest to Salt",
+    "R2_OUTCOME_G": "Signed and Saved the Founder Hand",
+    "R2_OUTCOME_H": "Left It Unsigned but Safe and Dry",
+    "ROUTE_R3_RESOLVE": "making peace with what the sea will take",
+    "R3_OUTCOME_A": "Let the Low Vaults Go in Peace",
+    "R3_OUTCOME_B": "Broke From the Founder's Fear of Loss",
+    "R3_OUTCOME_C": "Told the Town and Let It Grieve",
+    "R3_OUTCOME_D": "Held Vigil While the Water Rose",
+    "R3_OUTCOME_E": "Walked It Out Into the Weather",
+    "R3_OUTCOME_F": "Sealed It and Felt the Old Dread",
+    "R3_OUTCOME_G": "Named the Loss and Made It Bearable",
+    "R3_OUTCOME_H": "Left No Name on the Empty Shelf",
+    "ROUTE_R4_RESOLVE": "salvaging a single page from a losing night",
+    "R4_OUTCOME_A": "Alone in the Dark, One Page Saved",
+    "R4_OUTCOME_B": "Went Off the Founder's Map, Kept a Scrap",
+    "R4_OUTCOME_C": "Spoke to No One and Saved the Corner",
+    "R4_OUTCOME_D": "Held the Line Till the Line Gave",
+    "R4_OUTCOME_E": "Carried One Page Into the Rain",
+    "R4_OUTCOME_F": "Sealed a Vault That Was Already Full",
+    "R4_OUTCOME_G": "Signed for a Page, the Rest Was Sea",
+    "R4_OUTCOME_H": "Unsigned, Unsettled, but Safe by Dawn"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The keeper protagonist.",
+      "guidance": "A single adult investigator-protagonist (name); capable, methodical, not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "CONTRIBUTOR",
+          "FOUNDER"
+        ]
+      }
+    },
+    {
+      "id": "TOWN",
+      "scope": "global",
+      "meaning": "The town whose secrets the archive holds.",
+      "guidance": "A place name; the community whose collective memory is at stake.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FOUNDER",
+      "scope": "global",
+      "meaning": "The archive's deceased founder.",
+      "guidance": "A named historical figure who built the archive and set its rules; never present, only referenced.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "CONTRIBUTOR"
+        ]
+      }
+    },
+    {
+      "id": "CONTRIBUTOR",
+      "scope": "global",
+      "meaning": "The last living person who fed the archive its records.",
+      "guidance": "An elderly, still-living secondary character who can be trusted or kept at arm's length.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "FOUNDER"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole flooding place the story happens inside.",
+      "guidance": "The archive/building itself; self-contained, explorable, no lethal hazards, no toxic air.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The event that begins the crisis.",
+      "guidance": "A specific, dateable triggering event (a storm, a tide, a failure) that starts the flooding.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The abstract time pressure driving every choice.",
+      "guidance": "The overarching, non-lethal clock (a tide, a season, a countdown); survivable throughout.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The recurring sensory sign of the deadline arriving.",
+      "guidance": "The concrete, physical cue (rising water, spreading cold, dimming light); never itself lethal.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_APPROACH",
+      "scope": "route",
+      "meaning": "The object of investigation chosen at the very start (branch A).",
+      "guidance": "A distinct, benign investigative lead; distinguishable from its three sibling leads.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_APPROACH",
+          "ROUTE_C_APPROACH",
+          "ROUTE_D_APPROACH"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_GATE",
+      "scope": "ending",
+      "meaning": "Short topic label naming what branch A loses or notes on setback/discovery.",
+      "guidance": "A short proper-noun-style label (2-6 words); never itself lethal, toxic, or weapon-bearing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_APPROACH",
+      "scope": "route",
+      "meaning": "The object of investigation chosen at the very start (branch B).",
+      "guidance": "A distinct, benign investigative lead; distinguishable from its three sibling leads.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_APPROACH",
+          "ROUTE_C_APPROACH",
+          "ROUTE_D_APPROACH"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_GATE",
+      "scope": "ending",
+      "meaning": "Short topic label naming what branch B loses or notes on setback/discovery.",
+      "guidance": "A short proper-noun-style label (2-6 words); never itself lethal, toxic, or weapon-bearing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_APPROACH",
+      "scope": "route",
+      "meaning": "The object of investigation chosen at the very start (branch C).",
+      "guidance": "A distinct, benign investigative lead; distinguishable from its three sibling leads.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_APPROACH",
+          "ROUTE_B_APPROACH",
+          "ROUTE_D_APPROACH"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_GATE",
+      "scope": "ending",
+      "meaning": "Short topic label naming what branch C loses or notes on setback/discovery.",
+      "guidance": "A short proper-noun-style label (2-6 words); never itself lethal, toxic, or weapon-bearing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_APPROACH",
+      "scope": "route",
+      "meaning": "The object of investigation chosen at the very start (branch D).",
+      "guidance": "A distinct, benign investigative lead; distinguishable from its three sibling leads.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_APPROACH",
+          "ROUTE_B_APPROACH",
+          "ROUTE_C_APPROACH"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_GATE",
+      "scope": "ending",
+      "meaning": "Short topic label naming what branch D loses or notes on setback/discovery.",
+      "guidance": "A short proper-noun-style label (2-6 words); never itself lethal, toxic, or weapon-bearing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_MA_THREAD",
+      "scope": "route",
+      "meaning": "The specific withheld record this thread investigates (branch MA).",
+      "guidance": "A distinct archival record/document; distinguishable from its three sibling threads.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_MB_THREAD",
+          "ROUTE_MC_THREAD",
+          "ROUTE_MD_THREAD"
+        ]
+      }
+    },
+    {
+      "id": "MA_LOST",
+      "scope": "ending",
+      "meaning": "Label for what is lost when MA's record is dried and forced back (setback).",
+      "guidance": "A short Title Case label naming the forgotten/denied version of the record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "MA_KEPT",
+      "scope": "ending",
+      "meaning": "Label for what is kept when MA's vault is sealed instead (discovery).",
+      "guidance": "A short label naming the safely-kept but harder version of the record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_MB_THREAD",
+      "scope": "route",
+      "meaning": "The specific withheld record this thread investigates (branch MB).",
+      "guidance": "A distinct archival record/document; distinguishable from its three sibling threads.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_MA_THREAD",
+          "ROUTE_MC_THREAD",
+          "ROUTE_MD_THREAD"
+        ]
+      }
+    },
+    {
+      "id": "MB_LOST",
+      "scope": "ending",
+      "meaning": "Label for what is lost when MB's record is dried and forced back (setback).",
+      "guidance": "A short Title Case label naming the forgotten/denied version of the record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "MB_KEPT",
+      "scope": "ending",
+      "meaning": "Label for what is kept when MB's vault is sealed instead (discovery).",
+      "guidance": "A short label naming the safely-kept but harder version of the record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_MC_THREAD",
+      "scope": "route",
+      "meaning": "The specific withheld record this thread investigates (branch MC).",
+      "guidance": "A distinct archival record/document; distinguishable from its three sibling threads.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_MA_THREAD",
+          "ROUTE_MB_THREAD",
+          "ROUTE_MD_THREAD"
+        ]
+      }
+    },
+    {
+      "id": "MC_LOST",
+      "scope": "ending",
+      "meaning": "Label for what is lost when MC's record is dried and forced back (setback).",
+      "guidance": "A short Title Case label naming the forgotten/denied version of the record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "MC_KEPT",
+      "scope": "ending",
+      "meaning": "Label for what is kept when MC's vault is sealed instead (discovery).",
+      "guidance": "A short label naming the safely-kept but harder version of the record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_MD_THREAD",
+      "scope": "route",
+      "meaning": "The specific withheld record this thread investigates (branch MD).",
+      "guidance": "A distinct archival record/document; distinguishable from its three sibling threads.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_MA_THREAD",
+          "ROUTE_MB_THREAD",
+          "ROUTE_MC_THREAD"
+        ]
+      }
+    },
+    {
+      "id": "MD_LOST",
+      "scope": "ending",
+      "meaning": "Label for what is lost when MD's record is dried and forced back (setback).",
+      "guidance": "A short Title Case label naming the forgotten/denied version of the record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "MD_KEPT",
+      "scope": "ending",
+      "meaning": "Label for what is kept when MD's vault is sealed instead (discovery).",
+      "guidance": "A short label naming the safely-kept but harder version of the record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "NA_GATE",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_NA_CONFIDANT",
+      "scope": "route",
+      "meaning": "The source Maren must trade honesty with (branch NA).",
+      "guidance": "A distinct confidant or record that only answers in exchange for the hero's own honesty.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_NB_CONFIDANT",
+          "ROUTE_NC_CONFIDANT"
+        ]
+      }
+    },
+    {
+      "id": "NA_GATE",
+      "scope": "ending",
+      "meaning": "Short topic label naming what branch NA's confidant withholds.",
+      "guidance": "A short phrase naming the impossible/uncanny thing this confidant reveals or withholds.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NB_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_NB_CONFIDANT",
+      "scope": "route",
+      "meaning": "The source Maren must trade honesty with (branch NB).",
+      "guidance": "A distinct confidant or record that only answers in exchange for the hero's own honesty.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_NA_CONFIDANT",
+          "ROUTE_NC_CONFIDANT"
+        ]
+      }
+    },
+    {
+      "id": "NB_GATE",
+      "scope": "ending",
+      "meaning": "Short topic label naming what branch NB's confidant withholds.",
+      "guidance": "A short phrase naming the impossible/uncanny thing this confidant reveals or withholds.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NC_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_NC_CONFIDANT",
+      "scope": "route",
+      "meaning": "The source Maren must trade honesty with (branch NC).",
+      "guidance": "A distinct confidant or record that only answers in exchange for the hero's own honesty.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_NA_CONFIDANT",
+          "ROUTE_NB_CONFIDANT"
+        ]
+      }
+    },
+    {
+      "id": "NC_GATE",
+      "scope": "ending",
+      "meaning": "Short topic label naming what branch NC's confidant withholds.",
+      "guidance": "A short phrase naming the impossible/uncanny thing this confidant reveals or withholds.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_GATE",
+          "ROUTE_B_GATE",
+          "ROUTE_C_GATE",
+          "ROUTE_D_GATE",
+          "MA_LOST",
+          "MA_KEPT",
+          "MB_LOST",
+          "MB_KEPT",
+          "MC_LOST",
+          "MC_KEPT",
+          "MD_LOST",
+          "MD_KEPT",
+          "NA_GATE",
+          "NB_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_R1_RESOLVE",
+      "scope": "route",
+      "meaning": "The final approach to resolving the flooding archive (track R1).",
+      "guidance": "A distinct closing strategy (reconcile/save/accept/salvage); distinguishable from its three siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_R2_RESOLVE",
+          "ROUTE_R3_RESOLVE",
+          "ROUTE_R4_RESOLVE"
+        ]
+      }
+    },
+    {
+      "id": "R1_OUTCOME_A",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R1, branch A.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R1_OUTCOME_B",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R1, branch B.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R1_OUTCOME_C",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R1, branch C.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R1_OUTCOME_D",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R1, branch D.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R1_OUTCOME_E",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R1, branch E.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R1_OUTCOME_F",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R1, branch F.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R1_OUTCOME_G",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R1, branch G.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R1_OUTCOME_H",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R1, branch H.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_R2_RESOLVE",
+      "scope": "route",
+      "meaning": "The final approach to resolving the flooding archive (track R2).",
+      "guidance": "A distinct closing strategy (reconcile/save/accept/salvage); distinguishable from its three siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_R1_RESOLVE",
+          "ROUTE_R3_RESOLVE",
+          "ROUTE_R4_RESOLVE"
+        ]
+      }
+    },
+    {
+      "id": "R2_OUTCOME_A",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R2, branch A.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R2_OUTCOME_B",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R2, branch B.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R2_OUTCOME_C",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R2, branch C.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R2_OUTCOME_D",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R2, branch D.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R2_OUTCOME_E",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R2, branch E.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R2_OUTCOME_F",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R2, branch F.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R2_OUTCOME_G",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R2, branch G.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R2_OUTCOME_H",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R2, branch H.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_R3_RESOLVE",
+      "scope": "route",
+      "meaning": "The final approach to resolving the flooding archive (track R3).",
+      "guidance": "A distinct closing strategy (reconcile/save/accept/salvage); distinguishable from its three siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_R1_RESOLVE",
+          "ROUTE_R2_RESOLVE",
+          "ROUTE_R4_RESOLVE"
+        ]
+      }
+    },
+    {
+      "id": "R3_OUTCOME_A",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R3, branch A.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R3_OUTCOME_B",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R3, branch B.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R3_OUTCOME_C",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R3, branch C.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R3_OUTCOME_D",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R3, branch D.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R3_OUTCOME_E",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R3, branch E.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R3_OUTCOME_F",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R3, branch F.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R3_OUTCOME_G",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R3, branch G.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R3_OUTCOME_H",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R3, branch H.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_R4_RESOLVE",
+      "scope": "route",
+      "meaning": "The final approach to resolving the flooding archive (track R4).",
+      "guidance": "A distinct closing strategy (reconcile/save/accept/salvage); distinguishable from its three siblings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_R1_RESOLVE",
+          "ROUTE_R2_RESOLVE",
+          "ROUTE_R3_RESOLVE"
+        ]
+      }
+    },
+    {
+      "id": "R4_OUTCOME_A",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R4, branch A.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R4_OUTCOME_B",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R4, branch B.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R4_OUTCOME_C",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R4, branch C.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R4_OUTCOME_D",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R4, branch D.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R4_OUTCOME_E",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R4, branch E.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R4_OUTCOME_F",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R4, branch F.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_G",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R4_OUTCOME_G",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R4, branch G.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_H"
+        ]
+      }
+    },
+    {
+      "id": "R4_OUTCOME_H",
+      "scope": "ending",
+      "meaning": "Named terminal outcome for track R4, branch H.",
+      "guidance": "A short Title Case phrase naming this ending's resolution; a discovery/keepsake/realisation, never a death, capture, injury, or graphic loss.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "R1_OUTCOME_A",
+          "R1_OUTCOME_B",
+          "R1_OUTCOME_C",
+          "R1_OUTCOME_D",
+          "R1_OUTCOME_E",
+          "R1_OUTCOME_F",
+          "R1_OUTCOME_G",
+          "R1_OUTCOME_H",
+          "R2_OUTCOME_A",
+          "R2_OUTCOME_B",
+          "R2_OUTCOME_C",
+          "R2_OUTCOME_D",
+          "R2_OUTCOME_E",
+          "R2_OUTCOME_F",
+          "R2_OUTCOME_G",
+          "R2_OUTCOME_H",
+          "R3_OUTCOME_A",
+          "R3_OUTCOME_B",
+          "R3_OUTCOME_C",
+          "R3_OUTCOME_D",
+          "R3_OUTCOME_E",
+          "R3_OUTCOME_F",
+          "R3_OUTCOME_G",
+          "R3_OUTCOME_H",
+          "R4_OUTCOME_A",
+          "R4_OUTCOME_B",
+          "R4_OUTCOME_C",
+          "R4_OUTCOME_D",
+          "R4_OUTCOME_E",
+          "R4_OUTCOME_F",
+          "R4_OUTCOME_G"
+        ]
+      }
+    }
+  ]
+}

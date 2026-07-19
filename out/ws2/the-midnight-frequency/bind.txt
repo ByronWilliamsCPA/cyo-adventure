@@ -1,0 +1,2 @@
+bound skeletons/10-13/the-midnight-frequency.json using bindings from out/ws2/the-midnight-frequency/new-theme.binding.json
+wrote bound skeleton to out/ws2/the-midnight-frequency/new-theme.bound.json

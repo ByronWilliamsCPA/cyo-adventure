@@ -68,7 +68,7 @@ state g0a3_5 #D1C4E9
 g0a3_5 : rising · 170w
 state g0a3_end #FFCDD2
 g0a3_end : setback (negative)
-g0a3_end : "Lulled by the Snow"
+g0a3_end : "{G0A3_PRIZE}"
 state g1a0_1 #D1C4E9
 g1a0_1 : rising · 165w
 state g1a0_2 #FFF9C4
@@ -143,7 +143,7 @@ state g2a0_5 #D1C4E9
 g2a0_5 : rising · 170w
 state g2a0_end #E0E0E0
 g2a0_end : discovery (neutral)
-g2a0_end : "What the Conductor Won't Say"
+g2a0_end : "{G2A0_PRIZE}"
 state g2a1_1 #D1C4E9
 g2a1_1 : rising · 165w
 state g2a1_2 #FFF9C4
@@ -203,7 +203,7 @@ state g3a0_5 #D1C4E9
 g3a0_5 : rising · 170w
 state g3a0_end #E0E0E0
 g3a0_end : discovery (neutral)
-g3a0_end : "What the Conductor Carries"
+g3a0_end : "{G3A0_PRIZE}"
 state g3a1_1 #D1C4E9
 g3a1_1 : rising · 165w
 state g3a1_2 #FFF9C4
@@ -218,7 +218,7 @@ state g3a1_5 #D1C4E9
 g3a1_5 : rising · 170w
 state g3a1_end #C8E6C9
 g3a1_end : completion (positive)
-g3a1_end : "The Child Shows the Way"
+g3a1_end : "{G3A1_PRIZE}"
 state g3a2_1 #D1C4E9
 g3a2_1 : rising · 165w
 state g3a2_2 #FFF9C4
@@ -233,7 +233,7 @@ state g3a2_5 #D1C4E9
 g3a2_5 : rising · 170w
 state g3a2_end #C8E6C9
 g3a2_end : success (positive)
-g3a2_end : "You Carried Her Message"
+g3a2_end : "{G3A2_PRIZE}"
 state g3a3_1 #D1C4E9
 g3a3_1 : rising · 165w
 state g3a3_2 #FFF9C4
@@ -248,7 +248,7 @@ state g3a3_5 #D1C4E9
 g3a3_5 : rising · 170w
 state g3a3_end #FFCDD2
 g3a3_end : setback (negative)
-g3a3_end : "Lost Among the Columns"
+g3a3_end : "{G3A3_PRIZE}"
 state p1_never_arrives #ECEFF1
 p1_never_arrives : pivot · 205w
 state p2_who_passengers #ECEFF1
@@ -283,7 +283,7 @@ state r_truth3 #ECEFF1
 r_truth3 : resolution · 185w
 state e_truth_early #E0E0E0
 e_truth_early : discovery (neutral)
-e_truth_early : "Half the Timetable"
+e_truth_early : "{TRUTH_EARLY_PRIZE}"
 state r_leave1 #ECEFF1
 r_leave1 : resolution · 185w
 state r_leave2 #FFF9C4
@@ -292,7 +292,7 @@ state r_leave3 #ECEFF1
 r_leave3 : resolution · 185w
 state e_leave_early #FFCDD2
 e_leave_early : setback (negative)
-e_leave_early : "Back at the First Platform"
+e_leave_early : "{LEAVE_EARLY_PRIZE}"
 state r_dawn #ECEFF1
 r_dawn : pivot · 200w
 state r_choice_peace #ECEFF1
@@ -305,23 +305,23 @@ state r_choice_safe #ECEFF1
 r_choice_safe : resolution · 185w
 state e_make_peace #C8E6C9
 e_make_peace : success (positive)
-e_make_peace : "The Last Train North"
+e_make_peace : "{PEACE_PRIZE}"
 state e_help_passenger #C8E6C9
 e_help_passenger : completion (positive)
-e_help_passenger : "A Seat Beside Her"
+e_help_passenger : "{HELP_PRIZE}"
 state e_help_cost #FFCDD2
 e_help_cost : setback (negative)
 e_help_cost : "You Stayed Too Long"
 state e_uncover_truth #C8E6C9
 e_uncover_truth : discovery (positive)
-e_uncover_truth : "The Northbound Names"
+e_uncover_truth : "{TRUTH_PRIZE}"
 state e_unsettled_safe #E0E0E0
 e_unsettled_safe : setback (neutral)
 e_unsettled_safe : "Awake and Unharmed"
-n_start --> g0a0_1 : Find the night conductor.
-n_start --> g0a1_1 : Walk the sleeper cars.
-n_start --> g0a2_1 : Read the left-behind letter.
-n_start --> g0a3_1 : Watch the changing land.
+n_start --> g0a0_1 : Find {G0A0_LURE}.
+n_start --> g0a1_1 : Walk {G0A1_LURE}.
+n_start --> g0a2_1 : Read {G0A2_LURE}.
+n_start --> g0a3_1 : Watch {G0A3_LURE}.
 g0a0_1 --> g0a0_2 : Look closer.
 g0a0_2 --> g0a0_3a : Press in directly.
 g0a0_2 --> g0a0_3b : Hang back and watch.
@@ -450,38 +450,38 @@ g3a3_3b --> g3a3_4 : Hold the thread and go on.
 g3a3_3b --> g3a3_end : Let the hour take you.
 g3a3_4 --> g3a3_5 : Press on.
 g3a3_5 --> p4_dawn_reveal : Follow it to the pivot.
-p1_never_arrives --> g1a0_1 : Sit with the dining-car regulars.
-p1_never_arrives --> g1a1_1 : Find the child who never sleeps.
-p1_never_arrives --> g1a2_1 : Follow the man counting stations.
-p1_never_arrives --> g1a3_1 : Approach the woman in mourning.
-p2_who_passengers --> g2a0_1 : Consult the conductor again.
-p2_who_passengers --> g2a1_1 : Decode the letter's map.
-p2_who_passengers --> g2a2_1 : Read the tunnel signal lights.
-p2_who_passengers --> g2a3_1 : Gather the passengers to decide.
-p3_tunnel_choice --> g3a0_1 : Ask the conductor for the whole truth.
-p3_tunnel_choice --> g3a1_1 : Let the child lead you.
-p3_tunnel_choice --> g3a2_1 : Answer the mourning woman's request.
-p3_tunnel_choice --> g3a3_1 : Search the endless timetable.
+p1_never_arrives --> g1a0_1 : Sit with {G1A0_LURE}.
+p1_never_arrives --> g1a1_1 : Find {G1A1_LURE}.
+p1_never_arrives --> g1a2_1 : Follow {G1A2_LURE}.
+p1_never_arrives --> g1a3_1 : Approach {G1A3_LURE}.
+p2_who_passengers --> g2a0_1 : Consult {G2A0_LURE} again.
+p2_who_passengers --> g2a1_1 : Decode {G2A1_LURE}.
+p2_who_passengers --> g2a2_1 : Read {G2A2_LURE}.
+p2_who_passengers --> g2a3_1 : Gather {G2A3_LURE} to decide.
+p3_tunnel_choice --> g3a0_1 : Ask {G3A0_LURE} for the whole truth.
+p3_tunnel_choice --> g3a1_1 : Let {G3A1_LURE} lead you.
+p3_tunnel_choice --> g3a2_1 : Answer {G3A2_CHAR}.
+p3_tunnel_choice --> g3a3_1 : Search {G3A3_LURE}.
 p4_dawn_reveal --> r_peace1 : Ride on and simply be present.
-p4_dawn_reveal --> r_help1 : Turn to the traveler who needs you.
-p4_dawn_reveal --> r_truth1 : Chase the last of the truth.
-p4_dawn_reveal --> r_leave1 : Try to get off before the tunnel.
-r_peace1 --> r_peace2 : Follow it toward dawn.
-r_peace2 --> r_peace3 : Stay open to the dawn.
+p4_dawn_reveal --> r_help1 : Turn to {R_HELP_LURE}.
+p4_dawn_reveal --> r_truth1 : Chase {R_TRUTH_LURE}.
+p4_dawn_reveal --> r_leave1 : Try to get off before {DEADLINE}.
+r_peace1 --> r_peace2 : Follow it toward {DEADLINE_SIGN}.
+r_peace2 --> r_peace3 : Stay open to {DEADLINE_SIGN}.
 r_peace2 --> e_peace_early : Close it here.
-r_peace3 --> r_dawn : Meet the dawn.
-r_help1 --> r_help2 : Follow it toward dawn.
-r_help2 --> r_help3 : Stay open to the dawn.
+r_peace3 --> r_dawn : Meet {DEADLINE_SIGN}.
+r_help1 --> r_help2 : Follow it toward {DEADLINE_SIGN}.
+r_help2 --> r_help3 : Stay open to {DEADLINE_SIGN}.
 r_help2 --> e_help_early : Close it here.
-r_help3 --> r_dawn : Meet the dawn.
-r_truth1 --> r_truth2 : Follow it toward dawn.
-r_truth2 --> r_truth3 : Stay open to the dawn.
+r_help3 --> r_dawn : Meet {DEADLINE_SIGN}.
+r_truth1 --> r_truth2 : Follow it toward {DEADLINE_SIGN}.
+r_truth2 --> r_truth3 : Stay open to {DEADLINE_SIGN}.
 r_truth2 --> e_truth_early : Close it here.
-r_truth3 --> r_dawn : Meet the dawn.
-r_leave1 --> r_leave2 : Follow it toward dawn.
-r_leave2 --> r_leave3 : Stay open to the dawn.
+r_truth3 --> r_dawn : Meet {DEADLINE_SIGN}.
+r_leave1 --> r_leave2 : Follow it toward {DEADLINE_SIGN}.
+r_leave2 --> r_leave3 : Stay open to {DEADLINE_SIGN}.
 r_leave2 --> e_leave_early : Close it here.
-r_leave3 --> r_dawn : Meet the dawn.
+r_leave3 --> r_dawn : Meet {DEADLINE_SIGN}.
 r_dawn --> r_choice_peace : Set the night down and stay.
 r_dawn --> r_choice_help : Give the traveler your seat.
 r_dawn --> r_choice_truth : Name what you have understood.

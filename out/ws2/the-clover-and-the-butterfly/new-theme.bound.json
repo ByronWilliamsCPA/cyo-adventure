@@ -1,0 +1,299 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_clover_butterfly",
+  "version": 1,
+  "title": "Clover and the Butterfly",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "nature",
+      "curiosity",
+      "friendship",
+      "gentleness"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 7,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=45 beats='Otto the puppy sees the golden ladybug in the breezy meadow; it flutters past the buttercup row, past the shallow creek, and toward the meadow grass; Otto the puppy wants to follow it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_daisies",
+          "label": "Follow it to the buttercup row.",
+          "target": "n_daisies"
+        },
+        {
+          "id": "c_pond",
+          "label": "Follow it to the shallow creek.",
+          "target": "n_pond"
+        },
+        {
+          "id": "c_grass",
+          "label": "Follow it to the meadow grass.",
+          "target": "n_grass"
+        }
+      ]
+    },
+    {
+      "id": "n_daisies",
+      "body": "<<FILL role=choice words=40 beats='the golden ladybug dances over the buttercup row where a soft, fuzzy cricket hums a happy tune; then it floats on toward the mossy stump; Otto the puppy can watch the cricket or keep following'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_bee",
+          "label": "Stop and watch the cricket.",
+          "target": "n_bee_end"
+        },
+        {
+          "id": "c_to_birdbath",
+          "label": "Keep following the golden ladybug.",
+          "target": "n_birdbath"
+        }
+      ]
+    },
+    {
+      "id": "n_bee_end",
+      "body": "<<FILL role=ending words=40 beats='Otto the puppy watches the happy cricket bumble from flower to flower; when Otto the puppy looks up, the golden ladybug is gone; Otto the puppy trots back to the wooden porch, warm and glad anyway'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bee_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Chirping Cricket"
+      }
+    },
+    {
+      "id": "n_birdbath",
+      "body": "<<FILL role=rising words=38 beats='at the mossy stump a little sparrow splashes and shakes bright drops in the sun; the golden ladybug rests on the rim, then drifts on toward the wild blackberries'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_strawberries",
+          "label": "Follow the golden ladybug to wild blackberries.",
+          "target": "n_strawberries"
+        }
+      ]
+    },
+    {
+      "id": "n_strawberries",
+      "body": "<<FILL role=rising words=38 beats='the wild blackberries hide under cool green leaves; the golden ladybug loops around them and flutters deeper into the breezy meadow toward a snug fern hollow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_meadow",
+          "label": "Tiptoe after the golden ladybug.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "<<FILL role=choice words=40 beats='in a snug fern hollow the golden ladybug slows down and floats gently, right in front of Otto the puppy's little nose; nearby sits the acorn cap; Otto the puppy holds very still'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_still",
+          "label": "Hold still and wait.",
+          "target": "n_nose_end"
+        },
+        {
+          "id": "c_flower_ring",
+          "label": "Peek at the acorn cap.",
+          "target": "n_crown_end"
+        }
+      ]
+    },
+    {
+      "id": "n_nose_end",
+      "body": "<<FILL role=completion words=40 beats='the gentle the golden ladybug lands softly right on the tip of Otto the puppy's paw; its wings open and close like two tiny blue fans; Otto the puppy giggles, still as can be, the happiest kitten in the breezy meadow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_nose",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "On Otto the puppy's paw"
+      }
+    },
+    {
+      "id": "n_crown_end",
+      "body": "<<FILL role=completion words=40 beats='beside a snug fern hollow Otto the puppy finds the acorn cap, a tiny flower crown just her size; the golden ladybug circles it once, and Otto the puppy wears the crown proudly, a sweet garden treasure'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crown",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Acorn Cap Treasure"
+      }
+    },
+    {
+      "id": "n_pond",
+      "body": "<<FILL role=choice words=40 beats='by the shallow creek a green toad sits on a lily pad and blinks; the golden ladybug skims over the water toward the cattails; Otto the puppy can play with the toad or follow on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_play_frog",
+          "label": "Play peekaboo with the toad.",
+          "target": "n_frog_end"
+        },
+        {
+          "id": "c_to_reeds",
+          "label": "Follow the golden ladybug to the cattails.",
+          "target": "n_reeds"
+        }
+      ]
+    },
+    {
+      "id": "n_frog_end",
+      "body": "<<FILL role=ending words=40 beats='Otto the puppy and the toad play a giggly game of peekaboo around the lily pad, splish, splash, hop; by the time the game ends the golden ladybug has floated away, and Otto the puppy pads home for a cozy nap, content'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_frog_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Splashy Toad Games"
+      }
+    },
+    {
+      "id": "n_reeds",
+      "body": "<<FILL role=rising words=38 beats='the golden ladybug weaves between the cattails; a shiny damselfly zips by like a tiny helicopter; the golden ladybug leads Otto the puppy onward toward a soft, fallen birch log'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_hedgehog",
+          "label": "Follow past the fallen birch log.",
+          "target": "n_hedgehog"
+        }
+      ]
+    },
+    {
+      "id": "n_hedgehog",
+      "body": "<<FILL role=rising words=38 beats='under the fallen birch log a small chipmunk snoozes in a ball of soft prickles; Otto the puppy steps quietly so it can sleep, and follows the golden ladybug into a shady willow nook'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_friend",
+          "label": "Tiptoe into a shady willow nook.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "n_friend",
+      "body": "<<FILL role=rising words=38 beats='in a shady willow nook Otto the puppy meets Wren, a gentle fox kit munching wild berries; the golden ladybug rests on a leaf above them, and Wren smiles a shy hello'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_berries",
+          "label": "Share the sweet berries with Wren.",
+          "target": "n_share_end"
+        }
+      ]
+    },
+    {
+      "id": "n_share_end",
+      "body": "<<FILL role=completion words=42 beats='Otto the puppy and Wren share wild blackberries that grow nearby while the golden ladybug watches from a leaf; two happy new friends, sticky little paws, and a lovely, sunny garden afternoon together'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_share",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Blackberries for Two"
+      }
+    },
+    {
+      "id": "n_grass",
+      "body": "<<FILL role=choice words=40 beats='in the meadow grass the golden ladybug bounces up and down like a little kite; Otto the puppy can dash after it fast, or tiptoe slow and quiet through the soft green blades'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dash",
+          "label": "Dash after it fast!",
+          "target": "n_lost_end"
+        },
+        {
+          "id": "c_tiptoe",
+          "label": "Tiptoe slow and quiet.",
+          "target": "n_sunflower"
+        }
+      ]
+    },
+    {
+      "id": "n_lost_end",
+      "body": "<<FILL role=ending words=40 beats='Otto the puppy pounces and dashes, paws thumping, so fast that the surprised the golden ladybug zips high over the garden wall; Otto the puppy cannot follow up there, so she trots back to the wooden porch, tail high and happy'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lost_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Fast!"
+      }
+    },
+    {
+      "id": "n_sunflower",
+      "body": "<<FILL role=rising words=38 beats='stepping softly, Otto the puppy follows the golden ladybug under a stand of tall cornstalks; the golden ladybug floats on toward a little picket gate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_gate",
+          "label": "Follow toward a little picket gate.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "<<FILL role=rising words=38 beats='the golden ladybug slips through a little picket gate into a quiet rose corner, full of purple and pink blooms; Otto the puppy squeezes gently after it, whiskers twitching'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_arch",
+          "label": "Follow into a quiet rose corner.",
+          "target": "n_arch"
+        }
+      ]
+    },
+    {
+      "id": "n_arch",
+      "body": "<<FILL role=rising words=38 beats='in a quiet rose corner a green leafy trellis curves overhead, dripping with sweet honeysuckle; the golden ladybug circles the trellis and slows, as if it is waiting just for Otto the puppy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sit_arch",
+          "label": "Sit quietly beneath the trellis.",
+          "target": "n_perch_end"
+        }
+      ]
+    },
+    {
+      "id": "n_perch_end",
+      "body": "<<FILL role=completion words=42 beats='Otto the puppy sits very still beneath the flowery trellis, and the golden ladybug settles on Otto the puppy's soft ear like a little bow; they rest together in the sweet-smelling shade, calm and cozy and glad'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_perch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Under the Rose Trellis"
+      }
+    }
+  ]
+}

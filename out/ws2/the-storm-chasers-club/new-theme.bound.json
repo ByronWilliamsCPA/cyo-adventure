@@ -1,0 +1,1608 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_storm_chasers_club",
+  "title": "The Storm Chasers Club",
+  "version": 1,
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "weather",
+      "teamwork",
+      "science",
+      "courage",
+      "community"
+    ],
+    "estimated_minutes": 10,
+    "ending_count": 25,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "sorting_hat",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=115 beats='Saturday morning at the Comet Watch Society, a junior weather club that meets in the old observatory on Observatory Lane; you bike up under the darkening eastern horizon while the radio in the window mutters to itself; today is the night a rare meteor shower peaks, and every member from eight to eighty has a job; you rack your bike and hurry for the observatory hatch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_in",
+          "label": "Head inside for the morning briefing.",
+          "target": "n_brief"
+        }
+      ]
+    },
+    {
+      "id": "n_brief",
+      "body": "<<FILL role=rising words=112 beats='inside the old observatory hums; Dr. Alvarez, a retired planetarium director, taps the wall map: the meteor shower's peak window, a long marching wall of storms, will cross Cinder Valley this afternoon; she reads the rules the club lives by, nobody goes anywhere without an adult, every post shelters when its adult calls it, and the sky is worth studying, never fearing; then she asks for volunteers for the three teams'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_brief_up",
+          "label": "Step up when she calls for volunteers.",
+          "target": "n_sort"
+        }
+      ]
+    },
+    {
+      "id": "n_sort",
+      "body": "<<FILL role=choice words=125 beats='Dr. Alvarez says the club needs you on exactly one team today, your pick, and the teams will not cross paths again until the meteor shower's peak window is done; the TELESCOPE team runs the dome control room with Nadia, the society's licensed dish operator, relaying storm-spotter reports; the CHARTS team runs the charting desk down here with Dr. Alvarez and Theo, plotting the storm's track; the FIELD SCOPES team rides in the society's van with Sam and Elena, two trained adult spotters, to run instruments from the storm's safe side; three doors, one storm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sort_radio",
+          "label": "Join the TELESCOPE team in the dome control room.",
+          "target": "r_post"
+        },
+        {
+          "id": "c_sort_maps",
+          "label": "Join the CHARTS team at the charting desk.",
+          "target": "m_table"
+        },
+        {
+          "id": "c_sort_field",
+          "label": "Join the FIELD SCOPES team in the society's van.",
+          "target": "f_van"
+        }
+      ]
+    },
+    {
+      "id": "r_post",
+      "body": "<<FILL role=rising words=105 beats='the attic stairs creak up into the dome control room: two radios glowing, a county wall map bristling with pins, headsets on hooks; Nadia, the society's licensed dish operator, pats the second chair and says that today you are her second seat; through the dome slit, the darkening eastern horizon is stacking up dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rpost_sit",
+          "label": "Take the second seat and put on a headset.",
+          "target": "r_net"
+        }
+      ]
+    },
+    {
+      "id": "r_net",
+      "body": "<<FILL role=rising words=100 beats='Nadia teaches fast: say the club callsign, speak slow, write everything in the log with the time; the first spotter check-ins crackle through, Elm Hollow, Bluff Point, Route 12, and you log each one; outside, the wind is starting to lean on the old observatory'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rnet_log",
+          "label": "Keep logging as the net wakes up.",
+          "target": "r_split"
+        }
+      ]
+    },
+    {
+      "id": "r_split",
+      "body": "<<FILL role=choice words=112 beats='two problems at once: an ugly crackle is chewing the main antenna signal, and check-ins are stacking up faster than one person can log; Nadia says she can only be in one place at a time, so the two of you will have to split the work'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rsplit_cable",
+          "label": "Help trace the crackling antenna cable.",
+          "target": "r_a_trace"
+        },
+        {
+          "id": "c_rsplit_net",
+          "label": "Take the logbook and run check-ins while Nadia traces it.",
+          "target": "r_n_seat"
+        }
+      ]
+    },
+    {
+      "id": "r_a_trace",
+      "body": "<<FILL role=rising words=96 beats='flashlight in your teeth, you follow the feedline from the radio along the rafters while Nadia taps each joint; dust, cobwebs, the wind singing through the vents; the crackle in the monitor speaker gets louder every time the line moves'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ratrace_follow",
+          "label": "Follow the line to where it moves the most.",
+          "target": "r_a_finds"
+        }
+      ]
+    },
+    {
+      "id": "r_a_finds",
+      "body": "<<FILL role=rising words=100 beats='two suspects: at the dome slit the connector is green with corrosion, and near the spool of spare cable a section has been squashed flat under a shifted beam; Nadia checks her watch and says there is time to fix one of them properly before the meteor shower's peak window arrives'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rafinds_report",
+          "label": "Weigh the two fixes with Nadia.",
+          "target": "r_a_pick"
+        }
+      ]
+    },
+    {
+      "id": "r_a_pick",
+      "body": "<<FILL role=choice words=112 beats='Nadia lays out the choice like a real technician: reseat and seal the corroded connector at the dome slit, a small fix in a tight spot, or bypass the squashed section by running the spare cable up over the rafters, a bigger fix with fresh line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rapick_window",
+          "label": "Clean and reseat the corroded connector at the dome slit.",
+          "target": "r_a_fix"
+        },
+        {
+          "id": "c_rapick_bypass",
+          "label": "Run the spare cable over the rafters to bypass the damage.",
+          "target": "r_b_spool"
+        }
+      ]
+    },
+    {
+      "id": "r_a_fix",
+      "body": "<<FILL role=rising words=96 beats='you sand the green crust until the copper shines, seat the connector with a click, and wrap it in rubber tape the way Nadia shows you; the crackle drops away like a hand lifted off the speaker'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rafix_desk",
+          "label": "Head back to the radio desk.",
+          "target": "r_a_meter"
+        }
+      ]
+    },
+    {
+      "id": "r_a_meter",
+      "body": "<<FILL role=rising words=100 beats='the signal meter climbs and holds; spotter voices come through clean; Nadia looks at the clock, the meteor shower's peak window is maybe twenty minutes out, and reminds you that a smart operator proves a repair before trusting it, but the net is getting busy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rameter_decide",
+          "label": "Decide how much you trust your fix.",
+          "target": "r_a_test"
+        }
+      ]
+    },
+    {
+      "id": "r_a_test",
+      "body": "<<FILL role=choice words=112 beats='test it or trust it: you could run a radio check with Bluff Point, the farthest spotter on the net, which costs a quiet minute you may want later, or jump straight back into the net traffic and let the climbing meter be your proof'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ratest_check",
+          "label": "Run a radio check with far-off Bluff Point.",
+          "target": "r_a_check1"
+        },
+        {
+          "id": "c_ratest_trust",
+          "label": "Trust the meter and dive back into the net.",
+          "target": "r_a_mid"
+        }
+      ]
+    },
+    {
+      "id": "r_a_check1",
+      "body": "<<FILL role=rising words=96 beats='you key up: Bluff Point, this is the dome control room, radio check; a heartbeat of hiss, then the reply booms back louder than it has sounded all season; Nadia writes your fix and the test time into the maintenance log'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_racheck_net",
+          "label": "Rejoin the net with a proven antenna.",
+          "target": "r_a_check2"
+        }
+      ]
+    },
+    {
+      "id": "r_a_check2",
+      "body": "<<FILL role=climax words=100 beats='the meteor shower's peak window arrives with a drumroll of rain on the roof; check-ins pour in, hail at Foster's Bend, gusts on Route 12, and every voice rides your repaired line clean into the log and onward to the weather service'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_racheck_ride",
+          "label": "Ride the storm at the radio until it passes.",
+          "target": "r_end_clear"
+        }
+      ]
+    },
+    {
+      "id": "r_end_clear",
+      "body": "<<FILL role=completion words=92 beats='the line sweeps east and the sun cuts under the clouds; the weather service calls the club's relay the clearest in the county; Nadia shakes your hand, operator style, and writes your name beside the repair in the log; you tested your work, and the whole net leaned on it without ever knowing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_clear",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Clear Skies Ahead"
+      }
+    },
+    {
+      "id": "r_a_mid",
+      "body": "<<FILL role=rising words=96 beats='for ten loud minutes the net is perfect, then the storm's first real gust shakes the old observatory and the crackle comes snarling back mid-report; the connector you did not test has popped loose, and a hail report dissolves into static'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ramid_scramble",
+          "label": "Scramble to catch what you can.",
+          "target": "r_end_crackle"
+        }
+      ]
+    },
+    {
+      "id": "r_end_crackle",
+      "body": "<<FILL role=failure words=92 beats='Nadia calmly swaps to the little backup antenna and the net limps through, but two reports are lost for good and the log has holes; nobody is hurt and the storm rolls on east; taping a fix is half the job, she says, proving it is the other half, and next week the two of you will reseat that connector together'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_crackle",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Static Returns"
+      }
+    },
+    {
+      "id": "r_b_spool",
+      "body": "<<FILL role=rising words=96 beats='you unspool the fresh cable and Nadia boosts you where the rafters are high; hook by hook the new line goes up and over the squashed section like a detour around a broken bridge; the roof drums with the first rain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbspool_crimp",
+          "label": "Crimp the connectors and hook it to the radio.",
+          "target": "r_b_crimp"
+        }
+      ]
+    },
+    {
+      "id": "r_b_crimp",
+      "body": "<<FILL role=rising words=100 beats='the crimps bite and the new line is in, but it runs a good deal longer than the old one, and Nadia taps the meter: long cable can bleed signal away quietly, she says, and the far spotters are the ones you lose first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbcrimp_bin",
+          "label": "Look at what the parts bin offers.",
+          "target": "r_b_amp"
+        }
+      ]
+    },
+    {
+      "id": "r_b_amp",
+      "body": "<<FILL role=choice words=112 beats='in the parts bin sits the club's little inline amplifier, which would boost the long run but adds one more thing that can fail in a storm; keep it simple and plug straight in, or add the amp and give the far voices a ladder'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbamp_add",
+          "label": "Wire in the inline amplifier.",
+          "target": "r_b_hum"
+        },
+        {
+          "id": "c_rbamp_plain",
+          "label": "Keep it simple and plug straight in.",
+          "target": "r_b_faint"
+        }
+      ]
+    },
+    {
+      "id": "r_b_hum",
+      "body": "<<FILL role=rising words=96 beats='the amp hums to life and the meter jumps; Bluff Point comes in like they are calling from downstairs; as the meteor shower's peak window arrives, a nervous new spotter calls in something he thinks is a funnel cloud, and Nadia slides her chair beside yours'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbhum_scud",
+          "label": "Help sort out the scary-looking report.",
+          "target": "r_b_scud"
+        }
+      ]
+    },
+    {
+      "id": "r_b_scud",
+      "body": "<<FILL role=climax words=100 beats='with the signal crisp you ask the spotter careful questions off Nadia's card: is it rotating, is it attached to the cloud base; it is not, it is scud, raggedy harmless cloud that loves to frighten people, and the correct all-clear goes out under your callsign'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbscud_finish",
+          "label": "See the net through to the storm's end.",
+          "target": "r_end_longway"
+        }
+      ]
+    },
+    {
+      "id": "r_end_longway",
+      "body": "<<FILL role=completion words=92 beats='the storm crosses the county without one report lost; your detour line and its humming amplifier carried every voice, including the one that needed to hear it was only scud; at closedown Nadia tells the club the attic has never sounded better, and your bypass becomes the permanent line'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_longway",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Long Relay"
+      }
+    },
+    {
+      "id": "r_b_faint",
+      "body": "<<FILL role=rising words=96 beats='simple is quick, and quick feels fine until the meteor shower's peak window arrives; nearby spotters are clear, but Bluff Point and the north farms fade to whispers on the long unboosted run, and you lean into the headset until your ears ache, pulling words out of the hiss'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rbfaint_strain",
+          "label": "Copy everything you possibly can.",
+          "target": "r_end_quiet"
+        }
+      ]
+    },
+    {
+      "id": "r_end_quiet",
+      "body": "<<FILL role=failure words=92 beats='you save every close-in report, but Bluff Point's hail measurement never makes it through, and the weather service asks about the gap in the county's log; the storm passes with everyone safe; over cocoa, Nadia shows you the arithmetic of cable loss, and the amplifier goes in first thing at the next meeting'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_quiet",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Faint to Catch"
+      }
+    },
+    {
+      "id": "r_n_seat",
+      "body": "<<FILL role=rising words=96 beats='the logbook is yours; you settle the headset, square the pages, and answer your first check-in with a voice steadier than your hands; behind you Nadia works along the crackling cable with her flashlight, half listening, always close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rnseat_flow",
+          "label": "Find your rhythm as the reports come in.",
+          "target": "r_n_line"
+        }
+      ]
+    },
+    {
+      "id": "r_n_line",
+      "body": "<<FILL role=rising words=100 beats='the meteor shower's peak window steps onto the county like something with feet: pea hail at Foster's Bend, forty mile an hour gusts on Route 12, a barn door gone at the Whitfield gate farm; you log it all, time, place, spotter, exactly like the drills'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rnline_next",
+          "label": "Answer the next call on the repeater.",
+          "target": "r_n_voice"
+        }
+      ]
+    },
+    {
+      "id": "r_n_voice",
+      "body": "<<FILL role=rising words=100 beats='between check-ins a thin, unfamiliar voice surfaces on the repeater, half swallowed by static: anybody, please, Comet Ridge, the trail is washed out; your stomach drops; Nadia is across the attic with her head in the rafters, still tracing the bad cable'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rnvoice_act",
+          "label": "Act the way the club trained you to.",
+          "target": "r_n_call"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "r_n_call",
+      "body": "<<FILL role=choice words=115 beats='the training card is taped beside the mic: stay calm, get facts, get help; you can answer the caller yourself, slow and steady the way Nadia taught you, or wave her over right now and back her up with the logbook while she takes the mic'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rncall_answer",
+          "label": "Answer the caller yourself, calm and slow.",
+          "target": "r_h_copy"
+        },
+        {
+          "id": "c_rncall_marisol",
+          "label": "Wave Nadia over and back her up on the log.",
+          "target": "r_m_second"
+        }
+      ]
+    },
+    {
+      "id": "r_h_copy",
+      "body": "<<FILL role=rising words=100 beats='you key the mic: station calling about Comet Ridge, I copy you, this is the storm club net; the voice steadies, a teenage hiker named Priyanka, a day hike gone long, the trail washed out below, and the sky to the west gone dark green'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhcopy_facts",
+          "label": "Get the facts, one question at a time.",
+          "target": "r_h_name"
+        }
+      ]
+    },
+    {
+      "id": "r_h_name",
+      "body": "<<FILL role=rising words=100 beats='one question at a time, straight off the card: Priyanka is alone but unhurt, passed the leaning boulder an hour ago, and can see the old lookout cabin up the slope; you print each fact in the log in big letters; Nadia is beside you now, hand on your shoulder, letting you keep the mic'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhname_plan",
+          "label": "Work out the fastest way to get Priyanka safe.",
+          "target": "r_h_plan"
+        }
+      ]
+    },
+    {
+      "id": "r_h_plan",
+      "body": "<<FILL role=choice words=115 beats='two good plans, minutes apart: switch radio two to the sheriff's net and relay Priyanka's position to the deputies while Nadia keeps Priyanka company on radio one, or use the wall map to guide Priyanka up to the old lookout cabin's ground floor shelter room while Nadia phones the park ranger post'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhplan_relay",
+          "label": "Relay Priyanka's position to the sheriff's net.",
+          "target": "r_h_card"
+        },
+        {
+          "id": "c_rhplan_guide",
+          "label": "Guide Priyanka to the old lookout cabin shelter by the map.",
+          "target": "r_h_tower"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "r_h_card",
+      "body": "<<FILL role=rising words=100 beats='you build the relay card the way the drills taught: who, where, landmarks, condition, time; then you key radio two and read it to the sheriff's dispatcher without one wasted word; she reads it back perfectly and says units are rolling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhcard_hold",
+          "label": "Hold the net steady while help rolls.",
+          "target": "r_h_deputy"
+        }
+      ]
+    },
+    {
+      "id": "r_h_deputy",
+      "body": "<<FILL role=climax words=100 beats='radio one: Nadia keeps Priyanka talking and moving upslope; radio two: the deputy calls out mile markers as the rain arrives; the two stories race each other across your log pages toward the old lookout cabin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhdeputy_meet",
+          "label": "Log the moment they meet.",
+          "target": "r_end_relay"
+        }
+      ]
+    },
+    {
+      "id": "r_end_relay",
+      "body": "<<FILL role=completion words=95 beats='the deputy and the ranger reach the old lookout cabin just as the gust front combs the ridge, and Priyanka is inside, wrapped in a blanket, asking if the radio kid is still there; the dispatcher calls your relay textbook; Nadia uses the word every operator wants, professional; the storm howls past a shelter with everyone inside it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_relay",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Signal Received"
+      }
+    },
+    {
+      "id": "r_h_tower",
+      "body": "<<FILL role=climax words=100 beats='the wall map becomes a trail under your finger: from the leaning boulder, up and left of the rockslide, six hundred steps to the old lookout cabin; you talk Priyanka through it landmark by landmark while Nadia reads the ranger the same picture over the phone; wind claws at the dome slit like it wants to listen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rhtower_last",
+          "label": "Stay on the mic until Priyanka is through the door.",
+          "target": "r_end_voice"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "r_end_voice",
+      "body": "<<FILL role=completion words=95 beats='I am inside, Priyanka says, and the repeater carries the clunk of the shelter door just as hail starts hammering the tower roof; the ranger arrives once the line has passed and finds one soggy hiker and, still on the radio, one steady young voice keeping company; Nadia logs it simply: caller sheltered, guided by the second seat'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_voice",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Voice Under the Stars"
+      }
+    },
+    {
+      "id": "r_m_second",
+      "body": "<<FILL role=rising words=100 beats='Nadia takes the mic in one smooth motion and becomes pure calm; you become her second: logbook open, pencil flying, repeating back each fact she draws out of the hiker, Priyanka, alone, unhurt, above the washout near the leaning boulder'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rmsecond_use",
+          "label": "Make yourself exactly as useful as possible.",
+          "target": "r_m_task"
+        }
+      ]
+    },
+    {
+      "id": "r_m_task",
+      "body": "<<FILL role=choice words=112 beats='Nadia covers the mic and gives you a real operator's choice: plot Priyanka's landmarks on the wall map and hand her a bearing the ranger can use, or take radio two and keep the spotter net's storm reports flowing so the county picture does not go dark during the rescue'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rmtask_pin",
+          "label": "Plot the landmarks and work out a bearing.",
+          "target": "r_m_pin"
+        },
+        {
+          "id": "c_rmtask_log",
+          "label": "Keep the storm net alive on radio two.",
+          "target": "r_m_log"
+        }
+      ]
+    },
+    {
+      "id": "r_m_pin",
+      "body": "<<FILL role=climax words=100 beats='the leaning boulder pin, washout pin, the old lookout cabin pin; you lay the ruler between them and read off a bearing and a distance in your steadiest voice; Nadia repeats it to the ranger word for word, and the map under your hands quietly becomes a rescue'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rmpin_watch",
+          "label": "Watch your bearing do its work.",
+          "target": "r_end_bearing"
+        }
+      ]
+    },
+    {
+      "id": "r_end_bearing",
+      "body": "<<FILL role=completion words=92 beats='the ranger walks your bearing almost exactly and radios back found and fine as the meteor shower's peak window sweeps the ridge behind them; after closedown Nadia taps the three pins and tells the whole club that tonight the map did the rescuing; the pins stay where you put them, a tiny monument in the attic'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_bearing",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "True North"
+      }
+    },
+    {
+      "id": "r_m_log",
+      "body": "<<FILL role=rising words=96 beats='radio two is a river and you keep it in its banks: hail size at Silver Creek, wind over the county stargazing field, a power flash near the old chalk pit, logged, logged, logged, while two feet away Nadia talks a stranger up a dark hillside'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rmlog_carry",
+          "label": "Carry the net through the height of the storm.",
+          "target": "r_end_log"
+        }
+      ]
+    },
+    {
+      "id": "r_end_log",
+      "body": "<<FILL role=ending words=95 beats='when it is over, Priyanka is safe in the old lookout cabin and your pages are the only complete record of the storm's march across the county; reading the log back, you can see the whole the meteor shower's peak window like a creature drawn in columns, gust by gust; the weather service asks for a copy; you never said a word on the rescue, and it could not have happened without your pages'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "r_end_log",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Complete Log"
+      }
+    },
+    {
+      "id": "m_table",
+      "body": "<<FILL role=rising words=105 beats='the charting desk is a county map under scratched plastic, grease pencils on strings, a laptop looping radar, and the official forecast pinned at the corner: the meteor shower's peak window crossing the north hills at four fifteen; Dr. Alvarez hands you a grease pencil like it is a key to something'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mtable_learn",
+          "label": "Learn the plotter's job.",
+          "target": "m_plot"
+        }
+      ]
+    },
+    {
+      "id": "m_plot",
+      "body": "<<FILL role=rising words=100 beats='every spotter report becomes a mark: an X, a time, a word like hail or gust; Theo, a college intern who tracks orbits daily, calls out fixes from the attic net and you plot them; slowly the storm stops being weather and becomes a shape that moves'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mplot_notice",
+          "label": "Notice what the marks are starting to say.",
+          "target": "m_split"
+        }
+      ]
+    },
+    {
+      "id": "m_split",
+      "body": "<<FILL role=choice words=112 beats='your last three X's do not sit on the forecast track; the line's south end looks faster and farther south than the pinned map says it should be; Dr. Alvarez sees you frowning and offers two jobs: dig into the plots and test the official track, or run the timeline board that keeps the whole room current'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_msplit_test",
+          "label": "Re-plot the last hour and test the forecast track.",
+          "target": "m_a_replot"
+        },
+        {
+          "id": "c_msplit_board",
+          "label": "Run the timeline board for the room.",
+          "target": "m_b_board"
+        }
+      ]
+    },
+    {
+      "id": "m_a_replot",
+      "body": "<<FILL role=rising words=100 beats='you re-plot the hour clean on tracing paper: the south stations show pressure falling faster and gusts arriving earlier; the line is not a straight wall, its south end is bulging forward like a runner leaning into a corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mareplot_extend",
+          "label": "Extend the line forward in time.",
+          "target": "m_a_fair"
+        }
+      ]
+    },
+    {
+      "id": "m_a_fair",
+      "body": "<<FILL role=rising words=100 beats='you walk the bulge forward with the ruler, and your pencil stops on the county stargazing field, where the harvest festival is in full swing, at about three forty, thirty five minutes earlier than the official track says and miles farther south'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mafair_breathe",
+          "label": "Take a breath, because this is a big claim.",
+          "target": "m_a_verify"
+        }
+      ]
+    },
+    {
+      "id": "m_a_verify",
+      "body": "<<FILL role=choice words=115 beats='Dr. Alvarez's first rule of forecasting is to check yourself before you announce yourself; you can test your line against fresh ground truth by sending questions up to the radio room for the two south spotters, or test it against the science by pulling the latest radar frames with Theo and measuring the line's speed directly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_maverify_spotters",
+          "label": "Get fresh fixes from the south spotters.",
+          "target": "m_a_ask"
+        },
+        {
+          "id": "c_maverify_radar",
+          "label": "Measure the storm's motion on radar with Theo.",
+          "target": "m_a_frames"
+        }
+      ]
+    },
+    {
+      "id": "m_a_ask",
+      "body": "<<FILL role=rising words=96 beats='you write two tight questions, what, where, when, and send them up the attic stairs; the answers come back in minutes: gust front already past Route 12 south, hail starting at Silver Creek; you plot the fresh fixes with a thumping heart'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_maask_land",
+          "label": "See where the new marks land.",
+          "target": "m_a_fresh"
+        }
+      ]
+    },
+    {
+      "id": "m_a_fresh",
+      "body": "<<FILL role=rising words=100 beats='both fixes land on your pencil line like they were invited; Theo whistles low; Dr. Alvarez studies your tracing paper, then the clock, and says the words you will remember all year: alright, forecaster, present your case'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mafresh_present",
+          "label": "Get ready to present.",
+          "target": "m_a_show"
+        }
+      ]
+    },
+    {
+      "id": "m_a_show",
+      "body": "<<FILL role=choice words=112 beats='how do you argue something this big: walk her through the map itself, mark by mark and time by time, and let the evidence do the talking, or lead with the headline, the festival gets hit at three forty, and then show the work behind it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mashow_walk",
+          "label": "Walk her through the marks and let the map argue.",
+          "target": "m_a_walk"
+        },
+        {
+          "id": "c_mashow_bold",
+          "label": "Lead with the headline, then show the work.",
+          "target": "m_a_bold"
+        }
+      ]
+    },
+    {
+      "id": "m_a_walk",
+      "body": "<<FILL role=rising words=100 beats='mark by mark you retell the storm: here at two ten, here at two twenty five, faster with every step, and her pencil follows yours; she re-checks two plots herself, nods once, and picks up the phone to the county emergency manager with your tracing paper in her hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mawalk_call",
+          "label": "Listen to the call your map started.",
+          "target": "m_a_barns"
+        }
+      ]
+    },
+    {
+      "id": "m_a_barns",
+      "body": "<<FILL role=climax words=100 beats='the emergency manager asks hard questions and Dr. Alvarez answers them straight off your plots; the festival announcer moves everyone into the livestock barns and the grandstand shelter, grumbling and laughing, cotton candy and all, while the darkening eastern horizon deepens'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mabarns_clock",
+          "label": "Watch the clock you predicted.",
+          "target": "m_end_343"
+        }
+      ]
+    },
+    {
+      "id": "m_end_343",
+      "body": "<<FILL role=completion words=95 beats='the gust front hits the empty midway at three forty three, three minutes off your pencil line; funnel cake stands roll and nobody is under them; afterward the emergency manager visits the charting desk to see the tracing paper for himself, and Dr. Alvarez introduces you as the forecaster who caught the turn; the state storm report notes that a local club flagged the acceleration first'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_343",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Right on the Minute"
+      }
+    },
+    {
+      "id": "m_a_bold",
+      "body": "<<FILL role=climax words=100 beats='the festival gets hit at three forty, you say, and the room goes quiet; Dr. Alvarez grills you like a scientist, where is your ground truth, why is the official track wrong, and every question lands on a mark you have already made; it costs some sweaty minutes, but the case holds'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mabold_call",
+          "label": "Stand by while she makes the call.",
+          "target": "m_end_sayit"
+        }
+      ]
+    },
+    {
+      "id": "m_end_sayit",
+      "body": "<<FILL role=completion words=92 beats='the warning goes out with a little less lead time than it might have had, but it goes, and the festival crowd is snug in the barns when the wind arrives; afterward Dr. Alvarez shares a secret of the trade: a headline opens ears, but the boring careful marks are what open minds; next time, she says, hand them the map first and you will save the argument minutes'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_sayit",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Bold and Right"
+      }
+    },
+    {
+      "id": "m_a_frames",
+      "body": "<<FILL role=rising words=96 beats='Theo steps the radar back frame by frame and you measure with the screen ruler: the south end of the line is doing forty five miles an hour where the forecast assumed thirty; the math is clean and the bulge is real'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_maframes_check",
+          "label": "Check the numbers twice.",
+          "target": "m_a_stale"
+        }
+      ]
+    },
+    {
+      "id": "m_a_stale",
+      "body": "<<FILL role=rising words=100 beats='the numbers hold, but Theo points at the timestamp: the newest frame is already six minutes old, and Dr. Alvarez asks the question that matters, how fresh is this picture, because a warning is only as good as its ground truth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mastale_answer",
+          "label": "Decide what your answer will be.",
+          "target": "m_a_call"
+        }
+      ]
+    },
+    {
+      "id": "m_a_call",
+      "body": "<<FILL role=choice words=112 beats='you can make the brief airtight by adding the latest spotter plots to the radar measurement, marrying the math to fresh ground truth, or you can call it now on the radar alone, because the clock is running and a festival is a big place to move'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_macall_combine",
+          "label": "Add fresh spotter plots before calling it in.",
+          "target": "m_a_agree"
+        },
+        {
+          "id": "c_macall_now",
+          "label": "Call it in now on the radar math alone.",
+          "target": "m_a_fuzzy"
+        }
+      ]
+    },
+    {
+      "id": "m_a_agree",
+      "body": "<<FILL role=climax words=100 beats='the newest spotter fixes drop onto the radar vector like stitches pulling one seam tight; map and math agree on three forty at the county stargazing field; Dr. Alvarez reads your one page brief, initials it, and dials the emergency manager without a wasted breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_maagree_out",
+          "label": "Follow your nowcast out into the world.",
+          "target": "m_end_agree"
+        }
+      ]
+    },
+    {
+      "id": "m_end_agree",
+      "body": "<<FILL role=completion words=95 beats='because the brief is airtight, the emergency manager does not stop to argue, and the saved minutes become shelter time; the festival is under roofs early enough that kids watch the shelf cloud roll in from the barn doors like a parade; Dr. Alvarez pins your brief to the club wall: one page, two kinds of proof, zero people in the open'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_agree",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Chart and Math Agree"
+      }
+    },
+    {
+      "id": "m_a_fuzzy",
+      "body": "<<FILL role=rising words=100 beats='the call goes out fast, and fast turns out to be fuzzy: the emergency manager asks whether the track is ground-truthed, and the honest answer is not yet; he holds the warning while a deputy drives out to eyeball the sky, and you watch minutes you gave away tick past'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mafuzzy_recover",
+          "label": "Help win the lost minutes back.",
+          "target": "m_end_fuzzy"
+        }
+      ]
+    },
+    {
+      "id": "m_end_fuzzy",
+      "body": "<<FILL role=failure words=95 beats='Dr. Alvarez rescues it, feeding fresh spotter fixes to the county while you plot them at speed, and the festival still gets under cover, closer to the wire than anyone liked; nobody is hurt; in the debrief she draws a triangle on the board, radar, spotters, plot, and says a nowcast stands on all three legs or it wobbles; you skipped one leg once, and you will never skip it again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_fuzzy",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Quick but Shaky"
+      }
+    },
+    {
+      "id": "m_b_board",
+      "body": "<<FILL role=rising words=100 beats='the timeline board is chalk and columns: time, place, report; you claim it, square your chalk, and start turning radio chatter into a story the whole room can read at a glance; within minutes Dr. Alvarez is steering the table by your columns'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbboard_code",
+          "label": "Make the board even easier to read.",
+          "target": "m_b_colors"
+        }
+      ]
+    },
+    {
+      "id": "m_b_colors",
+      "body": "<<FILL role=rising words=96 beats='you invent a color code on the fly, green for rain, blue for hail, orange for wind, and the board turns into a weather comic strip marching down the wall; Theo photographs it for the club scrapbook; then your own columns show you something nobody has said out loud'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbcolors_see",
+          "label": "Say out loud what the board is showing.",
+          "target": "m_b_gap"
+        }
+      ]
+    },
+    {
+      "id": "m_b_gap",
+      "body": "<<FILL role=choice words=118 beats='the orange marks are stepping straight toward Elm Hollow, where the middle school soccer semifinal kicks off at three thirty, and the storm will get there first; the room is busy and this is your find; you can build the warning yourself, draft it and get Dr. Alvarez's sign-off, or hand the warning job to Theo and keep the board current, because the whole room steers by it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbgap_warn",
+          "label": "Draft the warning and get it signed.",
+          "target": "m_b_draft"
+        },
+        {
+          "id": "c_mbgap_board",
+          "label": "Hand the warning to Theo and keep the board current.",
+          "target": "m_b_columns"
+        }
+      ]
+    },
+    {
+      "id": "m_b_draft",
+      "body": "<<FILL role=rising words=100 beats='you write it the way Dr. Alvarez teaches, what, when, what to do: strong gusts and hail reaching Elm Hollow near three twenty five, clear the field by three fifteen, shelter in the gym, wait for the club's all-clear; she reads it twice and signs the corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbdraft_send",
+          "label": "Now get it to the right ears.",
+          "target": "m_b_phone"
+        }
+      ]
+    },
+    {
+      "id": "m_b_phone",
+      "body": "<<FILL role=choice words=112 beats='the field house phone rings busy, busy, busy, and the clock does not care; two ways to reach the right ears: Theo can dig the athletic director's cell number out of the league sheet, or you can call the snack stand's posted number, which a parent always answers, and have your warning hand-carried to the press box'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbphone_cell",
+          "label": "Track down the athletic director's cell with Theo.",
+          "target": "m_b_ad"
+        },
+        {
+          "id": "c_mbphone_stand",
+          "label": "Call the snack stand and send the warning by hand.",
+          "target": "m_b_note"
+        }
+      ]
+    },
+    {
+      "id": "m_b_ad",
+      "body": "<<FILL role=choice words=112 beats='the athletic director wavers: the sky over the field looks fine, parents drove a long way, and calling a delay on a bright-ish afternoon takes nerve; you can give him your best evidence in plain words, or offer him a deal that makes the decision easy to live with'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbad_evidence",
+          "label": "Give him the evidence, plain and clear.",
+          "target": "m_b_hailfact"
+        },
+        {
+          "id": "c_mbad_deal",
+          "label": "Offer him the club's deal.",
+          "target": "m_b_deal"
+        }
+      ]
+    },
+    {
+      "id": "m_b_hailfact",
+      "body": "<<FILL role=rising words=100 beats='you keep it kid-clear: hail the size of peas is falling right now at Silver Creek, which sits upstream of the field on the storm's track, the gust front should arrive near three twenty five, and the sky always looks fine just before a gust front, that is the trap'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbhail_land",
+          "label": "Let the upstream fact land.",
+          "target": "m_b_gustfront"
+        }
+      ]
+    },
+    {
+      "id": "m_b_gustfront",
+      "body": "<<FILL role=climax words=96 beats='the word upstream does it, and you can hear him deciding; the announcement crackles across the field behind his voice, and the stands begin flowing toward the gym doors while the west stays deceptively bright'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbgust_watch",
+          "label": "Stay on the line while the field clears.",
+          "target": "m_end_called"
+        }
+      ]
+    },
+    {
+      "id": "m_end_called",
+      "body": "<<FILL role=completion words=95 beats='the gust front arrives at three thirty four and flattens both corner flags in front of a beautifully empty field; from the gym doorway the teams watch the rain wall cross the pitch like a curtain being drawn; the athletic director keeps you on the line through all of it, and afterward asks whether the club does this every storm; Dr. Alvarez writes one line under your warning: sent, heeded, nobody outside'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_called",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Called Before the Comet"
+      }
+    },
+    {
+      "id": "m_b_deal",
+      "body": "<<FILL role=climax words=96 beats='here is the club's offer, you say: delay kickoff forty minutes, and we will watch the storm off your field minute by minute and call you the all-clear the moment the line is past; a pause, whistles, crowd noise, and then, deal, kid'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbdeal_keep",
+          "label": "Keep the club's side of the bargain.",
+          "target": "m_end_delay"
+        }
+      ]
+    },
+    {
+      "id": "m_end_delay",
+      "body": "<<FILL role=completion words=95 beats='the line crosses the empty field at three thirty five while both teams wait dry in the gym; at four eleven your plots show the back edge clear of Elm Hollow, and Dr. Alvarez lets you make the all-clear call yourself; the semifinal kicks off at four forty on a soaked, sparkling field, and the league writes the club a thank you letter that goes straight onto the wall'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_delay",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Later Show, Style"
+      }
+    },
+    {
+      "id": "m_b_note",
+      "body": "<<FILL role=rising words=100 beats='a cheerful parent volunteer answers over popcorn noise; you dictate the warning slowly, what is coming, when it arrives, clear the field by three fifteen, shelter in the gym, wait for the club's all-clear, and she reads it back twice and sprints for the press box with the note in her fist'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbnote_pa",
+          "label": "Listen for the announcement.",
+          "target": "m_end_note"
+        }
+      ]
+    },
+    {
+      "id": "m_end_note",
+      "body": "<<FILL role=completion words=92 beats='the public address system crackles and a puzzled announcer reads your warning word for word, and because it is written down, nothing gets garbled; the field clears with twelve minutes to spare and both teams watch the gust front from the gym; afterward the note itself, popcorn grease and all, is pinned to the club wall beside the plots, proof that a message with a person attached always finds its way'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_note",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Note That Made It"
+      }
+    },
+    {
+      "id": "m_b_columns",
+      "body": "<<FILL role=rising words=100 beats='Theo takes the warning and runs with it; you stay on the board, and staying turns out to be a real job: reports double as the line closes in, and your columns are the only thing keeping fourteen voices from talking over each other'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbcolumns_hold",
+          "label": "Hold the county picture together.",
+          "target": "m_b_conflict"
+        }
+      ]
+    },
+    {
+      "id": "m_b_conflict",
+      "body": "<<FILL role=choice words=115 beats='two spotters disagree: one puts the hail line at Silver Creek, the other at the old chalk pit, and both cannot be true; the board is the room's truth, so what it says matters; you can plot both with question marks and radio for a tiebreaker fix, or pick the likelier report, Silver Creek fits the storm's motion, and keep the board clean and confident'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbconflict_marks",
+          "label": "Plot both with question marks and ask for a tiebreaker.",
+          "target": "m_b_tiebreak"
+        },
+        {
+          "id": "c_mbconflict_pick",
+          "label": "Pick Silver Creek and keep the board clean.",
+          "target": "m_b_wrong"
+        }
+      ]
+    },
+    {
+      "id": "m_b_tiebreak",
+      "body": "<<FILL role=climax words=96 beats='your two question marks sit on the board like raised hands, honest about what the room does not know; three minutes later a third spotter breaks the tie, the the old chalk pit report was old hail already melted and Silver Creek is live, and you erase exactly one question mark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbtie_rule",
+          "label": "Notice what the question marks just did.",
+          "target": "m_end_qmark"
+        }
+      ]
+    },
+    {
+      "id": "m_end_qmark",
+      "body": "<<FILL role=ending words=95 beats='after the storm, Dr. Alvarez circles your two chalk question marks and tells the club they were the smartest thing on the board all night: doubt shown exactly where doubt lived, so nobody steered on a guess; the club votes it a standing rule, uncertain reports get question marks and a tiebreaker; the board never lied to the room, not even for three minutes, and that, she says, is the whole game'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_qmark",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Honest Question Mark"
+      }
+    },
+    {
+      "id": "m_b_wrong",
+      "body": "<<FILL role=rising words=100 beats='your pick is lucky, Silver Creek really is the live report, but clean and confident has become the board's whole style: the the county stargazing field wind column is riding gauge numbers that quietly stopped updating ten minutes ago, plotted without one question mark, and the room steers by stale wind until a puzzled spotter radios that the the county stargazing field flags are whipping hard while your board still says calm'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mbwrong_fix",
+          "label": "Fix the board fast.",
+          "target": "m_end_sure"
+        }
+      ]
+    },
+    {
+      "id": "m_end_sure",
+      "body": "<<FILL role=failure words=95 beats='you and Dr. Alvarez reset the column together in front of everyone, and the room recovers quickly because everything else on your board is good; no harm reaches anyone, but the ten crooked minutes sting; in the debrief she hands you the chalk and asks what you would do differently, and you draw a question mark; exactly, she says, a board is allowed to be unsure, it is not allowed to be wrong on purpose'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "m_end_sure",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Chart Was Certain"
+      }
+    },
+    {
+      "id": "f_van",
+      "body": "<<FILL role=rising words=105 beats='the society's van smells of coffee and electronics; Sam, steady hands, laminated checklist, drives; Elena, quick and precise, runs instruments; before the engine turns over she gives the speech: we watch storms from the side that cannot reach us, we leave early, we never drive through water, and inside this van, weather is homework, not a monster'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fvan_roll",
+          "label": "Roll out with the field team.",
+          "target": "f_load"
+        }
+      ]
+    },
+    {
+      "id": "f_load",
+      "body": "<<FILL role=rising words=100 beats='you inventory the kit hand over hand: anemometer mast, spare rain gauge bottles, hail pads in their frames, the camera, the ruler card, and the weather radio already murmuring with the dome control room's net; Elena declares you instruments crew, official'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fload_sheet",
+          "label": "Check the route sheet with Sam.",
+          "target": "f_route"
+        }
+      ]
+    },
+    {
+      "id": "f_route",
+      "body": "<<FILL role=choice words=118 beats='two jobs on the route sheet and time for one before the line arrives, maybe a piece of the second: the gauge run, swapping rain gauge bottles at three farms along Orchard Lane so the storm's rainfall gets measured, or setting up the observation post on Signal Bluff, the safe flank overlook, with the mast, the hail pads, and the camera'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_froute_gauges",
+          "label": "Start with the gauge run along Orchard Lane.",
+          "target": "f_g_stops"
+        },
+        {
+          "id": "c_froute_hill",
+          "label": "Set up the Signal Bluff post before the sky closes in.",
+          "target": "f_h_hill"
+        }
+      ]
+    },
+    {
+      "id": "f_g_stops",
+      "body": "<<FILL role=rising words=100 beats='stops one and two are clockwork: unscrew, cap, label, swap, thirty seconds a bottle, while Sam keeps the van pointed out the gate, nose toward the road, leave-early rule made of steel; westward the sky is going green-gray and the wind sock at the Pruitt gate stands straight out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgstops_third",
+          "label": "Head for the third farm.",
+          "target": "f_g_farm"
+        }
+      ]
+    },
+    {
+      "id": "f_g_farm",
+      "body": "<<FILL role=rising words=100 beats='the Delgado farm is chaos with a fence around it: goats loose in the yard, ducks everywhere, a hay tarp cracking like a flag, and Mrs. Delgado alone in the middle of it because her helper is stuck in town; the rain gauge sits calmly by the barn, doing its one job'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgfarm_out",
+          "label": "Pile out and size it up.",
+          "target": "f_g_pick"
+        }
+      ]
+    },
+    {
+      "id": "f_g_pick",
+      "body": "<<FILL role=choice words=115 beats='the radio says twenty five minutes until the gust front, and Sam is already parking nose-out; you can help the farm first, animals and tarp, and grab the gauge bottle if time allows, or do protocol first, swap the gauge in ninety seconds while your hands remember how, then throw everything you have at the yard'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgpick_farm",
+          "label": "Help with the animals and the tarp first.",
+          "target": "f_g_goats"
+        },
+        {
+          "id": "c_fgpick_gauge",
+          "label": "Swap the gauge fast, then help the farm.",
+          "target": "f_g_swap"
+        }
+      ]
+    },
+    {
+      "id": "f_g_goats",
+      "body": "<<FILL role=rising words=100 beats='Elena teaches you the feed bucket trick, rattle it and walk, never chase, and the goats decide you are the most interesting thing on the farm; one by one they follow you into the barn, and you latch the pens while the ducks file in under the workbench like commuters'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fggoats_tarp",
+          "label": "Now the flapping tarp.",
+          "target": "f_g_tarp"
+        }
+      ]
+    },
+    {
+      "id": "f_g_tarp",
+      "body": "<<FILL role=rising words=100 beats='the tarp fights like a sail, but Sam anchors the corners with old tires while you and Elena haul the lines; the first fat raindrops smack the dust around your shoes, and the radio on Sam's belt says the gust front is ten minutes out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgtarp_count",
+          "label": "Help Mrs. Delgado count the goats.",
+          "target": "f_g_count"
+        }
+      ]
+    },
+    {
+      "id": "f_g_count",
+      "body": "<<FILL role=choice words=115 beats='eleven goats in the pen and Mrs. Delgado counts twelve on her fingers: Marigold is missing, probably sulking down in the creek willows; ten minutes is enough for a fast two minute look with a hard stop, or it is enough to get every person inside right now and trust that goats are better at weather than people are'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgcount_look",
+          "label": "Take a fast two-minute look at the willows with Elena.",
+          "target": "f_g_willow"
+        },
+        {
+          "id": "c_fgcount_shelter",
+          "label": "Get everyone inside now, people before goats.",
+          "target": "f_g_cellar"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_g_willow",
+      "body": "<<FILL role=rising words=100 beats='Elena sets a timer out loud, two minutes and we walk, and you jog to the willows under a sky like a held breath; there, a cream colored rump backed into the blackberry: Marigold, tangled, indignant, and very loud about it; you work the brambles while Elena watches the west and the timer both'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgwillow_run",
+          "label": "Look for Marigold once the line has passed.",
+          "target": "f_g_inside"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_g_inside",
+      "body": "<<FILL role=climax words=100 beats='the bucket rattle does the rest; Marigold trots, you run, and Sam's horn is honking everyone in as the wind arrives like a shoulder against the whole farm; barn latched, people in the farmhouse, and the gust front breaks over a buttoned-up yard'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fginside_watch",
+          "label": "Watch the storm do its worst to a ready farm.",
+          "target": "f_end_goats"
+        }
+      ]
+    },
+    {
+      "id": "f_end_goats",
+      "body": "<<FILL role=completion words=95 beats='hail rattles the farmhouse windows like popcorn while twelve goats chew calmly in a latched barn; when the sun knifes back under the cloud line, the yard is soaked, the tarp held, and the gauge bottle rides labeled in the van; Mrs. Delgado will not stop telling the story of the storm club kid and the blackberry goat; Elena logs it: all animals secured, all people sheltered, margin respected, and the timer never had to say so'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_goats",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Every Goat Accounted For"
+      }
+    },
+    {
+      "id": "f_g_cellar",
+      "body": "<<FILL role=climax words=100 beats='people first, you say, and nobody argues; Mrs. Delgado, Elena, Sam, and you are inside the sturdy farmhouse with the door braced when the gust front arrives, and it arrives like a train made of wind; through the window the willows go over sideways and spring back up again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgcellar_after",
+          "label": "Look for Marigold once the line has passed.",
+          "target": "f_end_people"
+        }
+      ]
+    },
+    {
+      "id": "f_end_people",
+      "body": "<<FILL role=completion words=95 beats='the storm passes, loud but brief, and Marigold strolls out of the willows soggy, cross, and completely fine, because critters know how to hunker; Mrs. Delgado says you chose exactly right and feeds everyone cider; Sam writes the club's oldest rule in the log where you can see it, animals survive weather better than people survive risks; the gauge bottle gets swapped in the after-storm calm, data safe, everyone dry'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_people",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Shelter Comes First"
+      }
+    },
+    {
+      "id": "f_g_swap",
+      "body": "<<FILL role=rising words=96 beats='ninety seconds, just like the drills: unscrew, cap, label with the farm name and the time, fresh bottle in, and the storm's rainfall record for the road is safe in the crate; then it is all hands to the yard, tarp lines, feed bucket, ducks scattering like spilled popcorn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgswap_yard",
+          "label": "Throw everything at the yard.",
+          "target": "f_g_horn"
+        }
+      ]
+    },
+    {
+      "id": "f_g_horn",
+      "body": "<<FILL role=rising words=100 beats='goats penned, ducks under the bench, and the radio says the gust front is eight minutes out and already visible from Signal Bluff; Sam backs the van to the farmhouse and stands by the horn; the hay tarp is half anchored, two tires on, two corners still snapping'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fghorn_call",
+          "label": "Make the call on the tarp.",
+          "target": "f_g_tarp2"
+        }
+      ]
+    },
+    {
+      "id": "f_g_tarp2",
+      "body": "<<FILL role=choice words=112 beats='Sam gives you the honest arithmetic: one more minute finishes the tarp, and one more minute is exactly the margin the club promises never to spend; leave the tarp and get inside now, hay gets wet and people do not, or take the minute and throw the last two tires on with Sam, cutting it close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgtarp2_leave",
+          "label": "Leave the tarp, everyone inside now.",
+          "target": "f_g_peel"
+        },
+        {
+          "id": "c_fgtarp2_minute",
+          "label": "Take one more minute and finish it with Sam.",
+          "target": "f_g_minute"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_g_peel",
+      "body": "<<FILL role=climax words=96 beats='from the farmhouse window you watch the wind take the tarp like a magician's tablecloth trick; it wraps the fence and stays there, flapping furiously, while the hay underneath goes gray with rain; inside, the kettle is on and every heartbeat in the room is slow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgpeel_tally",
+          "label": "Tally what was lost and what was not.",
+          "target": "f_end_dry"
+        }
+      ]
+    },
+    {
+      "id": "f_end_dry",
+      "body": "<<FILL role=completion words=95 beats='the tally after the storm: one soaked haystack, one tarp rescued off the fence, zero scratches on anybody, and one perfectly labeled gauge bottle that tells the county exactly how hard Orchard Lane was rained on; Mrs. Delgado shrugs about the hay, it will dry, hay does; Elena writes your first field report with you, and its last line is the club's whole creed: we can always buy hay'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_dry",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Dry Barn, Dry People"
+      }
+    },
+    {
+      "id": "f_g_minute",
+      "body": "<<FILL role=rising words=100 beats='the last two tires go on and the tarp is drum tight, and then the minute is gone and the wind arrives while you and Sam are still crossing the yard; a bucket cartwheels past, grit stings your ears, the first gust shoves you like a crowd, and Sam's hand clamps your arm for the last five steps through the farmhouse door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fgminute_breathe",
+          "label": "Catch your breath inside.",
+          "target": "f_end_margin"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_end_margin",
+      "body": "<<FILL role=failure words=95 beats='the tarp holds and nobody is hurt, and Sam is quiet in a way that is worse than shouting; that was my mistake as much as yours, he says at last, we do not spend our margin on hay; the ride home is silent, and at the old observatory the two of you write it up together for the safety book, new rule underlined: when the horn is worth honking, the job is already over; your gauge bottle still makes it into the data crate, but the lesson rides home heavier'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_margin",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Spent Minute"
+      }
+    },
+    {
+      "id": "f_h_hill",
+      "body": "<<FILL role=rising words=100 beats='Signal Bluff earns its name: wind combing the grass flat and the darkening eastern horizon one long shelf cloud, like a rolling pin of slate; Sam parks nose-out on the east track, escape route agreed before anyone opens a door, and Elena starts handing you the mast sections'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhhill_build",
+          "label": "Build the observation post.",
+          "target": "f_h_live"
+        }
+      ]
+    },
+    {
+      "id": "f_h_live",
+      "body": "<<FILL role=rising words=104 beats='mast up and guyed, hail pads staked in their frames, camera on the tripod with the old fire beacon for scale; the anemometer wakes, fifteen miles an hour gusting twenty two; Elena points at the shelf cloud and teaches you the difference that matters, outflow shelf, not a rotating wall, awe, not alarm; the dome control room's net wants a wind reading every five minutes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhlive_jobs",
+          "label": "Split the post's two jobs.",
+          "target": "f_h_job"
+        }
+      ]
+    },
+    {
+      "id": "f_h_job",
+      "body": "<<FILL role=choice words=112 beats='two jobs, one you: instruments captain, owning the readings and calling them to the dome control room's net on schedule, or camera captain, documenting the shelf cloud's arrival and the hail for the club's science archive, every shot timestamped; Elena will back up whichever one you do not take'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhjob_wind",
+          "label": "Take the instruments and call the readings.",
+          "target": "f_h_calls"
+        },
+        {
+          "id": "c_fhjob_camera",
+          "label": "Take the camera and document the storm.",
+          "target": "f_h_frame"
+        }
+      ]
+    },
+    {
+      "id": "f_h_calls",
+      "body": "<<FILL role=rising words=100 beats='you find the rhythm fast: Signal Bluff, two eight gusting four one, and the dome control room reads it back and relays it onward; between calls Elena shows you how the gusts come in families, build, peak, breathe; the shelf cloud swallows the last blue in the west'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhcalls_rise",
+          "label": "Keep calling as the numbers climb.",
+          "target": "f_h_hail"
+        }
+      ]
+    },
+    {
+      "id": "f_h_hail",
+      "body": "<<FILL role=rising words=100 beats='fifty one miles an hour and the first hail ticks off the society's van's roof like thrown gravel; Sam calls everyone inside the society's van, windows up, and announces the load-and-leave threshold: when he says go, the post comes down and the society's van rolls, no debate; Elena raises the real question, the mast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhhail_mast",
+          "label": "Settle the mast question.",
+          "target": "f_h_mast"
+        }
+      ],
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "f_h_mast",
+      "body": "<<FILL role=choice words=115 beats='strike the mast now and finish the run on the handheld anemometer through the cracked window, gear safe and numbers humbler, or leave the mast up until the deadline and read the remote display from inside the van, chasing the peak gust right up to the moment the post comes down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhmast_keep",
+          "label": "Leave the mast up till Sam's deadline and log the peak.",
+          "target": "f_h_peak"
+        },
+        {
+          "id": "c_fhmast_strike",
+          "label": "Strike the mast now and switch to the handheld.",
+          "target": "f_h_hand"
+        }
+      ]
+    },
+    {
+      "id": "f_h_peak",
+      "body": "<<FILL role=climax words=104 beats='from inside the society's van you call the numbers off the remote display while hail pops on the roof: five two, five five, then the gust front's leading edge itself, five eight, and the whole van rocks on its springs like a boat; Sam says go, the mast comes down slick as a drill, and the society's van is rolling east inside his margin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhpeak_home",
+          "label": "Ride home with the number.",
+          "target": "f_h_report"
+        }
+      ]
+    },
+    {
+      "id": "f_h_report",
+      "body": "<<FILL role=rising words=96 beats='back at the old observatory the attic log confirms it: Signal Bluff, fifty eight miles an hour, the highest wind measured anywhere in the county today, logged at the exact minute the gust front crossed the ridge, with your callsign on the reading'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhreport_share",
+          "label": "Hand the data over.",
+          "target": "f_end_58"
+        }
+      ]
+    },
+    {
+      "id": "f_end_58",
+      "body": "<<FILL role=completion words=95 beats='the weather service uses the club's Signal Bluff reading in the official storm report, and fifty eight becomes the number everyone quotes at school on Monday; the mast has a new dent and the hail pads look like the moon, which Elena calls the best kind of trophy; Sam taps the safety log too, post struck on deadline, van rolling on time, and that pairing, the great number and the kept margin, is what the club frames for the wall'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_58",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Sixty and Rising"
+      }
+    },
+    {
+      "id": "f_h_hand",
+      "body": "<<FILL role=rising words=100 beats='the mast comes down dry and safe in its case, and you finish the run on the handheld through the cracked window: four four is your best, solid data honestly gotten, while the real peak howls by unmeasured somewhere over the grass; out in the weather, the hail pads are still taking notes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhhand_pads",
+          "label": "Collect the hail pads after the all-clear.",
+          "target": "f_end_gotaway"
+        }
+      ]
+    },
+    {
+      "id": "f_end_gotaway",
+      "body": "<<FILL role=ending words=95 beats='the pads come in stippled with perfect little craters, a record of the hail even though the peak gust got away; Elena spreads them on the workbench and shows you the trade you made without knowing it, gear kept safe versus the biggest number lost, and every field scientist makes that trade over and over; next storm, she says, you will know the price of both answers before you choose, and that is exactly what a second storm is for'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_gotaway",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Reading That Slipped Away"
+      }
+    },
+    {
+      "id": "f_h_frame",
+      "body": "<<FILL role=rising words=100 beats='the camera loves the shelf cloud: you frame it behind the old fire beacon for scale, timestamp burning in the corner, while Elena narrates the structure like a tour guide, outflow lifting the dust line, rain shaft dragging behind like a broom; you shoot the gust front racing across the valley floor toward Signal Bluff'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhframe_hail",
+          "label": "Keep shooting as the hail arrives.",
+          "target": "f_h_van"
+        }
+      ]
+    },
+    {
+      "id": "f_h_van",
+      "body": "<<FILL role=choice words=118 beats='pea hail, then marbles, and Sam calls everyone into the society's van to shoot through glass; when the line passes and Sam gives the all-clear, you will have only minutes before the evidence melts: measure and photograph the three biggest stones on the hail pad with the ruler card, the archive's first calibrated hail record, or chase the light east, because the back edge is lifting and there will be a double rainbow over the wet valley'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhvan_measure",
+          "label": "Measure the hail on the pad before it melts.",
+          "target": "f_h_ruler"
+        },
+        {
+          "id": "c_fhvan_light",
+          "label": "Chase the light for the club's best-ever photo.",
+          "target": "f_h_light"
+        }
+      ]
+    },
+    {
+      "id": "f_h_ruler",
+      "body": "<<FILL role=climax words=96 beats='all-clear, and you are out the door with the ruler card: biggest stone nineteen millimeters, photographed square on the pad grid with the timestamp, then the next two, while meltwater eats the small ones around your knees; Elena calls the technique textbook'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhruler_file",
+          "label": "File the archive's first calibrated hail record.",
+          "target": "f_end_19mm"
+        }
+      ]
+    },
+    {
+      "id": "f_end_19mm",
+      "body": "<<FILL role=completion words=95 beats='nineteen millimeters at Signal Bluff becomes the county's official hail measurement for the storm, photographed, calibrated, and filed in the club's science archive with your name on the entry; the weather service cites it, and Elena opens the winter class on hail with your photo on the projector; the rainbow happened too, and someone else got a blurry picture of it, and you do not mind even slightly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_19mm",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Twenty Millimeters, Confirmed"
+      }
+    },
+    {
+      "id": "f_h_light",
+      "body": "<<FILL role=climax words=96 beats='you chase the light east and the sky pays out: a double rainbow braced over the soaked valley, mammatus pouches glowing under the storm's retreating anvil, and you shoot the best photograph in the club's whole scrapbook while the hail pads sit forgotten in the grass, going drip, drip, drip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fhlight_cost",
+          "label": "Bring your treasure back to the van.",
+          "target": "f_end_photo"
+        }
+      ]
+    },
+    {
+      "id": "f_end_photo",
+      "body": "<<FILL role=failure words=95 beats='the photo wins the fall fair and hangs framed in the old observatory, and every time you see it you also see what is missing: the archive entry that reads hail, observed, unmeasured, because the stones melted while you chased the light; beautiful, Elena says, meaning it, and next time we will get the data too; the club gains its greatest picture, and you gain the quiet lesson that in field science, pretty is optional and measured is forever'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "f_end_photo",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Gorgeous Shot, the Missing Data"
+      }
+    }
+  ]
+}

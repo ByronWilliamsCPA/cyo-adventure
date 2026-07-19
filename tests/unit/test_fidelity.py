@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 from cyo_adventure.generation.fidelity import (
     parse_fill_directive,
     run_fidelity_checks,
@@ -12,15 +9,22 @@ from cyo_adventure.generation.fidelity import (
     word_count_violations,
 )
 
-_CAVE = Path("skeletons/8-11/the-cave-of-echoes.json")
-
 
 def test_parse_fill_directive_handles_apostrophe_in_beats() -> None:
-    """The real la_tunnel directive has an apostrophe inside beats (Biscuit's);
-    a naive first-quote-closes regex would truncate it."""
-    story = json.loads(_CAVE.read_text(encoding="utf-8"))
-    node = next(n for n in story["nodes"] if n["id"] == "la_tunnel")
-    parsed = parse_fill_directive(node["body"])
+    """An apostrophe inside the beats segment must not truncate the parse.
+
+    Beats guidance is single-quoted (``beats='...'``), so a naive
+    first-quote-closes regex would stop at the apostrophe in "Biscuit's"; the
+    parser must instead consume the whole segment up to the closing ``'>>``.
+    Modeled on the classic cave-of-echoes ``la_tunnel`` directive but kept
+    synthetic, since that skeleton's beats are now parameterized (WS-2) and its
+    prose is no longer fixed.
+    """
+    body = (
+        "<<FILL role=rising words=95 "
+        "beats='Biscuit's ears prick at the soft rustling'>>"
+    )
+    parsed = parse_fill_directive(body)
     assert parsed is not None
     assert parsed["role"] == "rising"
     assert parsed["words"] == "95"

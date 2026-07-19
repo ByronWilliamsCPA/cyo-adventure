@@ -123,6 +123,17 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
         return []
     candidates: list[tuple[str, StoryMetadata]] = []
     for path in sorted(band_dir.glob("*.json")):
+        # #ASSUME: data-integrity: a WS-2 theme-contract sidecar
+        # (`<slug>.contract.json`) lives next to its skeleton and also matches
+        # this `*.json` glob; without this skip it would be treated as a
+        # skeleton with a missing metadata block, logging one spurious
+        # `skeleton.missing_metadata_block` warning per contract on every
+        # scan. Sidecars are authoring-time data, never a selectable
+        # skeleton.
+        # #VERIFY: test_skeleton_match.py asserts a `*.contract.json` file
+        # produces no candidate and no warning log.
+        if path.name.endswith(".contract.json"):
+            continue
         metadata = _load_metadata(path)
         if metadata is None or not metadata.production_eligible:
             continue

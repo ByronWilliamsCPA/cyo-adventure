@@ -1,0 +1,3027 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_salt_archive",
+  "version": 1,
+  "title": "The Salt Archive",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "memory",
+      "the uncanny",
+      "what we choose to forget",
+      "impermanence"
+    ],
+    "estimated_minutes": 24,
+    "ending_count": 54,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "long",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=210 beats='Priya Anand arrives as new keeper of the Coolant Archive above Kestrel Station on the shift the reactor seal fails quietly and the oldest vaults begin to drink the venting gas, and four ways to meet the drowning open before her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_0",
+          "label": "Investigate the manifest of the flooding lower bays.",
+          "target": "a0_1"
+        },
+        {
+          "id": "c_n_start_1",
+          "label": "Seek out Tomas Reyes, the last living technician.",
+          "target": "a1_1"
+        },
+        {
+          "id": "c_n_start_2",
+          "label": "Open the engineer's sealed logbook.",
+          "target": "a2_1"
+        },
+        {
+          "id": "c_n_start_3",
+          "label": "Face the venting leak against the hull.",
+          "target": "a3_1"
+        }
+      ]
+    },
+    {
+      "id": "a0_1",
+      "body": "<<FILL role=rising words=172 beats='Priya Anand turns toward the manifest of the flooding lower bays; salt damp beads on the stone and her lantern doubles in the venting gas; a first wrongness snags her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_1",
+          "label": "Go on.",
+          "target": "a0_2"
+        }
+      ]
+    },
+    {
+      "id": "a0_2",
+      "body": "<<FILL role=choice words=186 beats='the manifest of the flooding lower bays offers Priya Anand two ways in: press hard and risk being noticed by whatever the venting gas answers to, or wait and let the Coolant Archive keep its secret a while longer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_2_0",
+          "label": "Press in directly.",
+          "target": "a0_3a"
+        },
+        {
+          "id": "c_a0_2_1",
+          "label": "Hang back and watch.",
+          "target": "a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "a0_3a",
+      "body": "<<FILL role=rising words=176 beats='pressed directly, the manifest of the flooding lower bays yields a hard specific fact that will not sit still in Priya Anand's mind and points deeper under the tideline'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_3a",
+          "label": "Go on.",
+          "target": "a0_4"
+        }
+      ]
+    },
+    {
+      "id": "a0_3b",
+      "body": "<<FILL role=choice words=181 beats='watching the manifest of the flooding lower bays from the edge, Priya Anand can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_3b_0",
+          "label": "Hold the thread and go on.",
+          "target": "a0_4"
+        },
+        {
+          "id": "c_a0_3b_1",
+          "label": "Let the cold take you.",
+          "target": "a0_e1"
+        }
+      ]
+    },
+    {
+      "id": "a0_4",
+      "body": "<<FILL role=rising words=169 beats='both readings of the manifest of the flooding lower bays settle on the same small impossibility, and Priya Anand feels the flooded floor tilt the whole building toward one question'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_4",
+          "label": "Go on.",
+          "target": "a0_5"
+        }
+      ]
+    },
+    {
+      "id": "a0_desc_s1",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after the manifest of the flooding lower bays, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_desc_s1",
+          "label": "Go on.",
+          "target": "a0_desc_s2"
+        }
+      ]
+    },
+    {
+      "id": "a0_desc_s2",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after the manifest of the flooding lower bays, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_desc_s2",
+          "label": "Go on.",
+          "target": "a0_desc_s3"
+        }
+      ]
+    },
+    {
+      "id": "a0_desc_s3",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after the manifest of the flooding lower bays, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_desc_s3",
+          "label": "Go on.",
+          "target": "a0_6"
+        }
+      ]
+    },
+    {
+      "id": "a0_5",
+      "body": "<<FILL role=choice words=179 beats='the manifest of the flooding lower bays shows Priya Anand a name half dissolved in brine; she can carry the reading down toward Aldous Rook's old pivot, or stop to record only the loss in front of her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_5_0",
+          "label": "Descend toward the pivot.",
+          "target": "a0_desc_s1"
+        },
+        {
+          "id": "c_a0_5_1",
+          "label": "Record only the loss.",
+          "target": "a0_e2"
+        }
+      ]
+    },
+    {
+      "id": "a0_6",
+      "body": "<<FILL role=rising words=173 beats='carrying what the manifest of the flooding lower bays has told her, Priya Anand reaches the low landing toward the shared question the Coolant Archive seems built around: why the leak takes what it takes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a0_6",
+          "label": "Go on.",
+          "target": "p1"
+        }
+      ]
+    },
+    {
+      "id": "a0_e1",
+      "body": "<<FILL role=setback words=156 beats='the pull of the manifest of the flooding lower bays closes over Priya Anand before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, the venting gas already higher'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_001",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost the Thread at The Flooding Bays"
+      }
+    },
+    {
+      "id": "a0_e2",
+      "body": "<<FILL role=revelation words=159 beats='Priya Anand stays to record only the manifest of the flooding lower bays and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how Kestrel Station forgets'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_002",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Note on The Flooding Bays"
+      }
+    },
+    {
+      "id": "a1_1",
+      "body": "<<FILL role=rising words=172 beats='Priya Anand turns toward Tomas Reyes, the last living technician; salt damp beads on the stone and her lantern doubles in the venting gas; a first wrongness snags her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_1",
+          "label": "Go on.",
+          "target": "a1_2"
+        }
+      ]
+    },
+    {
+      "id": "a1_2",
+      "body": "<<FILL role=choice words=186 beats='Tomas Reyes, the last living technician offers Priya Anand two ways in: press hard and risk being noticed by whatever the venting gas answers to, or wait and let the Coolant Archive keep its secret a while longer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_2_0",
+          "label": "Press in directly.",
+          "target": "a1_3a"
+        },
+        {
+          "id": "c_a1_2_1",
+          "label": "Hang back and watch.",
+          "target": "a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "a1_3a",
+      "body": "<<FILL role=rising words=176 beats='pressed directly, Tomas Reyes, the last living technician yields a hard specific fact that will not sit still in Priya Anand's mind and points deeper under the tideline'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_3a",
+          "label": "Go on.",
+          "target": "a1_4"
+        }
+      ]
+    },
+    {
+      "id": "a1_3b",
+      "body": "<<FILL role=choice words=181 beats='watching Tomas Reyes, the last living technician from the edge, Priya Anand can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_3b_0",
+          "label": "Hold the thread and go on.",
+          "target": "a1_4"
+        },
+        {
+          "id": "c_a1_3b_1",
+          "label": "Let the cold take you.",
+          "target": "a1_e1"
+        }
+      ]
+    },
+    {
+      "id": "a1_4",
+      "body": "<<FILL role=rising words=169 beats='both readings of Tomas Reyes, the last living technician settle on the same small impossibility, and Priya Anand feels the flooded floor tilt the whole building toward one question'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_4",
+          "label": "Go on.",
+          "target": "a1_5"
+        }
+      ]
+    },
+    {
+      "id": "a1_desc_s1",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after Tomas Reyes, the last living technician, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_desc_s1",
+          "label": "Go on.",
+          "target": "a1_desc_s2"
+        }
+      ]
+    },
+    {
+      "id": "a1_desc_s2",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after Tomas Reyes, the last living technician, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_desc_s2",
+          "label": "Go on.",
+          "target": "a1_desc_s3"
+        }
+      ]
+    },
+    {
+      "id": "a1_desc_s3",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after Tomas Reyes, the last living technician, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_desc_s3",
+          "label": "Go on.",
+          "target": "a1_6"
+        }
+      ]
+    },
+    {
+      "id": "a1_5",
+      "body": "<<FILL role=choice words=179 beats='Tomas Reyes, the last living technician shows Priya Anand a name half dissolved in brine; she can carry the reading down toward Aldous Rook's old pivot, or stop to record only the loss in front of her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_5_0",
+          "label": "Descend toward the pivot.",
+          "target": "a1_desc_s1"
+        },
+        {
+          "id": "c_a1_5_1",
+          "label": "Record only the loss.",
+          "target": "a1_e2"
+        }
+      ]
+    },
+    {
+      "id": "a1_6",
+      "body": "<<FILL role=rising words=173 beats='carrying what Tomas Reyes, the last living technician has told her, Priya Anand reaches the low landing toward the shared question the Coolant Archive seems built around: why the leak takes what it takes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a1_6",
+          "label": "Go on.",
+          "target": "p1"
+        }
+      ]
+    },
+    {
+      "id": "a1_e1",
+      "body": "<<FILL role=setback words=156 beats='the pull of Tomas Reyes, the last living technician closes over Priya Anand before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, the venting gas already higher'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_003",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost the Thread at The Last Technician"
+      }
+    },
+    {
+      "id": "a1_e2",
+      "body": "<<FILL role=revelation words=159 beats='Priya Anand stays to record only Tomas Reyes, the last living technician and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how Kestrel Station forgets'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_004",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Note on The Last Technician"
+      }
+    },
+    {
+      "id": "a2_1",
+      "body": "<<FILL role=rising words=172 beats='Priya Anand turns toward the engineer's sealed logbook; salt damp beads on the stone and her lantern doubles in the venting gas; a first wrongness snags her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_1",
+          "label": "Go on.",
+          "target": "a2_2"
+        }
+      ]
+    },
+    {
+      "id": "a2_2",
+      "body": "<<FILL role=choice words=186 beats='the engineer's sealed logbook offers Priya Anand two ways in: press hard and risk being noticed by whatever the venting gas answers to, or wait and let the Coolant Archive keep its secret a while longer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_2_0",
+          "label": "Press in directly.",
+          "target": "a2_3a"
+        },
+        {
+          "id": "c_a2_2_1",
+          "label": "Hang back and watch.",
+          "target": "a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "a2_3a",
+      "body": "<<FILL role=rising words=176 beats='pressed directly, the engineer's sealed logbook yields a hard specific fact that will not sit still in Priya Anand's mind and points deeper under the tideline'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_3a",
+          "label": "Go on.",
+          "target": "a2_4"
+        }
+      ]
+    },
+    {
+      "id": "a2_3b",
+      "body": "<<FILL role=choice words=181 beats='watching the engineer's sealed logbook from the edge, Priya Anand can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_3b_0",
+          "label": "Hold the thread and go on.",
+          "target": "a2_4"
+        },
+        {
+          "id": "c_a2_3b_1",
+          "label": "Let the cold take you.",
+          "target": "a2_e1"
+        }
+      ]
+    },
+    {
+      "id": "a2_4",
+      "body": "<<FILL role=rising words=169 beats='both readings of the engineer's sealed logbook settle on the same small impossibility, and Priya Anand feels the flooded floor tilt the whole building toward one question'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_4",
+          "label": "Go on.",
+          "target": "a2_5"
+        }
+      ]
+    },
+    {
+      "id": "a2_desc_s1",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after the engineer's sealed logbook, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_desc_s1",
+          "label": "Go on.",
+          "target": "a2_desc_s2"
+        }
+      ]
+    },
+    {
+      "id": "a2_desc_s2",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after the engineer's sealed logbook, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_desc_s2",
+          "label": "Go on.",
+          "target": "a2_desc_s3"
+        }
+      ]
+    },
+    {
+      "id": "a2_desc_s3",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after the engineer's sealed logbook, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_desc_s3",
+          "label": "Go on.",
+          "target": "a2_6"
+        }
+      ]
+    },
+    {
+      "id": "a2_5",
+      "body": "<<FILL role=choice words=179 beats='the engineer's sealed logbook shows Priya Anand a name half dissolved in brine; she can carry the reading down toward Aldous Rook's old pivot, or stop to record only the loss in front of her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_5_0",
+          "label": "Descend toward the pivot.",
+          "target": "a2_desc_s1"
+        },
+        {
+          "id": "c_a2_5_1",
+          "label": "Record only the loss.",
+          "target": "a2_e2"
+        }
+      ]
+    },
+    {
+      "id": "a2_6",
+      "body": "<<FILL role=rising words=173 beats='carrying what the engineer's sealed logbook has told her, Priya Anand reaches the low landing toward the shared question the Coolant Archive seems built around: why the leak takes what it takes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a2_6",
+          "label": "Go on.",
+          "target": "p1"
+        }
+      ]
+    },
+    {
+      "id": "a2_e1",
+      "body": "<<FILL role=setback words=156 beats='the pull of the engineer's sealed logbook closes over Priya Anand before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, the venting gas already higher'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_005",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost the Thread at The Sealed Logbook"
+      }
+    },
+    {
+      "id": "a2_e2",
+      "body": "<<FILL role=revelation words=159 beats='Priya Anand stays to record only the engineer's sealed logbook and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how Kestrel Station forgets'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_006",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Note on The Sealed Logbook"
+      }
+    },
+    {
+      "id": "a3_1",
+      "body": "<<FILL role=rising words=172 beats='Priya Anand turns toward the venting leak against the hull; salt damp beads on the stone and her lantern doubles in the venting gas; a first wrongness snags her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_1",
+          "label": "Go on.",
+          "target": "a3_2"
+        }
+      ]
+    },
+    {
+      "id": "a3_2",
+      "body": "<<FILL role=choice words=186 beats='the venting leak against the hull offers Priya Anand two ways in: press hard and risk being noticed by whatever the venting gas answers to, or wait and let the Coolant Archive keep its secret a while longer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_2_0",
+          "label": "Press in directly.",
+          "target": "a3_3a"
+        },
+        {
+          "id": "c_a3_2_1",
+          "label": "Hang back and watch.",
+          "target": "a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "a3_3a",
+      "body": "<<FILL role=rising words=176 beats='pressed directly, the venting leak against the hull yields a hard specific fact that will not sit still in Priya Anand's mind and points deeper under the tideline'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_3a",
+          "label": "Go on.",
+          "target": "a3_4"
+        }
+      ]
+    },
+    {
+      "id": "a3_3b",
+      "body": "<<FILL role=choice words=181 beats='watching the venting leak against the hull from the edge, Priya Anand can fold the quiet detail into what she knows, or let the cold and the late hour pull her attention away before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_3b_0",
+          "label": "Hold the thread and go on.",
+          "target": "a3_4"
+        },
+        {
+          "id": "c_a3_3b_1",
+          "label": "Let the cold take you.",
+          "target": "a3_e1"
+        }
+      ]
+    },
+    {
+      "id": "a3_4",
+      "body": "<<FILL role=rising words=169 beats='both readings of the venting leak against the hull settle on the same small impossibility, and Priya Anand feels the flooded floor tilt the whole building toward one question'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_4",
+          "label": "Go on.",
+          "target": "a3_5"
+        }
+      ]
+    },
+    {
+      "id": "a3_desc_s1",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after the venting leak against the hull, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_desc_s1",
+          "label": "Go on.",
+          "target": "a3_desc_s2"
+        }
+      ]
+    },
+    {
+      "id": "a3_desc_s2",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after the venting leak against the hull, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_desc_s2",
+          "label": "Go on.",
+          "target": "a3_desc_s3"
+        }
+      ]
+    },
+    {
+      "id": "a3_desc_s3",
+      "body": "<<FILL role=rising words=168 beats='Priya Anand goes down after the venting leak against the hull, the venting gas climbing each step to her ankles then her shins, the corridor lantern-lit and swaying, the shared question waiting below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_desc_s3",
+          "label": "Go on.",
+          "target": "a3_6"
+        }
+      ]
+    },
+    {
+      "id": "a3_5",
+      "body": "<<FILL role=choice words=179 beats='the venting leak against the hull shows Priya Anand a name half dissolved in brine; she can carry the reading down toward Aldous Rook's old pivot, or stop to record only the loss in front of her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_5_0",
+          "label": "Descend toward the pivot.",
+          "target": "a3_desc_s1"
+        },
+        {
+          "id": "c_a3_5_1",
+          "label": "Record only the loss.",
+          "target": "a3_e2"
+        }
+      ]
+    },
+    {
+      "id": "a3_6",
+      "body": "<<FILL role=rising words=173 beats='carrying what the venting leak against the hull has told her, Priya Anand reaches the low landing toward the shared question the Coolant Archive seems built around: why the leak takes what it takes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a3_6",
+          "label": "Go on.",
+          "target": "p1"
+        }
+      ]
+    },
+    {
+      "id": "a3_e1",
+      "body": "<<FILL role=setback words=156 beats='the pull of the venting leak against the hull closes over Priya Anand before she can hold it; she surfaces later on dry stone, safe but emptied of the thing she almost understood, the venting gas already higher'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_007",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost the Thread at The Venting Leak"
+      }
+    },
+    {
+      "id": "a3_e2",
+      "body": "<<FILL role=revelation words=159 beats='Priya Anand stays to record only the venting leak against the hull and the loss it marks; she leaves the deeper question unasked and learns one true small thing about how Kestrel Station forgets'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_008",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Note on The Venting Leak"
+      }
+    },
+    {
+      "id": "p1",
+      "body": "<<FILL role=revelation words=196 beats='every approach converges here: the leak does not rise blindly but climbs toward particular shelves, taking first the records Kestrel Station most wanted gone, and Priya Anand finally sees the pattern in the ruin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1",
+          "label": "Go on.",
+          "target": "p1_reveal"
+        }
+      ]
+    },
+    {
+      "id": "p1_reveal",
+      "body": "<<FILL role=rising words=187 beats='the venting gas reads the Coolant Archive like an index of shame, and Priya Anand understands the flood is a choosing; she must decide how to test the choosing before it reaches the middle vaults'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_reveal",
+          "label": "Go on.",
+          "target": "p1_gate"
+        }
+      ]
+    },
+    {
+      "id": "p1_gate",
+      "body": "<<FILL role=choice words=182 beats='four threads lead deeper from the choosing the leak: the voided marriage contracts, Tomas Reyes's withheld logs, the struck crew manifests, and the erased birth registry'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_gate_0",
+          "label": "Follow the voided marriage contracts.",
+          "target": "mA_1"
+        },
+        {
+          "id": "c_p1_gate_1",
+          "label": "Follow Tomas Reyes's withheld logs.",
+          "target": "mB_1"
+        },
+        {
+          "id": "c_p1_gate_2",
+          "label": "Follow the struck crew manifests.",
+          "target": "mC_1"
+        },
+        {
+          "id": "c_p1_gate_3",
+          "label": "Follow the erased birth registry.",
+          "target": "mD_1"
+        }
+      ]
+    },
+    {
+      "id": "mA_1",
+      "body": "<<FILL role=rising words=177 beats='Priya Anand wades to the voided marriage contracts, where The Vows the Station Forgot lies swelling in its boxes; the ink lifts off the page and rearranges as she watches'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mA_1",
+          "label": "Go on.",
+          "target": "mA_2"
+        }
+      ]
+    },
+    {
+      "id": "mA_pad_s1",
+      "body": "<<FILL role=rising words=170 beats='reading the voided marriage contracts line by drowned line, Priya Anand copies the venting gas revisions into her book while the boxes sag and the leak keeps its patient climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mA_pad_s1",
+          "label": "Go on.",
+          "target": "mA_pad_s2"
+        }
+      ]
+    },
+    {
+      "id": "mA_pad_s2",
+      "body": "<<FILL role=rising words=170 beats='reading the voided marriage contracts line by drowned line, Priya Anand copies the venting gas revisions into her book while the boxes sag and the leak keeps its patient climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mA_pad_s2",
+          "label": "Go on.",
+          "target": "mA_3"
+        }
+      ]
+    },
+    {
+      "id": "mA_2",
+      "body": "<<FILL role=choice words=183 beats='the voided marriage contracts can be read as the venting gas leaves it, changed, or dried and forced back to what it first said; each choice costs Priya Anand something of the truth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mA_2_0",
+          "label": "Read what the water wrote.",
+          "target": "mA_pad_s1"
+        },
+        {
+          "id": "c_mA_2_1",
+          "label": "Dry it and force it back.",
+          "target": "mA_e1"
+        }
+      ]
+    },
+    {
+      "id": "mA_3",
+      "body": "<<FILL role=rising words=175 beats='the revision of the voided marriage contracts proves more honest than the original, and the discovery pulls Priya Anand toward the second pivot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mA_3",
+          "label": "Go on.",
+          "target": "mA_4"
+        }
+      ]
+    },
+    {
+      "id": "mA_4",
+      "body": "<<FILL role=choice words=180 beats='the voided marriage contracts names a thing the Coolant Archive was never meant to shelve; Priya Anand can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mA_4_0",
+          "label": "Carry the contradiction on.",
+          "target": "mA_5"
+        },
+        {
+          "id": "c_mA_4_1",
+          "label": "Seal the vault and stop.",
+          "target": "mA_e2"
+        }
+      ]
+    },
+    {
+      "id": "mA_5",
+      "body": "<<FILL role=rising words=172 beats='with the voided marriage contracts rewritten in her hands, Priya Anand climbs toward the second question under all the others: what the Coolant Archive was actually built to hold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mA_5",
+          "label": "Go on.",
+          "target": "p2"
+        }
+      ]
+    },
+    {
+      "id": "mA_e1",
+      "body": "<<FILL role=setback words=157 beats='Priya Anand dries the voided marriage contracts and forces the ink back to its first lie; the page holds, but she has helped Kestrel Station forget again, and the venting gas only climbs faster'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_009",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Forced Back: The Vows the Station Forgot"
+      }
+    },
+    {
+      "id": "mA_e2",
+      "body": "<<FILL role=revelation words=160 beats='Priya Anand seals the vault around the voided marriage contracts and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_010",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Sealed Around A Contract Kept Silent But Whole"
+      }
+    },
+    {
+      "id": "mB_1",
+      "body": "<<FILL role=rising words=177 beats='Priya Anand wades to Tomas Reyes's withheld logs, where The Logs He Never Shared lies swelling in its boxes; the ink lifts off the page and rearranges as she watches'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mB_1",
+          "label": "Go on.",
+          "target": "mB_2"
+        }
+      ]
+    },
+    {
+      "id": "mB_pad_s1",
+      "body": "<<FILL role=rising words=170 beats='reading Tomas Reyes's withheld logs line by drowned line, Priya Anand copies the venting gas revisions into her book while the boxes sag and the leak keeps its patient climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mB_pad_s1",
+          "label": "Go on.",
+          "target": "mB_pad_s2"
+        }
+      ]
+    },
+    {
+      "id": "mB_pad_s2",
+      "body": "<<FILL role=rising words=170 beats='reading Tomas Reyes's withheld logs line by drowned line, Priya Anand copies the venting gas revisions into her book while the boxes sag and the leak keeps its patient climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mB_pad_s2",
+          "label": "Go on.",
+          "target": "mB_3"
+        }
+      ]
+    },
+    {
+      "id": "mB_2",
+      "body": "<<FILL role=choice words=183 beats='Tomas Reyes's withheld logs can be read as the venting gas leaves it, changed, or dried and forced back to what it first said; each choice costs Priya Anand something of the truth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mB_2_0",
+          "label": "Read what the water wrote.",
+          "target": "mB_pad_s1"
+        },
+        {
+          "id": "c_mB_2_1",
+          "label": "Dry it and force it back.",
+          "target": "mB_e1"
+        }
+      ]
+    },
+    {
+      "id": "mB_3",
+      "body": "<<FILL role=rising words=175 beats='the revision of Tomas Reyes's withheld logs proves more honest than the original, and the discovery pulls Priya Anand toward the second pivot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mB_3",
+          "label": "Go on.",
+          "target": "mB_4"
+        }
+      ]
+    },
+    {
+      "id": "mB_4",
+      "body": "<<FILL role=choice words=180 beats='Tomas Reyes's withheld logs names a thing the Coolant Archive was never meant to shelve; Priya Anand can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mB_4_0",
+          "label": "Carry the contradiction on.",
+          "target": "mB_5"
+        },
+        {
+          "id": "c_mB_4_1",
+          "label": "Seal the vault and stop.",
+          "target": "mB_e2"
+        }
+      ]
+    },
+    {
+      "id": "mB_5",
+      "body": "<<FILL role=rising words=172 beats='with Tomas Reyes's withheld logs rewritten in her hands, Priya Anand climbs toward the second question under all the others: what the Coolant Archive was actually built to hold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mB_5",
+          "label": "Go on.",
+          "target": "p2"
+        }
+      ]
+    },
+    {
+      "id": "mB_e1",
+      "body": "<<FILL role=setback words=157 beats='Priya Anand dries Tomas Reyes's withheld logs and forces the ink back to its first lie; the page holds, but she has helped Kestrel Station forget again, and the venting gas only climbs faster'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_011",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Forced Back: The Logs He Never Shared"
+      }
+    },
+    {
+      "id": "mB_e2",
+      "body": "<<FILL role=revelation words=160 beats='Priya Anand seals the vault around Tomas Reyes's withheld logs and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_012",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Sealed Around the Logs"
+      }
+    },
+    {
+      "id": "mC_1",
+      "body": "<<FILL role=rising words=177 beats='Priya Anand wades to the struck crew manifests, where The Names the Station Erased lies swelling in its boxes; the ink lifts off the page and rearranges as she watches'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mC_1",
+          "label": "Go on.",
+          "target": "mC_2"
+        }
+      ]
+    },
+    {
+      "id": "mC_pad_s1",
+      "body": "<<FILL role=rising words=170 beats='reading the struck crew manifests line by drowned line, Priya Anand copies the venting gas revisions into her book while the boxes sag and the leak keeps its patient climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mC_pad_s1",
+          "label": "Go on.",
+          "target": "mC_pad_s2"
+        }
+      ]
+    },
+    {
+      "id": "mC_pad_s2",
+      "body": "<<FILL role=rising words=170 beats='reading the struck crew manifests line by drowned line, Priya Anand copies the venting gas revisions into her book while the boxes sag and the leak keeps its patient climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mC_pad_s2",
+          "label": "Go on.",
+          "target": "mC_3"
+        }
+      ]
+    },
+    {
+      "id": "mC_2",
+      "body": "<<FILL role=choice words=183 beats='the struck crew manifests can be read as the venting gas leaves it, changed, or dried and forced back to what it first said; each choice costs Priya Anand something of the truth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mC_2_0",
+          "label": "Read what the water wrote.",
+          "target": "mC_pad_s1"
+        },
+        {
+          "id": "c_mC_2_1",
+          "label": "Dry it and force it back.",
+          "target": "mC_e1"
+        }
+      ]
+    },
+    {
+      "id": "mC_3",
+      "body": "<<FILL role=rising words=175 beats='the revision of the struck crew manifests proves more honest than the original, and the discovery pulls Priya Anand toward the second pivot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mC_3",
+          "label": "Go on.",
+          "target": "mC_4"
+        }
+      ]
+    },
+    {
+      "id": "mC_4",
+      "body": "<<FILL role=choice words=180 beats='the struck crew manifests names a thing the Coolant Archive was never meant to shelve; Priya Anand can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mC_4_0",
+          "label": "Carry the contradiction on.",
+          "target": "mC_5"
+        },
+        {
+          "id": "c_mC_4_1",
+          "label": "Seal the vault and stop.",
+          "target": "mC_e2"
+        }
+      ]
+    },
+    {
+      "id": "mC_5",
+      "body": "<<FILL role=rising words=172 beats='with the struck crew manifests rewritten in her hands, Priya Anand climbs toward the second question under all the others: what the Coolant Archive was actually built to hold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mC_5",
+          "label": "Go on.",
+          "target": "p2"
+        }
+      ]
+    },
+    {
+      "id": "mC_e1",
+      "body": "<<FILL role=setback words=157 beats='Priya Anand dries the struck crew manifests and forces the ink back to its first lie; the page holds, but she has helped Kestrel Station forget again, and the venting gas only climbs faster'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_013",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Forced Back: The Names the Station Erased"
+      }
+    },
+    {
+      "id": "mC_e2",
+      "body": "<<FILL role=revelation words=160 beats='Priya Anand seals the vault around the struck crew manifests and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_014",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Sealed Around A Manifest Preserved Without a Name"
+      }
+    },
+    {
+      "id": "mD_1",
+      "body": "<<FILL role=rising words=177 beats='Priya Anand wades to the erased birth registry, where The Births the Station Denied lies swelling in its boxes; the ink lifts off the page and rearranges as she watches'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mD_1",
+          "label": "Go on.",
+          "target": "mD_2"
+        }
+      ]
+    },
+    {
+      "id": "mD_pad_s1",
+      "body": "<<FILL role=rising words=170 beats='reading the erased birth registry line by drowned line, Priya Anand copies the venting gas revisions into her book while the boxes sag and the leak keeps its patient climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mD_pad_s1",
+          "label": "Go on.",
+          "target": "mD_pad_s2"
+        }
+      ]
+    },
+    {
+      "id": "mD_pad_s2",
+      "body": "<<FILL role=rising words=170 beats='reading the erased birth registry line by drowned line, Priya Anand copies the venting gas revisions into her book while the boxes sag and the leak keeps its patient climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mD_pad_s2",
+          "label": "Go on.",
+          "target": "mD_3"
+        }
+      ]
+    },
+    {
+      "id": "mD_2",
+      "body": "<<FILL role=choice words=183 beats='the erased birth registry can be read as the venting gas leaves it, changed, or dried and forced back to what it first said; each choice costs Priya Anand something of the truth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mD_2_0",
+          "label": "Read what the water wrote.",
+          "target": "mD_pad_s1"
+        },
+        {
+          "id": "c_mD_2_1",
+          "label": "Dry it and force it back.",
+          "target": "mD_e1"
+        }
+      ]
+    },
+    {
+      "id": "mD_3",
+      "body": "<<FILL role=rising words=175 beats='the revision of the erased birth registry proves more honest than the original, and the discovery pulls Priya Anand toward the second pivot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mD_3",
+          "label": "Go on.",
+          "target": "mD_4"
+        }
+      ]
+    },
+    {
+      "id": "mD_4",
+      "body": "<<FILL role=choice words=180 beats='the erased birth registry names a thing the Coolant Archive was never meant to shelve; Priya Anand can carry the contradiction toward what the building truly holds, or seal this vault and save only itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mD_4_0",
+          "label": "Carry the contradiction on.",
+          "target": "mD_5"
+        },
+        {
+          "id": "c_mD_4_1",
+          "label": "Seal the vault and stop.",
+          "target": "mD_e2"
+        }
+      ]
+    },
+    {
+      "id": "mD_5",
+      "body": "<<FILL role=rising words=172 beats='with the erased birth registry rewritten in her hands, Priya Anand climbs toward the second question under all the others: what the Coolant Archive was actually built to hold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mD_5",
+          "label": "Go on.",
+          "target": "p2"
+        }
+      ]
+    },
+    {
+      "id": "mD_e1",
+      "body": "<<FILL role=setback words=157 beats='Priya Anand dries the erased birth registry and forces the ink back to its first lie; the page holds, but she has helped Kestrel Station forget again, and the venting gas only climbs faster'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_015",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Forced Back: The Births the Station Denied"
+      }
+    },
+    {
+      "id": "mD_e2",
+      "body": "<<FILL role=revelation words=160 beats='Priya Anand seals the vault around the erased birth registry and saves the room if not the meaning; she keeps a true thing safe and leaves its harder truth unspoken'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_016",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Sealed Around the Registry of Births"
+      }
+    },
+    {
+      "id": "p2",
+      "body": "<<FILL role=revelation words=200 beats='the four threads reconverge and answer together: the Coolant Archive was never built to keep Kestrel Station's records but to hold everything Kestrel Station chose to forget, a covenant with its own unremembering, and the venting gas has come to call the covenant in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2",
+          "label": "Go on.",
+          "target": "p2_reveal"
+        }
+      ]
+    },
+    {
+      "id": "p2_reveal",
+      "body": "<<FILL role=rising words=188 beats='Aldous Rook did not build a library, Priya Anand realises, but a lung for Kestrel Station's shame, breathing what could not be said; the leak is Kestrel Station's own held breath let go at last'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_reveal",
+          "label": "Go on.",
+          "target": "p2_gate"
+        }
+      ]
+    },
+    {
+      "id": "p2_gate",
+      "body": "<<FILL role=choice words=179 beats='three ways remain to test the covenant before it drowns: the engineer's folded confession, Tomas Reyes at his console, and the leak's own record against the hull'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_gate_0",
+          "label": "Read the engineer's folded confession.",
+          "target": "nA_1"
+        },
+        {
+          "id": "c_p2_gate_1",
+          "label": "Sit with Tomas Reyes at his console.",
+          "target": "nB_1"
+        },
+        {
+          "id": "c_p2_gate_2",
+          "label": "Read the leak's own record against the hull.",
+          "target": "nC_1"
+        }
+      ]
+    },
+    {
+      "id": "nA_1",
+      "body": "<<FILL role=rising words=178 beats='Priya Anand comes to the engineer's folded confession; What the Engineer Left Unsaid waits like held weather, and the salt light off the venting gas makes the room feel underwater already'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nA_1",
+          "label": "Go on.",
+          "target": "nA_2"
+        }
+      ]
+    },
+    {
+      "id": "nA_pad_s1",
+      "body": "<<FILL role=rising words=171 beats='Priya Anand trades honesty for honesty with the engineer's folded confession, and each thing she admits about herself unlocks another turn of What the Engineer Left Unsaid, the venting gas rising past the sill as they speak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nA_pad_s1",
+          "label": "Go on.",
+          "target": "nA_pad_s2"
+        }
+      ]
+    },
+    {
+      "id": "nA_pad_s2",
+      "body": "<<FILL role=rising words=171 beats='Priya Anand trades honesty for honesty with the engineer's folded confession, and each thing she admits about herself unlocks another turn of What the Engineer Left Unsaid, the venting gas rising past the sill as they speak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nA_pad_s2",
+          "label": "Go on.",
+          "target": "nA_pad_s3"
+        }
+      ]
+    },
+    {
+      "id": "nA_pad_s3",
+      "body": "<<FILL role=rising words=171 beats='Priya Anand trades honesty for honesty with the engineer's folded confession, and each thing she admits about herself unlocks another turn of What the Engineer Left Unsaid, the venting gas rising past the sill as they speak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nA_pad_s3",
+          "label": "Go on.",
+          "target": "nA_3"
+        }
+      ]
+    },
+    {
+      "id": "nA_2",
+      "body": "<<FILL role=choice words=182 beats='the engineer's folded confession will answer Priya Anand honestly only if she gives something true in return; she can offer her own doubt, or keep her distance and take only what is freely shown'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nA_2_0",
+          "label": "Offer something true in return.",
+          "target": "nA_pad_s1"
+        },
+        {
+          "id": "c_nA_2_1",
+          "label": "Keep your distance.",
+          "target": "nA_e1"
+        }
+      ]
+    },
+    {
+      "id": "nA_3",
+      "body": "<<FILL role=rising words=176 beats='in exchange, the engineer's folded confession gives Priya Anand the last turn of the story, and it points at a document with her own name where no name of hers should be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nA_3",
+          "label": "Go on.",
+          "target": "nA_4"
+        }
+      ]
+    },
+    {
+      "id": "nA_4",
+      "body": "<<FILL role=choice words=177 beats='the engineer's folded confession sets the impossible page before Priya Anand; she can carry it to the third pivot and face it, or refuse the page and keep the version of herself she arrived with'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nA_4_0",
+          "label": "Carry the page to the pivot.",
+          "target": "nA_5"
+        },
+        {
+          "id": "c_nA_4_1",
+          "label": "Refuse the page.",
+          "target": "nA_e2"
+        }
+      ]
+    },
+    {
+      "id": "nA_5",
+      "body": "<<FILL role=rising words=171 beats='with what the engineer's folded confession has given her, Priya Anand climbs to the last turn, where the Coolant Archive stops being about Kestrel Station and becomes about the keeper who came to save it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nA_5",
+          "label": "Go on.",
+          "target": "p3"
+        }
+      ]
+    },
+    {
+      "id": "nA_e1",
+      "body": "<<FILL role=setback words=158 beats='Priya Anand keeps her distance from the engineer's folded confession and takes only what is safe to take; she leaves with facts and without the truth, dry and unchanged and a little ashamed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_017",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Kept Distance: What the Engineer Left Unsaid"
+      }
+    },
+    {
+      "id": "nA_e2",
+      "body": "<<FILL role=revelation words=161 beats='Priya Anand refuses the page the engineer's folded confession offers and stays the woman she was; she preserves her own settled story and never learns what the Coolant Archive wrote in her name'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_018",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Refused the Page: What the Engineer Left Unsaid"
+      }
+    },
+    {
+      "id": "nB_1",
+      "body": "<<FILL role=rising words=178 beats='Priya Anand comes to Tomas Reyes at his console; The Last Voice on the Station waits like held weather, and the salt light off the venting gas makes the room feel underwater already'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nB_1",
+          "label": "Go on.",
+          "target": "nB_2"
+        }
+      ]
+    },
+    {
+      "id": "nB_pad_s1",
+      "body": "<<FILL role=rising words=171 beats='Priya Anand trades honesty for honesty with Tomas Reyes at his console, and each thing she admits about herself unlocks another turn of The Last Voice on the Station, the venting gas rising past the sill as they speak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nB_pad_s1",
+          "label": "Go on.",
+          "target": "nB_pad_s2"
+        }
+      ]
+    },
+    {
+      "id": "nB_pad_s2",
+      "body": "<<FILL role=rising words=171 beats='Priya Anand trades honesty for honesty with Tomas Reyes at his console, and each thing she admits about herself unlocks another turn of The Last Voice on the Station, the venting gas rising past the sill as they speak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nB_pad_s2",
+          "label": "Go on.",
+          "target": "nB_pad_s3"
+        }
+      ]
+    },
+    {
+      "id": "nB_pad_s3",
+      "body": "<<FILL role=rising words=171 beats='Priya Anand trades honesty for honesty with Tomas Reyes at his console, and each thing she admits about herself unlocks another turn of The Last Voice on the Station, the venting gas rising past the sill as they speak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nB_pad_s3",
+          "label": "Go on.",
+          "target": "nB_3"
+        }
+      ]
+    },
+    {
+      "id": "nB_2",
+      "body": "<<FILL role=choice words=182 beats='Tomas Reyes at his console will answer Priya Anand honestly only if she gives something true in return; she can offer her own doubt, or keep her distance and take only what is freely shown'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nB_2_0",
+          "label": "Offer something true in return.",
+          "target": "nB_pad_s1"
+        },
+        {
+          "id": "c_nB_2_1",
+          "label": "Keep your distance.",
+          "target": "nB_e1"
+        }
+      ]
+    },
+    {
+      "id": "nB_3",
+      "body": "<<FILL role=rising words=176 beats='in exchange, Tomas Reyes at his console gives Priya Anand the last turn of the story, and it points at a document with her own name where no name of hers should be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nB_3",
+          "label": "Go on.",
+          "target": "nB_4"
+        }
+      ]
+    },
+    {
+      "id": "nB_4",
+      "body": "<<FILL role=choice words=177 beats='Tomas Reyes at his console sets the impossible page before Priya Anand; she can carry it to the third pivot and face it, or refuse the page and keep the version of herself she arrived with'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nB_4_0",
+          "label": "Carry the page to the pivot.",
+          "target": "nB_5"
+        },
+        {
+          "id": "c_nB_4_1",
+          "label": "Refuse the page.",
+          "target": "nB_e2"
+        }
+      ]
+    },
+    {
+      "id": "nB_5",
+      "body": "<<FILL role=rising words=171 beats='with what Tomas Reyes at his console has given her, Priya Anand climbs to the last turn, where the Coolant Archive stops being about Kestrel Station and becomes about the keeper who came to save it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nB_5",
+          "label": "Go on.",
+          "target": "p3"
+        }
+      ]
+    },
+    {
+      "id": "nB_e1",
+      "body": "<<FILL role=setback words=158 beats='Priya Anand keeps her distance from Tomas Reyes at his console and takes only what is safe to take; she leaves with facts and without the truth, dry and unchanged and a little ashamed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_019",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Kept Distance: The Last Voice on the Station"
+      }
+    },
+    {
+      "id": "nB_e2",
+      "body": "<<FILL role=revelation words=161 beats='Priya Anand refuses the page Tomas Reyes at his console offers and stays the woman she was; she preserves her own settled story and never learns what the Coolant Archive wrote in her name'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_020",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Refused the Page: The Last Voice on the Station"
+      }
+    },
+    {
+      "id": "nC_1",
+      "body": "<<FILL role=rising words=178 beats='Priya Anand comes to the leak's own record against the hull; What the Leak Wrote waits like held weather, and the salt light off the venting gas makes the room feel underwater already'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nC_1",
+          "label": "Go on.",
+          "target": "nC_2"
+        }
+      ]
+    },
+    {
+      "id": "nC_pad_s1",
+      "body": "<<FILL role=rising words=171 beats='Priya Anand trades honesty for honesty with the leak's own record against the hull, and each thing she admits about herself unlocks another turn of What the Leak Wrote, the venting gas rising past the sill as they speak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nC_pad_s1",
+          "label": "Go on.",
+          "target": "nC_pad_s2"
+        }
+      ]
+    },
+    {
+      "id": "nC_pad_s2",
+      "body": "<<FILL role=rising words=171 beats='Priya Anand trades honesty for honesty with the leak's own record against the hull, and each thing she admits about herself unlocks another turn of What the Leak Wrote, the venting gas rising past the sill as they speak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nC_pad_s2",
+          "label": "Go on.",
+          "target": "nC_pad_s3"
+        }
+      ]
+    },
+    {
+      "id": "nC_pad_s3",
+      "body": "<<FILL role=rising words=171 beats='Priya Anand trades honesty for honesty with the leak's own record against the hull, and each thing she admits about herself unlocks another turn of What the Leak Wrote, the venting gas rising past the sill as they speak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nC_pad_s3",
+          "label": "Go on.",
+          "target": "nC_3"
+        }
+      ]
+    },
+    {
+      "id": "nC_2",
+      "body": "<<FILL role=choice words=182 beats='the leak's own record against the hull will answer Priya Anand honestly only if she gives something true in return; she can offer her own doubt, or keep her distance and take only what is freely shown'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nC_2_0",
+          "label": "Offer something true in return.",
+          "target": "nC_pad_s1"
+        },
+        {
+          "id": "c_nC_2_1",
+          "label": "Keep your distance.",
+          "target": "nC_e1"
+        }
+      ]
+    },
+    {
+      "id": "nC_3",
+      "body": "<<FILL role=rising words=176 beats='in exchange, the leak's own record against the hull gives Priya Anand the last turn of the story, and it points at a document with her own name where no name of hers should be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nC_3",
+          "label": "Go on.",
+          "target": "nC_4"
+        }
+      ]
+    },
+    {
+      "id": "nC_4",
+      "body": "<<FILL role=choice words=177 beats='the leak's own record against the hull sets the impossible page before Priya Anand; she can carry it to the third pivot and face it, or refuse the page and keep the version of herself she arrived with'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nC_4_0",
+          "label": "Carry the page to the pivot.",
+          "target": "nC_5"
+        },
+        {
+          "id": "c_nC_4_1",
+          "label": "Refuse the page.",
+          "target": "nC_e2"
+        }
+      ]
+    },
+    {
+      "id": "nC_5",
+      "body": "<<FILL role=rising words=171 beats='with what the leak's own record against the hull has given her, Priya Anand climbs to the last turn, where the Coolant Archive stops being about Kestrel Station and becomes about the keeper who came to save it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nC_5",
+          "label": "Go on.",
+          "target": "p3"
+        }
+      ]
+    },
+    {
+      "id": "nC_e1",
+      "body": "<<FILL role=setback words=158 beats='Priya Anand keeps her distance from the leak's own record against the hull and takes only what is safe to take; she leaves with facts and without the truth, dry and unchanged and a little ashamed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_021",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Kept Distance: What the Leak Wrote"
+      }
+    },
+    {
+      "id": "nC_e2",
+      "body": "<<FILL role=revelation words=161 beats='Priya Anand refuses the page the leak's own record against the hull offers and stays the woman she was; she preserves her own settled story and never learns what the Coolant Archive wrote in her name'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_022",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Refused the Page: What the Leak Wrote"
+      }
+    },
+    {
+      "id": "p3",
+      "body": "<<FILL role=revelation words=202 beats='all three threads meet on one impossible sheet: Priya Anand's own name, in her own hand, signing an entry dated before she was ever hired, as though the Coolant Archive had been waiting for a keeper it already knew'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3",
+          "label": "Go on.",
+          "target": "p3_reveal"
+        }
+      ]
+    },
+    {
+      "id": "p3_reveal",
+      "body": "<<FILL role=rising words=189 beats='the entry records a promise: that the last keeper would decide what Kestrel Station is allowed to remember, and Priya Anand sees the flood has only ever been asking her to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_reveal",
+          "label": "Go on.",
+          "target": "p3_name"
+        }
+      ]
+    },
+    {
+      "id": "p3_name",
+      "body": "<<FILL role=rising words=185 beats='she reads her own signed words to their end while the venting gas laps the top step, and the whole of Kestrel Station's memory now waits on what she does before dawn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_name",
+          "label": "Go on.",
+          "target": "p3_gate"
+        }
+      ]
+    },
+    {
+      "id": "p3_gate",
+      "body": "<<FILL role=choice words=192 beats='four ways to answer the Coolant Archive's drowning lie open, and each keeps a different thing: Kestrel Station made whole, one saved treasure, peace with what cannot be kept, or the honest small salvage of a losing night'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_gate_0",
+          "label": "Begin reconciling Kestrel Station with its forgetting.",
+          "target": "r1_1"
+        },
+        {
+          "id": "c_p3_gate_1",
+          "label": "Begin saving the one irreplaceable log of Kestrel Station.",
+          "target": "r2_1"
+        },
+        {
+          "id": "c_p3_gate_2",
+          "label": "Begin making peace with what the leak will take.",
+          "target": "r3_1"
+        },
+        {
+          "id": "c_p3_gate_3",
+          "label": "Begin salvaging a single log from a losing shift.",
+          "target": "r4_1"
+        }
+      ]
+    },
+    {
+      "id": "r1_dsc_s1",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to reconciling Kestrel Station with its forgetting and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_dsc_s1",
+          "label": "Go on.",
+          "target": "r1_dsc_s2"
+        }
+      ]
+    },
+    {
+      "id": "r1_dsc_s2",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to reconciling Kestrel Station with its forgetting and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_dsc_s2",
+          "label": "Go on.",
+          "target": "r1_dsc_s3"
+        }
+      ]
+    },
+    {
+      "id": "r1_dsc_s3",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to reconciling Kestrel Station with its forgetting and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_dsc_s3",
+          "label": "Go on.",
+          "target": "r1_dsc_s4"
+        }
+      ]
+    },
+    {
+      "id": "r1_dsc_s4",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to reconciling Kestrel Station with its forgetting and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_dsc_s4",
+          "label": "Go on.",
+          "target": "r1_2"
+        }
+      ]
+    },
+    {
+      "id": "r1_1",
+      "body": "<<FILL role=rising words=181 beats='Priya Anand sets herself to reconciling Kestrel Station with its forgetting; the choice settles in her chest like ballast, and the Coolant Archive seems flooded and leaning in to watch how she will keep it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_1",
+          "label": "Go on.",
+          "target": "r1_dsc_s1"
+        }
+      ]
+    },
+    {
+      "id": "r1_2",
+      "body": "<<FILL role=choice words=184 beats='reconciling Kestrel Station with its forgetting can be done gently, saving the fragile first, or decisively, taking the whole weight at once while the venting gas still climbs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_2_0",
+          "label": "Work gently, fragile first.",
+          "target": "r1_3a"
+        },
+        {
+          "id": "c_r1_2_1",
+          "label": "Take the whole weight at once.",
+          "target": "r1_3b"
+        }
+      ]
+    },
+    {
+      "id": "r1_3a",
+      "body": "<<FILL role=choice words=178 beats='working gently at reconciling Kestrel Station with its forgetting, Priya Anand reaches a fork: trust Tomas Reyes to carry half the burden, or bear it alone and spare her the cost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_3a_0",
+          "label": "Trust Tomas Reyes with half.",
+          "target": "r1_4"
+        },
+        {
+          "id": "c_r1_3a_1",
+          "label": "Bear it alone.",
+          "target": "r1_ea"
+        }
+      ]
+    },
+    {
+      "id": "r1_3b",
+      "body": "<<FILL role=choice words=179 beats='taking the whole weight of reconciling Kestrel Station with its forgetting, Priya Anand must choose fast: follow Aldous Rook's method to the letter, or break from Aldous Rook and do it her own way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_3b_0",
+          "label": "Follow Aldous Rook's method.",
+          "target": "r1_4"
+        },
+        {
+          "id": "c_r1_3b_1",
+          "label": "Break from Aldous Rook.",
+          "target": "r1_eb"
+        }
+      ]
+    },
+    {
+      "id": "r1_aft_s1",
+      "body": "<<FILL role=rising words=173 beats='the two ways of reconciling Kestrel Station with its forgetting rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_aft_s1",
+          "label": "Go on.",
+          "target": "r1_aft_s2"
+        }
+      ]
+    },
+    {
+      "id": "r1_aft_s2",
+      "body": "<<FILL role=rising words=173 beats='the two ways of reconciling Kestrel Station with its forgetting rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_aft_s2",
+          "label": "Go on.",
+          "target": "r1_aft_s3"
+        }
+      ]
+    },
+    {
+      "id": "r1_aft_s3",
+      "body": "<<FILL role=rising words=173 beats='the two ways of reconciling Kestrel Station with its forgetting rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_aft_s3",
+          "label": "Go on.",
+          "target": "r1_5"
+        }
+      ]
+    },
+    {
+      "id": "r1_4",
+      "body": "<<FILL role=rising words=176 beats='whichever hand she used, reconciling Kestrel Station with its forgetting now comes down to what Priya Anand is willing to give up, and the outcome narrows to a single stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_4",
+          "label": "Go on.",
+          "target": "r1_aft_s1"
+        }
+      ]
+    },
+    {
+      "id": "r1_5",
+      "body": "<<FILL role=choice words=182 beats='at the last landing of reconciling Kestrel Station with its forgetting, Priya Anand weighs Kestrel Station's claim against her own; she can put Kestrel Station first, or put the single irreplaceable thing first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_5_0",
+          "label": "Put Kestrel Station first.",
+          "target": "r1_6"
+        },
+        {
+          "id": "c_r1_5_1",
+          "label": "Put the one thing first.",
+          "target": "r1_7"
+        }
+      ]
+    },
+    {
+      "id": "r1_6",
+      "body": "<<FILL role=choice words=177 beats='choosing Kestrel Station in reconciling Kestrel Station with its forgetting, the venting gas offers a final bargain: speak the forgotten thing aloud to the whole of Kestrel Station, or keep it and simply hold the line here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_6_0",
+          "label": "Speak the forgotten thing aloud.",
+          "target": "r1_ec"
+        },
+        {
+          "id": "c_r1_6_1",
+          "label": "Keep it and hold the line.",
+          "target": "r1_ed"
+        }
+      ]
+    },
+    {
+      "id": "r1_7",
+      "body": "<<FILL role=choice words=181 beats='choosing the single thing in reconciling Kestrel Station with its forgetting, Priya Anand must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_7_0",
+          "label": "Carry it out into the storm.",
+          "target": "r1_ee"
+        },
+        {
+          "id": "c_r1_7_1",
+          "label": "Seal it high for the morning.",
+          "target": "r1_8"
+        }
+      ]
+    },
+    {
+      "id": "r1_8",
+      "body": "<<FILL role=choice words=178 beats='sealing the one thing of reconciling Kestrel Station with its forgetting above the leak, Priya Anand has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_8_0",
+          "label": "Leave it for the salvage crew.",
+          "target": "r1_ef"
+        },
+        {
+          "id": "c_r1_8_1",
+          "label": "Settle the record yourself.",
+          "target": "r1_9"
+        }
+      ]
+    },
+    {
+      "id": "r1_9",
+      "body": "<<FILL role=choice words=176 beats='at the very last of reconciling Kestrel Station with its forgetting, Priya Anand holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps the Coolant Archive next'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r1_9_0",
+          "label": "Sign it in your name.",
+          "target": "r1_eg"
+        },
+        {
+          "id": "c_r1_9_1",
+          "label": "Leave it unclaimed.",
+          "target": "r1_eh"
+        }
+      ]
+    },
+    {
+      "id": "r1_ea",
+      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Kestrel Station with its forgetting, Bore It Alone and the Station Held; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_023",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Bore It Alone and the Station Held"
+      }
+    },
+    {
+      "id": "r1_eb",
+      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Kestrel Station with its forgetting, Broke From the Engineer and Made It New; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_024",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Broke From the Engineer and Made It New"
+      }
+    },
+    {
+      "id": "r1_ec",
+      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Kestrel Station with its forgetting, The Station Remembers and Is Not Broken; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_025",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Station Remembers and Is Not Broken"
+      }
+    },
+    {
+      "id": "r1_ed",
+      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Kestrel Station with its forgetting, Held the Line and Kept the Bay; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_026",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Held the Line and Kept the Bay"
+      }
+    },
+    {
+      "id": "r1_ee",
+      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Kestrel Station with its forgetting, Carried the Truth Into the Breach; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_027",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Carried the Truth Into the Breach"
+      }
+    },
+    {
+      "id": "r1_ef",
+      "body": "<<FILL role=revelation words=163 beats='at the end of reconciling Kestrel Station with its forgetting, Sealed the Truth for a Kinder Shift; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_028",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Sealed the Truth for a Kinder Shift"
+      }
+    },
+    {
+      "id": "r1_eg",
+      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Kestrel Station with its forgetting, Signed It True and the Pressure Fell; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_029",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Signed It True and the Pressure Fell"
+      }
+    },
+    {
+      "id": "r1_eh",
+      "body": "<<FILL role=resolution words=163 beats='at the end of reconciling Kestrel Station with its forgetting, Left It Unclaimed and the Station Chose; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_030",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Left It Unclaimed and the Station Chose"
+      }
+    },
+    {
+      "id": "r2_dsc_s1",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to saving the one irreplaceable log of Kestrel Station and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_dsc_s1",
+          "label": "Go on.",
+          "target": "r2_dsc_s2"
+        }
+      ]
+    },
+    {
+      "id": "r2_dsc_s2",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to saving the one irreplaceable log of Kestrel Station and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_dsc_s2",
+          "label": "Go on.",
+          "target": "r2_dsc_s3"
+        }
+      ]
+    },
+    {
+      "id": "r2_dsc_s3",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to saving the one irreplaceable log of Kestrel Station and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_dsc_s3",
+          "label": "Go on.",
+          "target": "r2_dsc_s4"
+        }
+      ]
+    },
+    {
+      "id": "r2_dsc_s4",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to saving the one irreplaceable log of Kestrel Station and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_dsc_s4",
+          "label": "Go on.",
+          "target": "r2_2"
+        }
+      ]
+    },
+    {
+      "id": "r2_1",
+      "body": "<<FILL role=rising words=181 beats='Priya Anand sets herself to saving the one irreplaceable log of Kestrel Station; the choice settles in her chest like ballast, and the Coolant Archive seems flooded and leaning in to watch how she will keep it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_1",
+          "label": "Go on.",
+          "target": "r2_dsc_s1"
+        }
+      ]
+    },
+    {
+      "id": "r2_2",
+      "body": "<<FILL role=choice words=184 beats='saving the one irreplaceable log of Kestrel Station can be done gently, saving the fragile first, or decisively, taking the whole weight at once while the venting gas still climbs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_2_0",
+          "label": "Work gently, fragile first.",
+          "target": "r2_3a"
+        },
+        {
+          "id": "c_r2_2_1",
+          "label": "Take the whole weight at once.",
+          "target": "r2_3b"
+        }
+      ]
+    },
+    {
+      "id": "r2_3a",
+      "body": "<<FILL role=choice words=178 beats='working gently at saving the one irreplaceable log of Kestrel Station, Priya Anand reaches a fork: trust Tomas Reyes to carry half the burden, or bear it alone and spare her the cost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_3a_0",
+          "label": "Trust Tomas Reyes with half.",
+          "target": "r2_4"
+        },
+        {
+          "id": "c_r2_3a_1",
+          "label": "Bear it alone.",
+          "target": "r2_ea"
+        }
+      ]
+    },
+    {
+      "id": "r2_3b",
+      "body": "<<FILL role=choice words=179 beats='taking the whole weight of saving the one irreplaceable log of Kestrel Station, Priya Anand must choose fast: follow Aldous Rook's method to the letter, or break from Aldous Rook and do it her own way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_3b_0",
+          "label": "Follow Aldous Rook's method.",
+          "target": "r2_4"
+        },
+        {
+          "id": "c_r2_3b_1",
+          "label": "Break from Aldous Rook.",
+          "target": "r2_eb"
+        }
+      ]
+    },
+    {
+      "id": "r2_aft_s1",
+      "body": "<<FILL role=rising words=173 beats='the two ways of saving the one irreplaceable log of Kestrel Station rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_aft_s1",
+          "label": "Go on.",
+          "target": "r2_aft_s2"
+        }
+      ]
+    },
+    {
+      "id": "r2_aft_s2",
+      "body": "<<FILL role=rising words=173 beats='the two ways of saving the one irreplaceable log of Kestrel Station rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_aft_s2",
+          "label": "Go on.",
+          "target": "r2_aft_s3"
+        }
+      ]
+    },
+    {
+      "id": "r2_aft_s3",
+      "body": "<<FILL role=rising words=173 beats='the two ways of saving the one irreplaceable log of Kestrel Station rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_aft_s3",
+          "label": "Go on.",
+          "target": "r2_5"
+        }
+      ]
+    },
+    {
+      "id": "r2_4",
+      "body": "<<FILL role=rising words=176 beats='whichever hand she used, saving the one irreplaceable log of Kestrel Station now comes down to what Priya Anand is willing to give up, and the outcome narrows to a single stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_4",
+          "label": "Go on.",
+          "target": "r2_aft_s1"
+        }
+      ]
+    },
+    {
+      "id": "r2_5",
+      "body": "<<FILL role=choice words=182 beats='at the last landing of saving the one irreplaceable log of Kestrel Station, Priya Anand weighs Kestrel Station's claim against her own; she can put Kestrel Station first, or put the single irreplaceable thing first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_5_0",
+          "label": "Put Kestrel Station first.",
+          "target": "r2_6"
+        },
+        {
+          "id": "c_r2_5_1",
+          "label": "Put the one thing first.",
+          "target": "r2_7"
+        }
+      ]
+    },
+    {
+      "id": "r2_6",
+      "body": "<<FILL role=choice words=177 beats='choosing Kestrel Station in saving the one irreplaceable log of Kestrel Station, the venting gas offers a final bargain: speak the forgotten thing aloud to the whole of Kestrel Station, or keep it and simply hold the line here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_6_0",
+          "label": "Speak the forgotten thing aloud.",
+          "target": "r2_ec"
+        },
+        {
+          "id": "c_r2_6_1",
+          "label": "Keep it and hold the line.",
+          "target": "r2_ed"
+        }
+      ]
+    },
+    {
+      "id": "r2_7",
+      "body": "<<FILL role=choice words=181 beats='choosing the single thing in saving the one irreplaceable log of Kestrel Station, Priya Anand must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_7_0",
+          "label": "Carry it out into the storm.",
+          "target": "r2_ee"
+        },
+        {
+          "id": "c_r2_7_1",
+          "label": "Seal it high for the morning.",
+          "target": "r2_8"
+        }
+      ]
+    },
+    {
+      "id": "r2_8",
+      "body": "<<FILL role=choice words=178 beats='sealing the one thing of saving the one irreplaceable log of Kestrel Station above the leak, Priya Anand has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_8_0",
+          "label": "Leave it for the salvage crew.",
+          "target": "r2_ef"
+        },
+        {
+          "id": "c_r2_8_1",
+          "label": "Settle the record yourself.",
+          "target": "r2_9"
+        }
+      ]
+    },
+    {
+      "id": "r2_9",
+      "body": "<<FILL role=choice words=176 beats='at the very last of saving the one irreplaceable log of Kestrel Station, Priya Anand holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps the Coolant Archive next'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r2_9_0",
+          "label": "Sign it in your name.",
+          "target": "r2_eg"
+        },
+        {
+          "id": "c_r2_9_1",
+          "label": "Leave it unclaimed.",
+          "target": "r2_eh"
+        }
+      ]
+    },
+    {
+      "id": "r2_ea",
+      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable log of Kestrel Station, Saved the Manifest Alone; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_031",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Saved the Manifest Alone"
+      }
+    },
+    {
+      "id": "r2_eb",
+      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable log of Kestrel Station, Broke the Seal and Carried It Out; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_032",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Broke the Seal and Carried It Out"
+      }
+    },
+    {
+      "id": "r2_ec",
+      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable log of Kestrel Station, Spoke It and Saved the Page; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_033",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Spoke It and Saved the Page"
+      }
+    },
+    {
+      "id": "r2_ed",
+      "body": "<<FILL role=revelation words=163 beats='at the end of saving the one irreplaceable log of Kestrel Station, Guarded the One Surviving Record; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_034",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Guarded the One Surviving Record"
+      }
+    },
+    {
+      "id": "r2_ee",
+      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable log of Kestrel Station, Ran the Manifest Through the Breach; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_035",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Ran the Manifest Through the Breach"
+      }
+    },
+    {
+      "id": "r2_ef",
+      "body": "<<FILL role=setback words=163 beats='at the end of saving the one irreplaceable log of Kestrel Station, Sealed It and Lost the Rest to Vacuum; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_036",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed It and Lost the Rest to Vacuum"
+      }
+    },
+    {
+      "id": "r2_eg",
+      "body": "<<FILL role=resolution words=163 beats='at the end of saving the one irreplaceable log of Kestrel Station, Signed and Saved the Engineer Hand; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_037",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Signed and Saved the Engineer Hand"
+      }
+    },
+    {
+      "id": "r2_eh",
+      "body": "<<FILL role=revelation words=163 beats='at the end of saving the one irreplaceable log of Kestrel Station, Left It Unsigned but Safe and Dry; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_038",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Left It Unsigned but Safe and Dry"
+      }
+    },
+    {
+      "id": "r3_dsc_s1",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to making peace with what the leak will take and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_dsc_s1",
+          "label": "Go on.",
+          "target": "r3_dsc_s2"
+        }
+      ]
+    },
+    {
+      "id": "r3_dsc_s2",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to making peace with what the leak will take and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_dsc_s2",
+          "label": "Go on.",
+          "target": "r3_dsc_s3"
+        }
+      ]
+    },
+    {
+      "id": "r3_dsc_s3",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to making peace with what the leak will take and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_dsc_s3",
+          "label": "Go on.",
+          "target": "r3_dsc_s4"
+        }
+      ]
+    },
+    {
+      "id": "r3_dsc_s4",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to making peace with what the leak will take and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_dsc_s4",
+          "label": "Go on.",
+          "target": "r3_2"
+        }
+      ]
+    },
+    {
+      "id": "r3_1",
+      "body": "<<FILL role=rising words=181 beats='Priya Anand sets herself to making peace with what the leak will take; the choice settles in her chest like ballast, and the Coolant Archive seems flooded and leaning in to watch how she will keep it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_1",
+          "label": "Go on.",
+          "target": "r3_dsc_s1"
+        }
+      ]
+    },
+    {
+      "id": "r3_2",
+      "body": "<<FILL role=choice words=184 beats='making peace with what the leak will take can be done gently, saving the fragile first, or decisively, taking the whole weight at once while the venting gas still climbs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_2_0",
+          "label": "Work gently, fragile first.",
+          "target": "r3_3a"
+        },
+        {
+          "id": "c_r3_2_1",
+          "label": "Take the whole weight at once.",
+          "target": "r3_3b"
+        }
+      ]
+    },
+    {
+      "id": "r3_3a",
+      "body": "<<FILL role=choice words=178 beats='working gently at making peace with what the leak will take, Priya Anand reaches a fork: trust Tomas Reyes to carry half the burden, or bear it alone and spare her the cost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_3a_0",
+          "label": "Trust Tomas Reyes with half.",
+          "target": "r3_4"
+        },
+        {
+          "id": "c_r3_3a_1",
+          "label": "Bear it alone.",
+          "target": "r3_ea"
+        }
+      ]
+    },
+    {
+      "id": "r3_3b",
+      "body": "<<FILL role=choice words=179 beats='taking the whole weight of making peace with what the leak will take, Priya Anand must choose fast: follow Aldous Rook's method to the letter, or break from Aldous Rook and do it her own way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_3b_0",
+          "label": "Follow Aldous Rook's method.",
+          "target": "r3_4"
+        },
+        {
+          "id": "c_r3_3b_1",
+          "label": "Break from Aldous Rook.",
+          "target": "r3_eb"
+        }
+      ]
+    },
+    {
+      "id": "r3_aft_s1",
+      "body": "<<FILL role=rising words=173 beats='the two ways of making peace with what the leak will take rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_aft_s1",
+          "label": "Go on.",
+          "target": "r3_aft_s2"
+        }
+      ]
+    },
+    {
+      "id": "r3_aft_s2",
+      "body": "<<FILL role=rising words=173 beats='the two ways of making peace with what the leak will take rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_aft_s2",
+          "label": "Go on.",
+          "target": "r3_aft_s3"
+        }
+      ]
+    },
+    {
+      "id": "r3_aft_s3",
+      "body": "<<FILL role=rising words=173 beats='the two ways of making peace with what the leak will take rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_aft_s3",
+          "label": "Go on.",
+          "target": "r3_5"
+        }
+      ]
+    },
+    {
+      "id": "r3_4",
+      "body": "<<FILL role=rising words=176 beats='whichever hand she used, making peace with what the leak will take now comes down to what Priya Anand is willing to give up, and the outcome narrows to a single stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_4",
+          "label": "Go on.",
+          "target": "r3_aft_s1"
+        }
+      ]
+    },
+    {
+      "id": "r3_5",
+      "body": "<<FILL role=choice words=182 beats='at the last landing of making peace with what the leak will take, Priya Anand weighs Kestrel Station's claim against her own; she can put Kestrel Station first, or put the single irreplaceable thing first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_5_0",
+          "label": "Put Kestrel Station first.",
+          "target": "r3_6"
+        },
+        {
+          "id": "c_r3_5_1",
+          "label": "Put the one thing first.",
+          "target": "r3_7"
+        }
+      ]
+    },
+    {
+      "id": "r3_6",
+      "body": "<<FILL role=choice words=177 beats='choosing Kestrel Station in making peace with what the leak will take, the venting gas offers a final bargain: speak the forgotten thing aloud to the whole of Kestrel Station, or keep it and simply hold the line here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_6_0",
+          "label": "Speak the forgotten thing aloud.",
+          "target": "r3_ec"
+        },
+        {
+          "id": "c_r3_6_1",
+          "label": "Keep it and hold the line.",
+          "target": "r3_ed"
+        }
+      ]
+    },
+    {
+      "id": "r3_7",
+      "body": "<<FILL role=choice words=181 beats='choosing the single thing in making peace with what the leak will take, Priya Anand must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_7_0",
+          "label": "Carry it out into the storm.",
+          "target": "r3_ee"
+        },
+        {
+          "id": "c_r3_7_1",
+          "label": "Seal it high for the morning.",
+          "target": "r3_8"
+        }
+      ]
+    },
+    {
+      "id": "r3_8",
+      "body": "<<FILL role=choice words=178 beats='sealing the one thing of making peace with what the leak will take above the leak, Priya Anand has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_8_0",
+          "label": "Leave it for the salvage crew.",
+          "target": "r3_ef"
+        },
+        {
+          "id": "c_r3_8_1",
+          "label": "Settle the record yourself.",
+          "target": "r3_9"
+        }
+      ]
+    },
+    {
+      "id": "r3_9",
+      "body": "<<FILL role=choice words=176 beats='at the very last of making peace with what the leak will take, Priya Anand holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps the Coolant Archive next'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r3_9_0",
+          "label": "Sign it in your name.",
+          "target": "r3_eg"
+        },
+        {
+          "id": "c_r3_9_1",
+          "label": "Leave it unclaimed.",
+          "target": "r3_eh"
+        }
+      ]
+    },
+    {
+      "id": "r3_ea",
+      "body": "<<FILL role=resolution words=163 beats='at the end of making peace with what the leak will take, Let the Low Bays Go in Peace; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_039",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Let the Low Bays Go in Peace"
+      }
+    },
+    {
+      "id": "r3_eb",
+      "body": "<<FILL role=revelation words=163 beats='at the end of making peace with what the leak will take, Broke From the Engineer's Fear of Loss; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_040",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Broke From the Engineer's Fear of Loss"
+      }
+    },
+    {
+      "id": "r3_ec",
+      "body": "<<FILL role=revelation words=163 beats='at the end of making peace with what the leak will take, Told the Station and Let It Grieve; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_041",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Told the Station and Let It Grieve"
+      }
+    },
+    {
+      "id": "r3_ed",
+      "body": "<<FILL role=resolution words=163 beats='at the end of making peace with what the leak will take, Held Vigil While the Pressure Rose; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_042",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Held Vigil While the Pressure Rose"
+      }
+    },
+    {
+      "id": "r3_ee",
+      "body": "<<FILL role=revelation words=163 beats='at the end of making peace with what the leak will take, Walked It Out Into the Cold; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_043",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Walked It Out Into the Cold"
+      }
+    },
+    {
+      "id": "r3_ef",
+      "body": "<<FILL role=setback words=163 beats='at the end of making peace with what the leak will take, Sealed It and Felt the Old Dread; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_044",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed It and Felt the Old Dread"
+      }
+    },
+    {
+      "id": "r3_eg",
+      "body": "<<FILL role=resolution words=163 beats='at the end of making peace with what the leak will take, Named the Loss and Made It Bearable; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_045",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Named the Loss and Made It Bearable"
+      }
+    },
+    {
+      "id": "r3_eh",
+      "body": "<<FILL role=revelation words=163 beats='at the end of making peace with what the leak will take, Left No Name on the Empty Rack; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_046",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Left No Name on the Empty Rack"
+      }
+    },
+    {
+      "id": "r4_dsc_s1",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to salvaging a single log from a losing shift and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_dsc_s1",
+          "label": "Go on.",
+          "target": "r4_dsc_s2"
+        }
+      ]
+    },
+    {
+      "id": "r4_dsc_s2",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to salvaging a single log from a losing shift and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_dsc_s2",
+          "label": "Go on.",
+          "target": "r4_dsc_s3"
+        }
+      ]
+    },
+    {
+      "id": "r4_dsc_s3",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to salvaging a single log from a losing shift and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_dsc_s3",
+          "label": "Go on.",
+          "target": "r4_dsc_s4"
+        }
+      ]
+    },
+    {
+      "id": "r4_dsc_s4",
+      "body": "<<FILL role=rising words=174 beats='Priya Anand commits to salvaging a single log from a losing shift and starts down into the flooding stair, the venting gas black and rising, her lantern the only warm thing left in the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_dsc_s4",
+          "label": "Go on.",
+          "target": "r4_2"
+        }
+      ]
+    },
+    {
+      "id": "r4_1",
+      "body": "<<FILL role=rising words=181 beats='Priya Anand sets herself to salvaging a single log from a losing shift; the choice settles in her chest like ballast, and the Coolant Archive seems flooded and leaning in to watch how she will keep it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_1",
+          "label": "Go on.",
+          "target": "r4_dsc_s1"
+        }
+      ]
+    },
+    {
+      "id": "r4_2",
+      "body": "<<FILL role=choice words=184 beats='salvaging a single log from a losing shift can be done gently, saving the fragile first, or decisively, taking the whole weight at once while the venting gas still climbs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_2_0",
+          "label": "Work gently, fragile first.",
+          "target": "r4_3a"
+        },
+        {
+          "id": "c_r4_2_1",
+          "label": "Take the whole weight at once.",
+          "target": "r4_3b"
+        }
+      ]
+    },
+    {
+      "id": "r4_3a",
+      "body": "<<FILL role=choice words=178 beats='working gently at salvaging a single log from a losing shift, Priya Anand reaches a fork: trust Tomas Reyes to carry half the burden, or bear it alone and spare her the cost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_3a_0",
+          "label": "Trust Tomas Reyes with half.",
+          "target": "r4_4"
+        },
+        {
+          "id": "c_r4_3a_1",
+          "label": "Bear it alone.",
+          "target": "r4_ea"
+        }
+      ]
+    },
+    {
+      "id": "r4_3b",
+      "body": "<<FILL role=choice words=179 beats='taking the whole weight of salvaging a single log from a losing shift, Priya Anand must choose fast: follow Aldous Rook's method to the letter, or break from Aldous Rook and do it her own way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_3b_0",
+          "label": "Follow Aldous Rook's method.",
+          "target": "r4_4"
+        },
+        {
+          "id": "c_r4_3b_1",
+          "label": "Break from Aldous Rook.",
+          "target": "r4_eb"
+        }
+      ]
+    },
+    {
+      "id": "r4_aft_s1",
+      "body": "<<FILL role=rising words=173 beats='the two ways of salvaging a single log from a losing shift rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_aft_s1",
+          "label": "Go on.",
+          "target": "r4_aft_s2"
+        }
+      ]
+    },
+    {
+      "id": "r4_aft_s2",
+      "body": "<<FILL role=rising words=173 beats='the two ways of salvaging a single log from a losing shift rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_aft_s2",
+          "label": "Go on.",
+          "target": "r4_aft_s3"
+        }
+      ]
+    },
+    {
+      "id": "r4_aft_s3",
+      "body": "<<FILL role=rising words=173 beats='the two ways of salvaging a single log from a losing shift rejoin on the narrow stair, the venting gas at her knees, one lantern left, and Priya Anand works upward through the cold toward the last of the choosing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_aft_s3",
+          "label": "Go on.",
+          "target": "r4_5"
+        }
+      ]
+    },
+    {
+      "id": "r4_4",
+      "body": "<<FILL role=rising words=176 beats='whichever hand she used, salvaging a single log from a losing shift now comes down to what Priya Anand is willing to give up, and the outcome narrows to a single stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_4",
+          "label": "Go on.",
+          "target": "r4_aft_s1"
+        }
+      ]
+    },
+    {
+      "id": "r4_5",
+      "body": "<<FILL role=choice words=182 beats='at the last landing of salvaging a single log from a losing shift, Priya Anand weighs Kestrel Station's claim against her own; she can put Kestrel Station first, or put the single irreplaceable thing first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_5_0",
+          "label": "Put Kestrel Station first.",
+          "target": "r4_6"
+        },
+        {
+          "id": "c_r4_5_1",
+          "label": "Put the one thing first.",
+          "target": "r4_7"
+        }
+      ]
+    },
+    {
+      "id": "r4_6",
+      "body": "<<FILL role=choice words=177 beats='choosing Kestrel Station in salvaging a single log from a losing shift, the venting gas offers a final bargain: speak the forgotten thing aloud to the whole of Kestrel Station, or keep it and simply hold the line here'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_6_0",
+          "label": "Speak the forgotten thing aloud.",
+          "target": "r4_ec"
+        },
+        {
+          "id": "c_r4_6_1",
+          "label": "Keep it and hold the line.",
+          "target": "r4_ed"
+        }
+      ]
+    },
+    {
+      "id": "r4_7",
+      "body": "<<FILL role=choice words=181 beats='choosing the single thing in salvaging a single log from a losing shift, Priya Anand must decide how it survives: carried out into the storm now, or sealed high and left for the morning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_7_0",
+          "label": "Carry it out into the storm.",
+          "target": "r4_ee"
+        },
+        {
+          "id": "c_r4_7_1",
+          "label": "Seal it high for the morning.",
+          "target": "r4_8"
+        }
+      ]
+    },
+    {
+      "id": "r4_8",
+      "body": "<<FILL role=choice words=178 beats='sealing the one thing of salvaging a single log from a losing shift above the leak, Priya Anand has a breath to decide whether to leave it for the salvage crew, or to settle the record herself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_8_0",
+          "label": "Leave it for the salvage crew.",
+          "target": "r4_ef"
+        },
+        {
+          "id": "c_r4_8_1",
+          "label": "Settle the record yourself.",
+          "target": "r4_9"
+        }
+      ]
+    },
+    {
+      "id": "r4_9",
+      "body": "<<FILL role=choice words=176 beats='at the very last of salvaging a single log from a losing shift, Priya Anand holds the pen over the salvage log: sign it in her own true name, or leave the record unclaimed for whoever keeps the Coolant Archive next'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r4_9_0",
+          "label": "Sign it in your name.",
+          "target": "r4_eg"
+        },
+        {
+          "id": "c_r4_9_1",
+          "label": "Leave it unclaimed.",
+          "target": "r4_eh"
+        }
+      ]
+    },
+    {
+      "id": "r4_ea",
+      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single log from a losing shift, Alone in the Dark, One Log Saved; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_047",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Alone in the Dark, One Log Saved"
+      }
+    },
+    {
+      "id": "r4_eb",
+      "body": "<<FILL role=revelation words=163 beats='at the end of salvaging a single log from a losing shift, Went Off the Engineer's Map, Kept a Scrap; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_048",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Went Off the Engineer's Map, Kept a Scrap"
+      }
+    },
+    {
+      "id": "r4_ec",
+      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single log from a losing shift, Spoke to No One and Saved the Corner; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_049",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Spoke to No One and Saved the Corner"
+      }
+    },
+    {
+      "id": "r4_ed",
+      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single log from a losing shift, Held the Line Till the Line Gave; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_050",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Held the Line Till the Line Gave"
+      }
+    },
+    {
+      "id": "r4_ee",
+      "body": "<<FILL role=revelation words=163 beats='at the end of salvaging a single log from a losing shift, Carried One Page Into the Cold; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_051",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Carried One Page Into the Cold"
+      }
+    },
+    {
+      "id": "r4_ef",
+      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single log from a losing shift, Sealed a Bay That Was Already Full; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_052",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed a Bay That Was Already Full"
+      }
+    },
+    {
+      "id": "r4_eg",
+      "body": "<<FILL role=setback words=163 beats='at the end of salvaging a single log from a losing shift, Signed for a Page, the Rest Was Lost; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_053",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Signed for a Page, the Rest Was Lost"
+      }
+    },
+    {
+      "id": "r4_eh",
+      "body": "<<FILL role=revelation words=163 beats='at the end of salvaging a single log from a losing shift, Unsigned, Unsettled, but Safe by Dawn; the venting gas holds its level a moment as if listening, and Priya Anand lets the night close on the choice she has made'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_054",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Unsigned, Unsettled, but Safe by Dawn"
+      }
+    }
+  ]
+}

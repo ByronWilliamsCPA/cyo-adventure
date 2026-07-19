@@ -35,7 +35,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=110 beats='it is the morning of the Maplewood School robot fair and Priya arrives at the Room 12 workshop early with a bag of doughnuts for Team Circuit Sparks; the door hangs ajar though it is always locked overnight; on the bench her team robot Gizmo lies in pieces, panels off, wheels out, wiring unclipped, and her stomach drops as she steps inside'>>",
+      "body": "<<FILL role=setup words=110 beats='it is the morning of {THRESHOLD} and {HERO} arrives at {ENTRANCE} early with {TREAT} for {TEAM}; the door hangs ajar though it is always locked overnight; on the bench her team robot {HERO_ROBOT} lies in pieces, panels off, wheels out, wiring unclipped, and her stomach drops as she steps inside'>>",
       "is_ending": false,
       "choices": [
         {
@@ -47,7 +47,7 @@
     },
     {
       "id": "n_survey",
-      "body": "<<FILL role=setup words=112 beats='her teammate Ben arrives and together they discover it is not just Gizmo; Team Thunderbolt found their robot Vulcan taken apart and the Gearheads robot Daisy too; strangest of all nothing is broken or missing, screws are sorted into neat bins, wires are coiled like ribbon, and faint waxy scuff loops run across the floor; sabotage that tidies up after itself makes no sense at all'>>",
+      "body": "<<FILL role=setup words=112 beats='{COMPANION} arrives and together they discover it is not just {HERO_ROBOT}; {RIVAL_TEAM_A} found their robot {RIVAL_ROBOT_A} taken apart and {RIVAL_TEAM_B} robot {RIVAL_ROBOT_B} too; strangest of all nothing is broken or missing, screws are sorted into neat bins, wires are coiled like ribbon, and faint {TRACK_MARKS} run across the floor; sabotage that tidies up after itself makes no sense at all'>>",
       "is_ending": false,
       "choices": [
         {
@@ -59,7 +59,7 @@
     },
     {
       "id": "n_clues",
-      "body": "<<FILL role=choice words=105 beats='ten minutes before the whole school gathers for assembly Priya weighs where to look first: the strange sorted bins on the bench, the door and its lock that Ben swears was chained tight, or the knot of early kids in the hall who might have seen something last night; she can only manage one before the bell'>>",
+      "body": "<<FILL role=choice words=105 beats='ten minutes before the whole school gathers for assembly {HERO} weighs where to look first: the strange sorted bins on the bench, the door and its lock that {COMPANION} swears was chained tight, or the knot of early kids in the hall who might have seen something last night; she can only manage one before {DEADLINE_SIGN}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -81,7 +81,7 @@
     },
     {
       "id": "k_bins1",
-      "body": "<<FILL role=rising words=95 beats='the bins are sorted by size and shape with masking tape labels in blocky stencil letters reading SMALL and ROUND and SHINY; every last part of Gizmo is here, cleaned and grouped, as if someone meant to be helpful; Priya frowns, because no thief sorts screws by length'>>",
+      "body": "<<FILL role=rising words=95 beats='the bins are sorted by size and shape with masking tape labels in blocky stencil letters reading {BINS_LABEL_WORDS}; every last part of {HERO_ROBOT} is here, cleaned and grouped, as if someone meant to be helpful; {HERO} frowns, because no thief sorts screws by length'>>",
       "is_ending": false,
       "choices": [
         {
@@ -93,43 +93,43 @@
     },
     {
       "id": "k_bins2",
-      "body": "<<FILL role=rising words=92 beats='the stencil letters match no kid and no teacher; the ink smells like a dusty old typewriter ribbon and one label sits slightly crooked, as if stamped on by a machine instead of a hand; the assembly bell rings and Priya pockets a label as evidence'>>",
+      "body": "<<FILL role=rising words=92 beats='the stencil letters match no kid and no teacher; the ink smells like a dusty old typewriter ribbon and one label sits slightly crooked, as if stamped on by a machine instead of a hand; {DEADLINE_SIGN} rings and {HERO} pockets {BINS_EVIDENCE} as evidence'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_bins_go",
-          "label": "Head to assembly with the label in her pocket.",
+          "label": "Head to assembly with {BINS_EVIDENCE} in her pocket.",
           "target": "n_assembly"
         }
       ]
     },
     {
       "id": "k_door1",
-      "body": "<<FILL role=rising words=95 beats='Ben swears the door was chained when he rattled it at seven; the lock shows no scratches, the window is latched from the inside, and the waxy scuff loops do not come in from the hallway at all; whatever made them started and ended somewhere inside the room'>>",
+      "body": "<<FILL role=rising words=95 beats='{COMPANION} swears the door was chained when he rattled it at seven; the lock shows no scratches, the window is latched from the inside, and the {TRACK_MARKS} do not come in from the hallway at all; whatever made them started and ended somewhere inside the room'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_door_follow",
-          "label": "Follow the scuffed loops across the floor.",
+          "label": "Follow the {TRACK_MARKS} across the floor.",
           "target": "k_door2"
         }
       ]
     },
     {
       "id": "k_door2",
-      "body": "<<FILL role=rising words=92 beats='the loops run from bench to bench in patient tidy lines and vanish at the old storage closet at the back of the workshop, the one place nobody has thought to check; the closet will have to wait, because the assembly bell is ringing'>>",
+      "body": "<<FILL role=rising words=92 beats='the {TRACK_MARKS} run from bench to bench in patient tidy lines and vanish at {CLOSET} at the back of the workshop, the one place nobody has thought to check; {CLOSET} will have to wait, because {DEADLINE_SIGN} is ringing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_door_go",
-          "label": "Head to assembly, still thinking about that closet.",
+          "label": "Head to assembly, still thinking about {CLOSET}.",
           "target": "n_assembly"
         }
       ]
     },
     {
       "id": "k_kids1",
-      "body": "<<FILL role=rising words=95 beats='the hallway is buzzing with wild guesses; one kid says Marcus from Team Thunderbolt was spotted by the bike racks at dusk looking guilty; another says a little kid stood at the workshop window after dinner time; a third saw the custodian's cart outside long after dark'>>",
+      "body": "<<FILL role=rising words=95 beats='the hallway is buzzing with wild guesses; one kid says {SUSPECT_MARCUS} from {RIVAL_TEAM_A} was spotted by the bike racks at dusk looking guilty; another says a little kid stood at the workshop window after dinner time; a third saw {CUSTODIAN}'s cart outside long after dark'>>",
       "is_ending": false,
       "choices": [
         {
@@ -141,7 +141,7 @@
     },
     {
       "id": "k_kids2",
-      "body": "<<FILL role=rising words=92 beats='the little kid at the window turns out to be Poppy, the small sister of Priya's teammate Jade; and Mr. Okafor the custodian was definitely working late; three names, three question marks, and no time for more because the assembly bell rings'>>",
+      "body": "<<FILL role=rising words=92 beats='the little kid at the window turns out to be {SUSPECT_POPPY}, the small sister of {HERO}'s teammate {SUSPECT_POPPY_SIS}; and {CUSTODIAN} was definitely working late; three names, three question marks, and no time for more because {DEADLINE_SIGN} rings'>>",
       "is_ending": false,
       "choices": [
         {
@@ -153,41 +153,41 @@
     },
     {
       "id": "n_assembly",
-      "body": "<<FILL role=rising words=115 beats='whatever clue Priya managed to gather before the bell, she carries it into the packed gym turning it over and over in her mind; Principal Vasquez announces that three robots were tampered with overnight, that the fair will still happen with demonstrations this afternoon, that teams may use the workshop at lunch for repairs, and that anyone with information should come forward; the room murmurs with rumors, and Priya starts watching faces instead of listening'>>",
+      "body": "<<FILL role=rising words=115 beats='whatever clue {HERO} managed to gather before {DEADLINE_SIGN}, she carries it into the packed gym turning it over and over in her mind; {PRINCIPAL} announces that three robots were tampered with overnight, that {THRESHOLD} will still happen with demonstrations this afternoon, that teams may use the workshop at lunch for repairs, and that anyone with information should come forward; the room murmurs with rumors, and {HERO} starts watching faces instead of listening'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_assembly_watch",
-          "label": "Watch the crowd while the principal talks.",
+          "label": "Watch the crowd while {PRINCIPAL} talks.",
           "target": "n_suspects"
         }
       ]
     },
     {
       "id": "n_suspects",
-      "body": "<<FILL role=choice words=108 beats='three reactions stand out from the bleachers: Mr. Okafor slips out the side door early, twisting his cap in his hands; Marcus of Team Thunderbolt stares at his shoes and will not look toward the Sparks; and little Poppy hugs a sketchbook to her chest like a shield; lunch is the only free time before the demos, so Priya must pick one thread to pull'>>",
+      "body": "<<FILL role=choice words=108 beats='three reactions stand out from the bleachers: {CUSTODIAN} slips out the side door early, twisting his cap in his hands; {SUSPECT_MARCUS} of {RIVAL_TEAM_A} stares at his shoes and will not look toward the Sparks; and little {SUSPECT_POPPY} hugs {SKETCHBOOK} to her chest like a shield; lunch is the only free time before the demos, so {HERO} must pick one thread to pull'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_sus_marcus",
-          "label": "Catch Marcus before class.",
+          "label": "Catch {SUSPECT_MARCUS} before class.",
           "target": "m1"
         },
         {
           "id": "c_sus_poppy",
-          "label": "Find Poppy and ask what she saw.",
+          "label": "Find {SUSPECT_POPPY} and ask what she saw.",
           "target": "p1"
         },
         {
           "id": "c_sus_okafor",
-          "label": "Follow Mr. Okafor.",
+          "label": "Follow {CUSTODIAN}.",
           "target": "o1"
         }
       ]
     },
     {
       "id": "m1",
-      "body": "<<FILL role=choice words=102 beats='Marcus is at his locker cradling a servo box, and he goes stiff when Priya walks up, insisting he never touched her precious Gizmo before she even asks; she can question him straight out right here, hang back and quietly watch what he does next, or go find his teammate Sana, who has never once kept a secret'>>",
+      "body": "<<FILL role=choice words=102 beats='{SUSPECT_MARCUS} is at his locker cradling {SERVO_BOX}, and he goes stiff when {HERO} walks up, insisting he never touched her precious {HERO_ROBOT} before she even asks; she can question him straight out right here, hang back and quietly watch what he does next, or go find his teammate {SUSPECT_MARCUS_MATE}, who has never once kept a secret'>>",
       "is_ending": false,
       "choices": [
         {
@@ -202,14 +202,14 @@
         },
         {
           "id": "c_m_mate",
-          "label": "Talk to his teammate Sana instead.",
+          "label": "Talk to his teammate {SUSPECT_MARCUS_MATE} instead.",
           "target": "m_mate"
         }
       ]
     },
     {
       "id": "m_conf",
-      "body": "<<FILL role=choice words=100 beats='the direct question lands like a spark in dry grass; Marcus goes red and loud, a crowd starts to gather, and a teacher looks over; Priya feels the moment tipping and knows she can take a breath and start over kindly, or wave Principal Vasquez across and say his name out loud in front of everyone'>>",
+      "body": "<<FILL role=choice words=100 beats='the direct question lands like a spark in dry grass; {SUSPECT_MARCUS} goes red and loud, a crowd starts to gather, and a teacher looks over; {HERO} feels the moment tipping and knows she can take a breath and start over kindly, or wave {PRINCIPAL} across and say his name out loud in front of everyone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -219,14 +219,14 @@
         },
         {
           "id": "c_m_report",
-          "label": "Wave the principal over and accuse him.",
+          "label": "Wave {PRINCIPAL} over and accuse him.",
           "target": "e_blame"
         }
       ]
     },
     {
       "id": "m_conf2",
-      "body": "<<FILL role=rising words=92 beats='the apology catches Marcus completely off guard; the red drains out of his face as the crowd loses interest and drifts away, and in a low voice he admits he was at school at dusk last night, but it is not what she thinks'>>",
+      "body": "<<FILL role=rising words=92 beats='the apology catches {SUSPECT_MARCUS} completely off guard; the red drains out of his face as the crowd loses interest and drifts away, and in a low voice he admits he was at school at dusk last night, but it is not what she thinks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -238,7 +238,7 @@
     },
     {
       "id": "m_watch",
-      "body": "<<FILL role=rising words=95 beats='Priya trails Marcus between classes; he keeps checking over his shoulder and carrying that box as if it were made of eggshells, and at break he heads straight for the Room 12 corridor and hovers outside the workshop window looking miserable'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} trails {SUSPECT_MARCUS} between classes; he keeps checking over his shoulder and carrying {SERVO_BOX} as if it were made of eggshells, and at break he heads straight for the Room 12 corridor and hovers outside the workshop window looking miserable'>>",
       "is_ending": false,
       "choices": [
         {
@@ -250,31 +250,31 @@
     },
     {
       "id": "m_watch2",
-      "body": "<<FILL role=rising words=92 beats='Marcus tapes a paper bag and a folded note to the workshop door handle and hurries away; the note says sorry in handwriting that has been erased and rewritten twice, and the bag holds the Sparks spare motor that went missing from their bench last week'>>",
+      "body": "<<FILL role=rising words=92 beats='{SUSPECT_MARCUS} tapes a paper bag and a folded note to the workshop door handle and hurries away; the note says sorry in handwriting that has been erased and rewritten twice, and the bag holds the Sparks spare motor that went missing from their bench last week'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_watch2_go",
-          "label": "Catch up with Marcus and ask about the note.",
+          "label": "Catch up with {SUSPECT_MARCUS} and ask about the note.",
           "target": "m_truth"
         }
       ]
     },
     {
       "id": "m_mate",
-      "body": "<<FILL role=rising words=95 beats='Sana rolls her eyes the moment Priya asks; Marcus has been a nervous wreck all week, she says, ever since he borrowed a spare motor from the Sparks bench without asking and then could not find the courage to hand it back'>>",
+      "body": "<<FILL role=rising words=95 beats='{SUSPECT_MARCUS_MATE} rolls her eyes the moment {HERO} asks; {SUSPECT_MARCUS} has been a nervous wreck all week, she says, ever since he borrowed a spare motor from the Sparks bench without asking and then could not find the courage to hand it back'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_mate_go",
-          "label": "Find Marcus and tell him what Sana said.",
+          "label": "Find {SUSPECT_MARCUS} and tell him what {SUSPECT_MARCUS_MATE} said.",
           "target": "m_mate2"
         }
       ]
     },
     {
       "id": "m_mate2",
-      "body": "<<FILL role=rising words=90 beats='faced gently with Sana's story, Marcus lets out a breath he seems to have been holding for a week; yes he took the motor, yes he biked back at dusk to return it, and there is one more thing he has been too scared to tell anybody'>>",
+      "body": "<<FILL role=rising words=90 beats='faced gently with {SUSPECT_MARCUS_MATE}'s story, {SUSPECT_MARCUS} lets out a breath he seems to have been holding for a week; yes he took the motor, yes he biked back at dusk to return it, and there is one more thing he has been too scared to tell anybody'>>",
       "is_ending": false,
       "choices": [
         {
@@ -286,7 +286,7 @@
     },
     {
       "id": "m_truth",
-      "body": "<<FILL role=rising words=112 beats='however it finally comes out, the story is the same: Marcus borrowed the motor without asking, panicked, and pedaled back at dusk to return it; while he stood at the locked workshop door he saw a small wobbling light glide across the room inside, low and slow like a lantern on wheels, and he ran, because he knew being seen there made him look guilty; ashamed and relieved at once, he offers the Sparks his own spare servo for Gizmo'>>",
+      "body": "<<FILL role=rising words=112 beats='however it finally comes out, the story is the same: {SUSPECT_MARCUS} borrowed the motor without asking, panicked, and pedaled back at dusk to return it; while he stood at the locked workshop door he saw a small wobbling light glide across the room inside, low and slow like a lantern on wheels, and he ran, because he knew being seen there made him look guilty; ashamed and relieved at once, he offers the Sparks his own spare servo for {HERO_ROBOT}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -298,19 +298,19 @@
     },
     {
       "id": "m_light",
-      "body": "<<FILL role=rising words=96 beats='the light moved bench to bench in patient lines, Marcus says, never bumping a thing, while the door stayed chained the whole time; whatever took the robots apart was already inside after lockup; the lunch bell rings and the workshop is opening for repairs'>>",
+      "body": "<<FILL role=rising words=96 beats='the light moved bench to bench in patient lines, {SUSPECT_MARCUS} says, never bumping a thing, while the door stayed chained the whole time; whatever took the robots apart was already inside after lockup; the lunch bell rings and {ENTRANCE} is opening for repairs'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m_light_go",
-          "label": "Get to the workshop and check the back of the room.",
+          "label": "Get to {ENTRANCE} and check the back of the room.",
           "target": "n_lockup"
         }
       ]
     },
     {
       "id": "e_blame",
-      "body": "<<FILL role=failure words=102 beats='the accusation in front of everyone goes exactly as badly as it can; Marcus is pulled from his team while the principal investigates, and it is mid afternoon before a teacher finds the real answer in the workshop, wheel tracks and a dozing old robot and a chewed chore card, clearing him completely; by then his demo slot is gone; Priya apologizes for real and he accepts it quietly; Gizmo runs fine, but no ribbon would feel right today, and Priya learns that a name said out loud without proof cannot be unsaid'>>",
+      "body": "<<FILL role=failure words=102 beats='the accusation in front of everyone goes exactly as badly as it can; {SUSPECT_MARCUS} is pulled from his team while {PRINCIPAL} investigates, and it is mid afternoon before a teacher finds the real answer in the workshop, wheel tracks and a dozing old robot and a chewed {CHORE_CARD}, clearing him completely; by then his demo slot is gone; {HERO} apologizes for real and he accepts it quietly; {HERO_ROBOT} runs fine, but no ribbon would feel right today, and {HERO} learns that a name said out loud without proof cannot be unsaid'>>",
       "is_ending": true,
       "ending": {
         "id": "e_blame",
@@ -321,7 +321,7 @@
     },
     {
       "id": "p1",
-      "body": "<<FILL role=choice words=102 beats='Poppy is behind the gym with red eyes and her sketchbook clutched tight, far too small to have taken three robots apart but plainly hiding something; Priya can sit down beside her and talk about drawing first, tell her straight that she knows Poppy was at the workshop window last night, or go and bring her big sister Jade over'>>",
+      "body": "<<FILL role=choice words=102 beats='{SUSPECT_POPPY} is behind the gym with red eyes and {SKETCHBOOK} clutched tight, far too small to have taken three robots apart but plainly hiding something; {HERO} can sit down beside her and talk about drawing first, tell her straight that she knows {SUSPECT_POPPY} was at the workshop window last night, or go and bring her big sister {SUSPECT_POPPY_SIS} over'>>",
       "is_ending": false,
       "choices": [
         {
@@ -336,14 +336,14 @@
         },
         {
           "id": "c_p_jade",
-          "label": "Bring her big sister Jade over.",
+          "label": "Bring her big sister {SUSPECT_POPPY_SIS} over.",
           "target": "p_jade"
         }
       ]
     },
     {
       "id": "p_gentle",
-      "body": "<<FILL role=rising words=95 beats='Priya admires the robot drawings page by page, and slowly Poppy stops gripping the book so hard; in a very small voice she says she was there last night, and that something was wrong with the shadows inside the workshop'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} admires the robot drawings page by page, and slowly {SUSPECT_POPPY} stops gripping {SKETCHBOOK} so hard; in a very small voice she says she was there last night, and that something was wrong with the shadows inside the workshop'>>",
       "is_ending": false,
       "choices": [
         {
@@ -355,7 +355,7 @@
     },
     {
       "id": "p_scare",
-      "body": "<<FILL role=choice words=96 beats='the words land much too hard and Poppy bolts around the bleachers like a startled rabbit; Priya can follow quietly and apologize for scaring her, or let her go and spend what is left of lunch questioning the older kids instead'>>",
+      "body": "<<FILL role=choice words=96 beats='the words land much too hard and {SUSPECT_POPPY} bolts around the bleachers like a startled rabbit; {HERO} can follow quietly and apologize for scaring her, or let her go and spend what is left of lunch questioning the older kids instead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -372,31 +372,31 @@
     },
     {
       "id": "p_hide",
-      "body": "<<FILL role=rising words=92 beats='Priya finds her wedged behind the gym mats and sits down a little way off, saying sorry for the scare and holding out half a doughnut; after a long minute Poppy scoots closer and whispers that she has to tell someone or she will burst'>>",
+      "body": "<<FILL role=rising words=92 beats='{HERO} finds her wedged behind the gym mats and sits down a little way off, saying sorry for the scare and holding out half {TREAT}; after a long minute {SUSPECT_POPPY} scoots closer and whispers that she has to tell someone or she will burst'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p_hide_go",
-          "label": "Wait until Poppy is ready to talk.",
+          "label": "Wait until {SUSPECT_POPPY} is ready to talk.",
           "target": "p_story"
         }
       ]
     },
     {
       "id": "p_jade",
-      "body": "<<FILL role=rising words=95 beats='Jade crouches down, calls her bug, and promises that nobody is mad at anybody; Poppy peeks over the top of her sketchbook, looks from her sister to Priya and back, and decides to trust them with what she saw'>>",
+      "body": "<<FILL role=rising words=95 beats='{SUSPECT_POPPY_SIS} crouches down, calls her bug, and promises that nobody is mad at anybody; {SUSPECT_POPPY} peeks over the top of {SKETCHBOOK}, looks from her sister to {HERO} and back, and decides to trust them with what she saw'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p_jade_go",
-          "label": "Listen to Poppy's story.",
+          "label": "Listen to {SUSPECT_POPPY}'s story.",
           "target": "p_story"
         }
       ]
     },
     {
       "id": "p_story",
-      "body": "<<FILL role=rising words=115 beats='once she feels safe, Poppy tells it all in a rush: she was told she is too little for robotics club, so at dusk she snuck to the workshop to tape a good luck drawing onto Jade's robot; the door was locked, so she watched through the window, and she saw a shadow slide along the shelves all by itself, with two small green lights and a friendly little beep; she ran so fast she dropped her drawing somewhere, and she is terrified everyone will decide the sabotage was her'>>",
+      "body": "<<FILL role=rising words=115 beats='once she feels safe, {SUSPECT_POPPY} tells it all in a rush: she was told she is too little for robotics club, so at dusk she snuck to the workshop to tape a good luck {CRAYON_DRAWING} onto {SUSPECT_POPPY_SIS}'s robot; the door was locked, so she watched through the window, and she saw a shadow slide along the shelves all by itself, with two small green lights and a friendly little beep; she ran so fast she dropped {CRAYON_DRAWING}, and she is terrified everyone will decide the sabotage was her'>>",
       "is_ending": false,
       "choices": [
         {
@@ -408,19 +408,19 @@
     },
     {
       "id": "p_drawing",
-      "body": "<<FILL role=rising words=100 beats='they circle to the workshop window and the drawing is not on the ground anywhere; if it ended up inside the locked workshop, then whatever moves in there picked it up after lockup; Priya draws a lookout badge in marker on Poppy's hand, deputizing her on the spot, and they plan to search the back of the workshop the moment lunch repairs begin'>>",
+      "body": "<<FILL role=rising words=100 beats='they circle to the workshop window and {CRAYON_DRAWING} is not on the ground anywhere; if it ended up inside the locked workshop, then whatever moves in there picked it up after lockup; {HERO} draws a lookout badge in marker on {SUSPECT_POPPY}'s hand, deputizing her on the spot, and they plan to search the back of the workshop the moment lunch repairs begin'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p_drawing_go",
-          "label": "Head to the workshop at lunch with your new lookout.",
+          "label": "Head to {ENTRANCE} at lunch with your new lookout.",
           "target": "n_lockup"
         }
       ]
     },
     {
       "id": "e_deadend",
-      "body": "<<FILL role=failure words=100 beats='without Poppy's clue the lunch hour goes nowhere; the older kids repeat the same three rumors, and repair time runs out with Gizmo only half himself; the demo is a wobbling, sputtering flop, though the crowd claps kindly anyway; only during cleanup does someone open the storage closet, and the real story rolls out on four dusty wheels for everyone to see at once; no prize, no mystery solved by her, and one small girl who still flinches when Priya walks past; tomorrow, Priya decides, she starts fixing that with an apology and a doughnut'>>",
+      "body": "<<FILL role=failure words=100 beats='without {SUSPECT_POPPY}'s clue the lunch hour goes nowhere; the older kids repeat the same three rumors, and repair time runs out with {HERO_ROBOT} only half himself; the demo is a wobbling, sputtering flop, though the crowd claps kindly anyway; only during cleanup does someone open {CLOSET}, and the real story rolls out on four dusty wheels for everyone to see at once; no prize, no mystery solved by her, and one small girl who still flinches when {HERO} walks past; tomorrow, {HERO} decides, she starts fixing that with an apology and {TREAT}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_deadend",
@@ -431,12 +431,12 @@
     },
     {
       "id": "o1",
-      "body": "<<FILL role=choice words=102 beats='Mr. Okafor stops at the workshop door, tests the padlock twice, mutters that it is not possible, and wheels his cart with a lumpy canvas bundle toward the boiler room; Priya can knock and ask him straight, peek through the gap where the boiler room door never quite closes, or hang back and study the waxy scuff tracks he keeps frowning at'>>",
+      "body": "<<FILL role=choice words=102 beats='{CUSTODIAN} stops at the workshop door, tests the padlock twice, mutters that it is not possible, and wheels his cart with a lumpy canvas bundle toward {BOILER_ROOM}; {HERO} can knock and ask him straight, peek through the gap where {BOILER_ROOM} door never quite closes, or hang back and study the {TRACK_MARKS} he keeps frowning at'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_knock",
-          "label": "Knock on the boiler room door and ask him.",
+          "label": "Knock on {BOILER_ROOM} door and ask him.",
           "target": "o_knock"
         },
         {
@@ -446,26 +446,26 @@
         },
         {
           "id": "c_o_wax",
-          "label": "Study the waxy scuff tracks first.",
+          "label": "Study the {TRACK_MARKS} first.",
           "target": "o_wax"
         }
       ]
     },
     {
       "id": "o_knock",
-      "body": "<<FILL role=rising words=94 beats='the door opens a crack and one tired eye looks out; then Mr. Okafor sighs like a man setting down something heavy and swings the door wide, saying she had better see for herself before somebody imagines something worse'>>",
+      "body": "<<FILL role=rising words=94 beats='the door opens a crack and one tired eye looks out; then {CUSTODIAN} sighs like a man setting down something heavy and swings the door wide, saying she had better see for herself before somebody imagines something worse'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_knock_go",
-          "label": "Step inside the boiler room.",
+          "label": "Step inside {BOILER_ROOM}.",
           "target": "o_secret"
         }
       ]
     },
     {
       "id": "o_peek",
-      "body": "<<FILL role=choice words=100 beats='through the gap she sees a workbench covered in robot parts, a wheel the size of a dinner plate, and a faded photo of a boxy robot in a bow tie leading a school assembly; then a shadow falls across her and Mr. Okafor says it is rude to peek; she can own up and ask about the photo, or slip away and tell her team what she saw'>>",
+      "body": "<<FILL role=choice words=100 beats='through the gap she sees a workbench covered in robot parts, a wheel the size of a dinner plate, and a faded photo of a boxy robot in a bow tie leading a school assembly; then a shadow falls across her and {CUSTODIAN} says it is rude to peek; she can own up and ask about the photo, or slip away and tell her team what she saw'>>",
       "is_ending": false,
       "choices": [
         {
@@ -482,7 +482,7 @@
     },
     {
       "id": "o_own",
-      "body": "<<FILL role=rising words=92 beats='Priya owns it, cheeks burning, and asks about the robot in the photo; Mr. Okafor's frown turns into something softer, and he says curiosity is not a crime, though sneaking is borderline, and waves her inside'>>",
+      "body": "<<FILL role=rising words=92 beats='{HERO} owns it, cheeks burning, and asks about the robot in the photo; {CUSTODIAN}'s frown turns into something softer, and he says curiosity is not a crime, though sneaking is borderline, and waves her inside'>>",
       "is_ending": false,
       "choices": [
         {
@@ -494,55 +494,55 @@
     },
     {
       "id": "o_wax",
-      "body": "<<FILL role=rising words=95 beats='up close the scuffs are not boot prints at all; they are two narrow parallel lines with a zigzag tread between them, wheels, not feet, and every loop begins and ends at the storage closet at the back of the workshop'>>",
+      "body": "<<FILL role=rising words=95 beats='up close the {TRACK_MARKS} are not boot prints at all; they are two narrow parallel lines with a zigzag tread between them, wheels, not feet, and every loop begins and ends at {CLOSET} at the back of the workshop'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_wax_go",
-          "label": "Compare the tread with the custodian's cart wheels.",
+          "label": "Compare the tread with {CUSTODIAN}'s cart wheels.",
           "target": "o_wax2"
         }
       ]
     },
     {
       "id": "o_wax2",
-      "body": "<<FILL role=rising words=92 beats='the cart tread does not match at all; while Priya is still crouched over the tracks measuring, Mr. Okafor comes back for his mop, sees the wheel marks for what they are, and goes gray as ash, whispering oh no, oh Herbie, no'>>",
+      "body": "<<FILL role=rising words=92 beats='the cart tread does not match at all; while {HERO} is still crouched over the tracks measuring, {CUSTODIAN} comes back for his mop, sees the wheel marks for what they are, and goes gray as ash, whispering oh no, oh {OLD_ROBOT}, no'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_wax2_go",
-          "label": "Ask him who Herbie is.",
+          "label": "Ask him who {OLD_ROBOT} is.",
           "target": "o_secret"
         }
       ]
     },
     {
       "id": "o_secret",
-      "body": "<<FILL role=rising words=118 beats='the secret comes out gently: Herbie is the school's old demonstration robot, the bow tied machine that led assemblies thirty years ago and has slept in storage ever since; Mr. Okafor has spent his nights rebuilding him as a surprise for the fair's fiftieth anniversary; last night he left Herbie charging in the workshop storage closet and locked up as always; his voice fails at the thought of what a half awake Herbie might have done with his old chore programs, and he says they must go and look, right now'>>",
+      "body": "<<FILL role=rising words=118 beats='the secret comes out gently: {OLD_ROBOT} is the school's old demonstration robot, the bow tied machine that led assemblies thirty years ago and has slept in storage ever since; {CUSTODIAN} has spent his nights rebuilding him as a surprise for the fair's fiftieth anniversary; last night he left {OLD_ROBOT} charging in {CLOSET} and locked up as always; his voice fails at the thought of what a half awake {OLD_ROBOT} might have done with his old {CHORE_CARD}s, and he says they must go and look, right now'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_secret_go",
-          "label": "Hurry to the workshop with Mr. Okafor.",
+          "label": "Hurry to {ENTRANCE} with {CUSTODIAN}.",
           "target": "o_key"
         }
       ]
     },
     {
       "id": "o_key",
-      "body": "<<FILL role=rising words=96 beats='keys jangle as they cut through the lunch crowd, Mr. Okafor repeating that Herbie is gentle, he was built gentle; at the workshop door his radio crackles about a spill in the cafeteria and he groans, unlocks the room for her, and promises to come back the moment he can'>>",
+      "body": "<<FILL role=rising words=96 beats='keys jangle as they cut through the lunch crowd, {CUSTODIAN} repeating that {OLD_ROBOT} is gentle, he was built gentle; at {ENTRANCE} his radio crackles about a spill in the cafeteria and he groans, unlocks the room for her, and promises to come back the moment he can'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_o_key_go",
-          "label": "Go in and check the storage closet.",
+          "label": "Go in and check {CLOSET}.",
           "target": "n_lockup"
         }
       ]
     },
     {
       "id": "e_rumor",
-      "body": "<<FILL role=failure words=105 beats='the whisper travels faster than any robot: by the end of lunch half the school has heard that the custodian keeps a bench of stolen parts, and a parent is asking pointed questions at the office; the truth rolls out by demo time, an old robot, a garbled chore card, an anniversary surprise ruined by being told wrong; Mr. Okafor is cleared completely, but the surprise he worked nights on is spoiled, and Priya knows the whisper was hers; she takes the microphone before the demos and sets the story straight, and he nods once from the doorway; the fair goes on, and the lesson stays'>>",
+      "body": "<<FILL role=failure words=105 beats='the whisper travels faster than any robot: by the end of lunch half the school has heard that {CUSTODIAN} keeps a bench of stolen parts, and a parent is asking pointed questions at the office; the truth rolls out by demo time, an old robot, a garbled {CHORE_CARD}, an anniversary surprise ruined by being told wrong; {CUSTODIAN} is cleared completely, but the surprise he worked nights on is spoiled, and {HERO} knows the whisper was hers; she takes the microphone before the demos and sets the story straight, and he nods once from the doorway; {THRESHOLD} goes on, and the lesson stays'>>",
       "is_ending": true,
       "ending": {
         "id": "e_rumor",
@@ -553,19 +553,19 @@
     },
     {
       "id": "n_lockup",
-      "body": "<<FILL role=rising words=116 beats='the trail, whichever one Priya followed, ends at the storage closet at the back of the workshop while lunch repairs clatter behind her; Ben, already at the Sparks bench laying out tools, spots her heading for the closet and jogs over to join her; every clue she is carrying points the same way, at something that was inside this room after lockup; the closet door hangs open a crack, and inside is an empty charging dock still faintly warm, dusty wheel tracks rolling out and back, a child's crayon drawing folded neatly on a shelf as if put away with care, and in the dock's card slot an ancient punch card, chewed along one edge'>>",
+      "body": "<<FILL role=rising words=116 beats='the trail, whichever one {HERO} followed, ends at {CLOSET} at the back of the workshop while lunch repairs clatter behind her; {COMPANION}, already at the Sparks bench laying out tools, spots her heading for {CLOSET} and jogs over to join her; every clue she is carrying points the same way, at something that was inside this room after lockup; the closet door hangs open a crack, and inside is {CHARGING_DOCK} still faintly warm, dusty wheel tracks rolling out and back, {CRAYON_DRAWING} folded neatly on a shelf as if put away with care, and in the dock's card slot {PUNCH_CARD}, chewed along one edge'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_lockup_go",
-          "label": "Follow the wheel tracks behind the paint tarp.",
+          "label": "Follow the {TRACK_MARKS} behind the paint tarp.",
           "target": "n_herbie"
         }
       ]
     },
     {
       "id": "n_herbie",
-      "body": "<<FILL role=rising words=120 beats='behind the tarp stands Herbie, the school's boxy old demonstration robot with a faded bow tie, powered down mid chore with a bench brush still gripped in one claw and bins of perfectly sorted parts at his wheels; taped to his side is a work log in careful adult handwriting, signed R. Okafor, with a clipped photo of Herbie leading a school assembly long ago: anniversary surprise, recharge Tuesday, DO NOT RUN CARD 7; the chewed card from the dock is card 7, and its half eaten label reads TIDY ALL BEN; no villain anywhere, just a mixed up machine that woke early and did a thirty year old chore on the wrong benches'>>",
+      "body": "<<FILL role=rising words=120 beats='behind the tarp stands {OLD_ROBOT}, the school's boxy old demonstration robot with a faded bow tie, powered down mid chore with a bench brush still gripped in one claw and bins of perfectly sorted parts at his wheels; taped to his side is {WORK_LOG} in careful adult handwriting, signed R. {CUSTODIAN}, with a clipped photo of {OLD_ROBOT} leading a school assembly long ago: anniversary surprise, recharge Tuesday, DO NOT RUN CARD 7; {PUNCH_CARD} from the dock is card 7, and its half eaten label reads TIDY ALL BEN; no villain anywhere, just a mixed up machine that woke early and did a thirty year old chore on the wrong benches'>>",
       "is_ending": false,
       "choices": [
         {
@@ -577,41 +577,41 @@
     },
     {
       "id": "n_plan",
-      "body": "<<FILL role=choice words=106 beats='one hour until demos and three ways to spend it: use the punch kit and the log's code page to fix Herbie's garbled chore card themselves, go find Mr. Okafor and bring the whole truth to Principal Vasquez together, or let sleeping robots lie and pour every minute into repairing the sabotaged robots first'>>",
+      "body": "<<FILL role=choice words=106 beats='one hour until demos and three ways to spend it: use the punch kit and {WORK_LOG}'s code page to fix {OLD_ROBOT}'s garbled {CHORE_CARD} themselves, go find {CUSTODIAN} and bring the whole truth to {PRINCIPAL} together, or let sleeping robots lie and pour every minute into repairing the sabotaged robots first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_plan_fix",
-          "label": "Fix Herbie's garbled chore card yourselves.",
+          "label": "Fix {OLD_ROBOT}'s garbled {CHORE_CARD} yourselves.",
           "target": "x1"
         },
         {
           "id": "c_plan_tell",
-          "label": "Find Mr. Okafor and tell the principal everything.",
+          "label": "Find {CUSTODIAN} and tell {PRINCIPAL} everything.",
           "target": "y1"
         },
         {
           "id": "c_plan_repair",
-          "label": "Repair the robots first; Herbie can wait.",
+          "label": "Repair the robots first; {OLD_ROBOT} can wait.",
           "target": "z1"
         }
       ]
     },
     {
       "id": "x1",
-      "body": "<<FILL role=rising words=98 beats='the dock has a card punch and a drawer of blank cards, and the back page of the log is a code table of Herbie's chore words in tidy rows; Ben cracks his knuckles and grins that they speak robot; between the two of them they can rebuild card 7, if they pick the right way to do it'>>",
+      "body": "<<FILL role=rising words=98 beats='{CHARGING_DOCK} has a card punch and a drawer of blank cards, and the back page of {WORK_LOG} is a code table of {OLD_ROBOT}'s chore words in tidy rows; {COMPANION} cracks his knuckles and grins that they speak robot; between the two of them they can rebuild {CHORE_CARD}, if they pick the right way to do it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_x1_go",
-          "label": "Work out the safest way to fix the card.",
+          "label": "Work out the safest way to fix {CHORE_CARD}.",
           "target": "x_how"
         }
       ]
     },
     {
       "id": "x_how",
-      "body": "<<FILL role=choice words=102 beats='two ways stare back at them: punch a brand new card letter by letter against the code table, slow but sure, or flip the LEARN switch on Herbie's side and reteach the chore by hand, which the log says is faster but warns, in double underline, never to do while a garbled card is loaded'>>",
+      "body": "<<FILL role=choice words=102 beats='two ways stare back at them: punch a brand new card letter by letter against the code table, slow but sure, or flip {LEARN_SWITCH} on {OLD_ROBOT}'s side and reteach the chore by hand, which {WORK_LOG} says is faster but warns, in double underline, never to do while a garbled card is loaded'>>",
       "is_ending": false,
       "choices": [
         {
@@ -621,67 +621,67 @@
         },
         {
           "id": "c_x_rush",
-          "label": "Flip the LEARN switch and reteach him by hand.",
+          "label": "Flip {LEARN_SWITCH} and reteach him by hand.",
           "target": "x_rush"
         }
       ]
     },
     {
       "id": "x_test",
-      "body": "<<FILL role=rising words=100 beats='punch, check, punch, check; the new card reads HELP ALL TEAMS and slides home with a satisfying click; Herbie hums awake with soft green eyes, reads the card, and begins wheeling bench to bench, handing every sorted part back to exactly the right robot like a nurse in a surgery'>>",
+      "body": "<<FILL role=rising words=100 beats='punch, check, punch, check; the new card reads HELP ALL TEAMS and slides home with a satisfying click; {OLD_ROBOT} hums awake with soft green eyes, reads the card, and begins wheeling bench to bench, handing every sorted part back to exactly the right robot like a nurse in a surgery'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_x_test_go",
-          "label": "Put Herbie to work and rebuild Gizmo.",
+          "label": "Put {OLD_ROBOT} to work and rebuild {HERO_ROBOT}.",
           "target": "x_ok"
         }
       ]
     },
     {
       "id": "x_ok",
-      "body": "<<FILL role=rising words=96 beats='with Herbie handing out parts the repairs fly, and the other two teams stop staring and start cheering; Gizmo comes back together with minutes to spare; they leave a thank you note on Mr. Okafor's cart and walk Herbie along to the gym themselves, so nothing surprises anybody ever again'>>",
+      "body": "<<FILL role=rising words=96 beats='with {OLD_ROBOT} handing out parts the repairs fly, and the other two teams stop staring and start cheering; {HERO_ROBOT} comes back together with minutes to spare; they leave a thank you note on {CUSTODIAN}'s cart and walk {OLD_ROBOT} along to {GYM} themselves, so nothing surprises anybody ever again'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_x_ok_go",
-          "label": "Roll everything to the gym.",
+          "label": "Roll everything to {GYM}.",
           "target": "n_demo"
         }
       ]
     },
     {
       "id": "x_rush",
-      "body": "<<FILL role=choice words=104 beats='the LEARN switch is a mistake; Herbie wakes mid garble, chirps TIDY, picks up a mop, and trundles for the gym doors at exactly the speed of trouble; Ben flips the log open to a page about an end of chores whistle while Priya eyes the battery latch on Herbie's back, safe and sudden but sure to eat the repair hour'>>",
+      "body": "<<FILL role=choice words=104 beats='{LEARN_SWITCH} is a mistake; {OLD_ROBOT} wakes mid garble, chirps TIDY, picks up a mop, and trundles for the gym doors at exactly the speed of trouble; {COMPANION} flips {WORK_LOG} open to a page about an end of chores whistle while {HERO} eyes {BATTERY_LATCH} on {OLD_ROBOT}'s back, safe and sudden but sure to eat the repair hour'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_x_unplug",
-          "label": "Yank the battery latch, safe and sudden.",
+          "label": "Yank {BATTERY_LATCH}, safe and sudden.",
           "target": "e_late"
         },
         {
           "id": "c_x_whistle",
-          "label": "Whistle the end of chores signal from the log.",
+          "label": "Whistle the end of chores signal from {WORK_LOG}.",
           "target": "x_whistle"
         }
       ]
     },
     {
       "id": "x_whistle",
-      "body": "<<FILL role=rising words=95 beats='two sharp notes and one low; Herbie stops mid roll, spins in place, and comes back looking as sheepish as a refrigerator can look; the chase has eaten most of the repair hour, so Gizmo goes back together in a scramble and they wheel Herbie along to the gym rather than leave him alone'>>",
+      "body": "<<FILL role=rising words=95 beats='two sharp notes and one low; {OLD_ROBOT} stops mid roll, spins in place, and comes back looking as sheepish as a refrigerator can look; the chase has eaten most of the repair hour, so {HERO_ROBOT} goes back together in a scramble and they wheel {OLD_ROBOT} along to {GYM} rather than leave him alone'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_x_whistle_go",
-          "label": "Sprint the last repairs and get to the gym.",
+          "label": "Sprint the last repairs and get to {GYM}.",
           "target": "n_demo"
         }
       ]
     },
     {
       "id": "e_late",
-      "body": "<<FILL role=failure words=98 beats='the battery latch clicks and Herbie sags mid stride, safe, still, and finally harmless; but hauling him home and calming everyone down eats the whole repair hour, and the Sparks miss their slot; Principal Vasquez lets them demonstrate at the very end of the day, after the trophies, to a small crowd of stragglers and parents, and patched up Gizmo runs his routine clean; no ribbon, but the truth gets told, Herbie is promised a proper debut next year, and nothing was broken today that cannot be mended'>>",
+      "body": "<<FILL role=failure words=98 beats='{BATTERY_LATCH} clicks and {OLD_ROBOT} sags mid stride, safe, still, and finally harmless; but hauling him home and calming everyone down eats the whole repair hour, and the Sparks miss their slot; {PRINCIPAL} lets them demonstrate at the very end of the day, after the trophies, to a small crowd of stragglers and parents, and patched up {HERO_ROBOT} runs his routine clean; no ribbon, but the truth gets told, {OLD_ROBOT} is promised a proper debut next year, and nothing was broken today that cannot be mended'>>",
       "is_ending": true,
       "ending": {
         "id": "e_late",
@@ -692,19 +692,19 @@
     },
     {
       "id": "y1",
-      "body": "<<FILL role=rising words=100 beats='they find Mr. Okafor and show him the work log and the chewed card; he sits down slowly on an upturned bucket, looks at Herbie's neat bins for a long moment, and says that not meaning to is not the same as not doing; then he stands, straightens his cap, and walks with them straight to the principal's office'>>",
+      "body": "<<FILL role=rising words=100 beats='they find {CUSTODIAN} and show him {WORK_LOG} and the chewed card; he sits down slowly on an upturned bucket, looks at {OLD_ROBOT}'s neat bins for a long moment, and says that not meaning to is not the same as not doing; then he stands, straightens his cap, and walks with them straight to {PRINCIPAL}'s office'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_y1_go",
-          "label": "Go with him to Principal Vasquez.",
+          "label": "Go with him to {PRINCIPAL}.",
           "target": "y2"
         }
       ]
     },
     {
       "id": "y2",
-      "body": "<<FILL role=choice words=108 beats='Principal Vasquez listens to the whole tangled story without interrupting once, then surprises everyone by turning to Priya: you found the truth, so what should happen now; Priya could ask to push the demos back an hour so all three sabotaged teams can repair fairly, ask that Herbie's story be told at the fair itself, or suggest keeping the whole thing quiet to spare Mr. Okafor'>>",
+      "body": "<<FILL role=choice words=108 beats='{PRINCIPAL} listens to the whole tangled story without interrupting once, then surprises everyone by turning to {HERO}: you found the truth, so what should happen now; {HERO} could ask to push the demos back an hour so all three sabotaged teams can repair fairly, ask that {OLD_ROBOT}'s story be told at {THRESHOLD} itself, or suggest keeping the whole thing quiet to spare {CUSTODIAN}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -714,43 +714,43 @@
         },
         {
           "id": "c_y_story",
-          "label": "Ask that Herbie's story be told at the fair.",
+          "label": "Ask that {OLD_ROBOT}'s story be told at {THRESHOLD}.",
           "target": "y_story"
         },
         {
           "id": "c_y_quiet",
-          "label": "Suggest keeping it quiet to spare Mr. Okafor.",
+          "label": "Suggest keeping it quiet to spare {CUSTODIAN}.",
           "target": "y_quiet"
         }
       ]
     },
     {
       "id": "y_delay",
-      "body": "<<FILL role=rising words=96 beats='the announcement crackles through the halls, demos pushed back an hour for technical difficulties overcome by student investigators; the workshop becomes one big pit crew, with Mr. Okafor and a freshly re carded Herbie handing back parts, and when the hour is up Herbie rides to the gym at the head of the parade'>>",
+      "body": "<<FILL role=rising words=96 beats='the announcement crackles through the halls, demos pushed back an hour for technical difficulties overcome by student investigators; the workshop becomes one big pit crew, with {CUSTODIAN} and a freshly re carded {OLD_ROBOT} handing back parts, and when the hour is up {OLD_ROBOT} rides to {GYM} at the head of the parade'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_y_delay_go",
-          "label": "Take the extra hour, then head to the gym.",
+          "label": "Take the extra hour, then head to {GYM}.",
           "target": "n_demo"
         }
       ]
     },
     {
       "id": "y_story",
-      "body": "<<FILL role=rising words=96 beats='Vasquez's eyes crinkle; fifty years of this school, she says, and the anniversary surprise turns out to be a mystery solved by students, that is a story worth telling when the moment is right; she leaves the telling of it in Priya's hands, sends them off to repair, and has Herbie wheeled to the gym so the fair can meet him properly'>>",
+      "body": "<<FILL role=rising words=96 beats='{PRINCIPAL}'s eyes crinkle; fifty years of this school, she says, and the anniversary surprise turns out to be a mystery solved by students, that is a story worth telling when the moment is right; she leaves the telling of it in {HERO}'s hands, sends them off to repair, and has {OLD_ROBOT} wheeled to {GYM} so {THRESHOLD} can meet him properly'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_y_story_go",
-          "label": "Get Gizmo ready while the stage is set.",
+          "label": "Get {HERO_ROBOT} ready while the stage is set.",
           "target": "n_demo"
         }
       ]
     },
     {
       "id": "y_quiet",
-      "body": "<<FILL role=choice words=100 beats='Mr. Okafor shakes his head slowly and almost smiles; secrets grew this mess, little engineer, he says; but he asks what she would really do, and the principal waits too; Priya can hold her ground that nobody else needs to know, or agree that the truth should be told, kindly and in the right words'>>",
+      "body": "<<FILL role=choice words=100 beats='{CUSTODIAN} shakes his head slowly and almost smiles; secrets grew this mess, little engineer, he says; but he asks what she would really do, and {PRINCIPAL} waits too; {HERO} can hold her ground that nobody else needs to know, or agree that the truth should be told, kindly and in the right words'>>",
       "is_ending": false,
       "choices": [
         {
@@ -767,19 +767,19 @@
     },
     {
       "id": "y_agree",
-      "body": "<<FILL role=rising words=94 beats='told kindly, it is a different story altogether: not custodian's robot wrecks fair, but the school's oldest robot got his chores mixed up and three teams got a wild morning; everyone in the office breathes easier, Mr. Okafor thanks her for the right words in the right order and goes to fetch Herbie so there are no more surprises, while Priya and the team race back to the workshop and rebuild Gizmo from the neatly sorted bins'>>",
+      "body": "<<FILL role=rising words=94 beats='told kindly, it is a different story altogether: not custodian's robot wrecks fair, but the school's oldest robot got his chores mixed up and three teams got a wild morning; everyone in the office breathes easier, {CUSTODIAN} thanks her for the right words in the right order and goes to fetch {OLD_ROBOT} so there are no more surprises, while {HERO} and the team race back to the workshop and rebuild {HERO_ROBOT} from the neatly sorted bins'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_y_agree_go",
-          "label": "Head for the gym.",
+          "label": "Head for {GYM}.",
           "target": "n_demo"
         }
       ]
     },
     {
       "id": "e_secret",
-      "body": "<<FILL role=failure words=96 beats='the secret holds for exactly one hour; when applause rolls through the gym wall, Herbie answers it from his closet with his old assembly fanfare, muffled but unmistakable, and the truth beeps its way out in the messiest possible way; there is a scramble, some blushing, and a lot of explaining mid fair; no harm is done and the demos go on, but Priya watches Mr. Okafor apologize in front of everyone anyway, and understands that a kept secret is just a surprise with worse timing'>>",
+      "body": "<<FILL role=failure words=96 beats='the secret holds for exactly one hour; when applause rolls through the gym wall, {OLD_ROBOT} answers it from his closet with his old assembly fanfare, muffled but unmistakable, and the truth beeps its way out in the messiest possible way; there is a scramble, some blushing, and a lot of explaining mid fair; no harm is done and the demos go on, but {HERO} watches {CUSTODIAN} apologize in front of everyone anyway, and understands that a kept secret is just a surprise with worse timing'>>",
       "is_ending": true,
       "ending": {
         "id": "e_secret",
@@ -790,7 +790,7 @@
     },
     {
       "id": "z1",
-      "body": "<<FILL role=choice words=100 beats='robots first: and the strange truth is that Herbie's sorting makes rebuilding faster, every screw already grouped by size, every wire coiled; but three teams were hit and only one of them is hers; Priya can call Thunderbolt and the Gearheads over to share the bins and rebuild together, or fix Gizmo first, because the fair will not wait'>>",
+      "body": "<<FILL role=choice words=100 beats='robots first: and the strange truth is that {OLD_ROBOT}'s sorting makes rebuilding faster, every screw already grouped by size, every wire coiled; but three teams were hit and only one of them is hers; {HERO} can call {RIVAL_TEAM_A} and {RIVAL_TEAM_B} over to share the bins and rebuild together, or fix {HERO_ROBOT} first, because {THRESHOLD} will not wait'>>",
       "is_ending": false,
       "choices": [
         {
@@ -800,14 +800,14 @@
         },
         {
           "id": "c_z_guard",
-          "label": "Fix Gizmo first; the fair will not wait.",
+          "label": "Fix {HERO_ROBOT} first; {THRESHOLD} will not wait.",
           "target": "z_guard"
         }
       ]
     },
     {
       "id": "z_pool",
-      "body": "<<FILL role=rising words=100 beats='three teams crowd one bench line and the parts flow like a bucket brigade; grudges evaporate somewhere between the third screwdriver swap and the first shared joke; when someone finds the work log everybody agrees to fetch Mr. Okafor, who arrives mortified and then, seeing three robots nearly whole, rolls up his sleeves'>>",
+      "body": "<<FILL role=rising words=100 beats='three teams crowd one bench line and the parts flow like a bucket brigade; grudges evaporate somewhere between the third screwdriver swap and the first shared joke; when someone finds {WORK_LOG} everybody agrees to fetch {CUSTODIAN}, who arrives mortified and then, seeing three robots nearly whole, rolls up his sleeves'>>",
       "is_ending": false,
       "choices": [
         {
@@ -819,36 +819,36 @@
     },
     {
       "id": "z_ready",
-      "body": "<<FILL role=rising words=92 beats='three patched robots stand ready and one strange story travels the workshop in delighted whispers; Mr. Okafor insists on wheeling Herbie along to the fair himself so the old fellow is never out of sight again, and the gym doors are opening; whatever the judges decide, the morning's disaster has turned into the best lunch hour of the year'>>",
+      "body": "<<FILL role=rising words=92 beats='three patched robots stand ready and one strange story travels the workshop in delighted whispers; {CUSTODIAN} insists on wheeling {OLD_ROBOT} along to the fair himself so the old fellow is never out of sight again, and the gym doors are opening; whatever the judges decide, the morning's disaster has turned into the best lunch hour of the year'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_z_ready_go",
-          "label": "Roll to the gym together.",
+          "label": "Roll to {GYM} together.",
           "target": "n_demo"
         }
       ]
     },
     {
       "id": "z_guard",
-      "body": "<<FILL role=choice words=100 beats='Gizmo is whole again with twenty minutes to spare, but one bench over Vulcan is still in pieces and Marcus's team is losing its race against the clock; and behind the closet door Herbie has begun to hum as his charge tops off; Priya can run for Mr. Okafor and hand the humming closet to a grown up, or head for the gym, since she fixed what is hers'>>",
+      "body": "<<FILL role=choice words=100 beats='{HERO_ROBOT} is whole again with twenty minutes to spare, but one bench over {RIVAL_ROBOT_A} is still in pieces and {SUSPECT_MARCUS}'s team is losing its race against the clock; and behind the closet door {OLD_ROBOT} has begun to hum as his charge tops off; {HERO} can run for {CUSTODIAN} and hand the humming closet to a grown up, or head for {GYM}, since she fixed what is hers'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_z_call",
-          "label": "Run for Mr. Okafor and hand Herbie over.",
+          "label": "Run for {CUSTODIAN} and hand {OLD_ROBOT} over.",
           "target": "z_late"
         },
         {
           "id": "c_z_go",
-          "label": "Head for the gym; you fixed what is yours.",
+          "label": "Head for {GYM}; you fixed what is yours.",
           "target": "e_selfish"
         }
       ]
     },
     {
       "id": "z_late",
-      "body": "<<FILL role=rising words=94 beats='Mr. Okafor arrives at a jog, listens, and goes pale and grateful in the same breath; he murmurs an apology to the whole room, promises the rest of the story after the demos, and walks Herbie to the gym himself; Priya slides through the doors just as Team Circuit Sparks is called'>>",
+      "body": "<<FILL role=rising words=94 beats='{CUSTODIAN} arrives at a jog, listens, and goes pale and grateful in the same breath; he murmurs an apology to the whole room, promises the rest of the story after the demos, and walks {OLD_ROBOT} to {GYM} himself; {HERO} slides through the doors just as {TEAM} is called'>>",
       "is_ending": false,
       "choices": [
         {
@@ -860,7 +860,7 @@
     },
     {
       "id": "e_selfish",
-      "body": "<<FILL role=completion words=102 beats='Gizmo runs a clean routine and takes a ribbon, and it starts feeling heavy the moment the judge hands it over; across the gym Vulcan never made the start line, and Marcus's team packs their pieces into a box without looking at anybody; Herbie's humming closet got handed to a startled teacher at the last minute and sorted out safely, so no harm came of it, but Priya keeps looking at the empty start line; after the fair she carries her toolbox to Thunderbolt's bench and offers to help rebuild, because a ribbon should not weigh this much'>>",
+      "body": "<<FILL role=completion words=102 beats='{HERO_ROBOT} runs a clean routine and takes a ribbon, and it starts feeling heavy the moment the judge hands it over; across the gym {RIVAL_ROBOT_A} never made the start line, and {SUSPECT_MARCUS}'s team packs their pieces into a box without looking at anybody; {OLD_ROBOT}'s humming closet got handed to a startled teacher at the last minute and sorted out safely, so no harm came of it, but {HERO} keeps looking at the empty start line; after the fair she carries her toolbox to {RIVAL_TEAM_A}'s bench and offers to help rebuild, because a ribbon should not weigh this much'>>",
       "is_ending": true,
       "ending": {
         "id": "e_selfish",
@@ -871,19 +871,19 @@
     },
     {
       "id": "n_demo",
-      "body": "<<FILL role=rising words=118 beats='however the last hour was spent, demo time arrives the way it always does, all at once; the gym is packed, the judges click their pens, and Gizmo waits at the start line, patched, blinking, and ready enough; off at the edge of the floor old Herbie sits safe and still with his bow tie straightened, drawing curious looks, the day's whole mystery answered at last; Priya's team gathers around her, and her heart hammers in the good way for the first time since breakfast'>>",
+      "body": "<<FILL role=rising words=118 beats='however the last hour was spent, demo time arrives the way it always does, all at once; {GYM} is packed, the judges click their pens, and {HERO_ROBOT} waits at the start line, patched, blinking, and ready enough; off at the edge of the floor old {OLD_ROBOT} sits safe and still with his bow tie straightened, drawing curious looks, the day's whole mystery answered at last; {HERO}'s team gathers around her, and her heart hammers in the good way for the first time since breakfast'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_demo_up",
-          "label": "Step up when Team Circuit Sparks is called.",
+          "label": "Step up when {TEAM} is called.",
           "target": "n_demo2"
         }
       ]
     },
     {
       "id": "n_demo2",
-      "body": "<<FILL role=choice words=106 beats='the microphone for the thirty second team introduction is in Priya's hand and the gym goes quiet; Gizmo is ready on the line and Herbie's soft green eyes are watching from the side; she can run the routine exactly as rehearsed, invite the old robot into the demonstration itself, or spend her introduction telling the whole true story of the tidy saboteur'>>",
+      "body": "<<FILL role=choice words=106 beats='the microphone for the thirty second team introduction is in {HERO}'s hand and {GYM} goes quiet; {HERO_ROBOT} is ready on the line and {OLD_ROBOT}'s soft green eyes are watching from the side; she can run the routine exactly as rehearsed, invite the old robot into the demonstration itself, or spend her introduction telling the whole true story of the tidy saboteur'>>",
       "is_ending": false,
       "choices": [
         {
@@ -893,7 +893,7 @@
         },
         {
           "id": "c_demo_herbie",
-          "label": "Invite Herbie into the demonstration.",
+          "label": "Invite {OLD_ROBOT} into the demonstration.",
           "target": "f_herbie"
         },
         {
@@ -905,12 +905,12 @@
     },
     {
       "id": "f_solo",
-      "body": "<<FILL role=climax words=110 beats='the rehearsed run: Gizmo hums through the gates, threads the slalom, and hits the seesaw ramp, where his patched wheel starts to wobble hard; Priya has one heartbeat to decide: trust the practice and let him ride it out, stop the run and fix the wheel right there in front of everyone while narrating like a pit crew, or grab the remote and steer around the ramp to a safer finish'>>",
+      "body": "<<FILL role=climax words=110 beats='the rehearsed run: {HERO_ROBOT} hums through the gates, threads the slalom, and hits the seesaw ramp, where his patched wheel starts to wobble hard; {HERO} has one heartbeat to decide: trust the practice and let him ride it out, stop the run and fix the wheel right there in front of everyone while narrating like a pit crew, or grab the remote and steer around the ramp to a safer finish'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_grit",
-          "label": "Trust the practice and let Gizmo ride it out.",
+          "label": "Trust the practice and let {HERO_ROBOT} ride it out.",
           "target": "e_grit"
         },
         {
@@ -927,34 +927,34 @@
     },
     {
       "id": "f_herbie",
-      "body": "<<FILL role=climax words=110 beats='Priya beckons, and Herbie rolls onto the floor to a gasp that turns into applause, the oldest robot at the fair reporting for duty; three ways to share the spotlight: run the routine as a duet with Herbie handing Gizmo the payload, step back and let Herbie perform his thirty year old assembly routine first, or hand Herbie the confetti cannon and make him the grand finale'>>",
+      "body": "<<FILL role=climax words=110 beats='{HERO} beckons, and {OLD_ROBOT} rolls onto the floor to a gasp that turns into applause, the oldest robot at the fair reporting for duty; three ways to share the spotlight: run the routine as a duet with {OLD_ROBOT} handing {HERO_ROBOT} the payload, step back and let {OLD_ROBOT} perform his thirty year old assembly routine first, or hand {OLD_ROBOT} {CONFETTI_CANNON} and make him the grand finale'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_duo",
-          "label": "Run the routine as a duet with Herbie.",
+          "label": "Run the routine as a duet with {OLD_ROBOT}.",
           "target": "e_duo"
         },
         {
           "id": "c_f_retro",
-          "label": "Let Herbie perform his old routine first.",
+          "label": "Let {OLD_ROBOT} perform his old routine first.",
           "target": "e_retro"
         },
         {
           "id": "c_f_finale",
-          "label": "Hand Herbie the confetti cannon for the finale.",
+          "label": "Hand {OLD_ROBOT} {CONFETTI_CANNON} for the finale.",
           "target": "e_chaos"
         }
       ]
     },
     {
       "id": "f_story",
-      "body": "<<FILL role=climax words=108 beats='she tells it all in her thirty seconds: the sorted screws and the stencil labels, the locked door and the wheel tracks, the custodian's secret anniversary surprise, and the chewed card that turned a gentle helper into a mystery; the gym is silent, then roaring; the judges lean in, and Priya has one breath left to decide how the story ends: dedicate the demo to Mr. Okafor and Herbie, or call the other two sabotaged teams onto the floor to run side by side'>>",
+      "body": "<<FILL role=climax words=108 beats='she tells it all in her thirty seconds: the sorted screws and the stencil labels, the locked door and the wheel tracks, {CUSTODIAN}'s secret anniversary surprise, and the chewed card that turned a gentle helper into a mystery; {GYM} is silent, then roaring; the judges lean in, and {HERO} has one breath left to decide how the story ends: dedicate the demo to {CUSTODIAN} and {OLD_ROBOT}, or call the other two sabotaged teams onto the floor to run side by side'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_f_honor",
-          "label": "Dedicate the demo to Mr. Okafor and Herbie.",
+          "label": "Dedicate the demo to {CUSTODIAN} and {OLD_ROBOT}.",
           "target": "e_honor"
         },
         {
@@ -966,7 +966,7 @@
     },
     {
       "id": "e_grit",
-      "body": "<<FILL role=completion words=100 beats='Priya keeps her thumbs off the controls and her heart in her throat; the patched wheel shudders, bites, and holds, and Gizmo sails off the ramp to the loudest cheer of the afternoon; the Sparks take second place overall, plus the judges' engineering award for a robot rebuilt from a bin of sorted parts in a single day; Mr. Okafor claps loudest of all, Herbie flashes his lights in something like pride, and Priya decides that second place earned this way beats first place any other way'>>",
+      "body": "<<FILL role=completion words=100 beats='{HERO} keeps her thumbs off the controls and her heart in her throat; the patched wheel shudders, bites, and holds, and {HERO_ROBOT} sails off the ramp to the loudest cheer of the afternoon; {TEAM} takes second place overall, plus {ENGINEERING_AWARD} for a robot rebuilt from a bin of sorted parts in a single day; {CUSTODIAN} claps loudest of all, {OLD_ROBOT} flashes his lights in something like pride, and {HERO} decides that second place earned this way beats first place any other way'>>",
       "is_ending": true,
       "ending": {
         "id": "e_grit",
@@ -977,7 +977,7 @@
     },
     {
       "id": "e_showfix",
-      "body": "<<FILL role=completion words=100 beats='Priya calls the stop herself, flips Gizmo gently on his side, and narrates the wobbly wheel fix bolt by bolt like a surgeon teaching a class; the gym is dead silent, then thunderous; the run scores no course points, but the judges invent a Problem Solver prize on the spot, because, as the head judge says, this is exactly what the fair is supposed to be about; Gizmo finishes the course on a rock steady wheel, and half the little kids in the gym go home wanting a toolbox of their own'>>",
+      "body": "<<FILL role=completion words=100 beats='{HERO} calls the stop herself, flips {HERO_ROBOT} gently on his side, and narrates the wobbly wheel fix bolt by bolt like a surgeon teaching a class; {GYM} is dead silent, then thunderous; the run scores no course points, but the judges invent {PROBLEM_SOLVER_PRIZE} on the spot, because, as the head judge says, this is exactly what the fair is supposed to be about; {HERO_ROBOT} finishes the course on a rock steady wheel, and half the little kids in the gym go home wanting a toolbox of their own'>>",
       "is_ending": true,
       "ending": {
         "id": "e_showfix",
@@ -988,7 +988,7 @@
     },
     {
       "id": "e_stumble",
-      "body": "<<FILL role=failure words=96 beats='the swerve is smooth and safe and costs every obstacle point the ramp was worth; Gizmo crosses the finish upright to warm applause and a scoreboard that lands the Sparks squarely in the middle; no ribbon this year, but nothing crashed, nobody got blamed for anything they did not do, and the whole strange day still counts as solved; on the way out Ben says next year they build a wheel that cannot wobble, and Priya is already sketching it in her head'>>",
+      "body": "<<FILL role=failure words=96 beats='the swerve is smooth and safe and costs every obstacle point the ramp was worth; {HERO_ROBOT} crosses the finish upright to warm applause and a scoreboard that lands {TEAM} squarely in the middle; no ribbon this year, but nothing crashed, nobody got blamed for anything they did not do, and the whole strange day still counts as solved; on the way out {COMPANION} says next year they build a wheel that cannot wobble, and {HERO} is already sketching it in her head'>>",
       "is_ending": true,
       "ending": {
         "id": "e_stumble",
@@ -999,7 +999,7 @@
     },
     {
       "id": "e_duo",
-      "body": "<<FILL role=completion words=102 beats='nobody at the fair has ever seen anything like it: Gizmo zipping the course while Herbie, thirty years his elder, hands off the payload with a courtly little bow of his claw; the crowd is on its feet before the finish line; the judges hand the Sparks the blue ribbon for showmanship, Principal Vasquez declares Herbie the fair's official anniversary guest, and Mr. Okafor polishes Herbie's bow tie with his sleeve about eleven times; the sabotage, everyone agrees on the way home, turned into the best fair in fifty years'>>",
+      "body": "<<FILL role=completion words=102 beats='nobody at the fair has ever seen anything like it: {HERO_ROBOT} zipping the course while {OLD_ROBOT}, thirty years his elder, hands off the payload with a courtly little bow of his claw; the crowd is on its feet before the finish line; the judges hand {TEAM} {SHOWMANSHIP_RIBBON}, {PRINCIPAL} declares {OLD_ROBOT} {ANNIVERSARY_GUEST_TITLE}, and {CUSTODIAN} polishes {OLD_ROBOT}'s bow tie with his sleeve about eleven times; the sabotage, everyone agrees on the way home, turned into the best fair in fifty years'>>",
       "is_ending": true,
       "ending": {
         "id": "e_duo",
@@ -1010,7 +1010,7 @@
     },
     {
       "id": "e_retro",
-      "body": "<<FILL role=completion words=98 beats='Herbie takes the floor and runs his old assembly routine, stiff, earnest, and completely charming, ending with the school song in warbly chimes that gets three hundred people singing along; it eats most of the Sparks' slot, and Gizmo's shortened run scores no prize; and yet, watching Mr. Okafor mouth every word of the song from the doorway, Priya cannot call it a loss; some demonstrations are worth more than trophies, and this one was thirty years late'>>",
+      "body": "<<FILL role=completion words=98 beats='{OLD_ROBOT} takes the floor and runs his old assembly routine, stiff, earnest, and completely charming, ending with {SCHOOL_SONG} in warbly chimes that gets three hundred people singing along; it eats most of {TEAM}'s slot, and {HERO_ROBOT}'s shortened run scores no prize; and yet, watching {CUSTODIAN} mouth every word of {SCHOOL_SONG} from the doorway, {HERO} cannot call it a loss; some demonstrations are worth more than trophies, and this one was thirty years late'>>",
       "is_ending": true,
       "ending": {
         "id": "e_retro",
@@ -1021,7 +1021,7 @@
     },
     {
       "id": "e_chaos",
-      "body": "<<FILL role=failure words=100 beats='the confetti cannon fires and Herbie's oldest instinct kicks in: TIDY; he wheels through the falling streamers, catching them midair and filing them neatly into his chest bin while the gym howls with laughter; the routine is a shambles, the judges dock every point they can find, and absolutely nobody who was there will ever forget it; no prize goes home with the Sparks, but the video is legendary by dinnertime, and Herbie is officially invited back next year, cannon and all'>>",
+      "body": "<<FILL role=failure words=100 beats='{CONFETTI_CANNON} fires and {OLD_ROBOT}'s oldest instinct kicks in: TIDY; he wheels through the falling streamers, catching them midair and filing them neatly into his chest bin while {GYM} howls with laughter; the routine is a shambles, the judges dock every point they can find, and absolutely nobody who was there will ever forget it; no prize goes home with {TEAM}, but the video is legendary by dinnertime, and {OLD_ROBOT} is officially invited back next year, cannon and all'>>",
       "is_ending": true,
       "ending": {
         "id": "e_chaos",
@@ -1032,18 +1032,18 @@
     },
     {
       "id": "e_honor",
-      "body": "<<FILL role=completion words=100 beats='Priya dedicates the run to the two quietest members of the team, a custodian who spent his nights rebuilding a piece of the school's heart, and a robot who only ever meant to help; Mr. Okafor is called to the floor blinking hard, and Herbie leads the gym in the school song as if no time has passed at all; the demo runs clean, the anniversary surprise is saved after all, and when the fair closes, the fiftieth year photo on the wall shows a girl, a robot, and a very straight bow tie'>>",
+      "body": "<<FILL role=completion words=100 beats='{HERO} dedicates the run to the two quietest members of the team, {CUSTODIAN} who spent his nights rebuilding a piece of the school's heart, and {OLD_ROBOT} who only ever meant to help; {CUSTODIAN} is called to the floor blinking hard, and {OLD_ROBOT} leads {GYM} in {SCHOOL_SONG} as if no time has passed at all; the demo runs clean, the anniversary surprise is saved after all, and when the fair closes, the fiftieth year photo on the wall shows a girl, a robot, and a very straight bow tie'>>",
       "is_ending": true,
       "ending": {
         "id": "e_honor",
         "valence": "positive",
         "kind": "completion",
-        "title": "Herbie's Second Debut"
+        "title": "{HONOR_TITLE}"
       }
     },
     {
       "id": "e_team",
-      "body": "<<FILL role=completion words=102 beats='all three sabotaged teams take the floor at once and run their demos side by side, sharing the course, the ramps, and one slightly overworked stopwatch; the judges give up trying to score it separately and award a shared first for the day the fair became a team; Marcus shakes Priya's hand without being told to, the Gearheads hoist Daisy like a trophy, and over the loudspeaker Principal Vasquez says that anyone who solves a mystery this kindly can call the fair theirs'>>",
+      "body": "<<FILL role=completion words=102 beats='all three sabotaged teams take the floor at once and run their demos side by side, sharing the course, the ramps, and one slightly overworked stopwatch; the judges give up trying to score it separately and award {SHARED_FIRST_AWARD} for the day the fair became a team; {SUSPECT_MARCUS} shakes {HERO}'s hand without being told to, {RIVAL_TEAM_B} hoist {RIVAL_ROBOT_B} like a trophy, and over the loudspeaker {PRINCIPAL} says that anyone who solves a mystery this kindly can call the fair theirs'>>",
       "is_ending": true,
       "ending": {
         "id": "e_team",

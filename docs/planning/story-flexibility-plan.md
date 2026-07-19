@@ -226,6 +226,26 @@ in WS-0 must detect and fail it.
   the removed byte-level label check only nominally provided; it stays advisory
   (fails open), one signal among several, consistent with the reviewer's
   existing design. The sign-off prerequisite is satisfied.
+- **Delivered (2026-07-19): the WS-1 body (D1/D2/D3).** Per the sprint design in
+  [ws1-leaf-diversity-sprint-design.md](ws1-leaf-diversity-sprint-design.md)
+  (Fable-designed, Opus-signed-off section 10): **D1** wires the anti-template
+  guard into `moderation/pipeline.py::run_moderation_pipeline` as an advisory,
+  fail-open check (new `moderation/leaf_diversity.py`, new
+  `diversity/history.py::load_version_blob`). It loads the family's most recent
+  prior fill of the same skeleton, excludes the just-persisted draft from its own
+  history (the load-bearing self-exclusion: the uncommitted draft is visible to
+  the same-transaction query and would otherwise self-select and FAIL at distance
+  ~0), and on an ATG `FAIL` emits per-node soft-`FLAG` findings that ride the one
+  existing bounded repair, then routes to the human guardian. It never blocks,
+  auto-rejects, or publishes; a `SQLAlchemyError` from its two reads propagates to
+  the worker rollback/retry rather than being swallowed. **D2** strengthens
+  `generation/templates/fill.md` to require genuine per-node re-imagining (the
+  find-and-replace-survivable-prose test) rather than noun substitution, with the
+  safety/structure "must not change" block and the untrusted-input fence held
+  byte-identical. **D3** adds a theme step (2b) to `cyo-author/SKILL.md` for
+  skill-path parity, stating the same re-imagine contract and fencing the brief as
+  untrusted data. Still open (unchanged): per-band ATG threshold calibration (the
+  guard stays advisory until then) and brief-passing into the guard.
 
 ### WS-4: Similarity-driven, escalating selection (consumes WS-0)
 

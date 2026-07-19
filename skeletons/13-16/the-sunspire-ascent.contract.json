@@ -1,0 +1,729 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-sunspire-ascent",
+  "age_band": "13-16",
+  "legacy_lexicon": [
+    "Rowan",
+    "Sunspire",
+    "the undercroft",
+    "the clockwork galleries",
+    "the whispering library",
+    "the wind-scoured ramparts",
+    "the crumbled moat causeway",
+    "the ivy on the north face",
+    "the servants tunnel",
+    "the wide front stair",
+    "curse-shadow",
+    "drowned shard",
+    "gear-shard",
+    "ink-shard",
+    "rusted sluice gate",
+    "jammed master-gear",
+    "paper guardian",
+    "tower guardian",
+    "the broken bridge",
+    "swinging pendulums",
+    "the tower gate"
+  ],
+  "default_binding": {
+    "HERO": "Rowan",
+    "TOWER": "Sunspire",
+    "ENTRANCE": "the tower gate",
+    "GOAL": "beacon",
+    "OPENING_MOMENT": "the long night",
+    "CROWN": "crown",
+    "SHADOW": "curse-shadow",
+    "CURSE": "curse",
+    "SHARD": "shard",
+    "KEEPER": "keeper",
+    "SPARK": "spark",
+    "AP1_NAME": "the crumbled moat causeway",
+    "AP2_NAME": "the ivy on the north face",
+    "AP3_NAME": "the servants tunnel",
+    "AP4_NAME": "the wide front stair",
+    "AP3_DEADEND": "a flooded, blocked passage",
+    "A_AP3_BAD": "The Flooded Passage",
+    "A_AP4": "The Hinged Stair",
+    "TIER_U": "the undercroft",
+    "TIER_C": "the clockwork galleries",
+    "TIER_L": "the whispering library",
+    "TIER_R": "the wind-scoured ramparts",
+    "U_SHARD": "drowned shard",
+    "C_SHARD": "gear-shard",
+    "L_SHARD": "ink-shard",
+    "U_GATE": "rusted sluice gate",
+    "C_GATE": "jammed master-gear",
+    "L_GATE": "the paper guardian",
+    "R_GATE": "the tower guardian",
+    "C_DIRECT": "swinging pendulums",
+    "R_BRIDGE": "the broken bridge",
+    "B_FURNACE": "a bricked-up furnace room",
+    "B_FORCE": "The Wild Spark",
+    "B_GA_BAD": "The Bargained Shard",
+    "B_GB2": "The Jammed Housing",
+    "B_PB_BAD": "Held by the Shadow",
+    "B_PD1": "The Braced Doors",
+    "B_WIDDER": "The Last Turn Wrong",
+    "CLEVER_PRIZE": "The Clever Summit",
+    "RELIGHT_PRIZE": "The Beacon Relit"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The lone teen protagonist making the ascent.",
+      "guidance": "A single, capable-but-not-reckless climber; solo, no companion in this skeleton.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TOWER",
+      "scope": "global",
+      "meaning": "The proper name of the whole cursed tower.",
+      "guidance": "A bare proper noun (no article); reused as an attributive modifier ('the cursed {TOWER}', '{TOWER} base', '{TOWER} heart').",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single convergence point all four approaches lead to, before the four-tier ascent begins.",
+      "guidance": "A gate/hall-like threshold; always reachable, never itself hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The dark, silent object of the whole quest (currently unlit; relighting it is the story's success condition).",
+      "guidance": "A bare noun naming the beacon/light-source; reused as '{GOAL} chamber', '{GOAL} mechanism'.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The temporal frame that both permits and pressures the whole climb.",
+      "guidance": "A full noun phrase with its own article (e.g. 'the long night'); must read as ongoing and survivable, never itself a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CROWN",
+      "scope": "global",
+      "meaning": "The mechanism atop the tower that receives the collected shards and relights the goal.",
+      "guidance": "A bare noun for the light-fitting/altar the shards are set into.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SHADOW",
+      "scope": "global",
+      "meaning": "The curse's personified presence; the recurring non-lethal antagonist at the summit.",
+      "guidance": "Never physically harms the hero; its worst effect is costing a shard or forcing a retreat, never injury.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CURSE",
+      "scope": "global",
+      "meaning": "The abstract force behind the tower's hundred-year darkness.",
+      "guidance": "A bare noun; stays an atmospheric/narrative force, never a physical weapon or toxin.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SHARD",
+      "scope": "global",
+      "meaning": "The collectible token gathered from three of the four tiers and needed to relight the crown.",
+      "guidance": "A bare singular noun; composed in templates as '{SHARD}s' for the plural.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEEPER",
+      "scope": "global",
+      "meaning": "The tower's long-dead former lighthouse-keeper-analog figure, known through a log, bones, and keys.",
+      "guidance": "A bare noun for a past, non-present figure; never appears alive.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SPARK",
+      "scope": "global",
+      "meaning": "The ignition energy released when the crown is lit.",
+      "guidance": "A bare noun; forcing it early causes a scattering setback, never an injury.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "AP1_NAME",
+      "scope": "route",
+      "meaning": "The first of four approach routes from the tower base.",
+      "guidance": "A distinct, passable approach; distinguishable from the other three.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "AP2_NAME",
+          "AP3_NAME",
+          "AP4_NAME"
+        ]
+      }
+    },
+    {
+      "id": "AP2_NAME",
+      "scope": "route",
+      "meaning": "The second approach route.",
+      "guidance": "Distinct from the other three approaches.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "AP1_NAME",
+          "AP3_NAME",
+          "AP4_NAME"
+        ]
+      }
+    },
+    {
+      "id": "AP3_NAME",
+      "scope": "route",
+      "meaning": "The third approach route (forks into a dead end).",
+      "guidance": "Distinct from the other three approaches.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "AP1_NAME",
+          "AP2_NAME",
+          "AP4_NAME"
+        ]
+      }
+    },
+    {
+      "id": "AP4_NAME",
+      "scope": "route",
+      "meaning": "The fourth approach route (itself a trap).",
+      "guidance": "Distinct from the other three approaches.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "AP1_NAME",
+          "AP2_NAME",
+          "AP3_NAME"
+        ]
+      }
+    },
+    {
+      "id": "AP3_DEADEND",
+      "scope": "track",
+      "meaning": "The dead end at the bottom of route 3's downward fork.",
+      "guidance": "A survivable dead end (a flooded/blocked stop, not a fall or drowning risk); the retreat from it is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_AP3_BAD",
+      "scope": "ending",
+      "meaning": "Ending title: the setback from route 3's downward fork.",
+      "guidance": "Names a non-lethal turn-back.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_AP4",
+      "scope": "ending",
+      "meaning": "Ending title: the setback from route 4 being a trap.",
+      "guidance": "Names a non-lethal turn-back.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TIER_U",
+      "scope": "route",
+      "meaning": "The first tier's place name (water-themed).",
+      "guidance": "A distinct, self-contained area name; distinguishable from the other three tiers.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "TIER_C",
+          "TIER_L",
+          "TIER_R"
+        ]
+      }
+    },
+    {
+      "id": "TIER_C",
+      "scope": "route",
+      "meaning": "The second tier's place name (mechanism-themed).",
+      "guidance": "Distinct from the other three tiers.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "TIER_U",
+          "TIER_L",
+          "TIER_R"
+        ]
+      }
+    },
+    {
+      "id": "TIER_L",
+      "scope": "route",
+      "meaning": "The third tier's place name (archive/knowledge-themed).",
+      "guidance": "Distinct from the other three tiers.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "TIER_U",
+          "TIER_C",
+          "TIER_R"
+        ]
+      }
+    },
+    {
+      "id": "TIER_R",
+      "scope": "route",
+      "meaning": "The fourth tier's place name (open-air/height-themed).",
+      "guidance": "Distinct from the other three tiers.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "TIER_U",
+          "TIER_C",
+          "TIER_L"
+        ]
+      }
+    },
+    {
+      "id": "U_SHARD",
+      "scope": "track",
+      "meaning": "The collectible shard found in tier U.",
+      "guidance": "A short noun phrase naming this tier's shard variant; distinguishable from the other two collectible shards.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C_SHARD",
+          "L_SHARD"
+        ]
+      }
+    },
+    {
+      "id": "C_SHARD",
+      "scope": "track",
+      "meaning": "The collectible shard found in tier C.",
+      "guidance": "Distinguishable from the other two collectible shards.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "U_SHARD",
+          "L_SHARD"
+        ]
+      }
+    },
+    {
+      "id": "L_SHARD",
+      "scope": "track",
+      "meaning": "The collectible shard found in tier L.",
+      "guidance": "Distinguishable from the other two collectible shards.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "U_SHARD",
+          "C_SHARD"
+        ]
+      }
+    },
+    {
+      "id": "U_GATE",
+      "scope": "ending",
+      "meaning": "Tier U's commit-or-turn-back barrier obstacle.",
+      "guidance": "A retreatable mechanism; failing it never harms the hero, only costs the tier's shard/progress for tonight. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "C_GATE",
+          "L_GATE",
+          "R_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C_GATE",
+      "scope": "ending",
+      "meaning": "Tier C's commit-or-turn-back barrier obstacle.",
+      "guidance": "A retreatable mechanism; must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "U_GATE",
+          "L_GATE",
+          "R_GATE"
+        ]
+      }
+    },
+    {
+      "id": "L_GATE",
+      "scope": "ending",
+      "meaning": "Tier L's commit-or-turn-back barrier obstacle (a guardian figure).",
+      "guidance": "Blocks passage but never attacks; a riddle/challenge, not a fight. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "U_GATE",
+          "C_GATE",
+          "R_GATE"
+        ]
+      }
+    },
+    {
+      "id": "R_GATE",
+      "scope": "ending",
+      "meaning": "Tier R's commit-or-turn-back barrier obstacle (a guardian figure).",
+      "guidance": "Blocks passage but never attacks; wakes and bars the stair, never harms. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "U_GATE",
+          "C_GATE",
+          "L_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C_DIRECT",
+      "scope": "track",
+      "meaning": "The hazard on tier C's direct route to its barrier.",
+      "guidance": "A navigable, non-lethal obstacle (timing/dexterity, not danger).",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "R_BRIDGE",
+      "scope": "track",
+      "meaning": "The hazard on tier R's direct route to its barrier.",
+      "guidance": "A navigable, non-lethal obstacle; a damaged crossing, not a fatal drop.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_FURNACE",
+      "scope": "track",
+      "meaning": "The dead-end side room off the tower gate.",
+      "guidance": "An enclosed, disused room; safe to enter and leave.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_FORCE",
+      "scope": "ending",
+      "meaning": "Ending title: forcing the crown's spark too soon.",
+      "guidance": "Names a non-lethal setback.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B_GA_BAD",
+          "B_GB2",
+          "B_PB_BAD",
+          "B_PD1",
+          "B_WIDDER"
+        ]
+      }
+    },
+    {
+      "id": "B_GA_BAD",
+      "scope": "ending",
+      "meaning": "Ending title: bargaining a shard away to the shadow.",
+      "guidance": "Names a non-lethal setback.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B_FORCE",
+          "B_GB2",
+          "B_PB_BAD",
+          "B_PD1",
+          "B_WIDDER"
+        ]
+      }
+    },
+    {
+      "id": "B_GB2",
+      "scope": "ending",
+      "meaning": "Ending title: jamming a shard while setting it blind.",
+      "guidance": "Names a non-lethal setback.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B_FORCE",
+          "B_GA_BAD",
+          "B_PB_BAD",
+          "B_PD1",
+          "B_WIDDER"
+        ]
+      }
+    },
+    {
+      "id": "B_PB_BAD",
+      "scope": "ending",
+      "meaning": "Ending title: losing the moment while watching the shadow.",
+      "guidance": "Names a non-lethal setback.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B_FORCE",
+          "B_GA_BAD",
+          "B_GB2",
+          "B_PD1",
+          "B_WIDDER"
+        ]
+      }
+    },
+    {
+      "id": "B_PD1",
+      "scope": "ending",
+      "meaning": "Ending title: bracing the doors, a partial/neutral outcome.",
+      "guidance": "Names a bittersweet but non-lethal discovery ending.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B_FORCE",
+          "B_GA_BAD",
+          "B_GB2",
+          "B_PB_BAD",
+          "B_WIDDER"
+        ]
+      }
+    },
+    {
+      "id": "B_WIDDER",
+      "scope": "ending",
+      "meaning": "Ending title: turning the crown the wrong way at the last moment.",
+      "guidance": "Names a non-lethal setback at the very top.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "B_FORCE",
+          "B_GA_BAD",
+          "B_GB2",
+          "B_PB_BAD",
+          "B_PD1"
+        ]
+      }
+    },
+    {
+      "id": "CLEVER_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the success ending (nerve/cleverness route).",
+      "guidance": "Positive; a triumphant but non-graphic victory over the curse.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "RELIGHT_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "RELIGHT_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending title: the completion ending (the keeper's true way).",
+      "guidance": "Positive; the beacon relit, the curse lifted.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "CLEVER_PRIZE"
+        ]
+      }
+    }
+  ]
+}

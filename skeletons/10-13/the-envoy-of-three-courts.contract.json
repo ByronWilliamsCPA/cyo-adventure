@@ -1,0 +1,2173 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-envoy-of-three-courts",
+  "age_band": "10-13",
+  "legacy_lexicon": [
+    "Tessara",
+    "Meret",
+    "Lantern Bridge",
+    "Bell Hall",
+    "Chancellor Ives",
+    "Ives",
+    "Accord of the Meret",
+    "Willow Sluice",
+    "Pell",
+    "Court of Tides",
+    "Harbormistress Selk",
+    "Selk",
+    "Harbor Hall",
+    "Marka",
+    "Court of Groves",
+    "Warden Oleth",
+    "Oleth",
+    "Grove Gate",
+    "Sefa",
+    "Court of Bells",
+    "First Archivist Corvel",
+    "Corvel",
+    "Marest",
+    "Tideway",
+    "Youth Envoy"
+  ],
+  "default_binding": {
+    "CITY": "Tessara",
+    "RIVER": "the Meret",
+    "ROLE_TITLE": "Youth Envoy",
+    "SELECTION_RITE": "the summer lottery",
+    "BRIDGE": "the Lantern Bridge",
+    "HARBOR_FLATS": "the Tideway mud",
+    "SUMMIT_VENUE": "Bell Hall",
+    "CHANCELLOR": "Chancellor Ives",
+    "ACCORD": "the Accord of the Meret",
+    "ACCORD_PAGE": "the water-measure page",
+    "TIMEKEEPER": "his brass hourglass",
+    "COURIER": "the courier Pell",
+    "FLOOD_SIGNAL": "the flood bell",
+    "FLOOD_SITE": "the Willow Sluice",
+    "LOW_QUARTER": "the low quarter",
+    "DEBRIS_CAUSE": "storm debris and a broken cartwheel",
+    "GAUGE": "an old bronze gauge plate",
+    "MYSTERY_Q": "where did the water go",
+    "ROUTE_A_COURT": "the Tides court",
+    "ROUTE_A_DOMAIN": "harbors and trade",
+    "ROUTE_A_LEAD": "Harbormistress Selk",
+    "ROUTE_A_LEAD_TRAIT": "blunt and honest",
+    "ROUTE_A_HALL": "Harbor Hall",
+    "ROUTE_A_PROBLEM": "her barges lie aground",
+    "ROUTE_A_DEPUTY": "Marka",
+    "ROUTE_A_RUMOR": "tampering",
+    "ROUTE_B_COURT": "the Groves court",
+    "ROUTE_B_DOMAIN": "farms and festivals",
+    "ROUTE_B_LEAD": "Warden Oleth",
+    "ROUTE_B_LEAD_TRAIT": "patient and worried",
+    "ROUTE_B_HALL": "Grove Gate",
+    "ROUTE_B_PROBLEM": "the new channels the whole city blames",
+    "ROUTE_B_CHAR": "Sefa",
+    "ROUTE_C_COURT": "the Bells court",
+    "ROUTE_C_DOMAIN": "law and archives",
+    "ROUTE_C_LEAD": "First Archivist Corvel",
+    "ROUTE_C_LEAD_TRAIT": "precise and kind",
+    "ROUTE_C_CHAR": "Marest",
+    "TA_GATE": "the false story about the letter",
+    "TA_TALLY": "the Tideway draft logs",
+    "TB_TALLY_BOOK": "the harbor's sworn tally book",
+    "TB_FIGURES": "the barge-measure figures",
+    "TB_GATE": "the pocketed figures",
+    "TC_THREAD": "a nail and a gray thread",
+    "GA_GATE": "the secret of gate seven",
+    "GA_GATE_NUM": "gate seven",
+    "GB_CISTERN": "the festival cisterns",
+    "GB_GATE": "the unlogged valves",
+    "BC_LINE": "a skipped line",
+    "BC_GATE": "one quiet day",
+    "BK_PIER_MARK": "an old chiseled pier mark",
+    "BK_THREAD": "a nail with a telltale thread",
+    "BK_GATE": "the courier's thread",
+    "TA_PRIZE1": "The Bridge Witness",
+    "TA_PRIZE2": "The Patient Sounding",
+    "TA_PRIZE3": "Mended Trust",
+    "TA_PRIZE4": "The Rumor Tide",
+    "TB_PRIZE1": "Shoulder to Shoulder",
+    "TB_PRIZE2": "The Runner's Report",
+    "TB_PRIZE3": "For the River",
+    "TB_PRIZE4": "Sounded Honest",
+    "TB_PRIZE5": "The Unsounded Page",
+    "TC_PRIZE1": "The Neutral Chair",
+    "TC_PRIZE2": "The Chair's Eyes",
+    "TC_PRIZE3": "The Harbor's Witness",
+    "GA_PRIZE1": "The Buried Gauge",
+    "GA_PRIZE2": "Clean Ledgers",
+    "GA_PRIZE3": "The Offer Carried",
+    "GA_PRIZE4": "The Late Truth",
+    "GA_PRIZE5": "Gate Seven",
+    "GB_PRIZE1": "Measured Fair",
+    "GB_PRIZE2": "Holding the Line",
+    "GB_PRIZE3": "The Festival Gift",
+    "GB_PRIZE4": "Water Unaccounted",
+    "BC_PRIZE1": "The True Page",
+    "BC_PRIZE2": "Silt to the Collar",
+    "BC_PRIZE3": "Plain Words",
+    "BC_PRIZE4": "One Extra Turn",
+    "BC_PRIZE5": "The Quiet Handling",
+    "BK_PRIZE1": "The Keeper's Mark",
+    "BK_PRIZE2": "Twice Measured",
+    "BK_PRIZE3": "Not for the Stage",
+    "BK_PRIZE4": "Too Clever by Half"
+  },
+  "slots": [
+    {
+      "id": "CITY",
+      "scope": "global",
+      "meaning": "The city-state where the whole summit takes place.",
+      "guidance": "A single named city-state; wonder/civic pride over dread.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RIVER",
+      "scope": "global",
+      "meaning": "The river whose low water triggers the whole plot.",
+      "guidance": "A single named river, running unusually low.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROLE_TITLE",
+      "scope": "global",
+      "meaning": "The hero's civic role/title for the summit.",
+      "guidance": "A youth-appropriate honorary civic role, not a combat role.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SELECTION_RITE",
+      "scope": "global",
+      "meaning": "The mechanism that picked the hero for the role.",
+      "guidance": "A benign selection ritual or lottery.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BRIDGE",
+      "scope": "global",
+      "meaning": "The bridge where the midnight incident happens.",
+      "guidance": "A single named bridge, crossable, non-hazardous by day.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HARBOR_FLATS",
+      "scope": "global",
+      "meaning": "The harbor mudflats/dock area affected by low water.",
+      "guidance": "A muddy tidal or dock flat; unpleasant but safe underfoot.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SUMMIT_VENUE",
+      "scope": "global",
+      "meaning": "The hall where the summit's sessions are held.",
+      "guidance": "A single named civic hall, safe and always open to the envoy.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CHANCELLOR",
+      "scope": "global",
+      "meaning": "The neutral official who chairs the summit.",
+      "guidance": "A fair, even-handed adult authority figure; never a source of peril.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ACCORD",
+      "scope": "global",
+      "meaning": "The old treaty/agreement the summit is trying to renew.",
+      "guidance": "A long-standing written agreement between the three courts.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ACCORD_PAGE",
+      "scope": "global",
+      "meaning": "The damaged, disputed page of the accord at the center of the mystery.",
+      "guidance": "A water-damaged, disputed document page; an object, not a person.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TIMEKEEPER",
+      "scope": "global",
+      "meaning": "The device used to time the summit's sessions.",
+      "guidance": "A benign timekeeping device (e.g. an hourglass); no hazard.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COURIER",
+      "scope": "global",
+      "meaning": "The courier whose midnight fall starts the tampering rumor.",
+      "guidance": "A named messenger, injured only mildly (a turned ankle); never in real danger.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FLOOD_SIGNAL",
+      "scope": "global",
+      "meaning": "The alarm that announces the flood emergency.",
+      "guidance": "A single named alarm signal (e.g. a bell); audible city-wide.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FLOOD_SITE",
+      "scope": "global",
+      "meaning": "The sluice/flood-control site where the emergency is centered.",
+      "guidance": "A jammed water-control structure; wadeable, non-lethal high water.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LOW_QUARTER",
+      "scope": "global",
+      "meaning": "The low-lying neighborhood threatened by the flood.",
+      "guidance": "A low neighborhood that floods shallowly; evacuable, non-lethal.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEBRIS_CAUSE",
+      "scope": "global",
+      "meaning": "The mundane debris explanation that rules out sabotage at the flood site.",
+      "guidance": "Ordinary storm debris (branches, wreckage); never a body or a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GAUGE",
+      "scope": "global",
+      "meaning": "The old, silted-over measuring instrument discovered near the flood site.",
+      "guidance": "A historical measuring instrument, inert and safe to handle.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MYSTERY_Q",
+      "scope": "global",
+      "meaning": "The central question the summit opens with.",
+      "guidance": "A short, benign question about where a resource went.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_COURT",
+      "scope": "route",
+      "meaning": "The name of the first court (harbors/trade).",
+      "guidance": "A named civic court/guild focused on harbors and trade.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_COURT",
+          "ROUTE_C_COURT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_DOMAIN",
+      "scope": "route",
+      "meaning": "Route A's area of responsibility.",
+      "guidance": "A short domain phrase (what this court governs).",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_DOMAIN",
+          "ROUTE_C_DOMAIN"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_LEAD",
+      "scope": "route",
+      "meaning": "The adult delegation leader for route A.",
+      "guidance": "A capable, honest adult mentor; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_B_LEAD",
+          "ROUTE_C_LEAD"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_LEAD_TRAIT",
+      "scope": "route",
+      "meaning": "Route A leader's two-word character trait.",
+      "guidance": "A short, positive personality descriptor.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_LEAD_TRAIT",
+          "ROUTE_C_LEAD_TRAIT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_HALL",
+      "scope": "route",
+      "meaning": "Route A's home venue.",
+      "guidance": "A single named hall/building belonging to this court.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_PROBLEM",
+      "scope": "route",
+      "meaning": "The practical problem afflicting route A at the story's start.",
+      "guidance": "A short, non-catastrophic practical problem (e.g. stranded transport).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_DEPUTY",
+      "scope": "route",
+      "meaning": "Route A leader's deputy, a secondary character.",
+      "guidance": "A named secondary adult character; never a source of peril.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_RUMOR",
+      "scope": "route",
+      "meaning": "The one-word rumor/accusation that spreads after the midnight incident.",
+      "guidance": "A single mild accusation word (e.g. tampering); never violent.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_COURT",
+      "scope": "route",
+      "meaning": "The name of the second court (farms/festivals).",
+      "guidance": "A named civic court/guild focused on farms and festivals.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_COURT",
+          "ROUTE_C_COURT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_DOMAIN",
+      "scope": "route",
+      "meaning": "Route B's area of responsibility.",
+      "guidance": "A short domain phrase (what this court governs).",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_DOMAIN",
+          "ROUTE_C_DOMAIN"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_LEAD",
+      "scope": "route",
+      "meaning": "The adult delegation leader for route B.",
+      "guidance": "A capable, patient adult mentor; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_LEAD",
+          "ROUTE_C_LEAD"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_LEAD_TRAIT",
+      "scope": "route",
+      "meaning": "Route B leader's two-word character trait.",
+      "guidance": "A short, positive personality descriptor.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LEAD_TRAIT",
+          "ROUTE_C_LEAD_TRAIT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_HALL",
+      "scope": "route",
+      "meaning": "Route B's home venue.",
+      "guidance": "A single named lodge/gate/building belonging to this court.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_PROBLEM",
+      "scope": "route",
+      "meaning": "The practical problem afflicting route B at the story's start.",
+      "guidance": "A short, non-catastrophic practical problem (e.g. a blamed public works project).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "A secondary character in route B (an under-warden with a secret).",
+      "guidance": "A named secondary character; never a source of peril.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_COURT",
+      "scope": "route",
+      "meaning": "The name of the third court (law/archives).",
+      "guidance": "A named civic court/guild focused on law and record-keeping.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_COURT",
+          "ROUTE_B_COURT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_DOMAIN",
+      "scope": "route",
+      "meaning": "Route C's area of responsibility.",
+      "guidance": "A short domain phrase (what this court governs).",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_DOMAIN",
+          "ROUTE_B_DOMAIN"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_LEAD",
+      "scope": "route",
+      "meaning": "The adult delegation leader for route C.",
+      "guidance": "A capable, precise adult mentor; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_LEAD",
+          "ROUTE_B_LEAD"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_LEAD_TRAIT",
+      "scope": "route",
+      "meaning": "Route C leader's two-word character trait.",
+      "guidance": "A short, positive personality descriptor.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LEAD_TRAIT",
+          "ROUTE_B_LEAD_TRAIT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_CHAR",
+      "scope": "route",
+      "meaning": "A secondary character in route C (a senior clerk with an old error).",
+      "guidance": "A named secondary character; never a source of peril.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TA_GATE",
+      "scope": "track",
+      "meaning": "The Tides-A moral-choice object: the false story a deputy wants let stand.",
+      "guidance": "The reveal-or-conceal fulcrum of this track; never dangerous, always retreatable/reversible.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TA_TALLY",
+      "scope": "track",
+      "meaning": "The Tides-A clue documents (draft river-level logs).",
+      "guidance": "Inert paperwork; safe to read and carry.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TB_TALLY_BOOK",
+      "scope": "track",
+      "meaning": "The Tides-B harbor's sworn ledger.",
+      "guidance": "Inert paperwork; safe to read and carry.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TB_FIGURES",
+      "scope": "track",
+      "meaning": "The Tides-B measured river-level figures.",
+      "guidance": "Inert data; safe to read and carry.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TB_GATE",
+      "scope": "track",
+      "meaning": "The Tides-B moral-choice object: the pocketed figures.",
+      "guidance": "The reveal-or-conceal fulcrum of this track; never dangerous, always retreatable/reversible.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TC_THREAD",
+      "scope": "track",
+      "meaning": "The Tides-C physical clue (a snagged thread) proving the tear was an accident.",
+      "guidance": "A small, safe, handleable clue object.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GA_GATE",
+      "scope": "track",
+      "meaning": "The Groves-A moral-choice object: the secret an under-warden asks kept.",
+      "guidance": "The reveal-or-conceal fulcrum of this track; never dangerous, always retreatable/reversible.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GA_GATE_NUM",
+      "scope": "track",
+      "meaning": "The Groves-A physical landmark (a numbered water gate).",
+      "guidance": "A named, safe-to-approach water-control gate.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GB_CISTERN",
+      "scope": "track",
+      "meaning": "The Groves-B stored-water landmark (festival cisterns).",
+      "guidance": "A safe, benign water-storage feature.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GB_GATE",
+      "scope": "track",
+      "meaning": "The Groves-B moral-choice object: the shortcut around proper process.",
+      "guidance": "The reveal-or-conceal fulcrum of this track; never dangerous, always retreatable/reversible.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BC_LINE",
+      "scope": "track",
+      "meaning": "The Bells-C clue (a skipped line in an old draft) revealing an old clerical error.",
+      "guidance": "A small, inert textual clue.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BC_GATE",
+      "scope": "track",
+      "meaning": "The Bells-C moral-choice object: the quiet day/crate a senior clerk asks for.",
+      "guidance": "The reveal-or-conceal fulcrum of this track; never dangerous, always retreatable/reversible.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BK_PIER_MARK",
+      "scope": "track",
+      "meaning": "The Bells-K physical clue (an old chiseled mark on a bridge pier).",
+      "guidance": "A safe-to-read historical landmark, not a hazard.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BK_THREAD",
+      "scope": "track",
+      "meaning": "The Bells-K physical clue (a snagged thread) that clears the courier.",
+      "guidance": "A small, safe, handleable clue object.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BK_GATE",
+      "scope": "track",
+      "meaning": "The Bells-K moral-choice object: the thread the envoy could reveal or withhold.",
+      "guidance": "The reveal-or-conceal fulcrum of this track; never dangerous, always retreatable/reversible.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TA_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-A success (told the truth on the bridge).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TA_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-A neutral discovery (the tally logs' quiet truth).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TA_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-A completion (mending a spread false story).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TA_PRIZE4",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-A setback (rumor wins, truth enters record late).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TB_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-B success (the sandbag-line accord).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TB_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-B completion (the runner's honest report).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TB_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-B success (the shared-numbers accord).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TB_PRIZE4",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-B neutral discovery (late figures, honest ground).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TB_PRIZE5",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-B setback (pocketed figures cost the harbor its case).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TC_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-C success (the neutral chair's terms).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TC_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-C neutral discovery (the sketch of the drowned gauge).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "TC_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: Tides-C completion (staying honest at the Tides bench).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "GA_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: Groves-A success (witness turns blame to measuring).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "GA_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: Groves-A completion (clean bookkeeping clears the court's name).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "GA_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: Groves-A completion (the Groves' own offer carried to Bell Hall).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "GA_PRIZE4",
+      "scope": "ending",
+      "meaning": "Ending title: Groves-A neutral discovery (late truth, joint survey ordered).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "GA_PRIZE5",
+      "scope": "ending",
+      "meaning": "Ending title: Groves-A setback (a kept secret costs the court its case).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "GB_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: Groves-B success (measured fair, accord signed).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "GB_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: Groves-B completion (an open gate-log defends the court's name).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "GB_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: Groves-B completion (a logged, timely goodwill gift).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "GB_PRIZE4",
+      "scope": "ending",
+      "meaning": "Ending title: Groves-B setback (a good deed given without a paper trail).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "BC_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: Bells-C success (the reconstructed true page).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "BC_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: Bells-C completion (the sketch of the buried gauge, silt to the collar).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "BC_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: Bells-C success (plain words the whole city can read).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "BC_PRIZE4",
+      "scope": "ending",
+      "meaning": "Ending title: Bells-C neutral discovery (the true page enters the record, one turn late).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "BC_PRIZE5",
+      "scope": "ending",
+      "meaning": "Ending title: Bells-C setback (a hidden crate handled quietly after the fact).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "BK_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending title: Bells-K success (the keeper's mark honored in the new accord).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE2",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "BK_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending title: Bells-K completion (a slow, twice-signed measurement wins trust).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE3",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "BK_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending title: Bells-K neutral discovery (evidence handled properly, not for show).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE4"
+        ]
+      }
+    },
+    {
+      "id": "BK_PRIZE4",
+      "scope": "ending",
+      "meaning": "Ending title: Bells-K setback (a too-clever, too-late reveal).",
+      "guidance": "A short evocative ending title (2-5 words); a benign discovery, achievement, correction, or honest setback, never a gruesome or violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "TA_PRIZE1",
+          "TA_PRIZE2",
+          "TA_PRIZE3",
+          "TA_PRIZE4",
+          "TB_PRIZE1",
+          "TB_PRIZE2",
+          "TB_PRIZE3",
+          "TB_PRIZE4",
+          "TB_PRIZE5",
+          "TC_PRIZE1",
+          "TC_PRIZE2",
+          "TC_PRIZE3",
+          "GA_PRIZE1",
+          "GA_PRIZE2",
+          "GA_PRIZE3",
+          "GA_PRIZE4",
+          "GA_PRIZE5",
+          "GB_PRIZE1",
+          "GB_PRIZE2",
+          "GB_PRIZE3",
+          "GB_PRIZE4",
+          "BC_PRIZE1",
+          "BC_PRIZE2",
+          "BC_PRIZE3",
+          "BC_PRIZE4",
+          "BC_PRIZE5",
+          "BK_PRIZE1",
+          "BK_PRIZE2",
+          "BK_PRIZE3"
+        ]
+      }
+    }
+  ]
+}

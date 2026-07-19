@@ -1,0 +1,218 @@
+{
+  "beats": {
+    "n_start": "Saturday morning at {ORG_NAME}, a junior weather club that meets in {THRESHOLD} on {STREET_NAME}; you bike up under {DEADLINE_SIGN} while the radio in the window mutters to itself; today is {OPENING_MOMENT}, and every member from eight to eighty has a job; you rack your bike and hurry for {ENTRANCE}",
+    "n_brief": "inside {THRESHOLD} hums; {LEADER}, {LEADER_CRED}, taps the wall map: {DEADLINE}, a long marching wall of storms, will cross {REGION_NAME} this afternoon; she reads the rules the club lives by, nobody goes anywhere without an adult, every post shelters when its adult calls it, and {TONE_MOTIF}; then she asks for volunteers for the three teams",
+    "n_sort": "{LEADER} says the club needs you on exactly one team today, your pick, and the teams will not cross paths again until {DEADLINE} is done; {ROUTE_A_TEAM} runs {ROUTE_A_POST} with {ROUTE_A_MENTOR}, {ROUTE_A_MENTOR_CRED}, relaying storm-spotter reports; {ROUTE_B_TEAM} runs {ROUTE_B_POST} down here with {LEADER} and {ROUTE_B_SIDEKICK}, plotting the storm's track; {ROUTE_C_TEAM} rides in {ROUTE_C_POST} with {ROUTE_C_MENTOR} and {ROUTE_C_SIDEKICK}, two trained adult spotters, to run instruments from the storm's safe side; three doors, one storm",
+    "r_post": "the attic stairs creak up into {ROUTE_A_POST}: two radios glowing, a county wall map bristling with pins, headsets on hooks; {ROUTE_A_MENTOR}, {ROUTE_A_MENTOR_CRED}, pats the second chair and says that today you are her second seat; through {ROUTE_A_WINDOW}, {DEADLINE_SIGN} is stacking up dark",
+    "r_net": "{ROUTE_A_MENTOR} teaches fast: say the club callsign, speak slow, write everything in the log with the time; the first spotter check-ins crackle through, {PLACE_CEDAR}, {PLACE_PINE}, {PLACE_ROUTE9}, and you log each one; outside, the wind is starting to lean on {THRESHOLD}",
+    "r_split": "two problems at once: an ugly crackle is chewing the main antenna signal, and check-ins are stacking up faster than one person can log; {ROUTE_A_MENTOR} says she can only be in one place at a time, so the two of you will have to split the work",
+    "r_a_trace": "flashlight in your teeth, you follow the feedline from the radio along the rafters while {ROUTE_A_MENTOR} taps each joint; dust, cobwebs, the wind singing through the vents; the crackle in the monitor speaker gets louder every time the line moves",
+    "r_a_finds": "two suspects: at {ROUTE_A_WINDOW} the connector is green with corrosion, and near the spool of spare cable a section has been squashed flat under a shifted beam; {ROUTE_A_MENTOR} checks her watch and says there is time to fix one of them properly before {DEADLINE} arrives",
+    "r_a_pick": "{ROUTE_A_MENTOR} lays out the choice like a real technician: reseat and seal the corroded connector at {ROUTE_A_WINDOW}, a small fix in a tight spot, or bypass the squashed section by running the spare cable up over the rafters, a bigger fix with fresh line",
+    "r_a_fix": "you sand the green crust until the copper shines, seat the connector with a click, and wrap it in rubber tape the way {ROUTE_A_MENTOR} shows you; the crackle drops away like a hand lifted off the speaker",
+    "r_a_meter": "the signal meter climbs and holds; spotter voices come through clean; {ROUTE_A_MENTOR} looks at the clock, {DEADLINE} is maybe twenty minutes out, and reminds you that a smart operator proves a repair before trusting it, but the net is getting busy",
+    "r_a_test": "test it or trust it: you could run a radio check with {PLACE_PINE}, the farthest spotter on the net, which costs a quiet minute you may want later, or jump straight back into the net traffic and let the climbing meter be your proof",
+    "r_a_check1": "you key up: {PLACE_PINE}, this is {ROUTE_A_POST}, radio check; a heartbeat of hiss, then the reply booms back louder than it has sounded all season; {ROUTE_A_MENTOR} writes your fix and the test time into the maintenance log",
+    "r_a_check2": "{DEADLINE} arrives with a drumroll of rain on the roof; check-ins pour in, hail at {PLACE_DUTCHMAN}, gusts on {PLACE_ROUTE9}, and every voice rides your repaired line clean into the log and onward to the weather service",
+    "r_end_clear": "the line sweeps east and the sun cuts under the clouds; the weather service calls the club's relay the clearest in the county; {ROUTE_A_MENTOR} shakes your hand, operator style, and writes your name beside the repair in the log; you tested your work, and the whole net leaned on it without ever knowing",
+    "r_a_mid": "for ten loud minutes the net is perfect, then the storm's first real gust shakes {THRESHOLD} and the crackle comes snarling back mid-report; the connector you did not test has popped loose, and a hail report dissolves into static",
+    "r_end_crackle": "{ROUTE_A_MENTOR} calmly swaps to the little backup antenna and the net limps through, but two reports are lost for good and the log has holes; nobody is hurt and the storm rolls on east; taping a fix is half the job, she says, proving it is the other half, and next week the two of you will reseat that connector together",
+    "r_b_spool": "you unspool the fresh cable and {ROUTE_A_MENTOR} boosts you where the rafters are high; hook by hook the new line goes up and over the squashed section like a detour around a broken bridge; the roof drums with the first rain",
+    "r_b_crimp": "the crimps bite and the new line is in, but it runs a good deal longer than the old one, and {ROUTE_A_MENTOR} taps the meter: long cable can bleed signal away quietly, she says, and the far spotters are the ones you lose first",
+    "r_b_amp": "in the parts bin sits the club's little inline amplifier, which would boost the long run but adds one more thing that can fail in a storm; keep it simple and plug straight in, or add the amp and give the far voices a ladder",
+    "r_b_hum": "the amp hums to life and the meter jumps; {PLACE_PINE} comes in like they are calling from downstairs; as {DEADLINE} arrives, a nervous new spotter calls in something he thinks is a funnel cloud, and {ROUTE_A_MENTOR} slides her chair beside yours",
+    "r_b_scud": "with the signal crisp you ask the spotter careful questions off {ROUTE_A_MENTOR}'s card: is it rotating, is it attached to the cloud base; it is not, it is scud, raggedy harmless cloud that loves to frighten people, and the correct all-clear goes out under your callsign",
+    "r_end_longway": "the storm crosses the county without one report lost; your detour line and its humming amplifier carried every voice, including the one that needed to hear it was only scud; at closedown {ROUTE_A_MENTOR} tells the club the attic has never sounded better, and your bypass becomes the permanent line",
+    "r_b_faint": "simple is quick, and quick feels fine until {DEADLINE} arrives; nearby spotters are clear, but {PLACE_PINE} and the north farms fade to whispers on the long unboosted run, and you lean into the headset until your ears ache, pulling words out of the hiss",
+    "r_end_quiet": "you save every close-in report, but {PLACE_PINE}'s hail measurement never makes it through, and the weather service asks about the gap in the county's log; the storm passes with everyone safe; over cocoa, {ROUTE_A_MENTOR} shows you the arithmetic of cable loss, and the amplifier goes in first thing at the next meeting",
+    "r_n_seat": "the logbook is yours; you settle the headset, square the pages, and answer your first check-in with a voice steadier than your hands; behind you {ROUTE_A_MENTOR} works along the crackling cable with her flashlight, half listening, always close",
+    "r_n_line": "{DEADLINE} steps onto the county like something with feet: pea hail at {PLACE_DUTCHMAN}, forty mile an hour gusts on {PLACE_ROUTE9}, a barn door gone at {PLACE_KLEIN}; you log it all, time, place, spotter, exactly like the drills",
+    "r_n_voice": "between check-ins a thin, unfamiliar voice surfaces on the repeater, half swallowed by static: anybody, please, {PLACE_MILLER}, the trail is washed out; your stomach drops; {ROUTE_A_MENTOR} is across the attic with her head in the rafters, still tracing the bad cable",
+    "r_n_call": "the training card is taped beside the mic: stay calm, get facts, get help; you can answer the caller yourself, slow and steady the way {ROUTE_A_MENTOR} taught you, or wave her over right now and back her up with the logbook while she takes the mic",
+    "r_h_copy": "you key the mic: station calling about {PLACE_MILLER}, I copy you, this is the storm club net; the voice steadies, a teenage hiker named {HIKER_NAME}, a day hike gone long, the trail washed out below, and the sky to the west gone dark green",
+    "r_h_name": "one question at a time, straight off the card: {HIKER_NAME} is alone but unhurt, passed {LANDMARK_BOULDER} an hour ago, and can see {LANDMARK_TOWER} up the slope; you print each fact in the log in big letters; {ROUTE_A_MENTOR} is beside you now, hand on your shoulder, letting you keep the mic",
+    "r_h_plan": "two good plans, minutes apart: switch radio two to the sheriff's net and relay {HIKER_NAME}'s position to the deputies while {ROUTE_A_MENTOR} keeps {HIKER_NAME} company on radio one, or use the wall map to guide {HIKER_NAME} up to {LANDMARK_TOWER}'s ground floor shelter room while {ROUTE_A_MENTOR} phones {RANGER_STATION}",
+    "r_h_card": "you build the relay card the way the drills taught: who, where, landmarks, condition, time; then you key radio two and read it to the sheriff's dispatcher without one wasted word; she reads it back perfectly and says units are rolling",
+    "r_h_deputy": "radio one: {ROUTE_A_MENTOR} keeps {HIKER_NAME} talking and moving upslope; radio two: the deputy calls out mile markers as the rain arrives; the two stories race each other across your log pages toward {LANDMARK_TOWER}",
+    "r_end_relay": "the deputy and the ranger reach {LANDMARK_TOWER} just as the gust front combs the ridge, and {HIKER_NAME} is inside, wrapped in a blanket, asking if the radio kid is still there; the dispatcher calls your relay textbook; {ROUTE_A_MENTOR} uses the word every operator wants, professional; the storm howls past a shelter with everyone inside it",
+    "r_h_tower": "the wall map becomes a trail under your finger: from {LANDMARK_BOULDER}, up and left of the rockslide, six hundred steps to {LANDMARK_TOWER}; you talk {HIKER_NAME} through it landmark by landmark while {ROUTE_A_MENTOR} reads the ranger the same picture over the phone; wind claws at {ROUTE_A_WINDOW} like it wants to listen",
+    "r_end_voice": "I am inside, {HIKER_NAME} says, and the repeater carries the clunk of the shelter door just as hail starts hammering the tower roof; the ranger arrives once the line has passed and finds one soggy hiker and, still on the radio, one steady young voice keeping company; {ROUTE_A_MENTOR} logs it simply: caller sheltered, guided by the second seat",
+    "r_m_second": "{ROUTE_A_MENTOR} takes the mic in one smooth motion and becomes pure calm; you become her second: logbook open, pencil flying, repeating back each fact she draws out of the hiker, {HIKER_NAME}, alone, unhurt, above the washout near {LANDMARK_BOULDER}",
+    "r_m_task": "{ROUTE_A_MENTOR} covers the mic and gives you a real operator's choice: plot {HIKER_NAME}'s landmarks on the wall map and hand her a bearing the ranger can use, or take radio two and keep the spotter net's storm reports flowing so the county picture does not go dark during the rescue",
+    "r_m_pin": "{LANDMARK_BOULDER} pin, washout pin, {LANDMARK_TOWER} pin; you lay the ruler between them and read off a bearing and a distance in your steadiest voice; {ROUTE_A_MENTOR} repeats it to the ranger word for word, and the map under your hands quietly becomes a rescue",
+    "r_end_bearing": "the ranger walks your bearing almost exactly and radios back found and fine as {DEADLINE} sweeps the ridge behind them; after closedown {ROUTE_A_MENTOR} taps the three pins and tells the whole club that tonight the map did the rescuing; the pins stay where you put them, a tiny monument in the attic",
+    "r_m_log": "radio two is a river and you keep it in its banks: hail size at {PLACE_BELLCREEK}, wind over {PLACE_FAIRGROUNDS}, a power flash near {PLACE_QUARRY}, logged, logged, logged, while two feet away {ROUTE_A_MENTOR} talks a stranger up a dark hillside",
+    "r_end_log": "when it is over, {HIKER_NAME} is safe in {LANDMARK_TOWER} and your pages are the only complete record of the storm's march across the county; reading the log back, you can see the whole {DEADLINE} like a creature drawn in columns, gust by gust; the weather service asks for a copy; you never said a word on the rescue, and it could not have happened without your pages",
+    "m_table": "{ROUTE_B_POST} is a county map under scratched plastic, grease pencils on strings, a laptop looping radar, and the official forecast pinned at the corner: {DEADLINE} crossing the north hills at four fifteen; {LEADER} hands you a grease pencil like it is a key to something",
+    "m_plot": "every spotter report becomes a mark: an X, a time, a word like hail or gust; {ROUTE_B_SIDEKICK}, {ROUTE_B_SIDEKICK_CRED}, calls out fixes from the attic net and you plot them; slowly the storm stops being weather and becomes a shape that moves",
+    "m_split": "your last three X's do not sit on the forecast track; the line's south end looks faster and farther south than the pinned map says it should be; {LEADER} sees you frowning and offers two jobs: dig into the plots and test the official track, or run the timeline board that keeps the whole room current",
+    "m_a_replot": "you re-plot the hour clean on tracing paper: the south stations show pressure falling faster and gusts arriving earlier; the line is not a straight wall, its south end is bulging forward like a runner leaning into a corner",
+    "m_a_fair": "you walk the bulge forward with the ruler, and your pencil stops on {PLACE_FAIRGROUNDS}, where the harvest festival is in full swing, at about three forty, thirty five minutes earlier than the official track says and miles farther south",
+    "m_a_verify": "{LEADER}'s first rule of forecasting is to check yourself before you announce yourself; you can test your line against fresh ground truth by sending questions up to the radio room for the two south spotters, or test it against the science by pulling the latest radar frames with {ROUTE_B_SIDEKICK} and measuring the line's speed directly",
+    "m_a_ask": "you write two tight questions, what, where, when, and send them up the attic stairs; the answers come back in minutes: gust front already past {PLACE_ROUTE9} south, hail starting at {PLACE_BELLCREEK}; you plot the fresh fixes with a thumping heart",
+    "m_a_fresh": "both fixes land on your pencil line like they were invited; {ROUTE_B_SIDEKICK} whistles low; {LEADER} studies your tracing paper, then the clock, and says the words you will remember all year: alright, forecaster, present your case",
+    "m_a_show": "how do you argue something this big: walk her through the map itself, mark by mark and time by time, and let the evidence do the talking, or lead with the headline, the festival gets hit at three forty, and then show the work behind it",
+    "m_a_walk": "mark by mark you retell the storm: here at two ten, here at two twenty five, faster with every step, and her pencil follows yours; she re-checks two plots herself, nods once, and picks up the phone to the county emergency manager with your tracing paper in her hand",
+    "m_a_barns": "the emergency manager asks hard questions and {LEADER} answers them straight off your plots; the festival announcer moves everyone into the livestock barns and the grandstand shelter, grumbling and laughing, cotton candy and all, while {DEADLINE_SIGN} deepens",
+    "m_end_343": "the gust front hits the empty midway at three forty three, three minutes off your pencil line; funnel cake stands roll and nobody is under them; afterward the emergency manager visits {ROUTE_B_POST} to see the tracing paper for himself, and {LEADER} introduces you as the forecaster who caught the turn; the state storm report notes that a local club flagged the acceleration first",
+    "m_a_bold": "the festival gets hit at three forty, you say, and the room goes quiet; {LEADER} grills you like a scientist, where is your ground truth, why is the official track wrong, and every question lands on a mark you have already made; it costs some sweaty minutes, but the case holds",
+    "m_end_sayit": "the warning goes out with a little less lead time than it might have had, but it goes, and the festival crowd is snug in the barns when the wind arrives; afterward {LEADER} shares a secret of the trade: a headline opens ears, but the boring careful marks are what open minds; next time, she says, hand them the map first and you will save the argument minutes",
+    "m_a_frames": "{ROUTE_B_SIDEKICK} steps the radar back frame by frame and you measure with the screen ruler: the south end of the line is doing forty five miles an hour where the forecast assumed thirty; the math is clean and the bulge is real",
+    "m_a_stale": "the numbers hold, but {ROUTE_B_SIDEKICK} points at the timestamp: the newest frame is already six minutes old, and {LEADER} asks the question that matters, how fresh is this picture, because a warning is only as good as its ground truth",
+    "m_a_call": "you can make the brief airtight by adding the latest spotter plots to the radar measurement, marrying the math to fresh ground truth, or you can call it now on the radar alone, because the clock is running and a festival is a big place to move",
+    "m_a_agree": "the newest spotter fixes drop onto the radar vector like stitches pulling one seam tight; map and math agree on three forty at {PLACE_FAIRGROUNDS}; {LEADER} reads your one page brief, initials it, and dials the emergency manager without a wasted breath",
+    "m_end_agree": "because the brief is airtight, the emergency manager does not stop to argue, and the saved minutes become shelter time; the festival is under roofs early enough that kids watch the shelf cloud roll in from the barn doors like a parade; {LEADER} pins your brief to the club wall: one page, two kinds of proof, zero people in the open",
+    "m_a_fuzzy": "the call goes out fast, and fast turns out to be fuzzy: the emergency manager asks whether the track is ground-truthed, and the honest answer is not yet; he holds the warning while a deputy drives out to eyeball the sky, and you watch minutes you gave away tick past",
+    "m_end_fuzzy": "{LEADER} rescues it, feeding fresh spotter fixes to the county while you plot them at speed, and the festival still gets under cover, closer to the wire than anyone liked; nobody is hurt; in the debrief she draws a triangle on the board, radar, spotters, plot, and says a nowcast stands on all three legs or it wobbles; you skipped one leg once, and you will never skip it again",
+    "m_b_board": "the timeline board is chalk and columns: time, place, report; you claim it, square your chalk, and start turning radio chatter into a story the whole room can read at a glance; within minutes {LEADER} is steering the table by your columns",
+    "m_b_colors": "you invent a color code on the fly, green for rain, blue for hail, orange for wind, and the board turns into a weather comic strip marching down the wall; {ROUTE_B_SIDEKICK} photographs it for the club scrapbook; then your own columns show you something nobody has said out loud",
+    "m_b_gap": "the orange marks are stepping straight toward {PLACE_CEDAR}, where the middle school soccer semifinal kicks off at three thirty, and the storm will get there first; the room is busy and this is your find; you can build the warning yourself, draft it and get {LEADER}'s sign-off, or hand the warning job to {ROUTE_B_SIDEKICK} and keep the board current, because the whole room steers by it",
+    "m_b_draft": "you write it the way {LEADER} teaches, what, when, what to do: strong gusts and hail reaching {PLACE_CEDAR} near three twenty five, clear the field by three fifteen, shelter in the gym, wait for the club's all-clear; she reads it twice and signs the corner",
+    "m_b_phone": "the field house phone rings busy, busy, busy, and the clock does not care; two ways to reach the right ears: {ROUTE_B_SIDEKICK} can dig the athletic director's cell number out of the league sheet, or you can call the snack stand's posted number, which a parent always answers, and have your warning hand-carried to the press box",
+    "m_b_ad": "the athletic director wavers: the sky over the field looks fine, parents drove a long way, and calling a delay on a bright-ish afternoon takes nerve; you can give him your best evidence in plain words, or offer him a deal that makes the decision easy to live with",
+    "m_b_hailfact": "you keep it kid-clear: hail the size of peas is falling right now at {PLACE_BELLCREEK}, which sits upstream of the field on the storm's track, the gust front should arrive near three twenty five, and the sky always looks fine just before a gust front, that is the trap",
+    "m_b_gustfront": "the word upstream does it, and you can hear him deciding; the announcement crackles across the field behind his voice, and the stands begin flowing toward the gym doors while the west stays deceptively bright",
+    "m_end_called": "the gust front arrives at three thirty four and flattens both corner flags in front of a beautifully empty field; from the gym doorway the teams watch the rain wall cross the pitch like a curtain being drawn; the athletic director keeps you on the line through all of it, and afterward asks whether the club does this every storm; {LEADER} writes one line under your warning: sent, heeded, nobody outside",
+    "m_b_deal": "here is the club's offer, you say: delay kickoff forty minutes, and we will watch the storm off your field minute by minute and call you the all-clear the moment the line is past; a pause, whistles, crowd noise, and then, deal, kid",
+    "m_end_delay": "the line crosses the empty field at three thirty five while both teams wait dry in the gym; at four eleven your plots show the back edge clear of {PLACE_CEDAR}, and {LEADER} lets you make the all-clear call yourself; the semifinal kicks off at four forty on a soaked, sparkling field, and the league writes the club a thank you letter that goes straight onto the wall",
+    "m_b_note": "a cheerful parent volunteer answers over popcorn noise; you dictate the warning slowly, what is coming, when it arrives, clear the field by three fifteen, shelter in the gym, wait for the club's all-clear, and she reads it back twice and sprints for the press box with the note in her fist",
+    "m_end_note": "the public address system crackles and a puzzled announcer reads your warning word for word, and because it is written down, nothing gets garbled; the field clears with twelve minutes to spare and both teams watch the gust front from the gym; afterward the note itself, popcorn grease and all, is pinned to the club wall beside the plots, proof that a message with a person attached always finds its way",
+    "m_b_columns": "{ROUTE_B_SIDEKICK} takes the warning and runs with it; you stay on the board, and staying turns out to be a real job: reports double as the line closes in, and your columns are the only thing keeping fourteen voices from talking over each other",
+    "m_b_conflict": "two spotters disagree: one puts the hail line at {PLACE_BELLCREEK}, the other at {PLACE_QUARRY}, and both cannot be true; the board is the room's truth, so what it says matters; you can plot both with question marks and radio for a tiebreaker fix, or pick the likelier report, {PLACE_BELLCREEK} fits the storm's motion, and keep the board clean and confident",
+    "m_b_tiebreak": "your two question marks sit on the board like raised hands, honest about what the room does not know; three minutes later a third spotter breaks the tie, the {PLACE_QUARRY} report was old hail already melted and {PLACE_BELLCREEK} is live, and you erase exactly one question mark",
+    "m_end_qmark": "after the storm, {LEADER} circles your two chalk question marks and tells the club they were the smartest thing on the board all night: doubt shown exactly where doubt lived, so nobody steered on a guess; the club votes it a standing rule, uncertain reports get question marks and a tiebreaker; the board never lied to the room, not even for three minutes, and that, she says, is the whole game",
+    "m_b_wrong": "your pick is lucky, {PLACE_BELLCREEK} really is the live report, but clean and confident has become the board's whole style: the {PLACE_FAIRGROUNDS} wind column is riding gauge numbers that quietly stopped updating ten minutes ago, plotted without one question mark, and the room steers by stale wind until a puzzled spotter radios that the {PLACE_FAIRGROUNDS} flags are whipping hard while your board still says calm",
+    "m_end_sure": "you and {LEADER} reset the column together in front of everyone, and the room recovers quickly because everything else on your board is good; no harm reaches anyone, but the ten crooked minutes sting; in the debrief she hands you the chalk and asks what you would do differently, and you draw a question mark; exactly, she says, a board is allowed to be unsure, it is not allowed to be wrong on purpose",
+    "f_van": "{ROUTE_C_POST} smells of coffee and electronics; {ROUTE_C_MENTOR}, {ROUTE_C_MENTOR_CRED}, drives; {ROUTE_C_SIDEKICK}, {ROUTE_C_SIDEKICK_CRED}, runs instruments; before the engine turns over she gives the speech: we watch storms from the side that cannot reach us, we leave early, we never drive through water, and inside this van, weather is homework, not a monster",
+    "f_load": "you inventory the kit hand over hand: anemometer mast, spare rain gauge bottles, hail pads in their frames, the camera, the ruler card, and the weather radio already murmuring with {ROUTE_A_POST}'s net; {ROUTE_C_SIDEKICK} declares you instruments crew, official",
+    "f_route": "two jobs on the route sheet and time for one before the line arrives, maybe a piece of the second: the gauge run, swapping rain gauge bottles at three farms along {C1_ROAD} so the storm's rainfall gets measured, or setting up the observation post on {C2_LANDMARK}, the safe flank overlook, with the mast, the hail pads, and the camera",
+    "f_g_stops": "stops one and two are clockwork: unscrew, cap, label, swap, thirty seconds a bottle, while {ROUTE_C_MENTOR} keeps the van pointed out the gate, nose toward the road, leave-early rule made of steel; westward the sky is going green-gray and the wind sock at {C1_HUTCH} stands straight out",
+    "f_g_farm": "{C1_FARM} is chaos with a fence around it: goats loose in the yard, ducks everywhere, a hay tarp cracking like a flag, and {C1_FARMER} alone in the middle of it because her helper is stuck in town; the rain gauge sits calmly by the barn, doing its one job",
+    "f_g_pick": "the radio says twenty five minutes until the gust front, and {ROUTE_C_MENTOR} is already parking nose-out; you can help the farm first, animals and tarp, and grab the gauge bottle if time allows, or do protocol first, swap the gauge in ninety seconds while your hands remember how, then throw everything you have at the yard",
+    "f_g_goats": "{ROUTE_C_SIDEKICK} teaches you the feed bucket trick, rattle it and walk, never chase, and the goats decide you are the most interesting thing on the farm; one by one they follow you into the barn, and you latch the pens while the ducks file in under the workbench like commuters",
+    "f_g_tarp": "the tarp fights like a sail, but {ROUTE_C_MENTOR} anchors the corners with old tires while you and {ROUTE_C_SIDEKICK} haul the lines; the first fat raindrops smack the dust around your shoes, and the radio on {ROUTE_C_MENTOR}'s belt says the gust front is ten minutes out",
+    "f_g_count": "eleven goats in the pen and {C1_FARMER} counts twelve on her fingers: {C1_GOAT} is missing, probably sulking down in the creek willows; ten minutes is enough for a fast two minute look with a hard stop, or it is enough to get every person inside right now and trust that goats are better at weather than people are",
+    "f_g_willow": "{ROUTE_C_SIDEKICK} sets a timer out loud, two minutes and we walk, and you jog to the willows under a sky like a held breath; there, a cream colored rump backed into the blackberry: {C1_GOAT}, tangled, indignant, and very loud about it; you work the brambles while {ROUTE_C_SIDEKICK} watches the west and the timer both",
+    "f_g_inside": "the bucket rattle does the rest; {C1_GOAT} trots, you run, and {ROUTE_C_MENTOR}'s horn is honking everyone in as the wind arrives like a shoulder against the whole farm; barn latched, people in the farmhouse, and the gust front breaks over a buttoned-up yard",
+    "f_end_goats": "hail rattles the farmhouse windows like popcorn while twelve goats chew calmly in a latched barn; when the sun knifes back under the cloud line, the yard is soaked, the tarp held, and the gauge bottle rides labeled in the van; {C1_FARMER} will not stop telling the story of the storm club kid and the blackberry goat; {ROUTE_C_SIDEKICK} logs it: all animals secured, all people sheltered, margin respected, and the timer never had to say so",
+    "f_g_cellar": "people first, you say, and nobody argues; {C1_FARMER}, {ROUTE_C_SIDEKICK}, {ROUTE_C_MENTOR}, and you are inside the sturdy farmhouse with the door braced when the gust front arrives, and it arrives like a train made of wind; through the window the willows go over sideways and spring back up again",
+    "f_end_people": "the storm passes, loud but brief, and {C1_GOAT} strolls out of the willows soggy, cross, and completely fine, because critters know how to hunker; {C1_FARMER} says you chose exactly right and feeds everyone cider; {ROUTE_C_MENTOR} writes the club's oldest rule in the log where you can see it, animals survive weather better than people survive risks; the gauge bottle gets swapped in the after-storm calm, data safe, everyone dry",
+    "f_g_swap": "ninety seconds, just like the drills: unscrew, cap, label with the farm name and the time, fresh bottle in, and the storm's rainfall record for the road is safe in the crate; then it is all hands to the yard, tarp lines, feed bucket, ducks scattering like spilled popcorn",
+    "f_g_horn": "goats penned, ducks under the bench, and the radio says the gust front is eight minutes out and already visible from {C2_LANDMARK}; {ROUTE_C_MENTOR} backs the van to the farmhouse and stands by the horn; the hay tarp is half anchored, two tires on, two corners still snapping",
+    "f_g_tarp2": "{ROUTE_C_MENTOR} gives you the honest arithmetic: one more minute finishes the tarp, and one more minute is exactly the margin the club promises never to spend; leave the tarp and get inside now, hay gets wet and people do not, or take the minute and throw the last two tires on with {ROUTE_C_MENTOR}, cutting it close",
+    "f_g_peel": "from the farmhouse window you watch the wind take the tarp like a magician's tablecloth trick; it wraps the fence and stays there, flapping furiously, while the hay underneath goes gray with rain; inside, the kettle is on and every heartbeat in the room is slow",
+    "f_end_dry": "the tally after the storm: one soaked haystack, one tarp rescued off the fence, zero scratches on anybody, and one perfectly labeled gauge bottle that tells the county exactly how hard {C1_ROAD} was rained on; {C1_FARMER} shrugs about the hay, it will dry, hay does; {ROUTE_C_SIDEKICK} writes your first field report with you, and its last line is the club's whole creed: we can always buy hay",
+    "f_g_minute": "the last two tires go on and the tarp is drum tight, and then the minute is gone and the wind arrives while you and {ROUTE_C_MENTOR} are still crossing the yard; a bucket cartwheels past, grit stings your ears, the first gust shoves you like a crowd, and {ROUTE_C_MENTOR}'s hand clamps your arm for the last five steps through the farmhouse door",
+    "f_end_margin": "the tarp holds and nobody is hurt, and {ROUTE_C_MENTOR} is quiet in a way that is worse than shouting; that was my mistake as much as yours, he says at last, we do not spend our margin on hay; the ride home is silent, and at {THRESHOLD} the two of you write it up together for the safety book, new rule underlined: when the horn is worth honking, the job is already over; your gauge bottle still makes it into the data crate, but the lesson rides home heavier",
+    "f_h_hill": "{C2_LANDMARK} earns its name: wind combing the grass flat and {DEADLINE_SIGN} one long shelf cloud, like a rolling pin of slate; {ROUTE_C_MENTOR} parks nose-out on the east track, escape route agreed before anyone opens a door, and {ROUTE_C_SIDEKICK} starts handing you the mast sections",
+    "f_h_live": "mast up and guyed, hail pads staked in their frames, camera on the tripod with {C2_WINDMILL} for scale; the anemometer wakes, fifteen miles an hour gusting twenty two; {ROUTE_C_SIDEKICK} points at the shelf cloud and teaches you the difference that matters, outflow shelf, not a rotating wall, awe, not alarm; {ROUTE_A_POST}'s net wants a wind reading every five minutes",
+    "f_h_job": "two jobs, one you: instruments captain, owning the readings and calling them to {ROUTE_A_POST}'s net on schedule, or camera captain, documenting the shelf cloud's arrival and the hail for the club's science archive, every shot timestamped; {ROUTE_C_SIDEKICK} will back up whichever one you do not take",
+    "f_h_calls": "you find the rhythm fast: {C2_LANDMARK}, two eight gusting four one, and {ROUTE_A_POST} reads it back and relays it onward; between calls {ROUTE_C_SIDEKICK} shows you how the gusts come in families, build, peak, breathe; the shelf cloud swallows the last blue in the west",
+    "f_h_hail": "fifty one miles an hour and the first hail ticks off {ROUTE_C_POST}'s roof like thrown gravel; {ROUTE_C_MENTOR} calls everyone inside {ROUTE_C_POST}, windows up, and announces the load-and-leave threshold: when he says go, the post comes down and {ROUTE_C_POST} rolls, no debate; {ROUTE_C_SIDEKICK} raises the real question, the mast",
+    "f_h_mast": "strike the mast now and finish the run on the handheld anemometer through the cracked window, gear safe and numbers humbler, or leave the mast up until the deadline and read the remote display from inside the van, chasing the peak gust right up to the moment the post comes down",
+    "f_h_peak": "from inside {ROUTE_C_POST} you call the numbers off the remote display while hail pops on the roof: five two, five five, then the gust front's leading edge itself, five eight, and the whole van rocks on its springs like a boat; {ROUTE_C_MENTOR} says go, the mast comes down slick as a drill, and {ROUTE_C_POST} is rolling east inside his margin",
+    "f_h_report": "back at {THRESHOLD} the attic log confirms it: {C2_LANDMARK}, fifty eight miles an hour, the highest wind measured anywhere in the county today, logged at the exact minute the gust front crossed the ridge, with your callsign on the reading",
+    "f_end_58": "the weather service uses the club's {C2_LANDMARK} reading in the official storm report, and fifty eight becomes the number everyone quotes at school on Monday; the mast has a new dent and the hail pads look like the moon, which {ROUTE_C_SIDEKICK} calls the best kind of trophy; {ROUTE_C_MENTOR} taps the safety log too, post struck on deadline, van rolling on time, and that pairing, the great number and the kept margin, is what the club frames for the wall",
+    "f_h_hand": "the mast comes down dry and safe in its case, and you finish the run on the handheld through the cracked window: four four is your best, solid data honestly gotten, while the real peak howls by unmeasured somewhere over the grass; out in the weather, the hail pads are still taking notes",
+    "f_end_gotaway": "the pads come in stippled with perfect little craters, a record of the hail even though the peak gust got away; {ROUTE_C_SIDEKICK} spreads them on the workbench and shows you the trade you made without knowing it, gear kept safe versus the biggest number lost, and every field scientist makes that trade over and over; next storm, she says, you will know the price of both answers before you choose, and that is exactly what a second storm is for",
+    "f_h_frame": "the camera loves the shelf cloud: you frame it behind {C2_WINDMILL} for scale, timestamp burning in the corner, while {ROUTE_C_SIDEKICK} narrates the structure like a tour guide, outflow lifting the dust line, rain shaft dragging behind like a broom; you shoot the gust front racing across the valley floor toward {C2_LANDMARK}",
+    "f_h_van": "pea hail, then marbles, and {ROUTE_C_MENTOR} calls everyone into {ROUTE_C_POST} to shoot through glass; when the line passes and {ROUTE_C_MENTOR} gives the all-clear, you will have only minutes before the evidence melts: measure and photograph the three biggest stones on the hail pad with the ruler card, the archive's first calibrated hail record, or chase the light east, because the back edge is lifting and there will be a double rainbow over the wet valley",
+    "f_h_ruler": "all-clear, and you are out the door with the ruler card: biggest stone nineteen millimeters, photographed square on the pad grid with the timestamp, then the next two, while meltwater eats the small ones around your knees; {ROUTE_C_SIDEKICK} calls the technique textbook",
+    "f_end_19mm": "nineteen millimeters at {C2_LANDMARK} becomes the county's official hail measurement for the storm, photographed, calibrated, and filed in the club's science archive with your name on the entry; the weather service cites it, and {ROUTE_C_SIDEKICK} opens the winter class on hail with your photo on the projector; the rainbow happened too, and someone else got a blurry picture of it, and you do not mind even slightly",
+    "f_h_light": "you chase the light east and the sky pays out: a double rainbow braced over the soaked valley, mammatus pouches glowing under the storm's retreating anvil, and you shoot the best photograph in the club's whole scrapbook while the hail pads sit forgotten in the grass, going drip, drip, drip",
+    "f_end_photo": "the photo wins the fall fair and hangs framed in {THRESHOLD}, and every time you see it you also see what is missing: the archive entry that reads hail, observed, unmeasured, because the stones melted while you chased the light; beautiful, {ROUTE_C_SIDEKICK} says, meaning it, and next time we will get the data too; the club gains its greatest picture, and you gain the quiet lesson that in field science, pretty is optional and measured is forever"
+  },
+  "titles": {
+    "r_end_clear": "{A11_PRIZE1}",
+    "r_end_crackle": "{A11_PRIZE2}",
+    "r_end_longway": "{A12_PRIZE1}",
+    "r_end_quiet": "{A12_PRIZE2}",
+    "r_end_relay": "{A21_PRIZE1}",
+    "r_end_voice": "{A21_PRIZE2}",
+    "r_end_bearing": "{A22_PRIZE1}",
+    "r_end_log": "{A22_PRIZE2}",
+    "m_end_343": "{B11_PRIZE1}",
+    "m_end_sayit": "{B11_PRIZE2}",
+    "m_end_agree": "{B12_PRIZE1}",
+    "m_end_fuzzy": "{B12_PRIZE2}",
+    "m_end_called": "{B211_PRIZE1}",
+    "m_end_delay": "{B211_PRIZE2}",
+    "m_end_note": "{B212_PRIZE}",
+    "m_end_qmark": "{B22_PRIZE1}",
+    "m_end_sure": "{B22_PRIZE2}",
+    "f_end_goats": "{C11_PRIZE1}",
+    "f_end_people": "{C11_PRIZE2}",
+    "f_end_dry": "{C12_PRIZE1}",
+    "f_end_margin": "{C12_PRIZE2}",
+    "f_end_58": "{C21_PRIZE1}",
+    "f_end_gotaway": "{C21_PRIZE2}",
+    "f_end_19mm": "{C22_PRIZE1}",
+    "f_end_photo": "{C22_PRIZE2}"
+  },
+  "labels": {
+    "n_sort": {
+      "c_sort_radio": "Join {ROUTE_A_TEAM} in {ROUTE_A_POST}.",
+      "c_sort_maps": "Join {ROUTE_B_TEAM} at {ROUTE_B_POST}.",
+      "c_sort_field": "Join {ROUTE_C_TEAM} in {ROUTE_C_POST}."
+    },
+    "r_split": {
+      "c_rsplit_net": "Take the logbook and run check-ins while {ROUTE_A_MENTOR} traces it."
+    },
+    "r_a_pick": {
+      "c_rapick_window": "Clean and reseat the corroded connector at {ROUTE_A_WINDOW}."
+    },
+    "r_a_test": {
+      "c_ratest_check": "Run a radio check with far-off {PLACE_PINE}."
+    },
+    "r_n_call": {
+      "c_rncall_marisol": "Wave {ROUTE_A_MENTOR} over and back her up on the log."
+    },
+    "r_h_plan": {
+      "c_rhplan_relay": "Relay {HIKER_NAME}'s position to the sheriff's net.",
+      "c_rhplan_guide": "Guide {HIKER_NAME} to {LANDMARK_TOWER} shelter by the map."
+    },
+    "m_a_verify": {
+      "c_maverify_radar": "Measure the storm's motion on radar with {ROUTE_B_SIDEKICK}."
+    },
+    "m_b_gap": {
+      "c_mbgap_board": "Hand the warning to {ROUTE_B_SIDEKICK} and keep the board current."
+    },
+    "m_b_phone": {
+      "c_mbphone_cell": "Track down the athletic director's cell with {ROUTE_B_SIDEKICK}."
+    },
+    "m_b_conflict": {
+      "c_mbconflict_pick": "Pick {PLACE_BELLCREEK} and keep the board clean."
+    },
+    "f_route": {
+      "c_froute_gauges": "Start with the gauge run along {C1_ROAD}.",
+      "c_froute_hill": "Set up the {C2_LANDMARK} post before the sky closes in."
+    },
+    "f_g_count": {
+      "c_fgcount_look": "Take a fast two-minute look at the willows with {ROUTE_C_SIDEKICK}."
+    },
+    "r_a_finds": {
+      "c_rafinds_report": "Weigh the two fixes with {ROUTE_A_MENTOR}."
+    },
+    "f_g_tarp": {
+      "c_fgtarp_count": "Help {C1_FARMER} count the goats."
+    },
+    "f_g_cellar": {
+      "c_fgcellar_after": "Look for {C1_GOAT} once the line has passed."
+    },
+    "r_h_name": {
+      "c_rhname_plan": "Work out the fastest way to get {HIKER_NAME} safe."
+    },
+    "r_h_tower": {
+      "c_rhtower_last": "Stay on the mic until {HIKER_NAME} is through the door."
+    },
+    "f_load": {
+      "c_fload_sheet": "Check the route sheet with {ROUTE_C_MENTOR}."
+    },
+    "f_g_tarp2": {
+      "c_fgtarp2_minute": "Take one more minute and finish it with {ROUTE_C_MENTOR}."
+    },
+    "f_h_mast": {
+      "c_fhmast_keep": "Leave the mast up till {ROUTE_C_MENTOR}'s deadline and log the peak."
+    }
+  }
+}

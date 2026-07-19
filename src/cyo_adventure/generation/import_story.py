@@ -8,7 +8,7 @@ cyo-author Claude Code authoring skill.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from sqlalchemy import select
 
@@ -23,6 +23,7 @@ from cyo_adventure.generation.authoring_metadata import (
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
 )
+from cyo_adventure.generation.binding import load_contract_for, render_bound_skeleton
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
@@ -191,6 +192,40 @@ def _str_meta(metadata: object, key: str) -> str | None:
     return value if isinstance(value, str) else None
 
 
+def _dict_meta(metadata: object, key: str) -> dict[str, str] | None:
+    """Read a ``dict[str, str]`` value from a job's ``authoring_metadata``.
+
+    Mirrors :func:`_str_meta`'s defensive posture, but for the WS-2
+    ``slot_bindings`` shape (:class:`~cyo_adventure.generation.authoring_metadata.SkeletonAuthoringMetadata`),
+    a flat slot-id-to-value map rather than a scalar string.
+
+    Args:
+        metadata: The job's ``authoring_metadata`` (expected dict, but any
+            type is tolerated).
+        key: The metadata key to read.
+
+    Returns:
+        The value at ``key`` only when ``metadata`` is a dict and the value
+        is itself a dict whose keys and values are all strings; any other
+        shape (missing key, wrong type, non-string key/value) degrades to
+        ``None`` (no recorded binding) instead of raising.
+    """
+    # #ASSUME: data-integrity: a recorded slot_bindings entry is a plain
+    # dict[str, str] written by the import CLI for a parameterized-skeleton
+    # skill fill; a missing/wrong-typed value degrades to "use
+    # contract.default_binding instead" rather than raising, matching
+    # _str_meta's defensive reads of the other authoring_metadata keys.
+    # #VERIFY: test_recorded_slot_bindings_are_preferred_over_default_binding.
+    if not isinstance(metadata, dict):
+        return None
+    value = metadata.get(key)
+    if not isinstance(value, dict):
+        return None
+    if not all(isinstance(k, str) and isinstance(v, str) for k, v in value.items()):
+        return None
+    return cast("dict[str, str]", value)
+
+
 def _resolve_resume_band(job: GenerationJob, concept: Concept) -> str:
     """Return the age-band directory segment to load a resumed fill's skeleton from.
 
@@ -251,6 +286,199 @@ def _load_resume_skeleton(band: str, skeleton_slug: str) -> dict[str, object]:
         raise ValidationError(msg) from exc
 
 
+def _stage1_reference_skeleton(
+    band: str,
+    skeleton_slug: str,
+    original_skeleton: dict[str, object],
+    job: GenerationJob,
+) -> tuple[dict[str, object] | None, str | None]:
+    """Return the Stage 1 fidelity reference for a resumed skill fill.
+
+    For a legacy (unparameterized) skeleton -- no ``<slug>.contract.json``
+    sidecar -- the reference is ``original_skeleton`` itself, byte-identical
+    to pre-WS-2 behavior. For a parameterized skeleton, the reference must
+    instead be the BOUND skeleton: ``original_skeleton`` still carries
+    ``{SLOT}`` tokens in its beats/title/label surfaces (WS-2 design section
+    5.1), so comparing a fill against it as-is would compare theme'd prose
+    against literal placeholder tokens and false-flag the fill. The bound
+    reference is rendered from the job's recorded
+    ``authoring_metadata["slot_bindings"]`` (the theme the skill actually
+    filled) when present, else the contract's ``default_binding``
+    (reproducing the classic-story reference), per
+    ``docs/planning/ws2-parameterized-catalog-design.md`` section 5.3.
+
+    Args:
+        band: The age-band directory segment the skeleton was resolved from
+            (see :func:`_resolve_resume_band`).
+        skeleton_slug: The matched skeleton's filename stem.
+        original_skeleton: The raw skeleton document, already loaded (see
+            :func:`_load_resume_skeleton`).
+        job: The parked GenerationJob being resumed, for its
+            ``authoring_metadata["slot_bindings"]``.
+
+    Returns:
+        ``(reference_skeleton, None)`` on success. ``(None, error_message)``
+        when a parameterized skeleton's contract cannot be loaded/cross-
+        checked, or its bind/render post-conditions fail (e.g. a stale
+        recorded binding that no longer validates): the caller must treat
+        this as a degrade-to-``needs_review`` signal, never a crash, since by
+        the time this runs the story is already persisted and moderated.
+    """
+    # #CRITICAL: data-integrity: a stale recorded `slot_bindings`, a
+    # contract/skeleton slot-token drift, or any other bind/render
+    # post-condition failure (render_bound_skeleton's four post-conditions)
+    # must not crash or strand an already-persisted, already-moderated
+    # resume; the caller degrades to needs_review on a `(None, ...)` return
+    # instead of letting a ValidationError propagate uncaught.
+    # #VERIFY: tests/unit/test_resume_manual_fill_stage1.py::
+    # test_parameterized_skeleton_uses_bound_skeleton_as_stage1_reference,
+    # ::test_recorded_slot_bindings_are_preferred_over_default_binding,
+    # ::test_default_binding_used_when_no_slot_bindings_recorded,
+    # ::test_legacy_skeleton_resume_reference_is_unchanged,
+    # ::test_contract_render_error_degrades_to_needs_review.
+    try:
+        skeleton_path = resolve_skeleton_path(band, skeleton_slug)
+        contract = load_contract_for(skeleton_path, original_skeleton)
+    except ValidationError as exc:
+        return None, str(exc)
+    if contract is None:
+        return original_skeleton, None
+
+    recorded_bindings = _dict_meta(job.authoring_metadata, "slot_bindings")
+    bindings = (
+        recorded_bindings if recorded_bindings is not None else contract.default_binding
+    )
+    try:
+        return render_bound_skeleton(original_skeleton, bindings), None
+    except ValidationError as exc:
+        return None, str(exc)
+
+
+@dataclass(frozen=True, slots=True)
+class _ResumeStage1Context:
+    """Grouped parameters for :func:`_finalize_resume`.
+
+    Bundled into one object (mirroring ``generation/worker.py``'s
+    ``_SkeletonFillContext``) so the function stays under the project's
+    argument-count limit while keeping each field explicit.
+
+    Attributes:
+        job: The parked GenerationJob being resumed (its ``storybook_id``/
+            ``version`` are already linked to the persisted story by the
+            caller before this context is built).
+        skeleton_slug: The job's matched skeleton slug, or ``None`` if the
+            job carries no skeleton provenance (Stage 1 is skipped entirely).
+        original_skeleton: The raw skeleton loaded before persisting (see
+            :func:`_load_resume_skeleton`), or ``None`` if it could not be
+            loaded.
+        skeleton_load_error: The load failure message, only meaningful when
+            ``original_skeleton`` is ``None``.
+        band: The age-band directory segment the skeleton was resolved from.
+        blob: The filled Storybook JSON being resumed.
+    """
+
+    job: GenerationJob
+    skeleton_slug: str | None
+    original_skeleton: dict[str, object] | None
+    skeleton_load_error: str | None
+    band: str
+    blob: dict[str, object]
+
+
+async def _finalize_resume(session: AsyncSession, ctx: _ResumeStage1Context) -> str:
+    """Run the Stage 1 fidelity gate (if applicable) and commit the job's final status.
+
+    Mirrors the shape of the missing-skeleton-file degradation
+    (:func:`_stage1_reference_skeleton`'s docstring) for every way Stage 1
+    can fail to run at all: a job with no ``skeleton_slug`` skips straight to
+    "passed" (no Stage 1 possible); a skeleton that could not be loaded, or a
+    parameterized skeleton whose contract/render step failed, both degrade to
+    "needs_review" without raising, since ``ctx.job.storybook_id``/``version``
+    are already linked to a story that is already persisted and moderated by
+    the time this runs. Only an actual Stage 1 fidelity violation (the gate
+    ran and found a mismatch) and a clean pass are distinguished beyond that.
+
+    Args:
+        session: Open async session; every branch below commits the job row
+            directly (this function owns that commit, mirroring
+            :func:`resume_manual_fill`'s own documented commit contract).
+        ctx: The grouped resume context (see :class:`_ResumeStage1Context`).
+
+    Returns:
+        The job's final status: ``"needs_review"`` or ``"passed"``.
+    """
+    job = ctx.job
+    if ctx.skeleton_slug is None:
+        job.status = "passed"
+        await session.commit()
+        return "passed"
+
+    if ctx.original_skeleton is None:
+        # #CRITICAL: data-integrity: the skeleton could not be loaded even
+        # before persisting (moved/removed at any point since the
+        # authoring-plan match, or concurrently). The story already exists
+        # and passed moderation; it just cannot be re-verified against its
+        # origin skeleton, so this is a needs_review downgrade, never a
+        # stuck "awaiting_manual_fill" job (#128).
+        # #VERIFY: covered at the unit level by monkeypatching
+        # load_skeleton to raise; no dedicated real-file test for this
+        # branch since it degenerates to the same missing-file mechanics
+        # test_resume_survives_skeleton_file_deleted_after_persist proves.
+        job.status = "needs_review"
+        job.error = (
+            ctx.skeleton_load_error or "matched skeleton unavailable for Stage 1 gate"
+        )[:512]
+        await session.commit()
+        return "needs_review"
+
+    # #CRITICAL: data-integrity: for a WS-2 parameterized skeleton, the
+    # Stage 1 reference must be the BOUND skeleton, not the raw
+    # {SLOT}-bearing one just loaded above (see _stage1_reference_skeleton's
+    # docstring); a legacy skeleton is unaffected. A ``(None, error)`` return
+    # means the contract/render step itself failed (e.g. a stale recorded
+    # binding) -- degrade to needs_review exactly like the missing-skeleton-
+    # file branch above, never crash or strand this already-persisted,
+    # already-moderated resume.
+    # #VERIFY: tests/unit/test_resume_manual_fill_stage1.py (see the helper's
+    # own docstring for the full test list).
+    reference_skeleton, reference_error = _stage1_reference_skeleton(
+        ctx.band, ctx.skeleton_slug, ctx.original_skeleton, job
+    )
+    if reference_skeleton is None:
+        job.status = "needs_review"
+        job.error = f"could not build Stage 1 reference: {reference_error}"[:512]
+        await session.commit()
+        return "needs_review"
+
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    review_stage1_model = _str_meta(job.authoring_metadata, "review_stage1_model")
+    violations = await run_stage1_gate(
+        reference_skeleton,
+        ctx.blob,
+        review_stage1_model=review_stage1_model,
+        prep_model=job.model,
+        settings=_default_settings,
+        pii=pii,
+    )
+    if violations:
+        # #CRITICAL: data-integrity: storybook_id/version were already
+        # linked above; only status/error differ from the clean-pass branch
+        # below, mirroring the automated_provider mechanism's own Stage 1
+        # downgrade in worker.py::run_generation_job, which persists the
+        # storybook and still marks the job needs_review.
+        # #VERIFY: covered by test_stage1_violations_are_recorded_on_the_job
+        # in the unit test file, which checks the job's storybook_id and
+        # version fields are both populated alongside needs_review.
+        job.status = "needs_review"
+        job.error = "; ".join(violations)[:512]
+        await session.commit()
+        return "needs_review"
+
+    job.status = "passed"
+    await session.commit()
+    return "passed"
+
+
 async def resume_manual_fill(
     session: AsyncSession,
     job_id: uuid.UUID,
@@ -272,7 +500,15 @@ async def resume_manual_fill(
     "needs_review" instead of "passed", but the job is still linked to the
     storybook :func:`import_filled_story` already persisted (only
     status/error differ between the two outcomes -- neither branch orphans
-    the job row from its story). On a validation-gate block the job is
+    the job row from its story). For a WS-2 parameterized skeleton (a
+    ``<slug>.contract.json`` sidecar exists), the Stage 1 reference is the
+    BOUND skeleton -- rendered from the job's recorded
+    ``authoring_metadata["slot_bindings"]`` when present, else the contract's
+    ``default_binding`` -- never the raw ``{SLOT}``-bearing skeleton; a
+    legacy skeleton is unaffected. A bind/render failure at this point (e.g.
+    a stale recorded binding) also downgrades to "needs_review" rather than
+    raising, since the story is already persisted and moderated. On a
+    validation-gate block the job is
     marked "failed" and the error is recorded before the exception
     propagates, mirroring generation/worker.py's failure-commit-then-reraise
     pattern. Unlike import_filled_story (which deliberately does not own the
@@ -350,6 +586,12 @@ async def resume_manual_fill(
     skeleton_slug = _str_meta(job.authoring_metadata, SKELETON_SLUG_KEY)
     original_skeleton: dict[str, object] | None = None
     skeleton_load_error: str | None = None
+    # Initialized unconditionally (rather than only inside the `if` below) so
+    # it is never "possibly unbound" at its second use further down (the
+    # reference-selection block), which re-enters under the identical
+    # `skeleton_slug is not None` guard; the "" default is never actually read
+    # since that guard is always true whenever band is used again.
+    band = ""
     if skeleton_slug is not None:
         band = _resolve_resume_band(job, concept)
         try:
@@ -388,49 +630,15 @@ async def resume_manual_fill(
     job.storybook_id = story_id
     job.version = _FIRST_VERSION
 
-    if skeleton_slug is not None:
-        if original_skeleton is None:
-            # #CRITICAL: data-integrity: the skeleton could not be loaded even
-            # before persisting (moved/removed at any point since the
-            # authoring-plan match, or concurrently). The story already exists
-            # and passed moderation; it just cannot be re-verified against its
-            # origin skeleton, so this is a needs_review downgrade, never a
-            # stuck "awaiting_manual_fill" job (#128).
-            # #VERIFY: covered at the unit level by monkeypatching
-            # load_skeleton to raise; no dedicated real-file test for this
-            # branch since it degenerates to the same missing-file mechanics
-            # test_resume_survives_skeleton_file_deleted_after_persist proves.
-            job.status = "needs_review"
-            job.error = (
-                skeleton_load_error or "matched skeleton unavailable for Stage 1 gate"
-            )[:512]
-            await session.commit()
-            return story_id, "needs_review"
-
-        pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
-        review_stage1_model = _str_meta(job.authoring_metadata, "review_stage1_model")
-        violations = await run_stage1_gate(
-            original_skeleton,
-            blob,
-            review_stage1_model=review_stage1_model,
-            prep_model=job.model,
-            settings=_default_settings,
-            pii=pii,
-        )
-        if violations:
-            # #CRITICAL: data-integrity: storybook_id/version were already
-            # linked above; only status/error differ from the clean-pass
-            # branch below, mirroring the automated_provider mechanism's own
-            # Stage 1 downgrade in worker.py::run_generation_job, which
-            # persists the storybook and still marks the job needs_review.
-            # #VERIFY: covered by test_stage1_violations_are_recorded_on_the_job
-            # in the unit test file, which checks the job's storybook_id and
-            # version fields are both populated alongside needs_review.
-            job.status = "needs_review"
-            job.error = "; ".join(violations)[:512]
-            await session.commit()
-            return story_id, "needs_review"
-
-    job.status = "passed"
-    await session.commit()
-    return story_id, "passed"
+    status = await _finalize_resume(
+        session,
+        _ResumeStage1Context(
+            job=job,
+            skeleton_slug=skeleton_slug,
+            original_skeleton=original_skeleton,
+            skeleton_load_error=skeleton_load_error,
+            band=band,
+            blob=blob,
+        ),
+    )
+    return story_id, status

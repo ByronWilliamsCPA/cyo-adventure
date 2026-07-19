@@ -1,0 +1,1177 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-conservatory-wars",
+  "age_band": "13-16",
+  "legacy_lexicon": [
+    "Noor Haddad",
+    "Noor",
+    "Ilsa Varga",
+    "Maestra Varga",
+    "Varga",
+    "Elias Thorn",
+    "Professor Thorn",
+    "Thorn",
+    "Amara Osei",
+    "Director Osei",
+    "Osei",
+    "Petra Lindqvist",
+    "Petra",
+    "Felix Marsh",
+    "Felix",
+    "Danil Reyes",
+    "Danil",
+    "Odile Maren",
+    "Odile",
+    "Brant",
+    "Farrow",
+    "Hale",
+    "Imrie",
+    "Aldermont",
+    "Aldermont Conservatory",
+    "Brede",
+    "Whitmore Hall",
+    "Weir Song",
+    "Weir",
+    "weir",
+    "Corvin Caprice",
+    "Corvin works",
+    "Corvin",
+    "Aldermont Evensong",
+    "Evensong",
+    "Welcome Recital",
+    "Winter Cantata",
+    "Cantata",
+    "Rain Study",
+    "Okafor"
+  ],
+  "default_binding": {
+    "HERO": "Noor Haddad",
+    "TEACHER_A": "Maestra Ilsa Varga",
+    "TEACHER_B": "Professor Elias Thorn",
+    "TEACHER_C": "Director Amara Osei",
+    "SENIOR_PEER": "Petra Lindqvist",
+    "CULPRIT": "Felix Marsh",
+    "HEAD_CHORISTER": "Danil Reyes",
+    "CUSTODIAN": "Mr. Brant",
+    "ADMIN": "Dean Farrow",
+    "PROVOST": "Provost Hale",
+    "NURSE": "Nurse Imrie",
+    "ROUTE_A_RIVAL": "Odile Maren",
+    "SCHOOL": "Aldermont Conservatory",
+    "SCHOOL_TOWN": "Brede",
+    "HALL": "Whitmore Hall",
+    "HIDING_PLACE": "organ loft",
+    "ROOM_STRINGS": "strings store",
+    "REPAIR_SHOP": "Okafor's",
+    "SIGNATURE_TUNE": "Weir Song",
+    "SHOWCASE_PIECE": "Corvin Caprice",
+    "CHORAL_PIECE": "Aldermont Evensong",
+    "OPENING_EVENT": "Welcome Recital",
+    "CONCERT_EVENT": "Winter Concert",
+    "COMBINED_PIECE": "Winter Cantata",
+    "CULPRIT_EARLY_PIECE": "Rain Study",
+    "HERO_HOMETOWN": "mill towns downriver",
+    "HERO_TUNE_ORIGIN": "grandmother's kitchen",
+    "HERO_KEEPSAKE": "grandmother's viola",
+    "CULPRIT_SIGN": "green wool scarf",
+    "FROST_MARKER": "first frost",
+    "WIRING_FUND": "wiring fund",
+    "CLUE_BOWS": "loaner bows wiped with soap",
+    "CLUE_PIANO": "felt shims wedged in the grand",
+    "CLUE_FOLIOS": "choir's marked folios gone from their cabinet",
+    "CLUE_THREAD": "fine green wool thread on the hinge",
+    "CLEARING_DETAIL": "a migraine, signed in and never out",
+    "MOTIVE_DETAIL": "his father's lost job and a shrunken audition week",
+    "ROUTE_A_STUDIO": "strings",
+    "ROUTE_A_DISCIPLINE": "Varga bar",
+    "ROUTE_A_CHALLENGE": "seat challenge",
+    "ROUTE_B_STUDIO": "composition",
+    "ROUTE_B_TASK": "four bars of weather",
+    "ROUTE_C_STUDIO": "voice",
+    "ROUTE_C_TASK": "descant line",
+    "ROUTE_C_ANCHOR": "alto seconds"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The scholarship student protagonist.",
+      "guidance": "A single relatable teen protagonist (name or role); talented but still learning.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "NURSE",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "TEACHER_A",
+      "scope": "global",
+      "meaning": "The strings studio's exacting, fair mentor.",
+      "guidance": "Demanding but fundamentally fair; never cruel, never a source of real peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "HERO",
+          "NURSE",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "TEACHER_B",
+      "scope": "global",
+      "meaning": "The composition studio's riddling, patient mentor.",
+      "guidance": "Eccentric and indirect but caring; teaches through patience, not through fear.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "HERO",
+          "NURSE",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "TEACHER_C",
+      "scope": "global",
+      "meaning": "The voice studio's warm, politically embattled mentor.",
+      "guidance": "Warm and politically savvy; protective of students, never punitive without cause.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "HERO",
+          "NURSE",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_B"
+        ]
+      }
+    },
+    {
+      "id": "SENIOR_PEER",
+      "scope": "global",
+      "meaning": "The senior student falsely accused of the sabotage.",
+      "guidance": "Talented, briefly under suspicion, always innocent; must read as sympathetic throughout.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "HERO",
+          "NURSE",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "TEACHER_A",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "CULPRIT",
+      "scope": "global",
+      "meaning": "The composition aide who actually caused the sabotage, out of desperation.",
+      "guidance": "Sympathetic and nonviolent; acts from desperation, causes only reversible harm, and owns it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "HERO",
+          "NURSE",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "HEAD_CHORISTER",
+      "scope": "global",
+      "meaning": "The choir's head chorister, a steady peer to the hero.",
+      "guidance": "A steady, kind peer; never a rival or a source of peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "CUSTODIAN",
+          "HERO",
+          "NURSE",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "CUSTODIAN",
+      "scope": "global",
+      "meaning": "The custodian who discovers the sabotage each Monday.",
+      "guidance": "A background adult who discovers, never causes, the sabotage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "HEAD_CHORISTER",
+          "HERO",
+          "NURSE",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "ADMIN",
+      "scope": "global",
+      "meaning": "The administrator who ties the concert's success to the building's budget.",
+      "guidance": "Bureaucratic and skeptical but not villainous; persuadable by the concert's success.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CULPRIT",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "HERO",
+          "NURSE",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "PROVOST",
+      "scope": "global",
+      "meaning": "The school's senior authority who hears and resolves the accusation.",
+      "guidance": "Fair, procedural, and ultimately just; the school's due-process figure.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "HERO",
+          "NURSE",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "NURSE",
+      "scope": "global",
+      "meaning": "The school nurse whose log clears the falsely accused student.",
+      "guidance": "A minor but pivotal figure whose records exonerate the falsely accused.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "HERO",
+          "PROVOST",
+          "ROUTE_A_RIVAL",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_RIVAL",
+      "scope": "route",
+      "meaning": "The strings-track peer who briefly rivals the hero for a chair.",
+      "guidance": "A genuine peer rival, never a bully; distinct from the hero and from the culprit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ADMIN",
+          "CULPRIT",
+          "CUSTODIAN",
+          "HEAD_CHORISTER",
+          "HERO",
+          "NURSE",
+          "PROVOST",
+          "SENIOR_PEER",
+          "TEACHER_A",
+          "TEACHER_B",
+          "TEACHER_C"
+        ]
+      }
+    },
+    {
+      "id": "SCHOOL",
+      "scope": "global",
+      "meaning": "The competitive arts school where the whole story takes place.",
+      "guidance": "A single named competitive arts school with three tracks/studios.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "HALL",
+          "HIDING_PLACE",
+          "REPAIR_SHOP",
+          "ROOM_STRINGS",
+          "SCHOOL_TOWN"
+        ]
+      }
+    },
+    {
+      "id": "SCHOOL_TOWN",
+      "scope": "global",
+      "meaning": "The town the school overlooks.",
+      "guidance": "A real-feeling small town near the school, distinct from the hero's hometown.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "HALL",
+          "HIDING_PLACE",
+          "REPAIR_SHOP",
+          "ROOM_STRINGS",
+          "SCHOOL"
+        ]
+      }
+    },
+    {
+      "id": "HALL",
+      "scope": "global",
+      "meaning": "The school's main performance hall.",
+      "guidance": "The school's central performance venue; must read as physically grand but imperfect (aging wiring).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "HIDING_PLACE",
+          "REPAIR_SHOP",
+          "ROOM_STRINGS",
+          "SCHOOL",
+          "SCHOOL_TOWN"
+        ]
+      }
+    },
+    {
+      "id": "HIDING_PLACE",
+      "scope": "global",
+      "meaning": "The place the missing choir folios are found hidden.",
+      "guidance": "A reachable-but-unused space where things are hidden, never itself dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "HALL",
+          "REPAIR_SHOP",
+          "ROOM_STRINGS",
+          "SCHOOL",
+          "SCHOOL_TOWN"
+        ]
+      }
+    },
+    {
+      "id": "ROOM_STRINGS",
+      "scope": "global",
+      "meaning": "The strings section's instrument storage room, sabotaged early on.",
+      "guidance": "A storage/practice room, the scene of the first sabotage; not itself hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "HALL",
+          "HIDING_PLACE",
+          "REPAIR_SHOP",
+          "SCHOOL",
+          "SCHOOL_TOWN"
+        ]
+      }
+    },
+    {
+      "id": "REPAIR_SHOP",
+      "scope": "global",
+      "meaning": "The instrument-repair workshop where amends are made.",
+      "guidance": "A workshop for mending instruments; the site of amends and reconciliation.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "HALL",
+          "HIDING_PLACE",
+          "ROOM_STRINGS",
+          "SCHOOL",
+          "SCHOOL_TOWN"
+        ]
+      }
+    },
+    {
+      "id": "SIGNATURE_TUNE",
+      "scope": "global",
+      "meaning": "The hero's family tune, and the concert's central piece.",
+      "guidance": "A folk tune tied to the hero's family; the emotional throughline of the concert.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CHORAL_PIECE",
+          "COMBINED_PIECE",
+          "CONCERT_EVENT",
+          "CULPRIT_EARLY_PIECE",
+          "OPENING_EVENT",
+          "SHOWCASE_PIECE"
+        ]
+      }
+    },
+    {
+      "id": "SHOWCASE_PIECE",
+      "scope": "global",
+      "meaning": "The strings studio's flagship virtuoso piece.",
+      "guidance": "A demanding virtuoso piece associated with the strings track.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CHORAL_PIECE",
+          "COMBINED_PIECE",
+          "CONCERT_EVENT",
+          "CULPRIT_EARLY_PIECE",
+          "OPENING_EVENT",
+          "SIGNATURE_TUNE"
+        ]
+      }
+    },
+    {
+      "id": "CHORAL_PIECE",
+      "scope": "global",
+      "meaning": "The choir's signature choral piece.",
+      "guidance": "A traditional choral piece associated with the voice track.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "COMBINED_PIECE",
+          "CONCERT_EVENT",
+          "CULPRIT_EARLY_PIECE",
+          "OPENING_EVENT",
+          "SHOWCASE_PIECE",
+          "SIGNATURE_TUNE"
+        ]
+      }
+    },
+    {
+      "id": "OPENING_EVENT",
+      "scope": "global",
+      "meaning": "The first-Friday recital that opens the term.",
+      "guidance": "The term's opening showcase; establishes the three studios and the mystery's victims.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CHORAL_PIECE",
+          "COMBINED_PIECE",
+          "CONCERT_EVENT",
+          "CULPRIT_EARLY_PIECE",
+          "SHOWCASE_PIECE",
+          "SIGNATURE_TUNE"
+        ]
+      }
+    },
+    {
+      "id": "CONCERT_EVENT",
+      "scope": "global",
+      "meaning": "The end-of-term concert that is the story's climax.",
+      "guidance": "The single unifying climax every route converges on.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CHORAL_PIECE",
+          "COMBINED_PIECE",
+          "CULPRIT_EARLY_PIECE",
+          "OPENING_EVENT",
+          "SHOWCASE_PIECE",
+          "SIGNATURE_TUNE"
+        ]
+      }
+    },
+    {
+      "id": "COMBINED_PIECE",
+      "scope": "global",
+      "meaning": "The combined-studios piece premiered at the concert.",
+      "guidance": "The new work that requires all three studios to cooperate.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CHORAL_PIECE",
+          "CONCERT_EVENT",
+          "CULPRIT_EARLY_PIECE",
+          "OPENING_EVENT",
+          "SHOWCASE_PIECE",
+          "SIGNATURE_TUNE"
+        ]
+      }
+    },
+    {
+      "id": "CULPRIT_EARLY_PIECE",
+      "scope": "global",
+      "meaning": "The culprit's own early composition, shown at the opening recital.",
+      "guidance": "A short piece establishing the culprit as a real artist before his crime.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CHORAL_PIECE",
+          "COMBINED_PIECE",
+          "CONCERT_EVENT",
+          "OPENING_EVENT",
+          "SHOWCASE_PIECE",
+          "SIGNATURE_TUNE"
+        ]
+      }
+    },
+    {
+      "id": "HERO_HOMETOWN",
+      "scope": "global",
+      "meaning": "Where the hero grew up, distinct from the school's town.",
+      "guidance": "A place distinct from the school's setting; grounds the hero's outsider status.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "HERO_KEEPSAKE",
+          "HERO_TUNE_ORIGIN"
+        ]
+      }
+    },
+    {
+      "id": "HERO_TUNE_ORIGIN",
+      "scope": "global",
+      "meaning": "Where the hero first learned her signature tune.",
+      "guidance": "A warm, domestic origin for the signature tune; never a source of loss or grief.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "HERO_HOMETOWN",
+          "HERO_KEEPSAKE"
+        ]
+      }
+    },
+    {
+      "id": "HERO_KEEPSAKE",
+      "scope": "global",
+      "meaning": "The hero's inherited instrument.",
+      "guidance": "A treasured inherited object; never at risk of being lost or destroyed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "HERO_HOMETOWN",
+          "HERO_TUNE_ORIGIN"
+        ]
+      }
+    },
+    {
+      "id": "CULPRIT_SIGN",
+      "scope": "global",
+      "meaning": "The culprit's signature garment, the clue that identifies him.",
+      "guidance": "A small, distinctive worn item; the mystery's visual clue, never a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FROST_MARKER",
+      "scope": "global",
+      "meaning": "The recurring seasonal marker naming the morning the sabotage is found.",
+      "guidance": "A seasonal marker naming the discovery morning; purely a time cue, never itself dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WIRING_FUND",
+      "scope": "global",
+      "meaning": "The fund the concert's success persuades the administrator to pledge.",
+      "guidance": "A building-maintenance fund; a benign administrative reward for the concert's success.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CLUE_BOWS",
+      "scope": "global",
+      "meaning": "The sabotaged bows, one of the mystery's four clue objects.",
+      "guidance": "Sabotaged but fully repairable equipment; never destroyed, only inconvenienced.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CLUE_FOLIOS",
+          "CLUE_PIANO",
+          "CLUE_THREAD"
+        ]
+      }
+    },
+    {
+      "id": "CLUE_PIANO",
+      "scope": "global",
+      "meaning": "The sabotaged piano, one of the mystery's four clue objects.",
+      "guidance": "Sabotaged but fully repairable equipment; never destroyed, only inconvenienced.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CLUE_BOWS",
+          "CLUE_FOLIOS",
+          "CLUE_THREAD"
+        ]
+      }
+    },
+    {
+      "id": "CLUE_FOLIOS",
+      "scope": "global",
+      "meaning": "The missing choir folios, one of the mystery's four clue objects.",
+      "guidance": "Misplaced, not destroyed; recoverable intact.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CLUE_BOWS",
+          "CLUE_PIANO",
+          "CLUE_THREAD"
+        ]
+      }
+    },
+    {
+      "id": "CLUE_THREAD",
+      "scope": "global",
+      "meaning": "The telltale thread snagged at the scene, one of the mystery's four clue objects.",
+      "guidance": "A small fabric clue; purely a mystery-solving detail, never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "CLUE_BOWS",
+          "CLUE_FOLIOS",
+          "CLUE_PIANO"
+        ]
+      }
+    },
+    {
+      "id": "CLEARING_DETAIL",
+      "scope": "global",
+      "meaning": "The medical detail that clears the falsely accused student's alibi.",
+      "guidance": "A mundane, sympathetic medical/attendance fact; never itself alarming.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MOTIVE_DETAIL",
+      "scope": "global",
+      "meaning": "The culprit's underlying motive for the sabotage.",
+      "guidance": "A sympathetic, nonviolent hardship (financial/family pressure); never blame-shifting onto a victim.",
+      "constraints": {
+        "max_words": 12,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_STUDIO",
+      "scope": "route",
+      "meaning": "The strings discipline/track name.",
+      "guidance": "A single-word (or short) discipline name distinct from the other two tracks.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ROUTE_B_STUDIO",
+          "ROUTE_C_STUDIO"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_DISCIPLINE",
+      "scope": "route",
+      "meaning": "The strings track's named recurring practice exercise.",
+      "guidance": "A named recurring exercise/ritual specific to the strings track.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ROUTE_A_CHALLENGE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_CHALLENGE",
+      "scope": "route",
+      "meaning": "The strings track's seat-ranking competition mechanic.",
+      "guidance": "A fair, non-humiliating ranking competition.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ROUTE_A_DISCIPLINE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_STUDIO",
+      "scope": "route",
+      "meaning": "The composition discipline/track name.",
+      "guidance": "A single-word (or short) discipline name distinct from the other two tracks.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ROUTE_A_STUDIO",
+          "ROUTE_C_STUDIO"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_TASK",
+      "scope": "route",
+      "meaning": "The composition track's recurring named assignment.",
+      "guidance": "A named recurring creative assignment specific to the composition track.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_STUDIO",
+      "scope": "route",
+      "meaning": "The voice discipline/track name.",
+      "guidance": "A single-word (or short) discipline name distinct from the other two tracks.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ROUTE_A_STUDIO",
+          "ROUTE_B_STUDIO"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_TASK",
+      "scope": "route",
+      "meaning": "The voice track's featured solo line/audition mechanic.",
+      "guidance": "A featured, competitive solo/audition role.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ROUTE_C_ANCHOR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_ANCHOR",
+      "scope": "route",
+      "meaning": "The voice track's steady, uncelebrated ensemble role.",
+      "guidance": "An unglamorous but essential ensemble role; never a lesser prize than ROUTE_C_TASK.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "graphic",
+          "capture",
+          "despair"
+        ],
+        "distinct_from": [
+          "ROUTE_C_TASK"
+        ]
+      }
+    }
+  ]
+}

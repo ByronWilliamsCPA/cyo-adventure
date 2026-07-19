@@ -21,7 +21,7 @@ state o_hollow_app #FFF9C4
 o_hollow_app : choice · 80w
 state e_set_hollow #FFCDD2
 e_set_hollow : setback (negative)
-e_set_hollow : "Back to the Flowerpots"
+e_set_hollow : "Back to the {A1_DEADEND_FIND}"
 state o_hollow_3 #D1C4E9
 o_hollow_3 : rising · 66w
 state o_hollow_4 #D1C4E9
@@ -32,7 +32,7 @@ state o_hollow_6 #D1C4E9
 o_hollow_6 : rising · 70w
 state e_toad_king #C8E6C9
 e_toad_king : completion (positive)
-e_toad_king : "The Toad Kingdom"
+e_toad_king : "{A1_PRIZE}"
 state o_swing_1 #D1C4E9
 o_swing_1 : rising · 66w
 state o_swing_2 #D1C4E9
@@ -41,7 +41,7 @@ state o_swing_app #FFF9C4
 o_swing_app : choice · 78w
 state e_set_swing #FFCDD2
 e_set_swing : setback (negative)
-e_set_swing : "Just an Empty Bird Box"
+e_set_swing : "Just an Empty {A2_DEADEND_FIND}"
 state o_swing_3 #D1C4E9
 o_swing_3 : rising · 64w
 state o_swing_4 #D1C4E9
@@ -52,7 +52,7 @@ state o_swing_6 #D1C4E9
 o_swing_6 : rising · 72w
 state e_chime #C8E6C9
 e_chime : success (positive)
-e_chime : "The Wind-Chime Tree"
+e_chime : "{A2_PRIZE}"
 state r_intro #D1C4E9
 r_intro : rising · 68w
 state r_fork #FFF9C4
@@ -76,7 +76,7 @@ state r_shed_6 #D1C4E9
 r_shed_6 : rising · 72w
 state e_fort #C8E6C9
 e_fort : success (positive)
-e_fort : "The Secret Fort"
+e_fort : "{B1_PRIZE}"
 state r_rock_1 #D1C4E9
 r_rock_1 : rising · 66w
 state r_rock_2 #D1C4E9
@@ -85,7 +85,7 @@ state r_rock_app #FFF9C4
 r_rock_app : choice · 78w
 state e_set_rock #FFCDD2
 e_set_rock : setback (negative)
-e_set_rock : "Only a Line of Ants"
+e_set_rock : "Only a Line of {B2_DEADEND_FIND}"
 state r_rock_3 #D1C4E9
 r_rock_3 : rising · 64w
 state r_rock_4 #D1C4E9
@@ -96,7 +96,7 @@ state r_rock_6 #D1C4E9
 r_rock_6 : rising · 72w
 state e_marbles #C8E6C9
 e_marbles : success (positive)
-e_marbles : "The Box of Marbles"
+e_marbles : "{B2_PRIZE}"
 state s_intro #D1C4E9
 s_intro : rising · 68w
 state s_fork #FFF9C4
@@ -109,7 +109,7 @@ state s_bramble_app #FFF9C4
 s_bramble_app : choice · 80w
 state e_set_bramble #FFCDD2
 e_set_bramble : setback (negative)
-e_set_bramble : "The Lost Sock"
+e_set_bramble : "The Lost {C1_DEADEND_FIND}"
 state s_bramble_3 #D1C4E9
 s_bramble_3 : rising · 66w
 state s_bramble_4 #D1C4E9
@@ -120,7 +120,7 @@ state s_bramble_6 #D1C4E9
 s_bramble_6 : rising · 72w
 state e_cat #C8E6C9
 e_cat : completion (positive)
-e_cat : "Pepper the Bramble Cat"
+e_cat : "{C1_PRIZE}"
 state s_bank_1 #D1C4E9
 s_bank_1 : rising · 66w
 state s_bank_2 #D1C4E9
@@ -129,7 +129,7 @@ state s_bank_app #FFF9C4
 s_bank_app : choice · 78w
 state e_set_bank #FFCDD2
 e_set_bank : setback (negative)
-e_set_bank : "A Surprised Water Beetle"
+e_set_bank : "A Surprised {C2_DEADEND_FIND}"
 state s_bank_3 #D1C4E9
 s_bank_3 : rising · 64w
 state s_bank_4 #D1C4E9
@@ -140,67 +140,67 @@ state s_bank_6 #D1C4E9
 s_bank_6 : rising · 72w
 state e_buttons #C8E6C9
 e_buttons : completion (positive)
-e_buttons : "The Tin of Shiny Buttons"
-n_start --> o_intro : Follow the map to the great old oak.
-n_start --> r_intro : Follow the map to the garden shed.
-n_start --> s_intro : Follow the map down to the stream.
-o_intro --> o_fork : Search around the roots of the oak.
-o_fork --> o_hollow_1 : Take the trail to the hollow log.
-o_fork --> o_swing_1 : Take the trail to the tire swing.
-o_hollow_1 --> o_hollow_2 : Peek inside the hollow log.
-o_hollow_2 --> o_hollow_app : Follow the map through the log.
-o_hollow_app --> e_set_hollow : Try the dry dusty path.
-o_hollow_app --> o_hollow_3 : Try the soft mossy path.
-o_hollow_3 --> o_hollow_4 : Follow the mossy path deeper.
-o_hollow_4 --> o_hollow_5 : Step into the shady green hollow.
-o_hollow_5 --> o_hollow_6 : Tiptoe up to the ring of pebbles.
-o_hollow_6 --> e_toad_king : Kneel down by the toad king.
-o_swing_1 --> o_swing_2 : Look at the ribbons on the swing.
-o_swing_2 --> o_swing_app : Listen for the tinkling sound.
-o_swing_app --> e_set_swing : Climb toward the prickly leaves.
-o_swing_app --> o_swing_3 : Walk along the smooth low limb.
-o_swing_3 --> o_swing_4 : Balance along toward the ringing.
+e_buttons : "{C2_PRIZE}"
+n_start --> o_intro : Follow the map to {ROUTE_A_LURE}.
+n_start --> r_intro : Follow the map to {ROUTE_B_LURE}.
+n_start --> s_intro : Follow the map down to {ROUTE_C_LURE}.
+o_intro --> o_fork : Search around the roots of {ROUTE_A_LURE...
+o_fork --> o_hollow_1 : Take the trail to {A1_LANDMARK1}.
+o_fork --> o_swing_1 : Take the trail to {A2_LANDMARK1}.
+o_hollow_1 --> o_hollow_2 : Peek inside {A1_LANDMARK1}.
+o_hollow_2 --> o_hollow_app : Follow the map through {A1_LANDMARK1}.
+o_hollow_app --> e_set_hollow : Try {A1_DEADEND_PATH}.
+o_hollow_app --> o_hollow_3 : Try {A1_ONWARD_PATH}.
+o_hollow_3 --> o_hollow_4 : Follow {A1_ONWARD_PATH} deeper.
+o_hollow_4 --> o_hollow_5 : Step into {A1_ZONE_HINT}.
+o_hollow_5 --> o_hollow_6 : Tiptoe up to {A1_RING}.
+o_hollow_6 --> e_toad_king : Kneel down by {A1_LEADER}.
+o_swing_1 --> o_swing_2 : Look at {A2_DETAIL1} on {A2_LANDMARK1}.
+o_swing_2 --> o_swing_app : Listen for {A2_SIGN}.
+o_swing_app --> e_set_swing : Climb toward {A2_DEADEND_PATH}.
+o_swing_app --> o_swing_3 : Walk along {A2_ONWARD_PATH}.
+o_swing_3 --> o_swing_4 : Balance along toward {A2_SIGN}.
 o_swing_4 --> o_swing_5 : Look at the dangling things.
 o_swing_5 --> o_swing_6 : Stand still and listen.
-o_swing_6 --> e_chime : Touch the biggest chime gently.
-r_intro --> r_fork : Sneak up to the garden shed.
-r_fork --> r_shed_1 : Slip inside the shed door.
-r_fork --> r_rock_1 : Head to the big rock pile.
-r_shed_1 --> r_shed_2 : Follow the light to the corner.
-r_shed_2 --> r_shed_app : Look at the stack of crates.
-r_shed_app --> e_set_shed : Crawl under the workbench.
-r_shed_app --> r_shed_3 : Climb the crate ladder up.
-r_shed_3 --> r_shed_4 : Climb toward the glowing gap.
-r_shed_4 --> r_shed_5 : Peek into the little loft.
-r_shed_5 --> r_shed_6 : Step into the cozy hideaway.
-r_shed_6 --> e_fort : Read the painted sign.
-r_rock_1 --> r_rock_2 : Look at the low flat stone.
-r_rock_2 --> r_rock_app : Tap the hollow-sounding stone.
-r_rock_app --> e_set_rock : Check the gap between boulders.
-r_rock_app --> r_rock_3 : Dig under the flat stone.
-r_rock_3 --> r_rock_4 : Brush away the sandy soil.
-r_rock_4 --> r_rock_5 : Wiggle the little box free.
+o_swing_6 --> e_chime : Touch {A2_BIG_CHIME} gently.
+r_intro --> r_fork : Sneak up to {ROUTE_B_LURE}.
+r_fork --> r_shed_1 : Slip inside {ROUTE_B_LURE}'s door.
+r_fork --> r_rock_1 : Head to {B2_LANDMARK1}.
+r_shed_1 --> r_shed_2 : Follow the light to {B1_LANDMARK1}.
+r_shed_2 --> r_shed_app : Look at {B1_CRATES}.
+r_shed_app --> e_set_shed : Crawl through {B1_DEADEND_PATH}.
+r_shed_app --> r_shed_3 : Climb {B1_ONWARD_PATH} up.
+r_shed_3 --> r_shed_4 : Climb toward {B1_ZONE_HINT}.
+r_shed_4 --> r_shed_5 : Peek into {B1_LOFT}.
+r_shed_5 --> r_shed_6 : Step into {B1_LOFT}.
+r_shed_6 --> e_fort : Read {B1_SIGN_BOARD}.
+r_rock_1 --> r_rock_2 : Look at {B2_STONE}.
+r_rock_2 --> r_rock_app : Tap {B2_STONE}.
+r_rock_app --> e_set_rock : Check {B2_DEADEND_PATH}.
+r_rock_app --> r_rock_3 : Dig into {B2_ONWARD_PATH}.
+r_rock_3 --> r_rock_4 : Brush away {B2_ONWARD_PATH}.
+r_rock_4 --> r_rock_5 : Wiggle {B2_BOX} free.
 r_rock_5 --> r_rock_6 : Open the rusty latch.
-r_rock_6 --> e_marbles : Look closely at the marbles.
-s_intro --> s_fork : Head down to the little stream.
-s_fork --> s_bramble_1 : Follow the line into the brambles.
-s_fork --> s_bank_1 : Cross the stepping stones.
-s_bramble_1 --> s_bramble_2 : Follow the meow into the bushes.
+r_rock_6 --> e_marbles : Look closely at {B2_TREASURE}.
+s_intro --> s_fork : Head down to {ROUTE_C_LURE}.
+s_fork --> s_bramble_1 : Follow the line into {C1_LANDMARK1}.
+s_fork --> s_bank_1 : Cross {C2_LANDMARK1}.
+s_bramble_1 --> s_bramble_2 : Follow {C1_SIGN} into the bushes.
 s_bramble_2 --> s_bramble_app : Hold the thorns aside and go in.
-s_bramble_app --> e_set_bramble : Take the low thorny tunnel.
-s_bramble_app --> s_bramble_3 : Take the sunny tunnel.
-s_bramble_3 --> s_bramble_4 : Step into the sunny clearing.
-s_bramble_4 --> s_bramble_5 : Say hello to the fluffy cat.
-s_bramble_5 --> s_bramble_6 : Give the cat a belly rub.
-s_bramble_6 --> e_cat : Read the little collar tag.
+s_bramble_app --> e_set_bramble : Take {C1_DEADEND_PATH}.
+s_bramble_app --> s_bramble_3 : Take {C1_ONWARD_PATH}.
+s_bramble_3 --> s_bramble_4 : Step into {C1_ZONE_HINT}.
+s_bramble_4 --> s_bramble_5 : Say hello to {C1_CAT}.
+s_bramble_5 --> s_bramble_6 : Give {C1_CAT} a belly rub.
+s_bramble_6 --> e_cat : Read {C1_TAG}.
 s_bank_1 --> s_bank_2 : Hop across to the far bank.
-s_bank_2 --> s_bank_app : Look among the willow roots.
-s_bank_app --> e_set_bank : Search the muddy dip.
-s_bank_app --> s_bank_3 : Search the dry sheltered nook.
+s_bank_2 --> s_bank_app : Look among the roots of {C2_TREE}.
+s_bank_app --> e_set_bank : Search {C2_DEADEND_PATH}.
+s_bank_app --> s_bank_3 : Search {C2_ONWARD_PATH}.
 s_bank_3 --> s_bank_4 : Brush away the cool soil.
-s_bank_4 --> s_bank_5 : Open the little brass tin.
-s_bank_5 --> s_bank_6 : Look at the shiny buttons.
-s_bank_6 --> e_buttons : Read the folded paper.
+s_bank_4 --> s_bank_5 : Open {C2_TIN}.
+s_bank_5 --> s_bank_6 : Look at {C2_BUTTONS}.
+s_bank_6 --> e_buttons : Read {C2_NOTE}.
 e_set_hollow --> [*]
 e_toad_king --> [*]
 e_set_swing --> [*]

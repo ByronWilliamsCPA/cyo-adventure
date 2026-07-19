@@ -1,0 +1,1220 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-sky-ship-stowaway",
+  "age_band": "8-11",
+  "legacy_lexicon": [
+    "Wren",
+    "Pip",
+    "Cirrus",
+    "Nimbus",
+    "sky-whale",
+    "airship",
+    "mooring tower",
+    "crow's nest",
+    "grand saloon",
+    "boarding deck"
+  ],
+  "default_binding": {
+    "HERO": "Wren",
+    "COMPANION": "a stowaway cat named Pip",
+    "THRESHOLD": "the great airship Cirrus",
+    "SHIP_NAME": "the Cirrus",
+    "ENTRANCE": "the mooring tower",
+    "OPENING_MOMENT": "a real stowaway at last",
+    "DEADLINE": "the storm closing in",
+    "DEADLINE_SIGN": "a warning bell and a hard lurch",
+    "PURSER": "the purser",
+    "CAPTAIN": "the captain",
+    "BOSUN": "the bosun",
+    "SECRET_NAME": "Nimbus",
+    "SECRET_KIND": "a young sky-whale",
+    "SECRET_SANCTUARY": "a safe sanctuary",
+    "ROUTE_A_ZONE": "the roaring engine room",
+    "ROUTE_B_ZONE": "the dark cargo hold",
+    "ROUTE_C_ZONE": "the crow's nest",
+    "ROUTE_D_ZONE": "the grand saloon",
+    "ROUTE_E_ZONE": "the galley",
+    "ROUTE_F_ZONE": "the captain's cabin",
+    "ROUTE_G_ZONE": "the inner rigging",
+    "ROUTE_H_ZONE": "the weather deck",
+    "ROUTE_I_ZONE": "the straining halyard",
+    "ROUTE_J_ZONE": "the deep hold",
+    "A_CHAR": "a broad-shouldered stoker",
+    "A_LANDMARK": "a narrow catwalk",
+    "A1_ZONE": "a maze of humming pipes",
+    "A1_OFFER1": "dials and gauges",
+    "A1_OFFER2": "the coal bunkers",
+    "A1_PASSAGE": "a low hatch",
+    "A2_LATCH": "a loose hatch",
+    "A_CONV": "a snug junction",
+    "A_HIDE": "the coal chute",
+    "B_AISLE": "a tidy aisle",
+    "B_GAP": "a shadowed gap",
+    "B_OFFER1": "the crest of a faraway city",
+    "B_OFFER2": "a low tunnel of stacked barrels",
+    "B_DETAIL": "a leaping silver fish above three clouds",
+    "B_PASSAGE": "a gap in the cargo",
+    "B_HIDE": "the loose netting",
+    "C_LADDER": "the sheltered inner ladder",
+    "C_RUNG": "the open mast rungs",
+    "C_SPYGLASS": "a spyglass",
+    "C_ENVELOPE": "the great silver envelope",
+    "C_ROPEDOWN": "a rope-run",
+    "D_WALL": "the curtained wall",
+    "D_TABLES": "the long linen tables",
+    "D_MODELS": "a glass case of ship's models",
+    "D_DOOR": "the steward's door",
+    "D_TROLLEY": "the serving trolley",
+    "E_CHAR": "the cook",
+    "E_LARDER": "the open larder",
+    "E_SACKS": "the flour sacks",
+    "F_CHARTS": "a room of charts and instruments",
+    "F_CURTAIN": "the long curtain",
+    "F_TABLE": "the chart table",
+    "G_CATWALK": "the steady catwalk",
+    "G_BRIDGE": "the swinging rope-bridge",
+    "H_LINE": "a loose control line",
+    "H_STANCHION": "a stanchion",
+    "I_BUCKETS": "the sand-buckets",
+    "J_DOOR": "a great sealed door",
+    "J_HATCH": "a small inspection hatch",
+    "J_PANEL": "a keyed control panel",
+    "K_HARNESS": "the tangled harness",
+    "L_STAIR": "the long safe stair",
+    "L_FLOOD": "the short flooded passage",
+    "N_TUBE": "a speaking-tube",
+    "O_TEAR": "the tear in the envelope",
+    "O_WINCH": "the winch",
+    "P_DOOR": "a great cargo door",
+    "P_BAY": "a calmer inner bay",
+    "A_GATE": "the coal fire",
+    "C_GATE": "the windy nest",
+    "D_GATE": "the saloon",
+    "F_GATE": "the chart table",
+    "G_GATE": "the rigging",
+    "L_GATE": "the flood",
+    "O_PRIZE1": "envelope",
+    "P_PRIZE1": "sky-whale"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist, a stowaway aboard the airship.",
+      "guidance": "A single kid-relatable stowaway (name or role); resourceful, quick to hide, never reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "COMPANION",
+          "CAPTAIN",
+          "BOSUN",
+          "PURSER",
+          "SECRET_NAME"
+        ]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The small animal companion discovered aboard partway through the voyage, who joins the hero for the rest of the story.",
+      "guidance": "A small, non-threatening stowaway creature; loyal, lightly-expressive; never a source of peril to the hero.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "HERO",
+          "CAPTAIN",
+          "BOSUN",
+          "PURSER",
+          "SECRET_NAME"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable vehicle the story happens inside, as first introduced in full.",
+      "guidance": "A single large vessel with distinct internal compartments; wonder over dread; no lethal hazards, no toxic/unbreathable air anywhere aboard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SHIP_NAME",
+      "scope": "global",
+      "meaning": "The vessel's own bare name, used for every reference after its full introduction.",
+      "guidance": "A short proper name for the vessel (2-3 words including an article), reused verbatim throughout.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single point of departure and return: where the hero boards, and where every setback and every ending sets her back down.",
+      "guidance": "A boarding/departure point that is always safe to reach and safe to be left at.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The moment/condition that marks the hero's successful, unseen entry into the threshold.",
+      "guidance": "A brief, non-lethal statement of successful concealment at the start of the journey.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The non-lethal escalating hazard that raises the stakes through the back half of the story.",
+      "guidance": "A survivable natural hazard (weather, mechanical strain) that threatens the vessel, never a hazard that directly threatens to kill.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The recurring sensory sign that the deadline is worsening, reused at each escalation beat.",
+      "guidance": "A visible or audible cue (an alarm, a lurch, a groan) that gives fair warning without ever implying real danger to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PURSER",
+      "scope": "global",
+      "meaning": "The kind officer who processes a caught stowaway at the end of a setback.",
+      "guidance": "A calm, unthreatening adult crew role; never punitive beyond a gentle early disembarkation.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "HERO",
+          "COMPANION",
+          "CAPTAIN",
+          "BOSUN",
+          "SECRET_NAME"
+        ]
+      }
+    },
+    {
+      "id": "CAPTAIN",
+      "scope": "global",
+      "meaning": "The vessel's commanding officer, who ultimately trusts the hero with a real task.",
+      "guidance": "A busy, capable, fundamentally kind authority figure.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "HERO",
+          "COMPANION",
+          "BOSUN",
+          "PURSER",
+          "SECRET_NAME"
+        ]
+      }
+    },
+    {
+      "id": "BOSUN",
+      "scope": "global",
+      "meaning": "A senior crew member who works alongside the hero during the storm.",
+      "guidance": "A friendly, hands-on crew role.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "HERO",
+          "COMPANION",
+          "CAPTAIN",
+          "PURSER",
+          "SECRET_NAME"
+        ]
+      }
+    },
+    {
+      "id": "SECRET_NAME",
+      "scope": "global",
+      "meaning": "The given name of the rescued creature hidden aboard.",
+      "guidance": "A short, gentle proper name for the creature.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "HERO",
+          "COMPANION",
+          "CAPTAIN",
+          "BOSUN",
+          "PURSER"
+        ]
+      }
+    },
+    {
+      "id": "SECRET_KIND",
+      "scope": "global",
+      "meaning": "The species/kind of the rescued creature, used wherever the story refers to it generically rather than by name.",
+      "guidance": "A wondrous, gentle young creature; frightened but never dangerous to the hero.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SECRET_SANCTUARY",
+      "scope": "global",
+      "meaning": "The safe destination the creature is being carried toward.",
+      "guidance": "A place of safety and freedom, away from anyone who would do the creature harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_ZONE",
+      "scope": "route",
+      "meaning": "The first compartment reachable from the opening hub (engine-room analogue).",
+      "guidance": "A working, industrial compartment; loud but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_B_ZONE",
+          "ROUTE_C_ZONE",
+          "ROUTE_D_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_ZONE",
+      "scope": "route",
+      "meaning": "The second compartment reachable from the opening hub (cargo-hold analogue).",
+      "guidance": "A storage compartment full of secured goods; dim but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_ZONE",
+          "ROUTE_C_ZONE",
+          "ROUTE_D_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_ZONE",
+      "scope": "route",
+      "meaning": "The third compartment reachable from the opening hub (lookout-post analogue).",
+      "guidance": "A high vantage point with a view outward; exposed but safe with care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_ZONE",
+          "ROUTE_B_ZONE",
+          "ROUTE_D_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_ZONE",
+      "scope": "route",
+      "meaning": "The fourth compartment reachable from the opening hub (passenger-lounge analogue).",
+      "guidance": "A public, occupied compartment; the hero must move through unseen.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_A_ZONE",
+          "ROUTE_B_ZONE",
+          "ROUTE_C_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_E_ZONE",
+      "scope": "route",
+      "meaning": "The first compartment reachable from the first bottleneck (galley/kitchen analogue).",
+      "guidance": "A food-preparation compartment; warm and busy but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_F_ZONE",
+          "ROUTE_G_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_F_ZONE",
+      "scope": "route",
+      "meaning": "The second compartment reachable from the first bottleneck (commanding officer's quarters analogue).",
+      "guidance": "A private working compartment belonging to an authority figure.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_E_ZONE",
+          "ROUTE_G_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_G_ZONE",
+      "scope": "route",
+      "meaning": "The third compartment reachable from the first bottleneck (rigging/superstructure analogue).",
+      "guidance": "An open-framework climbing area strung between decks; exposed but safe with care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_E_ZONE",
+          "ROUTE_F_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_H_ZONE",
+      "scope": "route",
+      "meaning": "The first destination reachable once the deadline hits (exposed weather-deck analogue).",
+      "guidance": "An open, exposed working area buffeted by the deadline hazard; safe with care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_I_ZONE",
+          "ROUTE_J_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_I_ZONE",
+      "scope": "route",
+      "meaning": "The second destination reachable once the deadline hits (crew-labor station analogue).",
+      "guidance": "A working station where the crew fight the deadline hazard directly.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_H_ZONE",
+          "ROUTE_J_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_J_ZONE",
+      "scope": "route",
+      "meaning": "The third destination reachable once the deadline hits (the deep hold housing the secret, analogue).",
+      "guidance": "A deep, enclosed compartment housing the story's hidden secret; sealed off but not menacing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "capture"
+        ],
+        "distinct_from": [
+          "ROUTE_H_ZONE",
+          "ROUTE_I_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "A_CHAR",
+      "scope": "track",
+      "meaning": "The crew member working ROUTE_A_ZONE.",
+      "guidance": "A large, busy, unthreatening worker.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_LANDMARK",
+      "scope": "track",
+      "meaning": "A physical landmark inside ROUTE_A_ZONE.",
+      "guidance": "A safe, passable structural feature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_ZONE",
+      "scope": "track",
+      "meaning": "The maze-like area past ROUTE_A_ZONE's first landmark.",
+      "guidance": "Intriguing, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_OFFER1",
+      "scope": "track",
+      "meaning": "The brighter of two paths inside A1_ZONE.",
+      "guidance": "An instrument-lit path.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "A1_OFFER2",
+      "scope": "track",
+      "meaning": "The darker of two paths inside A1_ZONE.",
+      "guidance": "A dim storage path with a small, harmless sound.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "A1_PASSAGE",
+      "scope": "track",
+      "meaning": "The passage leading on from A1_OFFER1.",
+      "guidance": "A small, safe connecting passage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_LATCH",
+      "scope": "track",
+      "meaning": "The latch/hatch leading on from A1_OFFER2.",
+      "guidance": "A simple, safe fastening.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_CONV",
+      "scope": "track",
+      "meaning": "The nook where route A's two paths reconverge.",
+      "guidance": "A snug, safe gathering spot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_HIDE",
+      "scope": "track",
+      "meaning": "The hiding spot used during route A's risk beat.",
+      "guidance": "A safe place to crouch out of sight.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_AISLE",
+      "scope": "track",
+      "meaning": "The tidy path through ROUTE_B_ZONE.",
+      "guidance": "An orderly, safe row of stored goods.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_GAP",
+      "scope": "track",
+      "meaning": "The looser, riskier path through ROUTE_B_ZONE.",
+      "guidance": "A gap in the securing that is passable but shifting.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_OFFER1",
+      "scope": "track",
+      "meaning": "A distinguishing mark noticed along B_AISLE.",
+      "guidance": "A painted or stamped identifying mark.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "B_OFFER2",
+      "scope": "track",
+      "meaning": "An alternate passage noticed along B_AISLE.",
+      "guidance": "A snug, safe connecting passage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "B_DETAIL",
+      "scope": "track",
+      "meaning": "The detail of B_OFFER1's mark.",
+      "guidance": "A vivid, benign decorative detail.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_PASSAGE",
+      "scope": "track",
+      "meaning": "The passage leading on from B_OFFER1.",
+      "guidance": "A safe gap between the stored goods.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_HIDE",
+      "scope": "track",
+      "meaning": "The looser securing used during route B's risk beat.",
+      "guidance": "A loosened restraint that gives way safely.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_LADDER",
+      "scope": "track",
+      "meaning": "The sheltered climbing path up to ROUTE_C_ZONE.",
+      "guidance": "A safe, enclosed climb.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_RUNG",
+      "scope": "track",
+      "meaning": "The exposed climbing path up to ROUTE_C_ZONE.",
+      "guidance": "An exposed but passable climb.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_SPYGLASS",
+      "scope": "track",
+      "meaning": "The viewing instrument found at ROUTE_C_ZONE.",
+      "guidance": "A simple optical instrument.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_ENVELOPE",
+      "scope": "track",
+      "meaning": "The vessel's great lifting structure, viewed from ROUTE_C_ZONE and worked on again in the finale.",
+      "guidance": "A vast, awe-inspiring structural feature that keeps the vessel aloft; safe to view and, later, to work on.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C_ROPEDOWN",
+      "scope": "track",
+      "meaning": "The quick descent from ROUTE_C_ZONE.",
+      "guidance": "A safe, fast way down.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_WALL",
+      "scope": "track",
+      "meaning": "The concealing wall/curtain inside ROUTE_D_ZONE.",
+      "guidance": "A safe place to move along unseen.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_TABLES",
+      "scope": "track",
+      "meaning": "The concealing furniture inside ROUTE_D_ZONE.",
+      "guidance": "Safe furniture to duck beneath.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_MODELS",
+      "scope": "track",
+      "meaning": "A display noticed behind D_WALL.",
+      "guidance": "A harmless decorative display.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_DOOR",
+      "scope": "track",
+      "meaning": "The service door leading on from D_WALL.",
+      "guidance": "A staff-only door, easy for a child to slip through.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_TROLLEY",
+      "scope": "track",
+      "meaning": "The moving furniture used during route D's risk beat.",
+      "guidance": "A safe object to duck behind.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E_CHAR",
+      "scope": "track",
+      "meaning": "The crew member working ROUTE_E_ZONE.",
+      "guidance": "A busy, unthreatening worker.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E_LARDER",
+      "scope": "track",
+      "meaning": "The food-storage area inside ROUTE_E_ZONE.",
+      "guidance": "A safe place stocked with food.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E_SACKS",
+      "scope": "track",
+      "meaning": "The concealing storage inside ROUTE_E_ZONE.",
+      "guidance": "Safe, soft storage to hide behind.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_CHARTS",
+      "scope": "track",
+      "meaning": "The working materials inside ROUTE_F_ZONE.",
+      "guidance": "Charts, instruments, or plans; informative, not dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_CURTAIN",
+      "scope": "track",
+      "meaning": "A concealing feature inside ROUTE_F_ZONE.",
+      "guidance": "A safe place to duck behind.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_TABLE",
+      "scope": "track",
+      "meaning": "A piece of furniture inside ROUTE_F_ZONE.",
+      "guidance": "Safe furniture to duck beneath.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_CATWALK",
+      "scope": "track",
+      "meaning": "The steadier of two paths through ROUTE_G_ZONE.",
+      "guidance": "A secure walkway.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_BRIDGE",
+      "scope": "track",
+      "meaning": "The swaying of two paths through ROUTE_G_ZONE.",
+      "guidance": "A swinging but ultimately safe crossing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H_LINE",
+      "scope": "track",
+      "meaning": "A loose piece of rigging on ROUTE_H_ZONE.",
+      "guidance": "A loose line that can be safely secured.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "H_STANCHION",
+      "scope": "track",
+      "meaning": "A fixed handhold on ROUTE_H_ZONE.",
+      "guidance": "A sturdy, safe handhold.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "I_BUCKETS",
+      "scope": "track",
+      "meaning": "Supplies the crew need moved on ROUTE_I_ZONE.",
+      "guidance": "Ordinary, harmless supplies.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "J_DOOR",
+      "scope": "track",
+      "meaning": "The sealed door guarding ROUTE_J_ZONE.",
+      "guidance": "A heavy but ordinary door, not a prison.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "J_HATCH",
+      "scope": "track",
+      "meaning": "The small viewing hatch beside J_DOOR.",
+      "guidance": "A safe way to look through before entering.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "J_PANEL",
+      "scope": "track",
+      "meaning": "The labelled control panel beside J_DOOR.",
+      "guidance": "A caretaking control panel, not a lock-in mechanism.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_HARNESS",
+      "scope": "track",
+      "meaning": "The restraint pinning the creature's fin, which the hero loosens to help it.",
+      "guidance": "A safety restraint being removed to free the creature, never to hold it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_STAIR",
+      "scope": "track",
+      "meaning": "The slower, safer path to the bridge.",
+      "guidance": "A slow but sound stairway.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_FLOOD",
+      "scope": "track",
+      "meaning": "The faster, riskier path to the bridge.",
+      "guidance": "A quicker route made slippery by the deadline hazard, never genuinely dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "N_TUBE",
+      "scope": "track",
+      "meaning": "The communication device the hero uses to calm the creature from a distance.",
+      "guidance": "A simple speaking device.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "O_TEAR",
+      "scope": "track",
+      "meaning": "The damage to C_ENVELOPE that must be mended.",
+      "guidance": "A repairable tear, not a catastrophic failure.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "O_WINCH",
+      "scope": "track",
+      "meaning": "The mechanical aid used to help mend O_TEAR.",
+      "guidance": "A simple hand-operated mechanism.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "P_DOOR",
+      "scope": "track",
+      "meaning": "The opening through which the creature can be released.",
+      "guidance": "A safe opening to the outside air.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "P_BAY",
+      "scope": "track",
+      "meaning": "The sheltered alternative to releasing the creature outright.",
+      "guidance": "A calm, padded, safe holding area.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_GATE",
+      "scope": "ending",
+      "meaning": "Names the route-A setback ending: the obstacle the hero fails to clear.",
+      "guidance": "Non-lethal; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "C_GATE",
+          "D_GATE",
+          "F_GATE",
+          "G_GATE",
+          "L_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C_GATE",
+      "scope": "ending",
+      "meaning": "Names the route-C setback ending.",
+      "guidance": "Non-lethal; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "D_GATE",
+          "F_GATE",
+          "G_GATE",
+          "L_GATE"
+        ]
+      }
+    },
+    {
+      "id": "D_GATE",
+      "scope": "ending",
+      "meaning": "Names the route-D setback ending.",
+      "guidance": "Non-lethal; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "C_GATE",
+          "F_GATE",
+          "G_GATE",
+          "L_GATE"
+        ]
+      }
+    },
+    {
+      "id": "F_GATE",
+      "scope": "ending",
+      "meaning": "Names the route-F setback ending.",
+      "guidance": "Non-lethal; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "C_GATE",
+          "D_GATE",
+          "G_GATE",
+          "L_GATE"
+        ]
+      }
+    },
+    {
+      "id": "G_GATE",
+      "scope": "ending",
+      "meaning": "Names the route-G setback ending.",
+      "guidance": "Non-lethal; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "C_GATE",
+          "D_GATE",
+          "F_GATE",
+          "L_GATE"
+        ]
+      }
+    },
+    {
+      "id": "L_GATE",
+      "scope": "ending",
+      "meaning": "Names the route-L setback ending.",
+      "guidance": "Non-lethal; retreat is always safe. Must be retreatable.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": [
+          "A_GATE",
+          "C_GATE",
+          "D_GATE",
+          "F_GATE",
+          "G_GATE"
+        ]
+      }
+    },
+    {
+      "id": "O_PRIZE1",
+      "scope": "ending",
+      "meaning": "Names the mended-envelope success ending.",
+      "guidance": "Positive; a real repair, not a violent or grim image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "P_PRIZE1"
+        ]
+      }
+    },
+    {
+      "id": "P_PRIZE1",
+      "scope": "ending",
+      "meaning": "Names the freed-creature success ending.",
+      "guidance": "Positive; the creature's short kind name, not a violent image.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "O_PRIZE1"
+        ]
+      }
+    }
+  ]
+}

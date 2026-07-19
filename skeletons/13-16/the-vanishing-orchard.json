@@ -34,51 +34,51 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=170 beats='Rowan Ashby steps off the last bus into Alderwick, the orchard town where she was born, and finds it half a stranger to itself; the war memorial lists names no one in the square can place, her cousin Teo waves at a house Rowan remembers as a bakery, and when she says the word bakery three people give her the same polite blank look; only Rowan seems to carry the missing years, the vanished shopfronts, the empty chairs still pulled up to kitchen tables, and four threads tug at her at once, the deed hall records, the last living orchard-keeper on Mabb Hill, the family photographs that will not stay the same, and the sealed cellar beneath the old cider house'>>",
+      "body": "<<FILL role=setup words=170 beats='{HERO_FULL} steps off the last bus into {TOWN}, the {ORCHARD} town where she was born, and finds it half a stranger to itself; the {WAR_MEMORIAL} lists names no one in the {TOWN_SQUARE} can place, her cousin {COUSIN} waves at a house {HERO} remembers as a {BAKERY}, and when she says the word {BAKERY} three people give her the same polite blank look; only {HERO} seems to carry the missing years, the vanished shopfronts, the empty chairs still pulled up to kitchen tables, and four threads tug at her at once, the {REC_LOCATION} records, the last living {ORCHARD}-{KEEPER_ROLE} on {KEE_LOCATION}, the family {PHO_MEDIUM}s that will not stay the same, and the sealed {CELLAR} beneath the old {CIDER_HOUSE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_start_1",
-          "label": "Search the deed hall for the missing years.",
+          "label": "Search the {REC_LOCATION} for the missing years.",
           "target": "rec_entry"
         },
         {
           "id": "c_n_start_2",
-          "label": "Climb Mabb Hill to the last orchard-keeper.",
+          "label": "Climb {KEE_LOCATION} to the last {ORCHARD}-{KEEPER_ROLE}.",
           "target": "kee_entry"
         },
         {
           "id": "c_n_start_3",
-          "label": "Lay out the family photographs that keep changing.",
+          "label": "Lay out the family {PHO_MEDIUM}s that keep changing.",
           "target": "pho_entry"
         },
         {
           "id": "c_n_start_4",
-          "label": "Force the sealed cellar under the cider house.",
+          "label": "Force the sealed {CELLAR} under the {CIDER_HOUSE}.",
           "target": "cel_entry"
         }
       ]
     },
     {
       "id": "rec_entry",
-      "body": "<<FILL role=rising words=150 beats='The deed hall smells of dust and floor wax; the register of Alderwick births and deaths lies open, but whole pages are blank where names were inked, the paper faintly warm as if the words left only moments ago, and the young clerk keeps losing his place mid-sentence'>>",
+      "body": "<<FILL role=rising words=150 beats='The {REC_LOCATION} smells of dust and floor wax; the {REC_DOCUMENT} of {TOWN} births and deaths lies open, but whole pages are blank where names were inked, the paper faintly warm as if the words left only moments ago, and the young {REC_CHAR} keeps losing his place mid-sentence'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rec_entry_1",
-          "label": "Question the frightened clerk.",
+          "label": "Question the frightened {REC_CHAR}.",
           "target": "rec_a_p1"
         },
         {
           "id": "c_rec_entry_2",
-          "label": "Read the oldest orchard leases.",
+          "label": "Read the oldest {ORCHARD} leases.",
           "target": "rec_b_p1"
         }
       ]
     },
     {
       "id": "rec_a_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan leans across the counter and asks the clerk who lived at number nine on the square, and watches him grope for a memory that keeps sliding out of reach'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} leans across the counter and asks the {REC_CHAR} who lived at number nine on the {TOWN_SQUARE}, and watches him grope for a memory that keeps sliding out of reach'>>",
       "is_ending": false,
       "choices": [
         {
@@ -90,7 +90,7 @@
     },
     {
       "id": "rec_a_p2",
-      "body": "<<FILL role=rising words=135 beats='The clerk whispers that he keeps a photograph of a girl he is sure is his daughter, though he cannot summon her name or her face the moment he looks away from it'>>",
+      "body": "<<FILL role=rising words=135 beats='The {REC_CHAR} whispers that he keeps a {PHO_MEDIUM} of a girl he is sure is his daughter, though he cannot summon her name or her face the moment he looks away from it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -102,7 +102,7 @@
     },
     {
       "id": "rec_a_p3",
-      "body": "<<FILL role=rising words=135 beats='Rowan copies the blank entries into her own notebook, off the register, hoping ink she carries out of town will hold where the register ink will not'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} copies the blank entries into her own notebook, off the {REC_DOCUMENT}, hoping ink she carries out of {TOWN} will hold where the {REC_DOCUMENT} ink will not'>>",
       "is_ending": false,
       "choices": [
         {
@@ -114,7 +114,7 @@
     },
     {
       "id": "rec_a_p4",
-      "body": "<<FILL role=rising words=135 beats='The clerk hands her a magnifier and together they find a birth entry where the name has thinned to a grey smear, present and absent at once'>>",
+      "body": "<<FILL role=rising words=135 beats='The {REC_CHAR} hands her a magnifier and together they find a birth entry where the name has thinned to a grey smear, present and absent at once'>>",
       "is_ending": false,
       "choices": [
         {
@@ -126,7 +126,7 @@
     },
     {
       "id": "rec_adec",
-      "body": "<<FILL role=choice words=150 beats='Rowan asks the clerk to say aloud a name he cannot hold, and his hands shake so hard the pen rolls off the desk, and she must choose between mercy and the answer she needs'>>",
+      "body": "<<FILL role=choice words=150 beats='{HERO} asks the {REC_CHAR} to say aloud a name he cannot hold, and his hands shake so hard the pen rolls off the desk, and she must choose between mercy and the answer she needs'>>",
       "is_ending": false,
       "choices": [
         {
@@ -143,18 +143,18 @@
     },
     {
       "id": "e_rec_a",
-      "body": "<<FILL role=failure words=120 beats='The clerk panics, shoves Rowan out and bolts the hall, and the one door into the towns records closes against her'>>",
+      "body": "<<FILL role=failure words=120 beats='The {REC_CHAR} panics, shoves {HERO} out and bolts the hall, and the one door into the {TOWN}s records closes against her'>>",
       "is_ending": true,
       "ending": {
         "id": "e_rec_a",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Bolted Hall"
+        "title": "{REC_A_SETBACK}"
       }
     },
     {
       "id": "rec_b_p1",
-      "body": "<<FILL role=rising words=135 beats='The lease ledger runs back two centuries in a dozen different hands, cracked and foxed, smelling of the same warm dust as the blank register'>>",
+      "body": "<<FILL role=rising words=135 beats='The lease {REC_B_LEDGER} runs back two centuries in a dozen different hands, cracked and foxed, smelling of the same warm dust as the blank {REC_DOCUMENT}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -166,7 +166,7 @@
     },
     {
       "id": "rec_b_p2",
-      "body": "<<FILL role=rising words=135 beats='Rowan traces the fortieth-year clause across the centuries and finds it always followed a hard season, a failed harvest, a fever, a flood, some grief the town could not carry'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} traces the fortieth-year clause across the centuries and finds it always followed a hard season, a failed harvest, a fever, a flood, some grief the {TOWN} could not carry'>>",
       "is_ending": false,
       "choices": [
         {
@@ -178,7 +178,7 @@
     },
     {
       "id": "rec_b_p3",
-      "body": "<<FILL role=rising words=135 beats='In the margin beside the newest clause someone has drawn a small tree with roots far deeper than its branches, and inked beneath it the single word enough'>>",
+      "body": "<<FILL role=rising words=135 beats='In the margin beside the newest clause someone has drawn a small tree with {ROOT}s far deeper than its branches, and inked beneath it the single word enough'>>",
       "is_ending": false,
       "choices": [
         {
@@ -190,7 +190,7 @@
     },
     {
       "id": "rec_b_p4",
-      "body": "<<FILL role=rising words=135 beats='Every fortieth year the same clause reappears in careful script, a promise that the orchard shall keep a little in exchange for a fruitful season'>>",
+      "body": "<<FILL role=rising words=135 beats='Every fortieth year the same clause reappears in careful script, a promise that the {ORCHARD} shall keep a little in exchange for a fruitful season'>>",
       "is_ending": false,
       "choices": [
         {
@@ -202,12 +202,12 @@
     },
     {
       "id": "rec_bdec",
-      "body": "<<FILL role=choice words=150 beats='The repeating clause always names a keeper, and Rowan can read the line calmly forward or tear the whole page free in fright'>>",
+      "body": "<<FILL role=choice words=150 beats='The repeating clause always names a {KEEPER_ROLE}, and {HERO} can read the line calmly forward or tear the whole page free in fright'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rec_bdec_1",
-          "label": "Trace the clause forward in the ledger.",
+          "label": "Trace the clause forward in the {REC_B_LEDGER}.",
           "target": "rec_conv"
         },
         {
@@ -219,30 +219,30 @@
     },
     {
       "id": "e_rec_b",
-      "body": "<<FILL role=failure words=120 beats='Outside, the ink fades from the stolen page to nothing in Rowan fist, her one hard fact turned to blank paper'>>",
+      "body": "<<FILL role=failure words=120 beats='Outside, the ink fades from the stolen page to nothing in {HERO} fist, her one hard fact turned to blank paper'>>",
       "is_ending": true,
       "ending": {
         "id": "e_rec_b",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Blank Page"
+        "title": "{REC_B_SETBACK}"
       }
     },
     {
       "id": "rec_conv",
-      "body": "<<FILL role=choice words=150 beats='The last named keeper, inked forty years ago, was Rowan’s own grandmother, and calmer now the clerk unlocks a back room where the forfeited years are shelved as sealed envelopes, one of them warm to the touch'>>",
+      "body": "<<FILL role=choice words=150 beats='The last named {KEEPER_ROLE}, inked forty years ago, was {HERO}\u2019s own {GRANDMOTHER}, and calmer now the {REC_CHAR} unlocks a back room where the forfeited years are shelved as sealed envelopes, one of them warm to the touch'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rec_conv_1",
-          "label": "Follow it down toward the root.",
+          "label": "Follow it down toward the {ROOT}.",
           "target": "rec_t_p1"
         }
       ]
     },
     {
       "id": "rec_t_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan breaks the warm seal and finds a photograph of the cider house cellar door standing open on darkness'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} breaks the warm seal and finds a {PHO_MEDIUM} of the {CIDER_HOUSE} {CELLAR} door standing open on darkness'>>",
       "is_ending": false,
       "choices": [
         {
@@ -254,7 +254,7 @@
     },
     {
       "id": "rec_t_p2",
-      "body": "<<FILL role=rising words=135 beats='A second envelope holds a class photograph with a whole row of children scratched out, and a note reading they were the price of the year the mill burned'>>",
+      "body": "<<FILL role=rising words=135 beats='A second envelope holds a {REC_PHOTO} with a whole row of children scratched out, and a note reading they were the price of the year the mill burned'>>",
       "is_ending": false,
       "choices": [
         {
@@ -266,7 +266,7 @@
     },
     {
       "id": "rec_t_p3",
-      "body": "<<FILL role=rising words=135 beats='Rowan tucks the warm photographs inside her coat against her skin, as if her own heat could keep the images from fading like everything else in this town'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} tucks the warm {PHO_MEDIUM}s inside her coat against her skin, as if her own heat could keep the images from fading like everything else in this {TOWN}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -278,7 +278,7 @@
     },
     {
       "id": "rec_t_p4",
-      "body": "<<FILL role=rising words=135 beats='Pencilled on the back of the first photo in a careful hand are the words it drinks from the root, come before the next frost'>>",
+      "body": "<<FILL role=rising words=135 beats='Pencilled on the back of the first {PHO_MEDIUM} in a careful hand are the words it drinks from the {ROOT}, come before the next {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -290,36 +290,36 @@
     },
     {
       "id": "rec_clue",
-      "body": "<<FILL role=rising words=150 beats='The envelope, the register, the lease all point the same way, down to the cider house cellar where something keeps the years'>>",
+      "body": "<<FILL role=rising words=150 beats='The envelope, the {REC_DOCUMENT}, the lease all point the same way, down to the {CIDER_HOUSE} {CELLAR} where something keeps the years'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rec_clue_1",
-          "label": "Carry what you found to the cider house.",
+          "label": "Carry what you found to the {CIDER_HOUSE}.",
           "target": "n_b1"
         }
       ]
     },
     {
       "id": "kee_entry",
-      "body": "<<FILL role=rising words=150 beats='Mabb Hill is all wind and bent apple trees, and at the top Odile Fenn, the last orchard-keeper, sits pruning by feel because her eyes have gone; she knows Rowan by the smell of the road on her, and says you are the one it cannot swallow, sit'>>",
+      "body": "<<FILL role=rising words=150 beats='{KEE_LOCATION} is all wind and bent apple trees, and at the top {KEE_CHAR_FULL}, the last {ORCHARD}-{KEEPER_ROLE}, sits pruning by feel because her eyes have gone; she knows {HERO} by the smell of the road on her, and says you are the one it cannot swallow, sit'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_kee_entry_1",
-          "label": "Ask Odile what is eating the town.",
+          "label": "Ask {KEE_CHAR} what is eating {TOWN}.",
           "target": "kee_a_p1"
         },
         {
           "id": "c_kee_entry_2",
-          "label": "Examine the keepers knotted cord.",
+          "label": "Examine the {KEEPER_ROLE}s knotted {KEEPER_CORD}.",
           "target": "kee_b_p1"
         }
       ]
     },
     {
       "id": "kee_a_p1",
-      "body": "<<FILL role=rising words=135 beats='Odile speaks of the Quiet, the slow forgetting that rises from the oldest tree when the town forgets to feed it a name'>>",
+      "body": "<<FILL role=rising words=135 beats='{KEE_CHAR} speaks of {PHENOMENON}, the slow forgetting that rises from the {OLDEST_TREE} when the {TOWN} forgets to feed it a name'>>",
       "is_ending": false,
       "choices": [
         {
@@ -331,7 +331,7 @@
     },
     {
       "id": "kee_a_p2",
-      "body": "<<FILL role=rising words=135 beats='She tells how the founders knelt at the spring in a starving winter and begged the orchard to take their grief, and how it learned that grief is only memory with the edges still sharp'>>",
+      "body": "<<FILL role=rising words=135 beats='She tells how the {FOUNDERS} knelt at the {SPRING} in a starving winter and begged the {ORCHARD} to take their grief, and how it learned that grief is only memory with the edges still sharp'>>",
       "is_ending": false,
       "choices": [
         {
@@ -343,7 +343,7 @@
     },
     {
       "id": "kee_a_p3",
-      "body": "<<FILL role=rising words=135 beats='Every keeper since has fed it one willing name a year, and the last to do so before the line broke was Rowan’s own grandmother'>>",
+      "body": "<<FILL role=rising words=135 beats='Every {KEEPER_ROLE} since has fed it one willing name a year, and the last to do so before the line broke was {HERO}\u2019s own {GRANDMOTHER}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -355,7 +355,7 @@
     },
     {
       "id": "kee_a_p4",
-      "body": "<<FILL role=rising words=135 beats='She asks whether Rowan is brave or only stubborn, because the two look alike right up until the very end'>>",
+      "body": "<<FILL role=rising words=135 beats='She asks whether {HERO} is brave or only stubborn, because the two look alike right up until the very end'>>",
       "is_ending": false,
       "choices": [
         {
@@ -367,7 +367,7 @@
     },
     {
       "id": "kee_adec",
-      "body": "<<FILL role=choice words=150 beats='Odile waits for Rowan to say what she means to do about the hunger on the hill, whether to starve it blindly or learn its price first'>>",
+      "body": "<<FILL role=choice words=150 beats='{KEE_CHAR} waits for {HERO} to say what she means to do about the hunger on the hill, whether to starve it blindly or learn its price first'>>",
       "is_ending": false,
       "choices": [
         {
@@ -384,18 +384,18 @@
     },
     {
       "id": "e_kee_a",
-      "body": "<<FILL role=failure words=120 beats='Odile decides Rowan is a fool who will only make it hungrier, and sends her down the hill with a warning she cannot understand'>>",
+      "body": "<<FILL role=failure words=120 beats='{KEE_CHAR} decides {HERO} is a fool who will only make it hungrier, and sends her down the hill with a warning she cannot understand'>>",
       "is_ending": true,
       "ending": {
         "id": "e_kee_a",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sent Down the Hill"
+        "title": "{KEE_A_SETBACK}"
       }
     },
     {
       "id": "kee_b_p1",
-      "body": "<<FILL role=rising words=135 beats='The keeper keeps a knotted cord, one knot for every keeper back to the founders, hung from a nail worn smooth by generations'>>",
+      "body": "<<FILL role=rising words=135 beats='The {KEEPER_ROLE} keeps a knotted {KEEPER_CORD}, one knot for every {KEEPER_ROLE} back to the {FOUNDERS}, hung from a nail worn smooth by generations'>>",
       "is_ending": false,
       "choices": [
         {
@@ -407,7 +407,7 @@
     },
     {
       "id": "kee_b_p2",
-      "body": "<<FILL role=rising words=135 beats='Odile guides Rowan thumb over each knot and names the keeper it stands for, her voice steady until it reaches the knots no living mind can attach to a face'>>",
+      "body": "<<FILL role=rising words=135 beats='{KEE_CHAR} guides {HERO} thumb over each knot and names the {KEEPER_ROLE} it stands for, her voice steady until it reaches the knots no living mind can attach to a face'>>",
       "is_ending": false,
       "choices": [
         {
@@ -419,7 +419,7 @@
     },
     {
       "id": "kee_b_p3",
-      "body": "<<FILL role=rising words=135 beats='Past those the cord is smooth for a whole arm length, one lost keeper after another, a rope of forgotten guardians holding a town that does not know it is held'>>",
+      "body": "<<FILL role=rising words=135 beats='Past those the {KEEPER_CORD} is smooth for a whole arm length, one lost {KEEPER_ROLE} after another, a rope of forgotten guardians holding a {TOWN} that does not know it is held'>>",
       "is_ending": false,
       "choices": [
         {
@@ -443,47 +443,47 @@
     },
     {
       "id": "kee_bdec",
-      "body": "<<FILL role=choice words=150 beats='The cord runs long in Rowan’s hands, and she can trace the knots back to the founding with Odile, or cut the line to try to end it'>>",
+      "body": "<<FILL role=choice words=150 beats='The {KEEPER_CORD} runs long in {HERO}\u2019s hands, and she can trace the knots back to the founding with {KEE_CHAR}, or cut the line to try to end it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_kee_bdec_1",
-          "label": "Let Odile guide your fingers along the knots.",
+          "label": "Let {KEE_CHAR} guide your fingers along the knots.",
           "target": "kee_conv"
         },
         {
           "id": "c_kee_bdec_2",
-          "label": "Cut the cord to break the line.",
+          "label": "Cut the {KEEPER_CORD} to break the line.",
           "target": "e_kee_b"
         }
       ]
     },
     {
       "id": "e_kee_b",
-      "body": "<<FILL role=failure words=120 beats='Rowan saws the keeper cord in two and the loose knots scatter down the slope, cutting the last thread anyone held to the vanished years'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} saws the {KEEPER_ROLE} {KEEPER_CORD} in two and the loose knots scatter down the slope, cutting the last thread anyone held to the vanished years'>>",
       "is_ending": true,
       "ending": {
         "id": "e_kee_b",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Severed Cord"
+        "title": "{KEE_B_SETBACK}"
       }
     },
     {
       "id": "kee_conv",
-      "body": "<<FILL role=choice words=150 beats='The cord ends at her grandmother knot, still tight and warm, with one fresh empty knot tied past it waiting for a name, and Odile presses a withered seed into Rowan palm, the mark every keeper carries'>>",
+      "body": "<<FILL role=choice words=150 beats='The {KEEPER_CORD} ends at her {GRANDMOTHER} knot, still tight and warm, with one fresh empty knot tied past it waiting for a name, and {KEE_CHAR} presses a withered {TOKEN_SEED} into {HERO} palm, the mark every {KEEPER_ROLE} carries'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_kee_conv_1",
-          "label": "Follow it down toward the root.",
+          "label": "Follow it down toward the {ROOT}.",
           "target": "kee_t_p1"
         }
       ]
     },
     {
       "id": "kee_t_p1",
-      "body": "<<FILL role=rising words=135 beats='Odile says this is why the Quiet slides off you, you were never planted here, and describes the black spring under the cider house where the founding root learned to drink'>>",
+      "body": "<<FILL role=rising words=135 beats='{KEE_CHAR} says this is why {PHENOMENON} slides off you, you were never planted here, and describes the black {SPRING} under the {CIDER_HOUSE} where the founding {ROOT} learned to drink'>>",
       "is_ending": false,
       "choices": [
         {
@@ -495,7 +495,7 @@
     },
     {
       "id": "kee_t_p2",
-      "body": "<<FILL role=rising words=135 beats='The seed will green only in a hand the Quiet cannot touch, she says, and a green seed is the founders token, the sign that its bearer may bargain at the spring'>>",
+      "body": "<<FILL role=rising words=135 beats='The {TOKEN_SEED} will green only in a hand {PHENOMENON} cannot touch, she says, and a green {TOKEN_SEED} is the {FOUNDERS} token, the sign that its bearer may bargain at the {SPRING}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -507,7 +507,7 @@
     },
     {
       "id": "kee_t_p3",
-      "body": "<<FILL role=rising words=135 beats='She cannot come down the hill on her own failing legs, but she promises to send Teo to the cider house before the frost so Rowan will not face the water alone'>>",
+      "body": "<<FILL role=rising words=135 beats='She cannot come down the hill on her own failing legs, but she promises to send {COUSIN} to the {CIDER_HOUSE} before the {DEADLINE} so {HERO} will not face the water alone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -519,7 +519,7 @@
     },
     {
       "id": "kee_t_p4",
-      "body": "<<FILL role=rising words=135 beats='She warns that the root keeps what it takes and the first frost is only days away now'>>",
+      "body": "<<FILL role=rising words=135 beats='She warns that the {ROOT} keeps what it takes and the first {DEADLINE} is only days away now'>>",
       "is_ending": false,
       "choices": [
         {
@@ -531,19 +531,19 @@
     },
     {
       "id": "kee_clue",
-      "body": "<<FILL role=rising words=150 beats='Odile last words send Rowan to the cellar, where the oldest root has cracked the founding wall and waits below in the dark'>>",
+      "body": "<<FILL role=rising words=150 beats='{KEE_CHAR} last words send {HERO} to the {CELLAR}, where the oldest {ROOT} has cracked the founding wall and waits below in the dark'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_kee_clue_1",
-          "label": "Carry what you found to the cider house.",
+          "label": "Carry what you found to the {CIDER_HOUSE}.",
           "target": "n_b1"
         }
       ]
     },
     {
       "id": "pho_entry",
-      "body": "<<FILL role=rising words=150 beats='In Teo attic the family photographs will not hold still; a christening portrait loses a godmother between two blinks, a harvest crowd thins by a face each time Rowan looks away, and the empty spaces heal over as if the missing were never there'>>",
+      "body": "<<FILL role=rising words=150 beats='In {COUSIN} {PHO_LOCATION} the family {PHO_MEDIUM}s will not hold still; a christening portrait loses a godmother between two blinks, a harvest crowd thins by a face each time {HERO} looks away, and the empty spaces heal over as if the missing were never there'>>",
       "is_ending": false,
       "choices": [
         {
@@ -553,14 +553,14 @@
         },
         {
           "id": "c_pho_entry_2",
-          "label": "Search for a photo that will not change.",
+          "label": "Search for a {PHO_MEDIUM} that will not change.",
           "target": "pho_b_p1"
         }
       ]
     },
     {
       "id": "pho_a_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan lays every photograph on the floorboards and pins the corners flat, determined to catch the erasure as it happens'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} lays every {PHO_MEDIUM} on the floorboards and pins the corners flat, determined to catch the erasure as it happens'>>",
       "is_ending": false,
       "choices": [
         {
@@ -572,7 +572,7 @@
     },
     {
       "id": "pho_a_p2",
-      "body": "<<FILL role=rising words=135 beats='She films the pinned photos on her phone, and on the small bright screen the vanishing happens slower, a face dimming frame by frame like a coal going grey'>>",
+      "body": "<<FILL role=rising words=135 beats='She films the pinned {PHO_MEDIUM}s on her phone, and on the small bright screen the vanishing happens slower, a face dimming frame by frame like a coal going grey'>>",
       "is_ending": false,
       "choices": [
         {
@@ -584,7 +584,7 @@
     },
     {
       "id": "pho_a_p3",
-      "body": "<<FILL role=rising words=135 beats='When she plays the film back the erased faces are gone from the recording too, as if the Quiet reaches even into the memory of a machine that only borrowed the image'>>",
+      "body": "<<FILL role=rising words=135 beats='When she plays the film back the erased faces are gone from the recording too, as if {PHENOMENON} reaches even into the memory of a machine that only borrowed the image'>>",
       "is_ending": false,
       "choices": [
         {
@@ -596,7 +596,7 @@
     },
     {
       "id": "pho_a_p4",
-      "body": "<<FILL role=rising words=135 beats='For one heartbeat a woman stands at the orchard gate, and then she is only a gap in the grass'>>",
+      "body": "<<FILL role=rising words=135 beats='For one heartbeat a woman stands at the {ORCHARD} gate, and then she is only a gap in the grass'>>",
       "is_ending": false,
       "choices": [
         {
@@ -608,7 +608,7 @@
     },
     {
       "id": "pho_adec",
-      "body": "<<FILL role=choice words=150 beats='Rowan can photograph the photographs before they change, or panic and burn the fading ones to try to stop the bleeding'>>",
+      "body": "<<FILL role=choice words=150 beats='{HERO} can {PHO_MEDIUM} the {PHO_MEDIUM}s before they change, or panic and burn the fading ones to try to stop the bleeding'>>",
       "is_ending": false,
       "choices": [
         {
@@ -625,18 +625,18 @@
     },
     {
       "id": "e_pho_a",
-      "body": "<<FILL role=failure words=120 beats='Rowan sets a match to the fading prints, and the fire takes the last images of the forgotten, so not even the gaps remain to prove anyone was lost'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} sets a match to the fading prints, and the fire takes the last images of the forgotten, so not even the gaps remain to prove anyone was lost'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pho_a",
         "valence": "negative",
         "kind": "setback",
-        "title": "Ash of the Forgotten"
+        "title": "{PHO_A_SETBACK}"
       }
     },
     {
       "id": "pho_b_p1",
-      "body": "<<FILL role=rising words=135 beats='One album feels wrong in the hand, heavier, its images sharp and whole while everything around them fades'>>",
+      "body": "<<FILL role=rising words=135 beats='One {PHO_ALBUM} feels wrong in the hand, heavier, its images sharp and whole while everything around them fades'>>",
       "is_ending": false,
       "choices": [
         {
@@ -648,7 +648,7 @@
     },
     {
       "id": "pho_b_p2",
-      "body": "<<FILL role=rising words=135 beats='The strange album has no people in it at all, only the orchard through the seasons, the oldest tree standing a little taller and a little darker in every passing year'>>",
+      "body": "<<FILL role=rising words=135 beats='The strange {PHO_ALBUM} has no people in it at all, only the {ORCHARD} through the seasons, the {OLDEST_TREE} standing a little taller and a little darker in every passing year'>>",
       "is_ending": false,
       "choices": [
         {
@@ -660,7 +660,7 @@
     },
     {
       "id": "pho_b_p3",
-      "body": "<<FILL role=rising words=135 beats='Pressed between two pages Rowan finds a dried apple blossom and a lock of pale hair tied with thread, saved by someone who knew the pictures of people would not last'>>",
+      "body": "<<FILL role=rising words=135 beats='Pressed between two pages {HERO} finds {PHO_KEEPSAKE} tied with thread, saved by someone who knew the pictures of people would not last'>>",
       "is_ending": false,
       "choices": [
         {
@@ -672,7 +672,7 @@
     },
     {
       "id": "pho_b_p4",
-      "body": "<<FILL role=rising words=135 beats='Every picture in it is of the orchard, the cider house, the oldest tree, as if the Quiet guards its own face'>>",
+      "body": "<<FILL role=rising words=135 beats='Every picture in it is of the {ORCHARD}, the {CIDER_HOUSE}, the {OLDEST_TREE}, as if {PHENOMENON} guards its own face'>>",
       "is_ending": false,
       "choices": [
         {
@@ -684,47 +684,47 @@
     },
     {
       "id": "pho_bdec",
-      "body": "<<FILL role=choice words=150 beats='Rowan can compare the untouched orchard photos across the years, or close the strange album and walk away from it'>>",
+      "body": "<<FILL role=choice words=150 beats='{HERO} can compare the untouched {ORCHARD} {PHO_MEDIUM}s across the years, or close the strange {PHO_ALBUM} and walk away from it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pho_bdec_1",
-          "label": "Compare the orchard photos year by year.",
+          "label": "Compare the {ORCHARD} {PHO_MEDIUM}s year by year.",
           "target": "pho_conv"
         },
         {
           "id": "c_pho_bdec_2",
-          "label": "Seal the album and walk away.",
+          "label": "Seal the {PHO_ALBUM} and walk away.",
           "target": "e_pho_b"
         }
       ]
     },
     {
       "id": "e_pho_b",
-      "body": "<<FILL role=failure words=120 beats='Rowan closes the strange album, telling herself photographs are only paper, and by morning cannot recall why the attic mattered, the thread slipping even from her'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} closes the strange {PHO_ALBUM}, telling herself {PHO_MEDIUM}s are only paper, and by morning cannot recall why the {PHO_LOCATION} mattered, the thread slipping even from her'>>",
       "is_ending": true,
       "ending": {
         "id": "e_pho_b",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Sealed Album"
+        "title": "{PHO_B_SETBACK}"
       }
     },
     {
       "id": "pho_conv",
-      "body": "<<FILL role=choice words=150 beats='Laid in order the orchard photos show the oldest tree swelling year by year while the town around it grows thin, and behind the last photograph, tucked in the frame, is Rowan’s grandmother’s young face beside the cellar door holding the same withered seed'>>",
+      "body": "<<FILL role=choice words=150 beats='Laid in order the {ORCHARD} {PHO_MEDIUM}s show the {OLDEST_TREE} swelling year by year while the {TOWN} around it grows thin, and behind the last {PHO_MEDIUM}, tucked in the frame, is {HERO}\u2019s {GRANDMOTHER}\u2019s young face beside the {CELLAR} door holding the same withered {TOKEN_SEED}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pho_conv_1",
-          "label": "Follow it down toward the root.",
+          "label": "Follow it down toward the {ROOT}.",
           "target": "pho_t_p1"
         }
       ]
     },
     {
       "id": "pho_t_p1",
-      "body": "<<FILL role=rising words=135 beats='On the album final page, in her grandmother hand, are the words go down to the root before frost, it keeps the years there'>>",
+      "body": "<<FILL role=rising words=135 beats='On the {PHO_ALBUM} final page, in her {GRANDMOTHER} hand, are the words go down to the {ROOT} before {DEADLINE}, it keeps the years there'>>",
       "is_ending": false,
       "choices": [
         {
@@ -736,7 +736,7 @@
     },
     {
       "id": "pho_t_p2",
-      "body": "<<FILL role=rising words=135 beats='Rowan compares the christening photo to the album and realises the missing godmother was a keeper, remembered by the orchard while the town forgot her face'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} compares the christening {PHO_MEDIUM} to the {PHO_ALBUM} and realises the missing godmother was a {KEEPER_ROLE}, remembered by the {ORCHARD} while the {TOWN} forgot her face'>>",
       "is_ending": false,
       "choices": [
         {
@@ -748,7 +748,7 @@
     },
     {
       "id": "pho_t_p3",
-      "body": "<<FILL role=rising words=135 beats='She understands now why the orchard photos never change, the root protects the image of the thing that feeds it, guarding its own long hunger against forgetting'>>",
+      "body": "<<FILL role=rising words=135 beats='She understands now why the {ORCHARD} {PHO_MEDIUM}s never change, the {ROOT} protects the image of the thing that feeds it, guarding its own long hunger against forgetting'>>",
       "is_ending": false,
       "choices": [
         {
@@ -760,7 +760,7 @@
     },
     {
       "id": "pho_t_p4",
-      "body": "<<FILL role=rising words=135 beats='The photographs, whole and fading alike, all point Rowan at the cider house cellar'>>",
+      "body": "<<FILL role=rising words=135 beats='The {PHO_MEDIUM}s, whole and fading alike, all point {HERO} at the {CIDER_HOUSE} {CELLAR}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -772,24 +772,24 @@
     },
     {
       "id": "pho_clue",
-      "body": "<<FILL role=rising words=150 beats='The changing pictures and the whole ones agree, the answer waits below the cider house where the root drinks'>>",
+      "body": "<<FILL role=rising words=150 beats='The changing pictures and the whole ones agree, the answer waits below the {CIDER_HOUSE} where the {ROOT} drinks'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pho_clue_1",
-          "label": "Carry what you found to the cider house.",
+          "label": "Carry what you found to the {CIDER_HOUSE}.",
           "target": "n_b1"
         }
       ]
     },
     {
       "id": "cel_entry",
-      "body": "<<FILL role=rising words=150 beats='The cider house leans empty at the orchard edge, and its cellar door is sealed with a bar of orchard wood grown over by living bark, as if the tree itself reached up to hold the door shut against anyone who would open it'>>",
+      "body": "<<FILL role=rising words=150 beats='The {CIDER_HOUSE} leans empty at the {ORCHARD} edge, and its {CELLAR} door is sealed with a bar of {ORCHARD} wood grown over by living bark, as if the tree itself reached up to hold the door shut against anyone who would open it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cel_entry_1",
-          "label": "Pry the barklocked door open.",
+          "label": "Pry the {CEL_SEAL} door open.",
           "target": "cel_a_p1"
         },
         {
@@ -801,7 +801,7 @@
     },
     {
       "id": "cel_a_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan works the barklocked bar loose splinter by splinter, and cold air breathes up from below'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} works the {CEL_SEAL} bar loose splinter by splinter, and cold air breathes up from below'>>",
       "is_ending": false,
       "choices": [
         {
@@ -825,7 +825,7 @@
     },
     {
       "id": "cel_a_p3",
-      "body": "<<FILL role=rising words=135 beats='Through the widening gap she can see the first steps slick with a frost that has no business being there in the mild autumn air of the orchard above'>>",
+      "body": "<<FILL role=rising words=135 beats='Through the widening gap she can see the first steps slick with a {DEADLINE} that has no business being there in the mild autumn air of the {ORCHARD} above'>>",
       "is_ending": false,
       "choices": [
         {
@@ -849,7 +849,7 @@
     },
     {
       "id": "cel_adec",
-      "body": "<<FILL role=choice words=150 beats='The open door gapes on darkness, and Rowan can descend toward the pulsing light or lose her nerve and reseal it'>>",
+      "body": "<<FILL role=choice words=150 beats='The open door gapes on darkness, and {HERO} can descend toward the pulsing light or lose her nerve and reseal it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -866,18 +866,18 @@
     },
     {
       "id": "e_cel_a",
-      "body": "<<FILL role=failure words=120 beats='Rowan hammers the bark bar back into place and walks away, telling herself some doors are shut for good reason, and the town keeps losing its years'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} hammers the bark bar back into place and walks away, telling herself some doors are shut for good reason, and the {TOWN} keeps losing its years'>>",
       "is_ending": true,
       "ending": {
         "id": "e_cel_a",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Door Rebarred"
+        "title": "{CEL_A_SETBACK}"
       }
     },
     {
       "id": "cel_b_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan drops a pebble down the dark stair and counts, and the count runs longer than the little building could ever hold'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} drops a pebble down the dark stair and counts, and the count runs longer than the little building could ever hold'>>",
       "is_ending": false,
       "choices": [
         {
@@ -925,7 +925,7 @@
     },
     {
       "id": "cel_bdec",
-      "body": "<<FILL role=choice words=150 beats='Rowan can follow the light down slowly, marking her steps, or retreat while she still remembers why she came'>>",
+      "body": "<<FILL role=choice words=150 beats='{HERO} can follow the light down slowly, marking her steps, or retreat while she still remembers why she came'>>",
       "is_ending": false,
       "choices": [
         {
@@ -942,30 +942,30 @@
     },
     {
       "id": "e_cel_b",
-      "body": "<<FILL role=failure words=120 beats='Halfway down Rowan feels her own reason for coming thin and drain away, and she climbs back into daylight emptyhanded, the cellar having drunk her very purpose'>>",
+      "body": "<<FILL role=failure words=120 beats='Halfway down {HERO} feels her own reason for coming thin and drain away, and she climbs back into daylight emptyhanded, the {CELLAR} having drunk her very purpose'>>",
       "is_ending": true,
       "ending": {
         "id": "e_cel_b",
         "valence": "negative",
         "kind": "setback",
-        "title": "Drained on the Stair"
+        "title": "{CEL_B_SETBACK}"
       }
     },
     {
       "id": "cel_conv",
-      "body": "<<FILL role=choice words=150 beats='At the bottom the split wall lets the oldest tree taproot through, down into a black spring, and the water is not still, it holds faces and streets and seasons turning slowly in the deep'>>",
+      "body": "<<FILL role=choice words=150 beats='At the bottom the split wall lets the {OLDEST_TREE} taproot through, down into a black {SPRING}, and the water is not still, it holds faces and streets and seasons turning slowly in the deep'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cel_conv_1",
-          "label": "Follow it down toward the root.",
+          "label": "Follow it down toward the {ROOT}.",
           "target": "cel_t_p1"
         }
       ]
     },
     {
       "id": "cel_t_p1",
-      "body": "<<FILL role=rising words=135 beats='The spring shows Rowan her own reflection last of all, and hers alone does not dissolve into the drift of the drowned town'>>",
+      "body": "<<FILL role=rising words=135 beats='The {SPRING} shows {HERO} her own reflection last of all, and hers alone does not dissolve into the drift of the drowned {TOWN}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -977,7 +977,7 @@
     },
     {
       "id": "cel_t_p2",
-      "body": "<<FILL role=rising words=135 beats='Rowan kneels at the lip of the black water and the drowned faces turn up toward her lamp, mouths moving, asking to be remembered by anyone at all who still can'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} kneels at the lip of the black water and the drowned faces turn up toward her lamp, mouths moving, asking to be remembered by anyone at all who still can'>>",
       "is_ending": false,
       "choices": [
         {
@@ -989,7 +989,7 @@
     },
     {
       "id": "cel_t_p3",
-      "body": "<<FILL role=rising words=135 beats='Her grandmother’s face drifts among them, younger than Rowan ever knew her, and for one moment it steadies and seems to smile before the current turns it under again'>>",
+      "body": "<<FILL role=rising words=135 beats='Her {GRANDMOTHER}\u2019s face drifts among them, younger than {HERO} ever knew her, and for one moment it steadies and seems to smile before the current turns it under again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1001,7 +1001,7 @@
     },
     {
       "id": "cel_t_p4",
-      "body": "<<FILL role=rising words=135 beats='Scratched into the wet stone above the water are the words the root keeps, the frost sets it, remember for us all'>>",
+      "body": "<<FILL role=rising words=135 beats='Scratched into the wet stone above the water are the words the {ROOT} keeps, the {DEADLINE} sets it, remember for us all'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1013,41 +1013,41 @@
     },
     {
       "id": "cel_clue",
-      "body": "<<FILL role=rising words=150 beats='The cellar, the spring, the drowned faces, every thread has led Rowan to this same black water beneath the tree'>>",
+      "body": "<<FILL role=rising words=150 beats='The {CELLAR}, the {SPRING}, the drowned faces, every thread has led {HERO} to this same black water beneath the tree'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cel_clue_1",
-          "label": "Carry what you found to the cider house.",
+          "label": "Carry what you found to the {CIDER_HOUSE}.",
           "target": "n_b1"
         }
       ]
     },
     {
       "id": "n_b1",
-      "body": "<<FILL role=climax words=175 beats='However Rowan came, every thread ends at the split founding wall beneath the cider house, at the black spring where the oldest tree taproot drinks; here the Quiet has a shape at last, not a curse but a bargain, the founders traded the towns memory for a harvest that never fails, letting the root keep a little each season, and the keeping has grown greedy, swallowing years and faces and whole lives while the town smiles and forgets it ever had them; the spring turns with everything Alderwick has lost, and Rowan must decide how to face a thing that eats remembering itself'>>",
+      "body": "<<FILL role=climax words=175 beats='However {HERO} came, every thread ends at the split founding wall beneath the {CIDER_HOUSE}, at the black {SPRING} where the {OLDEST_TREE} taproot drinks; here {PHENOMENON} has a shape at last, not a curse but a bargain, the {FOUNDERS} traded the {TOWN}s memory for a harvest that never fails, letting the {ROOT} keep a little each season, and the keeping has grown greedy, swallowing years and faces and whole lives while the {TOWN} smiles and forgets it ever had them; the {SPRING} turns with everything {TOWN} has lost, and {HERO} must decide how to face a thing that eats remembering itself'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_b1_1",
-          "label": "Reach into the spring to understand it.",
+          "label": "Reach into the {SPRING} to understand it.",
           "target": "b1a_p1"
         },
         {
           "id": "c_n_b1_2",
-          "label": "Refuse it and try to wall the root off.",
+          "label": "Refuse it and try to wall the {ROOT} off.",
           "target": "b1b_p1"
         },
         {
           "id": "c_n_b1_3",
-          "label": "Run and call the town to witness this.",
+          "label": "Run and call {TOWN} to witness this.",
           "target": "b1c_p1"
         }
       ]
     },
     {
       "id": "b1a_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan cups the black water and it does not take her memory, it shows her more, the founders kneeling at this spring long ago'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} cups the black water and it does not take her memory, it shows her more, the {FOUNDERS} kneeling at this {SPRING} long ago'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1059,7 +1059,7 @@
     },
     {
       "id": "b1a_p2",
-      "body": "<<FILL role=rising words=135 beats='The spring is warm as blood against her fingers and it does not pull at her, it only offers, showing the founders faces smoothing as their grief is drawn away down into the root'>>",
+      "body": "<<FILL role=rising words=135 beats='The {SPRING} is warm as blood against her fingers and it does not pull at her, it only offers, showing the {FOUNDERS} faces smoothing as their grief is drawn away down into the {ROOT}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1071,7 +1071,7 @@
     },
     {
       "id": "b1a_p3",
-      "body": "<<FILL role=rising words=135 beats='She sees a keeper walk willingly into the roots embrace so the town could forget a grief too heavy to carry through a hard winter'>>",
+      "body": "<<FILL role=rising words=135 beats='She sees a {KEEPER_ROLE} walk willingly into the {ROOT}s embrace so the {TOWN} could forget a grief too heavy to carry through a hard winter'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1083,7 +1083,7 @@
     },
     {
       "id": "b1a_dec",
-      "body": "<<FILL role=choice words=150 beats='The water offers Rowan a deeper truth if she will hold it a moment longer, or she can draw her hand back cold and unchanged'>>",
+      "body": "<<FILL role=choice words=150 beats='The water offers {HERO} a deeper truth if she will hold it a moment longer, or she can draw her hand back cold and unchanged'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1100,18 +1100,18 @@
     },
     {
       "id": "e_b1a",
-      "body": "<<FILL role=failure words=120 beats='Rowan holds the water too long and it shows her only the drowned faces turning, until she pulls back shaking, no wiser and much colder'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} holds the water too long and it shows her only the drowned faces turning, until she pulls back shaking, no wiser and much colder'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b1a",
         "valence": "negative",
         "kind": "setback",
-        "title": "Too Long in the Water"
+        "title": "{B1A_SETBACK}"
       }
     },
     {
       "id": "b1at_p1",
-      "body": "<<FILL role=rising words=135 beats='The spring teaches her that the root cannot hold what it never touched, and Rowan grew up far from Alderwick, her memories banked elsewhere'>>",
+      "body": "<<FILL role=rising words=135 beats='The {SPRING} teaches her that the {ROOT} cannot hold what it never touched, and {HERO} grew up far from {TOWN}, her memories banked elsewhere'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1123,7 +1123,7 @@
     },
     {
       "id": "b1at_p2",
-      "body": "<<FILL role=rising words=135 beats='The lesson settles in her like cold water finding its level, that the girl the town cannot swallow might be the one who can make it give back'>>",
+      "body": "<<FILL role=rising words=135 beats='The lesson settles in her like cold water finding its level, that the girl the {TOWN} cannot swallow might be the one who can make it give back'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1135,7 +1135,7 @@
     },
     {
       "id": "b1at_p3",
-      "body": "<<FILL role=rising words=135 beats='That distance is why the Quiet slides off her, and it may be the one thing that lets her reach in and take memory back out'>>",
+      "body": "<<FILL role=rising words=135 beats='That distance is why {PHENOMENON} slides off her, and it may be the one thing that lets her reach in and take memory back out'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1147,7 +1147,7 @@
     },
     {
       "id": "b1b_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan tries to pack the split wall with stone and orchard clay, but the root only drinks around her hands, patient and unbothered'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} tries to pack the split wall with stone and {ORCHARD} {B1B_CLAY}, but the {ROOT} only drinks around her hands, patient and unbothered'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1159,7 +1159,7 @@
     },
     {
       "id": "b1b_p2",
-      "body": "<<FILL role=rising words=135 beats='The clay she packs turns to slurry and runs between her fingers into the spring, and the root drinks even that, taking the very stone she meant to stop it with'>>",
+      "body": "<<FILL role=rising words=135 beats='The {B1B_CLAY} she packs turns to slurry and runs between her fingers into the {SPRING}, and the {ROOT} drinks even that, taking the very stone she meant to stop it with'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1183,7 +1183,7 @@
     },
     {
       "id": "b1b_dec",
-      "body": "<<FILL role=choice words=150 beats='The greening seed in Rowan palm steadies the faces where she touches the water, and she can learn from that or keep uselessly mortaring the wall'>>",
+      "body": "<<FILL role=choice words=150 beats='The greening {TOKEN_SEED} in {HERO} palm steadies the faces where she touches the water, and she can learn from that or keep uselessly mortaring the wall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1200,18 +1200,18 @@
     },
     {
       "id": "e_b1b",
-      "body": "<<FILL role=failure words=120 beats='Rowan mortars the wall shut and for one proud hour it holds, then the root splits it wider than before and a whole childhood of the town drains away in the night'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} mortars the wall shut and for one proud hour it holds, then the {ROOT} splits it wider than before and a whole childhood of the {TOWN} drains away in the night'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b1b",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Wall That Failed"
+        "title": "{B1B_SETBACK}"
       }
     },
     {
       "id": "b1bt_p1",
-      "body": "<<FILL role=rising words=135 beats='Where Rowan untaken memory touches the spring the drowned faces steady, as if her outsideness were a stone the current cannot move'>>",
+      "body": "<<FILL role=rising words=135 beats='Where {HERO} untaken memory touches the {SPRING} the drowned faces steady, as if her outsideness were a stone the current cannot move'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1235,7 +1235,7 @@
     },
     {
       "id": "b1bt_p3",
-      "body": "<<FILL role=rising words=135 beats='Stopping the Quiet is not about closing a door but about giving the root something it can keep forever instead of the living'>>",
+      "body": "<<FILL role=rising words=135 beats='Stopping {PHENOMENON} is not about closing a door but about giving the {ROOT} something it can keep forever instead of the living'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1247,7 +1247,7 @@
     },
     {
       "id": "b1c_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan runs up into the square shouting the names from the blank register, and a few townsfolk flinch as if the sounds fit old wounds'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} runs up into the {TOWN_SQUARE} shouting the names from the blank {REC_DOCUMENT}, and a few townsfolk flinch as if the sounds fit old wounds'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1259,7 +1259,7 @@
     },
     {
       "id": "b1c_p2",
-      "body": "<<FILL role=rising words=135 beats='She grabs old Mr Hallet by the sleeve and says your wife, Enid, the pie stall, and for a heartbeat his eyes fill and then go smooth again, the grief wiped clean before it can land'>>",
+      "body": "<<FILL role=rising words=135 beats='She grabs old {B1C_NEIGHBOR_NAME} by the sleeve and says your wife, {B1C_NEIGHBOR_SPOUSE}, the {B1C_NEIGHBOR_SHOP}, and for a heartbeat his eyes fill and then go smooth again, the grief wiped clean before it can land'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1283,7 +1283,7 @@
     },
     {
       "id": "b1c_dec",
-      "body": "<<FILL role=choice words=150 beats='Teo keeps his memory a moment longer than the rest, and Rowan can build on his stubborn love or shout herself hoarse alone'>>",
+      "body": "<<FILL role=choice words=150 beats='{COUSIN} keeps his memory a moment longer than the rest, and {HERO} can build on his stubborn love or shout herself hoarse alone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1300,18 +1300,18 @@
     },
     {
       "id": "e_b1c",
-      "body": "<<FILL role=failure words=120 beats='The square empties around Rowan as she shouts, and by dusk even Teo looks at her strangely, and she stands alone with a fist of names no one will take'>>",
+      "body": "<<FILL role=failure words=120 beats='The {TOWN_SQUARE} empties around {HERO} as she shouts, and by dusk even {COUSIN} looks at her strangely, and she stands alone with a fist of names no one will take'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b1c",
         "valence": "negative",
         "kind": "setback",
-        "title": "Shouting to No One"
+        "title": "{B1C_SETBACK}"
       }
     },
     {
       "id": "b1ct_p1",
-      "body": "<<FILL role=rising words=135 beats='Teo tells her the Quiet is weakest where love is stubborn, where someone flatly refuses to let go of a face'>>",
+      "body": "<<FILL role=rising words=135 beats='{COUSIN} tells her {PHENOMENON} is weakest where love is stubborn, where someone flatly refuses to let go of a face'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1323,7 +1323,7 @@
     },
     {
       "id": "b1ct_p2",
-      "body": "<<FILL role=rising words=135 beats='One held memory is a crack of light under a shut door, proof that the Quiet can be resisted if enough hands refuse to let go all at once'>>",
+      "body": "<<FILL role=rising words=135 beats='One held memory is a crack of light under a shut door, proof that {PHENOMENON} can be resisted if enough hands refuse to let go all at once'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1335,7 +1335,7 @@
     },
     {
       "id": "b1ct_p3",
-      "body": "<<FILL role=rising words=135 beats='If enough of the town could be made to remember at once, on purpose, their held memory might anchor what the root keeps stealing'>>",
+      "body": "<<FILL role=rising words=135 beats='If enough of the {TOWN} could be made to remember at once, on purpose, their held memory might anchor what the {ROOT} keeps stealing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1347,24 +1347,24 @@
     },
     {
       "id": "n_b2",
-      "body": "<<FILL role=climax words=175 beats='The threads knot into one truth: Rowan is immune because she grew up beyond Alderwick, her memories rooted in soil the Quiet never owned, and that same outsideness is a key; she alone can reach into the spring and lift memory back out without being drunk down with it; Odile withered seed, greening now in her palm, is the founders old token, the mark a keeper carries, and it will let the root recognise her as one who may bargain; but a bargain has a price, and the root does not give years back for nothing, so Rowan must learn what stopping the Quiet will cost before she can choose how much to pay'>>",
+      "body": "<<FILL role=climax words=175 beats='The threads knot into one truth: {HERO} is immune because she grew up beyond {TOWN}, her memories rooted in soil {PHENOMENON} never owned, and that same outsideness is a key; she alone can reach into the {SPRING} and lift memory back out without being drunk down with it; {KEE_CHAR} withered {TOKEN_SEED}, greening now in her palm, is the {FOUNDERS} old token, the mark a {KEEPER_ROLE} carries, and it will let the {ROOT} recognise her as one who may bargain; but a bargain has a price, and the {ROOT} does not give years back for nothing, so {HERO} must learn what stopping {PHENOMENON} will cost before she can choose how much to pay'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_b2_1",
-          "label": "Weigh giving the root a memory of your own.",
+          "label": "Weigh giving the {ROOT} a memory of your own.",
           "target": "b2t_p1"
         },
         {
           "id": "c_n_b2_2",
-          "label": "Weigh taking the empty keepers place yourself.",
+          "label": "Weigh taking the empty {KEEPER_ROLE}s place yourself.",
           "target": "b2k_p1"
         }
       ]
     },
     {
       "id": "b2t_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan offers the spring a small memory to test its hunger, the taste of her grandmother kitchen on a Sunday'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} offers the {SPRING} a small memory to test its hunger, the taste of her {GRANDMOTHER} kitchen on a Sunday'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1376,7 +1376,7 @@
     },
     {
       "id": "b2t_p2",
-      "body": "<<FILL role=rising words=135 beats='The returned lane smells of coal smoke and Sunday baking, solid enough to walk down, and then the root gently reminds her it is only lent, and the price is not yet paid'>>",
+      "body": "<<FILL role=rising words=135 beats='The returned {B2T_LANE} smells of coal smoke and Sunday baking, solid enough to walk down, and then the {ROOT} gently reminds her it is only lent, and the price is not yet paid'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1388,7 +1388,7 @@
     },
     {
       "id": "b2t_p3",
-      "body": "<<FILL role=rising words=135 beats='The root takes it gently and gives back, for one breath, a whole vanished lane of houses shimmering into being'>>",
+      "body": "<<FILL role=rising words=135 beats='The {ROOT} takes it gently and gives back, for one breath, a whole vanished {B2T_LANE} of houses shimmering into being'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1400,7 +1400,7 @@
     },
     {
       "id": "b2t_d1",
-      "body": "<<FILL role=choice words=150 beats='So it is a trade, memory for memory, the beloved for the lost; Rowan can measure the true cost or snatch her hand back now.'>>",
+      "body": "<<FILL role=choice words=150 beats='So it is a trade, memory for memory, the beloved for the lost; {HERO} can measure the true cost or snatch her hand back now.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1417,18 +1417,18 @@
     },
     {
       "id": "e_b2ta",
-      "body": "<<FILL role=failure words=120 beats='Frightened by how much the root will take, Rowan pulls free and keeps every memory clenched tight, and the town goes on quietly losing itself around her'>>",
+      "body": "<<FILL role=failure words=120 beats='Frightened by how much the {ROOT} will take, {HERO} pulls free and keeps every memory clenched tight, and the {TOWN} goes on quietly losing itself around her'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b2ta",
         "valence": "negative",
         "kind": "setback",
-        "title": "Keeping It All"
+        "title": "{B2T_A_SETBACK}"
       }
     },
     {
       "id": "b2t_m",
-      "body": "<<FILL role=rising words=145 beats='The root will hold whatever she gives it forever, meaning whatever she surrenders she can never have again; she can follow the cost fully or give something rashly.'>>",
+      "body": "<<FILL role=rising words=145 beats='The {ROOT} will hold whatever she gives it forever, meaning whatever she surrenders she can never have again; she can follow the cost fully or give something rashly.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1445,18 +1445,18 @@
     },
     {
       "id": "e_b2tb",
-      "body": "<<FILL role=failure words=120 beats='Rowan lets the spring take her grandmother whole, and the lane returns, but she stands in it a stranger, unable to recall why the houses should mean anything at all'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} lets the {SPRING} take her {GRANDMOTHER} whole, and the {B2T_LANE} returns, but she stands in it a stranger, unable to recall why the houses should mean anything at all'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b2tb",
         "valence": "negative",
         "kind": "setback",
-        "title": "A Trade Too Deep"
+        "title": "{B2T_B_SETBACK}"
       }
     },
     {
       "id": "b2tt_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan understands the true price now, to restore the town she must feed the root something she loves enough to lose'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} understands the true price now, to restore the {TOWN} she must feed the {ROOT} something she loves enough to lose'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1468,7 +1468,7 @@
     },
     {
       "id": "b2tt_p2",
-      "body": "<<FILL role=rising words=135 beats='The arithmetic is plain and cruel, the town can be bought back memory for memory, and the buyer must be someone the Quiet cannot bill for its own'>>",
+      "body": "<<FILL role=rising words=135 beats='The arithmetic is plain and cruel, the {TOWN} can be bought back memory for memory, and the buyer must be someone {PHENOMENON} cannot bill for its own'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1480,7 +1480,7 @@
     },
     {
       "id": "b2tt_p3",
-      "body": "<<FILL role=rising words=135 beats='The more she is willing to give, the more of Alderwick will come rising back out of the deep'>>",
+      "body": "<<FILL role=rising words=135 beats='The more she is willing to give, the more of {TOWN} will come rising back out of the deep'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1492,7 +1492,7 @@
     },
     {
       "id": "b2k_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan feels the fresh unnamed knot on Odile cord pull at her wrist, the empty keeper place waiting to be filled'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} feels the fresh unnamed knot on {KEE_CHAR} {KEEPER_CORD} pull at her wrist, the empty {KEEPER_ROLE} place waiting to be filled'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1504,7 +1504,7 @@
     },
     {
       "id": "b2k_p2",
-      "body": "<<FILL role=rising words=135 beats='The empty knot warms against her wrist like a living thing, eager, and she feels how easy it would be to simply give herself and let the whole town forget its grief in peace'>>",
+      "body": "<<FILL role=rising words=135 beats='The empty knot warms against her wrist like a living thing, eager, and she feels how easy it would be to simply give herself and let the whole {TOWN} forget its grief in peace'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1516,7 +1516,7 @@
     },
     {
       "id": "b2k_p3",
-      "body": "<<FILL role=rising words=135 beats='She understands she could tie herself to it, become the one the orchard remembers so the town need not be devoured'>>",
+      "body": "<<FILL role=rising words=135 beats='She understands she could tie herself to it, become the one the {ORCHARD} remembers so the {TOWN} need not be devoured'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1528,7 +1528,7 @@
     },
     {
       "id": "b2k_d1",
-      "body": "<<FILL role=choice words=150 beats='A keeper is remembered only by the root and forgotten by everyone else; Rowan can study that fate or refuse it outright.'>>",
+      "body": "<<FILL role=choice words=150 beats='A {KEEPER_ROLE} is remembered only by the {ROOT} and forgotten by everyone else; {HERO} can study that fate or refuse it outright.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1545,13 +1545,13 @@
     },
     {
       "id": "e_b2ka",
-      "body": "<<FILL role=failure words=120 beats='Rowan refuses the keeper knot and walks away from the cord, and without a keeper the root simply keeps eating, until by winter Odile herself is a name Rowan alone remembers'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} refuses the {KEEPER_ROLE} knot and walks away from the {KEEPER_CORD}, and without a {KEEPER_ROLE} the {ROOT} simply keeps eating, until by winter {KEE_CHAR} herself is a name {HERO} alone remembers'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b2ka",
         "valence": "negative",
         "kind": "setback",
-        "title": "No One to Anchor"
+        "title": "{B2K_A_SETBACK}"
       }
     },
     {
@@ -1566,25 +1566,25 @@
         },
         {
           "id": "c_b2k_m_2",
-          "label": "Tie yourself to the keeper knot right now.",
+          "label": "Tie yourself to the {KEEPER_ROLE} knot right now.",
           "target": "e_b2kb"
         }
       ]
     },
     {
       "id": "e_b2kb",
-      "body": "<<FILL role=failure words=120 beats='Rowan ties the fresh knot around her own wrist before she understands the whole of it, and the town steadies while she begins to fade from Teo’s eyes, a keeper made in fear'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} ties the fresh knot around her own wrist before she understands the whole of it, and the {TOWN} steadies while she begins to fade from {COUSIN}\u2019s eyes, a {KEEPER_ROLE} made in fear'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b2kb",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Knot Tied Early"
+        "title": "{B2K_B_SETBACK}"
       }
     },
     {
       "id": "b2kt_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan sees the shape of the sacrifice, a keeper anchors the town by letting the orchard keep her instead of the many'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} sees the shape of the sacrifice, a {KEEPER_ROLE} anchors the {TOWN} by letting the {ORCHARD} keep her instead of the many'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1596,7 +1596,7 @@
     },
     {
       "id": "b2kt_p2",
-      "body": "<<FILL role=rising words=135 beats='A keeper is loved only by the orchard and lost to everyone above, and Rowan is not ready to become a name that only a tree remembers, not yet, not in fear'>>",
+      "body": "<<FILL role=rising words=135 beats='A {KEEPER_ROLE} is loved only by the {ORCHARD} and lost to everyone above, and {HERO} is not ready to become a name that only a tree remembers, not yet, not in fear'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1620,17 +1620,17 @@
     },
     {
       "id": "n_b3",
-      "body": "<<FILL role=climax words=180 beats='Now Rowan knows the price in full; the root will give the town back its stolen years, but only if it is given something to keep forever in their place, either a memory beloved enough to matter or a keeper willing to be remembered by the orchard and forgotten by the world; Odile climbs down the cellar stair to stand with her, and Teo comes too, refusing to let Rowan face the spring alone, and their being there changes the arithmetic, because a price paid by one is a wound and a price shared by many is only a scar; at the black spring beneath the oldest tree, with the frost gathering above, Rowan must choose not whether to pay but how, and who pays alongside her'>>",
+      "body": "<<FILL role=climax words=180 beats='Now {HERO} knows the price in full; the {ROOT} will give the {TOWN} back its stolen years, but only if it is given something to keep forever in their place, either a memory beloved enough to matter or a {KEEPER_ROLE} willing to be remembered by the {ORCHARD} and forgotten by the world; {KEE_CHAR} climbs down the {CELLAR} stair to stand with her, and {COUSIN} comes too, refusing to let {HERO} face the {SPRING} alone, and their being there changes the arithmetic, because a price paid by one is a wound and a price shared by many is only a scar; at the black {SPRING} beneath the {OLDEST_TREE}, with the {DEADLINE} gathering above, {HERO} must choose not whether to pay but how, and who pays alongside her'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_b3_1",
-          "label": "Ask the whole town to share the weight.",
+          "label": "Ask the whole {TOWN} to share the weight.",
           "target": "b3u_p1"
         },
         {
           "id": "c_n_b3_2",
-          "label": "Offer the root one thing to save one soul.",
+          "label": "Offer the {ROOT} one thing to save one soul.",
           "target": "b3v_p1"
         },
         {
@@ -1642,7 +1642,7 @@
     },
     {
       "id": "b3u_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan sends Teo running through Alderwick with the register names, gathering everyone who will come to the cider house before frost'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} sends {COUSIN} running through {TOWN} with the {REC_DOCUMENT} names, gathering everyone who will come to the {CIDER_HOUSE} before {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1654,7 +1654,7 @@
     },
     {
       "id": "b3u_p2",
-      "body": "<<FILL role=rising words=135 beats='Teo comes back breathless with a dozen townsfolk behind him, then a dozen more, drawn by a feeling they cannot name that tonight they must not forget on purpose'>>",
+      "body": "<<FILL role=rising words=135 beats='{COUSIN} comes back breathless with a dozen townsfolk behind him, then a dozen more, drawn by a feeling they cannot name that tonight they must not forget on purpose'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1666,7 +1666,7 @@
     },
     {
       "id": "b3u_p3",
-      "body": "<<FILL role=rising words=135 beats='The plan is to make the town remember together, out loud, all at once, so no single heart is drained to fill the root'>>",
+      "body": "<<FILL role=rising words=135 beats='The plan is to make the {TOWN} remember together, out loud, all at once, so no single heart is drained to fill the {ROOT}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1678,7 +1678,7 @@
     },
     {
       "id": "b3u_d1",
-      "body": "<<FILL role=choice words=150 beats='Rowan can teach the root a new bargain of shared keeping, or let the town simply make peace with its smaller losses.'>>",
+      "body": "<<FILL role=choice words=150 beats='{HERO} can teach the {ROOT} a new bargain of shared keeping, or let the {TOWN} simply make peace with its smaller losses.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1688,20 +1688,20 @@
         },
         {
           "id": "c_b3u_d1_2",
-          "label": "Let the town forgive the orchard and go home.",
+          "label": "Let {TOWN} forgive the {ORCHARD} and go home.",
           "target": "e_b3un"
         }
       ]
     },
     {
       "id": "e_b3un",
-      "body": "<<FILL role=discovery words=135 beats='Rowan tells the gathered town the orchard was only lonely, and they choose to live with the losses, keeping what they have and mourning nothing they cannot name, a quiet peace with a quiet grief'>>",
+      "body": "<<FILL role=discovery words=135 beats='{HERO} tells the gathered {TOWN} the {ORCHARD} was only lonely, and they choose to live with the losses, keeping what they have and mourning nothing they cannot name, a quiet peace with a quiet grief'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b3un",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Peace With the Quiet"
+        "title": "{B3U_N_OUTCOME}"
       }
     },
     {
@@ -1716,25 +1716,25 @@
         },
         {
           "id": "c_b3u_m_2",
-          "label": "Begin before all the town has arrived.",
+          "label": "Begin before all {TOWN} has arrived.",
           "target": "e_b3us"
         }
       ]
     },
     {
       "id": "e_b3us",
-      "body": "<<FILL role=failure words=120 beats='Rowan begins before half the town arrives, and the weight lands too heavy on too few, and the ones who came stagger back forgetting their own names, the chain snapping for want of hands'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} begins before half the {TOWN} arrives, and the weight lands too heavy on too few, and the ones who came stagger back forgetting their own names, the chain snapping for want of hands'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b3us",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Chain Snapped Early"
+        "title": "{B3U_S_SETBACK}"
       }
     },
     {
       "id": "b3ut_p1",
-      "body": "<<FILL role=rising words=135 beats='Odile shows Rowan how to teach the root a keeping spread across a hundred hearts rather than devouring one'>>",
+      "body": "<<FILL role=rising words=135 beats='{KEE_CHAR} shows {HERO} how to teach the {ROOT} a keeping spread across a hundred hearts rather than devouring one'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1746,7 +1746,7 @@
     },
     {
       "id": "b3ut_p2",
-      "body": "<<FILL role=rising words=135 beats='Odile’s voice reaches them from the top of the stair, teaching the old words that turn a devouring into a keeping, a hunger fed by one into a memory held by all'>>",
+      "body": "<<FILL role=rising words=135 beats='{KEE_CHAR}\u2019s voice reaches them from the top of the stair, teaching the old words that turn a devouring into a keeping, a hunger fed by one into a memory held by all'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1758,7 +1758,7 @@
     },
     {
       "id": "b3ut_p3",
-      "body": "<<FILL role=rising words=135 beats='The living will hold the town memory between them like a chain, and the root will keep through many instead of hollowing anyone'>>",
+      "body": "<<FILL role=rising words=135 beats='The living will hold the {TOWN} memory between them like a chain, and the {ROOT} will keep through many instead of hollowing anyone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1770,7 +1770,7 @@
     },
     {
       "id": "b3v_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan cannot empty the whole spring, so she chooses one, kneeling with a single face fixed in her mind'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} cannot empty the whole {SPRING}, so she chooses one, kneeling with a single face fixed in her mind'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1782,7 +1782,7 @@
     },
     {
       "id": "b3v_p2",
-      "body": "<<FILL role=rising words=135 beats='She fixes the neighbour girl in her mind, the gap-toothed grin, the way she always won at conkers, a whole small life the town lost the same winter Rowan was taken away'>>",
+      "body": "<<FILL role=rising words=135 beats='She fixes the {NEIGHBOR_GIRL} in her mind, the gap-toothed grin, the way she always won at {B3V_GAME}, a whole small life the {TOWN} lost the same winter {HERO} was taken away'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1806,7 +1806,7 @@
     },
     {
       "id": "b3v_d1",
-      "body": "<<FILL role=choice words=150 beats='Rowan can brace to trade a piece of her own heart for the one soul, or simply learn who she would have saved.'>>",
+      "body": "<<FILL role=choice words=150 beats='{HERO} can brace to trade a piece of her own heart for the one soul, or simply learn who she would have saved.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1816,25 +1816,25 @@
         },
         {
           "id": "c_b3v_d1_2",
-          "label": "Only ask the root to show you her face.",
+          "label": "Only ask the {ROOT} to show you her face.",
           "target": "e_b3vn"
         }
       ]
     },
     {
       "id": "e_b3vn",
-      "body": "<<FILL role=discovery words=135 beats='Rowan asks the spring only to show her who she would save, and it lifts a face to the surface, and she carries the knowing back up unspent, changed by it, having taken nothing and given nothing'>>",
+      "body": "<<FILL role=discovery words=135 beats='{HERO} asks the {SPRING} only to show her who she would save, and it lifts a face to the surface, and she carries the knowing back up unspent, changed by it, having taken nothing and given nothing'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b3vn",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Name She Learned"
+        "title": "{B3V_N_OUTCOME}"
       }
     },
     {
       "id": "b3v_m",
-      "body": "<<FILL role=rising words=145 beats='The root offers one memory of Rowan’s own for one soul restored; she can pay the fair price or try to cheat it.'>>",
+      "body": "<<FILL role=rising words=145 beats='The {ROOT} offers one memory of {HERO}\u2019s own for one soul restored; she can pay the fair price or try to cheat it.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1844,25 +1844,25 @@
         },
         {
           "id": "c_b3v_m_2",
-          "label": "Demand the root give without taking anything.",
+          "label": "Demand the {ROOT} give without taking anything.",
           "target": "e_b3vs"
         }
       ]
     },
     {
       "id": "e_b3vs",
-      "body": "<<FILL role=failure words=120 beats='Rowan tries to pull one soul free while surrendering nothing, and the root closes hard, keeping both the lost one and the hour she wasted, and she surfaces having saved no one'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} tries to pull one soul free while surrendering nothing, and the {ROOT} closes hard, keeping both the lost one and the hour she wasted, and she surfaces having saved no one'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b3vs",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Bargain Refused Her"
+        "title": "{B3V_S_SETBACK}"
       }
     },
     {
       "id": "b3vt_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan braces to give up one precious thing so that one lost person may walk Alderwick again, remembered by all'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} braces to give up one precious thing so that one lost person may walk {TOWN} again, remembered by all'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1898,7 +1898,7 @@
     },
     {
       "id": "b3w_p1",
-      "body": "<<FILL role=rising words=135 beats='Rowan decides she does not need to defeat the Quiet, only to understand it well enough to live honestly beside it'>>",
+      "body": "<<FILL role=rising words=135 beats='{HERO} decides she does not need to defeat {PHENOMENON}, only to understand it well enough to live honestly beside it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1910,7 +1910,7 @@
     },
     {
       "id": "b3w_p2",
-      "body": "<<FILL role=rising words=135 beats='The root shows her the founders not as villains but as parents who could not bury one more child and still rise to prune the trees, and who made a terrible mercy of forgetting'>>",
+      "body": "<<FILL role=rising words=135 beats='The {ROOT} shows her the {FOUNDERS} not as villains but as parents who could not bury one more child and still rise to prune the trees, and who made a terrible mercy of forgetting'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1922,7 +1922,7 @@
     },
     {
       "id": "b3w_p3",
-      "body": "<<FILL role=rising words=135 beats='She asks the root not for years but for the whole truth of the bargain the founders made in their grief'>>",
+      "body": "<<FILL role=rising words=135 beats='She asks the {ROOT} not for years but for the whole truth of the bargain the {FOUNDERS} made in their grief'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1934,7 +1934,7 @@
     },
     {
       "id": "b3w_d1",
-      "body": "<<FILL role=choice words=150 beats='Rowan can accept an even trade for a single year, or try to force the whole hard truth into the town at once.'>>",
+      "body": "<<FILL role=choice words=150 beats='{HERO} can accept an even trade for a single year, or try to force the whole hard truth into the {TOWN} at once.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1944,25 +1944,25 @@
         },
         {
           "id": "c_b3w_d1_2",
-          "label": "Take back one year on the roots own terms.",
+          "label": "Take back one year on the {ROOT}s own terms.",
           "target": "e_b3wn"
         }
       ]
     },
     {
       "id": "e_b3wn",
-      "body": "<<FILL role=discovery words=135 beats='Rowan accepts the old bargain and asks for a single year back, the year she was born here, and the root gives it and keeps a year of hers, a fair and bittersweet swap that leaves her both fuller and lighter'>>",
+      "body": "<<FILL role=discovery words=135 beats='{HERO} accepts the old bargain and asks for a single year back, the year she was born here, and the {ROOT} gives it and keeps a year of hers, a fair and bittersweet swap that leaves her both fuller and lighter'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b3wn",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "An Even Trade"
+        "title": "{B3W_N_OUTCOME}"
       }
     },
     {
       "id": "b3w_m",
-      "body": "<<FILL role=rising words=145 beats='The roots long memory is a grief no one mind can hold alone; she can carry it wisely or pour it into the town uninvited.'>>",
+      "body": "<<FILL role=rising words=145 beats='The {ROOT}s long memory is a grief no one mind can hold alone; she can carry it wisely or pour it into the {TOWN} uninvited.'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1979,18 +1979,18 @@
     },
     {
       "id": "e_b3ws",
-      "body": "<<FILL role=failure words=120 beats='Rowan tries to pour the roots long memory into every mind in Alderwick, and the town reels, unable to bear a grief handed to them whole, and they turn from her, choosing forgetting over a truth too heavy'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} tries to pour the {ROOT}s long memory into every mind in {TOWN}, and the {TOWN} reels, unable to bear a grief handed to them whole, and they turn from her, choosing forgetting over a truth too heavy'>>",
       "is_ending": true,
       "ending": {
         "id": "e_b3ws",
         "valence": "negative",
         "kind": "setback",
-        "title": "A Truth Too Heavy"
+        "title": "{B3W_S_SETBACK}"
       }
     },
     {
       "id": "b3wt_p1",
-      "body": "<<FILL role=rising words=135 beats='The spring opens its long memory to Rowan, the hard winters, the mercy and the theft tangled together as one old unhealed wound'>>",
+      "body": "<<FILL role=rising words=135 beats='The {SPRING} opens its long memory to {HERO}, the hard winters, the mercy and the theft tangled together as one old unhealed wound'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2002,7 +2002,7 @@
     },
     {
       "id": "b3wt_p2",
-      "body": "<<FILL role=rising words=135 beats='She means to meet the oldest tree the way you meet an old grief in the family, not to defeat it but to finally say aloud the names it has carried alone for two hundred years'>>",
+      "body": "<<FILL role=rising words=135 beats='She means to meet the {OLDEST_TREE} the way you meet an old grief in the family, not to defeat it but to finally say aloud the names it has carried alone for two hundred years'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2014,7 +2014,7 @@
     },
     {
       "id": "b3wt_p3",
-      "body": "<<FILL role=rising words=135 beats='Carrying that understanding, she means to face the oldest tree not as an enemy but as the keeper of a sorrow the whole town must finally own'>>",
+      "body": "<<FILL role=rising words=135 beats='Carrying that understanding, she means to face the {OLDEST_TREE} not as an enemy but as the {KEEPER_ROLE} of a sorrow the whole {TOWN} must finally own'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2026,17 +2026,17 @@
     },
     {
       "id": "n_b4",
-      "body": "<<FILL role=climax words=180 beats='Every path brings Rowan to the same place at last, the black spring beneath the oldest tree with the first frost silvering the orchard overhead, the town gathered on the stair or a single face held in her mind; the withered seed in her palm is green and whole now, the keeper token alive again, and the root waits, ancient and patient, ready to make its bargain; this is the hinge of everything, the moment the Quiet can be turned from a hunger into a keeping, from a theft into a shared remembering, or lost for another forty years; whatever Rowan carries down to the water now, the town memory, a single name, an honest grief, she must offer it here and see what the orchard chooses to give back'>>",
+      "body": "<<FILL role=climax words=180 beats='Every path brings {HERO} to the same place at last, the black {SPRING} beneath the {OLDEST_TREE} with the first {DEADLINE} silvering the {ORCHARD} overhead, the {TOWN} gathered on the stair or a single face held in her mind; the withered {TOKEN_SEED} in her palm is green and whole now, the {KEEPER_ROLE} token alive again, and the {ROOT} waits, ancient and patient, ready to make its bargain; this is the hinge of everything, the moment {PHENOMENON} can be turned from a hunger into a keeping, from a theft into a shared remembering, or lost for another forty years; whatever {HERO} carries down to the water now, the {TOWN} memory, a single name, an honest grief, she must offer it here and see what the {ORCHARD} chooses to give back'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_b4_1",
-          "label": "Anchor the whole towns memory at once.",
+          "label": "Anchor the whole {TOWN}s memory at once.",
           "target": "fin_all_1"
         },
         {
           "id": "c_n_b4_2",
-          "label": "Bind the shared vow of the living into the root.",
+          "label": "Bind the shared vow of the living into the {ROOT}.",
           "target": "fin_share_1"
         },
         {
@@ -2053,7 +2053,7 @@
     },
     {
       "id": "fin_all_1",
-      "body": "<<FILL role=rising words=155 beats='Rowan presses the greening seed to the black water and speaks the founders bargain backward, not the orchard keeps for us but we keep for the orchard, and the root shudders as a hundred living memories pour down the cellar stair at once'>>",
+      "body": "<<FILL role=rising words=155 beats='{HERO} presses the greening {TOKEN_SEED} to the black water and speaks the {FOUNDERS} bargain backward, not the {ORCHARD} keeps for us but we keep for the {ORCHARD}, and the {ROOT} shudders as a hundred living memories pour down the {CELLAR} stair at once'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2070,35 +2070,35 @@
     },
     {
       "id": "e_all_flood",
-      "body": "<<FILL role=failure words=120 beats='The flood of remembering is more than Rowan can steer alone, and it scatters before it can anchor, leaving the town dazed and the root fed just enough to sleep, the great chance spent for a fragile partial calm'>>",
+      "body": "<<FILL role=failure words=120 beats='The flood of remembering is more than {HERO} can steer alone, and it scatters before it can anchor, leaving the {TOWN} dazed and the {ROOT} fed just enough to sleep, the great chance spent for a fragile partial calm'>>",
       "is_ending": true,
       "ending": {
         "id": "e_all_flood",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Flood Unsteered"
+        "title": "{ALL_FLOOD_SETBACK}"
       }
     },
     {
       "id": "fin_all_2",
-      "body": "<<FILL role=climax words=160 beats='With Odile’s hands over hers and Teo’s voice leading the crowd, Rowan teaches the root the new bargain, and the spring stops turning like a drain and begins to turn like a wheel, holding the town’s memory for it rather than swallowing it'>>",
+      "body": "<<FILL role=climax words=160 beats='With {KEE_CHAR}\u2019s hands over hers and {COUSIN}\u2019s voice leading the crowd, {HERO} teaches the {ROOT} the new bargain, and the {SPRING} stops turning like a drain and begins to turn like a wheel, holding the {TOWN}\u2019s memory for it rather than swallowing it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fin_all_2_1",
-          "label": "Seal the new keeping into the root.",
+          "label": "Seal the new keeping into the {ROOT}.",
           "target": "n_b5"
         }
       ]
     },
     {
       "id": "fin_share_1",
-      "body": "<<FILL role=rising words=155 beats='Rowan asks the gathered town not to give up anything they love but to promise together, aloud, to remember, and the vow rises off them like warmth off a fire, and the root leans toward it, curious at a thing offered freely'>>",
+      "body": "<<FILL role=rising words=155 beats='{HERO} asks the gathered {TOWN} not to give up anything they love but to promise together, aloud, to remember, and the vow rises off them like warmth off a fire, and the {ROOT} leans toward it, curious at a thing offered freely'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fin_share_1_1",
-          "label": "Bind the vow into the root.",
+          "label": "Bind the vow into the {ROOT}.",
           "target": "fin_share_2"
         },
         {
@@ -2110,18 +2110,18 @@
     },
     {
       "id": "e_share_lost",
-      "body": "<<FILL role=failure words=120 beats='The crowds nerve fails as the spring stirs, and one by one they climb back toward the light, and Rowan is left holding a vow no one will finish speaking, the root settling back to its slow patient theft'>>",
+      "body": "<<FILL role=failure words=120 beats='The crowds nerve fails as the {SPRING} stirs, and one by one they climb back toward the light, and {HERO} is left holding a vow no one will finish speaking, the {ROOT} settling back to its slow patient theft'>>",
       "is_ending": true,
       "ending": {
         "id": "e_share_lost",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Vow Unspoken"
+        "title": "{SHARE_LOST_SETBACK}"
       }
     },
     {
       "id": "fin_share_2",
-      "body": "<<FILL role=climax words=160 beats='The shared vow spreads thin across every heart in the cellar so no single person is drained, and the root, offered a keeping it can hold without hollowing anyone, accepts the new bargain the way dry ground accepts rain'>>",
+      "body": "<<FILL role=climax words=160 beats='The shared vow spreads thin across every heart in the {CELLAR} so no single person is drained, and the {ROOT}, offered a keeping it can hold without hollowing anyone, accepts the new bargain the way dry ground accepts rain'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2133,12 +2133,12 @@
     },
     {
       "id": "n_b5",
-      "body": "<<FILL role=climax words=170 beats='The root accepts the shared keeping and the split wall knits shut with living bark, and up in the orchard the vanished years come rising back into the town like dawn filling a valley, streets, faces, the bakery, the neighbour girl, all of it remembered at once by everyone who chose to hold it'>>",
+      "body": "<<FILL role=climax words=170 beats='The {ROOT} accepts the shared keeping and the split wall knits shut with living bark, and up in the {ORCHARD} the vanished years come rising back into the {TOWN} like dawn filling a valley, streets, faces, the {BAKERY}, the {NEIGHBOR_GIRL}, all of it remembered at once by everyone who chose to hold it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_b5_1",
-          "label": "Watch Alderwick wake into its whole self.",
+          "label": "Watch {TOWN} wake into its whole self.",
           "target": "e_all_restore"
         },
         {
@@ -2150,23 +2150,23 @@
     },
     {
       "id": "e_all_restore",
-      "body": "<<FILL role=completion words=155 beats='Alderwick wakes whole, every stolen year restored and now held safe by a town that remembers on purpose, the orchard bearing fruit without eating its keepers, and Rowan stands in a square full of names that finally fit their faces, the girl who taught a town to keep itself'>>",
+      "body": "<<FILL role=completion words=155 beats='{TOWN} wakes whole, every stolen year restored and now held safe by a {TOWN} that remembers on purpose, the {ORCHARD} bearing fruit without eating its {KEEPER_ROLE}s, and {HERO} stands in a {TOWN_SQUARE} full of names that finally fit their faces, the girl who taught a {TOWN} to keep itself'>>",
       "is_ending": true,
       "ending": {
         "id": "e_all_restore",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Town Made Whole"
+        "title": "{ALL_RESTORE_PRIZE}"
       }
     },
     {
       "id": "n_b5_2",
-      "body": "<<FILL role=rising words=150 beats='One face stays missing, Rowan’s own grandmother, the last keeper, whose memory the root has held longest and deepest, and Rowan realises she can leave her in peace or reach once more for the one soul the flood passed by'>>",
+      "body": "<<FILL role=rising words=150 beats='One face stays missing, {HERO}\u2019s own {GRANDMOTHER}, the last {KEEPER_ROLE}, whose memory the {ROOT} has held longest and deepest, and {HERO} realises she can leave her in peace or reach once more for the one soul the flood passed by'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n_b5_2_1",
-          "label": "Reach for your grandmother too.",
+          "label": "Reach for your {GRANDMOTHER} too.",
           "target": "e_all_grandmother"
         },
         {
@@ -2178,29 +2178,29 @@
     },
     {
       "id": "e_all_grandmother",
-      "body": "<<FILL role=success words=150 beats='Rowan reaches one last time and lifts her grandmother up out of the deep water, and the old keeper opens her eyes in a town that suddenly remembers loving her, and the two of them stand in the restored orchard, the long debt paid and the family whole again'>>",
+      "body": "<<FILL role=success words=150 beats='{HERO} reaches one last time and lifts her {GRANDMOTHER} up out of the deep water, and the old {KEEPER_ROLE} opens her eyes in a {TOWN} that suddenly remembers loving her, and the two of them stand in the restored {ORCHARD}, the long debt paid and the family whole again'>>",
       "is_ending": true,
       "ending": {
         "id": "e_all_grandmother",
         "valence": "positive",
         "kind": "success",
-        "title": "Her Grandmother Returned"
+        "title": "{ALL_GRANDMOTHER_PRIZE}"
       }
     },
     {
       "id": "e_all_rest",
-      "body": "<<FILL role=completion words=150 beats='Rowan lets her grandmother rest where she chose to be, remembered now by the root as the keeper who gave the town its second chance, and Alderwick lives on whole around that one gentle absence, a scar it will honour instead of forget'>>",
+      "body": "<<FILL role=completion words=150 beats='{HERO} lets her {GRANDMOTHER} rest where she chose to be, remembered now by the {ROOT} as the {KEEPER_ROLE} who gave the {TOWN} its second chance, and {TOWN} lives on whole around that one gentle absence, a scar it will honour instead of forget'>>",
       "is_ending": true,
       "ending": {
         "id": "e_all_rest",
         "valence": "positive",
         "kind": "completion",
-        "title": "One Kept, All Restored"
+        "title": "{ALL_REST_PRIZE}"
       }
     },
     {
       "id": "fin_one_1",
-      "body": "<<FILL role=rising words=155 beats='Rowan holds one face steady in her mind, the neighbour girl lost the winter she left, and offers the root a single memory of her own in fair trade for that one life lifted back into the town'>>",
+      "body": "<<FILL role=rising words=155 beats='{HERO} holds one face steady in her mind, the {NEIGHBOR_GIRL} lost the winter she left, and offers the {ROOT} a single memory of her own in fair trade for that one life lifted back into the {TOWN}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2217,18 +2217,18 @@
     },
     {
       "id": "e_one_hesitate",
-      "body": "<<FILL role=failure words=120 beats='Rowan hesitates too long over which piece of herself to give, and the frost closes over the spring for another year, and the neighbour girl stays a face in a fading photograph, so close to saved that the near miss aches'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} hesitates too long over which piece of herself to give, and the {DEADLINE} closes over the {SPRING} for another year, and the {NEIGHBOR_GIRL} stays a face in a fading {PHO_MEDIUM}, so close to saved that the near miss aches'>>",
       "is_ending": true,
       "ending": {
         "id": "e_one_hesitate",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Frost Came First"
+        "title": "{ONE_HESITATE_SETBACK}"
       }
     },
     {
       "id": "fin_one_2",
-      "body": "<<FILL role=climax words=160 beats='Rowan gives up her own first summer in Alderwick, a small bright thing she can spare, and the root takes it gently and lifts the neighbour girl up out of the water, blinking, alive, remembered again by a town that mourned her without knowing why'>>",
+      "body": "<<FILL role=climax words=160 beats='{HERO} gives up her own first summer in {TOWN}, a small bright thing she can spare, and the {ROOT} takes it gently and lifts the {NEIGHBOR_GIRL} up out of the water, blinking, alive, remembered again by a {TOWN} that mourned her without knowing why'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2245,29 +2245,29 @@
     },
     {
       "id": "e_one_saved",
-      "body": "<<FILL role=success words=155 beats='Rowan climbs the cellar stair with the neighbour girl beside her into a town that gasps to remember her, and though the Quiet still sleeps below and the wider loss remains, one whole life walks Alderwick again, bought back with a summer Rowan will never miss as much as this is worth'>>",
+      "body": "<<FILL role=success words=155 beats='{HERO} climbs the {CELLAR} stair with the {NEIGHBOR_GIRL} beside her into a {TOWN} that gasps to remember her, and though {PHENOMENON} still sleeps below and the wider loss remains, one whole life walks {TOWN} again, bought back with a summer {HERO} will never miss as much as this is worth'>>",
       "is_ending": true,
       "ending": {
         "id": "e_one_saved",
         "valence": "positive",
         "kind": "success",
-        "title": "One Soul Lifted"
+        "title": "{ONE_SAVED_PRIZE}"
       }
     },
     {
       "id": "e_one_content",
-      "body": "<<FILL role=success words=150 beats='The root will give no more than the fair one for one, and Rowan accepts it, choosing not to bleed herself dry chasing everyone, and she walks home with the neighbour girl and a hard gentle wisdom, that saving one completely is worth more than failing at saving all'>>",
+      "body": "<<FILL role=success words=150 beats='The {ROOT} will give no more than the fair one for one, and {HERO} accepts it, choosing not to bleed herself dry chasing everyone, and she walks home with the {NEIGHBOR_GIRL} and a hard gentle wisdom, that saving one completely is worth more than failing at saving all'>>",
       "is_ending": true,
       "ending": {
         "id": "e_one_content",
         "valence": "positive",
         "kind": "success",
-        "title": "Enough to Save One"
+        "title": "{ONE_CONTENT_PRIZE}"
       }
     },
     {
       "id": "fin_trade_1",
-      "body": "<<FILL role=rising words=155 beats='Rowan kneels at the water not to win but to be honest with it, and she offers the root her own memory of the day she first understood the town was disappearing, trading her certainty for a single year given back to Alderwick'>>",
+      "body": "<<FILL role=rising words=155 beats='{HERO} kneels at the water not to win but to be honest with it, and she offers the {ROOT} her own memory of the day she first understood the {TOWN} was disappearing, trading her certainty for a single year given back to {TOWN}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2277,25 +2277,25 @@
         },
         {
           "id": "c_fin_trade_1_2",
-          "label": "Grasp for more than the root will give.",
+          "label": "Grasp for more than the {ROOT} will give.",
           "target": "e_trade_greed"
         }
       ]
     },
     {
       "id": "e_trade_greed",
-      "body": "<<FILL role=failure words=120 beats='Rowan asks for more years than she offered, and the root, patient and exact, keeps what she gave and grants nothing, and she surfaces poorer by one memory and richer by no restored year, taught the cost of grasping'>>",
+      "body": "<<FILL role=failure words=120 beats='{HERO} asks for more years than she offered, and the {ROOT}, patient and exact, keeps what she gave and grants nothing, and she surfaces poorer by one memory and richer by no restored year, taught the cost of grasping'>>",
       "is_ending": true,
       "ending": {
         "id": "e_trade_greed",
         "valence": "negative",
         "kind": "setback",
-        "title": "Grasping for More"
+        "title": "{TRADE_GREED_SETBACK}"
       }
     },
     {
       "id": "fin_trade_2",
-      "body": "<<FILL role=climax words=160 beats='The root takes Rowan certainty and gives back the year she asked for, the bakery on the square with its warm lit window, and she understands she has not defeated the Quiet but made an honest peace with it, a fair exchange between a girl and an old grief'>>",
+      "body": "<<FILL role=climax words=160 beats='The {ROOT} takes {HERO} certainty and gives back the year she asked for, the {BAKERY} on the {TOWN_SQUARE} with its warm lit window, and she understands she has not defeated {PHENOMENON} but made an honest peace with it, a fair exchange between a girl and an old grief'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2305,7 +2305,7 @@
         },
         {
           "id": "c_fin_trade_2_2",
-          "label": "Promise the root a visit every frost.",
+          "label": "Promise the {ROOT} a visit every {DEADLINE}.",
           "target": "e_trade_keeper_light"
         },
         {
@@ -2317,35 +2317,35 @@
     },
     {
       "id": "e_trade_even",
-      "body": "<<FILL role=discovery words=145 beats='Rowan climbs into a town with one more street than it had that morning, carrying a little less of herself and a little more of Alderwick, and settles into the bittersweet knowledge that some things return only when we agree to let other things go'>>",
+      "body": "<<FILL role=discovery words=145 beats='{HERO} climbs into a {TOWN} with one more street than it had that morning, carrying a little less of herself and a little more of {TOWN}, and settles into the bittersweet knowledge that some things return only when we agree to let other things go'>>",
       "is_ending": true,
       "ending": {
         "id": "e_trade_even",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "A Fair Exchange"
+        "title": "{TRADE_EVEN_OUTCOME}"
       }
     },
     {
       "id": "e_trade_keeper_light",
-      "body": "<<FILL role=discovery words=155 beats='Rowan promises the root a yearly visit, a keeper who tends rather than surrenders, trading a single memory each frost for a single year returned, and she chooses to spend her life this way, slowly buying Alderwick back one season at a time, neither wholly winning nor losing'>>",
+      "body": "<<FILL role=discovery words=155 beats='{HERO} promises the {ROOT} a yearly visit, a {KEEPER_ROLE} who tends rather than surrenders, trading a single memory each {DEADLINE} for a single year returned, and she chooses to spend her life this way, slowly buying {TOWN} back one season at a time, neither wholly winning nor losing'>>",
       "is_ending": true,
       "ending": {
         "id": "e_trade_keeper_light",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "The Yearly Keeper"
+        "title": "{TRADE_KEEPER_OUTCOME}"
       }
     },
     {
       "id": "e_trade_photo",
-      "body": "<<FILL role=setback words=125 beats='Unwilling to feed the root anything she truly loves, Rowan keeps back one thing it can never take, a single photograph of the orchard gate held so tight it creases, and she walks home with the town still thinning around her, one saved image of everything lost'>>",
+      "body": "<<FILL role=setback words=125 beats='Unwilling to feed the {ROOT} anything she truly loves, {HERO} keeps back one thing it can never take, a single {PHO_MEDIUM} of the {ORCHARD} gate held so tight it creases, and she walks home with the {TOWN} still thinning around her, one saved image of everything lost'>>",
       "is_ending": true,
       "ending": {
         "id": "e_trade_photo",
         "valence": "negative",
         "kind": "setback",
-        "title": "One Photograph Kept"
+        "title": "{TRADE_PHOTO_SETBACK}"
       }
     }
   ]

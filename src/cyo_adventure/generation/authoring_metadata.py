@@ -45,6 +45,12 @@ class SkeletonAuthoringMetadata(TypedDict, total=False):
         review_stage1_model: The Stage 1 review model choice, if any.
         review_stage2_model: The Stage 2 review model choice, if any.
         theme_brief: The concept brief carried through to the fill job.
+        slot_bindings: WS-2 theme-contract slot values recorded for a
+            parameterized skeleton fill (manual/skill authoring path), so
+            :mod:`cyo_adventure.generation.import_story`'s ``resume_manual_fill``
+            can re-render the same bound skeleton for its Stage 1 check.
+            ``None``/absent for a fresh_generation job, an unparameterized
+            skeleton_fill job, or a pre-WS-2 job.
     """
 
     skeleton_slug: str
@@ -54,3 +60,4 @@ class SkeletonAuthoringMetadata(TypedDict, total=False):
     review_stage1_model: str
     review_stage2_model: str
     theme_brief: dict[str, object]
+    slot_bindings: dict[str, str] | None

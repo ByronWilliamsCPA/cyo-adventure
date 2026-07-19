@@ -34,34 +34,34 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=210 beats='Vera Lindqvist boards the last northbound overnight train of the season as sleet turns to snow; the platform clock has already stopped; four ways to read this strange, half-empty train open before her'>>",
+      "body": "<<FILL role=setup words=210 beats='{HERO} boards {THRESHOLD} at {OPENING_MOMENT}; {ENTRANCE}'s clock has already stopped; four ways to read this strange, half-empty train open before her'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_start_0",
-          "label": "Find the night conductor.",
+          "label": "Find {G0A0_LURE}.",
           "target": "g0a0_1"
         },
         {
           "id": "c_start_1",
-          "label": "Walk the sleeper cars.",
+          "label": "Walk {G0A1_LURE}.",
           "target": "g0a1_1"
         },
         {
           "id": "c_start_2",
-          "label": "Read the left-behind letter.",
+          "label": "Read {G0A2_LURE}.",
           "target": "g0a2_1"
         },
         {
           "id": "c_start_3",
-          "label": "Watch the changing land.",
+          "label": "Watch {G0A3_LURE}.",
           "target": "g0a3_1"
         }
       ]
     },
     {
       "id": "g0a0_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the night conductor and his silver punch-clock; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G0A0_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -73,7 +73,7 @@
     },
     {
       "id": "g0a0_2",
-      "body": "<<FILL role=choice words=180 beats='the night conductor and his silver punch-clock offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G0A0_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -90,7 +90,7 @@
     },
     {
       "id": "g0a0_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the night conductor and his silver punch-clock yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G0A0_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -102,7 +102,7 @@
     },
     {
       "id": "g0a0_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the night conductor and his silver punch-clock from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G0A0_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -119,7 +119,7 @@
     },
     {
       "id": "g0a0_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the night conductor and his silver punch-clock converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G0A0_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -131,7 +131,7 @@
     },
     {
       "id": "g0a0_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the night conductor and his silver punch-clock has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G0A0_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -143,7 +143,7 @@
     },
     {
       "id": "g0a0_end",
-      "body": "<<FILL role=setback words=150 beats='the pull of the night conductor and his silver punch-clock closes over Vera before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "body": "<<FILL role=setback words=150 beats='the pull of {G0A0_CHAR} closes over {HERO} before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g0a0",
@@ -154,7 +154,7 @@
     },
     {
       "id": "g0a1_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the long row of curtained sleeper berths; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G0A1_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -166,7 +166,7 @@
     },
     {
       "id": "g0a1_2",
-      "body": "<<FILL role=choice words=180 beats='the long row of curtained sleeper berths offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G0A1_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -183,7 +183,7 @@
     },
     {
       "id": "g0a1_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the long row of curtained sleeper berths yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G0A1_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -195,7 +195,7 @@
     },
     {
       "id": "g0a1_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the long row of curtained sleeper berths from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G0A1_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -212,7 +212,7 @@
     },
     {
       "id": "g0a1_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the long row of curtained sleeper berths converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G0A1_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -224,7 +224,7 @@
     },
     {
       "id": "g0a1_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the long row of curtained sleeper berths has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G0A1_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -236,7 +236,7 @@
     },
     {
       "id": "g0a1_end",
-      "body": "<<FILL role=setback words=150 beats='the pull of the long row of curtained sleeper berths closes over Vera before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "body": "<<FILL role=setback words=150 beats='the pull of {G0A1_CHAR} closes over {HERO} before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g0a1",
@@ -247,7 +247,7 @@
     },
     {
       "id": "g0a2_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the letter a stranger left folded on the seat; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G0A2_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -259,7 +259,7 @@
     },
     {
       "id": "g0a2_2",
-      "body": "<<FILL role=choice words=180 beats='the letter a stranger left folded on the seat offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G0A2_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -276,7 +276,7 @@
     },
     {
       "id": "g0a2_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the letter a stranger left folded on the seat yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G0A2_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -288,7 +288,7 @@
     },
     {
       "id": "g0a2_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the letter a stranger left folded on the seat from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G0A2_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -305,7 +305,7 @@
     },
     {
       "id": "g0a2_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the letter a stranger left folded on the seat converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G0A2_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -317,7 +317,7 @@
     },
     {
       "id": "g0a2_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the letter a stranger left folded on the seat has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G0A2_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -329,7 +329,7 @@
     },
     {
       "id": "g0a2_end",
-      "body": "<<FILL role=setback words=150 beats='the pull of the letter a stranger left folded on the seat closes over Vera before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "body": "<<FILL role=setback words=150 beats='the pull of {G0A2_CHAR} closes over {HERO} before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g0a2",
@@ -340,7 +340,7 @@
     },
     {
       "id": "g0a3_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the black country sliding past the window; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G0A3_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -352,7 +352,7 @@
     },
     {
       "id": "g0a3_2",
-      "body": "<<FILL role=choice words=180 beats='the black country sliding past the window offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G0A3_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -369,7 +369,7 @@
     },
     {
       "id": "g0a3_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the black country sliding past the window yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G0A3_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -381,7 +381,7 @@
     },
     {
       "id": "g0a3_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the black country sliding past the window from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G0A3_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -398,7 +398,7 @@
     },
     {
       "id": "g0a3_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the black country sliding past the window converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G0A3_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -410,7 +410,7 @@
     },
     {
       "id": "g0a3_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the black country sliding past the window has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G0A3_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -422,18 +422,18 @@
     },
     {
       "id": "g0a3_end",
-      "body": "<<FILL role=setback words=150 beats='the pull of the black country sliding past the window closes over Vera before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "body": "<<FILL role=setback words=150 beats='the pull of {G0A3_CHAR} closes over {HERO} before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g0a3",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lulled by the Snow"
+        "title": "{G0A3_PRIZE}"
       }
     },
     {
       "id": "g1a0_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the dining-car regulars who never seem to order; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G1A0_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -445,7 +445,7 @@
     },
     {
       "id": "g1a0_2",
-      "body": "<<FILL role=choice words=180 beats='the dining-car regulars who never seem to order offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G1A0_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -462,7 +462,7 @@
     },
     {
       "id": "g1a0_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the dining-car regulars who never seem to order yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G1A0_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -474,7 +474,7 @@
     },
     {
       "id": "g1a0_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the dining-car regulars who never seem to order from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G1A0_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -491,7 +491,7 @@
     },
     {
       "id": "g1a0_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the dining-car regulars who never seem to order converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G1A0_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -503,7 +503,7 @@
     },
     {
       "id": "g1a0_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the dining-car regulars who never seem to order has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G1A0_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -515,7 +515,7 @@
     },
     {
       "id": "g1a0_end",
-      "body": "<<FILL role=setback words=175 beats='in the dining-car regulars who never seem to order Vera finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the train'>>",
+      "body": "<<FILL role=setback words=175 beats='in {G1A0_CHAR} {HERO} finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off {THRESHOLD}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g1a0",
@@ -526,7 +526,7 @@
     },
     {
       "id": "g1a1_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the small child awake at the end of the carriage; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G1A1_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -538,7 +538,7 @@
     },
     {
       "id": "g1a1_2",
-      "body": "<<FILL role=choice words=180 beats='the small child awake at the end of the carriage offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G1A1_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -555,7 +555,7 @@
     },
     {
       "id": "g1a1_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the small child awake at the end of the carriage yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G1A1_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -567,7 +567,7 @@
     },
     {
       "id": "g1a1_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the small child awake at the end of the carriage from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G1A1_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -584,7 +584,7 @@
     },
     {
       "id": "g1a1_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the small child awake at the end of the carriage converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G1A1_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -596,7 +596,7 @@
     },
     {
       "id": "g1a1_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the small child awake at the end of the carriage has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G1A1_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -608,7 +608,7 @@
     },
     {
       "id": "g1a1_end",
-      "body": "<<FILL role=setback words=175 beats='in the small child awake at the end of the carriage Vera finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the train'>>",
+      "body": "<<FILL role=setback words=175 beats='in {G1A1_CHAR} {HERO} finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off {THRESHOLD}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g1a1",
@@ -619,7 +619,7 @@
     },
     {
       "id": "g1a2_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the man softly counting stations that never come; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G1A2_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -631,7 +631,7 @@
     },
     {
       "id": "g1a2_2",
-      "body": "<<FILL role=choice words=180 beats='the man softly counting stations that never come offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G1A2_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -648,7 +648,7 @@
     },
     {
       "id": "g1a2_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the man softly counting stations that never come yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G1A2_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -660,7 +660,7 @@
     },
     {
       "id": "g1a2_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the man softly counting stations that never come from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G1A2_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -677,7 +677,7 @@
     },
     {
       "id": "g1a2_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the man softly counting stations that never come converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G1A2_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -689,7 +689,7 @@
     },
     {
       "id": "g1a2_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the man softly counting stations that never come has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G1A2_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -701,7 +701,7 @@
     },
     {
       "id": "g1a2_end",
-      "body": "<<FILL role=setback words=175 beats='in the man softly counting stations that never come Vera finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the train'>>",
+      "body": "<<FILL role=setback words=175 beats='in {G1A2_CHAR} {HERO} finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off {THRESHOLD}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g1a2",
@@ -712,7 +712,7 @@
     },
     {
       "id": "g1a3_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the woman in grey travelling in mourning; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G1A3_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -724,7 +724,7 @@
     },
     {
       "id": "g1a3_2",
-      "body": "<<FILL role=choice words=180 beats='the woman in grey travelling in mourning offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G1A3_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -741,7 +741,7 @@
     },
     {
       "id": "g1a3_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the woman in grey travelling in mourning yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G1A3_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -753,7 +753,7 @@
     },
     {
       "id": "g1a3_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the woman in grey travelling in mourning from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G1A3_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -770,7 +770,7 @@
     },
     {
       "id": "g1a3_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the woman in grey travelling in mourning converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G1A3_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -782,7 +782,7 @@
     },
     {
       "id": "g1a3_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the woman in grey travelling in mourning has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G1A3_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -794,7 +794,7 @@
     },
     {
       "id": "g1a3_end",
-      "body": "<<FILL role=setback words=175 beats='in the woman in grey travelling in mourning Vera finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the train'>>",
+      "body": "<<FILL role=setback words=175 beats='in {G1A3_CHAR} {HERO} finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off {THRESHOLD}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g1a3",
@@ -805,7 +805,7 @@
     },
     {
       "id": "g2a0_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the conductor pressed a second time near the tunnel; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G2A0_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -817,7 +817,7 @@
     },
     {
       "id": "g2a0_2",
-      "body": "<<FILL role=choice words=180 beats='the conductor pressed a second time near the tunnel offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G2A0_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -834,7 +834,7 @@
     },
     {
       "id": "g2a0_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the conductor pressed a second time near the tunnel yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G2A0_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -846,7 +846,7 @@
     },
     {
       "id": "g2a0_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the conductor pressed a second time near the tunnel from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G2A0_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -863,7 +863,7 @@
     },
     {
       "id": "g2a0_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the conductor pressed a second time near the tunnel converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G2A0_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -875,7 +875,7 @@
     },
     {
       "id": "g2a0_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the conductor pressed a second time near the tunnel has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G2A0_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -887,18 +887,18 @@
     },
     {
       "id": "g2a0_end",
-      "body": "<<FILL role=setback words=175 beats='in the conductor pressed a second time near the tunnel Vera finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the train'>>",
+      "body": "<<FILL role=setback words=175 beats='in {G2A0_CHAR} {HERO} finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off {THRESHOLD}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g2a0",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "What the Conductor Won't Say"
+        "title": "{G2A0_PRIZE}"
       }
     },
     {
       "id": "g2a1_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the faint map inked in the margins of the letter; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G2A1_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -910,7 +910,7 @@
     },
     {
       "id": "g2a1_2",
-      "body": "<<FILL role=choice words=180 beats='the faint map inked in the margins of the letter offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G2A1_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -927,7 +927,7 @@
     },
     {
       "id": "g2a1_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the faint map inked in the margins of the letter yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G2A1_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -939,7 +939,7 @@
     },
     {
       "id": "g2a1_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the faint map inked in the margins of the letter from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G2A1_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -956,7 +956,7 @@
     },
     {
       "id": "g2a1_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the faint map inked in the margins of the letter converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G2A1_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -968,7 +968,7 @@
     },
     {
       "id": "g2a1_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the faint map inked in the margins of the letter has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G2A1_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -980,7 +980,7 @@
     },
     {
       "id": "g2a1_end",
-      "body": "<<FILL role=setback words=150 beats='the pull of the faint map inked in the margins of the letter closes over Vera before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "body": "<<FILL role=setback words=150 beats='the pull of {G2A1_CHAR} closes over {HERO} before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g2a1",
@@ -991,7 +991,7 @@
     },
     {
       "id": "g2a2_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the signal lamps burning ahead of the tunnel mouth; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G2A2_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1003,7 +1003,7 @@
     },
     {
       "id": "g2a2_2",
-      "body": "<<FILL role=choice words=180 beats='the signal lamps burning ahead of the tunnel mouth offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G2A2_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1020,7 +1020,7 @@
     },
     {
       "id": "g2a2_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the signal lamps burning ahead of the tunnel mouth yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G2A2_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1032,7 +1032,7 @@
     },
     {
       "id": "g2a2_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the signal lamps burning ahead of the tunnel mouth from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G2A2_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1049,7 +1049,7 @@
     },
     {
       "id": "g2a2_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the signal lamps burning ahead of the tunnel mouth converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G2A2_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1061,7 +1061,7 @@
     },
     {
       "id": "g2a2_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the signal lamps burning ahead of the tunnel mouth has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G2A2_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1073,7 +1073,7 @@
     },
     {
       "id": "g2a2_end",
-      "body": "<<FILL role=setback words=175 beats='in the signal lamps burning ahead of the tunnel mouth Vera finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the train'>>",
+      "body": "<<FILL role=setback words=175 beats='in {G2A2_CHAR} {HERO} finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off {THRESHOLD}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g2a2",
@@ -1084,7 +1084,7 @@
     },
     {
       "id": "g2a3_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the passengers gathered to weigh the choice together; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G2A3_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1096,7 +1096,7 @@
     },
     {
       "id": "g2a3_2",
-      "body": "<<FILL role=choice words=180 beats='the passengers gathered to weigh the choice together offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G2A3_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1113,7 +1113,7 @@
     },
     {
       "id": "g2a3_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the passengers gathered to weigh the choice together yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G2A3_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1125,7 +1125,7 @@
     },
     {
       "id": "g2a3_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the passengers gathered to weigh the choice together from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G2A3_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1142,7 +1142,7 @@
     },
     {
       "id": "g2a3_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the passengers gathered to weigh the choice together converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G2A3_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1154,7 +1154,7 @@
     },
     {
       "id": "g2a3_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the passengers gathered to weigh the choice together has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G2A3_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1166,7 +1166,7 @@
     },
     {
       "id": "g2a3_end",
-      "body": "<<FILL role=setback words=150 beats='the pull of the passengers gathered to weigh the choice together closes over Vera before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "body": "<<FILL role=setback words=150 beats='the pull of {G2A3_CHAR} closes over {HERO} before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g2a3",
@@ -1177,7 +1177,7 @@
     },
     {
       "id": "g3a0_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the conductor at last willing to explain the north line; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G3A0_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1189,7 +1189,7 @@
     },
     {
       "id": "g3a0_2",
-      "body": "<<FILL role=choice words=180 beats='the conductor at last willing to explain the north line offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G3A0_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1206,7 +1206,7 @@
     },
     {
       "id": "g3a0_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the conductor at last willing to explain the north line yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G3A0_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1218,7 +1218,7 @@
     },
     {
       "id": "g3a0_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the conductor at last willing to explain the north line from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G3A0_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1235,7 +1235,7 @@
     },
     {
       "id": "g3a0_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the conductor at last willing to explain the north line converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G3A0_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1247,7 +1247,7 @@
     },
     {
       "id": "g3a0_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the conductor at last willing to explain the north line has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G3A0_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1259,18 +1259,18 @@
     },
     {
       "id": "g3a0_end",
-      "body": "<<FILL role=setback words=175 beats='in the conductor at last willing to explain the north line Vera finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the train'>>",
+      "body": "<<FILL role=setback words=175 beats='in {G3A0_CHAR} {HERO} finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off {THRESHOLD}'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g3a0",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "What the Conductor Carries"
+        "title": "{G3A0_PRIZE}"
       }
     },
     {
       "id": "g3a1_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the wakeful child offering to show Vera the way through; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G3A1_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1282,7 +1282,7 @@
     },
     {
       "id": "g3a1_2",
-      "body": "<<FILL role=choice words=180 beats='the wakeful child offering to show Vera the way through offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G3A1_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1299,7 +1299,7 @@
     },
     {
       "id": "g3a1_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the wakeful child offering to show Vera the way through yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G3A1_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1311,7 +1311,7 @@
     },
     {
       "id": "g3a1_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the wakeful child offering to show Vera the way through from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G3A1_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1328,7 +1328,7 @@
     },
     {
       "id": "g3a1_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the wakeful child offering to show Vera the way through converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G3A1_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1340,7 +1340,7 @@
     },
     {
       "id": "g3a1_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the wakeful child offering to show Vera the way through has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G3A1_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1352,18 +1352,18 @@
     },
     {
       "id": "g3a1_end",
-      "body": "<<FILL role=setback words=210 beats='through the wakeful child offering to show Vera the way through Vera does one whole, quiet good thing for another traveler, and the doing of it is enough; the carriage seems to warm a half-degree around her'>>",
+      "body": "<<FILL role=setback words=210 beats='through {G3A1_CHAR} {HERO} does one whole, quiet good thing for another traveler, and the doing of it is enough; the carriage seems to warm a half-degree around her'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g3a1",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Child Shows the Way"
+        "title": "{G3A1_PRIZE}"
       }
     },
     {
       "id": "g3a2_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the mourning woman's quiet request to carry a message on; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G3A2_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1375,7 +1375,7 @@
     },
     {
       "id": "g3a2_2",
-      "body": "<<FILL role=choice words=180 beats='the mourning woman's quiet request to carry a message on offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G3A2_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1392,7 +1392,7 @@
     },
     {
       "id": "g3a2_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the mourning woman's quiet request to carry a message on yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G3A2_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1404,7 +1404,7 @@
     },
     {
       "id": "g3a2_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the mourning woman's quiet request to carry a message on from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G3A2_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1421,7 +1421,7 @@
     },
     {
       "id": "g3a2_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the mourning woman's quiet request to carry a message on converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G3A2_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1433,7 +1433,7 @@
     },
     {
       "id": "g3a2_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the mourning woman's quiet request to carry a message on has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G3A2_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1445,18 +1445,18 @@
     },
     {
       "id": "g3a2_end",
-      "body": "<<FILL role=setback words=215 beats='through the mourning woman's quiet request to carry a message on Vera meets the journey on its own terms and is answered; something long carried is finally set down'>>",
+      "body": "<<FILL role=setback words=215 beats='through {G3A2_CHAR} {HERO} meets the journey on its own terms and is answered; something long carried is finally set down'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g3a2",
         "valence": "positive",
         "kind": "success",
-        "title": "You Carried Her Message"
+        "title": "{G3A2_PRIZE}"
       }
     },
     {
       "id": "g3a3_1",
-      "body": "<<FILL role=rising words=165 beats='Vera turns toward the timetable whose columns of stations never end; the carriage sways and the cold glass holds her reflection over the dark; a first detail snags her attention'>>",
+      "body": "<<FILL role=rising words=165 beats='{HERO} turns toward {G3A3_CHAR}; {TONE_MOTIF}; a first detail snags her attention'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1468,7 +1468,7 @@
     },
     {
       "id": "g3a3_2",
-      "body": "<<FILL role=choice words=180 beats='the timetable whose columns of stations never end offers Vera two ways to read it; one is direct and risks notice, the other is patient and lets the train keep its secret a while'>>",
+      "body": "<<FILL role=choice words=180 beats='{G3A3_CHAR} offers {HERO} two ways to read it; one is direct and risks notice, the other is patient and lets {THRESHOLD} keep its secret a while'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1485,7 +1485,7 @@
     },
     {
       "id": "g3a3_3a",
-      "body": "<<FILL role=rising words=150 beats='the direct approach to the timetable whose columns of stations never end yields a hard, specific fact that will not sit still in Vera's mind; it points deeper into the train'>>",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to {G3A3_CHAR} yields a hard, specific fact that will not sit still in {HERO}'s mind; it points deeper into {THRESHOLD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1497,7 +1497,7 @@
     },
     {
       "id": "g3a3_3b",
-      "body": "<<FILL role=choice words=175 beats='watching the timetable whose columns of stations never end from the edges, Vera can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "body": "<<FILL role=choice words=175 beats='watching {G3A3_CHAR} from the edges, {HERO} can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1514,7 +1514,7 @@
     },
     {
       "id": "g3a3_4",
-      "body": "<<FILL role=rising words=160 beats='both readings of the timetable whose columns of stations never end converge on the same small wrongness; Vera feels the journey close around it like a held breath'>>",
+      "body": "<<FILL role=rising words=160 beats='both readings of {G3A3_CHAR} converge on the same small wrongness; {HERO} feels the journey close around it like a held breath'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1526,7 +1526,7 @@
     },
     {
       "id": "g3a3_5",
-      "body": "<<FILL role=rising words=170 beats='carrying what the timetable whose columns of stations never end has told her, Vera moves on through the swaying cars toward the question the whole train seems built around'>>",
+      "body": "<<FILL role=rising words=170 beats='carrying what {G3A3_CHAR} has told her, {HERO} moves on through the swaying cars toward {GOAL}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1538,38 +1538,38 @@
     },
     {
       "id": "g3a3_end",
-      "body": "<<FILL role=setback words=150 beats='the pull of the timetable whose columns of stations never end closes over Vera before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "body": "<<FILL role=setback words=150 beats='the pull of {G3A3_CHAR} closes over {HERO} before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
       "is_ending": true,
       "ending": {
         "id": "e_g3a3",
         "valence": "negative",
         "kind": "setback",
-        "title": "Lost Among the Columns"
+        "title": "{G3A3_PRIZE}"
       }
     },
     {
       "id": "p1_never_arrives",
-      "body": "<<FILL role=pivot words=205 beats='the first bottleneck, why the train never seems to arrive; every clock aboard has stopped and the north terminus stays exactly one hour off, no matter how long the night runs'>>",
+      "body": "<<FILL role=pivot words=205 beats='the first bottleneck, why {THRESHOLD} never seems to arrive; every clock aboard has stopped and {TERMINUS} stays exactly one hour off, no matter how long the night runs'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p1_never_arrives_0",
-          "label": "Sit with the dining-car regulars.",
+          "label": "Sit with {G1A0_LURE}.",
           "target": "g1a0_1"
         },
         {
           "id": "c_p1_never_arrives_1",
-          "label": "Find the child who never sleeps.",
+          "label": "Find {G1A1_LURE}.",
           "target": "g1a1_1"
         },
         {
           "id": "c_p1_never_arrives_2",
-          "label": "Follow the man counting stations.",
+          "label": "Follow {G1A2_LURE}.",
           "target": "g1a2_1"
         },
         {
           "id": "c_p1_never_arrives_3",
-          "label": "Approach the woman in mourning.",
+          "label": "Approach {G1A3_LURE}.",
           "target": "g1a3_1"
         }
       ]
@@ -1581,56 +1581,56 @@
       "choices": [
         {
           "id": "c_p2_who_passengers_0",
-          "label": "Consult the conductor again.",
+          "label": "Consult {G2A0_LURE} again.",
           "target": "g2a0_1"
         },
         {
           "id": "c_p2_who_passengers_1",
-          "label": "Decode the letter's map.",
+          "label": "Decode {G2A1_LURE}.",
           "target": "g2a1_1"
         },
         {
           "id": "c_p2_who_passengers_2",
-          "label": "Read the tunnel signal lights.",
+          "label": "Read {G2A2_LURE}.",
           "target": "g2a2_1"
         },
         {
           "id": "c_p2_who_passengers_3",
-          "label": "Gather the passengers to decide.",
+          "label": "Gather {G2A3_LURE} to decide.",
           "target": "g2a3_1"
         }
       ]
     },
     {
       "id": "p3_tunnel_choice",
-      "body": "<<FILL role=pivot words=205 beats='the third bottleneck, the choice at the mountain tunnel; the train slows before a black tunnel mouth in the peaks and Vera must decide what she will carry through the dark, and what she will leave'>>",
+      "body": "<<FILL role=pivot words=205 beats='the third bottleneck, the choice at {DEADLINE}; {THRESHOLD} slows before {DEADLINE} and {HERO} must decide what she will carry through the dark, and what she will leave'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p3_tunnel_choice_0",
-          "label": "Ask the conductor for the whole truth.",
+          "label": "Ask {G3A0_LURE} for the whole truth.",
           "target": "g3a0_1"
         },
         {
           "id": "c_p3_tunnel_choice_1",
-          "label": "Let the child lead you.",
+          "label": "Let {G3A1_LURE} lead you.",
           "target": "g3a1_1"
         },
         {
           "id": "c_p3_tunnel_choice_2",
-          "label": "Answer the mourning woman's request.",
+          "label": "Answer {G3A2_CHAR}.",
           "target": "g3a2_1"
         },
         {
           "id": "c_p3_tunnel_choice_3",
-          "label": "Search the endless timetable.",
+          "label": "Search {G3A3_LURE}.",
           "target": "g3a3_1"
         }
       ]
     },
     {
       "id": "p4_dawn_reveal",
-      "body": "<<FILL role=pivot words=205 beats='the passengers reveal themselves as the first grey light touches the peaks; Vera understands the train is a passage and not a route, and that how the night ends is now hers to shape'>>",
+      "body": "<<FILL role=pivot words=205 beats='the passengers reveal themselves as {DEADLINE_SIGN} touches the peaks; {HERO} understands {THRESHOLD} is a passage and not a route, and that how the night ends is now hers to shape'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1640,41 +1640,41 @@
         },
         {
           "id": "c_p4_help",
-          "label": "Turn to the traveler who needs you.",
+          "label": "Turn to {R_HELP_LURE}.",
           "target": "r_help1"
         },
         {
           "id": "c_p4_truth",
-          "label": "Chase the last of the truth.",
+          "label": "Chase {R_TRUTH_LURE}.",
           "target": "r_truth1"
         },
         {
           "id": "c_p4_leave",
-          "label": "Try to get off before the tunnel.",
+          "label": "Try to get off before {DEADLINE}.",
           "target": "r_leave1"
         }
       ]
     },
     {
       "id": "r_peace1",
-      "body": "<<FILL role=resolution words=185 beats='Vera gives herself to the plain act of riding on, wide awake; the carriage narrows to this one long, lucid stretch of track before the tunnel'>>",
+      "body": "<<FILL role=resolution words=185 beats='{HERO} gives herself to {R_PEACE_CHAR}; the carriage narrows to this one long, lucid stretch of track before {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_peace1",
-          "label": "Follow it toward dawn.",
+          "label": "Follow it toward {DEADLINE_SIGN}.",
           "target": "r_peace2"
         }
       ]
     },
     {
       "id": "r_peace2",
-      "body": "<<FILL role=choice words=180 beats='in the plain act of riding on, wide awake there is a smaller door and a larger one; one closes the night early, the other stays open toward the grey dawn'>>",
+      "body": "<<FILL role=choice words=180 beats='in {R_PEACE_CHAR} there is a smaller door and a larger one; one closes the night early, the other stays open toward {DEADLINE_SIGN}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_peace2a",
-          "label": "Stay open to the dawn.",
+          "label": "Stay open to {DEADLINE_SIGN}.",
           "target": "r_peace3"
         },
         {
@@ -1686,19 +1686,19 @@
     },
     {
       "id": "r_peace3",
-      "body": "<<FILL role=resolution words=185 beats='having chosen the plain act of riding on, wide awake, Vera comes level with the dawn coming up over the ridgeline where all the night's threads seem to gather'>>",
+      "body": "<<FILL role=resolution words=185 beats='having chosen {R_PEACE_CHAR}, {HERO} comes level with {DEADLINE_SIGN} coming up over the ridgeline where all the night's threads seem to gather'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_peace3",
-          "label": "Meet the dawn.",
+          "label": "Meet {DEADLINE_SIGN}.",
           "target": "r_dawn"
         }
       ]
     },
     {
       "id": "e_peace_early",
-      "body": "<<FILL role=setback words=150 beats='the calm Vera finds is real but slips through her fingers before the dawn; she arrives unsettled, sure only that she let a moment pass'>>",
+      "body": "<<FILL role=setback words=150 beats='the calm {HERO} finds is real but slips through her fingers before {DEADLINE_SIGN}; she arrives unsettled, sure only that she let a moment pass'>>",
       "is_ending": true,
       "ending": {
         "id": "e_calm_unkept",
@@ -1709,24 +1709,24 @@
     },
     {
       "id": "r_help1",
-      "body": "<<FILL role=resolution words=185 beats='Vera gives herself to the traveler at the carriage end who needs a hand; the carriage narrows to this one long, lucid stretch of track before the tunnel'>>",
+      "body": "<<FILL role=resolution words=185 beats='{HERO} gives herself to {R_HELP_CHAR}; the carriage narrows to this one long, lucid stretch of track before {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_help1",
-          "label": "Follow it toward dawn.",
+          "label": "Follow it toward {DEADLINE_SIGN}.",
           "target": "r_help2"
         }
       ]
     },
     {
       "id": "r_help2",
-      "body": "<<FILL role=choice words=180 beats='in the traveler at the carriage end who needs a hand there is a smaller door and a larger one; one closes the night early, the other stays open toward the grey dawn'>>",
+      "body": "<<FILL role=choice words=180 beats='in {R_HELP_CHAR} there is a smaller door and a larger one; one closes the night early, the other stays open toward {DEADLINE_SIGN}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_help2a",
-          "label": "Stay open to the dawn.",
+          "label": "Stay open to {DEADLINE_SIGN}.",
           "target": "r_help3"
         },
         {
@@ -1738,19 +1738,19 @@
     },
     {
       "id": "r_help3",
-      "body": "<<FILL role=resolution words=185 beats='having chosen the traveler at the carriage end who needs a hand, Vera comes level with the dawn coming up over the ridgeline where all the night's threads seem to gather'>>",
+      "body": "<<FILL role=resolution words=185 beats='having chosen {R_HELP_CHAR}, {HERO} comes level with {DEADLINE_SIGN} coming up over the ridgeline where all the night's threads seem to gather'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_help3",
-          "label": "Meet the dawn.",
+          "label": "Meet {DEADLINE_SIGN}.",
           "target": "r_dawn"
         }
       ]
     },
     {
       "id": "e_help_early",
-      "body": "<<FILL role=setback words=150 beats='Vera hesitates one beat too long and the hand she meant to take is withdrawn; the traveler rides on alone and so does she'>>",
+      "body": "<<FILL role=setback words=150 beats='{HERO} hesitates one beat too long and the hand she meant to take is withdrawn; the traveler rides on alone and so does she'>>",
       "is_ending": true,
       "ending": {
         "id": "e_hand_untaken",
@@ -1761,24 +1761,24 @@
     },
     {
       "id": "r_truth1",
-      "body": "<<FILL role=resolution words=185 beats='Vera gives herself to the last unread lines of the stranger's letter; the carriage narrows to this one long, lucid stretch of track before the tunnel'>>",
+      "body": "<<FILL role=resolution words=185 beats='{HERO} gives herself to {R_TRUTH_CHAR}; the carriage narrows to this one long, lucid stretch of track before {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_truth1",
-          "label": "Follow it toward dawn.",
+          "label": "Follow it toward {DEADLINE_SIGN}.",
           "target": "r_truth2"
         }
       ]
     },
     {
       "id": "r_truth2",
-      "body": "<<FILL role=choice words=180 beats='in the last unread lines of the stranger's letter there is a smaller door and a larger one; one closes the night early, the other stays open toward the grey dawn'>>",
+      "body": "<<FILL role=choice words=180 beats='in {R_TRUTH_CHAR} there is a smaller door and a larger one; one closes the night early, the other stays open toward {DEADLINE_SIGN}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_truth2a",
-          "label": "Stay open to the dawn.",
+          "label": "Stay open to {DEADLINE_SIGN}.",
           "target": "r_truth3"
         },
         {
@@ -1790,47 +1790,47 @@
     },
     {
       "id": "r_truth3",
-      "body": "<<FILL role=resolution words=185 beats='having chosen the last unread lines of the stranger's letter, Vera comes level with the dawn coming up over the ridgeline where all the night's threads seem to gather'>>",
+      "body": "<<FILL role=resolution words=185 beats='having chosen {R_TRUTH_CHAR}, {HERO} comes level with {DEADLINE_SIGN} coming up over the ridgeline where all the night's threads seem to gather'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_truth3",
-          "label": "Meet the dawn.",
+          "label": "Meet {DEADLINE_SIGN}.",
           "target": "r_dawn"
         }
       ]
     },
     {
       "id": "e_truth_early",
-      "body": "<<FILL role=discovery words=175 beats='Vera reads half the timetable's secret and no more; it is enough to know the train is kind, not enough to know why it chose her'>>",
+      "body": "<<FILL role=discovery words=175 beats='{HERO} reads half {G3A3_LURE}'s secret and no more; it is enough to know {THRESHOLD} is kind, not enough to know why it chose her'>>",
       "is_ending": true,
       "ending": {
         "id": "e_half_timetable",
         "valence": "neutral",
         "kind": "discovery",
-        "title": "Half the Timetable"
+        "title": "{TRUTH_EARLY_PRIZE}"
       }
     },
     {
       "id": "r_leave1",
-      "body": "<<FILL role=resolution words=185 beats='Vera gives herself to the cold vestibule door and the idea of stepping down; the carriage narrows to this one long, lucid stretch of track before the tunnel'>>",
+      "body": "<<FILL role=resolution words=185 beats='{HERO} gives herself to {R_LEAVE_CHAR}; the carriage narrows to this one long, lucid stretch of track before {DEADLINE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_leave1",
-          "label": "Follow it toward dawn.",
+          "label": "Follow it toward {DEADLINE_SIGN}.",
           "target": "r_leave2"
         }
       ]
     },
     {
       "id": "r_leave2",
-      "body": "<<FILL role=choice words=180 beats='in the cold vestibule door and the idea of stepping down there is a smaller door and a larger one; one closes the night early, the other stays open toward the grey dawn'>>",
+      "body": "<<FILL role=choice words=180 beats='in {R_LEAVE_CHAR} there is a smaller door and a larger one; one closes the night early, the other stays open toward {DEADLINE_SIGN}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_leave2a",
-          "label": "Stay open to the dawn.",
+          "label": "Stay open to {DEADLINE_SIGN}.",
           "target": "r_leave3"
         },
         {
@@ -1842,30 +1842,30 @@
     },
     {
       "id": "r_leave3",
-      "body": "<<FILL role=resolution words=185 beats='having chosen the cold vestibule door and the idea of stepping down, Vera comes level with the dawn coming up over the ridgeline where all the night's threads seem to gather'>>",
+      "body": "<<FILL role=resolution words=185 beats='having chosen {R_LEAVE_CHAR}, {HERO} comes level with {DEADLINE_SIGN} coming up over the ridgeline where all the night's threads seem to gather'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_r_leave3",
-          "label": "Meet the dawn.",
+          "label": "Meet {DEADLINE_SIGN}.",
           "target": "r_dawn"
         }
       ]
     },
     {
       "id": "e_leave_early",
-      "body": "<<FILL role=setback words=150 beats='the door opens onto the first platform of all, and Vera wakes there as the train pulls away northward without her, the night unspent'>>",
+      "body": "<<FILL role=setback words=150 beats='the door opens onto the first {ENTRANCE} of all, and {HERO} wakes there as {THRESHOLD} pulls away northward without her, the night unspent'>>",
       "is_ending": true,
       "ending": {
         "id": "e_first_platform",
         "valence": "negative",
         "kind": "setback",
-        "title": "Back at the First Platform"
+        "title": "{LEAVE_EARLY_PRIZE}"
       }
     },
     {
       "id": "r_dawn",
-      "body": "<<FILL role=pivot words=200 beats='every route through the night gathers at the dawn bottleneck above the tunnel; the peaks go gold, the passengers are quiet, and the last shape of Vera's journey waits on one final turning'>>",
+      "body": "<<FILL role=pivot words=200 beats='every route through the night gathers at {DEADLINE_SIGN} bottleneck above {DEADLINE}; the peaks go gold, the passengers are quiet, and the last shape of {HERO}'s journey waits on one final turning'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1892,7 +1892,7 @@
     },
     {
       "id": "r_choice_peace",
-      "body": "<<FILL role=resolution words=190 beats='Vera stops trying to arrive; she lets the north terminus stay one hour off forever and finds, at last, that she does not mind the distance'>>",
+      "body": "<<FILL role=resolution words=190 beats='{HERO} stops trying to arrive; she lets {TERMINUS} stay one hour off forever and finds, at last, that she does not mind the distance'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1904,7 +1904,7 @@
     },
     {
       "id": "r_choice_help",
-      "body": "<<FILL role=choice words=180 beats='the seat beside the mourning traveler is warm; Vera can stay through the tunnel at the price of her own arrival, or step back and keep it'>>",
+      "body": "<<FILL role=choice words=180 beats='the seat beside the mourning traveler is warm; {HERO} can stay through {DEADLINE} at the price of her own arrival, or step back and keep it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1921,7 +1921,7 @@
     },
     {
       "id": "r_choice_truth",
-      "body": "<<FILL role=resolution words=190 beats='Vera speaks the north line's whole quiet truth aloud to the grey window, and the naming of it is its own kind of arrival'>>",
+      "body": "<<FILL role=resolution words=190 beats='{HERO} speaks {TERMINUS}'s whole quiet truth aloud to the grey window, and the naming of it is its own kind of arrival'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1933,7 +1933,7 @@
     },
     {
       "id": "r_choice_safe",
-      "body": "<<FILL role=resolution words=185 beats='Vera asks the train for nothing but a safe waking, and the train, being kinder than she feared, grants exactly that and no more'>>",
+      "body": "<<FILL role=resolution words=185 beats='{HERO} asks {THRESHOLD} for nothing but a safe waking, and {THRESHOLD}, being kinder than she feared, grants exactly that and no more'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1945,29 +1945,29 @@
     },
     {
       "id": "e_make_peace",
-      "body": "<<FILL role=success words=220 beats='the best ending: Vera rides the last train north with open eyes and an open heart, at peace with a journey that was never meant to end at a station; dawn holds and she is finally, wholly here'>>",
+      "body": "<<FILL role=success words=220 beats='the best ending: {HERO} rides {THRESHOLD} with open eyes and an open heart, at peace with a journey that was never meant to end at a station; {DEADLINE_SIGN} holds and she is finally, wholly here'>>",
       "is_ending": true,
       "ending": {
         "id": "e_final_peace",
         "valence": "positive",
         "kind": "success",
-        "title": "The Last Train North"
+        "title": "{PEACE_PRIZE}"
       }
     },
     {
       "id": "e_help_passenger",
-      "body": "<<FILL role=completion words=215 beats='Vera stays beside the mourning traveler through the tunnel and delivers her safely into the dawn; helping another home turns out to be the arrival Vera was riding toward all along'>>",
+      "body": "<<FILL role=completion words=215 beats='{HERO} stays beside the mourning traveler through {DEADLINE} and delivers her safely into {DEADLINE_SIGN}; helping another home turns out to be the arrival {HERO} was riding toward all along'>>",
       "is_ending": true,
       "ending": {
         "id": "e_final_help",
         "valence": "positive",
         "kind": "completion",
-        "title": "A Seat Beside Her"
+        "title": "{HELP_PRIZE}"
       }
     },
     {
       "id": "e_help_cost",
-      "body": "<<FILL role=setback words=150 beats='Vera stays past every reasonable hour and the dawn slips by; the traveler is helped but Vera surfaces frayed and far from herself, the good deed shadowed by what it cost'>>",
+      "body": "<<FILL role=setback words=150 beats='{HERO} stays past every reasonable hour and {DEADLINE_SIGN} slips by; the traveler is helped but {HERO} surfaces frayed and far from herself, the good deed shadowed by what it cost'>>",
       "is_ending": true,
       "ending": {
         "id": "e_final_cost",
@@ -1978,18 +1978,18 @@
     },
     {
       "id": "e_uncover_truth",
-      "body": "<<FILL role=discovery words=185 beats='Vera names the north line for what it is, a passage the season lends to travelers who are ready; she does not stay, but she leaves knowing, and the knowing settles something in her'>>",
+      "body": "<<FILL role=discovery words=185 beats='{HERO} names {TERMINUS} for what it is, a passage the season lends to travelers who are ready; she does not stay, but she leaves knowing, and the knowing settles something in her'>>",
       "is_ending": true,
       "ending": {
         "id": "e_final_truth",
         "valence": "positive",
         "kind": "discovery",
-        "title": "The Northbound Names"
+        "title": "{TRUTH_PRIZE}"
       }
     },
     {
       "id": "e_unsettled_safe",
-      "body": "<<FILL role=setback words=165 beats='Vera wakes at her own quiet station, unharmed and a little haunted; the train is gone, the night unexplained, and she carries only the sense of a door she chose not to walk through'>>",
+      "body": "<<FILL role=setback words=165 beats='{HERO} wakes at her own quiet station, unharmed and a little haunted; {THRESHOLD} is gone, the night unexplained, and she carries only the sense of a door she chose not to walk through'>>",
       "is_ending": true,
       "ending": {
         "id": "e_final_safe",

@@ -1,0 +1,527 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_snow_day_expedition",
+  "version": 1,
+  "title": "The Snow Day Expedition",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "imagination",
+      "adventure",
+      "siblings",
+      "winter"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=85 beats='a whole free Saturday closes school for the day; Priya presses her nose to the cold window while her older cousin Theo drums on the glass beside her; overnight the yard vanishes under deep white and the tire swing wears a tall snow hat; Priya announces that this is not a backyard anymore, it is the jungle treehouse world, and they are the rangers who will map it; they race each other to the garage, thrilled'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_gear",
+          "label": "Suit up for the expedition.",
+          "target": "n_gear"
+        }
+      ]
+    },
+    {
+      "id": "n_gear",
+      "body": "<<FILL role=setup words=72 beats='in the garage the rangers gear up; puffy coats become expedition parkas, mittens are rated for the coldest cold, and the wagon becomes the supply carrier, loaded with lemonade, the garden trowel, the ranger logbook, and the crackers; Dad runs ranger dispatch, which looks exactly like the kitchen, zips her older cousin Theo to the chin, and waves the team out the door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gear_basecamp",
+          "label": "March out to Camp Leafy.",
+          "target": "n_basecamp"
+        }
+      ]
+    },
+    {
+      "id": "n_basecamp",
+      "body": "<<FILL role=choice words=82 beats='Camp Leafy is the staging point and the whole the jungle treehouse world spreads out below it; on one side a snowbank looms like the Vine Tower, with a trail of tiny hoofprints stitched along the fence beneath it; on the other side the Fern Meadow lie soft, springy fallen leaves, with the old fountain statue poking up out of them like a lonely marker; the rangers must pick a direction to trek'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_base_east",
+          "label": "Trek toward the Vine Tower.",
+          "target": "n_east"
+        },
+        {
+          "id": "c_base_west",
+          "label": "Trek across the Fern Meadow.",
+          "target": "n_west"
+        }
+      ]
+    },
+    {
+      "id": "n_east",
+      "body": "<<FILL role=choice words=78 beats='the eastward trek is squeaky boot work through knee-deep powder; the Vine Tower rises huge ahead, really just a snowbank, but with eyes half shut it is a true peak with knotted vines and wide branches; right across the trail runs tiny round hoofprints heading for the fence, and her older cousin Theo gasps that a mysterious creature has passed this way; two expeditions call at once and the rangers can only pick one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_east_climb",
+          "label": "Climb the Vine Tower.",
+          "target": "m_1"
+        },
+        {
+          "id": "c_east_tracks",
+          "label": "Follow a trail of tiny hoofprints.",
+          "target": "t_1"
+        }
+      ]
+    },
+    {
+      "id": "n_west",
+      "body": "<<FILL role=choice words=78 beats='out on the Fern Meadow the snow is soft, springy fallen leaves, exactly right for building a fort; farther on, the old fountain statue rises from the drifts, and frozen fast in its icy top stand the toy dinosaurs her older cousin Theo left there before the big freeze, upright and waiting bravely for rescue; the rangers must choose today's mission'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_west_igloo",
+          "label": "Build the Leaf Fort.",
+          "target": "i_1"
+        },
+        {
+          "id": "c_west_penguins",
+          "label": "Rescue the toy dinosaurs.",
+          "target": "p_1"
+        }
+      ]
+    },
+    {
+      "id": "m_1",
+      "body": "<<FILL role=rising words=68 beats='at the foot of the Vine Tower the rangers rope up with the garden hose coiled as a rope; up close the mountain is a crusty snowbank taller than the car, but to the roped-up team it is all wide branches and rope loops; Priya spots the first good foothold and the ascent begins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_up",
+          "label": "Start up the lower slopes.",
+          "target": "m_2"
+        }
+      ]
+    },
+    {
+      "id": "m_2",
+      "body": "<<FILL role=choice words=80 beats='at the halfway ledge, really a buried lawn chair making a fine flat shelf, a sudden rain shower whirls in; the wind kicks loose snow-dust off the crest and a distant machine adds a roaring white plume; sparkles sting their cheeks and her older cousin Theo's nose has gone pink; real the rangers must decide, brave the storm on to the top, or head back to Camp Leafy for lemonade and try again later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_push",
+          "label": "Push on through a sudden rain shower.",
+          "target": "m_3"
+        },
+        {
+          "id": "c_m2_cocoa",
+          "label": "Head back down for lemonade.",
+          "target": "m_r1"
+        }
+      ]
+    },
+    {
+      "id": "m_r1",
+      "body": "<<FILL role=rising words=60 beats='they climb down ledge by ledge, careful as real mountaineers, and a sudden rain shower dies away behind them just as ranger dispatch's window glows gold ahead; Priya says this is not quitting, the rangers call it regrouping, and her older cousin Theo agrees because his toes agree'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mr1_in",
+          "label": "Tromp inside to warm up.",
+          "target": "e_m_retreat"
+        }
+      ]
+    },
+    {
+      "id": "e_m_retreat",
+      "body": "<<FILL role=ending words=72 beats='mittens steam on the radiator while the rangers sip lemonade with extra marshmallows at ranger dispatch; they draw tomorrow's route to the treetop on a napkin map with arrows and a big X; the Vine Tower is not going anywhere, and next time, they agree with a clink of mugs, the treetop is theirs'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m_retreat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at a sudden rain shower"
+      }
+    },
+    {
+      "id": "m_3",
+      "body": "<<FILL role=rising words=66 beats='above the storm the wind quiets and the snow crust firms underfoot; they kick toe-steps the way real mountaineers do, Priya first and her older cousin Theo counting every step out loud; the treetop of the Vine Tower is suddenly close against the bright blue sky'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_top",
+          "label": "Scramble up the last stretch.",
+          "target": "m_4"
+        }
+      ]
+    },
+    {
+      "id": "m_4",
+      "body": "<<FILL role=choice words=78 beats='the treetop! from the top the rangers can see their whole the jungle treehouse world at once, the fence line, the Fern Meadow, the old fountain statue, even their own boot trail winding back to Camp Leafy; two glorious ways to finish the climb: plant a bamboo pole with a green banner, or line up the wagon for the first-ever ride down the smooth wind-packed far slope'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m4_flag",
+          "label": "Plant a bamboo pole with a green banner.",
+          "target": "m_f1"
+        },
+        {
+          "id": "c_m4_sled",
+          "label": "Ride the wagon down the far slope.",
+          "target": "m_s1"
+        }
+      ]
+    },
+    {
+      "id": "m_f1",
+      "body": "<<FILL role=rising words=62 beats='they pack snow tight to plant a bamboo pole with a green banner, where it flaps like a true expedition flag; Priya and her older cousin Theo stand at attention beside it, puffed up with pride, and Priya declares that a brand-new mountain needs a name'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mf1_name",
+          "label": "Name the Vine Tower out loud.",
+          "target": "e_m_flag"
+        }
+      ]
+    },
+    {
+      "id": "e_m_flag",
+      "body": "<<FILL role=completion words=78 beats='they shout the mountain's new name across the yard, the first the rangers ever to stand on the treetop of the Vine Tower; a bamboo pole with a green banner flaps proudly above them; Dad appears at the ranger dispatch window and waves both arms, and the rangers salute back, then stamp their initials into the summit crust so the whole the jungle treehouse world knows who climbed it first'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m_flag",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Banner on the Tower"
+      }
+    },
+    {
+      "id": "m_s1",
+      "body": "<<FILL role=rising words=62 beats='they line the wagon up at the top of the smooth far slope, Priya steering in front, her older cousin Theo wrapped around her middle like a backpack; below them the run flattens out into a big soft drift, a perfect landing zone; Priya counts down from three in her best expedition voice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ms1_go",
+          "label": "Push off down the slope.",
+          "target": "e_m_sled"
+        }
+      ]
+    },
+    {
+      "id": "e_m_sled",
+      "body": "<<FILL role=completion words=78 beats='whoosh, the wagon flies down the mountain trailing a rooster tail of snow, both the rangers whooping the whole way, and lands them in the deep soft drift at the bottom in a laughing tangle; the first-ever descent of the Vine Tower is complete; they flop onto their backs and stamp two snow angels into the drift as official victory marks'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_m_sled",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Vine Swing"
+      }
+    },
+    {
+      "id": "t_1",
+      "body": "<<FILL role=rising words=68 beats='Priya kneels beside tiny round hoofprints like a wildlife scientist and studies them closely; small, round, and neat, dotting away along the fence like a row of buttons; too big for a squirrel, too small for a big animal, so her older cousin Theo decides it is a mystery creature; the tracking team moves out with eyes on the trail'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t1_track",
+          "label": "Track tiny round hoofprints along the fence.",
+          "target": "t_2"
+        }
+      ]
+    },
+    {
+      "id": "t_2",
+      "body": "<<FILL role=choice words=80 beats='the trail runs straight to the old lilac bush in the corner and dives underneath it into the shadows; the tracking team huddles up in the snow to plan; there are two ways to keep the trail: wriggle straight through the low snow tunnel under the old lilac bush's branches where the prints go, or hurry around behind the shed to cut the creature off on the far side'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t2_tunnel",
+          "label": "Crawl through the tunnel under the old lilac bush.",
+          "target": "t_3"
+        },
+        {
+          "id": "c_t2_shed",
+          "label": "Circle around behind the shed.",
+          "target": "t_4"
+        }
+      ]
+    },
+    {
+      "id": "t_3",
+      "body": "<<FILL role=rising words=72 beats='under the old lilac bush is a secret green cave with no snow at all, hushed and dim like a ranger's hideout; tiny round hoofprints stitch straight through it and out the far side toward the woodpile; up ahead something rustles softly, and a flick of thick gray fur shows between two logs; the trackers hold their breath and creep closer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t3_peek",
+          "label": "Peek around the woodpile.",
+          "target": "e_t_cat"
+        }
+      ]
+    },
+    {
+      "id": "e_t_cat",
+      "body": "<<FILL role=completion words=80 beats='curled in a snug gap between the logs is Pepper, the neighbor's small tabby cat, blinking slow warm blinks at her visitors, and the rangers know a rare discovery in a secret den when they see one; they crouch like wildlife scientists, whisper their field notes into the ranger logbook, and promise Pepper, the neighbor's small tabby cat her den will stay secret; she answers with a purr they can feel through the logs'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_t_cat",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Garden Fox's Burrow"
+      }
+    },
+    {
+      "id": "t_4",
+      "body": "<<FILL role=rising words=72 beats='behind the shed the snow is a crisscross of prints, big ones and tiny ones circling everywhere, and every trail leads back to one dark little gap under the shed step; the trackers crouch low behind the wagon to watch; her older cousin Theo whispers that he can see whiskers, actual whiskers, twitching just inside the shadow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_t4_watch",
+          "label": "Hold still and watch the gap.",
+          "target": "e_t_rabbits"
+        }
+      ]
+    },
+    {
+      "id": "e_t_rabbits",
+      "body": "<<FILL role=completion words=80 beats='a spotted garden hen hops halfway out of the gap, and behind her two round kits peek over her back, a whole secret expedition team living under the shed step; the rangers set one the crackers from the wagon at a polite distance and back away slow and quiet; a spotted garden hen takes it, and Priya marks the hidden base on the expedition map with a big star'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_t_rabbits",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Hedgehog Family Nook"
+      }
+    },
+    {
+      "id": "i_1",
+      "body": "<<FILL role=rising words=66 beats='the Fern Meadow snow squeaks and packs like magic; Priya stamps out a big circle for the floor of the Leaf Fort while her older cousin Theo hauls the wagon alongside as the official hauling cart; the garden trowel becomes a snow saw, and the very first brick comes out crisp and square as a slice of cake'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_i1_bricks",
+          "label": "Cut the first row of snow bricks.",
+          "target": "i_2"
+        }
+      ]
+    },
+    {
+      "id": "i_2",
+      "body": "<<FILL role=rising words=68 beats='row by row the spiral wall of the Leaf Fort rises, each brick lifted off the wagon and patted snug into place with mitten thumps; the wall climbs past her older cousin Theo's shoulders and leans inward the way real forts do; they leave a door gap just their size, and now only the tricky top of the dome is left'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_i2_dome",
+          "label": "Fit the last bricks of the dome.",
+          "target": "i_3"
+        }
+      ]
+    },
+    {
+      "id": "i_3",
+      "body": "<<FILL role=choice words=80 beats='the dome of the Leaf Fort closes with one careful final brick and the builders cheer; inside, the light glows soft and blue like the inside of an ice palace, even though from Camp Leafy it is still a snow fort in the backyard; two dreams remain for finishing the Leaf Fort: carve a round ice window and move the supplies in to make it a true base, or dig a grand entrance tunnel long enough to crawl through like real the rangers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_i3_window",
+          "label": "Carve a window and move in supplies.",
+          "target": "i_f1"
+        },
+        {
+          "id": "c_i3_tunnel",
+          "label": "Dig the grand entrance tunnel.",
+          "target": "i_f2"
+        }
+      ]
+    },
+    {
+      "id": "i_f1",
+      "body": "<<FILL role=rising words=62 beats='Priya carves a round window with the garden trowel and cold sunshine pours through it; her older cousin Theo ferries the supplies in from the wagon, lemonade, the crackers, and the ranger logbook lined up neatly on a carved snow shelf; the Leaf Fort begins to feel like a real base at the bottom of the world'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_if1_settle",
+          "label": "Settle into the new base.",
+          "target": "e_i_base"
+        }
+      ]
+    },
+    {
+      "id": "e_i_base",
+      "body": "<<FILL role=completion words=80 beats='the rangers sit shoulder to shoulder inside the Leaf Fort, sipping lemonade while their breath makes little clouds, watching their whole the jungle treehouse world through the round ice window; it is officially the finest base the backyard has ever had; they shout the good news toward ranger dispatch, and Dad's laugh floats back to them across the snow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_i_base",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Camp Leafy Base"
+      }
+    },
+    {
+      "id": "i_f2",
+      "body": "<<FILL role=rising words=62 beats='they dig from both ends at once, Priya from outside the wall and her older cousin Theo from inside the glowing dome, until two mittens meet in the middle of the snow with a muffled high five; they pat the tunnel walls smooth and round, long enough to crawl through like true the rangers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_if2_crawl",
+          "label": "Crawl through the finished tunnel.",
+          "target": "e_i_tunnel"
+        }
+      ]
+    },
+    {
+      "id": "e_i_tunnel",
+      "body": "<<FILL role=completion words=76 beats='Priya crawls the whole tunnel first and pops up inside the glowing dome with a shout, then her older cousin Theo, then both of them again just because; the Leaf Fort now has an official secret entrance, and from Camp Leafy Dad applauds the two snowy heads popping in and out; the rangers agree it is the greatest fort ever built in the jungle treehouse world'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_i_tunnel",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Hidden Leaf Tunnel"
+      }
+    },
+    {
+      "id": "p_1",
+      "body": "<<FILL role=rising words=68 beats='the old fountain statue rises from the drifts like a lonely iceberg, and frozen fast in the ice on top stand the toy dinosaurs, upright and brave, exactly where her older cousin Theo left them before the big freeze; Priya declares the rescue mission open and the wagon becomes the official rescue ambulance; the team crunches closer to study the ice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_look",
+          "label": "Look closely at the icy situation.",
+          "target": "p_2"
+        }
+      ]
+    },
+    {
+      "id": "p_2",
+      "body": "<<FILL role=choice words=80 beats='up close the ice sheet holds each of the toy dinosaurs tight by the feet, shiny and stubborn; the rescue team weighs two plans: tap and wiggle the ice loose bit by bit with mitten thumps and the ice scraper, slow but steady work, or pour warm lemonade over the ice to melt them free fast, even though lemonade is the expedition's emergency fuel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_tap",
+          "label": "Tap the ice loose, slow and steady.",
+          "target": "p_3"
+        },
+        {
+          "id": "c_p2_cocoa",
+          "label": "Pour warm lemonade over the ice.",
+          "target": "p_r1"
+        }
+      ]
+    },
+    {
+      "id": "p_r1",
+      "body": "<<FILL role=rising words=60 beats='the last of the warm lemonade glugs out and causes a lemonade spill, a shiny brown puddle that freezes again slicker than before; the toy dinosaurs have not budged a single feather and the emergency fuel is gone; Priya says real rescue teams know when to regroup'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pr1_retreat",
+          "label": "Call a retreat to ranger dispatch.",
+          "target": "e_p_retreat"
+        }
+      ]
+    },
+    {
+      "id": "e_p_retreat",
+      "body": "<<FILL role=ending words=74 beats='back at ranger dispatch the rangers thaw their mittens while Dad refills the lemonade and does not even laugh at a lemonade spill; they plan Rescue Mission Two on the back of a napkin, with a proper ice tool this time; out at the old fountain statue the toy dinosaurs hold their post bravely until after lunch'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_p_retreat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at a lemonade spill"
+      }
+    },
+    {
+      "id": "p_3",
+      "body": "<<FILL role=rising words=66 beats='tap, tap, tap, little cracks spider out around each of the toy dinosaurs's feet while her older cousin Theo holds his breath beside the wagon; one by one they pop free into Priya's mitten, first one, then two, then all three; the team wraps them snug in Priya's spare scarf like tiny rescued the rangers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_load",
+          "label": "Load the toy dinosaurs for transport.",
+          "target": "p_4"
+        }
+      ]
+    },
+    {
+      "id": "p_4",
+      "body": "<<FILL role=choice words=78 beats='the toy dinosaurs peek out of the scarf in the wagon, safe but very cold, or so the rescue team solemnly agrees; now the mission needs a proper finish: rush them to Camp Leafy and set up a rescue hospital with snow-pillow beds and feather-by-feather checkups, or lead one triumphant rescue parade around the whole the jungle treehouse world first so every snowdrift can cheer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p4_hospital",
+          "label": "Set up the hospital for the toy dinosaurs.",
+          "target": "p_f1"
+        },
+        {
+          "id": "c_p4_parade",
+          "label": "Lead the rescue parade.",
+          "target": "p_f2"
+        }
+      ]
+    },
+    {
+      "id": "p_f1",
+      "body": "<<FILL role=rising words=62 beats='Camp Leafy becomes hospital row with three snow-pillow beds patted smooth; Doctor Priya checks each of the toy dinosaurs from beak to feet while Nurse her older cousin Theo records everything in the ranger logbook with very serious nods; all three patients are pronounced brave and perfectly healthy'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf1_tuck",
+          "label": "Tuck the patients into their beds.",
+          "target": "e_p_hospital"
+        }
+      ]
+    },
+    {
+      "id": "e_p_hospital",
+      "body": "<<FILL role=completion words=76 beats='the toy dinosaurs lie tucked in their snow beds at Camp Leafy, each with a certificate of bravery scratched into the frost beside it; the rescue mission is complete and the doctors shake mittens over their sleeping patients; when Dad calls the team in for lunch, the toy dinosaurs come too, riding warm and proud in Priya's coat pocket'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_p_hospital",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Dinosaur Rescue Clinic"
+      }
+    },
+    {
+      "id": "p_f2",
+      "body": "<<FILL role=rising words=62 beats='the wagon becomes a parade float with the toy dinosaurs riding high on the folded scarf; Priya pulls the rope out front while her older cousin Theo marches behind, announcing the heroes to the whole the jungle treehouse world in his loudest voice; the parade sets off across the Fern Meadow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pf2_lap",
+          "label": "March the full victory lap.",
+          "target": "e_p_parade"
+        }
+      ]
+    },
+    {
+      "id": "e_p_parade",
+      "body": "<<FILL role=completion words=76 beats='the parade rounds the whole the jungle treehouse world, past the Vine Tower, along the fence line, and home to Camp Leafy, the rangers cheering for their heroes loud enough for every snowdrift to hear; Dad waves from the window like a whole crowd at once; the toy dinosaurs ride home tall and proud in the greatest rescue parade the jungle treehouse world has ever seen'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_p_parade",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Dino Parade"
+      }
+    }
+  ]
+}

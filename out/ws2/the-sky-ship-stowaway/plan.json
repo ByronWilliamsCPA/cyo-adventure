@@ -1,0 +1,269 @@
+{
+  "beats": {
+    "n_start": "{HERO} has dreamed of the sky her whole life, so when {THRESHOLD} casts off from {ENTRANCE} she is already aboard, hidden in a coil of rope, {OPENING_MOMENT}; the humming boarding deck stretches around her and nobody has spotted her yet; four passages lead away into the belly of the ship, and she must choose one before a crewman turns around",
+    "a_eng1": "{ROUTE_A_ZONE} roars with brass pistons and the warm smell of oil; {A_CHAR} shovels coal with his back to her, and {A_LANDMARK} runs above the machines toward a quieter corner where the pipes glow",
+    "a_eng_deep": "past the pistons {ROUTE_A_ZONE} opens into {A1_ZONE}; one way is bright with {A1_OFFER1} that show the ship's heartbeat, the other drops toward {A1_OFFER2} where something small is scuffling in the dark",
+    "a_eng_a": "{A1_OFFER1} tick and tremble, showing steam and lift and altitude; {HERO} works out how the huge engine breathes, and {A1_PASSAGE} beyond the gauges leads toward the middle of the ship where the corridors join",
+    "a_eng_a2": "{A1_PASSAGE} lets onto a snug maintenance passage warmed by the engines; oil-lamps swing on hooks, and a faint mewing sound drifts down the corridor toward the heart of {SHIP_NAME}",
+    "a_eng_b": "{A1_OFFER2} are hot and dim; the scuffling turns out to be nothing frightening, only {A2_LATCH} swinging, but through it she glimpses a warmer passage and hears a small, hopeful mewing",
+    "a_eng_b2": "beyond {A2_LATCH} a service corridor runs warm and quiet along the engine's flank; the mewing is closer now, coming from somewhere near the middle of the ship where all the low passages seem to meet",
+    "a_eng_conv": "the warm engine passages funnel {HERO} into {A_CONV} full of spare rope and folded canvas; the mewing is very near now, and a small pair of eyes shines at her from behind a crate",
+    "a_eng_risk": "{HERO} dashes across the open floor, but {A_CHAR} begins to turn; she can throw herself flat behind {A_HIDE} and hope, or freeze where she stands in the lamplight",
+    "a_eng_recover": "crouched behind {A_HIDE}, {HERO} holds her breath until {A_CHAR} shrugs and turns back to his fire; when his shovel starts again she slips deeper into {A1_ZONE}",
+    "b_hold1": "{ROUTE_B_ZONE} is a cavern of lashed crates and swaying lanterns; ropes creak overhead, and two ways beckon, {B_AISLE} stacked with labelled boxes and {B_GAP} where the netting has come loose",
+    "b_hold_deep": "{B_AISLE} runs deep into the hold; one row of crates is stamped with {B_OFFER1}, and beside it {B_OFFER2} leads toward the warm middle of the ship",
+    "b_hold_a": "{B_OFFER1} is {B_DETAIL}, the mark of a coast {HERO} has only read about; the crates hum faintly, and past them {B_PASSAGE} opens toward the heart of {SHIP_NAME}",
+    "b_hold_a2": "{B_PASSAGE} becomes a snug walkway between towers of freight; a lantern sways, throwing soft light, and somewhere ahead a small pair of eyes catches the glow and blinks",
+    "b_hold_b": "{B_OFFER2} is snug and creaking, but it holds; {HERO} wriggles along it and out the far end into a warmer part of the hold, where the cargo thins and a walkway leads inward",
+    "b_hold_b2": "the walkway is lit by one swinging lantern; the deep-hold roar of the engines softens here, and a small, hopeful sound, half mew and half chirp, guides her toward the middle of the ship",
+    "b_hold_conv": "the hold walkways bring {HERO} to a snug nook of coiled rope and spare canvas near {SHIP_NAME}'s heart; the little sound comes again, and two bright eyes peep at her from behind a crate",
+    "b_hold_risk": "{B_HIDE} drops {HERO} into a maze of unlashed crates that shift as the ship rolls; a wall of cargo leans toward her, and she must scramble clear at once or squeeze into a gap and wait it out",
+    "b_hold_recover": "{HERO} rolls clear just as the crates settle with a groan; heart thumping, she steadies the nearest box, then picks a safer route back toward {B_AISLE} deeper in the hold",
+    "c_nest1": "the ladder to {ROUTE_C_ZONE} climbs through cold, whistling air; far below the deck tilts and the clouds slide past; two ways offer themselves, {C_LADDER} and {C_RUNG} along the swaying mast",
+    "c_nest_deep": "{C_LADDER} brings her to the little round nest where {C_SPYGLASS} hangs on a hook; from here she can study {C_ENVELOPE} above or slide down {C_ROPEDOWN} toward the warm inner decks",
+    "c_nest_a": "through {C_SPYGLASS} {C_ENVELOPE} is a whole silver sky of ribs and seams; {HERO} sees how the great gasbags give the ship its lift, then follows a rigging line down toward the warmer inner decks",
+    "c_nest_a2": "the rigging line leads to a sheltered gangway out of the wind; the roar of the sky fades, lanterns glow, and a small, curious sound drifts up toward her from the heart of the ship",
+    "c_nest_b": "{C_ROPEDOWN} carries her quickly down out of the biting wind; she lands soft on a coil of canvas, and a warm inner passage opens ahead, humming with the distant engines",
+    "c_nest_b2": "the inner passage is snug and lamplit; the wind is only a memory now, and a small hopeful mewing echoes along the corridor, drawing her toward the middle of the Cirrus",
+    "c_nest_conv": "the inner ways bring {HERO} to a cosy nook of rope and folded sail near {SHIP_NAME}'s heart; the mewing sounds again, close by, and two shining eyes watch her from behind a crate",
+    "c_nest_risk": "out on {C_RUNG} the wind snatches at {HERO}'s coat and the mast sways under her hands; a gust rocks the ship, and she must grab the safety line at once or try to scramble up before the next gust hits",
+    "c_nest_recover": "{HERO} clips onto the safety line just as the gust punches past; she waits, knuckles white, until the air steadies, then climbs back to {C_LADDER} with her heart hammering",
+    "d_salon1": "{ROUTE_D_ZONE} glows with brass and velvet, passengers laughing over supper; {D_TROLLEY} rolls by, and {HERO} spies two ways to slip through unseen, along {D_WALL} or under {D_TABLES}",
+    "d_salon_deep": "{D_WALL} hide a service alcove; from here {D_MODELS} catches {HERO}'s eye, and beside it {D_DOOR} swings toward the working heart of {SHIP_NAME}",
+    "d_salon_a": "{D_MODELS} show {SHIP_NAME} in cutaway, and one deck is painted over as if hidden on purpose; puzzled, {HERO} notes it, then follows the steward's corridor toward the inner decks",
+    "d_salon_a2": "the corridor leaves the music behind and grows plain and warm; lanterns hang low, and a small, hopeful sound, half mew and half chirp, echoes from somewhere near the ship's heart",
+    "d_salon_b": "{D_DOOR} lets onto a pantry passage stacked with trays; {HERO} pinches a crust of bread for later and follows the plain corridor away from {ROUTE_D_ZONE} toward the working decks",
+    "d_salon_b2": "the corridor turns snug and dim, warmed by the engines below; a small mewing drifts to her on the smell of oil and bread, leading her steadily toward the middle of the Cirrus",
+    "d_salon_conv": "the inner corridors gather {HERO} into a quiet nook of rope and sailcloth near the heart of {SHIP_NAME}; the little sound comes once more, and two bright eyes shine at her from behind a crate",
+    "d_salon_risk": "under {D_TABLES} {HERO} freezes between passengers' shoes, and a waiter's foot swings straight toward her; she can roll aside behind {D_TROLLEY} and stay hidden, or bolt for the nearest door in the open",
+    "d_salon_recover": "{HERO} tucks behind {D_TROLLEY} just as the waiter passes, close enough to smell the soup; when the coast clears she slips out the other side and makes for the curtained service alcove",
+    "n_friend": "BOTTLENECK: whichever way {HERO} came, all the inner passages meet at this cosy nook, and here she finds the secret {SHIP_NAME} has been keeping, {COMPANION} who has been living on scraps and hiding from the crew; {COMPANION} trusts her at once, and now she has a friend aboard; three ways lead on, toward {ROUTE_E_ZONE}, {ROUTE_F_ZONE}, or up into {ROUTE_G_ZONE}",
+    "f_galley1": "{ROUTE_E_ZONE} steams with the smell of stew; {E_CHAR} is busy at the far stove, and {COMPANION}'s nose twitches; {HERO} can creep to {E_LARDER} or wait behind {E_SACKS} for a clear moment",
+    "f_galley_a": "{E_LARDER} is a treasure of bread and cheese; {HERO} fills her pockets and sets a scrap down for {COMPANION}, and as they eat, {DEADLINE_SIGN} sweeps through the ship",
+    "f_galley_b": "behind {E_SACKS} {HERO} waits, but {COMPANION} sneezes at the dust; {E_CHAR}'s head starts to turn, and she must scoop {COMPANION} up and slip out fast or hold still and hope he did not hear",
+    "f_galley_mid": "out in the corridor {DEADLINE_SIGN} rolls through the ship; loose tins roll past and a bell begins to clang somewhere above; {HERO} tucks {COMPANION} into her coat and hurries toward the noise and the swaying light",
+    "f_cabin1": "{ROUTE_F_ZONE} door stands ajar on {F_CHARTS}; {CAPTAIN} is not there, but voices murmur near; {HERO} can slip inside for a quick look or listen at the door first",
+    "f_cabin_a": "through the gap {HERO} hears the officers speak low of a secret cargo and a course set to outrun {DEADLINE}; before she can hear more, {DEADLINE_SIGN} begins",
+    "f_cabin_b": "inside, {F_CHARTS} show a route bending sharply around a great grey smudge of {DEADLINE}; footsteps approach the door, and {HERO} must duck behind {F_CURTAIN} at once or dive under {F_TABLE}",
+    "f_cabin_mid": "the corridor outside pitches as {SHIP_NAME} meets rough air; {DEADLINE_SIGN} clangs harder and boots pound overhead; {HERO} holds {COMPANION} close and follows the running crew toward the trouble",
+    "f_rig1": "{ROUTE_G_ZONE} is a warm forest of ropes between the decks; {COMPANION} scampers ahead, sure-footed, and {HERO} follows; {G_CATWALK} runs one way and {G_BRIDGE} sways the other toward {C_ENVELOPE}",
+    "f_rig_a": "{G_CATWALK} gives {HERO} a grand view of {C_ENVELOPE}'s inner sky of gasbags; {COMPANION} walks the rail like a rope-dancer, and then {SHIP_NAME} leans as {DEADLINE_SIGN} shoves against the hull",
+    "f_rig_b": "halfway across {G_BRIDGE} a gust sets it swinging wildly and {COMPANION} clings to {HERO}'s shoulder; she must lunge for the far platform now or freeze and grip the ropes until it settles",
+    "f_rig_mid": "{ROUTE_G_ZONE} shakes as {DEADLINE} takes hold; below, {DEADLINE_SIGN} and officers shout orders; {HERO} tucks {COMPANION} safe and climbs down toward the din to see what is happening to {SHIP_NAME}",
+    "n_storm": "BOTTLENECK: every path brings {HERO} into the heart of {SHIP_NAME} just as {DEADLINE} truly hits; rain lashes the ports, {SHIP_NAME} pitches, and lift is failing as {C_ENVELOPE} strains; the crew are stretched thin and frightened, and a small stowaway who knows the ship might actually help; she can head to {ROUTE_H_ZONE}, join the struggling crew, or go down to {ROUTE_J_ZONE} where the ship is groaning worst",
+    "s_deck1": "{ROUTE_H_ZONE} is a roar of wind and spray; {H_LINE} whips free near the rail, and the deck tilts hard; {HERO} can crawl low to reach the line or grab {H_STANCHION} and steady herself first",
+    "s_deck_a": "flat on her belly {HERO} snags {H_LINE} and loops it round a cleat; a soaked officer sees, gives her a startled nod, and points her toward a hatch that drops into {SHIP_NAME}'s {ROUTE_J_ZONE}",
+    "s_deck_b": "clinging to {H_STANCHION}, {HERO} catches her breath, but a wave of wind sends a crate skidding at her; she can scramble down the deck hatch to safety now or make a dash across the open deck for the wheelhouse",
+    "s_deck_mid": "below decks the noise softens to a deep groan of straining timber; the sound is worst from far down in {ROUTE_J_ZONE}, where {SHIP_NAME} seems to be fighting to hold something in; {HERO} follows the groan downward",
+    "s_crew1": "the crew heave together on {ROUTE_I_ZONE}, boots sliding on the wet floor; they are one pair of hands short, and {HERO} is small but willing; she can grab the rope's end and pull or run for {I_BUCKETS} they keep shouting for",
+    "s_crew_a": "{HERO} throws her weight on the rope and the extra pull is just enough; {ROUTE_I_ZONE} holds, the crew cheer her hoarsely, and {BOSUN} jerks a thumb toward a ladder leading down into {ROUTE_J_ZONE} where help is needed next",
+    "s_crew_b": "{HERO} hauls {I_BUCKETS} over, but the deck heaves and a bucket tips; she can steady the load and finish the job or let it go and scramble clear as it slides",
+    "s_crew_mid": "the crew have {HERO}'s measure now and wave her on; a deep, sad groan rolls up from the very bottom of {SHIP_NAME}, unlike any storm sound, and {BOSUN} mutters that the trouble is in the sealed {ROUTE_J_ZONE} below",
+    "s_hold1": "{ROUTE_J_ZONE} is where {SHIP_NAME} groans loudest, and the sound is not just timber, it is alive and afraid; {J_DOOR} blocks the way, with {J_HATCH} beside it and {J_PANEL} above",
+    "s_hold_a": "through {J_HATCH} {HERO} sees a vast dim chamber and in it something huge and gentle and frightened, pale as cloud; {COMPANION} presses to the glass and mews, and the great shape answers with a low, sad note",
+    "s_hold_b": "{J_PANEL} is labelled in {CAPTAIN}'s careful hand, tending, feeding, calming; it is not a cargo lock at all but the door to a living thing's shelter, and it stands ajar as {DEADLINE} rattles {SHIP_NAME}",
+    "s_hold_mid": "{HERO} slips inside the great chamber; {DEADLINE} booms against the hull and the huge pale shape shivers, and she understands she is standing in {SHIP_NAME}'s deepest secret, close enough now to see what {SHIP_NAME} truly carries",
+    "n_secret": "BOTTLENECK: all roads lead to the sealed heart of {SHIP_NAME}, and here {HERO} learns the secret {SHIP_NAME} has been keeping; the hold holds {SECRET_KIND}, a wondrous cloud-grey creature {CAPTAIN} rescued and is smuggling to {SECRET_SANCTUARY} far from those who would hunt it; the calf is called {SECRET_NAME}, and {DEADLINE} has it panicked, its thrashing making the ship pitch worse; {HERO} can move to help save the ship, hurry to reveal the secret to those who can steer, or fetch the crew and {CAPTAIN}",
+    "p_save1": "{SECRET_NAME} rolls and bumps the hull, and every bump throws the ship; {HERO} edges closer with {COMPANION}, who is not afraid at all; she can hum the low sound {COMPANION} makes to soothe the calf, or reach up to loosen {K_HARNESS} pinning one great fin",
+    "p_save_a": "{HERO} hums the way {COMPANION} does and {SECRET_NAME} stills, one huge cloudy eye fixing on her; its thrashing slows, and with it the wild pitching of the ship eases a little, enough for her to think what to do next",
+    "p_save_b": "{HERO} works {K_HARNESS} free of the calf's fin; {SECRET_NAME} gives a grateful shudder and settles lower in the hold, steadier now, and the ship stops lurching quite so hard beneath her feet",
+    "p_save_mid": "calmer now, {SECRET_NAME} follows {HERO}'s humming; she realises the calf steadies when she is near, and that if she can reach the bridge she can tell {CAPTAIN} how to use that; she climbs toward the wheelhouse with {COMPANION} leading",
+    "p_reveal1": "{HERO} turns to race for the bridge with her news, but {DEADLINE} has jammed the main companionway; she can take {L_STAIR} around or risk {L_FLOOD} that is quicker but rising with rainwater",
+    "p_reveal_a": "{L_STAIR} is slow but sound; {HERO} climbs it two steps at a time with {COMPANION} clinging to her collar, rehearsing what she will say, that the hold holds {SECRET_KIND} and its fear is what rocks the ship",
+    "p_reveal_a2": "near the top {L_STAIR} opens on the officers' corridor, loud with orders and the boom of {DEADLINE}; the wheelhouse door is just ahead, and {HERO} gathers her breath to burst in with the truth",
+    "p_reveal_mid": "{HERO} reaches the wheelhouse door as the ship shudders again; she can hear {CAPTAIN} calling for anything that might steady the vessel, and she knows the answer is {SECRET_KIND} frightened in the hold; she steps in",
+    "p_people1": "{HERO} decides she cannot fix this alone and goes for help; she can find the friendly {BOSUN} she pulled ropes with, or go straight to {CAPTAIN} who alone knows the calf's ways",
+    "p_people_a": "{BOSUN} listens wide-eyed as {HERO} gasps out the secret, then grins and says {CAPTAIN} will want to hear this from her own mouth; together they push up through {DEADLINE} toward the wheelhouse",
+    "p_people_b": "{HERO} finds {CAPTAIN} braced at a rain-streaked port, grim and tired; when she blurts that she has seen {SECRET_NAME} and can calm the calf, {CAPTAIN}'s eyes go sharp with sudden hope, and she waves {HERO} toward the wheel",
+    "p_people_mid": "crew and {CAPTAIN} and stowaway crowd toward the bridge with one shared hope; the ship pitches under them, but for the first time the grown-ups are listening to {HERO}, and the wheelhouse doors swing open ahead",
+    "n_bridge": "BOTTLENECK: every route ends here on the storm-tossed bridge, where {CAPTAIN} and crew turn to {HERO} as the one person who has calmed {SECRET_KIND}; {SHIP_NAME} is losing height and {DEADLINE} is close to winning; there is time for one clear choice to save the ship, and {HERO} must decide how she will help, by steadying {SECRET_NAME} so the ship flies true, patching {C_ENVELOPE}, taking a hand at the great wheel, or telling everyone the secret so the crew can act as one",
+    "b_steer1": "{CAPTAIN} asks {HERO} to keep {SECRET_NAME} calm through {N_TUBE} while the crew fly the ship; steadiness is everything now; {HERO} can hum slow and sure into the tube, or rush her song, frightened, as {DEADLINE} howls",
+    "b_steer_ok": "{HERO} keeps her voice slow and warm, and far below {SECRET_NAME} answers, growing still; with the calf calm the ship stops fighting itself and the crew feel the wheel come alive under their hands again",
+    "b_steer_ok2": "minute by minute {HERO} hums {SECRET_KIND} through the heart of {DEADLINE} while the crew hold their course; the lift steadies, the pitching fades, and at last {SHIP_NAME} climbs out above the clouds into calm, moonlit air, saved by a stowaway's steady song",
+    "b_patch1": "{C_ENVELOPE} is tearing where the gasbags strain; a rigger needs a small brave pair of hands to help thread the patch-line through the ribs; {HERO} can climb {ROUTE_G_ZONE} to reach {O_TEAR} or work {O_WINCH} that pulls the patch tight from below",
+    "b_patch_ok": "light and quick, {HERO} scrambles where a grown rigger cannot fit and threads the patch-line through the straining ribs; the rigger hauls it tight, {O_TEAR} closes, and the ship stops bleeding away its precious lift",
+    "b_patch_alt": "{HERO} throws herself on {O_WINCH} handle and cranks with all her weight; slowly the patch draws tight over {O_TEAR}, the rigger cheers, and steady lift returns just as the crew wrestle the ship level",
+    "b_free1": "{HERO} sees that {SECRET_NAME} is frantic because it longs for the open sky; the calf is nearly grown, and {DEADLINE} has torn loose {P_DOOR}; she can help ease {SECRET_KIND} out to fly beside the ship, or coax it to {P_BAY} first",
+    "b_free_ok": "with {CAPTAIN}'s nod {HERO} hums {SECRET_NAME} toward {P_DOOR}; the great calf gathers itself and slips out into the storm-wind, and instead of falling it rises, spreading cloud-grey fins, wheeling free beside the labouring ship",
+    "b_free_ok2": "free at last, {SECRET_NAME} swims through {DEADLINE} as easily as through calm water, and where it flies the winds seem to gentle; {SECRET_KIND} shepherds {SHIP_NAME} out of the worst of the weather, then soars ahead to guide the ship the last miles to {SECRET_SANCTUARY}",
+    "b_free_alt": "judging {DEADLINE} too wild for a young calf, {HERO} instead hums {SECRET_NAME} into {P_BAY} and pads it round with canvas; safe and calm, {SECRET_KIND} stops thrashing, and the ship steadies enough for the crew to fly it clear",
+    "b_tell1": "{HERO} decides the ship's best chance is everyone pulling together, so she tells the whole secret aloud; how she shares it now will shape what happens, to the working crew who can act, to {CAPTAIN} who must choose, or by showing them all {SECRET_NAME} itself",
+    "b_tell_crew": "the crew take {HERO}'s word without a blink and split into teams, some to soothe the calf, some to fly the ship; with everyone working as one {SHIP_NAME} fights clear of {DEADLINE}, and the sailors count {HERO} one of their own",
+    "b_tell_captain": "{CAPTAIN} hears {HERO} out, then must decide; she can trust this brave stowaway with a real task at the calf's side, or thank her and send her below to safety while the officers handle {DEADLINE}",
+    "b_tell_reveal": "instead of only telling, {HERO} leads {CAPTAIN} and crew down to the hatch and shows them {SECRET_NAME} in the flesh, cloud-grey and gentle; the sight melts every doubt, and together, awed and united, they set about calming the calf and saving the ship",
+    "e_set_eng": "{A_CHAR} spots her at once and, not unkindly, walks her up to {PURSER}'s office; she waits on a bench while {SHIP_NAME} flies on, then is set down safe and sound at the very next {ENTRANCE}, her stowaway voyage over before it truly began",
+    "e_set_hold": "the shifting cargo boxes her into a snug corner she cannot climb out of, and she has to call for help; a surprised deckhand lifts the crates aside and, once she is safe, {PURSER} sees her ashore at {ENTRANCE}, dusty and disappointed but perfectly unharmed",
+    "e_set_nest": "the gust leaves her clinging and calling until the lookout hauls her in over the rail of the nest, safe but shaking; kindly, the lookout keeps her warm until {SHIP_NAME} reaches {ENTRANCE}, where she is helped down to the ground, foiled but entirely unhurt",
+    "e_set_salon": "she bolts into full view and a startled passenger cries out; the steward catches her gently by the sleeve and sits her in {PURSER}'s office with a warm bun while {SHIP_NAME} flies on, then sees her safely ashore at {ENTRANCE}, her secret out too soon",
+    "e_set_galley": "{E_CHAR} turns and finds a girl and {COMPANION} among {E_SACKS}; more astonished than angry, he feeds them both and marches {HERO} to {PURSER}, who keeps her safe until {SHIP_NAME} lands and sees her home from {ENTRANCE}, well fed and foiled",
+    "e_set_cabin": "the first officer strides in and finds two small feet under {F_TABLE}; surprised but gentle, she hands {HERO} to {PURSER}, who keeps her safe through the flight and sends her ashore at {ENTRANCE}, her peek at {CAPTAIN}'s secret cut short",
+    "e_set_rig": "{G_BRIDGE} bucks until a rigger swings across and carries {HERO} and {COMPANION} back to solid footing, safe but scolded; he keeps them beside him out of the wind for the rest of the flight, and at {ENTRANCE} {HERO} is helped down to the ground, grounded from the sky for now",
+    "e_set_storm1": "the wind is too strong for a dash and a rigger drags {HERO} back and bundles her below to a safe cabin, {COMPANION} and all, to wait out the blow; she is warm and unhurt, but by the time {DEADLINE} passes the crew have set things right without her, and she rides quietly to {ENTRANCE}",
+    "e_set_storm2": "the sliding {I_BUCKETS} knock {HERO} off her feet and a big kind hand catches her before she tumbles; {BOSUN} sits her safely out of the way with {COMPANION} until the worst is over, and though she is unhurt, {SHIP_NAME} is steadied without her and carried on to {ENTRANCE}",
+    "e_set_reveal": "{L_FLOOD} rises faster than {HERO} expects and she has to wade back before it is too deep, cold and dripping and delayed; by the time she reaches the bridge the crew have wrestled the ship level on their own, and she is bundled off to dry out and ride safely to {ENTRANCE}",
+    "e_set_final": "{HERO}'s song comes out too fast and frightened, and {SECRET_NAME} will not settle; the crew have to fight {DEADLINE} the hard way and win it without her, safe but exhausted; grateful all the same, {CAPTAIN} lands to set {HERO} gently ashore at {ENTRANCE} with a promise she may try again someday",
+    "e_win_save_ship": "{SHIP_NAME} sails on through clean night air, saved because a stowaway kept {SECRET_KIND} calm; {CAPTAIN} shakes {HERO}'s hand before the whole crew and names her the ship's own, and {SECRET_NAME} reaches {SECRET_SANCTUARY} safe; {HERO} has found her place in the sky at last, with {COMPANION} purring on her shoulder; the greatest ending of all",
+    "e_win_patch": "with {C_ENVELOPE} patched {SHIP_NAME} rides out {DEADLINE} and climbs into the stars; the riggers swear the little stowaway saved them, and {CAPTAIN}, hearing all, lets {HERO} stay aboard as helper to the crew; {SECRET_NAME} reaches {SECRET_SANCTUARY}, and {HERO} has earned her passage through the sky",
+    "e_win_steer": "steady lift wins the day, and {SHIP_NAME} rights herself over the calming sea of cloud; the crew lift {HERO} onto their shoulders, and {CAPTAIN}, laughing for the first time all night, says any sailor who works {O_WINCH} like that has a berth on {SHIP_NAME} whenever she likes",
+    "e_win_free": "{SECRET_KIND} leads {SHIP_NAME} safe out of {DEADLINE} and home, and the whole crew watch in wonder as {SECRET_NAME} circles {ENTRANCE} once before winging off to the wild sky; {CAPTAIN} tells {HERO} the calf owes its freedom to her, and she may sail with them always; a soaring, joyful ending",
+    "e_win_friend": "snug in {P_BAY}, {SECRET_NAME} rides out {DEADLINE} calm and safe, and {SHIP_NAME} carries it gently on to {SECRET_SANCTUARY} at journey's end; the keepers there marvel that a stowaway kept the calf so quiet, and {HERO} gets to see {SECRET_NAME} set free among its own kind; a warm, tender ending",
+    "e_win_crew": "the crew win through {DEADLINE} together, and afterward they hang a hammock for {HERO} in their own quarters and stitch her name on a spare jersey; {BOSUN} says a girl who works this hard is no stowaway but a shipmate, and {HERO} sails on as the youngest of {SHIP_NAME}'s crew; a proud, happy ending",
+    "e_win_captain": "{CAPTAIN} gives {HERO} a real task and she rises to it, keeping {SECRET_NAME} calm at the officers' side until {DEADLINE} breaks; when the sky clears {CAPTAIN} enters her name in the ship's log with her own hand and calls her the bravest passenger {SHIP_NAME} ever carried; a triumphant, honoured ending",
+    "e_neu_home": "{HERO} lets {CAPTAIN} tuck her safely below with {COMPANION}, and the crew bring the ship through without her; she never gets to help save the day, but she has ridden {DEADLINE} in a real sky-ship and glimpsed {SECRET_KIND}, and she is set down at {ENTRANCE} with a wave and a wonderful secret to keep; a safe, wondering ending",
+    "e_win_discovery": "with the whole ship let in on the wonder, crew and {CAPTAIN} work as one to soothe {SECRET_NAME} and fly {SHIP_NAME} safe through {DEADLINE}; the secret is a secret no more but a shared marvel, and {HERO}, the stowaway who revealed it, is thanked by every soul aboard and welcomed to sail on; a wondrous, uniting ending"
+  },
+  "titles": {
+    "e_set_eng": "Caught by {A_GATE}",
+    "e_set_hold": "Boxed In Below",
+    "e_set_nest": "Down from {C_GATE}",
+    "e_set_salon": "Spotted in {D_GATE}",
+    "e_set_galley": "The Cook Catches On",
+    "e_set_cabin": "Under {F_GATE}",
+    "e_set_rig": "Grounded from {G_GATE}",
+    "e_set_storm1": "Waiting Out the Blow",
+    "e_set_storm2": "Knocked Off Her Feet",
+    "e_set_reveal": "Too Slow Through {L_GATE}",
+    "e_set_final": "Put Ashore at Port",
+    "e_win_save_ship": "The Cirrus Sails On",
+    "e_win_patch": "The Mended {O_PRIZE1}",
+    "e_win_steer": "Steady Lift Wins",
+    "e_win_free": "The {P_PRIZE1} Rises",
+    "e_win_friend": "{SECRET_NAME} Safe Ashore",
+    "e_win_crew": "One of the Crew",
+    "e_win_captain": "The Captain's Word",
+    "e_neu_home": "Safe Below, Secret Kept",
+    "e_win_discovery": "The Secret of {SHIP_NAME}"
+  },
+  "labels": {
+    "n_start": {
+      "c_start_eng": "Slip down toward {ROUTE_A_ZONE}.",
+      "c_start_hold": "Creep into {ROUTE_B_ZONE}.",
+      "c_start_nest": "Climb up toward {ROUTE_C_ZONE}.",
+      "c_start_salon": "Sneak into {ROUTE_D_ZONE}."
+    },
+    "a_eng1": {
+      "c_eng_deep": "Creep along {A_LANDMARK} deeper in."
+    },
+    "a_eng_deep": {
+      "c_eng_a": "Study {A1_OFFER1}."
+    },
+    "a_eng_a": {
+      "c_eng_a_go": "Duck through {A1_PASSAGE}."
+    },
+    "a_eng_b": {
+      "c_eng_b_go": "Squeeze through {A2_LATCH}."
+    },
+    "a_eng_risk": {
+      "c_eng_recover": "Dive behind {A_HIDE}."
+    },
+    "b_hold1": {
+      "c_hold_deep": "Follow {B_AISLE} of crates.",
+      "c_hold_risk": "Wriggle into {B_GAP}."
+    },
+    "b_hold_deep": {
+      "c_hold_a": "Read {B_OFFER1} on the crates.",
+      "c_hold_b": "Crawl through {B_OFFER2}."
+    },
+    "b_hold_a": {
+      "c_hold_a_go": "Slip through {B_PASSAGE}."
+    },
+    "c_nest1": {
+      "c_nest_deep": "Climb {C_LADDER}.",
+      "c_nest_risk": "Edge along {C_RUNG}."
+    },
+    "c_nest_deep": {
+      "c_nest_a": "Study {C_ENVELOPE} through {C_SPYGLASS}.",
+      "c_nest_b": "Slide down {C_ROPEDOWN} inward."
+    },
+    "d_salon1": {
+      "c_salon_deep": "Edge along {D_WALL}.",
+      "c_salon_risk": "Duck under {D_TABLES}."
+    },
+    "d_salon_deep": {
+      "c_salon_a": "Peer into {D_MODELS}.",
+      "c_salon_b": "Slip through {D_DOOR}."
+    },
+    "d_salon_risk": {
+      "c_salon_recover": "Roll behind {D_TROLLEY}."
+    },
+    "n_friend": {
+      "c_friend_galley": "Sneak to {ROUTE_E_ZONE} with {COMPANION} for food.",
+      "c_friend_cabin": "Slip toward {ROUTE_F_ZONE}.",
+      "c_friend_rig": "Climb into {ROUTE_G_ZONE} with {COMPANION}."
+    },
+    "f_galley1": {
+      "c_galley_a": "Creep to {E_LARDER}.",
+      "c_galley_b": "Wait behind {E_SACKS}."
+    },
+    "f_galley_b": {
+      "c_galley_b_go": "Scoop up {COMPANION} and slip out fast."
+    },
+    "f_cabin_b": {
+      "c_cabin_b_go": "Duck behind {F_CURTAIN}.",
+      "c_cabin_fail": "Dive under {F_TABLE}."
+    },
+    "f_rig1": {
+      "c_rig_a": "Take {G_CATWALK}.",
+      "c_rig_b": "Cross {G_BRIDGE}."
+    },
+    "n_storm": {
+      "c_storm_deck": "Fight your way to {ROUTE_H_ZONE}.",
+      "c_storm_hold": "Go down to the groaning {ROUTE_J_ZONE}."
+    },
+    "s_deck1": {
+      "c_deck_a": "Crawl low toward {H_LINE}.",
+      "c_deck_b": "Grab {H_STANCHION} and steady up."
+    },
+    "s_crew1": {
+      "c_crew_b": "Run for {I_BUCKETS} they need."
+    },
+    "s_hold1": {
+      "c_hold_hatch": "Peer through {J_HATCH}.",
+      "c_hold_panel": "Study {J_PANEL}."
+    },
+    "n_secret": {
+      "c_secret_save": "Try to help calm {SECRET_NAME} and save the ship.",
+      "c_secret_people": "Fetch the crew and {CAPTAIN}."
+    },
+    "p_save1": {
+      "c_save_b": "Loosen {K_HARNESS}."
+    },
+    "p_reveal1": {
+      "c_reveal_a": "Take {L_STAIR}.",
+      "c_reveal_fail": "Risk {L_FLOOD}."
+    },
+    "p_people1": {
+      "c_people_a": "Fetch the friendly {BOSUN}.",
+      "c_people_b": "Go straight to {CAPTAIN}."
+    },
+    "p_people_a": {
+      "c_people_a_go": "Go with {BOSUN} to the wheelhouse."
+    },
+    "p_people_b": {
+      "c_people_b_go": "Follow {CAPTAIN} to the wheel."
+    },
+    "n_bridge": {
+      "c_bridge_steer": "Steady {SECRET_NAME} so the ship can fly true.",
+      "c_bridge_patch": "Help patch {C_ENVELOPE}.",
+      "c_bridge_free": "Help ease {SECRET_NAME} to open air."
+    },
+    "b_steer1": {
+      "c_steer_ok": "Hum slow and sure into {N_TUBE}."
+    },
+    "b_patch1": {
+      "c_patch_ok": "Climb {ROUTE_G_ZONE} to reach {O_TEAR}.",
+      "c_patch_alt": "Work {O_WINCH} from below."
+    },
+    "b_free1": {
+      "c_free_alt": "Coax {SECRET_NAME} to {P_BAY}."
+    },
+    "b_tell1": {
+      "c_tell_captain": "Put it to {CAPTAIN}.",
+      "c_tell_reveal": "Show them all {SECRET_NAME}."
+    },
+    "b_tell_captain": {
+      "c_tell_cap_win": "Accept {CAPTAIN}'s trust and a real task.",
+      "c_tell_cap_home": "Let {CAPTAIN} send you safely below."
+    }
+  }
+}

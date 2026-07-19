@@ -1,0 +1,395 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-year-of-four-banners",
+  "age_band": "13-16",
+  "legacy_lexicon": [
+    "Veldmark",
+    "Caldmere",
+    "Veld",
+    "Emeric",
+    "King Emeric the Fourth",
+    "Rell",
+    "House of Rell",
+    "Doran",
+    "Prince Doran",
+    "Heron Keep",
+    "Heron Feast",
+    "Kingsbridge",
+    "Sarn",
+    "Roderic Sarn",
+    "Iron Fords",
+    "Vane",
+    "Aldric",
+    "Aldric Vane",
+    "Corven",
+    "Halden",
+    "Miren",
+    "Serai",
+    "Redwater",
+    "Wend"
+  ],
+  "default_binding": {
+    "KINGDOM": "Veldmark",
+    "CAPITAL": "Caldmere",
+    "RIVER_NAME": "Veld",
+    "OLD_KING": "King Emeric the Fourth",
+    "HEIR_HOUSE": "House of Rell",
+    "HEIR_NAME": "Doran",
+    "ROYAL_SIGIL": "Heron",
+    "KINGSBRIDGE": "Kingsbridge",
+    "GUARD_CAPTAIN": "Sarn",
+    "SELLSWORD_BASE": "Iron Fords",
+    "GREY_LEADER": "Vane",
+    "GREY_LEADER_GIVEN": "Aldric",
+    "GREY_TITLE": "Steward",
+    "GREY_COLOR": "Grey",
+    "GREY_SIGIL": "wolf",
+    "GREY_ROLE": "page",
+    "RED_LEADER": "Corven",
+    "RED_LEADER_GIVEN": "Halden",
+    "RED_TITLE": "Duke",
+    "RED_COLOR": "Red",
+    "RED_SIGIL": "falcon",
+    "RED_ROLE": "herald",
+    "RED_FORTRESS": "Redwater",
+    "GREEN_LEADER": "Miren",
+    "GREEN_LEADER_GIVEN": "Serai",
+    "GREEN_TITLE": "Lady",
+    "GREEN_COLOR": "Green",
+    "GREEN_SIGIL": "thorn",
+    "GREEN_ROLE": "scribe",
+    "GREEN_CITY": "Wend"
+  },
+  "slots": [
+    {
+      "id": "KINGDOM",
+      "scope": "global",
+      "meaning": "The whole realm the succession crisis is set in.",
+      "guidance": "A single named country/domain whose throne is contested; distinct from the capital and the river.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["CAPITAL", "RIVER_NAME", "RED_FORTRESS", "GREEN_CITY", "SELLSWORD_BASE", "KINGSBRIDGE"]
+      }
+    },
+    {
+      "id": "CAPITAL",
+      "scope": "global",
+      "meaning": "The seat city where the old king died and the will is read.",
+      "guidance": "The realm's capital/seat of power; the grey house's home ground.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["KINGDOM", "RIVER_NAME", "RED_FORTRESS", "GREEN_CITY", "SELLSWORD_BASE", "KINGSBRIDGE"]
+      }
+    },
+    {
+      "id": "RIVER_NAME",
+      "scope": "global",
+      "meaning": "The river running through the realm, the site of the drowned crossing.",
+      "guidance": "A single named waterway; the green house's constituency lives along it.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["KINGDOM", "CAPITAL", "RED_FORTRESS", "GREEN_CITY", "SELLSWORD_BASE", "KINGSBRIDGE"]
+      }
+    },
+    {
+      "id": "OLD_KING",
+      "scope": "global",
+      "meaning": "The dead king whose succession opens the story.",
+      "guidance": "A named, titled monarch who has just died, leaving a child heir; referenced once at the opening, never on stage.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HEIR_HOUSE",
+      "scope": "global",
+      "meaning": "The ruling dynasty the child heir belongs to.",
+      "guidance": "The royal house name, distinct from the three contending houses.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HEIR_NAME",
+      "scope": "global",
+      "meaning": "The child heir whose safety and throne every branch ultimately turns on.",
+      "guidance": "A named young heir (age nine, kept fixed); never harmed on the page; the stakes every house is really playing for.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["OLD_KING", "GUARD_CAPTAIN"]
+      }
+    },
+    {
+      "id": "ROYAL_SIGIL",
+      "scope": "global",
+      "meaning": "The royal house's own emblem, used to name the throne's keep, its truce feast, and its assembly hall.",
+      "guidance": "A single benign emblem word (a bird, beast, or device) that reads naturally as 'gold {ROYAL_SIGIL}' and as part of a place name.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["GREY_SIGIL", "RED_SIGIL", "GREEN_SIGIL"]
+      }
+    },
+    {
+      "id": "KINGSBRIDGE",
+      "scope": "global",
+      "meaning": "The river crossing/crisis that all three houses' vantages reference: the fords a house floods to deny a border army.",
+      "guidance": "A single named crossing or chokepoint; the site of the year's first, and worst-kept, secret.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["KINGDOM", "CAPITAL", "RIVER_NAME", "RED_FORTRESS", "GREEN_CITY", "SELLSWORD_BASE"]
+      }
+    },
+    {
+      "id": "GUARD_CAPTAIN",
+      "scope": "global",
+      "meaning": "The grey house's guard captain, referenced from both the grey and green vantages.",
+      "guidance": "A named, loyal officer; the one who ultimately carries out the drowning order.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HEIR_NAME", "OLD_KING"]
+      }
+    },
+    {
+      "id": "SELLSWORD_BASE",
+      "scope": "global",
+      "meaning": "The distant muster point where the red house secretly buys an army under the truce.",
+      "guidance": "A named, out-of-the-way place; distinct from the drowned crossing near the capital.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": ["KINGDOM", "CAPITAL", "RIVER_NAME", "RED_FORTRESS", "GREEN_CITY", "KINGSBRIDGE"]
+      }
+    },
+    {
+      "id": "GREY_LEADER",
+      "scope": "route",
+      "meaning": "The grey house's head, the regent-Steward the hero pages for.",
+      "guidance": "A surname used constantly as his referential name; an old, exact, dutiful guardian.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["RED_LEADER", "GREEN_LEADER"]
+      }
+    },
+    {
+      "id": "GREY_LEADER_GIVEN",
+      "scope": "route",
+      "meaning": "The grey leader's given name, used alongside the surname at introduction.",
+      "guidance": "A single given name.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["RED_LEADER_GIVEN", "GREEN_LEADER_GIVEN"]
+      }
+    },
+    {
+      "id": "GREY_TITLE",
+      "scope": "route",
+      "meaning": "The grey leader's office/title, used throughout as a name-substitute ('the Steward').",
+      "guidance": "A single formal office title implying stewardship/regency, distinct from the other two houses' titles.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["RED_TITLE", "GREEN_TITLE"]
+      }
+    },
+    {
+      "id": "GREY_COLOR",
+      "scope": "route",
+      "meaning": "The grey house's banner color.",
+      "guidance": "A single color word, distinct from the other two houses' colors.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": ["RED_COLOR", "GREEN_COLOR"]
+      }
+    },
+    {
+      "id": "GREY_SIGIL",
+      "scope": "route",
+      "meaning": "The grey house's banner beast.",
+      "guidance": "A single benign animal/emblem word, distinct from the other two houses' sigils.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["RED_SIGIL", "GREEN_SIGIL", "ROYAL_SIGIL"]
+      }
+    },
+    {
+      "id": "GREY_ROLE",
+      "scope": "route",
+      "meaning": "The hero's post in the grey house (Steward's household).",
+      "guidance": "A junior, trusted household post; distinct from the hero's post in the other two houses.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["RED_ROLE", "GREEN_ROLE"]
+      }
+    },
+    {
+      "id": "RED_LEADER",
+      "scope": "route",
+      "meaning": "The red house's head, the border Duke the hero serves as herald.",
+      "guidance": "A surname used constantly as his referential name; charming, generous, ambitious, never idle.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["GREY_LEADER", "GREEN_LEADER"]
+      }
+    },
+    {
+      "id": "RED_LEADER_GIVEN",
+      "scope": "route",
+      "meaning": "The red leader's given name, used alongside the surname at introduction.",
+      "guidance": "A single given name.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["GREY_LEADER_GIVEN", "GREEN_LEADER_GIVEN"]
+      }
+    },
+    {
+      "id": "RED_TITLE",
+      "scope": "route",
+      "meaning": "The red leader's office/title, used throughout as a name-substitute ('the Duke').",
+      "guidance": "A single formal title implying martial/border authority, distinct from the other two houses' titles.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["GREY_TITLE", "GREEN_TITLE"]
+      }
+    },
+    {
+      "id": "RED_COLOR",
+      "scope": "route",
+      "meaning": "The red house's banner color.",
+      "guidance": "A single color word, distinct from the other two houses' colors.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": ["GREY_COLOR", "GREEN_COLOR"]
+      }
+    },
+    {
+      "id": "RED_SIGIL",
+      "scope": "route",
+      "meaning": "The red house's banner beast.",
+      "guidance": "A single benign animal/emblem word, distinct from the other two houses' sigils.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["GREY_SIGIL", "GREEN_SIGIL", "ROYAL_SIGIL"]
+      }
+    },
+    {
+      "id": "RED_ROLE",
+      "scope": "route",
+      "meaning": "The hero's post in the red house (the Duke's confidential messenger).",
+      "guidance": "A trusted messenger/envoy post that carries words and secrets its master would not commit to any other hand.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["GREY_ROLE", "GREEN_ROLE"]
+      }
+    },
+    {
+      "id": "RED_FORTRESS",
+      "scope": "route",
+      "meaning": "The red house's border stronghold, where the captured heir is held and the siege plays out.",
+      "guidance": "A single named fortress, distinct from the capital and every other named place.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["KINGDOM", "CAPITAL", "RIVER_NAME", "GREEN_CITY", "SELLSWORD_BASE", "KINGSBRIDGE"]
+      }
+    },
+    {
+      "id": "GREEN_LEADER",
+      "scope": "route",
+      "meaning": "The green house's head, the chancery Lady the hero scribes for.",
+      "guidance": "A surname used constantly as her referential name; plain-spoken, patient, trusts proof over the sword.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["GREY_LEADER", "RED_LEADER"]
+      }
+    },
+    {
+      "id": "GREEN_LEADER_GIVEN",
+      "scope": "route",
+      "meaning": "The green leader's given name, used alongside the surname at introduction.",
+      "guidance": "A single given name.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["GREY_LEADER_GIVEN", "RED_LEADER_GIVEN"]
+      }
+    },
+    {
+      "id": "GREEN_TITLE",
+      "scope": "route",
+      "meaning": "The green leader's honorific, used throughout as a name-substitute ('the Lady').",
+      "guidance": "A single formal honorific, distinct from the other two houses' titles.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["GREY_TITLE", "RED_TITLE"]
+      }
+    },
+    {
+      "id": "GREEN_COLOR",
+      "scope": "route",
+      "meaning": "The green house's banner color.",
+      "guidance": "A single color word, distinct from the other two houses' colors.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": ["GREY_COLOR", "RED_COLOR"]
+      }
+    },
+    {
+      "id": "GREEN_SIGIL",
+      "scope": "route",
+      "meaning": "The green house's banner emblem.",
+      "guidance": "A single benign plant/emblem word, distinct from the other two houses' sigils.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["GREY_SIGIL", "RED_SIGIL", "ROYAL_SIGIL"]
+      }
+    },
+    {
+      "id": "GREEN_ROLE",
+      "scope": "route",
+      "meaning": "The hero's post in the green house (the chancery's youngest scribe).",
+      "guidance": "A junior clerical/record-keeping post; distinct from the hero's post in the other two houses.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["GREY_ROLE", "RED_ROLE"]
+      }
+    },
+    {
+      "id": "GREEN_CITY",
+      "scope": "route",
+      "meaning": "The river-city where the green house's chancery is seated.",
+      "guidance": "A single named town/city along the river, distinct from the capital and every other named place.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": ["KINGDOM", "CAPITAL", "RIVER_NAME", "RED_FORTRESS", "SELLSWORD_BASE", "KINGSBRIDGE"]
+      }
+    }
+  ]
+}

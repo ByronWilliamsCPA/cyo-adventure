@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=85 beats='the radio says every school is closed for the snow day; June presses her nose to the cold window while her little brother Max drums on the glass beside her; overnight the backyard has vanished under deep white and the swing set wears tall snow hats; June announces that this is not a backyard anymore, it is the Arctic, and they are the explorers who will map it; they race each other to the mudroom, thrilled'>>",
+      "body": "<<FILL role=setup words=85 beats='{OPENING_MOMENT} closes school for the day; {HERO} presses her nose to the cold window while {COMPANION} drums on the glass beside her; overnight the yard vanishes under deep white and {THRESHOLD_DETAIL} wears a tall snow hat; {HERO} announces that this is not a backyard anymore, it is {THRESHOLD}, and they are {TEAM_NAME} who will map it; they race each other to {PREP_SITE}, thrilled'>>",
       "is_ending": false,
       "choices": [
         {
@@ -46,70 +46,70 @@
     },
     {
       "id": "n_gear",
-      "body": "<<FILL role=setup words=72 beats='in the mudroom the explorers gear up; puffy coats become polar parkas, mittens are rated for the coldest cold, and the red sled becomes the supply sledge, loaded with the cocoa thermos, the flat shovel, the expedition notebook, and a snack bag of baby carrots; Mom runs mission control, which looks exactly like the kitchen, zips Max to the chin, and waves the team out the door'>>",
+      "body": "<<FILL role=setup words=72 beats='in {PREP_SITE} {TEAM_NAME} gear up; puffy coats become expedition parkas, mittens are rated for the coldest cold, and {SUPPLY_VEHICLE} becomes the supply carrier, loaded with {TREAT}, {DIG_TOOL}, {LOG_ITEM}, and {SNACK_ITEM}; {GUARDIAN} runs {HOME_BASE}, which looks exactly like the kitchen, zips {COMPANION} to the chin, and waves the team out the door'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_gear_basecamp",
-          "label": "March out to Base Camp One.",
+          "label": "March out to {ENTRANCE}.",
           "target": "n_basecamp"
         }
       ]
     },
     {
       "id": "n_basecamp",
-      "body": "<<FILL role=choice words=82 beats='the back porch is Base Camp One and the whole white Arctic spreads out below it; on one side the plow pile at the driveway corner looms like Mount Snowpile, with a line of mysterious paw prints stitched along the fence beneath it; on the other side the untouched drifts of the Frozen Flats lie smooth and perfect, with the birdbath poking up out of them like a lonely iceberg; the explorers must pick a direction to trek'>>",
+      "body": "<<FILL role=choice words=82 beats='{ENTRANCE} is the staging point and the whole {THRESHOLD} spreads out below it; on one side a snowbank looms like {ROUTE_A_LANDMARK}, with {A2_SIGN} stitched along the fence beneath it; on the other side {ROUTE_B_LANDMARK} lie {ROUTE_B_CHAR}, with {B2_SIGN} poking up out of them like a lonely marker; {TEAM_NAME} must pick a direction to trek'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_base_east",
-          "label": "Trek toward Mount Snowpile.",
+          "label": "Trek toward {ROUTE_A_LANDMARK}.",
           "target": "n_east"
         },
         {
           "id": "c_base_west",
-          "label": "Trek across the Frozen Flats.",
+          "label": "Trek across {ROUTE_B_LANDMARK}.",
           "target": "n_west"
         }
       ]
     },
     {
       "id": "n_east",
-      "body": "<<FILL role=choice words=78 beats='the eastward trek is squeaky boot work through knee-deep powder; Mount Snowpile rises huge and crusty ahead, really just the pile the plow left, but with eyes half shut it is a true peak with icy cliffs; right across the trail runs a fresh line of small round paw prints heading for the fence, and Max gasps that a mysterious Arctic creature has passed this way; two expeditions call at once and the team can only pick one'>>",
+      "body": "<<FILL role=choice words=78 beats='the eastward trek is squeaky boot work through knee-deep powder; {ROUTE_A_LANDMARK} rises huge ahead, really just a snowbank, but with eyes half shut it is a true peak with {ROUTE_A_CHAR}; right across the trail runs {A2_TRAIL} heading for the fence, and {COMPANION} gasps that a mysterious creature has passed this way; two expeditions call at once and {TEAM_NAME} can only pick one'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_east_climb",
-          "label": "Climb Mount Snowpile.",
+          "label": "Climb {ROUTE_A_LANDMARK}.",
           "target": "m_1"
         },
         {
           "id": "c_east_tracks",
-          "label": "Follow the mysterious paw prints.",
+          "label": "Follow {A2_SIGN}.",
           "target": "t_1"
         }
       ]
     },
     {
       "id": "n_west",
-      "body": "<<FILL role=choice words=78 beats='out on the Frozen Flats the snow is deep, smooth, perfect packing snow, exactly right for cutting igloo bricks; farther on, the birdbath iceberg rises from the drifts, and frozen fast in its icy top stand the three toy penguins Max left there before the big freeze, upright and waiting bravely for rescue; the explorers must choose today's mission on the Flats'>>",
+      "body": "<<FILL role=choice words=78 beats='out on {ROUTE_B_LANDMARK} the snow is {ROUTE_B_CHAR}, exactly right for building a fort; farther on, {B2_SIGN} rises from the drifts, and frozen fast in its icy top stand {B2_TARGET} {COMPANION} left there before the big freeze, upright and waiting bravely for rescue; {TEAM_NAME} must choose today's mission'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_west_igloo",
-          "label": "Build the Great Igloo fort.",
+          "label": "Build {B1_LANDMARK}.",
           "target": "i_1"
         },
         {
           "id": "c_west_penguins",
-          "label": "Rescue the bird bath penguins.",
+          "label": "Rescue {B2_TARGET}.",
           "target": "p_1"
         }
       ]
     },
     {
       "id": "m_1",
-      "body": "<<FILL role=rising words=68 beats='at the foot of Mount Snowpile the explorers rope up with the jump rope from the sledge; up close the mountain is a crusty plow pile taller than the car, but to the roped-up team it is all icy ledges and secret handholds; June spots the first good foothold and the ascent begins'>>",
+      "body": "<<FILL role=rising words=68 beats='at the foot of {ROUTE_A_LANDMARK} {TEAM_NAME} rope up with {A1_GEAR}; up close the mountain is a crusty snowbank taller than the car, but to the roped-up team it is all {A1_CLIMB}; {HERO} spots the first good foothold and the ascent begins'>>",
       "is_ending": false,
       "choices": [
         {
@@ -121,24 +121,24 @@
     },
     {
       "id": "m_2",
-      "body": "<<FILL role=choice words=80 beats='at the halfway ledge, really a buried lawn chair making a fine flat shelf, a sudden mountain storm whirls in; the wind kicks loose snow-dust off the crest and the neighbor's snowblower adds a roaring white plume; sparkles sting their cheeks and Max's nose has gone pink; real explorers must decide, brave the swirl on to the top, or head down to base camp for cocoa and try again later'>>",
+      "body": "<<FILL role=choice words=80 beats='at the halfway ledge, really a buried lawn chair making a fine flat shelf, {A1_GATE} whirls in; the wind kicks loose snow-dust off the crest and a distant machine adds a roaring white plume; sparkles sting their cheeks and {COMPANION}'s nose has gone pink; real {TEAM_NAME} must decide, brave the storm on to the top, or head back to {ENTRANCE} for {TREAT} and try again later'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m2_push",
-          "label": "Push on through the snow-swirl.",
+          "label": "Push on through {A1_GATE}.",
           "target": "m_3"
         },
         {
           "id": "c_m2_cocoa",
-          "label": "Head back down for cocoa.",
+          "label": "Head back down for {TREAT}.",
           "target": "m_r1"
         }
       ]
     },
     {
       "id": "m_r1",
-      "body": "<<FILL role=rising words=60 beats='they climb down ledge by ledge, careful as real mountaineers, and the swirl dies away behind them just as the kitchen window glows gold ahead; June says this is not quitting, explorers call it regrouping, and Max agrees because his toes agree'>>",
+      "body": "<<FILL role=rising words=60 beats='they climb down ledge by ledge, careful as real mountaineers, and {A1_GATE} dies away behind them just as {HOME_BASE}'s window glows gold ahead; {HERO} says this is not quitting, {TEAM_NAME} call it regrouping, and {COMPANION} agrees because his toes agree'>>",
       "is_ending": false,
       "choices": [
         {
@@ -150,18 +150,18 @@
     },
     {
       "id": "e_m_retreat",
-      "body": "<<FILL role=ending words=72 beats='mittens steam on the radiator while the explorers sip cocoa with extra marshmallows at mission control; they draw tomorrow's summit route on a napkin map with arrows and a big X on the peak; the mountain is not going anywhere, and next time, they agree with a clink of mugs, the top is theirs'>>",
+      "body": "<<FILL role=ending words=72 beats='mittens steam on the radiator while {TEAM_NAME} sip {TREAT} with extra marshmallows at {HOME_BASE}; they draw tomorrow's route to {A1_PEAK} on a napkin map with arrows and a big X; {ROUTE_A_LANDMARK} is not going anywhere, and next time, they agree with a clink of mugs, {A1_PEAK} is theirs'>>",
       "is_ending": true,
       "ending": {
         "id": "end_m_retreat",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Cocoa Retreat"
+        "title": "Turned Back at {A1_GATE}"
       }
     },
     {
       "id": "m_3",
-      "body": "<<FILL role=rising words=66 beats='above the swirl the wind quiets and the snow crust firms underfoot; they kick toe-steps the way real mountaineers do, June first and Max counting every step out loud; the white top of Mount Snowpile is suddenly close against the bright blue sky'>>",
+      "body": "<<FILL role=rising words=66 beats='above the storm the wind quiets and the snow crust firms underfoot; they kick toe-steps the way real mountaineers do, {HERO} first and {COMPANION} counting every step out loud; {A1_PEAK} of {ROUTE_A_LANDMARK} is suddenly close against the bright blue sky'>>",
       "is_ending": false,
       "choices": [
         {
@@ -173,47 +173,47 @@
     },
     {
       "id": "m_4",
-      "body": "<<FILL role=choice words=78 beats='the summit! from the top of the plow pile the explorers can see their whole Arctic at once, the fence line, the Frozen Flats, the birdbath iceberg, even their own boot trail winding back to base camp; two glorious ways to finish the climb: plant a flag on the very peak using the old broom handle and June's spare red mitten, or line up the sled for the first-ever ride down the smooth wind-packed far slope'>>",
+      "body": "<<FILL role=choice words=78 beats='{A1_PEAK}! from the top {TEAM_NAME} can see their whole {THRESHOLD} at once, the fence line, {ROUTE_B_LANDMARK}, {B2_SIGN}, even their own boot trail winding back to {ENTRANCE}; two glorious ways to finish the climb: plant {A1_MARKER}, or line up {SUPPLY_VEHICLE} for the first-ever ride down the smooth wind-packed far slope'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_m4_flag",
-          "label": "Plant the flag on the peak.",
+          "label": "Plant {A1_MARKER}.",
           "target": "m_f1"
         },
         {
           "id": "c_m4_sled",
-          "label": "Ride the sled down the far slope.",
+          "label": "Ride {SUPPLY_VEHICLE} down the far slope.",
           "target": "m_s1"
         }
       ]
     },
     {
       "id": "m_f1",
-      "body": "<<FILL role=rising words=62 beats='they pack snow tight around the broom-handle flagpole and tie the spare red mitten at the top, where it flaps like a true expedition flag; June and Max stand at attention beside it, puffed up with pride, and June declares that a brand-new mountain needs a name'>>",
+      "body": "<<FILL role=rising words=62 beats='they pack snow tight to plant {A1_MARKER}, where it flaps like a true expedition flag; {HERO} and {COMPANION} stand at attention beside it, puffed up with pride, and {HERO} declares that a brand-new mountain needs a name'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mf1_name",
-          "label": "Name the mountain out loud.",
+          "label": "Name {ROUTE_A_LANDMARK} out loud.",
           "target": "e_m_flag"
         }
       ]
     },
     {
       "id": "e_m_flag",
-      "body": "<<FILL role=completion words=78 beats='they shout the mountain's new name across the yard, the first explorers ever to stand on top of Mount Snowpile; the red mitten flag flaps proudly above them; Mom appears at the mission-control window and waves both arms, and the explorers salute back, then stamp their initials into the summit crust so the whole Arctic knows who climbed it first'>>",
+      "body": "<<FILL role=completion words=78 beats='they shout the mountain's new name across the yard, the first {TEAM_NAME} ever to stand on {A1_PEAK} of {ROUTE_A_LANDMARK}; {A1_MARKER} flaps proudly above them; {GUARDIAN} appears at the {HOME_BASE} window and waves both arms, and {TEAM_NAME} salute back, then stamp their initials into the summit crust so the whole {THRESHOLD} knows who climbed it first'>>",
       "is_ending": true,
       "ending": {
         "id": "end_m_flag",
         "valence": "positive",
         "kind": "success",
-        "title": "Flag on the Summit"
+        "title": "{A1_PRIZE1}"
       }
     },
     {
       "id": "m_s1",
-      "body": "<<FILL role=rising words=62 beats='they line the sled up at the top of the smooth far slope, June steering in front, Max wrapped around her middle like a backpack; below them the run flattens out into a big soft drift, a perfect landing zone; June counts down from three in her best expedition voice'>>",
+      "body": "<<FILL role=rising words=62 beats='they line {SUPPLY_VEHICLE} up at the top of the smooth far slope, {HERO} steering in front, {COMPANION} wrapped around her middle like a backpack; below them the run flattens out into a big soft drift, a perfect landing zone; {HERO} counts down from three in her best expedition voice'>>",
       "is_ending": false,
       "choices": [
         {
@@ -225,35 +225,35 @@
     },
     {
       "id": "e_m_sled",
-      "body": "<<FILL role=completion words=78 beats='whoosh, the sled flies down the mountain trailing a rooster tail of snow, both explorers whooping the whole way, and lands them in the deep soft drift at the bottom in a laughing tangle; the first-ever descent of Mount Snowpile is complete; they flop onto their backs and stamp two snow angels into the drift as official victory marks'>>",
+      "body": "<<FILL role=completion words=78 beats='whoosh, {SUPPLY_VEHICLE} flies down the mountain trailing a rooster tail of snow, both {TEAM_NAME} whooping the whole way, and lands them in the deep soft drift at the bottom in a laughing tangle; the first-ever descent of {ROUTE_A_LANDMARK} is complete; they flop onto their backs and stamp two snow angels into the drift as official victory marks'>>",
       "is_ending": true,
       "ending": {
         "id": "end_m_sled",
         "valence": "positive",
         "kind": "success",
-        "title": "The Great Summit Sled Run"
+        "title": "{A1_PRIZE2}"
       }
     },
     {
       "id": "t_1",
-      "body": "<<FILL role=rising words=68 beats='June kneels beside the prints like a wildlife scientist and studies them closely; small, round, and neat, dotting away along the fence like a row of buttons; too big for a squirrel, too small for a polar bear, so Max decides it is either an Arctic fox or a very small yeti; the tracking team moves out with eyes on the trail'>>",
+      "body": "<<FILL role=rising words=68 beats='{HERO} kneels beside {A2_TRAIL} like a wildlife scientist and studies them closely; small, round, and neat, dotting away along the fence like a row of buttons; too big for a squirrel, too small for a big animal, so {COMPANION} decides it is a mystery creature; the tracking team moves out with eyes on the trail'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t1_track",
-          "label": "Track the prints along the fence.",
+          "label": "Track {A2_TRAIL} along the fence.",
           "target": "t_2"
         }
       ]
     },
     {
       "id": "t_2",
-      "body": "<<FILL role=choice words=80 beats='the trail runs straight to the old holly bush in the corner and dives underneath it into the shadows; the tracking team huddles up in the snow to plan; there are two ways to keep the trail: wriggle straight through the low snow tunnel under the holly branches where the prints go, or hurry around behind the shed to cut the creature off on the far side'>>",
+      "body": "<<FILL role=choice words=80 beats='the trail runs straight to {A2_HIDEOUT} in the corner and dives underneath it into the shadows; the tracking team huddles up in the snow to plan; there are two ways to keep the trail: wriggle straight through the low snow tunnel under {A2_HIDEOUT}'s branches where the prints go, or hurry around behind the shed to cut the creature off on the far side'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_t2_tunnel",
-          "label": "Crawl through the tunnel under the holly.",
+          "label": "Crawl through the tunnel under {A2_HIDEOUT}.",
           "target": "t_3"
         },
         {
@@ -265,7 +265,7 @@
     },
     {
       "id": "t_3",
-      "body": "<<FILL role=rising words=72 beats='under the holly is a secret green cave with no snow at all, hushed and dim like a ranger's hideout; the prints stitch straight through it and out the far side toward the woodpile; up ahead something rustles softly, and a flick of thick gray fur shows between two logs; the trackers hold their breath and creep closer'>>",
+      "body": "<<FILL role=rising words=72 beats='under {A2_HIDEOUT} is a secret green cave with no snow at all, hushed and dim like a ranger's hideout; {A2_TRAIL} stitch straight through it and out the far side toward the woodpile; up ahead something rustles softly, and a flick of thick gray fur shows between two logs; the trackers hold their breath and creep closer'>>",
       "is_ending": false,
       "choices": [
         {
@@ -277,18 +277,18 @@
     },
     {
       "id": "e_t_cat",
-      "body": "<<FILL role=completion words=80 beats='curled in a snug gap between the logs is Duchess, the neighbor's enormous fluffy gray cat, blinking slow warm blinks at her visitors, and the explorers know a rare snow leopard in her secret mountain den when they see one; they crouch like wildlife scientists, whisper their field notes into the expedition notebook, and promise Duchess her den will stay secret; she answers with a purr they can feel through the logs'>>",
+      "body": "<<FILL role=completion words=80 beats='curled in a snug gap between the logs is {A2_CREATURE1}, blinking slow warm blinks at her visitors, and {TEAM_NAME} know a rare discovery in a secret den when they see one; they crouch like wildlife scientists, whisper their field notes into {LOG_ITEM}, and promise {A2_CREATURE1} her den will stay secret; she answers with a purr they can feel through the logs'>>",
       "is_ending": true,
       "ending": {
         "id": "end_t_cat",
         "valence": "positive",
         "kind": "discovery",
-        "title": "The Snow Leopard's Den"
+        "title": "{A2_PRIZE1}"
       }
     },
     {
       "id": "t_4",
-      "body": "<<FILL role=rising words=72 beats='behind the shed the snow is a crisscross of prints, big ones and tiny ones circling everywhere, and every trail leads back to one dark little gap under the shed step; the trackers crouch low behind the supply sledge to watch; Max whispers that he can see whiskers, actual whiskers, twitching just inside the shadow'>>",
+      "body": "<<FILL role=rising words=72 beats='behind the shed the snow is a crisscross of prints, big ones and tiny ones circling everywhere, and every trail leads back to one dark little gap under the shed step; the trackers crouch low behind {SUPPLY_VEHICLE} to watch; {COMPANION} whispers that he can see whiskers, actual whiskers, twitching just inside the shadow'>>",
       "is_ending": false,
       "choices": [
         {
@@ -300,18 +300,18 @@
     },
     {
       "id": "e_t_rabbits",
-      "body": "<<FILL role=completion words=80 beats='a plump brown rabbit hops halfway out of the gap, and behind her two round kits peek over her back, a whole secret expedition team living under the shed step; the explorers set one baby carrot from the supply sledge at a polite distance and back away slow and quiet; the rabbit takes it, and June marks the hidden rabbit base on the expedition map with a big star'>>",
+      "body": "<<FILL role=completion words=80 beats='{A2_CREATURE2} hops halfway out of the gap, and behind her two round kits peek over her back, a whole secret expedition team living under the shed step; {TEAM_NAME} set one {SNACK_ITEM} from {SUPPLY_VEHICLE} at a polite distance and back away slow and quiet; {A2_CREATURE2} takes it, and {HERO} marks the hidden base on the expedition map with a big star'>>",
       "is_ending": true,
       "ending": {
         "id": "end_t_rabbits",
         "valence": "positive",
         "kind": "discovery",
-        "title": "The Hidden Rabbit Base"
+        "title": "{A2_PRIZE2}"
       }
     },
     {
       "id": "i_1",
-      "body": "<<FILL role=rising words=66 beats='the Frozen Flats snow squeaks and packs like magic; June stamps out a big circle for the floor of the Great Igloo while Max hauls the sledge alongside as the official brick wagon; the flat shovel becomes a snow saw, and the very first brick comes out crisp and square as a slice of cake'>>",
+      "body": "<<FILL role=rising words=66 beats='{ROUTE_B_LANDMARK} snow squeaks and packs like magic; {HERO} stamps out a big circle for the floor of {B1_LANDMARK} while {COMPANION} hauls {SUPPLY_VEHICLE} alongside as the official hauling cart; {DIG_TOOL} becomes a snow saw, and the very first brick comes out crisp and square as a slice of cake'>>",
       "is_ending": false,
       "choices": [
         {
@@ -323,7 +323,7 @@
     },
     {
       "id": "i_2",
-      "body": "<<FILL role=rising words=68 beats='row by row the spiral wall rises, each brick lifted off the sled and patted snug into place with mitten thumps; the wall climbs past Max's shoulders and leans inward the way real igloos do; they leave a door gap just their size, and now only the tricky top of the dome is left'>>",
+      "body": "<<FILL role=rising words=68 beats='row by row the spiral wall of {B1_LANDMARK} rises, each brick lifted off {SUPPLY_VEHICLE} and patted snug into place with mitten thumps; the wall climbs past {COMPANION}'s shoulders and leans inward the way real forts do; they leave a door gap just their size, and now only the tricky top of the dome is left'>>",
       "is_ending": false,
       "choices": [
         {
@@ -335,7 +335,7 @@
     },
     {
       "id": "i_3",
-      "body": "<<FILL role=choice words=80 beats='the dome closes with one careful final brick and the builders cheer; inside, the light glows soft and blue like the inside of an ice palace, even though from the porch it is still a snow fort in the backyard; two dreams remain for finishing the Great Igloo: carve a round ice window and move the supplies in to make it a true Arctic base, or dig a grand entrance tunnel long enough to crawl through like real polar explorers'>>",
+      "body": "<<FILL role=choice words=80 beats='the dome of {B1_LANDMARK} closes with one careful final brick and the builders cheer; inside, the light glows soft and blue like the inside of an ice palace, even though from {ENTRANCE} it is still a snow fort in the backyard; two dreams remain for finishing {B1_LANDMARK}: carve a round ice window and move the supplies in to make it a true base, or dig a grand entrance tunnel long enough to crawl through like real {TEAM_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -352,7 +352,7 @@
     },
     {
       "id": "i_f1",
-      "body": "<<FILL role=rising words=62 beats='June carves a round window with the snow saw and cold sunshine pours through it; Max ferries the supplies in from the sledge, thermos, carrot bag, and notebook lined up neatly on a carved snow shelf; the Great Igloo begins to feel like a real base at the bottom of the world'>>",
+      "body": "<<FILL role=rising words=62 beats='{HERO} carves a round window with {DIG_TOOL} and cold sunshine pours through it; {COMPANION} ferries the supplies in from {SUPPLY_VEHICLE}, {TREAT}, {SNACK_ITEM}, and {LOG_ITEM} lined up neatly on a carved snow shelf; {B1_LANDMARK} begins to feel like a real base at the bottom of the world'>>",
       "is_ending": false,
       "choices": [
         {
@@ -364,18 +364,18 @@
     },
     {
       "id": "e_i_base",
-      "body": "<<FILL role=completion words=80 beats='the explorers sit shoulder to shoulder inside their glowing blue fort, sipping cocoa while their breath makes little clouds, watching their whole Arctic through the round ice window; it is officially the finest base the backyard has ever had; they shout the good news toward mission control, and Mom's laugh floats back to them across the snow'>>",
+      "body": "<<FILL role=completion words=80 beats='{TEAM_NAME} sit shoulder to shoulder inside {B1_LANDMARK}, sipping {TREAT} while their breath makes little clouds, watching their whole {THRESHOLD} through the round ice window; it is officially the finest base the backyard has ever had; they shout the good news toward {HOME_BASE}, and {GUARDIAN}'s laugh floats back to them across the snow'>>",
       "is_ending": true,
       "ending": {
         "id": "end_i_base",
         "valence": "positive",
         "kind": "completion",
-        "title": "Base Camp Igloo"
+        "title": "{B1_PRIZE1}"
       }
     },
     {
       "id": "i_f2",
-      "body": "<<FILL role=rising words=62 beats='they dig from both ends at once, June from outside the wall and Max from inside the glowing dome, until two mittens meet in the middle of the snow with a muffled high five; they pat the tunnel walls smooth and round, long enough to crawl through like true polar explorers'>>",
+      "body": "<<FILL role=rising words=62 beats='they dig from both ends at once, {HERO} from outside the wall and {COMPANION} from inside the glowing dome, until two mittens meet in the middle of the snow with a muffled high five; they pat the tunnel walls smooth and round, long enough to crawl through like true {TEAM_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -387,18 +387,18 @@
     },
     {
       "id": "e_i_tunnel",
-      "body": "<<FILL role=completion words=76 beats='June crawls the whole tunnel first and pops up inside the glowing dome with a shout, then Max, then both of them again just because; the Great Igloo now has an official secret entrance, and from the porch Mom applauds the two snowy heads popping in and out; the explorers agree it is the greatest fort ever built in the backyard Arctic'>>",
+      "body": "<<FILL role=completion words=76 beats='{HERO} crawls the whole tunnel first and pops up inside the glowing dome with a shout, then {COMPANION}, then both of them again just because; {B1_LANDMARK} now has an official secret entrance, and from {ENTRANCE} {GUARDIAN} applauds the two snowy heads popping in and out; {TEAM_NAME} agree it is the greatest fort ever built in {THRESHOLD}'>>",
       "is_ending": true,
       "ending": {
         "id": "end_i_tunnel",
         "valence": "positive",
         "kind": "success",
-        "title": "The Grand Snow Tunnel"
+        "title": "{B1_PRIZE2}"
       }
     },
     {
       "id": "p_1",
-      "body": "<<FILL role=rising words=68 beats='the birdbath rises from the drifts like a lonely iceberg, and frozen fast in the ice on top stand all three toy penguins, upright and brave, exactly where Max left them before the big freeze; June declares Operation Penguin Rescue open and the sledge becomes the official rescue ambulance; the team crunches closer to study the ice'>>",
+      "body": "<<FILL role=rising words=68 beats='{B2_SIGN} rises from the drifts like a lonely iceberg, and frozen fast in the ice on top stand {B2_TARGET}, upright and brave, exactly where {COMPANION} left them before the big freeze; {HERO} declares the rescue mission open and {SUPPLY_VEHICLE} becomes the official rescue ambulance; the team crunches closer to study the ice'>>",
       "is_ending": false,
       "choices": [
         {
@@ -410,7 +410,7 @@
     },
     {
       "id": "p_2",
-      "body": "<<FILL role=choice words=80 beats='up close the ice sheet holds each penguin tight by the feet, shiny and stubborn; the rescue team weighs two plans: tap and wiggle the ice loose bit by bit with mitten thumps and the ice scraper, slow but steady work, or pour warm cocoa from the thermos over the ice to melt the penguins free fast, even though the cocoa is the expedition's emergency fuel'>>",
+      "body": "<<FILL role=choice words=80 beats='up close the ice sheet holds each of {B2_TARGET} tight by the feet, shiny and stubborn; the rescue team weighs two plans: tap and wiggle the ice loose bit by bit with mitten thumps and the ice scraper, slow but steady work, or pour warm {TREAT} over the ice to melt them free fast, even though {TREAT} is the expedition's emergency fuel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -420,54 +420,54 @@
         },
         {
           "id": "c_p2_cocoa",
-          "label": "Pour warm cocoa over the ice.",
+          "label": "Pour warm {TREAT} over the ice.",
           "target": "p_r1"
         }
       ]
     },
     {
       "id": "p_r1",
-      "body": "<<FILL role=rising words=60 beats='the last of the warm cocoa glugs out and steams very grandly, but it only makes a shiny brown puddle that freezes again slicker than before; the penguins have not budged a single feather and the emergency fuel is gone; June says real rescue teams know when to regroup'>>",
+      "body": "<<FILL role=rising words=60 beats='the last of the warm {TREAT} glugs out and causes {B2_GATE}, a shiny brown puddle that freezes again slicker than before; {B2_TARGET} have not budged a single feather and the emergency fuel is gone; {HERO} says real rescue teams know when to regroup'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pr1_retreat",
-          "label": "Call a retreat to mission control.",
+          "label": "Call a retreat to {HOME_BASE}.",
           "target": "e_p_retreat"
         }
       ]
     },
     {
       "id": "e_p_retreat",
-      "body": "<<FILL role=ending words=74 beats='back at mission control the explorers thaw their mittens while Mom refills the thermos and does not even laugh at the cocoa-flavored iceberg; they plan Rescue Mission Two on the back of a napkin, with a proper ice tool this time; out on the birdbath the three penguins hold their post bravely until after lunch'>>",
+      "body": "<<FILL role=ending words=74 beats='back at {HOME_BASE} {TEAM_NAME} thaw their mittens while {GUARDIAN} refills the {TREAT} and does not even laugh at {B2_GATE}; they plan Rescue Mission Two on the back of a napkin, with a proper ice tool this time; out at {B2_SIGN} {B2_TARGET} hold their post bravely until after lunch'>>",
       "is_ending": true,
       "ending": {
         "id": "end_p_retreat",
         "valence": "negative",
         "kind": "setback",
-        "title": "Regroup and Refuel"
+        "title": "Turned Back at {B2_GATE}"
       }
     },
     {
       "id": "p_3",
-      "body": "<<FILL role=rising words=66 beats='tap, tap, tap, little cracks spider out around each penguin's feet while Max holds his breath beside the sled; one by one the penguins pop free into June's mitten, first one, then two, then all three; the team wraps them snug in June's spare scarf like tiny rescued explorers'>>",
+      "body": "<<FILL role=rising words=66 beats='tap, tap, tap, little cracks spider out around each of {B2_TARGET}'s feet while {COMPANION} holds his breath beside {SUPPLY_VEHICLE}; one by one they pop free into {HERO}'s mitten, first one, then two, then all three; the team wraps them snug in {HERO}'s spare scarf like tiny rescued {TEAM_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p3_load",
-          "label": "Load the penguins for transport.",
+          "label": "Load {B2_TARGET} for transport.",
           "target": "p_4"
         }
       ]
     },
     {
       "id": "p_4",
-      "body": "<<FILL role=choice words=78 beats='three rescued penguins peek out of the scarf in the sled ambulance, safe but very cold, or so the rescue team solemnly agrees; now the mission needs a proper finish: rush them to the porch railing and set up a penguin hospital with snow-pillow beds and feather-by-feather checkups, or lead one triumphant rescue parade around the whole Arctic first so every snowdrift can cheer'>>",
+      "body": "<<FILL role=choice words=78 beats='{B2_TARGET} peek out of the scarf in {SUPPLY_VEHICLE}, safe but very cold, or so the rescue team solemnly agrees; now the mission needs a proper finish: rush them to {ENTRANCE} and set up a rescue hospital with snow-pillow beds and feather-by-feather checkups, or lead one triumphant rescue parade around the whole {THRESHOLD} first so every snowdrift can cheer'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_p4_hospital",
-          "label": "Set up the penguin hospital.",
+          "label": "Set up the hospital for {B2_TARGET}.",
           "target": "p_f1"
         },
         {
@@ -479,7 +479,7 @@
     },
     {
       "id": "p_f1",
-      "body": "<<FILL role=rising words=62 beats='the porch railing becomes hospital row with three snow-pillow beds patted smooth; Doctor June checks each penguin from beak to feet while Nurse Max records everything in the expedition notebook with very serious nods; all three patients are pronounced brave and perfectly healthy'>>",
+      "body": "<<FILL role=rising words=62 beats='{ENTRANCE} becomes hospital row with three snow-pillow beds patted smooth; Doctor {HERO} checks each of {B2_TARGET} from beak to feet while Nurse {COMPANION} records everything in {LOG_ITEM} with very serious nods; all three patients are pronounced brave and perfectly healthy'>>",
       "is_ending": false,
       "choices": [
         {
@@ -491,18 +491,18 @@
     },
     {
       "id": "e_p_hospital",
-      "body": "<<FILL role=completion words=76 beats='three penguins lie tucked in their snow beds on the porch railing, each with a certificate of bravery scratched into the frost beside it; Operation Penguin Rescue is complete and the doctors shake mittens over their sleeping patients; when Mom calls the team in for lunch, the penguins come too, riding warm and proud in June's coat pocket'>>",
+      "body": "<<FILL role=completion words=76 beats='{B2_TARGET} lie tucked in their snow beds at {ENTRANCE}, each with a certificate of bravery scratched into the frost beside it; the rescue mission is complete and the doctors shake mittens over their sleeping patients; when {GUARDIAN} calls the team in for lunch, {B2_TARGET} come too, riding warm and proud in {HERO}'s coat pocket'>>",
       "is_ending": true,
       "ending": {
         "id": "end_p_hospital",
         "valence": "positive",
         "kind": "completion",
-        "title": "Penguin Hospital Heroes"
+        "title": "{B2_PRIZE1}"
       }
     },
     {
       "id": "p_f2",
-      "body": "<<FILL role=rising words=62 beats='the sled ambulance becomes a parade float with the three penguins riding high on the folded scarf; June pulls the rope out front while Max marches behind, announcing the heroes to the whole Arctic in his loudest voice; the parade sets off across the Frozen Flats'>>",
+      "body": "<<FILL role=rising words=62 beats='{SUPPLY_VEHICLE} becomes a parade float with {B2_TARGET} riding high on the folded scarf; {HERO} pulls the rope out front while {COMPANION} marches behind, announcing the heroes to the whole {THRESHOLD} in his loudest voice; the parade sets off across {ROUTE_B_LANDMARK}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -514,13 +514,13 @@
     },
     {
       "id": "e_p_parade",
-      "body": "<<FILL role=completion words=76 beats='the parade rounds the whole backyard Arctic, past Mount Snowpile, along the fence line, and home to Base Camp One, the explorers cheering for their penguin heroes loud enough for every snowdrift to hear; Mom waves from the window like a whole crowd at once; the penguins ride home tall and proud in the greatest rescue parade the Arctic has ever seen'>>",
+      "body": "<<FILL role=completion words=76 beats='the parade rounds the whole {THRESHOLD}, past {ROUTE_A_LANDMARK}, along the fence line, and home to {ENTRANCE}, {TEAM_NAME} cheering for their heroes loud enough for every snowdrift to hear; {GUARDIAN} waves from the window like a whole crowd at once; {B2_TARGET} ride home tall and proud in the greatest rescue parade {THRESHOLD} has ever seen'>>",
       "is_ending": true,
       "ending": {
         "id": "end_p_parade",
         "valence": "positive",
         "kind": "success",
-        "title": "The Great Rescue Parade"
+        "title": "{B2_PRIZE2}"
       }
     }
   ]

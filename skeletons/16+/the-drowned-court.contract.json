@@ -1,0 +1,376 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-drowned-court",
+  "age_band": "16+",
+  "legacy_lexicon": [
+    "Sable",
+    "tide-gate",
+    "throne",
+    "reliquary",
+    "cistern",
+    "observatory",
+    "circlet",
+    "tide-scepter",
+    "seal-ring",
+    "sunken gallery",
+    "silt-choked crawl",
+    "warded march",
+    "downward stair",
+    "caved vault",
+    "tide surge",
+    "collapsing hall",
+    "sunken royal court"
+  ],
+  "default_binding": {
+    "HERO": "Sable",
+    "RIVAL": "rival",
+    "RIVAL_TITLE": "Rival",
+    "COURT": "court",
+    "REGALIA": "regalia",
+    "CIRCLET": "circlet",
+    "CIRCLET_TITLE": "Crown",
+    "SCEPTER": "tide-scepter",
+    "RING": "seal-ring",
+    "QUEEN": "queen",
+    "OPENING_MOMENT": "slack tide",
+    "ROUTE_A_CHAR": "the sunken moat",
+    "ROUTE_B_CHAR": "the old sluice channel",
+    "ROUTE_C_CHAR": "the rival's scaffold",
+    "ROUTE_D_CHAR": "the seaward culvert",
+    "TIDEGATE": "tide-gate",
+    "TIDEGATE_TITLE": "Gate",
+    "THRONE": "throne",
+    "THRONE_TITLE": "Throne",
+    "RELIQUARY": "reliquary",
+    "CISTERN": "cistern",
+    "OBSERVATORY": "observatory",
+    "MOTIF_GALLERY": "sunken gallery",
+    "MOTIF_CRAWL": "silt-choked crawl",
+    "MOTIF_MARCH": "warded march",
+    "MOTIF_STAIR": "downward stair",
+    "MOTIF_VAULT": "caved vault",
+    "MOTIF_SURGE": "tide surge",
+    "MOTIF_HALL": "collapsing hall"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The adult diver protagonist (a codename/handle, not necessarily a real name).",
+      "guidance": "A single capable, professional treasure-diver or explorer; never armed, never reckless for its own sake.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["RIVAL"]
+      }
+    },
+    {
+      "id": "RIVAL",
+      "scope": "global",
+      "meaning": "The bare, reusable noun/adjective for the competing diver and their expedition (used as 'the RIVAL diver', 'a RIVAL buoy', 'RIVAL gear', 'the RIVAL's line', etc.).",
+      "guidance": "A competing explorer or team racing for the same prize; a rival in ambition and skill only, never a source of physical violence or a weapon threat.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "RIVAL_TITLE",
+      "scope": "ending",
+      "meaning": "Capitalized form of RIVAL, used only in two setback ending titles ('The RIVAL_TITLE Buoy', 'Fouled on the RIVAL_TITLE Line').",
+      "guidance": "The same competing-explorer concept as RIVAL, title-cased; never a weapon or violent framing.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal", "weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COURT",
+      "scope": "global",
+      "meaning": "The bare, pervasive short name for the whole sunken/ruined site being explored (used constantly as 'the COURT', 'the drowned COURT', and it closes several ending titles verbatim, e.g. 'The Court Sealed').",
+      "guidance": "A single common noun for the overall ruin/site; wonder over dread; must read as a place that can be safely entered, explored, and left.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["toxic", "lethal", "weapon", "graphic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "REGALIA",
+      "scope": "global",
+      "meaning": "The bare collective noun for the three treasure pieces recovered over the course of the dive (used as 'the REGALIA', 'full REGALIA', 'a REGALIA piece'); it also closes several positive ending titles.",
+      "guidance": "A collective noun for a set of valuable, non-hazardous recovered items (treasure, relics, instruments); never itself dangerous to hold or carry.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CIRCLET",
+      "scope": "global",
+      "meaning": "The first of the three regalia pieces, recovered at the THRONE position.",
+      "guidance": "A wearable ornamental treasure (a crown-like piece); a benign keepsake, never a weapon.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["SCEPTER", "RING"]
+      }
+    },
+    {
+      "id": "CIRCLET_TITLE",
+      "scope": "ending",
+      "meaning": "A title-cased synonym for CIRCLET, used only in the setback ending title 'Walled from the CIRCLET_TITLE'.",
+      "guidance": "A synonym for the same wearable-treasure concept as CIRCLET (e.g. a crown/coronet word); never a weapon.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SCEPTER",
+      "scope": "global",
+      "meaning": "The second of the three regalia pieces, recovered at the RELIQUARY position.",
+      "guidance": "A held ceremonial treasure object; a benign keepsake, never a weapon despite its shape.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["CIRCLET", "RING"]
+      }
+    },
+    {
+      "id": "RING",
+      "scope": "global",
+      "meaning": "The third of the three regalia pieces, recovered at the CISTERN position.",
+      "guidance": "A small wearable treasure (a seal or signet piece); a benign keepsake, never a weapon.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["CIRCLET", "SCEPTER"]
+      }
+    },
+    {
+      "id": "QUEEN",
+      "scope": "global",
+      "meaning": "The bare title for the site's original, long-dead ruler, used as a possessive adjective ('the QUEEN's RING', 'the last QUEEN').",
+      "guidance": "A historical ruler or leader figure whose regalia is being recovered; a figure of the past, not a present threat.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["lethal", "weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The single recurring condition that makes the dive/entry possible, named once at the outset.",
+      "guidance": "A survivable, recurring environmental window (a tide state, a weather lull, an access schedule); never itself dangerous.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CHAR",
+      "scope": "route",
+      "meaning": "One of the four approach paths into the TIDEGATE at the very start.",
+      "guidance": "A passable, non-hazardous approach route; distinct from the other three.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic", "lethal"],
+        "distinct_from": ["ROUTE_B_CHAR", "ROUTE_C_CHAR", "ROUTE_D_CHAR"]
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "One of the four approach paths into the TIDEGATE at the very start.",
+      "guidance": "A passable, non-hazardous approach route; distinct from the other three.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic", "lethal"],
+        "distinct_from": ["ROUTE_A_CHAR", "ROUTE_C_CHAR", "ROUTE_D_CHAR"]
+      }
+    },
+    {
+      "id": "ROUTE_C_CHAR",
+      "scope": "route",
+      "meaning": "One of the four approach paths into the TIDEGATE at the very start (the RIVAL's own old approach).",
+      "guidance": "A passable, non-hazardous approach route; distinct from the other three.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic", "lethal"],
+        "distinct_from": ["ROUTE_A_CHAR", "ROUTE_B_CHAR", "ROUTE_D_CHAR"]
+      }
+    },
+    {
+      "id": "ROUTE_D_CHAR",
+      "scope": "route",
+      "meaning": "The fourth, trap-like approach path that always ends in an immediate setback ('Taken by the Undertow').",
+      "guidance": "A tempting-looking but genuinely unsafe-feeling shortcut; still non-lethal in outcome (the ending is an aborted dive, never death).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic", "lethal"],
+        "distinct_from": ["ROUTE_A_CHAR", "ROUTE_B_CHAR", "ROUTE_C_CHAR"]
+      }
+    },
+    {
+      "id": "TIDEGATE",
+      "scope": "route",
+      "meaning": "The bare name for the first waypoint/hub of the site, just inside the entrance.",
+      "guidance": "A short name for a gated or mechanized entry feature; passable, not a death-trap.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["toxic", "lethal"],
+        "distinct_from": ["THRONE", "RELIQUARY", "CISTERN", "OBSERVATORY"]
+      }
+    },
+    {
+      "id": "TIDEGATE_TITLE",
+      "scope": "ending",
+      "meaning": "A short, ending-title form of TIDEGATE, used only in the setback ending title 'Pinned at the TIDEGATE_TITLE'.",
+      "guidance": "The same entry-feature concept as TIDEGATE, in its shortest ending-title form.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["lethal", "weapon"],
+        "distinct_from": ["THRONE_TITLE"]
+      }
+    },
+    {
+      "id": "THRONE",
+      "scope": "route",
+      "meaning": "The bare name for the second waypoint/hub of the site, where CIRCLET is recovered.",
+      "guidance": "A short name for a ceremonial hall or dais; passable, not a death-trap.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["toxic", "lethal"],
+        "distinct_from": ["TIDEGATE", "RELIQUARY", "CISTERN", "OBSERVATORY"]
+      }
+    },
+    {
+      "id": "THRONE_TITLE",
+      "scope": "ending",
+      "meaning": "A short, ending-title form of THRONE, used only in the setback ending title 'Outraced at the THRONE_TITLE'.",
+      "guidance": "The same ceremonial-hall concept as THRONE, in its shortest ending-title form.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": ["lethal", "weapon"],
+        "distinct_from": ["TIDEGATE_TITLE"]
+      }
+    },
+    {
+      "id": "RELIQUARY",
+      "scope": "route",
+      "meaning": "The bare name for the third waypoint/hub of the site, where SCEPTER is recovered.",
+      "guidance": "A short name for a vault or storehouse of relics; passable, not a death-trap.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["toxic", "lethal"],
+        "distinct_from": ["TIDEGATE", "THRONE", "CISTERN", "OBSERVATORY"]
+      }
+    },
+    {
+      "id": "CISTERN",
+      "scope": "route",
+      "meaning": "The bare name for the fourth waypoint/hub of the site, where RING is recovered.",
+      "guidance": "A short name for a large water-storage or reservoir chamber; passable, not a death-trap.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["toxic", "lethal"],
+        "distinct_from": ["TIDEGATE", "THRONE", "RELIQUARY", "OBSERVATORY"]
+      }
+    },
+    {
+      "id": "OBSERVATORY",
+      "scope": "route",
+      "meaning": "The bare name for the fifth and final waypoint/hub of the site, where the RIVAL makes a last stand and the ascent begins.",
+      "guidance": "A short name for a domed or instrument-filled chamber with a way up to the surface; passable, not a death-trap.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["toxic", "lethal"],
+        "distinct_from": ["TIDEGATE", "THRONE", "RELIQUARY", "CISTERN"]
+      }
+    },
+    {
+      "id": "MOTIF_GALLERY",
+      "scope": "track",
+      "meaning": "One of seven recurring filler-passage motifs used across the many dead-end side-branches; this one names a submerged, statue-lined hall.",
+      "guidance": "A benign, passable underwater passage feature; the branches that use it always end in a non-lethal setback, never death.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal"],
+        "distinct_from": ["MOTIF_CRAWL", "MOTIF_MARCH", "MOTIF_STAIR", "MOTIF_VAULT", "MOTIF_SURGE", "MOTIF_HALL"]
+      }
+    },
+    {
+      "id": "MOTIF_CRAWL",
+      "scope": "track",
+      "meaning": "One of seven recurring filler-passage motifs; this one names a narrow, sediment-choked crawlspace.",
+      "guidance": "A benign, passable tight passage feature; the branches that use it always end in a non-lethal setback, never death.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal"],
+        "distinct_from": ["MOTIF_GALLERY", "MOTIF_MARCH", "MOTIF_STAIR", "MOTIF_VAULT", "MOTIF_SURGE", "MOTIF_HALL"]
+      }
+    },
+    {
+      "id": "MOTIF_MARCH",
+      "scope": "track",
+      "meaning": "One of seven recurring filler-passage motifs; this one names a long, ward-humming processional corridor.",
+      "guidance": "A benign, passable corridor feature; the branches that use it always end in a non-lethal setback, never death.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal"],
+        "distinct_from": ["MOTIF_GALLERY", "MOTIF_CRAWL", "MOTIF_STAIR", "MOTIF_VAULT", "MOTIF_SURGE", "MOTIF_HALL"]
+      }
+    },
+    {
+      "id": "MOTIF_STAIR",
+      "scope": "track",
+      "meaning": "One of seven recurring filler-passage motifs; this one names a descending stairwell.",
+      "guidance": "A benign, passable descending-stair feature; the branches that use it always end in a non-lethal setback, never death.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal"],
+        "distinct_from": ["MOTIF_GALLERY", "MOTIF_CRAWL", "MOTIF_MARCH", "MOTIF_VAULT", "MOTIF_SURGE", "MOTIF_HALL"]
+      }
+    },
+    {
+      "id": "MOTIF_VAULT",
+      "scope": "track",
+      "meaning": "One of seven recurring filler-passage motifs; this one names a partly-collapsed storage vault.",
+      "guidance": "A benign, passable vault/chamber feature; the branches that use it always end in a non-lethal setback, never death.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal"],
+        "distinct_from": ["MOTIF_GALLERY", "MOTIF_CRAWL", "MOTIF_MARCH", "MOTIF_STAIR", "MOTIF_SURGE", "MOTIF_HALL"]
+      }
+    },
+    {
+      "id": "MOTIF_SURGE",
+      "scope": "track",
+      "meaning": "One of seven recurring filler-passage motifs; this one names a strong current/surge feature.",
+      "guidance": "A benign-but-forceful current feature; the branches that use it always end in a non-lethal setback, never death.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal"],
+        "distinct_from": ["MOTIF_GALLERY", "MOTIF_CRAWL", "MOTIF_MARCH", "MOTIF_STAIR", "MOTIF_VAULT", "MOTIF_HALL"]
+      }
+    },
+    {
+      "id": "MOTIF_HALL",
+      "scope": "track",
+      "meaning": "One of seven recurring filler-passage motifs; this one names a flooding, ceiling-failing hall.",
+      "guidance": "A benign-but-alarming flooding-hall feature; the branches that use it always end in a non-lethal setback, never death.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": ["lethal"],
+        "distinct_from": ["MOTIF_GALLERY", "MOTIF_CRAWL", "MOTIF_MARCH", "MOTIF_STAIR", "MOTIF_VAULT", "MOTIF_SURGE"]
+      }
+    }
+  ]
+}

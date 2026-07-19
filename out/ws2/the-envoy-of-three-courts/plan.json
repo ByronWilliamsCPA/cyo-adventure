@@ -1,0 +1,324 @@
+{
+  "beats": {
+    "n_start": "{CITY} on {RIVER}, the eve of summit day; you, drawn in {SELECTION_RITE}, are this year's {ROLE_TITLE}, the one young citizen who serves the river summit; {RIVER} runs low and brown under {BRIDGE}, barges sit aground at {HARBOR_FLATS}, and tomorrow the three courts that share the city, {ROUTE_A_COURT}, {ROUTE_B_COURT}, and {ROUTE_C_COURT}, meet at {SUMMIT_VENUE} over one question: {MYSTERY_Q}",
+    "n_rules": "{CHANCELLOR}, who will chair the summit, swears you in beneath the great bells and teaches you the envoy's three rules: carry messages truly, keep your ears open and your word good, serve the city and not one court; he shows you {ACCORD}, sixty years old, {ACCORD_PAGE} damaged and disputed, and lays out tomorrow: dawn, noon, and dusk sessions, each opened by a turn of {TIMEKEEPER}",
+    "n_sort": "{CHANCELLOR} lays three letters of attachment on the bench and names each: {ROUTE_A_COURT}, {ROUTE_A_DOMAIN}, its delegation led by {ROUTE_A_LEAD}, {ROUTE_A_LEAD_TRAIT}, whose {ROUTE_A_PROBLEM}; {ROUTE_B_COURT}, {ROUTE_B_DOMAIN}, led by {ROUTE_B_LEAD}, {ROUTE_B_LEAD_TRAIT}, whose {ROUTE_B_PROBLEM}; {ROUTE_C_COURT}, {ROUTE_C_DOMAIN}, under {ROUTE_C_LEAD}, {ROUTE_C_LEAD_TRAIT}, keeper of {ACCORD_PAGE}; each delegation needs its young envoy from tonight until the last bell, the courts will not share you, and {CHANCELLOR} says the choosing is yours alone",
+    "t_hall": "{ROUTE_A_HALL} smells of tar and ledger ink; {ROUTE_A_LEAD} sizes you up and hands you a runner's sash; out the window {HARBOR_FLATS} shows its mud like a bared secret, barges heeled over on their sides; if the summit fails, she says plainly, the harbor starves first, and she does not intend to let it",
+    "t_walk": "{ROUTE_A_LEAD} walks you down the quays naming every hull and what it carries; she tells you {CHANCELLOR} is sending his draft compromise to all three courts tonight by {COURIER}; near midnight, shouts rise from {BRIDGE}, where the harbor watch has stopped a limping courier under the lamps",
+    "t_bridge": "midnight on {BRIDGE}: {COURIER} leans on the split rail, ankle turned, and the seal on the chancellor's letter hangs torn; the watchman's lantern swings from face to face and somebody mutters the word {ROUTE_A_RUMOR}; three things could use doing and there is one of you",
+    "t_a1": "you stay at {COURIER}'s elbow and listen: he slipped on the wet steps, caught the rail, felt the seal tear on something sharp; his voice shakes but his story holds together; the watchman writes it down slowly while the crowd on the bridge grows, and the whisper of {ROUTE_A_RUMOR} grows with it",
+    "t_a2": "dawn session at {SUMMIT_VENUE}: {CHANCELLOR} turns {TIMEKEEPER} and asks for grievances; {ROUTE_A_LEAD} rises and accuses {ROUTE_B_COURT} of taking the river with their new channels; {ROUTE_B_LEAD} answers quietly that his orchards are browning too; the shouting swallows the rest and {CHANCELLOR} suspends the session until noon",
+    "t_a3": "morning on the quays: the story of the torn seal has beaten you here, retold worse at every mooring; barge crews say {ROUTE_B_COURT} opened the chancellor's letter, or {ROUTE_C_COURT} wrote two versions of it; you know what you heard from {COURIER} himself, which makes every whisper itch",
+    "t_a4": "{ROUTE_A_DEPUTY}, {ROUTE_A_LEAD}'s deputy, pulls you behind a stack of crab pots: the captains are ready to believe {ROUTE_B_COURT} tampered with the letter, and one good push would put the whole harbor at {ROUTE_A_LEAD}'s back by noon; all {ROUTE_A_DEPUTY} asks of the envoy who stood on that bridge is to let {TA_GATE} stand today",
+    "t_a5": "you tell {ROUTE_A_LEAD} {COURIER}'s account, the wet steps, the nail, the accidental tear; she listens without blinking and says the harbor argues for the river, not with lies; at noon the courts lay the accord copies side by side and {ACCORD_PAGE} is bared; then, mid-argument, {FLOOD_SIGNAL} begins to ring",
+    "t_a6": "{FLOOD_SITE} has jammed and water is backing toward {LOW_QUARTER}; {ROUTE_A_LEAD} is up in one motion, sending crews; she gives her envoy a choice of posts: the sluice gang needs runners at the water, and the tally room needs hands to ready {TA_TALLY} before the dusk session",
+    "t_a7": "{FLOOD_SITE}: brown water piling, {ROUTE_A_COURT} sailors and {ROUTE_B_COURT} wardens hauling the same rope; the jam comes up in armfuls of {DEBRIS_CAUSE}, no sabotage at all; and as the pool drains you glimpse, below the gate, {GAUGE} furred with silt",
+    "t_a8": "dusk session, one hourglass turn late; the hall smells of river mud off everyone's boots; {CHANCELLOR} calls for witnesses to the day, the bridge, the sluice, and the state of {ACCORD}, before any signing can start; {ROUTE_A_LEAD} catches your eye and nods you forward",
+    "t_a9": "you take the witness step with the envoy's sash straight; the room is a wall of faces, {ROUTE_A_LEAD}'s steady among them; you have three true things to tell: what {COURIER} said on the bridge at midnight, what the debris looked like coming out of the sluice, and {GAUGE} you saw under the gate",
+    "t_ae1": "you tell it plainly and the story of {ROUTE_A_RUMOR} dies in the room; {GAUGE} explains the drifted measures better than any accusation; {CHANCELLOR} steers the courts to terms, rebuild the gauge as a public one, share the dredging, water the groves at night; {ROUTE_A_LEAD} tells the bench the harbor is proud to have lent the city its envoy",
+    "t_a10": "the tally room: you and two clerks pull {TA_TALLY}; the numbers keep saying the same unwelcome thing, the river began dropping weeks before {ROUTE_B_COURT} ever opened their channels; whatever is wrong with {RIVER} started earlier and quieter than any feud",
+    "t_a11": "dusk session, one turn late; {ROUTE_A_LEAD} reads your log page to the hall, dates and drafts and nothing else; {ROUTE_B_LEAD} confirms the orchard wells match it; {CHANCELLOR} says evidence like this deserves measuring rather than arguing, and asks the courts what they mean to do with the truth",
+    "t_ae2": "no accord is signed tonight; instead the three courts order a joint survey of {RIVER} and {GAUGE}, its findings to be read publicly next month; it is not the ending anyone pictured at dawn, but it is honest ground; {ROUTE_A_LEAD} says slow water still reaches the sea, and has your log page entered into the record",
+    "t_a12": "you look away; by noon the quays believe {ROUTE_B_COURT} tore the seal, and the noon session curdles, captains jeering from the gallery while {ACCORD_PAGE} is shown; {ROUTE_B_LEAD} stops answering questions at all; then {FLOOD_SIGNAL} rings and everyone is running",
+    "t_a13": "at {FLOOD_SITE} the rumor got there first: {ROUTE_A_COURT} haulers and {ROUTE_B_COURT} wardens grip the same rope like they would rather not share it, and the work goes ragged; your stomach knows whose push started this; {ROUTE_A_LEAD} is ten steps away, directing crews through the spray",
+    "t_a14": "{ROUTE_A_LEAD} goes very still, then says torn sails mend and torn trust takes longer, and marches you down the rope line to tell the captains {COURIER}'s true story yourself, twice, three times, until the gangs pull like one crew again; the jam comes up as plain {DEBRIS_CAUSE}",
+    "t_a15": "dusk, one turn late: {ROUTE_A_LEAD} stands and corrects the record herself, the harbor spread a false story and the harbor takes it back; {CHANCELLOR} notes the correction with visible respect; the talk turns at last to the real question, the drifted measures of a tired old {ACCORD}",
+    "t_ae3": "the courts sign a narrower accord tonight, rebuild {GAUGE} first and settle the shares at next season's summit, and {CHANCELLOR} credits the correction that made calm possible; {ROUTE_A_LEAD} tells you the hardest cargo she ever carried was an apology, and that you carried yours to the right dock in time",
+    "t_a16": "the rumor wins the rope line: a {ROUTE_B_COURT} warden is shoved, shovels drop, and grown folk have to be hauled apart by grayer grown folk while the water keeps rising; the jam clears late and ugly, and the dusk session opens with mud on everyone and trust on no one",
+    "t_ae4": "dusk collapses under too much anger and too little daylight; {CHANCELLOR} closes the summit without an accord, but before the hall empties he enters {COURIER}'s true account into the record, with you named as the bridge witness who confirmed it at last; next season starts from the truth, {ROUTE_A_LEAD} says on the dark walk home, thanks to that much, and she leaves the rest unsaid",
+    "t_b1": "you sprint the quay and hammer on {ROUTE_A_LEAD}'s door; she comes in sea boots, questions the watch herself, and has the letter's arrival written down then and there, witnessed by a {ROUTE_C_COURT} clerk and a {ROUTE_B_COURT} carter pulled off the street; whatever the seal looks like, she says, the record will be straight",
+    "t_b2": "dawn session: {CHANCELLOR} turns {TIMEKEEPER}; {ROUTE_A_LEAD} accuses {ROUTE_B_COURT} of overdrawing the river, but when {ROUTE_A_RUMOR} first surfaces she reads the bridge record aloud and flattens it; the shouting ends the session anyway, yet you notice {CHANCELLOR} mark something in his notes with approval",
+    "t_b3": "back at {ROUTE_A_HALL}, {ROUTE_A_LEAD} lays two errands on the chart table and says an envoy should choose work the way a pilot chooses water, by where the hull actually sits; {ROUTE_C_COURT} have asked for {TB_TALLY_BOOK}, and {HARBOR_FLATS} needs its grounded barges measured before noon",
+    "t_b4": "{TB_TALLY_BOOK} is the harbor's sworn record of drafts and cargoes, wanted at {SUMMIT_VENUE} for checking against {ACCORD}; the barge measuring is cold mud work with {ROUTE_A_LEAD} herself, hunting exactly how far {RIVER} has fallen; both will matter by dusk, and there is one of you",
+    "t_b5": "{SUMMIT_VENUE} hums like a struck bell, clerks comparing accord copies at long tables; as you hand over {TB_TALLY_BOOK} you hear one mutter that {ACCORD_PAGE}s do not agree copy to copy; you carry that overheard sentence back across {BRIDGE} like a live coal in cupped hands",
+    "t_b6": "noon session: {ACCORD_PAGE} is laid bare and, just as the clerk muttered, the fair copies disagree; because your delivered {TB_TALLY_BOOK} sits open on the table, the courts can at least argue from the same harbor numbers; then {FLOOD_SIGNAL} rolls across the roofs and the hall empties at a run",
+    "t_b7": "{LOW_QUARTER}: water curling up through the drain grates, {FLOOD_SITE} jammed somewhere above; {ROUTE_A_LEAD} splits her crews without raising her voice, a sandbag line to hold the warehouse lane, and a runner chain to move true word between sluice, Hall, and harbor",
+    "t_b8": "the sandbag line: you pass weight until your arms are string, and {ROUTE_B_COURT} wardens shoulder in beside {ROUTE_A_COURT} sailors without anyone asking whose court owns which sandbag; behind you the lane stays dry; ahead, the shout goes up that the jam is {DEBRIS_CAUSE}, coming clear",
+    "t_b8b": "dusk, one turn late, mud to every knee in the hall; {ROUTE_A_LEAD} speaks last and shortest: the river does not care whose water it is, she says, and today the line held because every court held it; {CHANCELLOR} lets the words sit a moment before he opens the terms",
+    "t_be1": "the accord comes together like the sandbag line, one weight at a time: rebuild {GAUGE}, share the dredging, night water for the groves, retimed drafts for the barges; {ROUTE_A_LEAD} signs first and hands you the pen to carry to the other courts, which is envoy's work, done properly, in front of everyone",
+    "t_b9": "you run the chain, sluice to Hall to harbor and back, carrying counts and orders; on your third leg the sluice keeper hands you the report that matters, the jam is {DEBRIS_CAUSE}, no cut ropes and no sabotage, and you put it into {CHANCELLOR}'s own hand before dusk",
+    "t_be2": "the dusk session opens with your carried report read aloud, and the sabotage talk dies before it can poison the terms; the courts initial a working accord and set the full signing for {GAUGE}'s first public reading; {CHANCELLOR} notes for the record that a summit runs on true feet",
+    "t_b10": "{HARBOR_FLATS} at low water: you and {ROUTE_A_LEAD} measure heeled barges with rod and line while the mud sucks at your boots; {TB_FIGURES} keep saying the same unwelcome thing, the river began falling weeks before {ROUTE_B_COURT} ever opened their new channels; {ROUTE_A_LEAD} reads your column twice and goes quiet",
+    "t_b11": "with {ROUTE_A_LEAD} called ahead to the Hall, {ROUTE_A_DEPUTY} catches you at the sea wall and holds out a hand for {TB_FIGURES}: those numbers soften the case against {ROUTE_B_COURT}, {ROUTE_A_DEPUTY} says, and the harbor cannot afford soft today; better {TB_GATE} stays hidden until the summit is won",
+    "t_b12": "{ROUTE_A_LEAD} reads {TB_FIGURES}, jaw tight, and says the harbor does not trim its soundings; at noon she presents them herself alongside {ACCORD_PAGE}, which costs her case and buys her something better; when {FLOOD_SIGNAL} rings she leads her crews out with her head up",
+    "t_b12b": "at {FLOOD_SITE}, {ROUTE_B_LEAD} works the debris line across from {ROUTE_A_LEAD}, and between hauls the two of them speak, actually speak, about wells and drafts and dry years; the jam comes up as plain {DEBRIS_CAUSE}; you watch two old rivals discover they have been losing the same river",
+    "t_b12c": "dusk, one turn late: {ROUTE_A_LEAD} and {ROUTE_B_LEAD} present {TB_FIGURES} and the orchard well records together, two courts telling one story between them; {CHANCELLOR} turns {TIMEKEEPER} and observes that for the first time all day the summit is measuring instead of blaming",
+    "t_be3": "the accord is signed on shared numbers: a rebuilt public {GAUGE} at {FLOOD_SITE}, shared dredging, night watering, retimed drafts; {ROUTE_A_LEAD} tells the hall that the envoy reminded the harbor of its own law, sound honestly and sail safely; outside, {RIVER} slides on toward the sea, unbothered and forgiven",
+    "t_b13": "noon session: a {ROUTE_C_COURT} surveyor presents {HARBOR_FLATS} soundings anyway, taken independently that morning, and asks why the harbor's own figures were not offered; {ROUTE_A_LEAD} is blindsided in front of the courts, {ROUTE_A_DEPUTY} studies the floor, and {TB_GATE} burns like a stone; then {FLOOD_SIGNAL} interrupts everything",
+    "t_b14": "the flood work swallows the afternoon, sandbags and shouted counts, but the question is waiting when the water drops; before dusk, {ROUTE_A_LEAD} gathers her delegation on {SUMMIT_VENUE}'s steps to settle what the harbor will say about {TB_GATE}",
+    "t_b15": "{ROUTE_A_LEAD} takes the page without a word, walks in, and opens dusk by apologizing to the courts for her own house holding back soundings; it costs her, visibly; {CHANCELLOR} accepts the correction, the session steadies, and the argument finally turns to the measures themselves, though the daylight is nearly spent",
+    "t_be4": "too little hourglass remains for a full accord, so the courts order a joint survey and set a signing date, the harbor's late figures first into the new public ledger; on the walk home {ROUTE_A_LEAD} says the tide went out on the deal but the harbor got its name back, and that was the dearer cargo",
+    "t_b16": "dusk runs aground on distrust: if the harbor sat on its own soundings, the other courts ask, what else sits unoffered; {ROUTE_A_LEAD} fights for the terms stubbornly, but the room has hardened around her, and the hourglass runs out while the question is still circling",
+    "t_be5": "the summit closes without an accord; that night {ROUTE_A_LEAD} finds {TB_GATE} anyway, reads them twice by lamplight, and enters them in the harbor record under the next day's date; next year, she says, the truth goes first through the door; she does not scold you twice, but then she does not need to",
+    "t_c1": "you crouch by the rail with the watchman's lantern: {TC_THREAD} snagged where the rail split, the same weave as {COURIER}'s cloak; the tear in the seal matches the nail's bite exactly; you have the watchman log {TC_THREAD} and the hour, with your name as witness",
+    "t_c2": "dawn session: when {ROUTE_A_RUMOR} first slithers up the benches, {ROUTE_A_LEAD} reads the watch log aloud, {TC_THREAD}, hour, envoy's witness, and the whisper loses its legs; the session still breaks on the water question, {ROUTE_A_LEAD} accusing and {ROUTE_B_LEAD} denying, the hourglass turned and abandoned",
+    "t_c3": "mid-morning {COURIER} finds you on the quay, walking on a wrapped ankle, to say thank you; the letter went on to all three courts and {ROUTE_C_COURT} re-waxed the seal at their own door before witnesses; a small thing set straight, he says, but summits are stacked out of small things",
+    "t_c4": "two summonses arrive with one bell: {CHANCELLOR} asks the bridge witness to sit beside the chair for the day, a neutral post in every court's sight, and {ROUTE_A_LEAD} wants her sworn envoy at {ROUTE_A_COURT} bench where you were attached; {ROUTE_A_DEPUTY} mutters that nobody can stand in two courts at once",
+    "t_c5": "noon from beside the chair: you see the summit the way {CHANCELLOR} sees it, three tired courts each certain it is the honest one; {ACCORD_PAGE} is laid bare, fair copies disagreeing; when {FLOOD_SIGNAL} rings, {CHANCELLOR} keeps his seat one breath longer than everyone else, watching who runs where",
+    "t_c6": "{CHANCELLOR} needs two things at once during the scare and has one envoy: a steady voice at {SUMMIT_VENUE}'s door relaying the chair's orders both ways, or a pair of young eyes at {FLOOD_SITE} itself to bring back what is actually true down there",
+    "t_c7": "you hold the door and pass the chair's orders both ways, pumps to {LOW_QUARTER}, the tally of hands by court, the extra hourglass turn announced to the benches; through the doorway you watch three courts blur into one dripping crew, and you keep the ledger of who helped, which is everyone",
+    "t_c8": "dusk: {CHANCELLOR} opens by reading your door ledger aloud, every court's hands at the sluice, then asks you to state the bridge facts one last time for the record; a neutral witness, he tells the hall over his hourglass, is the rarest water in {CITY}",
+    "t_ce1": "on straight facts and a shared afternoon the courts settle terms by full dark: a public {GAUGE}, shared dredging, night water, honest soundings; {CHANCELLOR} signs last and tells you that every accord is only paper, and what holds is the witnessing; he says, turning the hourglass flat, that you witnessed well",
+    "t_c9": "you reach {FLOOD_SITE} as the jam gives way, {DEBRIS_CAUSE} and no cut ropes anywhere; below the draining gate you see it plainly and sketch it fast, {GAUGE} silted to the collar, the accord's own measure drowned in mud for years",
+    "t_c10": "{CHANCELLOR} studies your sketch of {GAUGE} a long time and says quietly that the city has been arguing over a ruler nobody could read; at dusk he sets the sketch before the courts and asks whether they would rather be right tonight or measured rightly forever",
+    "t_ce3": "the courts choose measured rightly: no full accord tonight, but a binding order to raise and rebuild {GAUGE}, signatures set for its first public reading; {CHANCELLOR} enters your sketch into the record and tells you that some days the bravest thing a summit can do is wait for the truth to dry out",
+    "t_c11": "you keep {ROUTE_A_COURT} bench, and {ROUTE_A_LEAD} puts you to proper envoy work between sessions, carrying the harbor's numbers to {ROUTE_C_COURT} and their queries back; at noon {ACCORD_PAGE} is laid bare; when {FLOOD_SIGNAL} rings, {ROUTE_A_LEAD} sends her crews and keeps her runner, you, at her side",
+    "t_c12": "the warehouse lane: sandbags, shouted counts, the harbor holding its own doorstep while word comes down the runner chain that the sluice jam is {DEBRIS_CAUSE} coming clear; {ROUTE_A_LEAD} works beside you and asks, between bags, exactly what you saw and logged on that bridge at midnight",
+    "t_c13": "dusk, one turn late: {ROUTE_A_LEAD} cites your bridge log to close {ROUTE_A_RUMOR} for good, then lays out the harbor's case; loyalty, she tells the bench with a hand on your shoulder, is not saying what your court wants, it is bringing your court the truth while there is still time to use it",
+    "t_ce2": "the courts initial a working accord, gauge first, full terms at next season's summit, and {ROUTE_A_LEAD} writes into the harbor log that this year's {ROLE_TITLE} served {ROUTE_A_COURT} best by staying exactly honest; you walk home along a river that has not changed beside a city that slightly has",
+    "g_road": "the orchard road out to {ROUTE_B_HALL} at dusk before the summit: terraces stepped up the valley, leaves curling early, {GB_CISTERN} showing their rings; {ROUTE_B_LEAD} meets you at the lodge with tea and no small talk: {ROUTE_B_COURT} dug new channels this spring because the rains failed twice, he says, and now the whole city says thief",
+    "g_gate": "{ROUTE_B_LEAD} walks you along the channels by lantern light: clay-lined, hand-dug, opened to save the young trees; he shows you the sluice-fed mains and the numbered gates with their pins; at {GA_GATE_NUM} the pin sits crooked in its hasp, as if lifted once and reset, and {ROUTE_B_LEAD}, ahead with the lantern, does not see it",
+    "g_walk": "from {ROUTE_B_HALL} you can see {BRIDGE} lamps across the fields; near midnight {COURIER} hurries over the bridge, lantern guttering, and goes down hard on the wet steps; he is up again, limping on toward {SUMMIT_VENUE}, before you can even call out; the chancellor's letters, {ROUTE_B_LEAD} murmurs, go out tonight",
+    "g_night": "the fallen {COURIER} limps on with his lantern failing and two fields still to cross; you could catch him with the lodge lantern and see him safely to {SUMMIT_VENUE}'s door, or wake {ROUTE_B_LEAD} so {ROUTE_B_COURT} can send proper word of the fall ahead to the Bell watch; the cold will not hold the choice open long",
+    "g_a1": "you catch {COURIER} at the field stile: ankle swelling, and the chancellor's seal torn where it caught a nail on the split bridge rail, a gray thread of his own cloak left behind on the metal; you lend him your shoulder as far as {SUMMIT_VENUE}'s door and hear the night clerk log him in",
+    "g_a2": "dawn session from {ROUTE_B_COURT} bench: {CHANCELLOR} turns {TIMEKEEPER}; {ROUTE_A_LEAD} stands and accuses {ROUTE_B_COURT} of taking the river with their new channels, and half the gallery growls along with her; {ROUTE_B_LEAD} answers only that his orchards are browning too; the shouting drowns the rest and {CHANCELLOR} suspends until noon",
+    "g_a3": "in the market you hear the torn seal retold as theft, {ROUTE_B_COURT} opened the chancellor's letter, folk are saying, {ROUTE_B_COURT} tore the seal; you stood at the stile and know better; back at the channels, {ROUTE_B_CHAR} the under-warden is waiting for you alone, twisting her hat in her hands",
+    "g_a4": "{ROUTE_B_CHAR} confesses to you alone: in the worst dry week she lifted {GA_GATE_NUM} without leave, one night, to save the young trees, and reset the pin after; with the whole city already calling {ROUTE_B_COURT} thieves, she begs you to keep {GA_GATE} just until the summit is over, one day of silence, envoy, one day",
+    "g_a5": "{ROUTE_B_CHAR} tells {ROUTE_B_LEAD} with you standing beside her; he is quiet long enough for the orchard to hear it, then thanks her for the truth and grieves the timing; {GA_GATE_NUM} is closed and the lift logged with its dates, and {ROUTE_B_LEAD} says {ROUTE_B_COURT} will not be the court that hides things, he will disclose it at noon himself",
+    "g_a6": "noon session: {ROUTE_B_LEAD} rises first and discloses {GA_GATE_NUM} before anyone can accuse, one gate, one night, logged and closed; the hall rustles, but there is respect in the sound; then {ACCORD_PAGE} is laid bare, fair copies disagreeing, and into the middle of the argument {FLOOD_SIGNAL} begins to ring",
+    "g_a7": "{FLOOD_SITE} is jammed and backing toward {LOW_QUARTER}, and {ROUTE_B_COURT}, whose channels feed off that sluice, are watched by every eye on the bank; {ROUTE_B_LEAD} needs runners three ways at once and trusts his envoy to pick the post that needs you most",
+    "g_a8": "at {FLOOD_SITE} you haul rope beside sailors who eyed {ROUTE_B_COURT} all day; the jam comes up as {DEBRIS_CAUSE}, no cut ropes anywhere; and as the pool drains a gray-bearded {ROUTE_A_COURT} hauler whistles low: below the gate, silted to the collar, sits {GAUGE}",
+    "g_a9": "dusk session, one turn late, mud on every bench; when {CHANCELLOR} calls for what the day taught the city, {ROUTE_B_LEAD} sends you, the envoy who stood in the water, to the witness step: the debris, the shared rope, and {GAUGE} that nobody has been able to read for years",
+    "g_ae1": "your witness turns the summit from blame to measuring: the courts agree to raise and rebuild {GAUGE} as a public one, share the dredging, and water the groves at night; {ROUTE_B_LEAD} signs for {ROUTE_B_COURT} and tells you an orchard grows on patience and true measure, and so, it turns out, does a city",
+    "g_a10": "you walk the line with the gate book: every gate checked, pinned, and signed, {GA_GATE_NUM}'s closure fresh on its page; twice you turn away angry strangers hunting sabotage with lanterns, politely, with the book open; when the water settles, {ROUTE_B_COURT} ledger shows every drop accounted, dated, and initialed",
+    "g_a11": "dusk: when a {ROUTE_A_COURT} captain rises to suggest {ROUTE_B_COURT} used the scare to draw water, {ROUTE_B_LEAD} does not argue; he passes your gate book down the bench and lets the courts read it page by page until the muttering dies; honesty at noon, he murmurs beside you, is why the book is believed at dusk",
+    "g_ae2": "the courts initial a working accord, rebuild {GAUGE} first and set the shares by its first honest readings, and {ROUTE_B_COURT} walk out with their name scrubbed clean by their own bookkeeping; at the lodge {ROUTE_B_LEAD} tells the wardens their envoy guarded the orchard with a pen, which is how it is done in a city of courts",
+    "g_a12": "{ROUTE_B_LEAD} writes fast on the lodge table: {ROUTE_B_COURT} offer night watering, metered gates, and a share of the dredging costs, all of it contingent on a rebuilt public {GAUGE}; you run the offer through streets loud with flood work, past the sandbag lines, and put it into the hands of the chancellor's clerk before the dusk bell",
+    "g_a13": "dusk, one turn late: {CHANCELLOR} opens by reading {ROUTE_B_COURT} offer aloud, the first plain proposal of the whole summit, and the room changes temperature; {ROUTE_A_LEAD} stands, allows that the harbor could retime its barge drafts, and suddenly the courts are trading terms instead of accusations",
+    "g_ae3": "built on {ROUTE_B_COURT}'s opening bid, the courts initial an accord by lamplight and set the signing for {GAUGE}'s first reading; {ROUTE_B_LEAD} tells you an envoy's legs matter as much as an envoy's ears, and that tonight {ROUTE_B_COURT} led the city by offering first; the orchard road home smells of rain finally coming",
+    "g_a14": "you give {ROUTE_B_CHAR} your silence, and at noon it spends itself: a {ROUTE_C_COURT} surveyor reports fresh scratches on {GA_GATE_NUM}'s pin and asks {ROUTE_B_COURT} to explain, {ROUTE_B_LEAD} turns to his own bench blindsided, {ROUTE_B_CHAR} goes pale as paper beside you, and before anyone can answer anything, {FLOOD_SIGNAL} begins to ring",
+    "g_a15": "the scare falls hardest on {ROUTE_B_COURT}: every eye at the sluice asks whether the court that lifted a gate in secret also jammed a sluice; you haul debris beside {ROUTE_B_CHAR}, who will not look up from the rope, while {ROUTE_B_LEAD} carries the suspicion of the whole bank on his level voice",
+    "g_a16": "in the lull before dusk, {ROUTE_B_LEAD} gathers the lodge and asks plainly: does anyone know why {GA_GATE_NUM}'s pin was scratched; {ROUTE_B_CHAR}'s breath goes thin beside you; {GA_GATE} sits on your tongue like a pebble, and the hourglass at {SUMMIT_VENUE} is already being carried to the bench",
+    "g_a17": "you tell it, and {ROUTE_B_CHAR}, released, tells the rest herself; {ROUTE_B_LEAD}'s disappointment is a weather that passes; at dusk he discloses {GA_GATE_NUM} late, with {ROUTE_B_CHAR} standing beside him and you named as the envoy who would not carry a hidden thing one field farther",
+    "g_ae4": "the courts, wary now, sign nothing tonight; they order a joint survey of gates and {GAUGE} with {ROUTE_B_COURT} records open to all, and set a new summit for the month's end; {ROUTE_B_CHAR} keeps her post on probation and grips your hand hard at the lodge door; a promise to hide, {ROUTE_B_LEAD} says, is a seed that only grows downward",
+    "g_a18": "silence holds until dusk and then breaks everything at once: the surveyor presses, {ROUTE_B_CHAR} confesses in front of all three courts, too late for it to look like anything but concealment, and {ROUTE_B_COURT} case, honest on every other page, drowns in the one page it held back",
+    "g_ae5": "the summit closes without an accord; {CHANCELLOR} records {ROUTE_B_CHAR}'s confession, and at {ROUTE_B_LEAD}'s own asking he also records the envoy's kindness to a hurt courier on the summit's eve, so the record holds the whole of the day; walking home, {ROUTE_B_LEAD} says the orchard will stand one more dry season, then plants his words slowly: the hiding cost more than the water ever did",
+    "g_b1": "you wake {ROUTE_B_LEAD}; he sends a rider to the Bell watch at once, so the courier's fall on the bridge is logged by two courts before any rumor can be born crooked; a small thing, he says, pulling on his boots, but in a summit year you log the weather itself; you sleep three hours and dream of numbered gates",
+    "g_b2": "dawn session: {ROUTE_A_LEAD} accuses {ROUTE_B_COURT} of taking the river with their new channels; when {ROUTE_A_RUMOR} tries the air, {ROUTE_B_LEAD} cites the night log, courier fallen, seal torn on the rail, reported within the hour, and the whisper thins; the water question still ends in shouting, and {CHANCELLOR} suspends until noon",
+    "g_b3": "{ROUTE_B_LEAD} has two jobs and one envoy before the noon bell: ride the channel line with him, measuring the real flows against what the accusers claim {ROUTE_B_COURT} take, or help {ROUTE_B_CHAR} ready {GB_CISTERN}, {ROUTE_B_COURT}' stored rain, for a goodwill release to the starving lower river",
+    "g_b4": "gate by gate you measure: even opened wide, the new channels take less water than the harbor swears is missing; {ROUTE_B_LEAD} chalks each figure on the gate boards where anyone who walks the line may check it, and says that something upstream of everyone's certainty is wrong with the measuring itself",
+    "g_b5": "noon session: {ACCORD_PAGE} is laid bare, fair copies disagreeing; {ROUTE_B_LEAD} presents your flow figures, less taken than claimed missing, and for one blessed minute the courts frown at the same numbers instead of at each other; then {FLOOD_SIGNAL} rolls through the hall",
+    "g_b6": "at the jammed sluice {ROUTE_B_LEAD} splits his wardens: a debris crew into the water beside {ROUTE_A_COURT} sailors, and a gate crew to hold and watch the channel mouths so that no surge can be blamed on {ROUTE_B_COURT} afterward; he leaves the choice of posts to his envoy",
+    "g_b7": "between hauls you sound the backed pool with the measuring rod, and when the debris comes clear, {DEBRIS_CAUSE}, no sabotage, your rod raps something square below the gate: {GAUGE}, silted blind, the accord's own measure that no living clerk has read",
+    "g_b8": "dusk, one turn late: your flow figures, your soundings, and {GAUGE} line up like beads on one string; {ROUTE_B_LEAD} lets the numbers speak first and then asks the courts a warden's question, whether they mean to keep farming blame or to start measuring water",
+    "g_be1": "the accord is signed around {ROUTE_B_COURT} arithmetic: raise {GAUGE}, read it publicly, night water for the orchards, shared dredging for the channel; {ROUTE_A_LEAD} shakes {ROUTE_B_LEAD}'s hand like a woman testing a fence post, and {ROUTE_B_LEAD} tells you the city was saved by a measuring rod and the patience to use it twice",
+    "g_b9": "you hold the gates, pinned, watched, and logged, while the surge shoulders past and {LOW_QUARTER} stays dry; twice a lantern party comes hunting {ROUTE_B_COURT} sabotage, and twice the open gate book turns them polite; when the jam clears as plain {DEBRIS_CAUSE}, your log shows the channels never moved",
+    "g_b9b": "dusk: when suspicion reaches for {ROUTE_B_COURT} one last time, the gate log answers it page by page, every pin, every hour, every initial; {CHANCELLOR} remarks that of all the day's evidence the dullest book is the most convincing, and asks the courts to talk terms at last",
+    "g_be2": "the courts initial a truce and a working accord, gauge first and shares after, and {ROUTE_B_COURT} gate book is entered whole into the record as the summit's example of an open ledger; at the lodge, {ROUTE_B_LEAD} tells the wardens that their envoy kept the gates, and the gates kept {ROUTE_B_COURT}' good name",
+    "g_b10": "{GB_CISTERN}: {ROUTE_B_COURT}' stored rain, saved all year for the harvest festival; {ROUTE_B_LEAD} means to release a share down-city as plain goodwill, proof {ROUTE_B_COURT} do not hoard while the river runs thin; you help {ROUTE_B_CHAR} rig the release gear and count off hands for the work",
+    "g_b10b": "noon session: {ROUTE_B_LEAD} announces the coming release; some benches call it neighborly and some call it a bribe, and then {ACCORD_PAGE} steals the argument entirely; when {FLOOD_SIGNAL} rings, {ROUTE_B_LEAD} realizes aloud that a goodwill release into a backing river must now be timed exactly right or not at all",
+    "g_b11": "{ROUTE_B_CHAR}, hauling on the release gear, says the paperwork can catch up later, open {GB_GATE} now while the sluice pool is dropping and the gesture still lands today; the proper way is slower, log the release, notify {ROUTE_C_COURT}, and open on a witnessed signal, and the daylight is spending itself while you decide",
+    "g_b12": "the logged release opens on {ROUTE_C_COURT}' signal just as the cleared sluice can take it, and the fresh cistern water rides the drop harmlessly down-city; the sluice keeper marks the levels hour by hour into three ledgers, and {LOW_QUARTER} watches {ROUTE_B_COURT} send their festival water past their own orchards",
+    "g_b12b": "dusk, one turn late: the release is read into the record with its times and its levels, and even {ROUTE_A_LEAD} grants that water given on paper and in fact at once is a hard argument to distrust; the courts warm by degrees, like a hall filling slowly with people",
+    "g_be3": "a narrower accord is initialed tonight, {GAUGE} rebuilt first and full shares at next season's summit, and the record names {ROUTE_B_COURT} release as the turn of the day; {ROUTE_B_LEAD} tells you that generosity, logged, is called diplomacy, and that the festival will taste better for the water it gave away",
+    "g_b13": "{GB_GATE} open unlogged, and for one giddy hour it looks like generosity; then the sluice readings, already tangled by the jam, jump where no reading should, and a {ROUTE_C_COURT} surveyor asks acidly whether {ROUTE_B_COURT} are moving unrecorded water in the middle of a flood scare, which is, you realize coldly, exactly what happened",
+    "g_b13b": "{ROUTE_B_LEAD} spends the dusk hour untangling honest generosity from what the ledgers make it look like, and the accounting eats the summit's last daylight; {ROUTE_B_CHAR} owns her shortcut out loud before the courts, and {ROUTE_B_LEAD} will not let her carry it alone: the warden signs for every gate, he says, even the kind ones",
+    "g_be4": "the summit adjourns without an accord; by lamplight {ROUTE_C_COURT} re-tally the levels and enter the release, hours late, as the gift it truly was, and {CHANCELLOR} sets a new summit for the month's end, writing one line the whole city repeats by morning: a good deed done in the dark still needs a ledger",
+    "b_hall": "{SUMMIT_VENUE} at evening: lamplit tables, ladders in the stacks, and {ROUTE_C_LEAD}, who shakes your hand like a man filing it for reference; he shows you the trouble itself, {ACCORD}, sixty years old, {ACCORD_PAGE} water-stained and torn at the fold, and its two fair copies disagreeing with each other",
+    "b_door": "midnight door duty: {COURIER} arrives limping, the chancellor's letter in hand and its seal torn; {ROUTE_C_LEAD} logs the hour, the nail-shaped tear, and {COURIER}'s account of the wet steps and the split bridge rail, then re-waxes the packet before three witnesses so no one can ever say {ROUTE_C_COURT} read it; you write the label",
+    "b_vault": "tomorrow, {ROUTE_C_LEAD} says, the courts will fight over what {ACCORD} says, so tonight {ROUTE_C_COURT} must find out what it said; the answer sleeps somewhere in the stacks, in the accord-year copy drafts or in the sluice keepers' logbooks, and there is one of you and one dawn coming",
+    "b_stacks": "two trails lead into the dark of the stacks: the copy-drafts crate from the accord year, every scribe's working sheet the fair copies were made from, or the sluice keepers' logbooks, the daily readings of {FLOOD_SITE} gauge going back a century; {ROUTE_C_LEAD} will work whichever trail you do not choose",
+    "b_c1": "dawn session happens under your feet, muffled shouting and the hourglass bell, while you and {ROUTE_C_LEAD} unlace the accord-year crate: sixty years of dust, working drafts in two different hands, margin notes by scribes long dead; {ROUTE_C_LEAD} reads the shouting below by its rhythm alone: grievances, he says, suspended until noon",
+    "b_c2": "mid-morning you find it: the water-measure clauses drafted in one hand and fair-copied in another, and where the drafts read one way, the fair copy skips {BC_LINE}; in the margin of the flawed page, small and young, a copyist's initials; {ROUTE_C_LEAD} goes very quiet, and then says the name: {ROUTE_C_CHAR}",
+    "b_c3": "{ROUTE_C_CHAR}: senior clerk of {ROUTE_C_COURT}, sixty years at the long tables, due to retire with honors at the year's end; {BC_LINE} is his, made when he was your age, and it is why the two fair copies disagree and why each court can read the page its own way; the flaw is small; the consequence is this summit",
+    "b_c4": "{ROUTE_C_CHAR} himself finds you among the drafts, reads his own young initials, and grips the crate edge with both hands; he asks for {BC_GATE}, let him retire first, he will set the record right quietly after the summit, the courts need never know whose hand slipped sixty years ago",
+    "b_c5": "{ROUTE_C_LEAD} hears it standing very straight, and then surprises you both: the record is not ours to spare ourselves, he says, but a slip is not a sin, and he sets {ROUTE_C_CHAR}, whose eyes know the accord-year hands better than anyone alive, to lead the reconstruction of the true page from his own old drafts",
+    "b_c5b": "noon session: the reconstruction, drafts pinned beside the flawed fair copy, is shown to the courts; read true, the page hangs everything on readings from {FLOOD_SITE} gauge, a gauge, somebody says slowly into the hush, that no living clerk remembers reading; and into that silence comes {FLOOD_SIGNAL}",
+    "b_c6": "the scare strikes {ROUTE_C_COURT} where they live: the archive cellar, where the records sleep below river level, and {ROUTE_C_LEAD} is needed in three places at once; he looks at his envoy and lets you choose the post",
+    "b_c7": "the cellar brigade: crates up the spiral stair hand to hand, and when {ROUTE_C_COURT} run short of hands, {ROUTE_A_COURT} sailors and {ROUTE_B_COURT} wardens fill the line without being asked; the accord-year crate rides up between a fisherman and an orchard girl, and {ROUTE_C_LEAD} remarks that this is the first shared work the summit has done",
+    "b_c8": "dusk, one turn late: the reconstruction is presented, and {ROUTE_C_CHAR} himself rises to read the correction aloud, his own sixty-year-old slip named in his own steady voice; the hall does not laugh; several very senior heads bow slightly, the way you salute a hard thing done properly",
+    "b_ce1": "with the page read true the terms nearly write themselves: rebuild the public {GAUGE} the accord always meant, share the dredging, night water, open ledgers; {ROUTE_C_CHAR} signs as witness with a steady hand, and {ROUTE_C_LEAD} tells you the archive did not save the summit, it only told the truth on time, which is the same thing",
+    "b_c9": "the sluice: debris hauled clear by mixed crews, and there below the draining gate {ROUTE_C_LEAD} points with his cane, silt to the collar, {GAUGE} the true page depends on, drowned and unread for years; you sketch it fast while he measures the silt line, both of you soaked through and neither of you caring",
+    "b_c10": "dusk: the reconstruction and your sketch tell one story between them, the accord was sound and its instrument was lost; the argument was never thief against thief, it was a city measuring with its eyes shut; {CHANCELLOR} turns {TIMEKEEPER} and asks the courts for terms that open them again",
+    "b_ce2": "the courts initial the gauge accord: raise it, rebuild it, read it publicly at every festival, the shares set by its first honest year; the signing is fixed for the first reading, and {ROUTE_C_LEAD} enters your sketch beside {ROUTE_C_CHAR}'s correction, because the flaw and the fix, he says, belong on the same shelf",
+    "b_c11": "you stay drafting with the chancellor's clerk, turning bench shout and legal growl into terms a barge captain and an orchard warden could both read aloud; the clerk works your plain sentences in between the formal ones and mutters that half of law is finding the words the anger can agree to",
+    "b_c12": "dusk: {CHANCELLOR} reads the draft terms, plain words first and formal after, and the plain words do the work, heads nodding along the benches before the jurists can even object; you watch three tired courts hear one sentence mean one thing, the same thing, for the first time all day",
+    "b_ce3": "the accord is signed in both registers, the formal copy for the shelves and the plain copy for the doors, and copies are posted at {ROUTE_A_HALL}, {ROUTE_B_HALL}, and {SUMMIT_VENUE} where anyone may read what was promised; {ROUTE_C_LEAD} tells you the archive keeps a special fondness for documents people actually understand",
+    "b_c13": "you give {ROUTE_C_CHAR} {BC_GATE}, and noon spends it cruelly: the flawed page is fought over line by line while the true drafts sit dark in their crate; suspicion, given nothing to eat, eats the courts instead; then {FLOOD_SIGNAL}, and in the cellar scramble you find {ROUTE_C_CHAR} alone, wrestling the accord-year crate toward a hiding place, water already at his shins",
+    "b_c14": "his eyes meet yours over the crate: help me set it aside, he says, just until my papers are through; the water climbs another stair; above you the brigade is calling for every pair of hands it can get",
+    "b_c15": "the brigade answers your shout; the crate goes up wet but whole, and the whole story comes up with it, drafts, {BC_LINE}, young initials; {ROUTE_C_LEAD} is cold with you for one flight of stairs and fair for all the rest; {ROUTE_C_CHAR}, wrung out, agrees the reconstruction happens tonight, late, or never",
+    "b_c16": "dusk gets the correction dripping and an hour past its moment; {CHANCELLOR} grants one extra turn of {TIMEKEEPER} so the reconstruction can be read in full; the courts, twice interrupted and once misled, listen with folded arms, believing the page now and trusting the day rather less",
+    "b_ce4": "the true page enters the record but the signatures do not: the courts adjourn to verify the drafts and will resume in a month; {ROUTE_C_CHAR}'s slip is recorded beside his sixty years of service, which is how {ROUTE_C_LEAD} insists it be written, and you are named as the envoy who shouted for help, which, he says, is the whole job, only sooner next time",
+    "b_c17": "the crate goes into the dark behind the boundary-stone shelf, and dusk goes down with the flawed page still ruling: the courts read it three ways, trust no reading, and the summit collapses politely, like a tent; within a week, you know, someone will find a water-marked crate exactly where honesty did not put it",
+    "b_ce5": "the summit fails, and days later the drafts surface anyway, as hidden things do, and the slip looks like a scheme until {ROUTE_C_LEAD}, who has guessed the shape of it, sets the record straight and retires {ROUTE_C_CHAR} with his honor bruised but whole; the archive forgives slips, {ROUTE_C_LEAD} tells you at the door, it is silences it cannot file",
+    "b_k1": "the keepers' logbooks: a century of {FLOOD_SITE} gauge readings in patient columns, and then, nineteen years back, the columns simply stop, mid-page, mid-month; dawn session mutters up through the floorboards, {ROUTE_A_LEAD} accusing and {ROUTE_B_LEAD} denying, while you hunt for the reason a river's diary just ends",
+    "b_k2": "the last keeper's final note, in a tired hand: gauge silted past reading, dredge requested again, no funds again; will measure from {BK_PIER_MARK} until the gauge is raised; and after that, nothing; nineteen years, you realize, of the city's water law hanging from an unofficial scratch on a bridge",
+    "b_k2b": "{ROUTE_C_LEAD} reads the note twice between sessions and puts on his coat: if the law has been living on a bridge pier, he says, then {ROUTE_C_COURT} had better go and pay their respects; the morning is bright and hard as the two of you cross toward {BRIDGE}",
+    "b_k3": "on the bridge {ROUTE_C_LEAD} finds {BK_PIER_MARK}, and you find something else where the rail split: {BK_THREAD}, the same weave as {COURIER}'s cloak; the seal tore here, on this nail, by accident, and you can prove it",
+    "b_k4": "two finds in one morning: {BK_PIER_MARK} that has been carrying the law, and {BK_THREAD} that clears {COURIER}; {ROUTE_C_LEAD} is already sketching the mark for the record, but {BK_GATE} is yours, and how you spend it is an envoy's own choice",
+    "b_k5": "the watch matches {BK_GATE} to cloak and nail to tear before the noon bell, and posts the finding; {ROUTE_A_RUMOR} dies at midday instead of festering; the noon session, spared one poison, argues the real one, {ACCORD_PAGE}, until {FLOOD_SIGNAL} rings and word comes that the backing pool is climbing the bridge piers",
+    "b_k6": "{BK_PIER_MARK}, the only measure the city has used for nineteen years, is going underwater while the courts still need it read against today's level; at the sluice the crews are launching a flat-bottomed boat onto the backed pool",
+    "b_k7": "you go out in the boat with a lantern and a keeper's rule, reading the mossy line against the climbing water while debris bumps the hull and the sluice crews haul {DEBRIS_CAUSE} out behind you; you call the figures and a {ROUTE_C_COURT} clerk on the bank writes them down, double-checked, signed, and splashed",
+    "b_k8": "dusk, one turn late: the keeper logs, {BK_PIER_MARK} reading, and {GAUGE} line up into one plain story, the city has been measuring its river law off a scratch, in good faith, for nineteen years; the hall goes very quiet, and {CHANCELLOR} turns {TIMEKEEPER} gently, as if it might wake something",
+    "b_ke1": "the accord is signed around your soaked figures: raise {GAUGE}, retire {BK_PIER_MARK} with honors, read the river publicly each season; {CHANCELLOR} has the last keeper's final note copied into the accord itself, so that no request for dredging is ever shelved unheard again; {ROUTE_C_LEAD} calls it the finest day of filing in his life",
+    "b_k9": "you wait for still water, and when the jam clears and the pool settles at lamplighting you read {BK_PIER_MARK} with two sworn witnesses and a level line, slower than heroics and twice as signed; the figures walk into the dusk session with three names on them and no mud on any",
+    "b_ke2": "dusk runs long by lamplight, but numbers carrying three signatures are hard to shout at: the courts initial the gauge accord and fix the full signing at {GAUGE}'s first reading; {ROUTE_C_LEAD} enters your measurement sheet as the summit's steadiest page, done, he notes, at the speed of being right",
+    "b_k10": "{BK_GATE} stays in your pocket, and {ROUTE_A_RUMOR}, unanswered, spends the day growing teeth: by noon the tamper story is fact in three flavors, and during the flood scare the watch, pressed to be seen doing something, searches {COURIER}'s satchel on the open street while the crowd watches him hold still and take it",
+    "b_k11": "{COURIER}'s face in the lantern light stays with you through the flood work; dusk and your grand moment are one hourglass away, and {BK_GATE} weighs a very great deal for a thread",
+    "b_k12": "you produce {BK_GATE} and say plainly when you found it; the watch sergeant looks at you for a long moment, then posts the finding and clears {COURIER} before the dusk bell; {ROUTE_C_LEAD}, informed, says only that evidence is for the record and not for the stage, and puts you to work hauling keeper logs to the hall",
+    "b_ke3": "dusk mends what it can: {COURIER} publicly cleared, the keeper logs and {BK_PIER_MARK} entered into the record, but the courts, rubbed raw by a day of rumor, adjourn to resume in a month rather than sign tonight; {COURIER} finds you after and shakes your hand anyway, which is somehow heavier than the hourglass",
+    "b_k13": "you stand at dusk and produce {BK_GATE} with a flourish, and it lands exactly wrong: a day too late for {COURIER} and an hour too clever for the courts; if the envoy sat on this, a captain asks aloud, what are the courts sitting on; the question has no bottom, and the session slides into it",
+    "b_ke4": "the summit closes unsigned; {CHANCELLOR} enters the nail, {BK_GATE}, and the hour you found them into the record, the truth preserved and the timing noted; {ROUTE_C_LEAD} walks you home under the cold bells and assigns you a season of door duty, kindly, because at the door, he says, everything that matters arrives on time or not at all"
+  },
+  "titles": {
+    "t_ae1": "{TA_PRIZE1}",
+    "t_ae2": "{TA_PRIZE2}",
+    "t_ae3": "{TA_PRIZE3}",
+    "t_ae4": "{TA_PRIZE4}",
+    "t_be1": "{TB_PRIZE1}",
+    "t_be2": "{TB_PRIZE2}",
+    "t_be3": "{TB_PRIZE3}",
+    "t_be4": "{TB_PRIZE4}",
+    "t_be5": "{TB_PRIZE5}",
+    "t_ce1": "{TC_PRIZE1}",
+    "t_ce3": "{TC_PRIZE2}",
+    "t_ce2": "{TC_PRIZE3}",
+    "g_ae1": "{GA_PRIZE1}",
+    "g_ae2": "{GA_PRIZE2}",
+    "g_ae3": "{GA_PRIZE3}",
+    "g_ae4": "{GA_PRIZE4}",
+    "g_ae5": "{GA_PRIZE5}",
+    "g_be1": "{GB_PRIZE1}",
+    "g_be2": "{GB_PRIZE2}",
+    "g_be3": "{GB_PRIZE3}",
+    "g_be4": "{GB_PRIZE4}",
+    "b_ce1": "{BC_PRIZE1}",
+    "b_ce2": "{BC_PRIZE2}",
+    "b_ce3": "{BC_PRIZE3}",
+    "b_ce4": "{BC_PRIZE4}",
+    "b_ce5": "{BC_PRIZE5}",
+    "b_ke1": "{BK_PRIZE1}",
+    "b_ke2": "{BK_PRIZE2}",
+    "b_ke3": "{BK_PRIZE3}",
+    "b_ke4": "{BK_PRIZE4}"
+  },
+  "labels": {
+    "n_start": {
+      "c_n_start_1": "Climb {SUMMIT_VENUE}'s steps to be sworn in."
+    },
+    "n_sort": {
+      "c_n_sort_1": "Serve {ROUTE_A_COURT} with {ROUTE_A_LEAD}.",
+      "c_n_sort_2": "Serve {ROUTE_B_COURT} with {ROUTE_B_LEAD}.",
+      "c_n_sort_3": "Serve {ROUTE_C_COURT} with {ROUTE_C_LEAD}."
+    },
+    "t_hall": {
+      "c_t_hall_1": "Walk the evening quays with {ROUTE_A_LEAD}."
+    },
+    "t_walk": {
+      "c_t_walk_1": "Hurry to {BRIDGE}."
+    },
+    "t_bridge": {
+      "c_t_bridge_1": "Stay close and listen to {COURIER}'s account.",
+      "c_t_bridge_2": "Run and fetch {ROUTE_A_LEAD}."
+    },
+    "t_a1": {
+      "c_t_a1_1": "See {COURIER} on his way and snatch some sleep."
+    },
+    "t_a3": {
+      "c_t_a3_1": "Head in when {ROUTE_A_DEPUTY} beckons you aside."
+    },
+    "t_a4": {
+      "c_t_a4_1": "Refuse, and tell {ROUTE_A_LEAD} what you actually heard.",
+      "c_t_a4_2": "Look away and let {TA_GATE} do its work."
+    },
+    "t_a5": {
+      "c_t_a5_1": "Run out with {ROUTE_A_COURT} crews."
+    },
+    "t_a6": {
+      "c_t_a6_2": "Dig into {TA_TALLY}."
+    },
+    "t_a13": {
+      "c_t_a13_1": "Tell {ROUTE_A_LEAD} {ROUTE_A_RUMOR} is false and you let it run."
+    },
+    "t_b2": {
+      "c_t_b2_1": "Return to {ROUTE_A_HALL} for orders."
+    },
+    "t_b5": {
+      "c_t_b5_1": "Report the overheard words to {ROUTE_A_LEAD}."
+    },
+    "t_b6": {
+      "c_t_b6_1": "Follow {ROUTE_A_LEAD} into {LOW_QUARTER}."
+    },
+    "t_b4": {
+      "c_t_b4_1": "Carry {TB_TALLY_BOOK} to {SUMMIT_VENUE}.",
+      "c_t_b4_2": "Measure the grounded barges with {ROUTE_A_LEAD}."
+    },
+    "t_b10": {
+      "c_t_b10_1": "Head back with {TB_FIGURES}."
+    },
+    "t_b11": {
+      "c_t_b11_1": "Bring {TB_FIGURES} straight to {ROUTE_A_LEAD}.",
+      "c_t_b11_2": "Let {ROUTE_A_DEPUTY} pocket the page for now."
+    },
+    "t_b14": {
+      "c_t_b14_1": "Own it: hand {ROUTE_A_LEAD} {TB_GATE} and the truth."
+    },
+    "t_c4": {
+      "c_t_c4_2": "Keep your place at {ROUTE_A_COURT} bench."
+    },
+    "t_c5": {
+      "c_t_c5_1": "Ask {CHANCELLOR} where he needs you."
+    },
+    "t_c6": {
+      "c_t_c6_1": "Hold {SUMMIT_VENUE}'s door and relay orders."
+    },
+    "t_c9": {
+      "c_t_c9_1": "Run the sketch back to {CHANCELLOR}."
+    },
+    "t_c11": {
+      "c_t_c11_1": "Follow her into {LOW_QUARTER}."
+    },
+    "g_a1": {
+      "c_g_a1_1": "Take the dawn bell at {ROUTE_B_COURT} bench."
+    },
+    "g_a3": {
+      "c_g_a3_1": "Hear what {ROUTE_B_CHAR} has to say."
+    },
+    "g_a4": {
+      "c_g_a4_1": "Say {ROUTE_B_LEAD} must hear it, and go with her."
+    },
+    "g_a7": {
+      "c_g_a7_3": "Carry {ROUTE_B_LEAD}'s compromise offer to {SUMMIT_VENUE}."
+    },
+    "g_a16": {
+      "c_g_a16_1": "Break your promise: tell {ROUTE_B_LEAD} now."
+    },
+    "g_b2": {
+      "c_g_b2_1": "Ride back to {ROUTE_B_HALL} for orders."
+    },
+    "g_b3": {
+      "c_g_b3_1": "Ride the measuring line with {ROUTE_B_LEAD}.",
+      "c_g_b3_2": "Help ready {GB_CISTERN}."
+    },
+    "g_b10b": {
+      "c_g_b10b_1": "Hurry back to the cistern gear with {ROUTE_B_CHAR}."
+    },
+    "g_b11": {
+      "c_g_b11_2": "Skip the paperwork and open {GB_GATE} now."
+    },
+    "g_b13": {
+      "c_g_b13_1": "Stand with {ROUTE_B_COURT} through dusk."
+    },
+    "b_door": {
+      "c_b_door_1": "Ask what {ROUTE_C_COURT} do next."
+    },
+    "b_c2": {
+      "c_b_c2_1": "Ask who {ROUTE_C_CHAR} is."
+    },
+    "b_c4": {
+      "c_b_c4_1": "Bring it to {ROUTE_C_LEAD} now, together with {ROUTE_C_CHAR}."
+    },
+    "b_c6": {
+      "c_b_c6_2": "Go with {ROUTE_C_LEAD} to the sluice to see {GAUGE} itself."
+    },
+    "b_k2": {
+      "c_b_k2_1": "Take the note up to {ROUTE_C_LEAD}."
+    },
+    "b_k4": {
+      "c_b_k4_1": "Take {BK_GATE} to the watch now and kill the rumor."
+    },
+    "b_k5": {
+      "c_b_k5_1": "Run with {ROUTE_C_LEAD} to the waterline."
+    }
+  }
+}

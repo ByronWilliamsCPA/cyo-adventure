@@ -1,0 +1,613 @@
+{
+  "beats": {
+    "n_start": "{HERO} misses the last bus home at {OPENING_MOMENT}; {THRESHOLD} has stood dark since {KEEPER} vanished a year ago; tonight {LIGHT_MOTIF} flickers though no one lives there; four ways lead in from the mist, {ROUTE_A_PLACE}, {ROUTE_B_PLACE}, {ROUTE_C_PLACE}, and {ROUTE_D_PLACE}",
+    "a_office1": "{ROUTE_A_PLACE} is cold and still, a mug of tea long gone to dust on the table; three places look worth a search, {A_DESK}, {A_SHELF}, and {A_HEARTH}",
+    "a_desk": "{A_DESK} rolls back with a groan; {A_LOG_PAGE} lies open mid-sentence, and {A_DESK_DRAWER} beneath is locked fast",
+    "a_desk_log": "the final entry stops halfway, {KEEPER} writing of {LIGHT_MOTIF} he never lit and footsteps on the shore; the words trail toward {A_CORRIDOR}",
+    "a_desk_drawer": "{A_DESK_DRAWER} will not give; a bent letter-opener could pick it, or {HERO} could simply wrench it open and risk splitting the old wood",
+    "a_desk_pick": "the lock clicks and {A_DESK_DRAWER} slides free, holding {A_DESK_KEY} and a folded hall plan marked toward the tower",
+    "a_shelf": "{A_SHELF} is heavy with ships in bottles and a long row of leather logbooks; one bottle hides a rolled note, and {A_LOGBOOK} spine is worn from handling",
+    "a_shelf_bottle": "{A_BOTTLE} pops loose and a curl of paper falls out, a sketch of the tower with a hidden door inked at its foot; {A_CORRIDOR} runs that way",
+    "a_shelf_books": "{A_LOGBOOK} falls open to a pressed sprig of sea-holly and a margin note in {KEEPER}'s hand, follow {A_CORRIDOR} when the light burns wrong",
+    "a_hearth": "{A_HEARTH} is full of pale ash; something square did not burn, and one firebrick sits loose and off its line",
+    "a_hearth_ash": "half {A_ASH_PHOTO} survives the ash, {KEEPER} on the gallery beside a stranger who should not be there; the print points her toward {A_CORRIDOR}",
+    "a_hearth_brick": "behind {A_BRICK_GATE} is a shallow cavity with a cloth bundle just in reach, but the brick jams half-out and pinches her fingers",
+    "a_hearth_key": "the bundle holds {A_HEARTH_KEY} stamped with the tower's mark; {A_CORRIDOR} to the tower door beckons",
+    "a_corridor": "{A_CORRIDOR} runs toward the tower's inner door, but a side passage leads to {A_KITCHEN} where a draught stirs; either way ends at the same locked door",
+    "a_kitchen": "the draught in {A_KITCHEN} comes from a gap behind the pantry; following it brings {HERO} right back to the tower's inner door from the other side",
+    "a_toward": "the tower's inner door stands ajar on darkness; on a hook beside it hangs {JOURNAL} she almost misses",
+    "b_lamp1": "{ROUTE_B_PLACE} spirals up to the lamp room where {LIGHT_MOTIF} pulses without heat or flame; three things pull at {HERO}, {B_LENS}, {B_GALLERY}, and {B_CLOCK}",
+    "b_lens": "up close {B_LENS} is not lit at all; {B_LENS_CRACK} throws the glow, and behind it {B_LENS_REFLECT} has been fitted where none should be",
+    "b_lens_crack": "through {B_LENS_CRACK} she sees the glow comes from below, not the lamp, a light climbing the shaft in the tower's heart; {B_DOWNSTAIR} leads to it",
+    "b_lens_reflect": "{B_LENS_REFLECT} is angled to bounce a light up from deep in the tower, a trick, not a ghost; {B_DOWNSTAIR} is where the trick begins",
+    "b_gallery": "{B_GALLERY} rings the lamp room in the open fog; the iron rail is furred with rust, and the mist below hides the drop to the rocks",
+    "b_gallery_out": "one foot on {B_GALLERY} and {B_RAIL_GATE} shivers under her hand; it might hold for a careful circuit, or it might not",
+    "b_gallery_fog": "through the streaked window {HERO} spots a glow leaking from a grille at the tower's base; whatever makes the light is far below the lamp",
+    "b_clock": "{B_CLOCK} hangs on a rust-stiff chain that once drove the turning lamp; winding it might wake the mechanism, or she could follow the chain down its shaft",
+    "b_clock_wind": "the mechanism grinds a quarter-turn and a hatch drops open in the floor, showing {B_DOWNSTAIR} that winds into the tower's core",
+    "b_clock_chain": "the chain runs down a narrow shaft to a landing far below; a maintenance stair beside it offers the safer way down",
+    "b_down": "{B_DOWNSTAIR} splits, {B_SPIRAL} curling into the dark, or {B_HATCH} that drops more directly toward the base",
+    "b_down_spiral": "{B_SPIRAL} delivers {HERO} to a low landing at the tower's foot, where {JOURNAL} lies open on a stool",
+    "b_down_hatch": "{B_HATCH} drops her onto the same low landing, and there on a stool sits {JOURNAL}, left open",
+    "c_cave1": "below the rock {ROUTE_C_PLACE} breathe with the tide, cold and echoing; three ways open off the entrance pool, {C_PASSAGE}, {C_POOLS}, and {C_ARCH}",
+    "c_pass": "{C_PASSAGE} narrows and {C_TIDE_GATE} at her boots is climbing; she can push deeper while the way is clear, or the tide may cut her off",
+    "c_pass_deep": "{C_PASSAGE} opens above the tideline onto a dry ledge and {C_ROCKSTEPS}, climbing toward the tower's base",
+    "c_pool": "{C_POOLS} glow faintly with clinging weed, the same pale colour as the tower's light; one pool holds a dull gleam of metal under the water",
+    "c_pool_glow": "{C_WEED} glows cold in her palm, harmless, the very thing that paints the ghostly light; a rope handrail leads up from {C_POOLS} toward the rock stair",
+    "c_pool_metal": "{C_BADGE} is a keeper's tide-badge on a chain, dropped and lost; beyond the pool a rock stair climbs out of the cave",
+    "c_arch": "{C_ARCH} is scratched with tally marks and a warning in {KEEPER}'s shorthand; {C_GAP_GATE} beyond it might be squeezed through",
+    "c_arch_marks": "{C_MARKS} count nights of a light that was never logged; the shorthand points to a stair up and out, away from the rising sea",
+    "c_arch_gap": "{C_GAP_GATE} is tight and cold; she can wriggle through to the far chamber, or feel her shoulders wedge and think better of it",
+    "c_gather": "the cave stair brings her under the tower at last; two ways up remain, {C_WORNSTEPS} or {C_LADDER}",
+    "c_steps": "{C_WORNSTEPS} end at a low landing inside the tower's base, where {JOURNAL} rests on a stool, left open",
+    "c_ladder": "{C_LADDER} lets her up into the same low landing, and there is {JOURNAL} on its stool, open to the last page",
+    "d_boat1": "{ROUTE_D_PLACE} smells of tar and old rope; three things catch her eye, {D_DINGHY}, {D_LOCKER}, and {D_LOFT}",
+    "d_dinghy": "under {D_DINGHY}'s tarp are bundled oilskins and, tucked in the bow, {D_TIN} that rattles with something that is not water",
+    "d_dinghy_tarp": "beneath the oilskins is {D_CHART} with a passage inked under the lighthouse; {D_HATCH} in the corner leads that way",
+    "d_dinghy_tin": "{D_TIN} holds a brass key and a scrap reading, the light is not a ghost, it is a signal; {D_HATCH} drops toward the tower",
+    "d_locker": "{D_LOCKER} holds {D_ROPE} and {D_LANTERN} still half full of oil, either handy for the dark below",
+    "d_locker_rope": "with {D_ROPE} looped over her shoulder {HERO} spots {D_HATCH} worn smooth by boots, the way down toward the tower",
+    "d_locker_lantern": "{D_LANTERN} catches on the third strike, throwing a warm ring of light; its glow finds {D_HATCH} in the corner",
+    "d_loft": "the ladder to {D_LOFT} is missing rungs; she can pick her way up carefully, or trust {D_RUNG_GATE} that looks ready to give",
+    "d_loft_up": "{D_LOFT} holds coils of signal flags and a diagram of lamp flashes; a trapdoor at the back drops back down beside {D_HATCH}",
+    "d_hatch": "{D_HATCH} is stiff; she can pry it up and follow the passage under the boathouse toward the tower, but {D_DOOR_GATE} is worrying loose in the wind behind her",
+    "d_hatch_down": "the passage runs under the rock to a low landing at the tower's base, where {JOURNAL} waits open on a stool",
+    "n_journal": "BOTTLENECK: whichever way {HERO} came, every path meets here at {JOURNAL}; its pages hold three tangled threads, {JR_LIGHT_ENTRIES}, {JR_CARGO_LEDGER}, and {JR_TUNNEL_SKETCH}",
+    "jr_light": "{JR_LIGHT_ENTRIES} grow uneasy, {LIGHT_MOTIF} climbing the tower when no lamp is lit; two pages stand out, {JR_LIGHT_DESC} and {JR_LIGHT_DATES}",
+    "jr_light_read": "{KEEPER} writes that the light is real but made, not haunted, and that its source lies below; the note ends, take {JR_HIDDEN_STAIR}",
+    "jr_light_date": "{JR_LIGHT_DATES} all fall on foggy nights, the very nights {JR_CARGO_LEDGER} lists cargoes; the pattern points down {JR_HIDDEN_STAIR}",
+    "jr_light_join": "both threads agree, the answer is below; a panel in the landing wall swings back on {JR_HIDDEN_STAIR} leading up into the tower's core",
+    "jr_smug": "{JR_CARGO_LEDGER} lists barrels and crates landed on dark nights and signed with a single initial that is not {KEEPER}'s; {JR_CARGO_FIGURES} and {JR_CODED_NAMES} both invite a closer look",
+    "jr_smug_ledger": "{JR_CARGO_FIGURES} do not balance, goods that came in and never left; but {JR_TORN_PAGE} has been torn out at the root",
+    "jr_smug_copy": "{HERO} copies the crooked totals into her own notebook, proof that someone used the dark tower as a store; the trail leads to {JR_HIDDEN_STAIR}",
+    "jr_smug_torn": "{JR_TORN_PAGE} is folded inside the back cover, naming a hidden store reached from the stair in the tower's core",
+    "jr_smug_names": "{JR_CODED_NAMES} unpick into a single smuggler who paid {KEEPER} to look away, then wanted the tower for himself; {JR_HIDDEN_STAIR} is the way to the truth",
+    "jr_smug_join": "{JR_CARGO_LEDGER} points up {JR_HIDDEN_STAIR} in the core; {JR_CELLAR_GATE} tempts her too, though its lock looks meant to stay shut",
+    "jr_tunnel": "{JR_TUNNEL_SKETCH} shows a tunnel running from beneath the tower out under the sea gate; {JR_FLAGSTONE} in this very landing is marked with the same cross",
+    "jr_tun_sketch": "{JR_TUNNEL_SKETCH} labels {JR_HIDDEN_STAIR} as the only dry way to the tunnel; the panel in the landing wall matches the drawing exactly",
+    "jr_tun_stone": "{JR_FLAGSTONE} rocks but is set fast with rust and age; she can heave at it, or give up and take the drier route {JR_TUNNEL_SKETCH} marks",
+    "jr_tun_join": "either way {JR_TUNNEL_SKETCH} wins, the dry route is {JR_HIDDEN_STAIR}; the wall panel stands open on a cramped climb into the core",
+    "n_stairs": "BOTTLENECK: all three threads bring {HERO} to {JR_HIDDEN_STAIR} in the tower's core, {KEEPER}'s secret climb toward the light; it forks into {ST_WIND} and {ST_OUTER}",
+    "st_wind": "{ST_WIND} is dark and close, each step worn to a dish; most are firm, but {ST_STEP_GATE} near the top sounds hollow underfoot",
+    "st_wind_up": "keeping to the wall side of each step, {HERO} climbs clear to {ST_DOOR}, warm with the pale light beyond",
+    "st_outer": "{ST_OUTER} hug the tower in the open fog, cold and slick; the wind gusts hard enough to make her wait for a lull",
+    "st_outer_wait": "she presses to the stone until the gust dies, then climbs on; {ST_OUTER} end at {ST_DOOR} glowing softly",
+    "st_outer_up": "{ST_OUTER} deliver her, breathless, to {ST_DOOR} where the pale light waits just behind",
+    "n_light": "BOTTLENECK: behind {ST_DOOR} lies the source of {LIGHT_MOTIF}, a small chamber where {LAMP_RIG} throws a pale glow up the tower, dressed with {C_WEED}; it is a made light, a signal, not a haunting; three ways lead down toward the tunnel, {LI_STAIR}, {LI_SHAFT}, and {LI_LADDER}",
+    "li_stair": "{LI_STAIR} is broad and safe; {LI_CUPBOARD} is stuffed with {KEEPER}'s things, spare parts and a folded coat",
+    "li_stair_down": "{LI_STAIR} winds down past the lamp-rig to a damp undercroft where {LI_TUNNEL_MOUTH} yawns dark and cool",
+    "li_stair_cup": "{LI_CUPBOARD} holds {LI_LENS} and {KEEPER}'s own {LI_COAT}, still smelling of pipe smoke; both feel like clues left behind",
+    "li_cup_lens": "{LI_LENS} is scored with the same rig-marks as the mirrors, proof the light was built by hand; {LI_STAIR} drops on to the tunnel",
+    "li_cup_coat": "{LI_COAT}'s pocket gives up a folded note in {KEEPER}'s hand, gone but not lost; {LI_STAIR} carries her down to {LI_TUNNEL_MOUTH}",
+    "li_shaft": "{LI_SHAFT} drops straight down on {LI_STAPLES}; {LI_ROPE_GATE} hangs beside it, and she cannot be sure which will bear her",
+    "li_shaft_down": "{LI_STAPLES} hold and {HERO} climbs down into the undercroft, where {LI_TUNNEL_MOUTH} opens off into the dark",
+    "li_shaft_rope": "she leans her weight on {LI_ROPE_GATE}; the first fibres creak, and she must judge whether to trust it or {LI_STAPLES}",
+    "li_ladder": "{LI_LADDER} runs down the tower's flank in thick fog; the rungs are wet and {LI_FOG_GATE} is closing until she can barely see her hands",
+    "li_ladder_down": "hand under hand through the murk, {HERO} reaches the foot of the tower and ducks into {LI_TUNNEL_MOUTH}",
+    "n_tunnel": "BOTTLENECK: every descent meets at {LI_TUNNEL_MOUTH} beneath the lighthouse, a low brick passage running out under the rock toward the sea; it branches three ways, toward {TN_KEEPER_DOOR}, toward {TN_STORE}, and toward {TN_SEAGATE_GATE}",
+    "tn_keeper": "{TN_KEEPER_DOOR} is oak bound in brass, {KEEPER}'s mark burned into it; a heavy beam has fallen across the passage just before it",
+    "tn_keep_door": "{TN_KEY} slides into the lock and turns halfway, then jams on rust; it will need coaxing, or a harder shove",
+    "tn_keep_open": "the lock gives with a soft clunk and {TN_KEEPER_DOOR} swings inward on {CM_ROOM} beyond",
+    "tn_keep_stuck": "{TN_WARD_GATE} sticks fast; forcing it might snap the old wards, or she can breathe, ease it back, and try again",
+    "tn_keep_beam": "{TN_BEAM_GATE} blocks the way; she can lever it clear with care, or drop and squeeze through the narrow gap beneath it",
+    "tn_store": "{TN_STORE} is stacked to the brick roof with crates and barrels, none of them stamped; {TN_LEDGERBOX} sits on the topmost crate",
+    "tn_store_crate": "{TN_CRATE} is full of untaxed lamp oil and fine cloth, a smuggler's haul hidden in a dead man's tower; a low door leads on to {CM_ROOM}",
+    "tn_store_box": "{TN_LEDGERBOX} confirms what she has already pieced together, sealing the case; a low door leads deeper toward {CM_ROOM}",
+    "tn_store_join": "the low door opens on the passage to {CM_ROOM}, but {TN_LANTERN} gutters low and threatens to leave her dark",
+    "tn_store_relight": "she trims the wick and the flame steadies; by its light the passage runs straight to {TN_KEEPER_DOOR}",
+    "tn_gate": "{TN_SEAGATE_GATE} lets the tide breathe in and out; beyond it the open water heaves, and the lower bars are slick and rising with the sea",
+    "tn_gate_open": "{TN_SEAGATE_GATE} grinds open a hand's width, enough to slip through onto an inner ledge; {TN_CURRENT} tugs, strong and cold",
+    "tn_gate_wait": "she waits out the surge on the ledge, then steps inside where a dry passage climbs to {CM_ROOM}",
+    "n_chamber": "BOTTLENECK: all routes end in {CM_ROOM}, snug and dry under the sea; a lamp, a bunk, a desk, and on it {CM_LETTER} that answers everything, the truth of where {KEEPER} went, the smuggler who drove him out, and {LAMP_RIG} he left burning as a warning; now {HERO} must decide what to do with it all",
+    "cm_letter": "{CM_LETTER} is addressed, to whoever is brave enough to climb; she can read it to the very end, or keep it safe and carry it out unread",
+    "cm_letter_read": "{CM_LETTER} tells it plain, {KEEPER} did not vanish, he fled the smuggler's threats and hid inland, leaving {LAMP_RIG} so the town would come looking; three things end the page, {CM_MAP}, {CM_CONFESSION}, and {CM_PLEA}",
+    "cm_letter_map": "{CM_MAP} inks a path to {CM_COTTAGE}; she can go straight to it and find the old keeper, or take word first to {CM_HARBOUR_OFFICE}",
+    "cm_letter_conf": "{CM_CONFESSION} is unflinching, years of small blind eyes turned for a little money, then the night the smuggler wanted everything; reading it, {HERO} sees exactly who did what, and how to set the record straight",
+    "cm_letter_plea": "{CM_PLEA} is simple and human, please tell them I am sorry and please light the tower true; the words settle on {HERO} like a task handed down, and she knows she will not put it down",
+    "cm_letter_keep": "{HERO} decides {CM_LETTER} is not hers to open all the way; she folds it carefully into her coat, its seal unbroken, to place in the right hands when the sun is up",
+    "cm_smug": "{CM_STORE} is the whole case laid bare; she can photograph the crates and ledger as evidence, or follow the passage deeper to where the goods truly end up",
+    "cm_smug_photo": "with the crates and ledger box framed on her phone, {HERO} has proof no one can wave away; she can signal {CM_COASTGUARD} now or carry it straight to {CM_HARBOURMASTER}",
+    "cm_smug_follow": "deeper in, the passage opens on a hidden hoard the smuggler stashed for himself; {CM_COMPASS} sits on top, easy to pocket",
+    "cm_smug_hoard": "{HERO} maps the whole hidden hoard with her phone, crate by crate, so nothing can be denied or lost; it is more than enough to bring the law down on the tower's secret keeper for good",
+    "cm_smug_token": "{CM_COMPASS} is beautiful and would prove everything in an instant; her hand hovers, and she weighs taking it against leaving it be",
+    "cm_light": "{LAMP_RIG} can still be saved for good use; she can relight the tower as a true lamp again, or study {CM_SIGNAL_RIG} built to warn passing ships",
+    "cm_light_relight": "the old lamp will burn if {CM_MIRROR} is set true and {CM_GEARS_GATE} turn clean; she can align {CM_MIRROR} by {KEEPER}'s marks, or force {CM_GEARS_GATE} to move",
+    "cm_light_true": "{CM_MIRROR} aligned and wick trimmed, the lamp catches and a strong clean beam swings out over the water for the first time in a year",
+    "cm_light_study": "{CM_SIGNAL_RIG} can flash a coded call; she can rig it now to call {CM_COASTGUARD} for help, or simply log how the whole clever thing was made",
+    "cm_leave": "the fog is thick and {HERO} is tired; she can head straight back to town with what she knows, or take a moment to mark the way so others can follow",
+    "cm_leave_town": "{HERO} takes one last look at {CM_ROOM}, then turns for the long foggy walk back to town with the whole strange night stored up in her head, ready to tell in the morning",
+    "cm_leave_mark": "she can leave {JOURNAL} open on the desk as a signpost, or carry it out and hand it to the town in the morning",
+    "e_set_a_drawer": "{A_DESK_DRAWER} splits and jams the desk shut on her sleeve; by the time {HERO} works free the fog has thickened and she decides {ROUTE_A_PLACE} has kept its secrets for tonight, safe but no wiser, and heads out to wait for morning",
+    "e_set_a_brick": "{A_BRICK_GATE} brings a small slide of rubble that seals the cavity and fills the room with dust; coughing, {HERO} gives up {A_HEARTH} and settles by the door to wait out the night, unharmed and unsolved",
+    "e_set_b_rail": "{B_RAIL_GATE} groans and sags under her hand and she snatches herself back to safety; {B_GALLERY} is too rotten to trust, so {HERO} retreats into the lamp room to wait for dawn, shaken but sound",
+    "e_set_c_tide": "{C_TIDE_GATE} slides in faster than she guessed and {C_PASSAGE} floods to her knees; {HERO} wades back to a high dry ledge and settles to wait for the water to fall, cold and unsolved but perfectly safe",
+    "e_set_c_stuck": "wedged in {C_GAP_GATE}, {HERO} breathes out and wriggles carefully back the way she came; the far chamber will keep its secret tonight, and she picks a route out to firmer ground",
+    "e_set_d_loft": "{D_RUNG_GATE} snaps and drops her a short jarring way to the boathouse floor; nothing broken but her pride, {HERO} decides {D_LOFT} can wait and limps out to the shore to wait for light",
+    "e_set_d_storm": "the wind slams {D_DOOR_GATE} and rattles the whole leaning shed until a shelf of gear comes down across the hatch; {HERO} judges it too risky tonight and steps out into the fog to head back for town",
+    "e_set_cellar": "{JR_CELLAR_GATE} gives all at once onto cold blackness and the lantern flame gutters out; rather than grope on blind, {HERO} eases the door shut and climbs back to the landing to wait for a safer hour",
+    "e_set_stair": "{ST_STEP_GATE} crumbles under her boot and drops her shin-deep into the stair; {HERO} hauls herself out, heart pounding, and decides {JR_HIDDEN_STAIR} is too far gone to trust tonight",
+    "e_set_shaft": "{LI_ROPE_GATE} frays through in her grip and she catches herself hard against {LI_STAPLES}; badly rattled, {HERO} climbs back up and gives up {LI_SHAFT}, the tunnel unreached this night",
+    "e_set_fog": "{LI_FOG_GATE} thickens on {LI_LADDER} until she cannot see the next rung or the ground below; {HERO} will not climb blind over rocks, so she edges back up and waits for the mist to lift",
+    "e_set_door": "she forces {TN_KEY} and {TN_WARD_GATE} shear with a snap, jamming {TN_KEEPER_DOOR} for good; the sealed room stays sealed, and {HERO} turns back with the mystery half-told",
+    "e_set_beam": "halfway under {TN_BEAM_GATE} it shifts and settles heavier, pinning her coat until she twists free of it; the near miss is enough, and {HERO} backs out of the passage to find a safer way another day",
+    "e_set_gate": "{TN_SEAGATE_GATE}'s lower bars are already awash and the cold water surges to her waist; {HERO} wades back to the dry passage and decides the tide has won this round, safe but stopped short",
+    "e_set_token": "{CM_COMPASS} in her pocket, {HERO} turns to go and a hidden bell-wire chimes through the tunnel; guilty and flustered, she puts it straight back, and by the time she climbs out the dawn patrol is waiting to ask hard questions, the evidence spoiled by her own hand",
+    "e_set_gears": "she forces {CM_GEARS_GATE} and they lock solid with a crack, jamming the whole lamp mechanism for good; the tower will not light tonight, and {HERO} climbs down disappointed, the beam still dark over the water",
+    "e_win_keeper_found": "{CM_COTTAGE} leads {HERO} to a low shepherd's cottage where {KEEPER} himself opens the door, grey and blinking but alive and well; the vanished keeper is found, the year-long mystery solved from end to end, and together they plan how to set the whole story right; the fullest, brightest ending",
+    "e_win_keeper_word": "{HERO} carries {CM_LETTER} and {CM_MAP} to {CM_HARBOUR_OFFICE} at first light; within the hour a search party sets out for the moor, and by noon {KEEPER} is home again, cleared and welcomed, the mystery closed by her word",
+    "e_win_name_cleared": "with {CM_CONFESSION} in hand, {HERO} makes sure the town learns the truth, that {KEEPER} was threatened, not guilty, and that he left {LAMP_RIG} to bring help; his good name is restored and the real culprit named",
+    "e_win_promise": "answering {CM_PLEA}, {HERO} vows to see the tower mended and the truth told; she leaves the room a keeper of his trust, and in the weeks that follow she quietly makes every word of it come good",
+    "e_win_smugglers": "{HERO} flashes the coded lamp until {CM_COASTGUARD} answers out of the fog; by dawn {CM_STORE} is opened, the crates seized, and the smuggler who haunted the tower is caught red-handed, the whole scheme undone",
+    "e_win_harbor": "{CM_HARBOURMASTER} listens open-mouthed to {HERO}'s proof, then rouses the constable and the revenue men; {CM_STORE} is emptied into the light of day, and the town owes the truth to a girl who missed her bus",
+    "e_win_hoard": "{HERO} records every corner of the hidden hoard without touching a thing, so the evidence stands untouched for the law; when {CM_COASTGUARD} comes, her careful photographs seal the case beyond any doubt",
+    "e_win_light_restored": "the true lamp swings its clean beam out across the water and, far off, a fishing boat lost in the fog answers with a grateful horn; {HERO} has given the coast back its light, and {ROUTE_B_PLACE} is hollow no more",
+    "e_win_rescue": "{HERO} sets {CM_SIGNAL_RIG} flashing its coded call for help, and before long lights answer from the harbour and the sea; {KEEPER}'s clever rig, meant as a warning, becomes the thing that finally brings everyone home",
+    "e_win_signal": "{HERO} logs every mirror and shutter of {CM_SIGNAL_RIG} until she understands it whole; the ghost light was never a ghost, and her careful record turns a year of fear into a solved and ordinary wonder",
+    "e_neutral_letter": "{HERO} slips {CM_LETTER} into her coat and climbs out into the greying fog, the truth carried safe but unread; she will hand it to the right people in daylight and let them open it, content to have found it at all",
+    "e_neutral_honest": "leaving {CM_COMPASS} exactly where it lay, {HERO} photographs the hoard and climbs out with clean hands; she has not caught anyone tonight, but she has learned what she will and will not do, and walks home wiser",
+    "e_neutral_town": "the fog is too thick and the hour too late; {HERO} heads back to town with a head full of what she has seen, the mystery not yet solved but no longer hers to fear, and a story she cannot wait to tell by daylight",
+    "e_neutral_evidence": "{HERO} leaves {JOURNAL} open on the desk like a signpost and marks the tunnel with chalk arrows for whoever comes next; she carries out only what she saw, trusting the grown-ups to follow the trail she has laid",
+    "e_neutral_museum": "{JOURNAL} goes home under {HERO}'s arm to be handed to the town in the morning; it is proof enough to bring the right people back, and she leaves the deciding of what happens next to older and wiser heads"
+  },
+  "titles": {
+    "e_set_a_drawer": "{A_DRAWER_END}",
+    "e_set_a_brick": "{A_BRICK_END}",
+    "e_set_b_rail": "{B_RAIL_END}",
+    "e_set_c_tide": "{C_TIDE_END}",
+    "e_set_c_stuck": "{C_GAP_END}",
+    "e_set_d_loft": "{D_RUNG_END}",
+    "e_set_d_storm": "{D_DOOR_END}",
+    "e_set_cellar": "{JR_CELLAR_END}",
+    "e_set_stair": "{ST_STEP_END}",
+    "e_set_shaft": "{LI_ROPE_END}",
+    "e_set_fog": "{LI_FOG_END}",
+    "e_set_door": "{TN_WARD_END}",
+    "e_set_beam": "{TN_BEAM_END}",
+    "e_set_gate": "{TN_SEAGATE_END}",
+    "e_set_token": "{CM_TOKEN_END}",
+    "e_set_gears": "{CM_GEARS_END}",
+    "e_win_keeper_found": "{KEEPER_FOUND_PRIZE}",
+    "e_win_keeper_word": "{KEEPER_WORD_PRIZE}",
+    "e_win_name_cleared": "{NAME_CLEARED_PRIZE}",
+    "e_win_promise": "{PROMISE_PRIZE}",
+    "e_win_smugglers": "{SMUGGLERS_PRIZE}",
+    "e_win_harbor": "{HARBOR_PRIZE}",
+    "e_win_hoard": "{HOARD_PRIZE}",
+    "e_win_light_restored": "{LIGHT_RESTORED_PRIZE}",
+    "e_win_rescue": "{RESCUE_PRIZE}",
+    "e_win_signal": "{SIGNAL_PRIZE}",
+    "e_neutral_letter": "{LETTER_PRIZE}",
+    "e_neutral_honest": "{HONEST_PRIZE}",
+    "e_neutral_town": "{TOWN_PRIZE}",
+    "e_neutral_evidence": "{EVIDENCE_PRIZE}",
+    "e_neutral_museum": "{MUSEUM_PRIZE}"
+  },
+  "labels": {
+    "n_start": {
+      "c_n_start_1": "Try {ROUTE_A_PLACE}.",
+      "c_n_start_2": "Head for {ROUTE_B_PLACE}.",
+      "c_n_start_3": "Slip into {ROUTE_C_PLACE}.",
+      "c_n_start_4": "Cross to {ROUTE_D_PLACE}."
+    },
+    "a_office1": {
+      "c_a_office1_1": "Search {A_DESK}.",
+      "c_a_office1_2": "Read along {A_SHELF}.",
+      "c_a_office1_3": "Rake through {A_HEARTH}."
+    },
+    "a_desk": {
+      "c_a_desk_1": "Read {A_LOG_PAGE}.",
+      "c_a_desk_2": "Work at {A_DESK_DRAWER}."
+    },
+    "a_desk_log": {
+      "c_a_desk_log_1": "Follow {A_CORRIDOR}."
+    },
+    "a_desk_drawer": {
+      "c_a_desk_drawer_1": "Pick the lock patiently.",
+      "c_a_desk_drawer_2": "Wrench {A_DESK_DRAWER} open."
+    },
+    "a_desk_pick": {
+      "c_a_desk_pick_1": "Take {A_DESK_KEY} and follow the plan."
+    },
+    "a_shelf": {
+      "c_a_shelf_1": "Uncork {A_BOTTLE}.",
+      "c_a_shelf_2": "Pull {A_LOGBOOK}."
+    },
+    "a_shelf_bottle": {
+      "c_a_shelf_bottle_1": "Head down {A_CORRIDOR}."
+    },
+    "a_shelf_books": {
+      "c_a_shelf_books_1": "Take the note down {A_CORRIDOR}."
+    },
+    "a_hearth": {
+      "c_a_hearth_1": "Sift the unburned ash.",
+      "c_a_hearth_2": "Work {A_BRICK_GATE} free."
+    },
+    "a_hearth_ash": {
+      "c_a_hearth_ash_1": "Carry the photo to {A_CORRIDOR}."
+    },
+    "a_hearth_brick": {
+      "c_a_hearth_brick_1": "Ease the bundle out gently.",
+      "c_a_hearth_brick_2": "Yank {A_BRICK_GATE}."
+    },
+    "a_hearth_key": {
+      "c_a_hearth_key_1": "Follow {A_CORRIDOR} with the key."
+    },
+    "a_corridor": {
+      "c_a_corridor_1": "Go straight to the tower door.",
+      "c_a_corridor_2": "Cut through {A_KITCHEN}."
+    },
+    "a_kitchen": {
+      "c_a_kitchen_1": "Step up to the tower door."
+    },
+    "a_toward": {
+      "c_a_toward_1": "Take {JOURNAL} down."
+    },
+    "b_lamp1": {
+      "c_b_lamp1_1": "Examine {B_LENS}.",
+      "c_b_lamp1_2": "Step toward {B_GALLERY}.",
+      "c_b_lamp1_3": "Study {B_CLOCK}."
+    },
+    "b_lens": {
+      "c_b_lens_1": "Look through {B_LENS_CRACK}.",
+      "c_b_lens_2": "Reach behind to {B_LENS_REFLECT}."
+    },
+    "b_lens_crack": {
+      "c_b_lens_crack_1": "Take {B_DOWNSTAIR}."
+    },
+    "b_lens_reflect": {
+      "c_b_lens_reflect_1": "Descend to find the source."
+    },
+    "b_gallery": {
+      "c_b_gallery_1": "Step out onto the walk.",
+      "c_b_gallery_2": "Peer through the fogged window instead."
+    },
+    "b_gallery_out": {
+      "c_b_gallery_out_1": "Trust {B_RAIL_GATE} and edge along.",
+      "c_b_gallery_out_2": "Feel {B_RAIL_GATE} groan and shrink back."
+    },
+    "b_gallery_fog": {
+      "c_b_gallery_fog_1": "Head for {B_DOWNSTAIR}."
+    },
+    "b_clock": {
+      "c_b_clock_1": "Wind the stiff mechanism.",
+      "c_b_clock_2": "Follow the chain down its shaft."
+    },
+    "b_clock_wind": {
+      "c_b_clock_wind_1": "Go down the opened stair."
+    },
+    "b_clock_chain": {
+      "c_b_clock_chain_1": "Take the maintenance stair down."
+    },
+    "b_down": {
+      "c_b_down_1": "Wind down {B_SPIRAL}.",
+      "c_b_down_2": "Drop through {B_HATCH}."
+    },
+    "b_down_spiral": {
+      "c_b_down_spiral_1": "Pick up {JOURNAL}."
+    },
+    "b_down_hatch": {
+      "c_b_down_hatch_1": "Take up {JOURNAL}."
+    },
+    "c_cave1": {
+      "c_c_cave1_1": "Follow {C_PASSAGE}.",
+      "c_c_cave1_2": "Search {C_POOLS}.",
+      "c_c_cave1_3": "Read {C_ARCH}."
+    },
+    "c_pass": {
+      "c_c_pass_1": "Push deeper while she can.",
+      "c_c_pass_2": "Feel {C_TIDE_GATE} rise and hesitate."
+    },
+    "c_pass_deep": {
+      "c_c_pass_deep_1": "Take {C_ROCKSTEPS} up."
+    },
+    "c_pool": {
+      "c_c_pool_1": "Cup {C_WEED}.",
+      "c_c_pool_2": "Fish out {C_BADGE}."
+    },
+    "c_pool_glow": {
+      "c_c_pool_glow_1": "Follow the handrail up."
+    },
+    "c_pool_metal": {
+      "c_c_pool_metal_1": "Climb the rock stair."
+    },
+    "c_arch": {
+      "c_c_arch_1": "Study {C_MARKS}.",
+      "c_c_arch_2": "Squeeze through {C_GAP_GATE}."
+    },
+    "c_arch_marks": {
+      "c_c_arch_marks_1": "Head for the stair up."
+    },
+    "c_arch_gap": {
+      "c_c_arch_gap_1": "Wriggle all the way through.",
+      "c_c_arch_gap_2": "Feel wedged and back out."
+    },
+    "c_gather": {
+      "c_c_gather_1": "Take {C_WORNSTEPS}.",
+      "c_c_gather_2": "Climb {C_LADDER}."
+    },
+    "c_steps": {
+      "c_c_steps_1": "Pick up {JOURNAL}."
+    },
+    "c_ladder": {
+      "c_c_ladder_1": "Take up {JOURNAL}."
+    },
+    "d_boat1": {
+      "c_d_boat1_1": "Search {D_DINGHY}.",
+      "c_d_boat1_2": "Open {D_LOCKER}.",
+      "c_d_boat1_3": "Climb to {D_LOFT}."
+    },
+    "d_dinghy": {
+      "c_d_dinghy_1": "Lift the tarp fully.",
+      "c_d_dinghy_2": "Shake out {D_TIN}."
+    },
+    "d_dinghy_tarp": {
+      "c_d_dinghy_tarp_1": "Cross to {D_HATCH}."
+    },
+    "d_dinghy_tin": {
+      "c_d_dinghy_tin_1": "Go to {D_HATCH}."
+    },
+    "d_locker": {
+      "c_d_locker_1": "Take {D_ROPE}.",
+      "c_d_locker_2": "Take {D_LANTERN}."
+    },
+    "d_locker_rope": {
+      "c_d_locker_rope_1": "Open {D_HATCH}."
+    },
+    "d_locker_lantern": {
+      "c_d_locker_lantern_1": "Lift {D_HATCH}."
+    },
+    "d_loft": {
+      "c_d_loft_1": "Climb carefully, testing each rung.",
+      "c_d_loft_2": "Trust {D_RUNG_GATE}."
+    },
+    "d_loft_up": {
+      "c_d_loft_up_1": "Drop down to {D_HATCH}."
+    },
+    "d_hatch": {
+      "c_d_hatch_1": "Pry the hatch and go down.",
+      "c_d_hatch_2": "Turn as {D_DOOR_GATE} slams in the wind."
+    },
+    "d_hatch_down": {
+      "c_d_hatch_down_1": "Take up {JOURNAL}."
+    },
+    "n_journal": {
+      "c_n_journal_1": "Read {JR_LIGHT_ENTRIES}.",
+      "c_n_journal_2": "Study {JR_CARGO_LEDGER}.",
+      "c_n_journal_3": "Trace {JR_TUNNEL_SKETCH}."
+    },
+    "jr_light": {
+      "c_jr_light_1": "Read {JR_LIGHT_DESC}.",
+      "c_jr_light_2": "Check {JR_LIGHT_DATES}."
+    },
+    "jr_light_read": {
+      "c_jr_light_read_1": "Look for {JR_HIDDEN_STAIR}."
+    },
+    "jr_light_date": {
+      "c_jr_light_date_1": "Find {JR_HIDDEN_STAIR}."
+    },
+    "jr_light_join": {
+      "c_jr_light_join_1": "Approach {JR_HIDDEN_STAIR}."
+    },
+    "jr_smug": {
+      "c_jr_smug_1": "Copy {JR_CARGO_FIGURES}.",
+      "c_jr_smug_2": "Puzzle out {JR_CODED_NAMES}."
+    },
+    "jr_smug_ledger": {
+      "c_jr_smug_ledger_1": "Copy what figures remain.",
+      "c_jr_smug_ledger_2": "Search for {JR_TORN_PAGE}."
+    },
+    "jr_smug_copy": {
+      "c_jr_smug_copy_1": "Head for {JR_HIDDEN_STAIR}."
+    },
+    "jr_smug_torn": {
+      "c_jr_smug_torn_1": "Make for {JR_HIDDEN_STAIR}."
+    },
+    "jr_smug_names": {
+      "c_jr_smug_names_1": "Find {JR_HIDDEN_STAIR}."
+    },
+    "jr_smug_join": {
+      "c_jr_smug_join_1": "Take {JR_HIDDEN_STAIR}.",
+      "c_jr_smug_join_2": "Try {JR_CELLAR_GATE}."
+    },
+    "jr_tunnel": {
+      "c_jr_tunnel_1": "Study {JR_TUNNEL_SKETCH}.",
+      "c_jr_tunnel_2": "Test {JR_FLAGSTONE}."
+    },
+    "jr_tun_sketch": {
+      "c_jr_tun_sketch_1": "Go to {JR_HIDDEN_STAIR}."
+    },
+    "jr_tun_stone": {
+      "c_jr_tun_stone_1": "Give up and read the sketch instead.",
+      "c_jr_tun_stone_2": "Heave {JR_FLAGSTONE} aside."
+    },
+    "jr_tun_join": {
+      "c_jr_tun_join_1": "Approach {JR_HIDDEN_STAIR}."
+    },
+    "n_stairs": {
+      "c_n_stairs_1": "Take {ST_WIND}.",
+      "c_n_stairs_2": "Climb {ST_OUTER}."
+    },
+    "st_wind": {
+      "c_st_wind_1": "Climb steadily to the top.",
+      "c_st_wind_2": "Trust {ST_STEP_GATE}."
+    },
+    "st_wind_up": {
+      "c_st_wind_up_1": "Open {ST_DOOR}."
+    },
+    "st_outer": {
+      "c_st_outer_1": "Push up through the fog.",
+      "c_st_outer_2": "Wait for the wind to drop."
+    },
+    "st_outer_wait": {
+      "c_st_outer_wait_1": "Reach {ST_DOOR}."
+    },
+    "st_outer_up": {
+      "c_st_outer_up_1": "Open {ST_DOOR}."
+    },
+    "n_light": {
+      "c_n_light_1": "Descend {LI_STAIR}.",
+      "c_n_light_2": "Climb down {LI_SHAFT}.",
+      "c_n_light_3": "Take {LI_LADDER} down."
+    },
+    "li_stair": {
+      "c_li_stair_1": "Descend steadily.",
+      "c_li_stair_2": "Open {LI_CUPBOARD}."
+    },
+    "li_stair_down": {
+      "c_li_stair_down_1": "Enter {LI_TUNNEL_MOUTH}."
+    },
+    "li_stair_cup": {
+      "c_li_stair_cup_1": "Take {LI_LENS}.",
+      "c_li_stair_cup_2": "Search {LI_COAT}."
+    },
+    "li_cup_lens": {
+      "c_li_cup_lens_1": "Go down to {LI_TUNNEL_MOUTH}."
+    },
+    "li_cup_coat": {
+      "c_li_cup_coat_1": "Descend to {LI_TUNNEL_MOUTH}."
+    },
+    "li_shaft": {
+      "c_li_shaft_1": "Climb straight down {LI_STAPLES}.",
+      "c_li_shaft_2": "Test {LI_ROPE_GATE} first."
+    },
+    "li_shaft_down": {
+      "c_li_shaft_down_1": "Step into {LI_TUNNEL_MOUTH}."
+    },
+    "li_shaft_rope": {
+      "c_li_shaft_rope_1": "Trust {LI_ROPE_GATE} down.",
+      "c_li_shaft_rope_2": "Feel it fray and pull back."
+    },
+    "li_ladder": {
+      "c_li_ladder_1": "Climb down through the fog.",
+      "c_li_ladder_2": "Judge {LI_FOG_GATE} too thick."
+    },
+    "li_ladder_down": {
+      "c_li_ladder_down_1": "Follow the tunnel in."
+    },
+    "n_tunnel": {
+      "c_n_tunnel_1": "Go toward {TN_KEEPER_DOOR}.",
+      "c_n_tunnel_2": "Go toward {TN_STORE}.",
+      "c_n_tunnel_3": "Go toward {TN_SEAGATE_GATE}."
+    },
+    "tn_keeper": {
+      "c_tn_keeper_1": "Try {TN_KEY} on the door.",
+      "c_tn_keeper_2": "Deal with {TN_BEAM_GATE}."
+    },
+    "tn_keep_door": {
+      "c_tn_keep_door_1": "Coax {TN_KEY} gently.",
+      "c_tn_keep_door_2": "Shove {TN_KEY} hard."
+    },
+    "tn_keep_open": {
+      "c_tn_keep_open_1": "Step into {CM_ROOM}."
+    },
+    "tn_keep_stuck": {
+      "c_tn_keep_stuck_1": "Ease it back and re-seat the key.",
+      "c_tn_keep_stuck_2": "Force it and risk {TN_WARD_GATE}."
+    },
+    "tn_keep_beam": {
+      "c_tn_keep_beam_1": "Lever {TN_BEAM_GATE} clear carefully.",
+      "c_tn_keep_beam_2": "Squeeze under {TN_BEAM_GATE}."
+    },
+    "tn_store": {
+      "c_tn_store_1": "Prise open {TN_CRATE}.",
+      "c_tn_store_2": "Take down {TN_LEDGERBOX}."
+    },
+    "tn_store_crate": {
+      "c_tn_store_crate_1": "Go on to {CM_ROOM}."
+    },
+    "tn_store_box": {
+      "c_tn_store_box_1": "Carry the box onward."
+    },
+    "tn_store_join": {
+      "c_tn_store_join_1": "Press on before {TN_LANTERN} dies.",
+      "c_tn_store_join_2": "Stop to trim and relight it."
+    },
+    "tn_store_relight": {
+      "c_tn_store_relight_1": "Follow the passage to the room."
+    },
+    "tn_gate": {
+      "c_tn_gate_1": "Work {TN_SEAGATE_GATE} open.",
+      "c_tn_gate_2": "Watch the water climb and think twice."
+    },
+    "tn_gate_open": {
+      "c_tn_gate_open_1": "Slip through the gap.",
+      "c_tn_gate_open_2": "Wait for {TN_CURRENT} to ease."
+    },
+    "tn_gate_wait": {
+      "c_tn_gate_wait_1": "Climb to {CM_ROOM}."
+    },
+    "n_chamber": {
+      "c_n_chamber_1": "Read {CM_LETTER}.",
+      "c_n_chamber_2": "Deal with {CM_STORE}.",
+      "c_n_chamber_3": "Turn to {LAMP_RIG}.",
+      "c_n_chamber_4": "Simply head back to town."
+    },
+    "cm_letter": {
+      "c_cm_letter_1": "Read {CM_LETTER} to the end.",
+      "c_cm_letter_2": "Keep it sealed and leave."
+    },
+    "cm_letter_read": {
+      "c_cm_letter_read_1": "Follow {CM_MAP} to the keeper.",
+      "c_cm_letter_read_2": "Read {CM_CONFESSION}.",
+      "c_cm_letter_read_3": "Answer {CM_PLEA}."
+    },
+    "cm_letter_map": {
+      "c_cm_letter_map_1": "Go to {CM_COTTAGE}.",
+      "c_cm_letter_map_2": "Take word to {CM_HARBOUR_OFFICE}."
+    },
+    "cm_letter_conf": {
+      "c_cm_letter_conf_1": "Take {CM_CONFESSION} to the town."
+    },
+    "cm_letter_plea": {
+      "c_cm_letter_plea_1": "Take up {KEEPER}'s task."
+    },
+    "cm_letter_keep": {
+      "c_cm_letter_keep_1": "Carry {CM_LETTER} out."
+    },
+    "cm_smug": {
+      "c_cm_smug_1": "Photograph the evidence.",
+      "c_cm_smug_2": "Follow {CM_STORE} deeper."
+    },
+    "cm_smug_photo": {
+      "c_cm_smug_photo_1": "Signal {CM_COASTGUARD}.",
+      "c_cm_smug_photo_2": "Take it to {CM_HARBOURMASTER}."
+    },
+    "cm_smug_follow": {
+      "c_cm_smug_follow_1": "Record the whole hidden hoard.",
+      "c_cm_smug_follow_2": "Reach for {CM_COMPASS}."
+    },
+    "cm_smug_hoard": {
+      "c_cm_smug_hoard_1": "Take the record to the authorities."
+    },
+    "cm_smug_token": {
+      "c_cm_smug_token_1": "Pocket {CM_COMPASS} and go.",
+      "c_cm_smug_token_2": "Leave it and photograph it instead."
+    },
+    "cm_light": {
+      "c_cm_light_1": "Relight the lamp as a true light.",
+      "c_cm_light_2": "Study {CM_SIGNAL_RIG}."
+    },
+    "cm_light_relight": {
+      "c_cm_light_relight_1": "Set {CM_MIRROR} true by the marks.",
+      "c_cm_light_relight_2": "Force {CM_GEARS_GATE}."
+    },
+    "cm_light_true": {
+      "c_cm_light_true_1": "Send the light out to sea."
+    },
+    "cm_light_study": {
+      "c_cm_light_study_1": "Rig it to call for help.",
+      "c_cm_light_study_2": "Log the signal for the record."
+    },
+    "cm_leave": {
+      "c_cm_leave_1": "Head straight back to town.",
+      "c_cm_leave_2": "Mark the way for others."
+    },
+    "cm_leave_town": {
+      "c_cm_leave_town_1": "Set off for town."
+    },
+    "cm_leave_mark": {
+      "c_cm_leave_mark_1": "Leave {JOURNAL} as a signpost.",
+      "c_cm_leave_mark_2": "Carry {JOURNAL} into town."
+    }
+  }
+}

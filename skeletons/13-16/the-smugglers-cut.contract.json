@@ -1,0 +1,589 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-smugglers-cut",
+  "age_band": "13-16",
+  "legacy_lexicon": [
+    "Coll",
+    "Vharsil",
+    "Meridian",
+    "Meridian counting-house",
+    "Herring Stair",
+    "Drowned Oak",
+    "tide-vault",
+    "tide-lock",
+    "marque-ledger",
+    "dawn bell",
+    "third bell",
+    "lantern-men",
+    "water-gate",
+    "the smugglers cut",
+    "sail-loft",
+    "third bridge",
+    "main cut",
+    "sluice-race",
+    "watch-post",
+    "coal hatch",
+    "winch chain",
+    "ledger-stacks",
+    "night-clerk"
+  ],
+  "default_binding": {
+    "COMPANION": "Coll",
+    "CITY": "Vharsil",
+    "TARGET": "Meridian counting-house",
+    "START_LANDMARK": "Herring Stair",
+    "RENDEZVOUS": "Drowned Oak",
+    "VAULT_NAME": "tide-vault",
+    "LOCK_NAME": "tide-lock",
+    "GOAL": "the smugglers cut",
+    "LEDGER": "marque-ledger",
+    "HAUL_NAME": "cut",
+    "DEADLINE": "third bell",
+    "DEADLINE_SIGN": "dawn bell",
+    "GATE_NAME": "water-gate",
+    "WATCHERS": "lantern-men",
+    "ROUTE_A_NAME": "main cut",
+    "ROUTE_B_NAME": "sail-loft",
+    "ROUTE_C_NAME": "third bridge",
+    "WG_CHAIN_NAME": "winch chain",
+    "WG_NET_NAME": "snagged net",
+    "WG_WICKET_NAME": "crooked latch",
+    "YD_HAZARD": "hound",
+    "YD_COAL_NAME": "coal hatch",
+    "YD_CLERK_NAME": "night-clerk",
+    "HL_GUARD_NAME": "watchman",
+    "HL_STACK_NAME": "ledger-stacks",
+    "HL_MEZZ_NAME": "mezzanine",
+    "ES_RACE_NAME": "sluice-race",
+    "ES_ROOF_NAME": "roof leads",
+    "JN_REED_NAME": "reed channel",
+    "JN_WATCHPOST_NAME": "watch-post",
+    "LAND_COIN_NAME": "coin tray",
+    "E_CLEAN_TITLE": "A Clean Cut",
+    "E_COST_TITLE": "The Cut That Counts",
+    "E_WALKAWAY_TITLE": "Clean Hands, Empty Hands",
+    "JN_BASIN_CAUGHT_TITLE": "Under the Watch-Post",
+    "ES_SIDE_DROWN_TITLE": "The Sluice-Race",
+    "YD_STAIR_CAUGHT_TITLE": "Behind the Clerk",
+    "LAND_GREED_TITLE": "The Price of the Coin Tray"
+  },
+  "slots": [
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The hero's ally, a boatman who ferries and guides them.",
+      "guidance": "A capable, loyal guide who waits at the rendezvous and never becomes a source of peril himself.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CITY",
+      "scope": "global",
+      "meaning": "The city whose canals the whole heist takes place in.",
+      "guidance": "A place name; the canal-laced backdrop of the run.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TARGET",
+      "scope": "global",
+      "meaning": "The building being robbed (the whole bounded, explorable heist site).",
+      "guidance": "A single named building the hero infiltrates; wonder/tension over dread; no toxic air, no lethal architecture.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "START_LANDMARK",
+      "scope": "global",
+      "meaning": "The landmark where the hero starts out and meets the companion.",
+      "guidance": "A quiet, safe waypoint before the run begins.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RENDEZVOUS",
+      "scope": "global",
+      "meaning": "The landmark where the companion waits for pickup at the end of the run.",
+      "guidance": "A distinctive, memorable meeting-point landmark near the water.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "VAULT_NAME",
+      "scope": "global",
+      "meaning": "The target vault/strongroom holding the prize.",
+      "guidance": "A sealed, valuable room; safe to approach, a puzzle to open, not a death-trap.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LOCK_NAME",
+      "scope": "global",
+      "meaning": "The distinctive lock mechanism securing the vault.",
+      "guidance": "A puzzle-lock, meant to be read/solved, not forced; no weapon imagery.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The full descriptive name of the haul: the strongbox and its contents together.",
+      "guidance": "A short descriptive phrase for the prize; a benign, carriable treasure, not a weapon or graphic hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "LEDGER"
+        ]
+      }
+    },
+    {
+      "id": "LEDGER",
+      "scope": "global",
+      "meaning": "The incriminating document inside the vault (the true prize of the three endings).",
+      "guidance": "A record/ledger object; a benign paper prize.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "GOAL"
+        ]
+      }
+    },
+    {
+      "id": "HAUL_NAME",
+      "scope": "global",
+      "meaning": "The short nickname used for the haul once it is in hand.",
+      "guidance": "A one-word slang term for 'the take'; benign, carriable.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The mid-run escalation point after which the low routes become dangerous.",
+      "guidance": "A survivable escalation cue (a bell, a signal); must read as a fair-warning threshold, not an instant kill switch.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The recurring countdown cue used throughout the whole run; the story's literal clock.",
+      "guidance": "A repeating, audible/visible signal (a bell, a chime); gives fair warning, escalates gradually.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GATE_NAME",
+      "scope": "global",
+      "meaning": "The bottleneck structure guarding entry to the counting-house grounds.",
+      "guidance": "A physical barrier/gate; passable by more than one method.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WATCHERS",
+      "scope": "global",
+      "meaning": "The patrol/guard force watching the exposed routes at night.",
+      "guidance": "Human patrol figures; a threat of capture, not violence.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_NAME",
+      "scope": "route",
+      "meaning": "The name of the first (fast, exposed) approach route.",
+      "guidance": "A distinct, nameable canal route; fast but watched.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_NAME",
+          "ROUTE_C_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_NAME",
+      "scope": "route",
+      "meaning": "The name of the second (quiet, rising-water) approach route.",
+      "guidance": "A distinct, nameable route; quiet but filling with water.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_NAME",
+          "ROUTE_C_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_NAME",
+      "scope": "route",
+      "meaning": "The name of the third (overland, always-watched) approach route.",
+      "guidance": "A distinct, nameable route; a trap, always watched.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_NAME",
+          "ROUTE_B_NAME"
+        ]
+      }
+    },
+    {
+      "id": "WG_CHAIN_NAME",
+      "scope": "track",
+      "meaning": "The rusted chain mechanism on the water-gate.",
+      "guidance": "A mechanical fixture; noisy if forced.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WG_NET_NAME",
+      "scope": "track",
+      "meaning": "The tangled net obstacle underwater at the gate.",
+      "guidance": "A snag hazard; frees with effort, not a weapon.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WG_WICKET_NAME",
+      "scope": "track",
+      "meaning": "The small door's stubborn latch mechanism.",
+      "guidance": "A fiddly, pickable latch.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "YD_HAZARD",
+      "scope": "track",
+      "meaning": "The silent guard creature patrolling the yard.",
+      "guidance": "A watchful animal on a chain; a capture/noise risk, not a weapon.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "YD_COAL_NAME",
+      "scope": "track",
+      "meaning": "The service hatch offering a way into the cellars.",
+      "guidance": "A grimy service entrance.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "YD_CLERK_NAME",
+      "scope": "track",
+      "meaning": "The night-shift clerk on duty near the stair.",
+      "guidance": "A human obstacle; capture risk if noticed, not violence.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HL_GUARD_NAME",
+      "scope": "track",
+      "meaning": "The watchman patrolling the counting-floor with a lantern.",
+      "guidance": "A human patrol figure; capture risk, not violence.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HL_STACK_NAME",
+      "scope": "track",
+      "meaning": "The tall stacks of paper offering cover along the wall.",
+      "guidance": "A tall, precarious stack; noisy if it falls, not dangerous.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HL_MEZZ_NAME",
+      "scope": "track",
+      "meaning": "The raised interior walkway/hatch offering a long way to the vault.",
+      "guidance": "An elevated structural feature.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ES_RACE_NAME",
+      "scope": "track",
+      "meaning": "The fast-running water channel that floods on the escape route.",
+      "guidance": "A fast channel; dangerous if entered at the wrong time, described in the fixed prose, not the slot value.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ES_ROOF_NAME",
+      "scope": "track",
+      "meaning": "The exposed rooftop escape path.",
+      "guidance": "A high, exposed path.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "JN_REED_NAME",
+      "scope": "track",
+      "meaning": "The slow, hidden channel through the reeds near the junction.",
+      "guidance": "A quiet, concealing channel.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "JN_WATCHPOST_NAME",
+      "scope": "track",
+      "meaning": "The watch-post overlooking the final open basin.",
+      "guidance": "A guard post with a clear sightline.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LAND_COIN_NAME",
+      "scope": "track",
+      "meaning": "The tray of counted coin left out near the vault landing.",
+      "guidance": "A tempting, noisy side-prize distinct from the true haul.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E_CLEAN_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: the full, clean success (whole haul carried out).",
+      "guidance": "A short, triumphant title. Names ending e_clean.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "E_COST_TITLE",
+          "E_WALKAWAY_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "E_COST_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: the partial success (ledger kept, coin sacrificed).",
+      "guidance": "A short, bittersweet title. Names ending e_cost.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "E_CLEAN_TITLE",
+          "E_WALKAWAY_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "E_WALKAWAY_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: walking away empty-handed but alive and free.",
+      "guidance": "A short, wry title about survival over the take. Names ending e_walkaway.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "E_CLEAN_TITLE",
+          "E_COST_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "JN_BASIN_CAUGHT_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: caught crossing the open basin (fixed CAPTURE ending).",
+      "guidance": "Names a fixed capture ending; keep it evocative and age-appropriate. This slot legitimately NAMES a capture outcome, so 'capture' is not declared in its own forbid list; it still may not describe a weapon or graphic harm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ES_SIDE_DROWN_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: swept away in the flooding side channel (fixed DEATH ending).",
+      "guidance": "Names a fixed death ending. Per the band-exception rule (WS-2 design sec. 14, 8.3), this slot must NOT forbid 'lethal': the title is permitted to read as fatal, since it names an already-fixed death outcome rather than describing a retreatable hazard. It still must not contain a weapon or graphic/gory imagery.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "YD_STAIR_CAUGHT_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: caught behind the night-clerk on the stair (fixed CAPTURE ending).",
+      "guidance": "Names a fixed capture ending; keep it evocative, no weapon/graphic imagery.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LAND_GREED_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: caught for the sake of a handful of coin (fixed CAPTURE ending).",
+      "guidance": "Names a fixed capture ending; keep it evocative, no weapon/graphic imagery.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": []
+      }
+    }
+  ]
+}

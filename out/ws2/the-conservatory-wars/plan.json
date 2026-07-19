@@ -1,0 +1,621 @@
+{
+  "beats": {
+    "n_start": "{HERO}, fifteen, climbs from the river ferry to {SCHOOL} on its hill above {SCHOOL_TOWN}; the scholarship letter folded soft from rereading; {HERO_KEEPSAKE} in a secondhand case and a notebook of margin tunes in her coat; head custodian {CUSTODIAN} hauls her trunk and points out {HALL} with its famous windows and infamous wiring; the terms of the scholarship plain on the page, end the term in good standing with a studio; downriver {HERO_HOMETOWN}, where everyone knows the {SIGNATURE_TUNE}; three studios, one choice coming, a whole term balanced on it",
+    "n_recital": "the {OPENING_EVENT}, first Friday of term, {HALL} packed; {TEACHER_A}'s strings play the {SHOWCASE_PIECE} with senior soloist {SENIOR_PEER}, exact as clockwork and twice as alive; the composition studio presents {CULPRIT_EARLY_PIECE} by third-year {CULPRIT}, who bows in a {CULPRIT_SIGN} with ink on his fingers; {TEACHER_C}'s choir sings the {CHORAL_PIECE}, and in the last verse the hall lights flicker, and {TEACHER_C} jokes about the wiring while {ADMIN}, clipboard on his knee, does not laugh; then the announcement that changes the term, this year the {CONCERT_EVENT} will for the first time combine all three studios in one piece; new students choose their studio tonight",
+    "n_sort": "the registrar's table under the founder's portrait, three lines on one form; {ROUTE_A_STUDIO} under {TEACHER_A}, who reworks one bar until it is true and whose section leader is {SENIOR_PEER} herself; {ROUTE_B_STUDIO} under {TEACHER_B}, whose studio is full of disagreeing clocks and who teaches by riddles, with {CULPRIT} as studio aide; {ROUTE_C_STUDIO} under {TEACHER_C}, who learned {HERO}'s name before {HERO} gave it and who is fighting the board for the choral program's evening hours in the hall, with head chorister {HEAD_CHORISTER} at her elbow; {TEACHER_A} demands, {TEACHER_B} puzzles, {TEACHER_C} welcomes, and none of the three doors is the easy one; {HERO}'s pen hangs over the form; the choosing is hers",
+    "st01": "first {ROUTE_A_STUDIO} class in the long room, chairs ranked by desk, {HERO} at the last desk of the second violas; {TEACHER_A} assigns the term's first discipline, {ROUTE_A_DISCIPLINE}, one bar of the {SHOWCASE_PIECE} played until it is true and no second bar before that; the metronome ticking like weather; {SENIOR_PEER} at the first desk making it look like breathing; the notebook of margin tunes heavy in {HERO}'s bag; two ways to survive a term like this and only one of her",
+    "st02": "the week of the bar; blisters ripening on her left hand; the bar true at slow tempo and false at speed; the last desk feeling like a verdict on gray mornings; {SENIOR_PEER} pausing behind her on Wednesday to watch her wrist without a word; {TEACHER_A}'s only comment all week, again",
+    "st03": "Thursday, {SENIOR_PEER} offers the loose-wrist trick her own first teacher gave her, knuckles soft, weight from the arm not the fingers; help passed from the first desk to the last is currency at {SCHOOL} and every chair in the room knows it; {TEACHER_A}, passing with the metronome, says pain is information, not tuition, and moves on; pride and sense pulling opposite directions in {HERO}'s chest",
+    "st04": "the trick lands; by Friday the bar rings true at tempo and {TEACHER_A} gives one short nod, which the second violas swear is a parade; {ROUTE_A_CHALLENGE} posted on the board, any player may challenge for a higher desk before the {CONCERT_EVENT}, chairs re-ranked by a blind hearing; {SENIOR_PEER} signs {HERO}'s name up herself before {HERO} can argue",
+    "st05": "challenge preparation; second-year {ROUTE_A_RIVAL} wants the same desk and stops saying good morning; the practice rooms at seven, at lunch, at dusk; {TEACHER_A} assigns them the same excerpt on purpose, because a rival is just a colleague you have not needed yet; the edge between the two girls sharpening all week",
+    "st06": "challenge day behind the screen; {HERO} plays the excerpt true and a hair braver than safe; the ranking posts at supper, {HERO} up two desks, {ROUTE_A_RIVAL}'s congratulations cold enough to skate on; that night {FROST_MARKER} silvers the practice-wing windows, and the term tips toward winter",
+    "st07": "the Monday after {FROST_MARKER}, {CUSTODIAN} unlocking at six and the morning going wrong; in {ROOM_STRINGS} the {CLUE_BOWS}, unplayable until rehaired though nothing is broken; next door the concert grand has {CLUE_PIANO}, and {CLUE_FOLIOS}, {CLUE_THREAD}; no forced entry anywhere, and the sign-out log shows the practice-wing key last signed to {SENIOR_PEER} and never signed back",
+    "st08": "Tuesday, {SENIOR_PEER} accused; the key log, plus a week of her grumbling that combined rehearsals were eating the hall, is enough for the rumor mill; {ROUTE_A_RIVAL} repeats it flat, some people hate sharing; the section leader's chair sits empty at rehearsal and {TEACHER_A} conducts around it like a missing tooth; {HERO} holding what she knows of {SENIOR_PEER} against what the log says",
+    "st09": "{HERO} speaks for {SENIOR_PEER} to {TEACHER_A}, the trick, the lent kindness, the sense it does not make; {TEACHER_A} listens without expression and says facts will serve her better than feeling, but carries both to {PROVOST} anyway; Wednesday evening {TEACHER_C} crosses the quad with the infirmary log under her arm",
+    "st10": "Thursday assembly; {NURSE}'s infirmary log read aloud, {SENIOR_PEER} there all Monday night with {CLEARING_DETAIL}; the key ring lent days earlier to her accompanist and never returned; {PROVOST} clears her name in front of everyone, and the applause from the section starts at the last desks",
+    "st11": "{SENIOR_PEER} back at the first desk; Friday, at the first combined rehearsal for the {COMBINED_PIECE}, {CULPRIT} stands up beside the repaired grand and says it all plainly, the soaped hair, the felt shims, the folios safe in the {HIDING_PLACE}, and why; the studios speak for him and expulsion becomes probation and long hours at {REPAIR_SHOP}; {ROUTE_A_RIVAL}, of all people, starts the section's applause when {SENIOR_PEER} shakes his hand",
+    "st12": "the {CONCERT_EVENT}, snow falling past the famous windows; the {SIGNATURE_TUNE} rising through strings and voices; in the last verse the old wiring flickers and lanterns come up along the stage lip like a second orchestra; {HERO} and {ROUTE_A_RIVAL} sharing one desk and one stand light, two names penciled on the same part; {ADMIN} pledging the {WIRING_FUND} before the hall empties",
+    "st13": "the facts, checked in the librarian's ledger light; the key signed out but the ring lent onward days before the frost, a detail the rumor skipped; the thread on the folio cabinet fine green wool, not {SENIOR_PEER}'s gray; {CUSTODIAN} mentions damp footprints that morning going toward the {HIDING_PLACE} stairs, and mentions twice that those stairs are unlit and treacherous after dark",
+    "st14": "everything {HERO} has found laid out on her music stand like a score; {TEACHER_A} is one flight up marking bowings, exact and fair and terrifying; the {HIDING_PLACE} is across the dark quad, where the footprints pointed, stairs unlit, {CUSTODIAN}'s warning still in her ears; the truth is close enough to touch and there are two ways to reach for it",
+    "st15": "{TEACHER_A} hears the whole account without interrupting, then acts the way she rehearses, in order and at once; the lent ring to {PROVOST}, the wool thread to {TEACHER_C}, Wednesday the infirmary log, Thursday assembly and {SENIOR_PEER} cleared before the whole school; afterward {TEACHER_A} tells {HERO} she practiced the truth like a bar, and from {TEACHER_A} that is a decoration",
+    "st16": "the search turns kind, because every harm was reversible, soap that washes out, felt that lifts away, folios missing but somewhere dry; whoever did it loved the instruments too much to break them, {TEACHER_A} says, and the school starts asking who instead of hunting what; Friday morning {CULPRIT} walks into {PROVOST}'s office before anyone names him, and says everything; probation, the shop bench, the folios home by supper",
+    "st17": "the {CONCERT_EVENT}, snow thick by curtain; the {SHOWCASE_PIECE} opening the night and the {SIGNATURE_TUNE} closing it; the flicker in the last verse, the lanterns, {ADMIN}'s pledge; {SENIOR_PEER} playing the solo she nearly lost, and finding {HERO} at the last desk afterward to say, in front of {TEACHER_A}, that the truth had good hands this term",
+    "st18": "the {HIDING_PLACE} at night, breath silver, stairs counted by hand; the choir folios stacked under a dust sheet, dry and safe and weighted square; and {CULPRIT} sitting beside them in his {CULPRIT_SIGN}, not dangerous, just wrecked; the story spilling out of him, {MOTIVE_DETAIL} by the new schedule; he came back Tuesday night to undo all of it and {CUSTODIAN} had already changed the lock",
+    "st19": "cold loft, two scholarship kids and a stack of stolen music between them; {SENIOR_PEER} wears the blame until the truth moves, and every hour matters; {CULPRIT} is asking nothing, which is somehow worse; {HERO} can sit down in the dust and walk him toward the truth by his own feet, or leave now and put it before {PROVOST} tonight, official and fast",
+    "st20": "they sit until the frost window pales, talking scholarships and fathers and the arithmetic of desperation; he agrees to carry it himself; Thursday the infirmary log clears {SENIOR_PEER} at assembly, and Friday, at the first combined rehearsal, {CULPRIT} stands and says everything with {HERO} standing at his shoulder; the studios speak, expulsion becomes probation and the shop bench, the folios come down the loft stairs in his own arms",
+    "st21": "December; {REPAIR_SHOP} shop smelling of rosin and glue while {CULPRIT} rehairs the bows he soaped, one by one; the {COMBINED_PIECE} knitting three studios into one animal; {SENIOR_PEER} bringing her own bow to his bench first, which says more than the assembly did; snow beginning the afternoon of the concert; lanterns set out along the stage lip",
+    "st22": "the {CONCERT_EVENT}; the {SIGNATURE_TUNE} in the middle movement, the flicker, the lanterns, the hall gone golden at its darkest moment; from her desk {HERO} watches {CULPRIT} in the back row of the violins, playing repaired music on repaired instruments; some weights are not lifted, only shared, and the term ends with hers set down",
+    "st23": "{PROVOST}'s office that same night; fair, thorough, and cold as the quad; {CULPRIT} hears the knock the next morning and does not run; suspension pending a hearing, the workshop hollow for two weeks; at the hearing {HERO} testifies to the kind details, soap that washes out, felt that lifts away, and {SENIOR_PEER}, cleared, speaks too; probation, not expulsion, and it is right, and something in {HERO} keeps asking whether there had been a kinder door first",
+    "st24": "the {CONCERT_EVENT}, snow and lanterns; {CULPRIT} in the back row, mending slowly, the section closing around him like water over a stone; the truth got where it was going, and {HERO} learns the thing the term wanted her to learn, that right and kind are two instruments, and the music is better when both play",
+    "st25": "alone with the bar on principle; the trick refused politely, the metronome merciless; by the second Thursday her wrist aches from the second knuckle to the elbow; {TEACHER_A} stops beside her desk and says it again, slower, pain is information, not tuition, and waits one extra beat before walking on",
+    "st26": "the ache and the calendar, side by side; {ROUTE_A_CHALLENGE} is coming, the bar is nearly true, and the wrist is asking for rest in a language {HERO} has been refusing to hear; {TEACHER_A} has now said it twice, plainly, which by studio arithmetic means it matters; rest is a week lost, pushing is the bar on schedule, and only one of those can be taken back",
+    "st27": "rest, resentfully, then honestly; slow practice, the bar at half tempo until the motion is clean; the wrist unclenches by degrees; the bar comes true a week late and rings; late and true beats soon and almost, {TEACHER_A} says, and moves her up one desk without a challenge",
+    "st28": "the Monday after {FROST_MARKER}; {CUSTODIAN} at six, {ROOM_STRINGS} wrong; {CLUE_BOWS}, {HERO}'s own among them, unplayable and unbroken; next door {CLUE_PIANO} and {CLUE_FOLIOS}, {CLUE_THREAD}; no forced entry, the key log naming {SENIOR_PEER}; the section grieving the bows like family",
+    "st29": "Tuesday, {SENIOR_PEER} accused on the strength of the log; {HERO} keeps her head down and her hands busy, learning bow rehairing at {REPAIR_SHOP} bench so her own loaner sings again; Wednesday {TEACHER_C} crosses the quad with the infirmary log, Thursday assembly clears {SENIOR_PEER}, the lent key ring surfacing, and the shop smells like the only honest room in the school",
+    "st30": "Friday, first combined rehearsal, {CULPRIT} stands by the repaired grand and confesses everything, the desperation named out loud, {MOTIVE_DETAIL}; probation and the shop bench where {HERO} already works; afterward {TEACHER_A} offers {HERO} the inner-voice chair in the {COMBINED_PIECE}'s quartet passage, earned, she says, by a wrist that learned to listen",
+    "st31": "quartet rehearsals inside the middle movement, the {SIGNATURE_TUNE} setting; {HERO} has known the tune since {HERO_TUNE_ORIGIN} and now it wears counterpoint like Sunday clothes; {CULPRIT} orchestrating the seam from the shop bench on probation; the four inner voices learning to breathe together",
+    "st32": "the final rehearsal, snow starting at noon and not stopping; lanterns set along the stage lip against the wiring; {TEACHER_A} rehearses the last verse twice, once for the notes and once, she says, for the dark; the hall breathing like a living thing",
+    "st33": "the {CONCERT_EVENT}; the quartet passage rising clean out of the middle movement, her inner voice holding the chord's warm center; the flicker, the lanterns, {ADMIN}'s pledge; {TEACHER_A}'s nod from the podium, longer this time; a term that began at the last desk ending inside the music's own weather, late and true",
+    "st34": "she practices through the ache and the ache stops being information and becomes fact; Friday, mid-bar, a tremor runs her bow arm and the tone shears; {TEACHER_A} stops the room, not unkindly, and walks her to {NURSE} herself; a strained tendon, weeks of true rest, {ROUTE_A_CHALLENGE} and the concert chair gone in one sentence",
+    "st35": "the term reshaped; {HERO} becomes the section's librarian, hands resting, ears growing; she watches the frost Monday and the soaped bows from the margins, watches {SENIOR_PEER} accused and cleared by the infirmary log, watches {CULPRIT} confess at the Friday rehearsal and begin his long repair at {REPAIR_SHOP}; the score opens to her like a building with the roof off",
+    "st36": "December; the section plays her bowing marks now, small decisions of hers alive in other hands; {TEACHER_A} leaves a concert ticket at her door with one line on the envelope, sections heal, so do wrists, spring auditions in March; the snow starts the afternoon of the concert",
+    "st37": "the {CONCERT_EVENT} from row twelve, her arm in its brace, the {SIGNATURE_TUNE} swelling without her and because of her, every bowing hers; the flicker, the lanterns, the hall gone golden; it aches worse than the tendon ever did and it teaches better; pain is information, and this year she finally wrote it down; March is four pages away",
+    "st38": "the double life; {ROUTE_A_DISCIPLINE} by daylight, margin tunes by lamplight, and both growing; mid-week the notebook slips from her stand at the end of rehearsal and lands open at {TEACHER_A}'s feet, a term's worth of small tunes looking up at the most exacting woman in the school",
+    "st39": "{TEACHER_A} reads three pages in silence and hands the notebook back; her sentence, bring me the margin tune played truly, or shelve it until spring, both are honorable; {ROUTE_A_DISCIPLINE} still due Friday; two disciplines now instead of one, and the weeks turn hard and bright",
+    "st40": "the margin tune played truly in the long room, {TEACHER_A} listening with closed eyes; then the summons across the quad, because {TEACHER_B} is gathering settings of the {SIGNATURE_TUNE} for the {COMBINED_PIECE}'s middle movement and {TEACHER_A} has told him about a second viola with tunes in her margins; {TEACHER_B}'s studio full of disagreeing clocks, and at the piano, arranging, {CULPRIT} in his {CULPRIT_SIGN}",
+    "st41": "{TEACHER_B}'s offer, spoken like a riddle but plain enough, fold her margin tune into the {COMBINED_PIECE}'s middle movement as a countermelody to the {SIGNATURE_TUNE}, one voice among many with the credit shared, or keep it whole and hers for the spring recital; a tune knows its hour, {TEACHER_B} says, but he will not say which hour this is; {CULPRIT} waits at the piano with kind, tired eyes",
+    "st42": "the workshop; her countermelody threading under the {SIGNATURE_TUNE}, {CULPRIT} setting her line with a care that borders on tenderness; also the fray she cannot unsee, unanswered letters from home under a paperweight, the solo commission list on the wall, his name and the audition dates; talent up close looks a lot like worry wearing good clothes",
+    "st43": "the Monday after {FROST_MARKER}; the workshop grand silenced, {CLUE_PIANO}, {ROOM_STRINGS}'s {CLUE_BOWS}, {CLUE_FOLIOS} with a green wool thread on the hinge; the key log naming {SENIOR_PEER}; no forced entry, nothing broken, everything reversible, which is somehow the strangest fact in the building",
+    "st44": "Tuesday, {SENIOR_PEER} accused; Wednesday, {TEACHER_C} and the infirmary log; Thursday, assembly, {NURSE}'s ledger, the lent key ring, {SENIOR_PEER} cleared before the school; the workshop limping forward on the repaired grand, her countermelody rehearsed around the mended keys; the green thread staying in {HERO}'s mind like a held note",
+    "st45": "Friday, first combined rehearsal; {CULPRIT} stands and says everything, and it lands hardest here, in the studio where he set her tune with such care; the desperation named, {MOTIVE_DETAIL}; the studios speak for him, probation and {REPAIR_SHOP} bench; {HERO} holding her line's manuscript, ink in his handwriting, not knowing where to put what she feels",
+    "st46": "{REPAIR_SHOP} shop; rehaired bows hanging in ranks like a choir; {CULPRIT} at the bench with soap-ruined hair in one hand and a hook in the other; {HERO} says the forgiveness out loud instead of carrying it, and he sands the same spot for a long minute before he can answer; the countermelody stays in the movement, both their names on the manuscript",
+    "st47": "final rehearsal, snow at the windows; the middle movement whole now, the {SIGNATURE_TUNE} with her countermelody breathing under it; lanterns along the stage lip; {TEACHER_A} rehearsing the last verse once for the notes and once for the dark",
+    "st48": "the {CONCERT_EVENT}; her margin tune inside the ensemble's weather, one voice among many and stronger for it; the flicker, the lanterns, {ADMIN}'s pledge to fix the wiring; in the program, under the middle movement, two names in small print that took the whole term to earn; the tune found its hour",
+    "st49": "the refusal, respected; a tune knows its hour, {TEACHER_B} says again, apparently satisfied, and winds a clock; back to the {SHOWCASE_PIECE} with a lighter bag; the margin tune goes into the drawer whole, promised to spring, and {ROUTE_A_DISCIPLINE} finally rings true the same week",
+    "st49b": "the week the bar rings true pays out; a better desk at the {SHOWCASE_PIECE} read-through, the ensemble knitting around her; an errand takes her to {TEACHER_B}'s studio, where the aide in the {CULPRIT_SIGN} is kind about her margins again, genuinely kind, though something behind his eyes looks worn thin, like a man counting a private clock; late autumn tightening toward frost",
+    "st50": "the Monday after {FROST_MARKER}; soaped bows, the wedged grand, the folios gone; and on the folio cabinet's hinge {CLUE_THREAD} that stops {HERO} cold, because she has seen that scarf, draped over the piano bench in {TEACHER_B}'s studio, on the shoulders of the aide who was kind about her margins; the key log names {SENIOR_PEER}, and the thread says otherwise, quietly, to the one person who noticed",
+    "st51": "she carries the thread to {TEACHER_C}, who receives it the way she receives everything, seriously and kindly; Wednesday the infirmary log, Thursday assembly and {SENIOR_PEER} cleared; and the search changes key, because every harm was reversible, soap that washes out, felt that lifts away, whoever did it loved the instruments too much to break them, and at the assembly the key log itself is answered, {SENIOR_PEER}'s ring had been lent out that week and never signed back, so the name on the page was never the hand on the door; and now the school is asking who wears green",
+    "st52": "Friday morning, before anyone names him, {CULPRIT} walks into {PROVOST}'s office and says everything; the desperation, {MOTIVE_DETAIL}; probation instead of expulsion when the studios speak, the folios down from the loft in his own arms, the long repair begun at {REPAIR_SHOP} bench; the kindest form the truth could have taken, and the thread helped it arrive",
+    "st53": "December; the {SHOWCASE_PIECE} polished until it rings, the margin tune safe in its drawer like a saved seed; the {COMBINED_PIECE} rehearsals knitting the studios together; snow beginning the afternoon of the concert, lanterns set out against the wiring, the hall filling with coats and breath",
+    "st54": "the {CONCERT_EVENT}; the {SHOWCASE_PIECE} played truly from a better desk than September's; the {SIGNATURE_TUNE}, the flicker, the lanterns; her tune still hers, whole, waiting for spring, and the waiting feels like strength now instead of hiding; some music you give the ensemble, and some you grow in the dark until its hour strikes",
+    "cm01": "{TEACHER_B}'s studio, forty clocks and none of them agreeing; the first assignment delivered like a riddle and left there, bring me {ROUTE_B_TASK}; {CULPRIT}, the studio aide, hands out manuscript paper in his {CULPRIT_SIGN}, ink to the second knuckle, and warns her with a tired smile that {TEACHER_B} never explains anything twice, or once",
+    "cm02": "the studio writes storms all week, thunder in the left hand, lightning in the right; {HERO} writes the drizzle over the mill roofs at home, small and gray and patient; doubt like a low ceiling; then {CULPRIT}'s pencil note in her margin, this one is weather, the rest are scenery, and the ceiling lifts an inch",
+    "cm03": "{TEACHER_B} hears every setting and says nothing about any of them, only winds his clocks; a silent teacher is its own riddle; some students corner him with questions, others wait him out like weather; {HERO} has one Friday and one nerve left, and two ways to spend them",
+    "cm04": "the asking; {TEACHER_B} answers her riddle with a riddle, then, quietly, one real thing, weather is what a place does when nobody is watching, and so is a student; then the assignment underneath the assignment, she will copy parts for the {COMBINED_PIECE} workshop, the middle movement, a setting of the {SIGNATURE_TUNE}; the tune from {HERO_TUNE_ORIGIN}, here, wearing manuscript ink",
+    "cm05": "copy nights beside {CULPRIT}; his gift up close, voice leading like water finding a channel, and his fray up close too, unanswered letters from home held under a paperweight, the solo commission list pinned to the wall with the audition dates circled; the scarf on the bench, the smile getting thinner as November comes on",
+    "cm06": "the schedule posts on a gray Thursday, combined rehearsals to take {HALL} and the shared instruments from mid-November, audition week for the commission cut to two days; {CULPRIT} reads the notice twice, says nothing the rest of the night, and copies eleven pages without one wrong stem, which is somehow worse than shouting",
+    "cm07": "the Monday after {FROST_MARKER}; {CUSTODIAN} unlocking at six and finding the morning wrong; {CLUE_PIANO}, {ROOM_STRINGS}'s {CLUE_BOWS}, {CLUE_FOLIOS} with a fine green wool thread on the hinge; no forced entry, damp footprints toward the {HIDING_PLACE} stairs; {CULPRIT} reports the piano first, pale as manuscript paper; nothing anywhere is actually broken, which nobody notices yet but {HERO}",
+    "cm08": "Tuesday, {SENIOR_PEER} accused, her key on the log and her grumbling about ceded hall time repeated in every corridor; the studio waits for {TEACHER_B}'s opinion and gets a riddle instead, who mends a thing they broke; the clocks disagree about the hour and everyone else disagrees about {SENIOR_PEER}; two honest ways into the riddle",
+    "cm09": "the facts, gathered honestly; no forced entry, so a key; the shims cut clean from the piano shop's felt stock with something like a copyist's knife; the three silenced keys spell the opening notes of the {CHORAL_PIECE}; soap on the bow hair because soap washes out; nothing permanent anywhere; whoever did it loved the instruments too much to break them, and knew exactly how much harm would heal",
+    "cm10": "the key; {SENIOR_PEER} signed it out, yes, and lent her whole ring days before the frost, to her accompanist, the way she has every term for three years; and her accompanist is the studio aide with ink on his fingers and a green scarf by the door; the floor tilts; the scarf hangs there like a held breath",
+    "cm11": "{TEACHER_B}, when she comes to him with her face full of it, does not ask what she knows; he sets three doors in a row, spoken like a riddle and meant like a map, a truth can be carried alone to the one it belongs to, or carried with a witness who loves him, or handed whole to the law of the school; the clocks tick at odds; {SENIOR_PEER} wears the blame another hour for every hour {HERO} stands still",
+    "cm12": "the {HIDING_PLACE}, dust sheets and cold; the folios stacked dry and safe and weighted square; {CULPRIT} beside them, undone at the sight of her; the whole of it spilling out, {MOTIVE_DETAIL}, the renewal letter that reads like a countdown, the night he chose harms that would all wash out; he went back Tuesday night to undo everything and {CUSTODIAN} had changed the lock",
+    "cm13": "Thursday the infirmary log clears {SENIOR_PEER} at assembly, {CLEARING_DETAIL}, the lent ring named; Friday, before the first combined rehearsal, {CULPRIT} stands beside the repaired grand and says everything plainly with {HERO} at his shoulder; the studios speak for him, {PROVOST} converts expulsion to probation, repairs assigned to {REPAIR_SHOP}, the folios home by supper",
+    "cm14": "the {CONCERT_EVENT}, snow past the windows; the {SIGNATURE_TUNE}'s middle movement on the mended grand and the rehaired bows, her {ROUTE_B_TASK} braided into it; the flicker in the last verse, the lanterns, {ADMIN}'s pledge; {TEACHER_B} winding nothing that night, only listening; {ROUTE_B_TASK}, and a term that learned what a place does when nobody is watching",
+    "cm15": "with {TEACHER_B}; the clocks tick through her whole account and he never once looks surprised; a riddle is a door you let a man open himself, he says; he invites {CULPRIT} to tea, asks nothing, tells one story about his own worst term and the stupid, reversible thing he did in it, and waits; the confession comes like ice going off the river, all at once and long overdue",
+    "cm16": "{TEACHER_B} walks {CULPRIT} to {PROVOST} and owns his own share out loud, the fray he watched all November and answered with riddles instead of questions; adults flawed and decent in the same breath; probation, the shop bench, the folios home by supper, {SENIOR_PEER} already cleared by Thursday's assembly; the studio spends the weekend copying parts together, nobody assigned, everybody there",
+    "cm17": "concert eve; snow starting at dusk; the middle movement finished by many hands, his themes, her drizzle figure, the {SIGNATURE_TUNE} under everything; lanterns set along the stage lip against the wiring; {TEACHER_B} stops every clock in the studio at seven, for luck, the only explanation anyone gets",
+    "cm18": "the {CONCERT_EVENT}; the {SIGNATURE_TUNE} rising through three studios like one instrument; the flicker, the lanterns, the pledge; {CULPRIT} playing in the back row of the violins on a bow he rehaired himself; afterward {TEACHER_B} tells {HERO} the term's real riddle was never the weather, it was the door, and she opened it the slow, right way",
+    "cm19": "{PROVOST}'s office that evening, the key ring, the thread, the felt, the motive laid out in order; {PROVOST} is fair and thorough and the room is cold; {CULPRIT} suspended the next morning pending a hearing; the workshop goes quiet for two weeks, his desk like a pulled tooth; at the hearing {HERO} testifies to the kind details, soap that washes out, felt that lifts away, harms chosen to heal",
+    "cm20": "the hearing; {SENIOR_PEER}, cleared since Thursday and generous past all expectation, speaks for him; {TEACHER_C}, {TEACHER_A}, and {TEACHER_B} speak; probation, not expulsion, the shop bench, the fund for the repairs; right, all of it, and slow; the two silent weeks sit in the middle of the term like rests nobody wrote",
+    "cm21": "the {CONCERT_EVENT}, snow and lanterns and the movement played whole, {CULPRIT} back at the rank desk working his way inward; the official door was real and it was the slowest one in the building; {HERO} carries that out into the snow, filed beside the facts, that procedure found the truth and mercy had to jog to catch up, and next time she will knock on the kinder door first",
+    "cm22": "charity first; {HERO} says out loud, in the studio, that {SENIOR_PEER} is innocent until the facts say otherwise, and then builds the answer that helps either way; the missing choir folios can be re-copied from the library masters, and the composition studio owns more pens than anyone; an overnight copy party, cocoa urn and all, so the choir can rehearse by Wednesday",
+    "cm23": "the copy night; twelve pens scratching; {CULPRIT} copies fastest of all, and writes in dynamics and breath marks the library masters never held, pencil ghosts that lived only in the missing folios; {HERO} watches his pen know things it should not know, and does not yet understand what she is seeing, only that she is seeing it",
+    "cm24": "Thursday assembly clears {SENIOR_PEER}, infirmary log and lent ring, the school exhaling; Friday the choir is handed the studio's copies and thanks {CULPRIT} by name for the markings, and he stands there while the gratitude lands like weight on a cracked beam, and then at rehearsal he stands again and cannot carry it, and says everything, unprompted, the whole desperate arithmetic of it",
+    "cm25": "the studio circle, raw; probation already likely, the shop bench already offered; {TEACHER_B}, who never assigns feelings, asks the newest member to speak first, because the newest member built the copy night that broke the truth loose; the room waits; there is the harm and there is the why, and the order {HERO} says them in will teach the studio which matters more",
+    "cm26": "she names the harm plainly first, {SENIOR_PEER}'s two days under the blame, the choir's grief for their pencil ghosts, the shop's long nights to come; and then, having said the true thing first, she asks that the repair be his to lead, folios, felts, hair, all of it; the circle holds; afterward {CULPRIT} thanks her, specifically, for not softening it",
+    "cm27": "the {CONCERT_EVENT}; snow, the flicker, the lanterns; the middle movement with his themes and her drizzle bars, played on instruments he repaired with his own hands; the studio's clocks all wrong and the music exactly on time; say the true thing first, and kindness has somewhere solid to stand",
+    "cm28": "she speaks the why, the letters under the paperweight, the commission list, the audition week cut to two days, a scholarship kid doing desperate arithmetic; the room softens toward him, which he needs; then {SENIOR_PEER}, visiting from the strings hall, says quietly that someone also needed to say what it cost her; {HERO} stands a second time and says the other half, late but said, and the circle holds both",
+    "cm29": "the {CONCERT_EVENT}, snow and lanterns, the movement whole; what {HERO} carries out is the shape of complete kindness, the why in one hand and the ledger in the other, neither pretending the other away; mercy without the accounting is only weather, and she came here to learn what weather really is",
+    "cm30": "the week of sitting; river walks, the drizzle piece growing a second voice on its own; {TEACHER_B} says nothing, winds one more clock, and {HERO} decides to take the winding as weather; patience as a discipline, which nobody warned her composition would be",
+    "cm31": "her {ROUTE_B_TASK} land; {TEACHER_B} plays them twice at the studio piano and says, again, slower, which by studio arithmetic is a parade; she is named junior copyist to the {COMBINED_PIECE} workshop, the middle movement, a setting of the {SIGNATURE_TUNE}; {HERO_TUNE_ORIGIN} tune wearing manuscript ink, the {SIGNATURE_TUNE}'s pulse audible under it if you know to listen, and she knows",
+    "cm32": "the workshop; the middle movement lacks a bridge and no draft survives Thursday; {CULPRIT}'s versions brilliant and frantic, each one trying harder than the last, which is the problem; then the schedule posts, combined rehearsals to take the hall from mid-November, audition week for the commission cut to two days, and {CULPRIT} stops humming that week entirely",
+    "cm33": "the Monday after {FROST_MARKER}; she and {CULPRIT} reach the hall first, just behind {CUSTODIAN}; {CLUE_PIANO}, and the silenced notes spell the {CHORAL_PIECE}'s opening; {ROOM_STRINGS}'s {CLUE_BOWS}, {CLUE_FOLIOS}, green wool thread on the hinge, damp footprints toward the loft stairs; nothing broken anywhere; {CULPRIT}'s face the color of the manuscript paper he is holding",
+    "cm34": "Tuesday, {SENIOR_PEER} accused on the key log; Thursday, the infirmary log read at assembly and {SENIOR_PEER} cleared, the lent ring named; but the folios are still missing and the workshop stalls on the mended grand; {TEACHER_B} sets the week's riddle to the whole studio, what does a locked room want, and winds his clocks while everyone groans",
+    "cm35": "the riddle sits on her desk like a bird that will not fly off; what does a locked room want; half the studio treats it as {TEACHER_B} being {TEACHER_B}; the bridge still is not written and the concert will not move; {HERO} can spend her one free evening chasing the riddle to wherever music sleeps in this school, or let the adults carry the mystery and write",
+    "cm36": "a locked room wants to be opened from the inside; she thinks about where music sleeps at {SCHOOL} and climbs to the {HIDING_PLACE} with a lamp; the folios stacked under dust sheets, dry and weighted square, every pencil ghost safe; and folded on top, deliberate as a signature, a {CULPRIT_SIGN}, left like an apology waiting for whoever cared enough to look",
+    "cm37": "scarf and folios to {TEACHER_B}, who looks at both a long moment and says, a door you let a man open himself; Friday, at the first combined rehearsal, {CULPRIT} stands beside the grand he silenced and opens it, all of it, father, renewal, audition week, the reversible harms, the changed lock; the studios speak, probation over expulsion, {REPAIR_SHOP} bench, the folios home in his own arms",
+    "cm38": "the bridge nobody could write gets written in one long night by the whole studio, his theme and her drizzle figure braided, the {SIGNATURE_TUNE} under everything; {CULPRIT} orchestrates from the shop bench between rehairing jobs; the last bow comes back to {ROOM_STRINGS} at midnight with the shop's chalk mark on the frog",
+    "cm39": "concert day, snow from noon on; lanterns along the stage lip against the wiring; {ADMIN} in the second row with his clipboard shut; {TEACHER_B} stops every clock in the studio at seven, and when someone finally asks why, he says the music will keep the time tonight",
+    "cm40": "the {CONCERT_EVENT}; the bridge holds, the {SIGNATURE_TUNE} rises, the flicker comes in the last verse and the lanterns answer it; {ADMIN} pledges the {WIRING_FUND} before the applause dies; where music sleeps, someone finally looked, and the looking was the kindness; the riddle answered in the only language {TEACHER_B} accepts, out loud, in the hall",
+    "cm41": "she lets the adults carry the mystery and writes; the bridge comes out of the drizzle figure, eight bars that make {SIGNATURE_TUNE}'s pulse audible, and survives Thursday, the first draft all term to do it; the workshop limps forward on the mended grand; Friday, at the first combined rehearsal, {CULPRIT} stands and says everything himself, unprompted, time and conscience having done the work no detective was doing",
+    "cm42": "aftermath; her bridge is chosen for the movement the same week his probation begins; she wrestles with having looked away from the riddle while it mattered, and {TEACHER_B}, winding the one clock that keeps real time, says, you answered a different riddle, both were real; {SENIOR_PEER}, cleared and unsentimental, brings her own bow to {CULPRIT}'s bench first, which says more than the assembly did",
+    "cm43": "the solo commission {CULPRIT} chased reopens, and {TEACHER_B} nominates her bridge for it; the prize that bent a good student until he broke, now offered to the newest member of his studio; the audition week that caused everything restored to a full week, too late; {HERO} holds the nomination letter and the term's whole weather at once",
+    "cm44": "she accepts, and attaches one condition, that {CULPRIT} orchestrate the bridge with her, from the shop bench, work as repair; two names on the commission line or none; the committee blinks and agrees; he argues for the violas in bar six and she lets him win where he is right, which is most places",
+    "cm45": "the last week; the bridge with both names rehearsed into the middle movement; snow starting the afternoon of the concert; lanterns along the stage lip; {CULPRIT}'s father's letter finally answered with a program in the envelope",
+    "cm46": "the {CONCERT_EVENT}; the bridge with two names in the program in small print; the flicker, the lanterns, the pledge; the commission money split toward his family's winter and her spring strings; a prize that broke someone taught to carry double, and the movement is better for every scar in it",
+    "cm47": "she asks, in writing, that the commission go unawarded this term, because the term's wound should not wear a prize; {PROVOST} reads the letter twice, fair as always, and agrees; the prize money seeds a quiet hardship fund with a deliberately boring name, for students whose letters from home read like countdowns; adults being decent on purpose, which turns out to be a thing you can ask for",
+    "cm48": "the last week; the middle movement finished by the whole studio, no solo line, the drizzle figure and his themes and three other students' bars braided; snow from noon; lanterns out; the program proof arrives and the credit line reads, middle movement, the composition studio, every name and none",
+    "cm49": "the {CONCERT_EVENT}; the movement rises with no name on it and everyone's hands in it; the flicker, the lanterns, {ADMIN}'s pledge; {CULPRIT} beside her in the standing row, on probation and present, the fund with the boring name already holding its first quiet grant; some credits are truest when they are shared all the way out",
+    "vo01": "first choir rehearsal; {TEACHER_C} greets {HERO} by name and river town before {HERO} has given either; alto seconds, third row; {HEAD_CHORISTER}, head chorister, hands her the {CHORAL_PIECE} folio, its margins full of pencil ghosts from forty years of singers; the folio cabinet by the stage locks with a small brass key that {HEAD_CHORISTER} treats like a relic",
+    "vo02": "warmth with weather coming; {ADMIN} walks {HALL} with a clipboard, measuring evening hours in money, because the wiring bill is real and the board votes on the hall's evening schedule in January; the {CONCERT_EVENT} is the argument, everyone knows it; {TEACHER_C} jokes about singing by candlelight and only half of it is a joke",
+    "vo03": "sectionals; {ROUTE_C_TASK} opens above the {CHORAL_PIECE}'s last verse, silver and exposed, auditions Friday; {ROUTE_C_ANCHOR} also need an anchor, the note nobody claps for that every chord leans on; {HEAD_CHORISTER} says the choir is a body and every part of it thinks it is the spine; two honest ways to spend a first term's voice",
+    "vo04": "the audition; her alto stretched to the line's silver top and holding; she wins it, and the winning is lonely for exactly one day, until {HEAD_CHORISTER} starts calling her the weathervane, the voice you steer by, and the name sticks the way kind names do",
+    "vo05": "{FROST_MARKER} silvering the quad; petitions on the notice boards to keep the choir's evening hours; the choir sings the harvest service at the river chapel and the town packs the pews to the doors, which is the whole argument for the program, made audible for anyone listening; {ADMIN} was not there, {HEAD_CHORISTER} notes, and {TEACHER_C} says he will be, in December",
+    "vo06": "the Monday after {FROST_MARKER}; {CUSTODIAN} at six and the folio cabinet open with no forced lock, the folios gone, pencil ghosts and all, {CLUE_THREAD}; next door {CLUE_BOWS} and {CLUE_PIANO}; the sign-out log says {SENIOR_PEER} and the key was never signed back; the older singers grieve the folios like letters from the dead",
+    "vo07": "{ADMIN}'s memo lands by noon, a program that cannot secure its own scores invites questions about its stewardship of shared spaces; the choir reads it in silence; {TEACHER_C} folds it once and asks for ideas, not outrage; the answer can be made of facts on paper or of music remembered, and there is only so much choir to spend",
+    "vo08": "the inventory drafted at {TEACHER_C}'s desk, honest to a fault, the music replaceable, the forty years of markings not, negligence nowhere in the building; {TEACHER_C} declines to speculate about any student before facts, and says so in writing; Tuesday the rumor mill names {SENIOR_PEER} anyway, key log and her grumbling about ceded hall time, and the corridor goes cold between choir and strings",
+    "vo09": "the board wants a culprit faster than the truth is moving; a complaint naming {SENIOR_PEER} arrives for {TEACHER_C}'s co-signature, protect the program, settle the matter; {HERO} is in the office when it lands; she has heard an aide from the infirmary mention a migraine log, secondhand and unverified; the pen and the rumor sit on the same desk",
+    "vo10": "{TEACHER_C} does not sign; blame is a loan at interest, she says, gently, and {HERO} hears the lesson land on herself; but the urging travels anyway, corridors being corridors, and {SENIOR_PEER} hears that the choir's new girl pushed for the complaint; Thursday the infirmary log clears {SENIOR_PEER} at assembly, {CLEARING_DETAIL}, the ring lent days before; the chill between the sections now has {HERO}'s name on it",
+    "vo11": "the accusation died at assembly but the chill outlived it; combined rehearsals start Friday and {ROUTE_C_ANCHOR} stand shoulder to shoulder with {SENIOR_PEER}'s section; an apology is a small door that gets heavier every day it stays shut; the term is loud and it would be easy to let the noise carry this away",
+    "vo12": "the apology, face to face outside the strings hall, no cushions on it; {SENIOR_PEER}'s grace arrives sideways, I lent my keys, you lent your fear, we both got them back; something unclenches; Friday at the first combined rehearsal {CULPRIT} stands and confesses everything, the desperation, the reversible harms, and {HERO}, already humbled once this week, is kind early instead of clever late",
+    "vo13": "December; {ROUTE_C_TASK} rehearsed over the {SIGNATURE_TUNE}'s last verse; the board confirmed for the second row; lantern drill after the flicker joke stops being a joke; snow forecast for concert night; {TEACHER_C}, counting breaths with the sopranos, in for four, out for the whole hall",
+    "vo14": "the {CONCERT_EVENT}; her {ROUTE_C_TASK} riding the last verse when the wiring flickers on schedule with no schedule, and the lanterns come up like a second choir; {ADMIN} stands and pledges the {WIRING_FUND}; {SENIOR_PEER} finds the weathervane afterward to say the descant steered true; a term that started with a wrong push ends pointed exactly right",
+    "vo15": "it does not fade; the chill sits between the sections at every combined rehearsal like a draft nobody will name; Friday {CULPRIT} stands and owns his whole mess in front of everyone, and {HERO} watches what owning looks like from the outside, which is a mirror if you let it be; the last night of term she writes the letter she should have spoken and slides it under {SENIOR_PEER}'s door",
+    "vo16": "the {CONCERT_EVENT} is beautiful anyway, snow and lanterns and the pledge; the descant flies; the letter is answered in January with two words and a rehearsal invitation, which is how string players forgive; some repairs run past the last page of a term, and the discovery is that they still count",
+    "vo17": "the wait, vindicated; Wednesday evening {TEACHER_C} crosses the quad to the infirmary herself and comes back with {NURSE}'s log under her arm, then walks {SENIOR_PEER} to {PROVOST}'s door; Thursday assembly, the log read aloud, the whole night accounted for, the key ring lent days earlier to her accompanist; {SENIOR_PEER} cleared in front of everyone, {TEACHER_C}'s hand on her shoulder, and the choir's memo suddenly answering itself",
+    "vo18": "the memo answered with the inventory and the clearing stapled together; {ADMIN} withdraws the insinuation in writing, which costs him something and he pays it, a flawed man being decent where it counts; Friday {CULPRIT} confesses at the first combined rehearsal, the folios come home with every pencil ghost intact, probation and the shop bench and a quiet fund; the January vote still looms, and the concert is the argument",
+    "vo19": "{TEACHER_C} spreads the concert order across the piano lid; the board will be in the second row and the hall will make its own case if the choir lets it; two plans, embrace the failing lights, rehearse the last verse in lantern light and make the board feel what this hall is, or sing the safest, cleanest {CHORAL_PIECE} in forty years and let flawless be the argument; risk against rigor, and she asks the room",
+    "vo20": "rehearsing darkness on purpose; lights off, lanterns up, the choir learning the last verse by ear and trust; {HEAD_CHORISTER}'s counter-melody threading the dark like a handrail; the sopranos giggle the first night and by the third night nobody does, because it sounds like the hall is singing back; snow forecast holds",
+    "vo21": "concert night, snow thick on the sills; the {SIGNATURE_TUNE}, the combined studios, the hall packed to the doors; in the last verse the old wiring flickers all on its own, right on cue, and the lanterns come up steady in a hundred hands because the choir rehearsed for exactly this dark",
+    "vo22": "the lantern verse; the board watching a hall full of light that the budget line calls a liability; {ADMIN} stands before the applause ends and pledges the {WIRING_FUND}, and the January vote becomes a formality everyone can feel; {TEACHER_C} finds {HERO} after and says the program was saved by people who rehearsed the dark instead of fearing it",
+    "vo23": "the flawless program; note-perfect {CHORAL_PIECE}, nothing staged, rigor as the whole argument; and when the flicker comes anyway in the last verse, unplanned and inevitable, the choir holds through the dark without one wobble, because held is what {TEACHER_C} trains; the board sees steadiness that no lighting rig can fake; snow on the windows like applause",
+    "vo24": "the last chord lands in half-dark and total silence, then the house lights stutter back to a hall on its feet; {ADMIN} pledges the {WIRING_FUND} with his clipboard finally shut; the choir proved the hall's case by being unshakable inside it; steadiness, it turns out, is also a kind of light",
+    "vo25": "the rally; every section pooling its memory of the pencil ghosts, an overnight re-marking with the cocoa urn going and {TEACHER_C} pretending not to know how late it runs; at midnight {CULPRIT} appears to help, copying dynamics and breath marks nobody's memory holds, markings only the missing folios knew; {HERO} watches his pen know too much and files the chill away without a name",
+    "vo26": "the question sits with {HERO} by the cocoa urn; how does a composition aide know the alto section's private breath marks; asking could be an accusation or a kindness depending entirely on how it is held; the scores are nearly done, the night nearly over, and Tuesday the school will start looking for someone to blame",
+    "vo27": "the kind question, just the two of them and the dregs of the cocoa; {CULPRIT} does not answer, and stops pretending, which is an answer; Tuesday {SENIOR_PEER} is accused on the key log and he goes gray as newsprint; {HERO} tells him, quiet and level, that the truth has a Thursday deadline if decency means anything, and then leaves the door open instead of pushing him through it",
+    "vo28": "Thursday the infirmary log clears {SENIOR_PEER} at assembly, the lent ring named at last; Friday morning {CULPRIT} goes to {TEACHER_C} first, then stands at the combined rehearsal with {HERO}'s steadying nod from the third row and says all of it, {MOTIVE_DETAIL}, the harms chosen to wash out; probation, the shop bench, the fund; the folios come down from the {HIDING_PLACE} intact",
+    "vo29": "December; the choir keeps the hand-copied set shelved beside the returned originals, the night the choir re-membered itself, {HEAD_CHORISTER} calls it, and the pun survives on merit; lantern drill, snow forecast, the board confirmed for the second row; the term closing like a chord resolving",
+    "vo30": "the {CONCERT_EVENT}; the {SIGNATURE_TUNE}, the flicker, the lanterns, the pledge; two sets of scores in the cabinet with one brass key, the originals and the night the choir wrote itself down from memory; a program the board came to price and left having heard; some things, re-marked by hand, hold better than before",
+    "vo31": "she says nothing and the scores get finished, which is real and mattered; Tuesday {SENIOR_PEER} is accused, Wednesday the school aches, Thursday the log clears her at assembly; Friday {CULPRIT} confesses at rehearsal unprompted, and {HERO} does the quiet arithmetic, her unasked question might have spared {SENIOR_PEER} two days under the blame; nobody scolds her, which is worse and better at once",
+    "vo32": "she tells {TEACHER_C} about the midnight markings after the fact, expecting weather and getting climate; noticing is a gift, {TEACHER_C} says, level and kind, hand it to someone sooner next time; the term folds toward the concert, lantern drill and snow forecast, and the lesson rides along without rancor",
+    "vo33": "the {CONCERT_EVENT}, snow and lanterns and the hall gone golden; the choir sings from the re-marked scores and the returned originals both; what {HERO} carries out into the snow is small and permanent, that a noticed thing is a held note, and holding it silent helps no one; next time, she hands it on sooner",
+    "vo34": "the anchor work; tuning the chord from the inside, the note nobody claps for; {TEACHER_C} stops the room mid-verse to make the sopranos listen down, the audience hears the descant, the choir hears the altos; {HERO} learns to love the unclapped note the way you love a load-bearing wall",
+    "vo35": "the schedule bites; the choir bumped from {HALL} twice in one week for paying events, sectionals held in the refectory among stacked chairs that ring like bad bells; {FROST_MARKER} on the quad, petitions on the boards, {HEAD_CHORISTER}'s jaw set; {TEACHER_C} keeps rehearsing as if the room does not matter, which is itself an argument, though not the whole of one; and once, quietly, to the section: a term has only so many evenings, spend each one where the music is",
+    "vo36": "the Monday after {FROST_MARKER}; the folio cabinet open with no forced lock, folios gone, {CLUE_THREAD}; {CLUE_BOWS} and {CLUE_PIANO} next door; the key log naming {SENIOR_PEER}, never signed back; the older singers grieving forty years of pencil ghosts, and {ADMIN}'s clipboard already crossing the quad by nine",
+    "vo37": "{HEAD_CHORISTER} wants the choir to sing, uninvited, at the board's open meeting Thursday week, two minutes of {CHORAL_PIECE} in front of the people pricing the hall, a plea in the only language the choir speaks fluently; {TEACHER_C} will neither bless it nor forbid it, students may attend open meetings, she says, and looks out the window; risk to the program either way, and {HEAD_CHORISTER} is asking {HERO} to stand with him",
+    "vo38": "the open meeting; the students rise from the public seats and sing two minutes of {CHORAL_PIECE}, respectful and short and devastatingly good; {ADMIN} listens with his pen down the whole time; {PROVOST} chides the method and praises the music in one sentence, adults being complicated in public; the recording someone made is around the school by supper",
+    "vo39": "fallout mild, ripples long; Tuesday {SENIOR_PEER} accused on the key log, Thursday assembly and the infirmary log clearing her while the whole school watches, {TEACHER_C}'s hand on her shoulder; Friday {CULPRIT} confesses at the first combined rehearsal, probation and the shop bench; and the board floats a compromise, shared evening hours with paying events if the {CONCERT_EVENT} makes the hall's case; the singing at the meeting bought that much",
+    "vo40": "{TEACHER_C}, plainly, to the choir, we asked to be heard and we were, now sing; {HEAD_CHORISTER} wants one more petition round anyway, pressure until the vote is signed; the compromise is real but unsigned, the concert is five weeks out, and a choir only has so many evenings; {TEACHER_C} has said her piece once, which by her arithmetic means it matters",
+    "vo41": "everything into the {COMBINED_PIECE}; the altos carry the join where strings hand the {SIGNATURE_TUNE} to the voices, the seam that makes three studios sound like one; {CULPRIT}, on probation, orchestrates the seam from the shop bench and gets it right the third time; combined rehearsals knit the term's wounds into something load-bearing; snow in the forecast",
+    "vo42": "final rehearsal; lantern drill for the last verse, the flicker joke long since a plan; the board confirmed for the second row; {TEACHER_C} counts the choir's breath, in for four, out for the whole hall; the join rehearsed until the seam disappears",
+    "vo43": "the {CONCERT_EVENT}; the join lands and nobody in the hall can hear where strings end and voices begin; the flicker, the lanterns, {ADMIN}'s pledge before the applause dies; the compromise signs itself in January, everyone can feel it; the altos still get no applause of their own, and {HERO} finally hears why that is the compliment",
+    "vo44": "the extra petition round; evenings that belonged to sectionals go to signatures, and {ROUTE_C_ANCHOR} sing Thursday's join ragged; {TEACHER_C} never scolds; she moves the alto lead to {HERO} for the last week to keep the section warm, and says only, a term has one December, spend it where you mean it; the kindness of the correction is the sting of it",
+    "vo45": "the {CONCERT_EVENT} lands anyway, carried by the whole term's case, the lanterns, the pledge, the vote all but won; {HERO} sings from the middle of a section she barely rehearsed with in the final weeks, and hears the difference between a fight and a term's work from the inside; nothing broke, and something thinned; the door to spring stands open, and she knows exactly which evenings she wants back",
+    "vo46": "{TEACHER_C}'s patience; instead of a protest she invites {ADMIN} to an ordinary Tuesday rehearsal, no program, no polish; he comes with the clipboard and forgets to write anything for forty minutes; on his way out he fixes the door hinge himself with a pocket screwdriver, a man who loves the building being half the problem and half the solution in one coat",
+    "vo47": "the accusation week up close; Tuesday, {SENIOR_PEER} named on the key log; Wednesday evening {TEACHER_C} crosses to the infirmary and walks {SENIOR_PEER} to {PROVOST} with {NURSE}'s log; Thursday assembly clears her, the lent ring surfacing at last; Friday {CULPRIT} confesses at the first combined rehearsal, folios home intact, probation and the shop bench; {ADMIN}'s second memo dies unsent, and the board's compromise takes shape around the concert instead",
+    "vo48": "{TEACHER_C}'s offer, made across the piano lid; the {COMBINED_PIECE}'s middle movement carries the {SIGNATURE_TUNE}, and its small solo verse wants a voice that grew up inside the tune; {HERO} has known it since {HERO_TUNE_ORIGIN}; take the solo and carry home into that paneled hall alone, or ask to share it, because {HEAD_CHORISTER}'s counter-voice has been threading hers all term and some tunes want two",
+    "vo49": "carrying the {SIGNATURE_TUNE} alone; nerves like a held fermata; {TEACHER_C}'s breath work, in for four, through the fear and out the other side; singing home in front of strangers, which is either betrayal or gift depending on the singing; {HERO_HOMETOWN} in every vowel; snow forecast for concert night",
+    "vo50": "concert night, snow thick past the famous windows; the hall packed, the board in the second row; the middle movement turns and the room goes quiet for one voice; in the last verse the wiring flickers and a hundred lanterns rise while she holds the tune steady over the dark",
+    "vo51": "a mill-town tune holding a paneled hall dead quiet, then the roar; {ADMIN} pledges the {WIRING_FUND} before he sits down; {TEACHER_C}, in the wings, taps her own sternum twice, which is choir for that was yours; the {SIGNATURE_TUNE} went out from a scholarship kid's kitchen and came home with a concert hall around it",
+    "vo52": "she asks to split the verse, and the asking surprises everyone but {TEACHER_C}; two voices braiding the {SIGNATURE_TUNE}, mill town and river school; rehearsals turn into a friendship with its own private jokes about fermatas and {ADMIN}'s clipboard; {HEAD_CHORISTER} teaches her to shape the verse's turn, she teaches him how {SIGNATURE_TUNE}'s pulse actually sounds; snow forecast holds",
+    "vo53": "the {CONCERT_EVENT}; the duet verse rises, two voices carrying one tune from two directions, and the join is invisible; the flicker, the lanterns, the pledge; afterward {HEAD_CHORISTER} says the tune was better with its pulse in it, and {HERO} says it was better with the handrail; a term that began alone in a new school ends in two-part harmony, which is the whole argument for the program in one bar"
+  },
+  "titles": {
+    "st12": "Two Names on One Desk",
+    "st17": "The True Bar",
+    "st22": "The Weight He Carried",
+    "st24": "A Colder Door",
+    "st33": "Late and True",
+    "st37": "Pain Is Information",
+    "st48": "The Margin Tune, Voiced",
+    "st54": "The Hour of the Tune",
+    "cm14": "Four Bars of Weather",
+    "cm18": "The Door He Opened",
+    "cm21": "Procedure Before Mercy",
+    "cm27": "Say the True Thing First",
+    "cm29": "Both Halves of Kindness",
+    "cm40": "Where Music Sleeps",
+    "cm46": "A Shared Credit",
+    "cm49": "The Studio's Name",
+    "vo14": "The Weathervane",
+    "vo16": "Letters Sent Late",
+    "vo22": "The Lantern Verse",
+    "vo24": "Steady in the Dark",
+    "vo30": "The Second Set of Scores",
+    "vo33": "The Unasked Question",
+    "vo43": "The Join",
+    "vo45": "The Wrong War",
+    "vo51": "The {SIGNATURE_TUNE}, Carried",
+    "vo53": "Two Voices, One {SIGNATURE_TUNE}"
+  },
+  "labels": {
+    "n_start": {
+      "c_n_start_1": "Follow {CUSTODIAN} up to the {OPENING_EVENT}."
+    },
+    "n_recital": {
+      "c_n_recital_1": "Join the line at the registrar's table."
+    },
+    "n_sort": {
+      "c_n_sort_1": "Sign for {ROUTE_A_STUDIO} under {TEACHER_A}.",
+      "c_n_sort_2": "Sign for {ROUTE_B_STUDIO} under {TEACHER_B}.",
+      "c_n_sort_3": "Sign for {ROUTE_C_STUDIO} under {TEACHER_C}."
+    },
+    "st01": {
+      "c_st01_1": "Give {ROUTE_A_DISCIPLINE} everything and shelve all else.",
+      "c_st01_2": "Work {ROUTE_A_DISCIPLINE} but keep the margin tunes alive."
+    },
+    "st02": {
+      "c_st02_1": "Keep at it until Thursday."
+    },
+    "st03": {
+      "c_st03_1": "Take {SENIOR_PEER}'s help and learn the trick.",
+      "c_st03_2": "Thank her, and prove the bar alone."
+    },
+    "st04": {
+      "c_st04_1": "Prepare for {ROUTE_A_CHALLENGE}."
+    },
+    "st05": {
+      "c_st05_1": "Play the blind hearing."
+    },
+    "st06": {
+      "c_st06_1": "Walk into Monday."
+    },
+    "st07": {
+      "c_st07_1": "Face the section on its worst day."
+    },
+    "st08": {
+      "c_st08_1": "Speak for {SENIOR_PEER}, straight to {TEACHER_A}.",
+      "c_st08_2": "Say less, and re-check the facts yourself."
+    },
+    "st09": {
+      "c_st09_1": "Stand with the section at assembly."
+    },
+    "st10": {
+      "c_st10_1": "Welcome {SENIOR_PEER} back."
+    },
+    "st11": {
+      "c_st11_1": "Give December to the {COMBINED_PIECE}."
+    },
+    "st13": {
+      "c_st13_1": "Decide what to do with what you found."
+    },
+    "st14": {
+      "c_st14_1": "Bring it all to {TEACHER_A}.",
+      "c_st14_2": "Climb to the {HIDING_PLACE} tonight."
+    },
+    "st15": {
+      "c_st15_1": "Watch the search turn kind."
+    },
+    "st16": {
+      "c_st16_1": "Carry the term to its last Friday."
+    },
+    "st18": {
+      "c_st18_1": "Choose what happens next."
+    },
+    "st19": {
+      "c_st19_1": "Stay, and walk him to the truth.",
+      "c_st19_2": "Go to {PROVOST} tonight."
+    },
+    "st20": {
+      "c_st20_1": "Let December do its work."
+    },
+    "st21": {
+      "c_st21_1": "Take your desk for the {CONCERT_EVENT}."
+    },
+    "st23": {
+      "c_st23_1": "Finish the term honestly."
+    },
+    "st25": {
+      "c_st25_1": "Decide what the ache is telling you."
+    },
+    "st26": {
+      "c_st26_1": "Rest the wrist as told.",
+      "c_st26_2": "Practice through the ache."
+    },
+    "st27": {
+      "c_st27_1": "Meet the Monday after {FROST_MARKER}."
+    },
+    "st28": {
+      "c_st28_1": "Hold steady through the accusation week."
+    },
+    "st29": {
+      "c_st29_1": "Hear the truth on Friday."
+    },
+    "st30": {
+      "c_st30_1": "Take the quartet chair."
+    },
+    "st31": {
+      "c_st31_1": "Play the final rehearsal."
+    },
+    "st32": {
+      "c_st32_1": "Walk out for the {CONCERT_EVENT}."
+    },
+    "st34": {
+      "c_st34_1": "Let the term reshape itself."
+    },
+    "st35": {
+      "c_st35_1": "Mark the parts for December."
+    },
+    "st36": {
+      "c_st36_1": "Take your seat in the audience."
+    },
+    "st38": {
+      "c_st38_1": "Stand there while {TEACHER_A} reads."
+    },
+    "st39": {
+      "c_st39_1": "Play the tune truly."
+    },
+    "st40": {
+      "c_st40_1": "Hear what {TEACHER_B} is asking."
+    },
+    "st41": {
+      "c_st41_1": "Give the tune to the {COMBINED_PIECE}.",
+      "c_st41_2": "Keep it for the spring recital."
+    },
+    "st42": {
+      "c_st42_1": "Keep working toward mid-term."
+    },
+    "st43": {
+      "c_st43_1": "Watch the accusation week unfold."
+    },
+    "st44": {
+      "c_st44_1": "Be there on Friday."
+    },
+    "st45": {
+      "c_st45_1": "Go where the repair is happening."
+    },
+    "st46": {
+      "c_st46_1": "Play the last rehearsal."
+    },
+    "st47": {
+      "c_st47_1": "Take your desk for the concert."
+    },
+    "st49": {
+      "c_st49_1": "Carry the true bar into ensemble week."
+    },
+    "st49b": {
+      "c_st49b_1": "Meet the frost Monday."
+    },
+    "st50": {
+      "c_st50_1": "Decide what the thread is worth."
+    },
+    "st51": {
+      "c_st51_1": "Let the kind search work."
+    },
+    "st52": {
+      "c_st52_1": "Give December to the {SHOWCASE_PIECE}."
+    },
+    "st53": {
+      "c_st53_1": "Play the {CONCERT_EVENT}."
+    },
+    "cm01": {
+      "c_cm01_1": "Take the riddle back to your room."
+    },
+    "cm02": {
+      "c_cm02_1": "Bring the drizzle to {TEACHER_B}."
+    },
+    "cm03": {
+      "c_cm03_1": "Ask {TEACHER_B} straight out what the riddle means.",
+      "c_cm03_2": "Sit with the riddle another week."
+    },
+    "cm04": {
+      "c_cm04_1": "Report to the workshop as copyist."
+    },
+    "cm05": {
+      "c_cm05_1": "Keep copying toward mid-term."
+    },
+    "cm06": {
+      "c_cm06_1": "Come in on the frost Monday."
+    },
+    "cm07": {
+      "c_cm07_1": "Sit with the studio in the wreckage."
+    },
+    "cm08": {
+      "c_cm08_1": "Answer the riddle with facts.",
+      "c_cm08_2": "Answer it with charity first."
+    },
+    "cm09": {
+      "c_cm09_1": "Follow the key."
+    },
+    "cm10": {
+      "c_cm10_1": "Stand at {TEACHER_B}'s three doors."
+    },
+    "cm11": {
+      "c_cm11_1": "Go to {CULPRIT} alone.",
+      "c_cm11_2": "Bring {TEACHER_B} with you.",
+      "c_cm11_3": "Put it before {PROVOST}."
+    },
+    "cm12": {
+      "c_cm12_1": "Hear him to the end."
+    },
+    "cm13": {
+      "c_cm13_1": "Give December to the middle movement."
+    },
+    "cm15": {
+      "c_cm15_1": "Stand by while the truth walks."
+    },
+    "cm16": {
+      "c_cm16_1": "Come to the last week of term."
+    },
+    "cm17": {
+      "c_cm17_1": "Take your seat for the concert."
+    },
+    "cm19": {
+      "c_cm19_1": "See the hearing through."
+    },
+    "cm20": {
+      "c_cm20_1": "Finish the term with open eyes."
+    },
+    "cm22": {
+      "c_cm22_1": "Run the copy night."
+    },
+    "cm23": {
+      "c_cm23_1": "Deliver the scores and wait."
+    },
+    "cm24": {
+      "c_cm24_1": "Sit in the studio circle after."
+    },
+    "cm25": {
+      "c_cm25_1": "Speak to what he did.",
+      "c_cm25_2": "Speak to why he did it."
+    },
+    "cm26": {
+      "c_cm26_1": "Let the term mend toward December."
+    },
+    "cm28": {
+      "c_cm28_1": "Carry both halves to December."
+    },
+    "cm30": {
+      "c_cm30_1": "Bring {ROUTE_B_TASK} back grown."
+    },
+    "cm31": {
+      "c_cm31_1": "Join the workshop."
+    },
+    "cm32": {
+      "c_cm32_1": "Come in on the frost Monday."
+    },
+    "cm33": {
+      "c_cm33_1": "Hold the studio together that week."
+    },
+    "cm34": {
+      "c_cm34_1": "Take the riddle seriously."
+    },
+    "cm35": {
+      "c_cm35_1": "Search where music sleeps.",
+      "c_cm35_2": "Let the adults carry it, and write."
+    },
+    "cm36": {
+      "c_cm36_1": "Carry it all to {TEACHER_B}."
+    },
+    "cm37": {
+      "c_cm37_1": "Watch the bridge get written."
+    },
+    "cm38": {
+      "c_cm38_1": "Come to concert day."
+    },
+    "cm39": {
+      "c_cm39_1": "Hear the {COMBINED_PIECE} whole."
+    },
+    "cm41": {
+      "c_cm41_1": "Meet the aftermath."
+    },
+    "cm42": {
+      "c_cm42_1": "Face the commission question."
+    },
+    "cm43": {
+      "c_cm43_1": "Accept the nomination.",
+      "c_cm43_2": "Ask that it go unawarded this term."
+    },
+    "cm44": {
+      "c_cm44_1": "Rehearse it into the movement."
+    },
+    "cm45": {
+      "c_cm45_1": "Take your seat for the concert."
+    },
+    "cm47": {
+      "c_cm47_1": "Finish the movement with the studio."
+    },
+    "cm48": {
+      "c_cm48_1": "Hear it played that way."
+    },
+    "vo01": {
+      "c_vo01_1": "Learn the {CHORAL_PIECE} from the inside."
+    },
+    "vo02": {
+      "c_vo02_1": "Settle into sectionals."
+    },
+    "vo03": {
+      "c_vo03_1": "Audition for {ROUTE_C_TASK}.",
+      "c_vo03_2": "Anchor {ROUTE_C_ANCHOR}."
+    },
+    "vo04": {
+      "c_vo04_1": "Sing into the cold weeks."
+    },
+    "vo05": {
+      "c_vo05_1": "Come in on Monday."
+    },
+    "vo06": {
+      "c_vo06_1": "Gather with the choir at noon."
+    },
+    "vo07": {
+      "c_vo07_1": "Help {TEACHER_C} answer the memo with facts.",
+      "c_vo07_2": "Rally the choir to re-mark scores overnight."
+    },
+    "vo08": {
+      "c_vo08_1": "Be in the office when the board writes back."
+    },
+    "vo09": {
+      "c_vo09_1": "Urge {TEACHER_C} to sign and protect the program.",
+      "c_vo09_2": "Urge her to wait for the infirmary log."
+    },
+    "vo10": {
+      "c_vo10_1": "Own what traveled."
+    },
+    "vo11": {
+      "c_vo11_1": "Apologize to {SENIOR_PEER}, face to face.",
+      "c_vo11_2": "Let it fade into the term's noise."
+    },
+    "vo12": {
+      "c_vo12_1": "Sing toward December."
+    },
+    "vo13": {
+      "c_vo13_1": "Sing the {CONCERT_EVENT}."
+    },
+    "vo15": {
+      "c_vo15_1": "Sing the concert with the letter sent."
+    },
+    "vo17": {
+      "c_vo17_1": "Watch the politics turn."
+    },
+    "vo18": {
+      "c_vo18_1": "Plan the argument with {TEACHER_C}."
+    },
+    "vo19": {
+      "c_vo19_1": "Back the lantern verse.",
+      "c_vo19_2": "Back the flawless program."
+    },
+    "vo20": {
+      "c_vo20_1": "Come to concert night."
+    },
+    "vo21": {
+      "c_vo21_1": "Hold the verse to the end."
+    },
+    "vo23": {
+      "c_vo23_1": "Finish in the dark, steady."
+    },
+    "vo25": {
+      "c_vo25_1": "Work beside him till the urn runs dry."
+    },
+    "vo26": {
+      "c_vo26_1": "Ask him, kindly, how he knows the markings.",
+      "c_vo26_2": "Say nothing and finish the scores."
+    },
+    "vo27": {
+      "c_vo27_1": "Hold the door open through the week."
+    },
+    "vo28": {
+      "c_vo28_1": "Bring the scores home to December."
+    },
+    "vo29": {
+      "c_vo29_1": "Sing the {CONCERT_EVENT}."
+    },
+    "vo31": {
+      "c_vo31_1": "Carry the arithmetic to {TEACHER_C}."
+    },
+    "vo32": {
+      "c_vo32_1": "Sing the concert with clear eyes."
+    },
+    "vo34": {
+      "c_vo34_1": "Sing into the schedule fight."
+    },
+    "vo35": {
+      "c_vo35_1": "Come in on Monday."
+    },
+    "vo36": {
+      "c_vo36_1": "Meet with the choir that evening."
+    },
+    "vo37": {
+      "c_vo37_1": "Back {HEAD_CHORISTER}'s plan.",
+      "c_vo37_2": "Back {TEACHER_C}'s patience."
+    },
+    "vo38": {
+      "c_vo38_1": "Ride the ripples."
+    },
+    "vo39": {
+      "c_vo39_1": "Weigh the compromise with the choir."
+    },
+    "vo40": {
+      "c_vo40_1": "Pour everything into the {COMBINED_PIECE}.",
+      "c_vo40_2": "Keep fighting the schedule fight."
+    },
+    "vo41": {
+      "c_vo41_1": "Sing the final rehearsal."
+    },
+    "vo42": {
+      "c_vo42_1": "Sing the {CONCERT_EVENT}."
+    },
+    "vo44": {
+      "c_vo44_1": "Sing the concert you rehearsed."
+    },
+    "vo46": {
+      "c_vo46_1": "Let the term turn under you."
+    },
+    "vo47": {
+      "c_vo47_1": "Hear {TEACHER_C}'s offer."
+    },
+    "vo48": {
+      "c_vo48_1": "Take the solo verse.",
+      "c_vo48_2": "Ask to sing it as a duet with {HEAD_CHORISTER}."
+    },
+    "vo49": {
+      "c_vo49_1": "Walk out under the lanterns."
+    },
+    "vo50": {
+      "c_vo50_1": "Finish the verse."
+    },
+    "vo52": {
+      "c_vo52_1": "Sing it together."
+    }
+  }
+}

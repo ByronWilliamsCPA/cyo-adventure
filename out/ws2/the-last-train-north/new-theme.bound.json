@@ -1,0 +1,2002 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_last_train_north",
+  "version": 1,
+  "title": "The Last Train North",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "the uncanny",
+      "journey and passage",
+      "memory",
+      "letting go"
+    ],
+    "estimated_minutes": 14,
+    "ending_count": 25,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=210 beats='Kaia Osei boards the final supply shuttle to the outpost at the reactor hums to life; the launch bay's clock has already stopped; four ways to read this strange, half-empty train open before her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_0",
+          "label": "Find the night navigator.",
+          "target": "g0a0_1"
+        },
+        {
+          "id": "c_start_1",
+          "label": "Walk the cargo pods.",
+          "target": "g0a1_1"
+        },
+        {
+          "id": "c_start_2",
+          "label": "Read the left-behind data chip.",
+          "target": "g0a2_1"
+        },
+        {
+          "id": "c_start_3",
+          "label": "Watch the shifting debris field.",
+          "target": "g0a3_1"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the night navigator and his worn data slate; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_1",
+          "label": "Look closer.",
+          "target": "g0a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_2",
+      "body": "<<FILL role=choice words=180 beats='the night navigator and his worn data slate offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_2a",
+          "label": "Press in directly.",
+          "target": "g0a0_3a"
+        },
+        {
+          "id": "c_g0a0_2b",
+          "label": "Hang back and watch.",
+          "target": "g0a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the night navigator and his worn data slate yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_3a",
+          "label": "Carry the fact onward.",
+          "target": "g0a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the night navigator and his worn data slate from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g0a0_4"
+        },
+        {
+          "id": "c_g0a0_3b2",
+          "label": "Let the hour take you.",
+          "target": "g0a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the night navigator and his worn data slate converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_4",
+          "label": "Press on.",
+          "target": "g0a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the night navigator and his worn data slate has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a0_5",
+          "label": "Follow it to the pivot.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a0_end",
+      "body": "<<FILL role=setback words=150 beats='the pull of the night navigator and his worn data slate closes over Kaia Osei before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "You Slept Through the Stop"
+      }
+    },
+    {
+      "id": "g0a1_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the long row of sealed cargo pods; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_1",
+          "label": "Look closer.",
+          "target": "g0a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_2",
+      "body": "<<FILL role=choice words=180 beats='the long row of sealed cargo pods offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_2a",
+          "label": "Press in directly.",
+          "target": "g0a1_3a"
+        },
+        {
+          "id": "c_g0a1_2b",
+          "label": "Hang back and watch.",
+          "target": "g0a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the long row of sealed cargo pods yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_3a",
+          "label": "Carry the fact onward.",
+          "target": "g0a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the long row of sealed cargo pods from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g0a1_4"
+        },
+        {
+          "id": "c_g0a1_3b2",
+          "label": "Let the hour take you.",
+          "target": "g0a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the long row of sealed cargo pods converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_4",
+          "label": "Press on.",
+          "target": "g0a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the long row of sealed cargo pods has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a1_5",
+          "label": "Follow it to the pivot.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a1_end",
+      "body": "<<FILL role=setback words=150 beats='the pull of the long row of sealed cargo pods closes over Kaia Osei before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Door You Did Not Open"
+      }
+    },
+    {
+      "id": "g0a2_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the data chip a stranger left tucked in a seat; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_1",
+          "label": "Look closer.",
+          "target": "g0a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_2",
+      "body": "<<FILL role=choice words=180 beats='the data chip a stranger left tucked in a seat offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_2a",
+          "label": "Press in directly.",
+          "target": "g0a2_3a"
+        },
+        {
+          "id": "c_g0a2_2b",
+          "label": "Hang back and watch.",
+          "target": "g0a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the data chip a stranger left tucked in a seat yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_3a",
+          "label": "Carry the fact onward.",
+          "target": "g0a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the data chip a stranger left tucked in a seat from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g0a2_4"
+        },
+        {
+          "id": "c_g0a2_3b2",
+          "label": "Let the hour take you.",
+          "target": "g0a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the data chip a stranger left tucked in a seat converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_4",
+          "label": "Press on.",
+          "target": "g0a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the data chip a stranger left tucked in a seat has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a2_5",
+          "label": "Follow it to the pivot.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a2_end",
+      "body": "<<FILL role=setback words=150 beats='the pull of the data chip a stranger left tucked in a seat closes over Kaia Osei before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Page Blurs to Nothing"
+      }
+    },
+    {
+      "id": "g0a3_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the drifting debris field beyond the viewport; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_1",
+          "label": "Look closer.",
+          "target": "g0a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_2",
+      "body": "<<FILL role=choice words=180 beats='the drifting debris field beyond the viewport offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_2a",
+          "label": "Press in directly.",
+          "target": "g0a3_3a"
+        },
+        {
+          "id": "c_g0a3_2b",
+          "label": "Hang back and watch.",
+          "target": "g0a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the drifting debris field beyond the viewport yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_3a",
+          "label": "Carry the fact onward.",
+          "target": "g0a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the drifting debris field beyond the viewport from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g0a3_4"
+        },
+        {
+          "id": "c_g0a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g0a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the drifting debris field beyond the viewport converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_4",
+          "label": "Press on.",
+          "target": "g0a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the drifting debris field beyond the viewport has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g0a3_5",
+          "label": "Follow it to the pivot.",
+          "target": "p1_never_arrives"
+        }
+      ]
+    },
+    {
+      "id": "g0a3_end",
+      "body": "<<FILL role=setback words=150 beats='the pull of the drifting debris field beyond the viewport closes over Kaia Osei before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g0a3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lulled by the Static"
+      }
+    },
+    {
+      "id": "g1a0_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the galley regulars who never seem to eat; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_1",
+          "label": "Look closer.",
+          "target": "g1a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_2",
+      "body": "<<FILL role=choice words=180 beats='the galley regulars who never seem to eat offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_2a",
+          "label": "Press in directly.",
+          "target": "g1a0_3a"
+        },
+        {
+          "id": "c_g1a0_2b",
+          "label": "Hang back and watch.",
+          "target": "g1a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the galley regulars who never seem to eat yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_3a",
+          "label": "Carry the fact onward.",
+          "target": "g1a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the galley regulars who never seem to eat from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g1a0_4"
+        },
+        {
+          "id": "c_g1a0_3b2",
+          "label": "Let the hour take you.",
+          "target": "g1a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the galley regulars who never seem to eat converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_4",
+          "label": "Press on.",
+          "target": "g1a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the galley regulars who never seem to eat has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a0_5",
+          "label": "Follow it to the pivot.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a0_end",
+      "body": "<<FILL role=setback words=175 beats='in the galley regulars who never seem to eat Kaia Osei finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the final supply shuttle to the outpost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Same Four Faces"
+      }
+    },
+    {
+      "id": "g1a1_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the small child awake at the end of the corridor; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_1",
+          "label": "Look closer.",
+          "target": "g1a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_2",
+      "body": "<<FILL role=choice words=180 beats='the small child awake at the end of the corridor offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_2a",
+          "label": "Press in directly.",
+          "target": "g1a1_3a"
+        },
+        {
+          "id": "c_g1a1_2b",
+          "label": "Hang back and watch.",
+          "target": "g1a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the small child awake at the end of the corridor yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_3a",
+          "label": "Carry the fact onward.",
+          "target": "g1a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the small child awake at the end of the corridor from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g1a1_4"
+        },
+        {
+          "id": "c_g1a1_3b2",
+          "label": "Let the hour take you.",
+          "target": "g1a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the small child awake at the end of the corridor converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_4",
+          "label": "Press on.",
+          "target": "g1a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the small child awake at the end of the corridor has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a1_5",
+          "label": "Follow it to the pivot.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a1_end",
+      "body": "<<FILL role=setback words=175 beats='in the small child awake at the end of the corridor Kaia Osei finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the final supply shuttle to the outpost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Child Knows"
+      }
+    },
+    {
+      "id": "g1a2_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the man softly counting beacons that never come; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_1",
+          "label": "Look closer.",
+          "target": "g1a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_2",
+      "body": "<<FILL role=choice words=180 beats='the man softly counting beacons that never come offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_2a",
+          "label": "Press in directly.",
+          "target": "g1a2_3a"
+        },
+        {
+          "id": "c_g1a2_2b",
+          "label": "Hang back and watch.",
+          "target": "g1a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the man softly counting beacons that never come yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_3a",
+          "label": "Carry the fact onward.",
+          "target": "g1a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the man softly counting beacons that never come from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g1a2_4"
+        },
+        {
+          "id": "c_g1a2_3b2",
+          "label": "Let the hour take you.",
+          "target": "g1a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the man softly counting beacons that never come converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_4",
+          "label": "Press on.",
+          "target": "g1a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the man softly counting beacons that never come has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a2_5",
+          "label": "Follow it to the pivot.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a2_end",
+      "body": "<<FILL role=setback words=175 beats='in the man softly counting beacons that never come Kaia Osei finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the final supply shuttle to the outpost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Numbers Without a Sum"
+      }
+    },
+    {
+      "id": "g1a3_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the woman in silver mourning her crew; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_1",
+          "label": "Look closer.",
+          "target": "g1a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_2",
+      "body": "<<FILL role=choice words=180 beats='the woman in silver mourning her crew offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_2a",
+          "label": "Press in directly.",
+          "target": "g1a3_3a"
+        },
+        {
+          "id": "c_g1a3_2b",
+          "label": "Hang back and watch.",
+          "target": "g1a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the woman in silver mourning her crew yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_3a",
+          "label": "Carry the fact onward.",
+          "target": "g1a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the woman in silver mourning her crew from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g1a3_4"
+        },
+        {
+          "id": "c_g1a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g1a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the woman in silver mourning her crew converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_4",
+          "label": "Press on.",
+          "target": "g1a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the woman in silver mourning her crew has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g1a3_5",
+          "label": "Follow it to the pivot.",
+          "target": "p2_who_passengers"
+        }
+      ]
+    },
+    {
+      "id": "g1a3_end",
+      "body": "<<FILL role=setback words=175 beats='in the woman in silver mourning her crew Kaia Osei finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the final supply shuttle to the outpost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g1a3",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Grief Held Very Still"
+      }
+    },
+    {
+      "id": "g2a0_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the navigator hailed a second time near the corridor; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_1",
+          "label": "Look closer.",
+          "target": "g2a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_2",
+      "body": "<<FILL role=choice words=180 beats='the navigator hailed a second time near the corridor offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_2a",
+          "label": "Press in directly.",
+          "target": "g2a0_3a"
+        },
+        {
+          "id": "c_g2a0_2b",
+          "label": "Hang back and watch.",
+          "target": "g2a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the navigator hailed a second time near the corridor yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_3a",
+          "label": "Carry the fact onward.",
+          "target": "g2a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the navigator hailed a second time near the corridor from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g2a0_4"
+        },
+        {
+          "id": "c_g2a0_3b2",
+          "label": "Let the hour take you.",
+          "target": "g2a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the navigator hailed a second time near the corridor converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_4",
+          "label": "Press on.",
+          "target": "g2a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the navigator hailed a second time near the corridor has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a0_5",
+          "label": "Follow it to the pivot.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a0_end",
+      "body": "<<FILL role=setback words=175 beats='in the navigator hailed a second time near the corridor Kaia Osei finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the final supply shuttle to the outpost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Navigator Won't Say"
+      }
+    },
+    {
+      "id": "g2a1_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the faint route etched into the data chip; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_1",
+          "label": "Look closer.",
+          "target": "g2a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_2",
+      "body": "<<FILL role=choice words=180 beats='the faint route etched into the data chip offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_2a",
+          "label": "Press in directly.",
+          "target": "g2a1_3a"
+        },
+        {
+          "id": "c_g2a1_2b",
+          "label": "Hang back and watch.",
+          "target": "g2a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the faint route etched into the data chip yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_3a",
+          "label": "Carry the fact onward.",
+          "target": "g2a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the faint route etched into the data chip from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g2a1_4"
+        },
+        {
+          "id": "c_g2a1_3b2",
+          "label": "Let the hour take you.",
+          "target": "g2a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the faint route etched into the data chip converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_4",
+          "label": "Press on.",
+          "target": "g2a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the faint route etched into the data chip has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a1_5",
+          "label": "Follow it to the pivot.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a1_end",
+      "body": "<<FILL role=setback words=150 beats='the pull of the faint route etched into the data chip closes over Kaia Osei before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Ink Runs in the Cold"
+      }
+    },
+    {
+      "id": "g2a2_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the beacon lights burning ahead of the corridor mouth; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_1",
+          "label": "Look closer.",
+          "target": "g2a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_2",
+      "body": "<<FILL role=choice words=180 beats='the beacon lights burning ahead of the corridor mouth offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_2a",
+          "label": "Press in directly.",
+          "target": "g2a2_3a"
+        },
+        {
+          "id": "c_g2a2_2b",
+          "label": "Hang back and watch.",
+          "target": "g2a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the beacon lights burning ahead of the corridor mouth yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_3a",
+          "label": "Carry the fact onward.",
+          "target": "g2a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the beacon lights burning ahead of the corridor mouth from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g2a2_4"
+        },
+        {
+          "id": "c_g2a2_3b2",
+          "label": "Let the hour take you.",
+          "target": "g2a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the beacon lights burning ahead of the corridor mouth converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_4",
+          "label": "Press on.",
+          "target": "g2a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the beacon lights burning ahead of the corridor mouth has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a2_5",
+          "label": "Follow it to the pivot.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a2_end",
+      "body": "<<FILL role=setback words=175 beats='in the beacon lights burning ahead of the corridor mouth Kaia Osei finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the final supply shuttle to the outpost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a2",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Green, and Then Not"
+      }
+    },
+    {
+      "id": "g2a3_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the crew gathered to weigh the choice together; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_1",
+          "label": "Look closer.",
+          "target": "g2a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_2",
+      "body": "<<FILL role=choice words=180 beats='the crew gathered to weigh the choice together offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_2a",
+          "label": "Press in directly.",
+          "target": "g2a3_3a"
+        },
+        {
+          "id": "c_g2a3_2b",
+          "label": "Hang back and watch.",
+          "target": "g2a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the crew gathered to weigh the choice together yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_3a",
+          "label": "Carry the fact onward.",
+          "target": "g2a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the crew gathered to weigh the choice together from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g2a3_4"
+        },
+        {
+          "id": "c_g2a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g2a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the crew gathered to weigh the choice together converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_4",
+          "label": "Press on.",
+          "target": "g2a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the crew gathered to weigh the choice together has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g2a3_5",
+          "label": "Follow it to the pivot.",
+          "target": "p3_tunnel_choice"
+        }
+      ]
+    },
+    {
+      "id": "g2a3_end",
+      "body": "<<FILL role=setback words=150 beats='the pull of the crew gathered to weigh the choice together closes over Kaia Osei before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g2a3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "No One Will Meet Your Eye"
+      }
+    },
+    {
+      "id": "g3a0_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the navigator at last willing to explain the outpost route; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_1",
+          "label": "Look closer.",
+          "target": "g3a0_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_2",
+      "body": "<<FILL role=choice words=180 beats='the navigator at last willing to explain the outpost route offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_2a",
+          "label": "Press in directly.",
+          "target": "g3a0_3a"
+        },
+        {
+          "id": "c_g3a0_2b",
+          "label": "Hang back and watch.",
+          "target": "g3a0_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the navigator at last willing to explain the outpost route yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_3a",
+          "label": "Carry the fact onward.",
+          "target": "g3a0_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the navigator at last willing to explain the outpost route from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g3a0_4"
+        },
+        {
+          "id": "c_g3a0_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a0_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the navigator at last willing to explain the outpost route converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_4",
+          "label": "Press on.",
+          "target": "g3a0_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the navigator at last willing to explain the outpost route has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a0_5",
+          "label": "Follow it to the pivot.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a0_end",
+      "body": "<<FILL role=setback words=175 beats='in the navigator at last willing to explain the outpost route Kaia Osei finds one true, unsettling detail and keeps it; it does not complete the picture, but it is real and it is hers to carry off the final supply shuttle to the outpost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a0",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "What the Navigator Carries"
+      }
+    },
+    {
+      "id": "g3a1_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the wakeful child offering to show the way through; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_1",
+          "label": "Look closer.",
+          "target": "g3a1_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_2",
+      "body": "<<FILL role=choice words=180 beats='the wakeful child offering to show the way through offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_2a",
+          "label": "Press in directly.",
+          "target": "g3a1_3a"
+        },
+        {
+          "id": "c_g3a1_2b",
+          "label": "Hang back and watch.",
+          "target": "g3a1_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the wakeful child offering to show the way through yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_3a",
+          "label": "Carry the fact onward.",
+          "target": "g3a1_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the wakeful child offering to show the way through from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g3a1_4"
+        },
+        {
+          "id": "c_g3a1_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a1_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the wakeful child offering to show the way through converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_4",
+          "label": "Press on.",
+          "target": "g3a1_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the wakeful child offering to show the way through has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a1_5",
+          "label": "Follow it to the pivot.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a1_end",
+      "body": "<<FILL role=setback words=210 beats='through the wakeful child offering to show the way through Kaia Osei does one whole, quiet good thing for another traveler, and the doing of it is enough; the carriage seems to warm a half-degree around her'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a1",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Child Shows the Way"
+      }
+    },
+    {
+      "id": "g3a2_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the mourning woman's quiet request to carry a message on; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_1",
+          "label": "Look closer.",
+          "target": "g3a2_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_2",
+      "body": "<<FILL role=choice words=180 beats='the mourning woman's quiet request to carry a message on offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_2a",
+          "label": "Press in directly.",
+          "target": "g3a2_3a"
+        },
+        {
+          "id": "c_g3a2_2b",
+          "label": "Hang back and watch.",
+          "target": "g3a2_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the mourning woman's quiet request to carry a message on yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_3a",
+          "label": "Carry the fact onward.",
+          "target": "g3a2_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the mourning woman's quiet request to carry a message on from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g3a2_4"
+        },
+        {
+          "id": "c_g3a2_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a2_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the mourning woman's quiet request to carry a message on converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_4",
+          "label": "Press on.",
+          "target": "g3a2_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the mourning woman's quiet request to carry a message on has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a2_5",
+          "label": "Follow it to the pivot.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a2_end",
+      "body": "<<FILL role=setback words=215 beats='through the mourning woman's quiet request to carry a message on Kaia Osei meets the journey on its own terms and is answered; something long carried is finally set down'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a2",
+        "valence": "positive",
+        "kind": "success",
+        "title": "You Carried Her Message"
+      }
+    },
+    {
+      "id": "g3a3_1",
+      "body": "<<FILL role=rising words=165 beats='Kaia Osei turns toward the manifest whose columns of routes never end; the hull creaks and the viewport holds her reflection over the void; a first detail snags her attention'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_1",
+          "label": "Look closer.",
+          "target": "g3a3_2"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_2",
+      "body": "<<FILL role=choice words=180 beats='the manifest whose columns of routes never end offers Kaia Osei two ways to read it; one is direct and risks notice, the other is patient and lets the final supply shuttle to the outpost keep its secret a while'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_2a",
+          "label": "Press in directly.",
+          "target": "g3a3_3a"
+        },
+        {
+          "id": "c_g3a3_2b",
+          "label": "Hang back and watch.",
+          "target": "g3a3_3b"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_3a",
+      "body": "<<FILL role=rising words=150 beats='the direct approach to the manifest whose columns of routes never end yields a hard, specific fact that will not sit still in Kaia Osei's mind; it points deeper into the final supply shuttle to the outpost'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_3a",
+          "label": "Carry the fact onward.",
+          "target": "g3a3_4"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_3b",
+      "body": "<<FILL role=choice words=175 beats='watching the manifest whose columns of routes never end from the edges, Kaia Osei can either fold the observation into what she already knows, or let the late hour and the motion pull her under before she has understood it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_3b1",
+          "label": "Hold the thread and go on.",
+          "target": "g3a3_4"
+        },
+        {
+          "id": "c_g3a3_3b2",
+          "label": "Let the hour take you.",
+          "target": "g3a3_end"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_4",
+      "body": "<<FILL role=rising words=160 beats='both readings of the manifest whose columns of routes never end converge on the same small wrongness; Kaia Osei feels the journey close around it like a held breath'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_4",
+          "label": "Press on.",
+          "target": "g3a3_5"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_5",
+      "body": "<<FILL role=rising words=170 beats='carrying what the manifest whose columns of routes never end has told her, Kaia Osei moves on through the swaying cars toward the question the whole shuttle seems built around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g3a3_5",
+          "label": "Follow it to the pivot.",
+          "target": "p4_dawn_reveal"
+        }
+      ]
+    },
+    {
+      "id": "g3a3_end",
+      "body": "<<FILL role=setback words=150 beats='the pull of the manifest whose columns of routes never end closes over Kaia Osei before she can hold it; she surfaces later having missed the moment, safe but emptied of the thing she almost understood'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_g3a3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost Among the Columns"
+      }
+    },
+    {
+      "id": "p1_never_arrives",
+      "body": "<<FILL role=pivot words=205 beats='the first bottleneck, why the final supply shuttle to the outpost never seems to arrive; every clock aboard has stopped and the outpost beacon stays exactly one hour off, no matter how long the night runs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p1_never_arrives_0",
+          "label": "Sit with the galley regulars.",
+          "target": "g1a0_1"
+        },
+        {
+          "id": "c_p1_never_arrives_1",
+          "label": "Find the child who never sleeps.",
+          "target": "g1a1_1"
+        },
+        {
+          "id": "c_p1_never_arrives_2",
+          "label": "Follow the man counting beacons.",
+          "target": "g1a2_1"
+        },
+        {
+          "id": "c_p1_never_arrives_3",
+          "label": "Approach the woman in mourning.",
+          "target": "g1a3_1"
+        }
+      ]
+    },
+    {
+      "id": "p2_who_passengers",
+      "body": "<<FILL role=pivot words=205 beats='the second bottleneck, who the passengers really are; each traveller seems to be riding for a reason older than tonight, and none of them will say where they first got on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p2_who_passengers_0",
+          "label": "Consult the navigator again.",
+          "target": "g2a0_1"
+        },
+        {
+          "id": "c_p2_who_passengers_1",
+          "label": "Decode the chip's route.",
+          "target": "g2a1_1"
+        },
+        {
+          "id": "c_p2_who_passengers_2",
+          "label": "Read the corridor beacon lights.",
+          "target": "g2a2_1"
+        },
+        {
+          "id": "c_p2_who_passengers_3",
+          "label": "Gather the crew to decide.",
+          "target": "g2a3_1"
+        }
+      ]
+    },
+    {
+      "id": "p3_tunnel_choice",
+      "body": "<<FILL role=pivot words=205 beats='the third bottleneck, the choice at the asteroid corridor; the final supply shuttle to the outpost slows before the asteroid corridor and Kaia Osei must decide what she will carry through the dark, and what she will leave'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p3_tunnel_choice_0",
+          "label": "Ask the navigator for the whole truth.",
+          "target": "g3a0_1"
+        },
+        {
+          "id": "c_p3_tunnel_choice_1",
+          "label": "Let the child lead you.",
+          "target": "g3a1_1"
+        },
+        {
+          "id": "c_p3_tunnel_choice_2",
+          "label": "Answer the mourning woman's quiet request to carry a message on.",
+          "target": "g3a2_1"
+        },
+        {
+          "id": "c_p3_tunnel_choice_3",
+          "label": "Search the endless manifest.",
+          "target": "g3a3_1"
+        }
+      ]
+    },
+    {
+      "id": "p4_dawn_reveal",
+      "body": "<<FILL role=pivot words=205 beats='the passengers reveal themselves as the first pale system light touches the peaks; Kaia Osei understands the final supply shuttle to the outpost is a passage and not a route, and that how the night ends is now hers to shape'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_p4_peace",
+          "label": "Ride on and simply be present.",
+          "target": "r_peace1"
+        },
+        {
+          "id": "c_p4_help",
+          "label": "Turn to the crewmate who needs you.",
+          "target": "r_help1"
+        },
+        {
+          "id": "c_p4_truth",
+          "label": "Chase the last of the truth.",
+          "target": "r_truth1"
+        },
+        {
+          "id": "c_p4_leave",
+          "label": "Try to get off before the asteroid corridor.",
+          "target": "r_leave1"
+        }
+      ]
+    },
+    {
+      "id": "r_peace1",
+      "body": "<<FILL role=resolution words=185 beats='Kaia Osei gives herself to the plain act of drifting on, wide awake; the carriage narrows to this one long, lucid stretch of track before the asteroid corridor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_peace1",
+          "label": "Follow it toward the first pale system light.",
+          "target": "r_peace2"
+        }
+      ]
+    },
+    {
+      "id": "r_peace2",
+      "body": "<<FILL role=choice words=180 beats='in the plain act of drifting on, wide awake there is a smaller door and a larger one; one closes the night early, the other stays open toward the first pale system light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_peace2a",
+          "label": "Stay open to the first pale system light.",
+          "target": "r_peace3"
+        },
+        {
+          "id": "c_r_peace2b",
+          "label": "Close it here.",
+          "target": "e_peace_early"
+        }
+      ]
+    },
+    {
+      "id": "r_peace3",
+      "body": "<<FILL role=resolution words=185 beats='having chosen the plain act of drifting on, wide awake, Kaia Osei comes level with the first pale system light coming up over the ridgeline where all the night's threads seem to gather'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_peace3",
+          "label": "Meet the first pale system light.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_peace_early",
+      "body": "<<FILL role=setback words=150 beats='the calm Kaia Osei finds is real but slips through her fingers before the first pale system light; she arrives unsettled, sure only that she let a moment pass'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_calm_unkept",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Calm You Cannot Keep"
+      }
+    },
+    {
+      "id": "r_help1",
+      "body": "<<FILL role=resolution words=185 beats='Kaia Osei gives herself to the crewmate at the corridor end who needs a hand; the carriage narrows to this one long, lucid stretch of track before the asteroid corridor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_help1",
+          "label": "Follow it toward the first pale system light.",
+          "target": "r_help2"
+        }
+      ]
+    },
+    {
+      "id": "r_help2",
+      "body": "<<FILL role=choice words=180 beats='in the crewmate at the corridor end who needs a hand there is a smaller door and a larger one; one closes the night early, the other stays open toward the first pale system light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_help2a",
+          "label": "Stay open to the first pale system light.",
+          "target": "r_help3"
+        },
+        {
+          "id": "c_r_help2b",
+          "label": "Close it here.",
+          "target": "e_help_early"
+        }
+      ]
+    },
+    {
+      "id": "r_help3",
+      "body": "<<FILL role=resolution words=185 beats='having chosen the crewmate at the corridor end who needs a hand, Kaia Osei comes level with the first pale system light coming up over the ridgeline where all the night's threads seem to gather'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_help3",
+          "label": "Meet the first pale system light.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_help_early",
+      "body": "<<FILL role=setback words=150 beats='Kaia Osei hesitates one beat too long and the hand she meant to take is withdrawn; the traveler rides on alone and so does she'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hand_untaken",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Hand You Did Not Take"
+      }
+    },
+    {
+      "id": "r_truth1",
+      "body": "<<FILL role=resolution words=185 beats='Kaia Osei gives herself to the last unread lines of the stranger's data chip; the carriage narrows to this one long, lucid stretch of track before the asteroid corridor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_truth1",
+          "label": "Follow it toward the first pale system light.",
+          "target": "r_truth2"
+        }
+      ]
+    },
+    {
+      "id": "r_truth2",
+      "body": "<<FILL role=choice words=180 beats='in the last unread lines of the stranger's data chip there is a smaller door and a larger one; one closes the night early, the other stays open toward the first pale system light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_truth2a",
+          "label": "Stay open to the first pale system light.",
+          "target": "r_truth3"
+        },
+        {
+          "id": "c_r_truth2b",
+          "label": "Close it here.",
+          "target": "e_truth_early"
+        }
+      ]
+    },
+    {
+      "id": "r_truth3",
+      "body": "<<FILL role=resolution words=185 beats='having chosen the last unread lines of the stranger's data chip, Kaia Osei comes level with the first pale system light coming up over the ridgeline where all the night's threads seem to gather'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_truth3",
+          "label": "Meet the first pale system light.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_truth_early",
+      "body": "<<FILL role=discovery words=175 beats='Kaia Osei reads half the endless manifest's secret and no more; it is enough to know the final supply shuttle to the outpost is kind, not enough to know why it chose her'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_half_timetable",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Half the Manifest"
+      }
+    },
+    {
+      "id": "r_leave1",
+      "body": "<<FILL role=resolution words=185 beats='Kaia Osei gives herself to the cold airlock door and the idea of stepping out; the carriage narrows to this one long, lucid stretch of track before the asteroid corridor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_leave1",
+          "label": "Follow it toward the first pale system light.",
+          "target": "r_leave2"
+        }
+      ]
+    },
+    {
+      "id": "r_leave2",
+      "body": "<<FILL role=choice words=180 beats='in the cold airlock door and the idea of stepping out there is a smaller door and a larger one; one closes the night early, the other stays open toward the first pale system light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_leave2a",
+          "label": "Stay open to the first pale system light.",
+          "target": "r_leave3"
+        },
+        {
+          "id": "c_r_leave2b",
+          "label": "Close it here.",
+          "target": "e_leave_early"
+        }
+      ]
+    },
+    {
+      "id": "r_leave3",
+      "body": "<<FILL role=resolution words=185 beats='having chosen the cold airlock door and the idea of stepping out, Kaia Osei comes level with the first pale system light coming up over the ridgeline where all the night's threads seem to gather'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_leave3",
+          "label": "Meet the first pale system light.",
+          "target": "r_dawn"
+        }
+      ]
+    },
+    {
+      "id": "e_leave_early",
+      "body": "<<FILL role=setback words=150 beats='the door opens onto the first the launch bay of all, and Kaia Osei wakes there as the final supply shuttle to the outpost pulls away northward without her, the night unspent'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_first_platform",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Back at the First Launch Bay"
+      }
+    },
+    {
+      "id": "r_dawn",
+      "body": "<<FILL role=pivot words=200 beats='every route through the night gathers at the first pale system light bottleneck above the asteroid corridor; the peaks go gold, the passengers are quiet, and the last shape of Kaia Osei's journey waits on one final turning'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dawn_peace",
+          "label": "Set the night down and stay.",
+          "target": "r_choice_peace"
+        },
+        {
+          "id": "c_dawn_help",
+          "label": "Give the traveler your seat.",
+          "target": "r_choice_help"
+        },
+        {
+          "id": "c_dawn_truth",
+          "label": "Name what you have understood.",
+          "target": "r_choice_truth"
+        },
+        {
+          "id": "c_dawn_safe",
+          "label": "Ask only to wake unharmed.",
+          "target": "r_choice_safe"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_peace",
+      "body": "<<FILL role=resolution words=190 beats='Kaia Osei stops trying to arrive; she lets the outpost beacon stay one hour off forever and finds, at last, that she does not mind the distance'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rcp",
+          "label": "Make peace with the journey.",
+          "target": "e_make_peace"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_help",
+      "body": "<<FILL role=choice words=180 beats='the seat beside the mourning traveler is warm; Kaia Osei can stay through the asteroid corridor at the price of her own arrival, or step back and keep it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rch_stay",
+          "label": "Stay beside her.",
+          "target": "e_help_passenger"
+        },
+        {
+          "id": "c_rch_cost",
+          "label": "Stay far too long.",
+          "target": "e_help_cost"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_truth",
+      "body": "<<FILL role=resolution words=190 beats='Kaia Osei speaks the outpost beacon's whole quiet truth aloud to the grey window, and the naming of it is its own kind of arrival'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rct",
+          "label": "Speak the northbound names.",
+          "target": "e_uncover_truth"
+        }
+      ]
+    },
+    {
+      "id": "r_choice_safe",
+      "body": "<<FILL role=resolution words=185 beats='Kaia Osei asks the final supply shuttle to the outpost for nothing but a safe waking, and the final supply shuttle to the outpost, being kinder than she feared, grants exactly that and no more'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rcs",
+          "label": "Wake unharmed.",
+          "target": "e_unsettled_safe"
+        }
+      ]
+    },
+    {
+      "id": "e_make_peace",
+      "body": "<<FILL role=success words=220 beats='the best ending: Kaia Osei rides the final supply shuttle to the outpost with open eyes and an open heart, at peace with a journey that was never meant to end at a station; the first pale system light holds and she is finally, wholly here'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_peace",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Last Shuttle to Meridian"
+      }
+    },
+    {
+      "id": "e_help_passenger",
+      "body": "<<FILL role=completion words=215 beats='Kaia Osei stays beside the mourning traveler through the asteroid corridor and delivers her safely into the first pale system light; helping another home turns out to be the arrival Kaia Osei was riding toward all along'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_help",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Seat Beside Her"
+      }
+    },
+    {
+      "id": "e_help_cost",
+      "body": "<<FILL role=setback words=150 beats='Kaia Osei stays past every reasonable hour and the first pale system light slips by; the traveler is helped but Kaia Osei surfaces frayed and far from herself, the good deed shadowed by what it cost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_cost",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "You Stayed Too Long"
+      }
+    },
+    {
+      "id": "e_uncover_truth",
+      "body": "<<FILL role=discovery words=185 beats='Kaia Osei names the outpost beacon for what it is, a passage the season lends to travelers who are ready; she does not stay, but she leaves knowing, and the knowing settles something in her'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_truth",
+        "valence": "positive",
+        "kind": "discovery",
+        "title": "The Outpost Names"
+      }
+    },
+    {
+      "id": "e_unsettled_safe",
+      "body": "<<FILL role=setback words=165 beats='Kaia Osei wakes at her own quiet station, unharmed and a little haunted; the final supply shuttle to the outpost is gone, the night unexplained, and she carries only the sense of a door she chose not to walk through'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_final_safe",
+        "valence": "neutral",
+        "kind": "setback",
+        "title": "Awake and Unharmed"
+      }
+    }
+  ]
+}

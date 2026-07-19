@@ -37,6 +37,7 @@ from typing import TYPE_CHECKING, Literal, cast
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.prompts import (
+    build_bound_fill_prompt,
     build_fidelity_repair_prompt,
     build_fill_prompt,
     build_prose_prompt,
@@ -51,6 +52,8 @@ from cyo_adventure.validator.report import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from cyo_adventure.core.config import Settings
     from cyo_adventure.generation.concept import ConceptBrief
     from cyo_adventure.generation.pii import PiiContext
@@ -719,6 +722,7 @@ async def fill_skeleton(
     settings: Settings | None = None,
     review_stage1_model: str | None = None,
     prep_model: str | None = None,
+    slot_bindings: Mapping[str, str] | None = None,
 ) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Stage B': Fill -> Repair).
 
@@ -768,6 +772,13 @@ async def fill_skeleton(
         prep_model: The model that wrote the fill; the Stage 1 semantic check's
             review-model default when ``review_stage1_model`` is unset (#134).
             Ignored when ``settings`` is ``None``.
+        slot_bindings: WS-2 bound-fill values. When set, ``skeleton`` is
+            expected to already be rendered by
+            :func:`~cyo_adventure.generation.binding.render_bound_skeleton`,
+            and the initial fill prompt uses the bound-fill variant
+            (:func:`~cyo_adventure.generation.prompts.build_bound_fill_prompt`)
+            instead of the free-text variant. ``None`` (default) preserves the
+            byte-identical legacy prompt for every existing caller.
 
     Returns:
         A :class:`GenerationOutcome` describing the final status, the last
@@ -797,7 +808,21 @@ async def fill_skeleton(
         else None
     )
 
-    fill_prompt = build_fill_prompt(json.dumps(skeleton), json.dumps(theme_brief))
+    # WS-2: a parameterized fill (slot_bindings supplied) already has its
+    # beats/titles/labels rendered onto `skeleton` by render_bound_skeleton;
+    # the bound-fill prompt variant carries those validated values as labeled
+    # data alongside the byte-identical untrusted-brief fence. `slot_bindings
+    # is None` (the default) is the only path every existing caller exercises,
+    # so this keeps their prompt byte-identical.
+    fill_prompt = (
+        build_bound_fill_prompt(
+            json.dumps(skeleton),
+            json.dumps(dict(slot_bindings)),
+            json.dumps(theme_brief),
+        )
+        if slot_bindings is not None
+        else build_fill_prompt(json.dumps(skeleton), json.dumps(theme_brief))
+    )
     current_doc, gate_result = await _run_one_stage(
         fill_prompt, provider=guarded_provider, max_tokens=_MAX_TOKENS_PROSE
     )

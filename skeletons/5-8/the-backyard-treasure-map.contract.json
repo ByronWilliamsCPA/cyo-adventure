@@ -1,0 +1,1166 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-backyard-treasure-map",
+  "age_band": "5-8",
+  "legacy_lexicon": [
+    "Nina",
+    "Theo",
+    "Grandpa",
+    "Pepper",
+    "backyard",
+    "big backyard",
+    "old oak",
+    "great old oak",
+    "tire swing",
+    "garden shed",
+    "rock pile",
+    "hollow log",
+    "wind-chime tree",
+    "wind chime",
+    "toad kingdom",
+    "secret fort",
+    "marbles",
+    "bramble",
+    "brambles",
+    "blackberry bushes",
+    "stepping stones",
+    "willow tree",
+    "willow",
+    "buttons",
+    "lemonade",
+    "red X",
+    "dotted line",
+    "treasure map"
+  ],
+  "default_binding": {
+    "HERO": "Nina",
+    "COMPANION": "her friend Theo",
+    "THRESHOLD": "Grandpa's big backyard",
+    "ENTRANCE": "the back porch",
+    "MAP": "an old, hand-drawn map",
+    "MAP_LINE": "the dotted line",
+    "TREASURE_MARK": "the red X",
+    "COMFORT_TREAT": "a glass of cold lemonade",
+    "ROUTE_A_LURE": "the great old oak",
+    "ROUTE_B_LURE": "the garden shed",
+    "ROUTE_C_LURE": "the little stream",
+    "A1_LANDMARK1": "the mossy hollow log",
+    "A1_SIGN": "a friendly croaking sound",
+    "A1_ZONE_HINT": "a shady green hollow of flat stones",
+    "A1_DEADEND_PATH": "the dry, dusty path",
+    "A1_ONWARD_PATH": "the soft, mossy path",
+    "A1_DEADEND_FIND": "flowerpots",
+    "A1_RING": "a ring of round pebbles",
+    "A1_CREATURES": "plump, spotted toads",
+    "A1_LEADER": "the biggest toad",
+    "A1_CROWN": "a crown of clover",
+    "A1_PRIZE": "The Toad Kingdom",
+    "A2_LANDMARK1": "the old tire swing",
+    "A2_DETAIL1": "bright ribbons",
+    "A2_SIGN": "a soft, tinkling sound",
+    "A2_ZONE_HINT": "a sunny gap in the leaves",
+    "A2_DEADEND_PATH": "the thick, prickly leaves",
+    "A2_ONWARD_PATH": "the smooth, low limb",
+    "A2_DEADEND_FIND": "bird box",
+    "A2_DANGLERS": "keys, shells, spoons, and buttons",
+    "A2_CHIMES": "wind chimes",
+    "A2_BIG_CHIME": "the biggest chime of all",
+    "A2_PRIZE": "The Wind-Chime Tree",
+    "B1_LANDMARK1": "the far, dark corner",
+    "B1_ZONE_HINT": "a faint glow near the roof",
+    "B1_DEADEND_PATH": "the low gap under the workbench",
+    "B1_ONWARD_PATH": "the wobbly crate ladder",
+    "B1_DEADEND_FIND": "sleepy woodlouse",
+    "B1_CRATES": "a stack of crates",
+    "B1_LOFT": "a cozy little hideaway",
+    "B1_FURNISHINGS": "old cushions and a milk-crate table",
+    "B1_SIGN_BOARD": "a hand-painted sign",
+    "B1_PRIZE": "The Secret Fort",
+    "B2_LANDMARK1": "the big, grey rock pile",
+    "B2_STONE": "the low, flat stone",
+    "B2_ZONE_HINT": "a little ring of pebbles",
+    "B2_DEADEND_PATH": "the gap between mossy boulders",
+    "B2_ONWARD_PATH": "the loose, sandy soil",
+    "B2_DEADEND_FIND": "ants",
+    "B2_BOX": "a little tin box",
+    "B2_TREASURE": "a whole collection of marbles",
+    "B2_NOTE": "a checkered-cloth note",
+    "B2_PRIZE": "The Box of Marbles",
+    "C1_LANDMARK1": "the tall blackberry bushes",
+    "C1_SIGN": "a soft, friendly meow",
+    "C1_ZONE_HINT": "a cozy little clearing",
+    "C1_DEADEND_PATH": "the low, thorny tunnel",
+    "C1_ONWARD_PATH": "the sunny tunnel",
+    "C1_DEADEND_FIND": "sock",
+    "C1_CAT": "a fluffy grey cat",
+    "C1_COLLAR": "a little bell collar",
+    "C1_TAG": "a small name tag",
+    "C1_PRIZE": "Pepper the Bramble Cat",
+    "C2_LANDMARK1": "the flat stepping stones",
+    "C2_TREE": "the leaning willow tree",
+    "C2_ZONE_HINT": "a faint glint among the roots",
+    "C2_DEADEND_PATH": "the muddy dip",
+    "C2_ONWARD_PATH": "the dry, sheltered nook",
+    "C2_DEADEND_FIND": "water beetle",
+    "C2_TIN": "a small brass tin",
+    "C2_BUTTONS": "shiny buttons of every kind",
+    "C2_NOTE": "a folded slip of paper",
+    "C2_PRIZE": "The Tin of Shiny Buttons"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist leading the treasure hunt.",
+      "guidance": "A single kid-relatable child (name or role); capable, curious, not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COMPANION"
+        ]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The hero's friend who travels with them throughout.",
+      "guidance": "A loyal peer companion, equally capable; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded outdoor place the hunt happens inside.",
+      "guidance": "One open, safe, explorable outdoor place with room to roam; wonder over dread; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The home base the friends return to after a setback.",
+      "guidance": "A cozy, always-reachable spot near the threshold; safe to reach from anywhere in the story.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MAP",
+      "scope": "global",
+      "meaning": "The guiding document the friends follow throughout.",
+      "guidance": "A single hand-held object that shows the way; harmless, carried the whole story.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MAP_LINE",
+      "scope": "global",
+      "meaning": "The path indicator drawn on the guide document.",
+      "guidance": "A visible trail/marking on the guide object that the friends trace and that forks with the story.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TREASURE_MARK",
+      "scope": "global",
+      "meaning": "The marker on the guide document showing the final destination.",
+      "guidance": "A small, recognizable mark naming the endpoint; purely benign.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COMFORT_TREAT",
+      "scope": "global",
+      "meaning": "The recurring consolation treat enjoyed after a setback.",
+      "guidance": "A simple, cheerful snack/drink; never a source of conflict or want.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LURE",
+      "scope": "route",
+      "meaning": "The named landmark the map points to first (route A).",
+      "guidance": "A distinct, safe destination named on the map; distinguishable from its siblings.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_LURE",
+          "ROUTE_C_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_LURE",
+      "scope": "route",
+      "meaning": "The named landmark the map points to second (route B).",
+      "guidance": "A distinct, safe destination named on the map; distinguishable from its siblings.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_C_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_LURE",
+      "scope": "route",
+      "meaning": "The named landmark the map points to third (route C).",
+      "guidance": "A distinct, safe destination named on the map; distinguishable from its siblings.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_LURE",
+          "ROUTE_B_LURE"
+        ]
+      }
+    },
+    {
+      "id": "A1_LANDMARK1",
+      "scope": "track",
+      "meaning": "[A1] The first physical feature this track leads to.",
+      "guidance": "A safe, distinctive physical feature; no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_SIGN",
+      "scope": "track",
+      "meaning": "[A1] The sensory cue (sound) noticed on this track.",
+      "guidance": "A benign, distinctive sound; never alarming.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "A2_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A1_ZONE_HINT",
+      "scope": "track",
+      "meaning": "[A1] The glimpse/hint of the track's inner zone before the final approach.",
+      "guidance": "An inviting, safe glimpse of what lies ahead.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_DEADEND_PATH",
+      "scope": "track",
+      "meaning": "[A1] The wrong-turn option at this track's fork (leads to a harmless setback).",
+      "guidance": "A passable, non-hazardous wrong turn; retreat from it is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_ONWARD_PATH"
+        ]
+      }
+    },
+    {
+      "id": "A1_ONWARD_PATH",
+      "scope": "track",
+      "meaning": "[A1] The right-turn option at this track's fork (leads onward to the reward).",
+      "guidance": "A passable, safe route toward the track's reward.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_DEADEND_PATH"
+        ]
+      }
+    },
+    {
+      "id": "A1_DEADEND_FIND",
+      "scope": "ending",
+      "meaning": "[A1] Ending: the harmless, pointless thing found down the wrong turn (setback).",
+      "guidance": "A mundane, faintly funny thing, never sad or frightening; names the setback ending.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "despair"
+        ],
+        "distinct_from": [
+          "A2_DEADEND_FIND",
+          "B1_DEADEND_FIND",
+          "B2_DEADEND_FIND",
+          "C1_DEADEND_FIND",
+          "C2_DEADEND_FIND"
+        ]
+      }
+    },
+    {
+      "id": "A1_RING",
+      "scope": "track",
+      "meaning": "[A1] A small ring-shaped structure found in the zone.",
+      "guidance": "A tidy, harmless arrangement; wonder, not hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_CREATURES",
+      "scope": "track",
+      "meaning": "[A1] The friendly creatures discovered in the zone.",
+      "guidance": "Harmless, calm animals; never aggressive.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_LEADER",
+      "scope": "track",
+      "meaning": "[A1] The largest/most notable of the creatures.",
+      "guidance": "A gentle, curious figure; never a threat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_CROWN",
+      "scope": "track",
+      "meaning": "[A1] A small decorative adornment worn by the leader creature.",
+      "guidance": "A whimsical, harmless decoration.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_PRIZE",
+      "scope": "ending",
+      "meaning": "[A1] Ending: the name of the positive discovery at the end of this track (success/completion).",
+      "guidance": "A short, warm, positive title; a benign discovery, keepsake, or new friendship.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A2_PRIZE",
+          "B1_PRIZE",
+          "B2_PRIZE",
+          "C1_PRIZE",
+          "C2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "A2_LANDMARK1",
+      "scope": "track",
+      "meaning": "[A2] The first physical feature this track leads to.",
+      "guidance": "A safe, distinctive physical feature; no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_DETAIL1",
+      "scope": "track",
+      "meaning": "[A2] A small decorative detail noticed on this track's first landmark.",
+      "guidance": "A small, harmless decorative detail.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_SIGN",
+      "scope": "track",
+      "meaning": "[A2] The sensory cue (sound) noticed on this track.",
+      "guidance": "A benign, distinctive sound; never alarming.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "A1_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A2_ZONE_HINT",
+      "scope": "track",
+      "meaning": "[A2] The glimpse/hint of the track's inner zone before the final approach.",
+      "guidance": "An inviting, safe glimpse of what lies ahead.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_DEADEND_PATH",
+      "scope": "track",
+      "meaning": "[A2] The wrong-turn option at this track's fork (leads to a harmless setback).",
+      "guidance": "A passable, non-hazardous wrong turn; retreat from it is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_ONWARD_PATH"
+        ]
+      }
+    },
+    {
+      "id": "A2_ONWARD_PATH",
+      "scope": "track",
+      "meaning": "[A2] The right-turn option at this track's fork (leads onward to the reward).",
+      "guidance": "A passable, safe route toward the track's reward.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_DEADEND_PATH"
+        ]
+      }
+    },
+    {
+      "id": "A2_DEADEND_FIND",
+      "scope": "ending",
+      "meaning": "[A2] Ending: the harmless, pointless thing found down the wrong turn (setback).",
+      "guidance": "A mundane, faintly funny thing, never sad or frightening; names the setback ending.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "despair"
+        ],
+        "distinct_from": [
+          "A1_DEADEND_FIND",
+          "B1_DEADEND_FIND",
+          "B2_DEADEND_FIND",
+          "C1_DEADEND_FIND",
+          "C2_DEADEND_FIND"
+        ]
+      }
+    },
+    {
+      "id": "A2_DANGLERS",
+      "scope": "track",
+      "meaning": "[A2] The small objects that dangle and knock together.",
+      "guidance": "Ordinary, harmless found objects.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_CHIMES",
+      "scope": "track",
+      "meaning": "[A2] The hanging chimes discovered along the track.",
+      "guidance": "A gentle, musical installation; safe to approach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_BIG_CHIME",
+      "scope": "track",
+      "meaning": "[A2] The largest, central chime at the heart of the zone.",
+      "guidance": "The track's centerpiece; safe to touch.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_PRIZE",
+      "scope": "ending",
+      "meaning": "[A2] Ending: the name of the positive discovery at the end of this track (success/completion).",
+      "guidance": "A short, warm, positive title; a benign discovery, keepsake, or new friendship.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE",
+          "B1_PRIZE",
+          "B2_PRIZE",
+          "C1_PRIZE",
+          "C2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "B1_LANDMARK1",
+      "scope": "track",
+      "meaning": "[B1] The first physical feature this track leads to.",
+      "guidance": "A safe, distinctive physical feature; no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_ZONE_HINT",
+      "scope": "track",
+      "meaning": "[B1] The glimpse/hint of the track's inner zone before the final approach.",
+      "guidance": "An inviting, safe glimpse of what lies ahead.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_DEADEND_PATH",
+      "scope": "track",
+      "meaning": "[B1] The wrong-turn option at this track's fork (leads to a harmless setback).",
+      "guidance": "A passable, non-hazardous wrong turn; retreat from it is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1_ONWARD_PATH"
+        ]
+      }
+    },
+    {
+      "id": "B1_ONWARD_PATH",
+      "scope": "track",
+      "meaning": "[B1] The right-turn option at this track's fork (leads onward to the reward).",
+      "guidance": "A passable, safe route toward the track's reward.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1_DEADEND_PATH"
+        ]
+      }
+    },
+    {
+      "id": "B1_DEADEND_FIND",
+      "scope": "ending",
+      "meaning": "[B1] Ending: the harmless, pointless thing found down the wrong turn (setback).",
+      "guidance": "A mundane, faintly funny thing, never sad or frightening; names the setback ending.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "despair"
+        ],
+        "distinct_from": [
+          "A1_DEADEND_FIND",
+          "A2_DEADEND_FIND",
+          "B2_DEADEND_FIND",
+          "C1_DEADEND_FIND",
+          "C2_DEADEND_FIND"
+        ]
+      }
+    },
+    {
+      "id": "B1_CRATES",
+      "scope": "track",
+      "meaning": "[B1] The stacked crates used to climb toward the loft.",
+      "guidance": "Sturdy enough to climb; no fall hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_LOFT",
+      "scope": "track",
+      "meaning": "[B1] The cozy hideaway built into the zone.",
+      "guidance": "A snug, safe, ready-made space.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_FURNISHINGS",
+      "scope": "track",
+      "meaning": "[B1] The furnishings inside the loft.",
+      "guidance": "Simple, comfortable, harmless furnishings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_SIGN_BOARD",
+      "scope": "track",
+      "meaning": "[B1] The hand-made sign marking the loft.",
+      "guidance": "A cheerful, welcoming hand-painted sign.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_PRIZE",
+      "scope": "ending",
+      "meaning": "[B1] Ending: the name of the positive discovery at the end of this track (success/completion).",
+      "guidance": "A short, warm, positive title; a benign discovery, keepsake, or new friendship.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE",
+          "A2_PRIZE",
+          "B2_PRIZE",
+          "C1_PRIZE",
+          "C2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "B2_LANDMARK1",
+      "scope": "track",
+      "meaning": "[B2] The first physical feature this track leads to.",
+      "guidance": "A safe, distinctive physical feature; no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_ZONE_HINT",
+      "scope": "track",
+      "meaning": "[B2] The glimpse/hint of the track's inner zone before the final approach.",
+      "guidance": "An inviting, safe glimpse of what lies ahead.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_DEADEND_PATH",
+      "scope": "track",
+      "meaning": "[B2] The wrong-turn option at this track's fork (leads to a harmless setback).",
+      "guidance": "A passable, non-hazardous wrong turn; retreat from it is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_ONWARD_PATH"
+        ]
+      }
+    },
+    {
+      "id": "B2_ONWARD_PATH",
+      "scope": "track",
+      "meaning": "[B2] The right-turn option at this track's fork (leads onward to the reward).",
+      "guidance": "A passable, safe route toward the track's reward.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_DEADEND_PATH"
+        ]
+      }
+    },
+    {
+      "id": "B2_DEADEND_FIND",
+      "scope": "ending",
+      "meaning": "[B2] Ending: the harmless, pointless thing found down the wrong turn (setback).",
+      "guidance": "A mundane, faintly funny thing, never sad or frightening; names the setback ending.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "despair"
+        ],
+        "distinct_from": [
+          "A1_DEADEND_FIND",
+          "A2_DEADEND_FIND",
+          "B1_DEADEND_FIND",
+          "C1_DEADEND_FIND",
+          "C2_DEADEND_FIND"
+        ]
+      }
+    },
+    {
+      "id": "B2_BOX",
+      "scope": "track",
+      "meaning": "[B2] The small container unearthed at this track's end.",
+      "guidance": "A carryable, harmless container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_TREASURE",
+      "scope": "track",
+      "meaning": "[B2] The collection of small objects found inside the box.",
+      "guidance": "A harmless, delightful collection; a keepsake, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_NOTE",
+      "scope": "track",
+      "meaning": "[B2] A short handwritten note found with the treasure.",
+      "guidance": "A friendly, harmless note.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_STONE",
+      "scope": "track",
+      "meaning": "[B2] The specific stone marking this track's dig site.",
+      "guidance": "A stable, safe-to-touch stone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_PRIZE",
+      "scope": "ending",
+      "meaning": "[B2] Ending: the name of the positive discovery at the end of this track (success/completion).",
+      "guidance": "A short, warm, positive title; a benign discovery, keepsake, or new friendship.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE",
+          "A2_PRIZE",
+          "B1_PRIZE",
+          "C1_PRIZE",
+          "C2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "C1_LANDMARK1",
+      "scope": "track",
+      "meaning": "[C1] The first physical feature this track leads to.",
+      "guidance": "A safe, distinctive physical feature; no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_SIGN",
+      "scope": "track",
+      "meaning": "[C1] The sensory cue (sound) noticed on this track.",
+      "guidance": "A benign, distinctive sound; never alarming.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_ZONE_HINT",
+      "scope": "track",
+      "meaning": "[C1] The glimpse/hint of the track's inner zone before the final approach.",
+      "guidance": "An inviting, safe glimpse of what lies ahead.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_DEADEND_PATH",
+      "scope": "track",
+      "meaning": "[C1] The wrong-turn option at this track's fork (leads to a harmless setback).",
+      "guidance": "A passable, non-hazardous wrong turn; retreat from it is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C1_ONWARD_PATH"
+        ]
+      }
+    },
+    {
+      "id": "C1_ONWARD_PATH",
+      "scope": "track",
+      "meaning": "[C1] The right-turn option at this track's fork (leads onward to the reward).",
+      "guidance": "A passable, safe route toward the track's reward.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C1_DEADEND_PATH"
+        ]
+      }
+    },
+    {
+      "id": "C1_DEADEND_FIND",
+      "scope": "ending",
+      "meaning": "[C1] Ending: the harmless, pointless thing found down the wrong turn (setback).",
+      "guidance": "A mundane, faintly funny thing, never sad or frightening; names the setback ending.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "despair"
+        ],
+        "distinct_from": [
+          "A1_DEADEND_FIND",
+          "A2_DEADEND_FIND",
+          "B1_DEADEND_FIND",
+          "B2_DEADEND_FIND",
+          "C2_DEADEND_FIND"
+        ]
+      }
+    },
+    {
+      "id": "C1_CAT",
+      "scope": "track",
+      "meaning": "[C1] The friendly animal found in the clearing.",
+      "guidance": "A calm, approachable animal; never aggressive.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_COLLAR",
+      "scope": "track",
+      "meaning": "[C1] The collar worn by the animal.",
+      "guidance": "A simple, harmless accessory.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_TAG",
+      "scope": "track",
+      "meaning": "[C1] The small tag attached to the collar.",
+      "guidance": "A readable, harmless identifying tag.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_PRIZE",
+      "scope": "ending",
+      "meaning": "[C1] Ending: the name of the positive discovery at the end of this track (success/completion).",
+      "guidance": "A short, warm, positive title; a benign discovery, keepsake, or new friendship.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE",
+          "A2_PRIZE",
+          "B1_PRIZE",
+          "B2_PRIZE",
+          "C2_PRIZE"
+        ]
+      }
+    },
+    {
+      "id": "C2_LANDMARK1",
+      "scope": "track",
+      "meaning": "[C2] The first physical feature this track leads to.",
+      "guidance": "A safe, distinctive physical feature; no hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_ZONE_HINT",
+      "scope": "track",
+      "meaning": "[C2] The glimpse/hint of the track's inner zone before the final approach.",
+      "guidance": "An inviting, safe glimpse of what lies ahead.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_DEADEND_PATH",
+      "scope": "track",
+      "meaning": "[C2] The wrong-turn option at this track's fork (leads to a harmless setback).",
+      "guidance": "A passable, non-hazardous wrong turn; retreat from it is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C2_ONWARD_PATH"
+        ]
+      }
+    },
+    {
+      "id": "C2_ONWARD_PATH",
+      "scope": "track",
+      "meaning": "[C2] The right-turn option at this track's fork (leads onward to the reward).",
+      "guidance": "A passable, safe route toward the track's reward.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C2_DEADEND_PATH"
+        ]
+      }
+    },
+    {
+      "id": "C2_DEADEND_FIND",
+      "scope": "ending",
+      "meaning": "[C2] Ending: the harmless, pointless thing found down the wrong turn (setback).",
+      "guidance": "A mundane, faintly funny thing, never sad or frightening; names the setback ending.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic",
+          "despair"
+        ],
+        "distinct_from": [
+          "A1_DEADEND_FIND",
+          "A2_DEADEND_FIND",
+          "B1_DEADEND_FIND",
+          "B2_DEADEND_FIND",
+          "C1_DEADEND_FIND"
+        ]
+      }
+    },
+    {
+      "id": "C2_TIN",
+      "scope": "track",
+      "meaning": "[C2] The small container unearthed at this track's end.",
+      "guidance": "A carryable, harmless container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_BUTTONS",
+      "scope": "track",
+      "meaning": "[C2] The collection of small objects found inside the tin.",
+      "guidance": "A harmless, delightful collection; a keepsake, not a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_NOTE",
+      "scope": "track",
+      "meaning": "[C2] A short handwritten note found with the treasure.",
+      "guidance": "A friendly, harmless note.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_TREE",
+      "scope": "track",
+      "meaning": "[C2] The specific tree marking this track's search site.",
+      "guidance": "A safe, climbable-adjacent landmark tree.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_PRIZE",
+      "scope": "ending",
+      "meaning": "[C2] Ending: the name of the positive discovery at the end of this track (success/completion).",
+      "guidance": "A short, warm, positive title; a benign discovery, keepsake, or new friendship.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "weapon",
+          "graphic"
+        ],
+        "distinct_from": [
+          "A1_PRIZE",
+          "A2_PRIZE",
+          "B1_PRIZE",
+          "B2_PRIZE",
+          "C1_PRIZE"
+        ]
+      }
+    }
+  ]
+}

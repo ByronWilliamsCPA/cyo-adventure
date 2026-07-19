@@ -1,0 +1,5090 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-mapmakers-island",
+  "age_band": "10-13",
+  "legacy_lexicon": [
+    "Wren",
+    "Alder",
+    "Chart House",
+    "Marigold",
+    "mangrove",
+    "cloud-forest",
+    "cloud forest",
+    "sink-hole",
+    "sinkhole",
+    "survey tower",
+    "tidal flat",
+    "tidal flats"
+  ],
+  "default_binding": {
+    "HERO": "Wren",
+    "PREDECESSOR": "Alder",
+    "INSTITUTION": "the Chart House",
+    "SUPERVISOR": "the mate",
+    "THRESHOLD": "a nameless island",
+    "ENTRANCE": "the beach",
+    "OPENING_MOMENT": "first light",
+    "DEADLINE": "the ship returns at dusk",
+    "GOAL": "the blank chart",
+    "COVE": "the hidden cove",
+    "SPRING": "the island's spring",
+    "CAMP": "Alder's ridge camp",
+    "SUMMIT": "the summit",
+    "ALDER_CHART": "Alder's half-finished chart",
+    "DUSK": "dusk",
+    "ROUTE_A_CHAR": "the mangrove coast",
+    "ROUTE_B_CHAR": "the cloud-forest ridge",
+    "ROUTE_C_CHAR": "the sink-hole caverns",
+    "ROUTE_D_CHAR": "the ruined survey tower",
+    "ROUTE_E_CHAR": "the tidal flats",
+    "A_BIRD": "herons",
+    "A_HIGHGROUND": "high ground",
+    "A_SEEP": "a shaded spring gully",
+    "A_OVERHANG": "a mossy overhang hung with vines",
+    "A_CACHE": "an old firepit and a dented tin cup",
+    "A1_SIGN": "a fallen log bridge",
+    "A1_LANDMARK1": "carved driftwood",
+    "A1_LANDMARK2": "a heron rookery",
+    "A1_FIND": "a mapmaker's shorthand message",
+    "A1_GATE": "a mud slick",
+    "A1_ALT": "a stand of firm palms",
+    "A1_TITLE1": "The Tide Closes In",
+    "A2_SIGN": "a cluster of oyster rocks",
+    "A2_FIND": "a stranded sea turtle",
+    "A2_TITLE": "One Good Turn",
+    "A3_SIGN": "a hidden creek",
+    "A3_CREATURE": "otters",
+    "A3_TRAIL": "a level game trail",
+    "A3_ZONE": "the loud heron island",
+    "A3_BLIND": "a weathered watching blind",
+    "A3_MUDBANK": "a wide mud bank",
+    "A3_FIND": "one fallen chick",
+    "A3_TITLE": "The Mangrove's Maze",
+    "A3_TITLE_TIDE": "Alder's Tide Table",
+    "A3_TITLE_STORM": "A Storm of Wings",
+    "A3_TITLE_ROOKERY": "The Heron Rookery",
+    "A4_SIGN": "a still green lagoon",
+    "A4_OFFER1": "a half sunk dugout canoe",
+    "A4_OFFER2": "a tunnel of arching roots",
+    "A4_ZONE": "a great heap of driftwood",
+    "A4_ZONE2": "a low mound of stones and posts",
+    "A4_FIND1": "a strip of old cleared ground",
+    "A4_FIND2": "a whole vanished fishing camp",
+    "A4_FIND3": "a weathered survey stake with a faded number",
+    "A4_TITLE1": "The Leaky Dugout",
+    "A4_TITLE1B": "The Vanished Village",
+    "A4_TITLE2": "Under the Roots",
+    "A4_TITLE3": "Alder's Survey Stake",
+    "A_TITLE_SHELTER": "The Dry Shelter",
+    "B_BENCH": "the grassy bench",
+    "B_GROVE_ZONE": "a grove of ancient mossy trees",
+    "B_LADDER": "a frayed rope ladder",
+    "B_SHRINE": "a small cairn shrine dressed with shells",
+    "B_DELL_ZONE": "a hidden dell ringed with ferns",
+    "B_DELL_BENCH": "a mossy carved bench",
+    "B_PLATFORM": "a plank platform lashed high in the crown",
+    "B1_SIGN": "a steep switchback",
+    "B1_ROUTE1": "a bare rock rib",
+    "B1_ROUTE2": "a green shelf",
+    "B2_SIGN": "a gentle traverse",
+    "B3_SIGN": "a mossy hollow",
+    "B3_FIND1": "a curtain of white orchids",
+    "B3_BOX": "a tin box",
+    "B3_ITEMS": "folded papers and a brass locket",
+    "B3_TITLE1": "The Brass Locket",
+    "B4_SIGN": "a hidden waterfall",
+    "B4_POOL": "a green pool loud with kingfishers",
+    "B4_GAUGE": "a stone gauge pecked with notches",
+    "B4_TITLE1": "The Slippery Falls",
+    "B4_TITLE2": "Alder's Water Gauge",
+    "B_TITLE_LADDER": "The Frayed Ladder",
+    "B_TITLE_CANOPY": "The Treetop Survey",
+    "B_TITLE_SHRINE": "The Grove Shrine",
+    "B_TITLE_DELL": "The Secret Green Room",
+    "B_TITLE_BENCH": "The Mapmakers' Bench",
+    "C1_SIGN": "dripping water",
+    "C1_GATE": "a low arch",
+    "C1_TITLE1": "When the Cave Breathes Water",
+    "C2_FIND": "handprints in red ochre",
+    "C2_TITLE1": "The Oldest Map",
+    "C2_SIGN": "a faint glitter",
+    "C3_SIGN": "breathing air",
+    "C3_FIND": "a stranded seal pup",
+    "C3_TITLE1": "Too Heavy Alone",
+    "C4_SIGN": "a high hole of daylight",
+    "C4_GALLERY": "a gallery of stone formations",
+    "C4_GATE": "a narrow chimney of rock",
+    "C4_TITLE1": "The Narrow Chimney",
+    "C4_FIND": "a rusted lantern",
+    "C4_TITLE2": "The Frozen Forest",
+    "C1_RAFT": "a raft of old lashed planks",
+    "C1_TITLE2": "The Black Lake",
+    "C1_FISH": "blind white fish",
+    "C1_TITLE3": "The Fish With No Eyes",
+    "C1_PRINTS": "footprints turned to stone",
+    "C1_TITLE4": "Footprints in the Deep",
+    "C1_GLOW": "glowworms",
+    "C1_GATE2": "a narrow squeeze",
+    "C1_TITLE5": "The Tight Squeeze",
+    "C1_TITLE6": "The Underground Sky",
+    "D_STAIR": "the outside stair",
+    "D_TORIDGE": "the headland path to the ridge",
+    "D_RIDGEWAY": "the ridge walk",
+    "D1_ZONE": "a ground room",
+    "D1_LOG": "a logbook",
+    "D1_TITLE1": "Alder's Last Entry",
+    "D1_TOOL": "a battered alidade",
+    "D1_BOX": "a small iron strongbox",
+    "D1_TITLE2": "The Seized Lock",
+    "D1_TOOLS": "a set of fine brass drawing tools",
+    "D1_LETTER": "a sealed letter",
+    "D1_TITLE3": "Alder's Letter",
+    "D2_GATE": "a gap in the steps",
+    "D2_TITLE1": "The Broken Stair",
+    "D2_BEACON": "the old beacon brazier",
+    "D2_DIAL": "a carved stone dial marking bearings",
+    "D2_FUEL": "a fuel store",
+    "D2_TITLE4": "The Cold Beacon",
+    "D2_TITLE2": "Back by the Storm",
+    "D2_TITLE3": "The Stone Compass",
+    "D3_ZONE": "a cellar hatch",
+    "D3_TUBE": "a leather tube that might hold a chart",
+    "D3_DRAFT": "a ruined chart",
+    "D3_TITLE1": "Someone Else's Map",
+    "D4_ZONE": "the keeper's side quarters",
+    "D4_CHEST": "a sea chest",
+    "D4_COMPASS": "a brass pocket compass that still swings true",
+    "D4_DRAWING": "a child's crayon drawing",
+    "D4_TITLE1": "A Life of Islands",
+    "D4_TITLE2": "The Family Ashore",
+    "E_CHANNEL": "the firm channels",
+    "E_GAP": "the green gap",
+    "E_CLIFFGAP": "the cliff gap",
+    "E1_SANDBAR": "a distant sandbar",
+    "E1_WRECK": "a whole boat's ribs",
+    "E1_TITLE1": "The Tide Comes Back",
+    "E3_BOTTLE": "a corked bottle",
+    "E3_TITLE1": "A Note From the Sea",
+    "E3_DUNE": "the grassy dunes behind the beach",
+    "E3_MARKER": "a weathered marker post",
+    "E3_TITLE2": "The Sliding Dunes",
+    "E3_TITLE3": "The View From the Dunes",
+    "E4_SEALS": "seals",
+    "E4_PUP": "one small pup",
+    "E4_TITLE1": "The Tangled Net",
+    "E4_GULLY": "a deep gully",
+    "E4_TITLE2": "The Flooding Gully",
+    "E5_WRECK": "the great wreck on the bar",
+    "E5_HOLD": "the flooded hold",
+    "E5_DECK": "the tilted deck",
+    "E5_FIGUREHEAD": "a carved figurehead",
+    "E5_TITLE1": "Caught in the Wreck",
+    "E5_BELL": "a great green brass bell named the Marigold",
+    "E5_TITLE2": "The Wreck of the Marigold",
+    "E5_TITLE3": "The Ship's Guardian",
+    "COVE_RILL": "a freshwater rill",
+    "COVE_PATH": "a hand cut path",
+    "COVE_MARK": "an old compass rose pointing up",
+    "COVE_TITLE1": "Lost in the Calm",
+    "COVE_SLAB": "a tilted slab",
+    "COVE_TITLE2": "The Map of Stars",
+    "COVE_CAVE": "a small sea cave",
+    "COVE_TIN": "a waterproof tin with a spare pencil",
+    "COVE_TITLE3": "A Friend Across the Years",
+    "COVE_TITLE4": "The Jewelled Reef",
+    "SPRING_MEADOW": "a high meadow",
+    "SPRING_CAIRN": "an old tumbled boundary cairn",
+    "SPRING_TITLE1": "Every Stream at Once",
+    "SPRING_TITLE2": "The Warm Meadow",
+    "F_CAIRNS": "a line of small cairns",
+    "F_RIDGE": "the open ridge",
+    "F_LEDGE": "a sheltered ledge",
+    "F_CREST": "the airy crest",
+    "F_TITLE1": "The Airy Ridge",
+    "F_TRUNK": "a tin trunk",
+    "F_TITLE2": "The Lost Mapmaker's Story",
+    "F_SPYGLASS": "a spyglass",
+    "F_MIRROR": "a signal mirror",
+    "F_JOURNAL": "a journal",
+    "F_TITLE3": "What Alder Left Behind",
+    "F_SCREE": "a bare scree slope",
+    "F_TITLE4": "The Sliding Scree",
+    "F_NOTCH": "a notch in the ridge",
+    "F_TITLE5": "Too Big to Draw",
+    "F_FARSHORE": "the wild far shore",
+    "F_TITLE6": "All at Once, and None of It",
+    "F_ALIDADE": "the salvaged alidade",
+    "F_TITLE7": "The Chart That Brings Ships Home",
+    "F_CHART": "the masterwork",
+    "F_TITLE8": "One More Detail",
+    "F_TITLE9": "Alder's Island",
+    "F_TITLE10": "Two Hands, One Island",
+    "F_TITLE11": "A Flawless Survey",
+    "F_TITLE12": "Never Just One Copy",
+    "F_TITLE13": "The Kept Copy",
+    "F_TITLE14": "The Coast No One Had Mapped",
+    "F_TITLE15": "The Living Chart",
+    "F_TITLE16": "A Clean, True Chart",
+    "F_TITLE17": "The Pup and the Rising Tide",
+    "F_TITLE18": "Back to the Deep Water"
+  },
+  "slots": [
+    {
+      "id": "A1_ALT",
+      "scope": "track",
+      "meaning": "The safe alternative path past the A1 gate.",
+      "guidance": "Firm, safe ground.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_FIND",
+      "scope": "track",
+      "meaning": "The message left on the driftwood.",
+      "guidance": "A benign clue.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back hazard on track A1.",
+      "guidance": "Non-lethal; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "C1_GATE",
+          "C1_GATE2",
+          "C4_GATE",
+          "D2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "A1_LANDMARK1",
+      "scope": "track",
+      "meaning": "A carved marker found on track A1.",
+      "guidance": "A found clue, safe to examine.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_LANDMARK2",
+      "scope": "track",
+      "meaning": "A noisy wildlife landmark on track A1.",
+      "guidance": "Harmless, loud wildlife.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A1_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero toward track A1.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "A2_SIGN",
+          "A3_SIGN",
+          "A4_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A1_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Tide Closes In",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "A2_FIND",
+      "scope": "track",
+      "meaning": "The stranded creature discovered on track A2.",
+      "guidance": "A gentle animal-in-need moment; never graphic.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A2_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero toward track A2.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "A1_SIGN",
+          "A3_SIGN",
+          "A4_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A2_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): One Good Turn",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "A3_BLIND",
+      "scope": "track",
+      "meaning": "A surveyor's hide on the heron island.",
+      "guidance": "A safe historical structure.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A3_CREATURE",
+      "scope": "track",
+      "meaning": "The wildlife family met along the creek.",
+      "guidance": "Playful, harmless wildlife.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A3_FIND",
+      "scope": "track",
+      "meaning": "A fallen creature found in the rookery.",
+      "guidance": "A tender, harmless rescue-adjacent moment.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A3_MUDBANK",
+      "scope": "track",
+      "meaning": "A wide mud bank on the heron island.",
+      "guidance": "Soft footing, no real danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A3_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero toward track A3.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "A1_SIGN",
+          "A2_SIGN",
+          "A4_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A3_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Mangrove's Maze",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "A3_TITLE_ROOKERY",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Heron Rookery",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "A3_TITLE_STORM",
+      "scope": "ending",
+      "meaning": "Ending title (setback): A Storm of Wings",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "A3_TITLE_TIDE",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): Alder's Tide Table",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "A3_TRAIL",
+      "scope": "track",
+      "meaning": "The alternate inland trail on track A3.",
+      "guidance": "Easy, safe walking.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A3_ZONE",
+      "scope": "track",
+      "meaning": "The heron island reached by poling across.",
+      "guidance": "A lively, safe wildlife zone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A4_FIND1",
+      "scope": "track",
+      "meaning": "The cleared strip discovered across the lagoon.",
+      "guidance": "A benign historical trace.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A4_FIND2",
+      "scope": "track",
+      "meaning": "The vanished settlement discovered on track A4.",
+      "guidance": "A quiet historical wonder.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A4_FIND3",
+      "scope": "track",
+      "meaning": "The predecessor's marker found at the dam.",
+      "guidance": "A benign keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A4_OFFER1",
+      "scope": "track",
+      "meaning": "The first vessel offered on track A4.",
+      "guidance": "Inert, usable, no peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A4_OFFER2"
+        ]
+      }
+    },
+    {
+      "id": "A4_OFFER2",
+      "scope": "track",
+      "meaning": "The second route offered on track A4.",
+      "guidance": "A passable, safe way deeper.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A4_OFFER1"
+        ]
+      }
+    },
+    {
+      "id": "A4_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero toward track A4.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "A1_SIGN",
+          "A2_SIGN",
+          "A3_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A4_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Leaky Dugout",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "A4_TITLE1B",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Vanished Village",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "A4_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (setback): Under the Roots",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "A4_TITLE3",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): Alder's Survey Stake",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "A4_ZONE",
+      "scope": "track",
+      "meaning": "The driftwood dam at the lagoon's far end.",
+      "guidance": "Safe, still.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A4_ZONE2",
+      "scope": "track",
+      "meaning": "The cleared ground on the lagoon's far bank.",
+      "guidance": "Safe, open ground.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ALDER_CHART",
+      "scope": "global",
+      "meaning": "The predecessor's own half-finished record, found at the camp.",
+      "guidance": "A precious, unfinished keepsake.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_BIRD",
+      "scope": "track",
+      "meaning": "The recurring wading bird motif along route A.",
+      "guidance": "Ordinary, harmless wildlife.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_CACHE",
+      "scope": "track",
+      "meaning": "An old campsite trace found under the overhang.",
+      "guidance": "Harmless historical trace.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_HIGHGROUND",
+      "scope": "track",
+      "meaning": "A shared rise reached from several route-A tracks.",
+      "guidance": "A safe viewpoint.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_OVERHANG",
+      "scope": "track",
+      "meaning": "A mossy shelter reached from the spring gully.",
+      "guidance": "Dry, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_SEEP",
+      "scope": "track",
+      "meaning": "The shared gully leading toward the spring.",
+      "guidance": "Safe, damp, cool.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "A_TITLE_SHELTER",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Dry Shelter",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "B1_ROUTE1",
+      "scope": "track",
+      "meaning": "The first sub-path on track B1.",
+      "guidance": "A safe, climbable option.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_ROUTE2",
+      "scope": "track",
+      "meaning": "The second sub-path on track B1.",
+      "guidance": "A safe, level option.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero up track B1.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "B2_SIGN",
+          "B3_SIGN",
+          "B4_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "B2_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero along track B2.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "B1_SIGN",
+          "B3_SIGN",
+          "B4_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "B3_BOX",
+      "scope": "track",
+      "meaning": "The tin box wedged in the hollow.",
+      "guidance": "A safe, openable container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3_FIND1",
+      "scope": "track",
+      "meaning": "The first discovery in the hollow.",
+      "guidance": "A safe natural wonder.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3_ITEMS",
+      "scope": "track",
+      "meaning": "The contents of the tin box.",
+      "guidance": "Harmless keepsakes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B3_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero to track B3.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "B1_SIGN",
+          "B2_SIGN",
+          "B4_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "B3_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Brass Locket",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "B4_GAUGE",
+      "scope": "track",
+      "meaning": "The predecessor's measuring device in the pool.",
+      "guidance": "A benign scientific instrument.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B4_POOL",
+      "scope": "track",
+      "meaning": "The pool beneath the waterfall.",
+      "guidance": "Safe to wade; no hidden danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B4_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero to track B4.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "B1_SIGN",
+          "B2_SIGN",
+          "B3_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "B4_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Slippery Falls",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "B4_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): Alder's Water Gauge",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "B_BENCH",
+      "scope": "track",
+      "meaning": "The shared grassy bench where switch/shelf/upper/notes converge.",
+      "guidance": "Safe, windy shoulder of the ridge.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_DELL_BENCH",
+      "scope": "track",
+      "meaning": "The carved bench in the dell.",
+      "guidance": "A benign historical record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_DELL_ZONE",
+      "scope": "track",
+      "meaning": "The hidden dell reached from the traverse.",
+      "guidance": "Soft, sheltered, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_GROVE_ZONE",
+      "scope": "track",
+      "meaning": "The ancient grove reached from the bench.",
+      "guidance": "Quiet, reverent, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_LADDER",
+      "scope": "track",
+      "meaning": "The rope ladder into the grove canopy.",
+      "guidance": "Old but testable; never truly unsafe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_PLATFORM",
+      "scope": "track",
+      "meaning": "The treetop survey platform.",
+      "guidance": "A safe, sturdy lookout.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_SHRINE",
+      "scope": "track",
+      "meaning": "The small shrine deep in the grove.",
+      "guidance": "A quiet historical marker.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B_TITLE_BENCH",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Mapmakers' Bench",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "B_TITLE_CANOPY",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Treetop Survey",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "B_TITLE_DELL",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Secret Green Room",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "B_TITLE_LADDER",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Frayed Ladder",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "B_TITLE_SHRINE",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Grove Shrine",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "C1_FISH",
+      "scope": "track",
+      "meaning": "The blind cave fish discovered at the far shore.",
+      "guidance": "A gentle natural wonder.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back hazard on track C1 (the low arch).",
+      "guidance": "Non-lethal; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_GATE",
+          "C1_GATE2",
+          "C4_GATE",
+          "D2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C1_GATE2",
+      "scope": "track",
+      "meaning": "The narrow squeeze at the end of the glowworm rift.",
+      "guidance": "Non-lethal; retreat is always possible.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_GATE",
+          "C1_GATE",
+          "C4_GATE",
+          "D2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C1_GLOW",
+      "scope": "track",
+      "meaning": "The glowworms lighting the side rift.",
+      "guidance": "A safe, beautiful natural wonder.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_PRINTS",
+      "scope": "track",
+      "meaning": "The fossil footprints found on the lake beach.",
+      "guidance": "A safe, wondrous historical trace.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_RAFT",
+      "scope": "track",
+      "meaning": "The raft found at the underground lake.",
+      "guidance": "Old but usable; no real peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero to track C1.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "C2_SIGN",
+          "C3_SIGN",
+          "C4_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "C1_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): When the Cave Breathes Water",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "C1_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Black Lake",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "C1_TITLE3",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Fish With No Eyes",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "C1_TITLE4",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): Footprints in the Deep",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "C1_TITLE5",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Tight Squeeze",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "C1_TITLE6",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Underground Sky",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "C2_FIND",
+      "scope": "track",
+      "meaning": "The ancient markings found in the glitter cave.",
+      "guidance": "A safe, wondrous historical trace.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero to track C2.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "C1_SIGN",
+          "C3_SIGN",
+          "C4_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "C2_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Oldest Map",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "C3_FIND",
+      "scope": "track",
+      "meaning": "The stranded creature found in the warm passage.",
+      "guidance": "A gentle animal-in-need moment; never graphic.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C3_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero to track C3.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "C1_SIGN",
+          "C2_SIGN",
+          "C4_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "C3_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): Too Heavy Alone",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "C4_FIND",
+      "scope": "track",
+      "meaning": "The old trace found in the stone gallery.",
+      "guidance": "A benign historical trace.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C4_GALLERY",
+      "scope": "track",
+      "meaning": "The stone formation gallery on track C4.",
+      "guidance": "Safe, wondrous, dim.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C4_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back hazard on track C4 (a narrow chimney).",
+      "guidance": "Non-lethal; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_GATE",
+          "C1_GATE",
+          "C1_GATE2",
+          "D2_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C4_SIGN",
+      "scope": "track",
+      "meaning": "The signal drawing the hero to track C4.",
+      "guidance": "A distinct, benign landmark.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "C1_SIGN",
+          "C2_SIGN",
+          "C3_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "C4_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Narrow Chimney",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "C4_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Frozen Forest",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "CAMP",
+      "scope": "global",
+      "meaning": "The predecessor's abandoned shelter, the story's hub.",
+      "guidance": "Homely, safe, a little sad.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COVE",
+      "scope": "global",
+      "meaning": "A hidden, calm landmark reached from several routes.",
+      "guidance": "Safe, sheltered, wondrous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COVE_CAVE",
+      "scope": "track",
+      "meaning": "The small sea cave at the cove's tide pools.",
+      "guidance": "Shallow, dry, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COVE_MARK",
+      "scope": "track",
+      "meaning": "The old compass rose drawn on a rock in the cove.",
+      "guidance": "A benign historical marker.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COVE_PATH",
+      "scope": "track",
+      "meaning": "The hand-cut path climbing from the cove to the ridge.",
+      "guidance": "Safe, well-worn path.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COVE_RILL",
+      "scope": "track",
+      "meaning": "The freshwater rill trickling into the cove.",
+      "guidance": "Safe, small watercourse.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COVE_SLAB",
+      "scope": "track",
+      "meaning": "The tilted, dot-pecked slab above the cove.",
+      "guidance": "A benign historical marker.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COVE_TIN",
+      "scope": "track",
+      "meaning": "The waterproof tin left in the sea cave.",
+      "guidance": "A gentle, precious keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "COVE_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): Lost in the Calm",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "COVE_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Map of Stars",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "COVE_TITLE3",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): A Friend Across the Years",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "COVE_TITLE4",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Jewelled Reef",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "D1_BOX",
+      "scope": "track",
+      "meaning": "The locked strongbox found under a floor slab.",
+      "guidance": "A safe, if stubborn, container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_LETTER",
+      "scope": "track",
+      "meaning": "The sealed letter found in the strongbox.",
+      "guidance": "A gentle, heartfelt keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_LOG",
+      "scope": "track",
+      "meaning": "The predecessor's logbook found in the ground room.",
+      "guidance": "A benign historical record.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): Alder's Last Entry",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "D1_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Seized Lock",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "D1_TITLE3",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): Alder's Letter",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "D1_TOOL",
+      "scope": "track",
+      "meaning": "The salvaged surveying instrument.",
+      "guidance": "An inert, useful tool.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_TOOLS",
+      "scope": "track",
+      "meaning": "The drawing tools found in the strongbox.",
+      "guidance": "Inert, precious keepsakes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D1_ZONE",
+      "scope": "track",
+      "meaning": "The tower's ground room.",
+      "guidance": "Dusty, safe, historical.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D2_BEACON",
+      "scope": "track",
+      "meaning": "The old signal beacon on the headland.",
+      "guidance": "A cold, harmless ruin.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D2_DIAL",
+      "scope": "track",
+      "meaning": "The carved bearing dial beside the beacon.",
+      "guidance": "A benign historical instrument.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D2_FUEL",
+      "scope": "track",
+      "meaning": "The beacon's fuel store.",
+      "guidance": "An empty, harmless space.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D2_GATE",
+      "scope": "ending",
+      "meaning": "The commit-or-turn-back hazard on the outside stair.",
+      "guidance": "Non-lethal; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_GATE",
+          "C1_GATE",
+          "C1_GATE2",
+          "C4_GATE"
+        ]
+      }
+    },
+    {
+      "id": "D2_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Broken Stair",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "D2_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): Back by the Storm",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "D2_TITLE3",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Stone Compass",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "D2_TITLE4",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Cold Beacon",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "D3_DRAFT",
+      "scope": "track",
+      "meaning": "The predecessor's abandoned chart draft.",
+      "guidance": "A precious, unfinished keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D3_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): Someone Else's Map",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "D3_TUBE",
+      "scope": "track",
+      "meaning": "The leather tube found in the cellar.",
+      "guidance": "A safe, precious container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D3_ZONE",
+      "scope": "track",
+      "meaning": "The tower's cellar.",
+      "guidance": "Dry, cool, safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D4_CHEST",
+      "scope": "track",
+      "meaning": "The sea chest in the keeper's quarters.",
+      "guidance": "A safe, personal container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D4_COMPASS",
+      "scope": "track",
+      "meaning": "The working compass found in the sea chest.",
+      "guidance": "An inert, precious keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D4_DRAWING",
+      "scope": "track",
+      "meaning": "The child's drawing found in the sea chest.",
+      "guidance": "A tender, harmless keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D4_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): A Life of Islands",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "D4_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Family Ashore",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "D4_ZONE",
+      "scope": "track",
+      "meaning": "The keeper's side quarters.",
+      "guidance": "Small, sad, but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DEADLINE",
+      "scope": "global",
+      "meaning": "The non-lethal time pressure that ends the day.",
+      "guidance": "A survivable deadline; missing it costs opportunity, not safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "DUSK",
+      "scope": "global",
+      "meaning": "Short form of the closing-time signal.",
+      "guidance": "A single time-of-day word.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_RIDGEWAY",
+      "scope": "track",
+      "meaning": "The shared ridge walk linking the tower's top to the camp trail.",
+      "guidance": "Thrilling but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_STAIR",
+      "scope": "track",
+      "meaning": "The shared outside stair, reached from several D tracks.",
+      "guidance": "Old but climbable; never truly unsafe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "D_TORIDGE",
+      "scope": "track",
+      "meaning": "The shared headland path linking the tower to the ridge.",
+      "guidance": "Safe, clear path.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E1_SANDBAR",
+      "scope": "track",
+      "meaning": "The distant sandbar visible from the flats.",
+      "guidance": "A safe, time-pressured destination.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "E_CHANNEL"
+        ]
+      }
+    },
+    {
+      "id": "E1_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Tide Comes Back",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "E1_WRECK",
+      "scope": "track",
+      "meaning": "The wreck timber seen from the sandbar.",
+      "guidance": "Old and inert; no real peril.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E3_BOTTLE",
+      "scope": "track",
+      "meaning": "The message bottle found on the strand.",
+      "guidance": "A gentle, safe keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E3_DUNE",
+      "scope": "track",
+      "meaning": "The grassy dunes behind the beach.",
+      "guidance": "Soft sand, tiring but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E3_MARKER",
+      "scope": "track",
+      "meaning": "The surveyor's marker post atop the dunes.",
+      "guidance": "A benign historical marker.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E3_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): A Note From the Sea",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "E3_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Sliding Dunes",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "E3_TITLE3",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The View From the Dunes",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "E4_GULLY",
+      "scope": "track",
+      "meaning": "The deep gully cutting toward the cliffs.",
+      "guidance": "Safe if hurried; floods if dawdled.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E4_PUP",
+      "scope": "track",
+      "meaning": "The tangled seal pup among the colony.",
+      "guidance": "A gentle animal-in-need moment; never graphic.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E4_SEALS",
+      "scope": "track",
+      "meaning": "The seal colony on the mussel beds.",
+      "guidance": "Gentle wildlife; never graphic.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E4_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Tangled Net",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "E4_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Flooding Gully",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "E5_BELL",
+      "scope": "track",
+      "meaning": "The ship's bell found in the hold.",
+      "guidance": "A benign historical keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E5_DECK",
+      "scope": "track",
+      "meaning": "The tilted deck of the wreck.",
+      "guidance": "Safe to climb; a fine viewpoint.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E5_FIGUREHEAD",
+      "scope": "track",
+      "meaning": "The carved figurehead at the wreck's bow.",
+      "guidance": "A safe, artistic keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E5_HOLD",
+      "scope": "track",
+      "meaning": "The flooded hold of the wreck.",
+      "guidance": "Enterable briefly; the tide is the real hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E5_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): Caught in the Wreck",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "E5_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Wreck of the Marigold",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE3",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "E5_TITLE3",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Ship's Guardian",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "F_TITLE2",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "E5_WRECK",
+      "scope": "track",
+      "meaning": "The great shipwreck on the bar.",
+      "guidance": "Old and inert; a place of wonder, not danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single entry/exit point the hero returns to.",
+      "guidance": "Always reachable and safe to reach.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E_CHANNEL",
+      "scope": "track",
+      "meaning": "The shared firm channels crossing the flats.",
+      "guidance": "Safe, reliable footing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E_CLIFFGAP",
+      "scope": "track",
+      "meaning": "The shared cliff gap leading to the cove.",
+      "guidance": "Safe at low water.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "E_GAP",
+      "scope": "track",
+      "meaning": "The shared green gap leading inland toward the spring.",
+      "guidance": "Safe, clear path.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_ALIDADE",
+      "scope": "track",
+      "meaning": "The salvaged sighting instrument used atop the summit.",
+      "guidance": "An inert, useful tool.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_CAIRNS",
+      "scope": "track",
+      "meaning": "The trail of small cairns marking the safe way to camp.",
+      "guidance": "Reassuring, safe waymarkers.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_CHART",
+      "scope": "track",
+      "meaning": "The finished masterwork chart Wren produces.",
+      "guidance": "The story's culminating positive object.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_CREST",
+      "scope": "track",
+      "meaning": "The airy crest option on the final ascent.",
+      "guidance": "Exhilarating but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_FARSHORE",
+      "scope": "track",
+      "meaning": "The wild, never-charted far shore of the island.",
+      "guidance": "Remote but safe to observe from a distance.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_JOURNAL",
+      "scope": "track",
+      "meaning": "The predecessor's journal, found in the trunk.",
+      "guidance": "A heartfelt, precious keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_LEDGE",
+      "scope": "track",
+      "meaning": "The sheltered ledge option on the final ascent.",
+      "guidance": "Slow but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_MIRROR",
+      "scope": "track",
+      "meaning": "The predecessor's signal mirror.",
+      "guidance": "An inert, useful keepsake; the story's rescue signal.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_NOTCH",
+      "scope": "track",
+      "meaning": "The windy notch on the way to the summit.",
+      "guidance": "Blustery but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_RIDGE",
+      "scope": "track",
+      "meaning": "The open ridge above the camp approach.",
+      "guidance": "Windy but safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_SCREE",
+      "scope": "track",
+      "meaning": "The tempting but unstable scree shortcut to the summit.",
+      "guidance": "A shortcut that slides; never lethal.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_SPYGLASS",
+      "scope": "track",
+      "meaning": "The predecessor's spyglass.",
+      "guidance": "An inert, useful keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Airy Ridge",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE10",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): Two Hands, One Island",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE11",
+          "F_TITLE12",
+          "F_TITLE13",
+          "F_TITLE14",
+          "F_TITLE15",
+          "F_TITLE16",
+          "F_TITLE17",
+          "F_TITLE18",
+          "F_TITLE7",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE11",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): A Flawless Survey",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE12",
+          "F_TITLE13",
+          "F_TITLE14",
+          "F_TITLE15",
+          "F_TITLE16",
+          "F_TITLE17",
+          "F_TITLE18",
+          "F_TITLE7",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE12",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): Never Just One Copy",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE11",
+          "F_TITLE13",
+          "F_TITLE14",
+          "F_TITLE15",
+          "F_TITLE16",
+          "F_TITLE17",
+          "F_TITLE18",
+          "F_TITLE7",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE13",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): The Kept Copy",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE11",
+          "F_TITLE12",
+          "F_TITLE14",
+          "F_TITLE15",
+          "F_TITLE16",
+          "F_TITLE17",
+          "F_TITLE18",
+          "F_TITLE7",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE14",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): The Coast No One Had Mapped",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE11",
+          "F_TITLE12",
+          "F_TITLE13",
+          "F_TITLE15",
+          "F_TITLE16",
+          "F_TITLE17",
+          "F_TITLE18",
+          "F_TITLE7",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE15",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): The Living Chart",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE11",
+          "F_TITLE12",
+          "F_TITLE13",
+          "F_TITLE14",
+          "F_TITLE16",
+          "F_TITLE17",
+          "F_TITLE18",
+          "F_TITLE7",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE16",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): A Clean, True Chart",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE11",
+          "F_TITLE12",
+          "F_TITLE13",
+          "F_TITLE14",
+          "F_TITLE15",
+          "F_TITLE17",
+          "F_TITLE18",
+          "F_TITLE7",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE17",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): The Pup and the Rising Tide",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE11",
+          "F_TITLE12",
+          "F_TITLE13",
+          "F_TITLE14",
+          "F_TITLE15",
+          "F_TITLE16",
+          "F_TITLE18",
+          "F_TITLE7",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE18",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): Back to the Deep Water",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE11",
+          "F_TITLE12",
+          "F_TITLE13",
+          "F_TITLE14",
+          "F_TITLE15",
+          "F_TITLE16",
+          "F_TITLE17",
+          "F_TITLE7",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): The Lost Mapmaker's Story",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE3"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE3",
+      "scope": "ending",
+      "meaning": "Ending title (neutral discovery): What Alder Left Behind",
+      "guidance": "Bittersweet or wondering; not a full win.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_TITLE",
+          "A3_TITLE_ROOKERY",
+          "A3_TITLE_TIDE",
+          "A4_TITLE1B",
+          "A4_TITLE3",
+          "B3_TITLE1",
+          "B4_TITLE2",
+          "B_TITLE_BENCH",
+          "B_TITLE_CANOPY",
+          "B_TITLE_SHRINE",
+          "C1_TITLE3",
+          "C1_TITLE4",
+          "C1_TITLE6",
+          "C2_TITLE1",
+          "C4_TITLE2",
+          "COVE_TITLE2",
+          "COVE_TITLE3",
+          "COVE_TITLE4",
+          "D1_TITLE1",
+          "D1_TITLE3",
+          "D2_TITLE2",
+          "D2_TITLE3",
+          "D3_TITLE1",
+          "D4_TITLE1",
+          "D4_TITLE2",
+          "E3_TITLE1",
+          "E3_TITLE3",
+          "E4_TITLE1",
+          "E5_TITLE2",
+          "E5_TITLE3",
+          "F_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE4",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Sliding Scree",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE5",
+      "scope": "ending",
+      "meaning": "Ending title (setback): Too Big to Draw",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE6",
+      "scope": "ending",
+      "meaning": "Ending title (setback): All at Once, and None of It",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE8",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE7",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): The Chart That Brings Ships Home",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE11",
+          "F_TITLE12",
+          "F_TITLE13",
+          "F_TITLE14",
+          "F_TITLE15",
+          "F_TITLE16",
+          "F_TITLE17",
+          "F_TITLE18",
+          "F_TITLE9"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE8",
+      "scope": "ending",
+      "meaning": "Ending title (setback): One More Detail",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "SPRING_TITLE1",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "F_TITLE9",
+      "scope": "ending",
+      "meaning": "Ending title (positive/completion): Alder's Island",
+      "guidance": "Positive; names the completion.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "F_TITLE10",
+          "F_TITLE11",
+          "F_TITLE12",
+          "F_TITLE13",
+          "F_TITLE14",
+          "F_TITLE15",
+          "F_TITLE16",
+          "F_TITLE17",
+          "F_TITLE18",
+          "F_TITLE7"
+        ]
+      }
+    },
+    {
+      "id": "F_TRUNK",
+      "scope": "track",
+      "meaning": "The predecessor's trunk kept at the camp.",
+      "guidance": "A safe, precious container.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The task object: the blank record the hero must fill.",
+      "guidance": "An ordinary, carriable object.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A capable, curious apprentice; never reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "INSTITUTION",
+      "scope": "global",
+      "meaning": "The hero's home institution / employer.",
+      "guidance": "A place of belonging and craft, not menace.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "OPENING_MOMENT",
+      "scope": "global",
+      "meaning": "The moment that makes the day's exploration possible.",
+      "guidance": "Non-lethal, ordinary daily rhythm.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PREDECESSOR",
+      "scope": "global",
+      "meaning": "The lost mapmaker whose story runs through the island.",
+      "guidance": "A gentle, admired absent mentor figure.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CHAR",
+      "scope": "route",
+      "meaning": "Route A's zone identity (physical/character description).",
+      "guidance": "A distinct, inviting terrain type.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_B_CHAR",
+          "ROUTE_C_CHAR",
+          "ROUTE_D_CHAR",
+          "ROUTE_E_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_CHAR",
+      "scope": "route",
+      "meaning": "Route B's zone identity.",
+      "guidance": "A distinct, inviting terrain type.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_CHAR",
+          "ROUTE_C_CHAR",
+          "ROUTE_D_CHAR",
+          "ROUTE_E_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_CHAR",
+      "scope": "route",
+      "meaning": "Route C's zone identity.",
+      "guidance": "A distinct, inviting terrain type.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_CHAR",
+          "ROUTE_B_CHAR",
+          "ROUTE_D_CHAR",
+          "ROUTE_E_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_CHAR",
+      "scope": "route",
+      "meaning": "Route D's zone identity.",
+      "guidance": "A distinct, inviting terrain type.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_CHAR",
+          "ROUTE_B_CHAR",
+          "ROUTE_C_CHAR",
+          "ROUTE_E_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_E_CHAR",
+      "scope": "route",
+      "meaning": "Route E's zone identity.",
+      "guidance": "A distinct, inviting terrain type.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_A_CHAR",
+          "ROUTE_B_CHAR",
+          "ROUTE_C_CHAR",
+          "ROUTE_D_CHAR"
+        ]
+      }
+    },
+    {
+      "id": "SPRING",
+      "scope": "global",
+      "meaning": "The island's central freshwater landmark.",
+      "guidance": "Safe, clear, restorative.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SPRING_CAIRN",
+      "scope": "track",
+      "meaning": "The old boundary cairn in the high meadow.",
+      "guidance": "A benign historical marker.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SPRING_MEADOW",
+      "scope": "track",
+      "meaning": "The high meadow above the spring.",
+      "guidance": "Gentle, safe grazing ground.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SPRING_TITLE1",
+      "scope": "ending",
+      "meaning": "Ending title (setback): Every Stream at Once",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE2"
+        ]
+      }
+    },
+    {
+      "id": "SPRING_TITLE2",
+      "scope": "ending",
+      "meaning": "Ending title (setback): The Warm Meadow",
+      "guidance": "Non-lethal setback; retreat is always safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_TITLE1",
+          "A3_TITLE",
+          "A3_TITLE_STORM",
+          "A4_TITLE1",
+          "A4_TITLE2",
+          "A_TITLE_SHELTER",
+          "B4_TITLE1",
+          "B_TITLE_DELL",
+          "B_TITLE_LADDER",
+          "C1_TITLE1",
+          "C1_TITLE2",
+          "C1_TITLE5",
+          "C3_TITLE1",
+          "C4_TITLE1",
+          "COVE_TITLE1",
+          "D1_TITLE2",
+          "D2_TITLE1",
+          "D2_TITLE4",
+          "E1_TITLE1",
+          "E3_TITLE2",
+          "E4_TITLE2",
+          "E5_TITLE1",
+          "F_TITLE1",
+          "F_TITLE4",
+          "F_TITLE5",
+          "F_TITLE6",
+          "F_TITLE8",
+          "SPRING_TITLE1"
+        ]
+      }
+    },
+    {
+      "id": "SUMMIT",
+      "scope": "global",
+      "meaning": "The island's highest point, reached only at the story's climax.",
+      "guidance": "Windy and grand, not perilous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SUPERVISOR",
+      "scope": "global",
+      "meaning": "The adult who judges the finished chart at the end.",
+      "guidance": "Fair, kind, a little dry; never harsh.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the story happens inside.",
+      "guidance": "Wonder over dread; no lethal hazards.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    }
+  ]
+}

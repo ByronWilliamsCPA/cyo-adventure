@@ -1,0 +1,863 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cave_of_echoes",
+  "version": 1,
+  "title": "The Cave of Echoes",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "exploration",
+      "courage",
+      "wonder",
+      "nature"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 16,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=110 beats='Theo and his kestrel Comet enter the slot canyons of the Redwall fossil beds at the dry-season morning, before the heat; three dark openings breathe cool air and each throws back its own signal, wind humming through a fluted wall, the drip of a seep spring, and the dry rattle of loose scree; Theo must choose which signal to follow before the afternoon flash-flood pulse'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_left",
+          "label": "Follow wind humming through a fluted wall to the left.",
+          "target": "la_tunnel"
+        },
+        {
+          "id": "c_right",
+          "label": "Follow the drip of a seep spring to the right.",
+          "target": "ra_drip"
+        },
+        {
+          "id": "c_down",
+          "label": "Follow the dry rattle of loose scree straight down.",
+          "target": "da_dark"
+        }
+      ]
+    },
+    {
+      "id": "la_tunnel",
+      "body": "<<FILL role=rising words=95 beats='the first way, a narrow fluted slot, draws them in as wind humming through a fluted wall steadies into a held note; his kestrel Comet perks up; Theo edges toward a distant glow and a soft stirring ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_fork",
+          "label": "Press on toward the glow.",
+          "target": "la_fork"
+        }
+      ]
+    },
+    {
+      "id": "la_fork",
+      "body": "<<FILL role=choice words=100 beats='the way splits into two tracks: on one side a banded, glinting seam catches the light, on the other a low resonant hum deepens into a warm, pulling sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glitter",
+          "label": "Go toward a banded, glinting seam.",
+          "target": "la_glitter"
+        },
+        {
+          "id": "c_hum",
+          "label": "Go toward a low resonant hum.",
+          "target": "la_hum"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter",
+      "body": "<<FILL role=rising words=95 beats='the track toward a banded, glinting seam runs past flecks of quartz in the seam wall that catches Theo's light; the floor slopes gently down toward a narrow gap breathing cold air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_slope",
+          "label": "Follow the sloping floor down.",
+          "target": "la_glitter2"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter2",
+      "body": "<<FILL role=rising words=95 beats='the slope opens into a small antechamber; a fissure glowing with mineral light shows in the far wall and the air smells of clean wet stone, a sign the greater find lies just beyond'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_crack",
+          "label": "Approach a narrow slot as runoff pools.",
+          "target": "la_grotto_app"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto_app",
+      "body": "<<FILL role=choice words=100 beats='the gap is just wide enough to pass, but a narrow slot as runoff pools blocks easy passage as muddy runoff rising across the canyon floor begins to gather at their feet; Theo can press through toward the reward or turn back toward the canyon trailhead while the way stays safe'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_squeeze",
+          "label": "Squeeze through a narrow slot as runoff pools.",
+          "target": "la_squeeze"
+        },
+        {
+          "id": "c_retreat",
+          "label": "Turn back before muddy runoff rising across the canyon floor rises.",
+          "target": "la_retreat_pool"
+        }
+      ]
+    },
+    {
+      "id": "la_retreat_pool",
+      "body": "<<FILL role=ending words=85 beats='Theo and his kestrel Comet make their way back toward the canyon trailhead as muddy runoff rising across the canyon floor rises around them; they reach the open air damp and safe, the greater find left for a better return, promising to come back at the next the dry-season morning, before the heat'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at a narrow slot as runoff pools"
+      }
+    },
+    {
+      "id": "la_squeeze",
+      "body": "<<FILL role=rising words=95 beats='they slip through a narrow slot as runoff pools and come out the other side; his kestrel Comet shakes off and the glow ahead brightens into a glittering geode chamber'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_room",
+          "label": "Step into a glittering geode chamber.",
+          "target": "la_grotto"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto",
+      "body": "<<FILL role=choice words=105 beats='a glittering geode chamber opens around them, full of light and wonder; within reach sits a loose banded agate, while a deeper way, a whispering echo-hall deeper in, pulls onward toward something greater'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take",
+          "label": "Gently take a loose banded agate.",
+          "target": "la_crystal_take"
+        },
+        {
+          "id": "c_deeper",
+          "label": "Follow a whispering echo-hall deeper in deeper.",
+          "target": "la_crystal_deeper"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_take",
+      "body": "<<FILL role=rising words=90 beats='Theo carefully gathers a loose banded agate; it is theirs to keep and lights a low passage that seems to curve back toward the way out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_up",
+          "label": "Follow a loose banded agate's light back up.",
+          "target": "la_crystal_out"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_out",
+      "body": "<<FILL role=completion words=90 beats='the find lights their way up and out to the canyon trailhead; Theo steps into the open carrying The Banded Agate for real, with his kestrel Comet close behind, proud of the safe treasure won'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crystal",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Banded Agate"
+      }
+    },
+    {
+      "id": "la_crystal_deeper",
+      "body": "<<FILL role=rising words=95 beats='the deeper way, a whispering echo-hall deeper in, grows stronger; the passage widens and its walls smooth into fluted stone walls, shaped as if to carry sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chord",
+          "label": "Follow the chord toward the sound.",
+          "target": "la_song_app"
+        }
+      ]
+    },
+    {
+      "id": "la_song_app",
+      "body": "<<FILL role=rising words=95 beats='ahead the walls curve into a whispering echo-hall; every drip and footstep rings and layers; his kestrel Comet gives a wondering sound that echoes back many times over'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_sing",
+          "label": "Step into a whispering echo-hall.",
+          "target": "la_song"
+        }
+      ]
+    },
+    {
+      "id": "la_song",
+      "body": "<<FILL role=completion words=90 beats='Theo makes a single sound and the whole place answers in shimmering harmony; they have found The Echo-Hall of Fluted Stone, a secret almost no one knew, and carry the wonder of it all the way home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Echo-Hall of Fluted Stone"
+      }
+    },
+    {
+      "id": "la_hum",
+      "body": "<<FILL role=rising words=95 beats='a low resonant hum leads down a rounded way; the sound is not wind but something huge and ribbed far below, coming from far below; his kestrel Comet pads ahead confidently'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_ring",
+          "label": "Follow something huge and ribbed far below downward.",
+          "target": "la_hum2"
+        }
+      ]
+    },
+    {
+      "id": "la_hum2",
+      "body": "<<FILL role=rising words=95 beats='the way steepens; something huge and ribbed far below steadies into a slow, deep pulse, and pale light leaks up from a chamber below where pale bone catching the light catches the glow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chime",
+          "label": "Climb down toward pale bone catching the light.",
+          "target": "la_bell_app"
+        }
+      ]
+    },
+    {
+      "id": "la_bell_app",
+      "body": "<<FILL role=choice words=100 beats='a fixed rope down the slot offers a way down, left behind by someone long ago; Theo's sense of the afternoon flash-flood pulse says time is short; they can go down toward the reward or climb back up while they still safely can'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bell",
+          "label": "Climb down a fixed rope down the slot.",
+          "target": "la_bell"
+        },
+        {
+          "id": "c_humback",
+          "label": "Scramble back up to be safe.",
+          "target": "la_hum_back"
+        }
+      ]
+    },
+    {
+      "id": "la_hum_back",
+      "body": "<<FILL role=ending words=85 beats='Theo decides the find can wait for a safer day; they and his kestrel Comet climb back up the rounded way and out to the canyon trailhead, a little breathless but perfectly safe'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_hum",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at a fixed rope down the slot"
+      }
+    },
+    {
+      "id": "la_bell",
+      "body": "<<FILL role=rising words=95 beats='a fixed rope down the slot holds; at the bottom waits a giant fossil ribcage, ancient and stone-hard, old and weathered, still faintly sounding as slow drips strike it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell2",
+          "label": "Walk up to a giant fossil ribcage, ancient and stone-hard.",
+          "target": "la_bell2"
+        }
+      ]
+    },
+    {
+      "id": "la_bell2",
+      "body": "<<FILL role=rising words=90 beats='marks are set into a giant fossil ribcage, ancient and stone-hard, a species name lost for ages; nearby a dry ledge holds useful leftovers from an earlier visitor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell3",
+          "label": "Read a species name lost for ages and look behind a giant fossil ribcage, ancient and stone-hard.",
+          "target": "la_bell3"
+        }
+      ]
+    },
+    {
+      "id": "la_bell3",
+      "body": "<<FILL role=rising words=90 beats='Theo records what a species name lost for ages tells them; a chalk marker and a coil of rope, enough to help them climb back out the way they came'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell4",
+          "label": "Take a chalk marker and a coil of rope and head out.",
+          "target": "la_bell4"
+        }
+      ]
+    },
+    {
+      "id": "la_bell4",
+      "body": "<<FILL role=completion words=95 beats='with what a giant fossil ribcage, ancient and stone-hard revealed kept safe and the old gear put to use, Theo and his kestrel Comet climb back to daylight; everyone will want to hear about The Species Lost for Ages'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Species Lost for Ages"
+      }
+    },
+    {
+      "id": "ra_drip",
+      "body": "<<FILL role=rising words=95 beats='the second way, a damp spring-fed passage, follows the drip of a seep spring deeper; Theo's light shows a trickle running on into the dark and the air turns cold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_fork",
+          "label": "Follow the drip of a seep spring deeper.",
+          "target": "ra_fork"
+        }
+      ]
+    },
+    {
+      "id": "ra_fork",
+      "body": "<<FILL role=choice words=100 beats='the trickle reaches a split: one way a growing splash and echo grows louder, the other way the scent of wet moss drifts from a low side-passage'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lake",
+          "label": "Head toward a growing splash and echo.",
+          "target": "ra_lake_way"
+        },
+        {
+          "id": "c_pool",
+          "label": "Follow the scent of wet moss.",
+          "target": "ra_pool_way"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_way",
+      "body": "<<FILL role=rising words=95 beats='following a growing splash and echo, the floor turns to smooth mud-slick stone and the ceiling lifts away into a darkness Theo's light cannot reach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_pebbles",
+          "label": "Cross smooth mud-slick stone.",
+          "target": "ra_lake2"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake2",
+      "body": "<<FILL role=rising words=95 beats='the way gives onto a ledge above a still plunge-pool; the sound is only his kestrel Comet testing the cold edge with one paw'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shelf",
+          "label": "Edge along a ledge above a still plunge-pool.",
+          "target": "ra_lake_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_app",
+      "body": "<<FILL role=choice words=105 beats='the shelf narrows into a mud-slick ledge; below waits a still canyon plunge-pool; Theo can climb carefully down toward it or back off before anyone slips'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_descend",
+          "label": "Climb down to a still canyon plunge-pool.",
+          "target": "ra_descend"
+        },
+        {
+          "id": "c_lakeback",
+          "label": "Back off a mud-slick ledge.",
+          "target": "ra_lake_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_back",
+      "body": "<<FILL role=ending words=85 beats='a mud-slick ledge is too risky; Theo coaxes his kestrel Comet back along the shelf and they retrace the way to the canyon trailhead, arriving safe, the greater find left for braver footing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_lake",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at a mud-slick ledge"
+      }
+    },
+    {
+      "id": "ra_descend",
+      "body": "<<FILL role=rising words=95 beats='they pick their way down to a still canyon plunge-pool; here at the edge of it, something waits for a bold explorer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shore",
+          "label": "Walk along the gravel shore.",
+          "target": "ra_lakeshore"
+        }
+      ]
+    },
+    {
+      "id": "ra_lakeshore",
+      "body": "<<FILL role=choice words=105 beats='two chances appear: nearby rests a driftwood raft, and further along shallows glowing with minerals beckons with its own promise'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_boat",
+          "label": "Examine a driftwood raft.",
+          "target": "ra_boat"
+        },
+        {
+          "id": "c_wade",
+          "label": "Wade into shallows glowing with minerals.",
+          "target": "ra_wade"
+        }
+      ]
+    },
+    {
+      "id": "ra_boat",
+      "body": "<<FILL role=rising words=95 beats='a driftwood raft proves usable; Theo lashes the loose driftwood together until it is ready to carry them onward across a still canyon plunge-pool'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_row",
+          "label": "Climb in and push off.",
+          "target": "ra_row"
+        }
+      ]
+    },
+    {
+      "id": "ra_row",
+      "body": "<<FILL role=completion words=95 beats='Theo takes his kestrel Comet across a still canyon plunge-pool to a far side where daylight leaks in; they climb out having done Across the Plunge-Pool, likely the first in a lifetime to manage it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rowboat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Across the Plunge-Pool"
+      }
+    },
+    {
+      "id": "ra_wade",
+      "body": "<<FILL role=rising words=95 beats='shallows glowing with minerals lights up as Theo disturbs it, a trail of mineral glow leading toward a low, bright opening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_islet",
+          "label": "Follow a trail of mineral glow.",
+          "target": "ra_islet"
+        }
+      ]
+    },
+    {
+      "id": "ra_islet",
+      "body": "<<FILL role=completion words=90 beats='the path leads to The Hidden Hanging Garden, a hidden spot under open sky; Theo takes a small keepsake and makes their way back into daylight, sworn to keep the place secret'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_islet",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Hidden Hanging Garden"
+      }
+    },
+    {
+      "id": "ra_pool_way",
+      "body": "<<FILL role=rising words=95 beats='the side-passage toward the scent of wet moss is tight; Theo crouches under dripping ledges while his kestrel Comet squeezes ahead toward a thread of pale light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_crouch",
+          "label": "Crouch through toward a thread of pale light.",
+          "target": "ra_pool2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool2",
+      "body": "<<FILL role=rising words=95 beats='the way opens a little; a clear spring channel runs along the floor toward a rounded chamber ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_channel",
+          "label": "Follow a clear spring channel.",
+          "target": "ra_pool_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_app",
+      "body": "<<FILL role=choice words=100 beats='the channel ends at a curtain of hanging roots; beyond it the light is bright, but muddy runoff rising across the canyon floor is filling the way behind them, so Theo must choose quickly to press on or hurry back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter",
+          "label": "Push through a curtain of hanging roots.",
+          "target": "ra_pool_enter"
+        },
+        {
+          "id": "c_poolback",
+          "label": "Hurry back before muddy runoff rising across the canyon floor rises.",
+          "target": "ra_pool_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_back",
+      "body": "<<FILL role=ending words=85 beats='Theo will not risk a curtain of hanging roots closing behind them; they and his kestrel Comet hurry back and reach the canyon trailhead just as muddy runoff rising across the canyon floor pours in, hearts thumping, entirely safe'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at a curtain of hanging roots"
+      }
+    },
+    {
+      "id": "ra_pool_enter",
+      "body": "<<FILL role=rising words=95 beats='through a curtain of hanging roots the chamber opens into a bright spring grotto, its water so clear it looks like air, alive with small creatures'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_kneel",
+          "label": "Kneel by a bright spring grotto.",
+          "target": "ra_pool_chamber"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_chamber",
+      "body": "<<FILL role=choice words=105 beats='a bright spring grotto is a whole tiny world; in one corner a rare blind cave salamander stands out, and on the far side a track to a darker basin leads to a deeper, darker basin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star",
+          "label": "Look closely at a rare blind cave salamander.",
+          "target": "ra_starfish"
+        },
+        {
+          "id": "c_deep",
+          "label": "Follow a track to a darker basin.",
+          "target": "ra_pool_deep"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish",
+      "body": "<<FILL role=rising words=95 beats='a rare blind cave salamander is a rare thing; Theo sketches it carefully, leaving it exactly where it belongs and recording the wonder of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_sketch",
+          "label": "Finish the sketch and slip out.",
+          "target": "ra_starfish2"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish2",
+      "body": "<<FILL role=completion words=90 beats='Theo backs out with a full record of The Blind Cave Salamander; the experts will not believe it until they see the proof, and Theo and his kestrel Comet climb out grinning'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_starfish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Blind Cave Salamander"
+      }
+    },
+    {
+      "id": "ra_pool_deep",
+      "body": "<<FILL role=rising words=95 beats='a track to a darker basin leads to a darker basin where the water is deep; a perfect ammonite, spiraled and pale gleams at the bottom, half-buried, catching the last of the light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_reach",
+          "label": "Reach into the green basin.",
+          "target": "ra_pool_deep2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_deep2",
+      "body": "<<FILL role=completion words=95 beats='Theo lifts out The Perfect Ammonite, the finest thing they have ever found, and carries it up into daylight like a trophy, his kestrel Comet celebrating alongside'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Perfect Ammonite"
+      }
+    },
+    {
+      "id": "da_dark",
+      "body": "<<FILL role=rising words=95 beats='the third way, the shadowed undercut, the darkest way, is the darkest; the dry rattle of loose scree turns out to be only a draft over stone; Theo keeps one hand on the wall and his kestrel Comet close as they go down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_fork",
+          "label": "Feel along the wall downward.",
+          "target": "da_fork"
+        }
+      ]
+    },
+    {
+      "id": "da_fork",
+      "body": "<<FILL role=choice words=100 beats='the dark way forks: from one branch comes a rustle of wings, from the other the creak of old timber'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bat",
+          "label": "Go toward a rustle of wings.",
+          "target": "da_bat_way"
+        },
+        {
+          "id": "c_cache",
+          "label": "Go toward the creak of old timber.",
+          "target": "da_cache_way"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_way",
+      "body": "<<FILL role=rising words=95 beats='a rustle of wings grows busier; the ceiling lifts and Theo's light catches a colony of roosting cliff swallows above; his kestrel Comet presses close, uncertain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_creep",
+          "label": "Creep on under a colony of roosting cliff swallows.",
+          "target": "da_bat2"
+        }
+      ]
+    },
+    {
+      "id": "da_bat2",
+      "body": "<<FILL role=rising words=95 beats='it is a colony of roosting cliff swallows, at rest in a great vaulted chamber; the air is warm and earthy, and a notch of bright sky shows the way onward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_grey",
+          "label": "Move quietly toward a notch of bright sky.",
+          "target": "da_bat_app"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_app",
+      "body": "<<FILL role=choice words=105 beats='a notch of bright sky may be a way up and out, but reaching it means crossing beneath the roosting swallows; Theo can go carefully on toward the reward or back away and leave things undisturbed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_batenter",
+          "label": "Tiptoe across under a colony of roosting cliff swallows.",
+          "target": "da_bat_enter"
+        },
+        {
+          "id": "c_batback",
+          "label": "Back away and leave a colony of roosting cliff swallows be.",
+          "target": "da_bat_back"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_back",
+      "body": "<<FILL role=ending words=85 beats='Theo will not risk disturbing what rests here; they and his kestrel Comet ease back out and return along the dark way to the canyon trailhead, dusty and awed and safe'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_bat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at crossing beneath the roosting swallows"
+      }
+    },
+    {
+      "id": "da_bat_enter",
+      "body": "<<FILL role=rising words=95 beats='they cross carefully; nothing stirs; beyond lies a rockfall stair, a rough way up toward the light far above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_stair",
+          "label": "Start up a rockfall stair.",
+          "target": "da_roost"
+        }
+      ]
+    },
+    {
+      "id": "da_roost",
+      "body": "<<FILL role=rising words=95 beats='a rockfall stair is steep but solid; partway up Theo finds an old carved marker, proof that someone came this secret way long before'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_climb",
+          "label": "Climb on past an old carved marker.",
+          "target": "da_roost2"
+        }
+      ]
+    },
+    {
+      "id": "da_roost2",
+      "body": "<<FILL role=rising words=90 beats='the way narrows to a narrow dusty chute; light and fresh air pour down; Theo boosts his kestrel Comet ahead and hauls up the last stretch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_push",
+          "label": "Push up through a narrow dusty chute.",
+          "target": "da_skylight"
+        }
+      ]
+    },
+    {
+      "id": "da_skylight",
+      "body": "<<FILL role=completion words=95 beats='they climb out through The Rim Notch onto the Mesa, high above the slot canyons of the Redwall fossil beds, blinking in the light; Theo has found a secret way in and out, and a discovery worth telling'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bats",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Rim Notch onto the Mesa"
+      }
+    },
+    {
+      "id": "da_cache_way",
+      "body": "<<FILL role=rising words=95 beats='the creak of old timber grows nearer; Theo's light finds a weathered plank door wedged into a side-cave, weathered and old'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_door",
+          "label": "Approach a weathered plank door.",
+          "target": "da_cache2"
+        }
+      ]
+    },
+    {
+      "id": "da_cache2",
+      "body": "<<FILL role=rising words=95 beats='a weathered plank door gives way with a groan; behind it a hand-dug supply niche has been made by hand, a hiding place with shapes stacked in the shadows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_peer",
+          "label": "Peer into a hand-dug supply niche.",
+          "target": "da_cache_app"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_app",
+      "body": "<<FILL role=choice words=105 beats='it is an old prospector's supply niche, forgotten for a long time; but muddy runoff rising across the canyon floor already glistens on the floor, so Theo can step in for a quick look or leave it for a drier day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cacheenter",
+          "label": "Step in for a quick look.",
+          "target": "da_cache_enter"
+        },
+        {
+          "id": "c_cacheback",
+          "label": "Leave an old prospector's supply niche before muddy runoff rising across the canyon floor.",
+          "target": "da_cache_back"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_back",
+      "body": "<<FILL role=ending words=85 beats='muddy runoff rising across the canyon floor decides it; Theo marks the spot and hurries out with his kestrel Comet ahead of the rising water, reaching the canyon trailhead safe, the find saved for a better day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cache",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the wash rising across the niche floor"
+      }
+    },
+    {
+      "id": "da_cache_enter",
+      "body": "<<FILL role=rising words=95 beats='inside, dust-covered, mostly rotted crates; most have crumbled, but two smaller boxes sit dry on a stone shelf, their lids stiff but whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_boxes",
+          "label": "Open the two dry boxes.",
+          "target": "da_cache_room"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_room",
+      "body": "<<FILL role=choice words=105 beats='the first box holds a still-true brass compass; the second is heavy and rattles like a tin of antique survey tokens; the water is creeping in, and Theo can only carry one out cleanly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_compass",
+          "label": "Take a still-true brass compass.",
+          "target": "da_compass"
+        },
+        {
+          "id": "c_coins",
+          "label": "Take a tin of antique survey tokens.",
+          "target": "da_coins"
+        }
+      ]
+    },
+    {
+      "id": "da_compass",
+      "body": "<<FILL role=rising words=95 beats='Theo cleans a still-true brass compass; wipes away the dust; the needle swings true, pointing the quickest way back toward the canyon trailhead and the fading light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_out",
+          "label": "Follow a still-true brass compass out.",
+          "target": "da_compass2"
+        }
+      ]
+    },
+    {
+      "id": "da_compass2",
+      "body": "<<FILL role=completion words=95 beats='a still-true brass compass leads them straight out to the canyon trailhead just as muddy runoff rising across the canyon floor returns; Theo carries The Brass Compass, and a story everyone will beg to hear'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_compass",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Brass Compass"
+      }
+    },
+    {
+      "id": "da_coins",
+      "body": "<<FILL role=rising words=95 beats='the heavy box holds a tin of antique survey tokens; Theo cannot count them now, but can carry the whole box out if they go at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_carry",
+          "label": "Carry a tin of antique survey tokens out quickly.",
+          "target": "da_coins2"
+        }
+      ]
+    },
+    {
+      "id": "da_coins2",
+      "body": "<<FILL role=completion words=95 beats='Theo hauls the box up to daylight just ahead of muddy runoff rising across the canyon floor; the experts will study The Antique Survey Tokens and put Theo's name to the find'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coins",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Antique Survey Tokens"
+      }
+    }
+  ]
+}

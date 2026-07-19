@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=85 beats='Milo and his grown-up cousin Ada step through the gate of the night market just as the lantern strings blink on overhead; warm steam drifts from the food stalls, paper crinkles at the craft tables, and somewhere a fiddle tunes up; tonight ends with the wish-lantern ceremony, the part Milo loves best; near the gate something small is sniffling behind a barrel; warm and twinkly, never spooky'>>",
+      "body": "<<FILL role=setup words=85 beats='{HERO} and his grown-up {CHAPERONE} step through {ENTRANCE} just as the lantern strings blink on overhead; warm steam drifts from the food stalls, paper crinkles at the craft tables, and somewhere a fiddle tunes up; tonight ends with {GOAL}, the part {HERO} loves best; near {ENTRANCE} something small is sniffling behind a barrel; warm and twinkly, never spooky'>>",
       "is_ending": false,
       "choices": [
         {
@@ -46,73 +46,73 @@
     },
     {
       "id": "n_meet",
-      "body": "<<FILL role=setup words=78 beats='behind the barrel is a small pangolin curled almost into a ball, scales like polished pinecones; her name is Pip and she is new to the market and very shy; between sniffles she explains that she lost her little basket with the three things she needs for the closing wish-lantern ceremony, her sheet of wish paper, her golden string, and her little candle; Milo kneels down slowly and gently'>>",
+      "body": "<<FILL role=setup words=78 beats='behind the barrel is a small {COMPANION_KIND} curled almost into a ball, shy and small; her name is {COMPANION} and she is new to {THRESHOLD} and very shy; between sniffles she explains that she lost her little basket with the three things she needs for the closing {GOAL}, {ITEM1}, {ITEM2}, and {ITEM3}; {HERO} kneels down slowly and gently'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_meet_promise",
-          "label": "Promise to help Pip before the ceremony.",
+          "label": "Promise to help {COMPANION} before {GOAL}.",
           "target": "n_promise"
         }
       ]
     },
     {
       "id": "n_promise",
-      "body": "<<FILL role=setup words=70 beats='Milo promises they will sort it out together, and cousin Ada nods; the stall keepers of this market are the kindest anywhere, she says, and helping hands are always welcome here; a small kindness at a stall is worth more than coins; Pip uncurls a little and takes Milo by the hand; together the three of them walk into the glowing lantern square'>>",
+      "body": "<<FILL role=setup words=70 beats='{HERO} promises they will sort it out together, and {CHAPERONE} nods; the stall keepers of {THRESHOLD} are the kindest anywhere, she says, and helping hands are always welcome here; a small kindness at a stall is worth more than coins; {COMPANION} uncurls a little and takes {HERO} by the hand; together the three of them walk into {HUB}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_promise_hub",
-          "label": "Step into the lantern square.",
+          "label": "Step into {HUB}.",
           "target": "n_hub"
         }
       ]
     },
     {
       "id": "n_hub",
-      "body": "<<FILL role=choice words=92 beats='the lantern square is the round heart of the market, criss-crossed with strings of paper lanterns; lanes lead off to the dumpling stall wrapped in ginger steam, the paper folder with his drifting cranes, the tea cart with its tiny glowing stove, the toy mender bent over wind-up toys, the fruit stand stacked with bright pyramids, and the musicians corner where strings hum; at the head of the square the wide ceremony steps glow, ready whenever they are; keep this scene general so it reads naturally on a first arrival or on any return trip between stalls; Pip stays close while Milo picks where to go'>>",
+      "body": "<<FILL role=choice words=92 beats='{HUB} is the round heart of {THRESHOLD}, criss-crossed with strings of paper lanterns; lanes lead off to {ROUTE_A_STALL} wrapped in {ROUTE_A_LURE}, {ROUTE_B_STALL} with his {ROUTE_B_LURE}, {ROUTE_C_STALL} with its {ROUTE_C_LURE}, {ROUTE_D_STALL} bent over {ROUTE_D_LURE}, {ROUTE_E_STALL} stacked with {ROUTE_E_LURE}, and {ROUTE_F_STALL} where {ROUTE_F_LURE}; at the head of the square {GOAL_STEPS} glow, ready whenever they are; keep this scene general so it reads naturally on a first arrival or on any return trip between stalls; {COMPANION} stays close while {HERO} picks where to go'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_hub_dumpling",
-          "label": "Follow the ginger steam to the dumpling stall.",
+          "label": "Follow {ROUTE_A_LURE} to {ROUTE_A_STALL}.",
           "target": "ds_entry"
         },
         {
           "id": "c_hub_paper",
-          "label": "Visit the paper folder and his cranes.",
+          "label": "Visit {ROUTE_B_STALL} and his {ROUTE_B_GOOD}.",
           "target": "pf_entry"
         },
         {
           "id": "c_hub_tea",
-          "label": "Stop by the tea cart with the tiny stove.",
+          "label": "Stop by {ROUTE_C_STALL} with {ROUTE_C_LURE}.",
           "target": "tc_entry"
         },
         {
           "id": "c_hub_toys",
-          "label": "Look in at the toy mender's table.",
+          "label": "Look in at {ROUTE_D_STALL}.",
           "target": "tm_entry"
         },
         {
           "id": "c_hub_fruit",
-          "label": "Wander over to the fruit stand.",
+          "label": "Wander over to {ROUTE_E_STALL}.",
           "target": "fs_entry"
         },
         {
           "id": "c_hub_music",
-          "label": "Drift toward the musicians' corner.",
+          "label": "Drift toward {ROUTE_F_STALL}.",
           "target": "mc_entry"
         },
         {
           "id": "c_hub_steps",
-          "label": "Head to the ceremony steps with Pip.",
+          "label": "Head to {GOAL_STEPS} with {COMPANION}.",
           "target": "f_steps"
         }
       ]
     },
     {
       "id": "ds_entry",
-      "body": "<<FILL role=choice words=78 beats='at the dumpling stall Auntie Mo is a one-woman whirlwind, bamboo steamers puffing, orders calling, a wobbling tower of trays waiting to go out to the little tables; she spots Milo and Pip through the steam and laughs that she could use four more hands tonight; Milo decides whether to carry the warm trays out to the tables or to join the folding table and help pleat dumplings'>>",
+      "body": "<<FILL role=choice words=78 beats='at {ROUTE_A_STALL} {ROUTE_A_KEEPER} is a one-woman whirlwind, bamboo steamers puffing, orders calling, a wobbling tower of trays waiting to go out to the little tables; she spots {HERO} and {COMPANION} through the steam and laughs that she could use four more hands tonight; {HERO} decides whether to carry the warm trays out to the tables or to join the folding table and help pleat {ROUTE_A_GOOD}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -122,14 +122,14 @@
         },
         {
           "id": "c_ds_fold",
-          "label": "Join the folding table and pleat dumplings.",
+          "label": "Join the folding table and pleat {ROUTE_A_GOOD}.",
           "target": "ds_fold"
         }
       ]
     },
     {
       "id": "ds_carry",
-      "body": "<<FILL role=choice words=72 beats='the trays are warm as sunbaked stones and smell of ginger and chive; lantern-lit tables of hungry customers wave from every side; Pip trots alongside holding the napkins; Milo decides whether to take one tray at a time, slow and steady like a waiter in a fancy restaurant, or to stack three trays high and deliver everything in one heroic trip'>>",
+      "body": "<<FILL role=choice words=72 beats='the trays are warm as sunbaked stones and smell of {ROUTE_A_GOOD} spice; lantern-lit tables of hungry customers wave from every side; {COMPANION} trots alongside holding the napkins; {HERO} decides whether to take one tray at a time, slow and steady like a waiter in a fancy restaurant, or to stack three trays high and deliver everything in one heroic trip'>>",
       "is_ending": false,
       "choices": [
         {
@@ -146,48 +146,48 @@
     },
     {
       "id": "ds_happy",
-      "body": "<<FILL role=rising words=62 beats='tray by careful tray, every table gets its dumplings hot and perfect; customers cheer for the small waiter and his pangolin napkin helper; Auntie Mo watches from the steam and beams like a lantern herself; when the last tray lands she waves Milo and Pip back to the stall for a thank-you'>>",
+      "body": "<<FILL role=rising words=62 beats='tray by careful tray, every table gets its {ROUTE_A_GOOD} hot and perfect; customers cheer for the small waiter and his {COMPANION_KIND} napkin helper; {ROUTE_A_KEEPER} watches from the steam and beams like a lantern herself; when the last tray lands she waves {HERO} and {COMPANION} back to {ROUTE_A_STALL} for a thank-you'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ds_happy_gift",
-          "label": "Go collect Auntie Mo's thank-you.",
+          "label": "Go collect {ROUTE_A_KEEPER}'s thank-you.",
           "target": "ds_gift"
         }
       ]
     },
     {
       "id": "ds_fold",
-      "body": "<<FILL role=rising words=68 beats='at the folding table Auntie Mo shows Milo the pleat, pinch and fold, pinch and fold, like tucking a tiny blanket; Milos first dumpling is wonky and his second is wonkier, but the tenth stands up almost proud; Pip pats the dough flat with careful paws; Auntie Mo steams the whole wobbly batch anyway and calls them the night specials'>>",
+      "body": "<<FILL role=rising words=68 beats='at the folding table {ROUTE_A_KEEPER} shows {HERO} the pleat, pinch and fold, pinch and fold, like tucking a tiny blanket; {HERO}'s first {ROUTE_A_GOOD} is wonky and his second is wonkier, but the tenth stands up almost proud; {COMPANION} pats the dough flat with careful paws; {ROUTE_A_KEEPER} steams the whole wobbly batch anyway and calls them the night specials'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ds_fold_gift",
-          "label": "See what Auntie Mo says next.",
+          "label": "See what {ROUTE_A_KEEPER} says next.",
           "target": "ds_gift"
         }
       ]
     },
     {
       "id": "ds_gift",
-      "body": "<<FILL role=rising words=75 beats='Auntie Mo tucks two warm dumplings into a paper bag and presses it into Pips paws, saying shy tummies are much braver when they are warm; she promises to close her steamers in time for the wish-lantern ceremony and to cheer for Pips lantern extra loud; Pip hugs the warm bag; Milo can head back to the lantern square or take Pip on toward the ceremony steps'>>",
+      "body": "<<FILL role=rising words=75 beats='{ROUTE_A_KEEPER} tucks two warm {ROUTE_A_GOOD} into a paper bag and presses it into {COMPANION}'s paws, saying shy tummies are much braver when they are warm; she promises to close her steamers in time for {GOAL} and to cheer for {COMPANION}'s lantern extra loud; {COMPANION} hugs the warm bag; {HERO} can head back to {HUB} or take {COMPANION} on toward {GOAL_STEPS}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ds_gift_hub",
-          "label": "Walk back to the lantern square.",
+          "label": "Walk back to {HUB}.",
           "target": "n_hub"
         },
         {
           "id": "c_ds_gift_steps",
-          "label": "Head for the ceremony steps with Pip.",
+          "label": "Head for {GOAL_STEPS} with {COMPANION}.",
           "target": "f_steps"
         }
       ]
     },
     {
       "id": "pf_entry",
-      "body": "<<FILL role=choice words=80 beats='the paper folders stall is strung with paper cranes that turn slowly in the warm lantern air; the old folder looks up in dismay, his basket of colored paper has tipped and squares of red and gold and blue are drifting across the lane like slow butterflies; Milo decides whether to chase and gather the drifting paper squares or to help sort the crane papers back into their color trays'>>",
+      "body": "<<FILL role=choice words=80 beats='{ROUTE_B_STALL} is strung with {ROUTE_B_GOOD} that turn slowly in the warm lantern air; {ROUTE_B_KEEPER} looks up in dismay, his basket of colored paper has tipped and squares of red and gold and blue are drifting across the lane like slow butterflies; {HERO} decides whether to chase and gather the drifting paper squares or to help sort the crane papers back into their color trays'>>",
       "is_ending": false,
       "choices": [
         {
@@ -197,14 +197,14 @@
         },
         {
           "id": "c_pf_sort",
-          "label": "Sort the crane papers by color.",
+          "label": "Sort the {ROUTE_B_GOOD} by color.",
           "target": "pf_sort"
         }
       ]
     },
     {
       "id": "pf_scraps",
-      "body": "<<FILL role=choice words=70 beats='Milo and Pip tiptoe after the paper squares, catching them gently so they do not crumple, off a bench, off a lantern pole, out of a sleepy dogs fur; soon only one runaway square is left, a gold one, resting high on the noodle carts awning; Milo decides whether to ask the tall noodle cook for a boost or to wait for the breeze to bring it down'>>",
+      "body": "<<FILL role=choice words=70 beats='{HERO} and {COMPANION} tiptoe after the paper squares, catching them gently so they do not crumple, off a bench, off a lantern pole, out of a sleepy dog's fur; soon only one runaway square is left, a gold one, resting high on the noodle cart's awning; {HERO} decides whether to ask the tall noodle cook for a boost or to wait for the breeze to bring it down'>>",
       "is_ending": false,
       "choices": [
         {
@@ -221,60 +221,60 @@
     },
     {
       "id": "pf_last",
-      "body": "<<FILL role=rising words=60 beats='the noodle cook laughs, lifts Milo onto his shoulders like a sack of noodles, and Milo plucks the gold square safe and smooth; from up high the whole market glitters; back on the ground Pip carries the rescued square to the paper folder like a tiny flag'>>",
+      "body": "<<FILL role=rising words=60 beats='the noodle cook laughs, lifts {HERO} onto his shoulders like a sack of noodles, and {HERO} plucks the gold square safe and smooth; from up high all of {THRESHOLD} glitters; back on the ground {COMPANION} carries the rescued square to {ROUTE_B_KEEPER} like a tiny flag'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pf_last_gift",
-          "label": "Bring the rescued papers back to the folder.",
+          "label": "Bring the rescued papers back to {ROUTE_B_KEEPER}.",
           "target": "pf_gift"
         }
       ]
     },
     {
       "id": "pf_breeze",
-      "body": "<<FILL role=rising words=60 beats='Milo and Pip stand very still, palms up, and wait; the breeze thinks about it, then tips the gold square off the awning and floats it down in lazy zigzags right into Pips open paws; Pip squeaks with delight, the first happy squeak of the night'>>",
+      "body": "<<FILL role=rising words=60 beats='{HERO} and {COMPANION} stand very still, palms up, and wait; the breeze thinks about it, then tips the gold square off the awning and floats it down in lazy zigzags right into {COMPANION}'s open paws; {COMPANION} squeaks with delight, the first happy squeak of the night'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pf_breeze_gift",
-          "label": "Carry the gold square back to the folder.",
+          "label": "Carry the gold square back to {ROUTE_B_KEEPER}.",
           "target": "pf_gift"
         }
       ]
     },
     {
       "id": "pf_sort",
-      "body": "<<FILL role=rising words=68 beats='Milo sorts the squares into their trays, reds with reds, golds with golds, blues with blues, while the old folder smooths each one flat with his thumb; as they work he folds a scrap into a crane right before their eyes, corner to corner, until it flaps; Pip watches so closely her nose nearly touches the paper'>>",
+      "body": "<<FILL role=rising words=68 beats='{HERO} sorts the squares into their trays, reds with reds, golds with golds, blues with blues, while {ROUTE_B_KEEPER} smooths each one flat with his thumb; as they work he folds a scrap into a crane right before their eyes, corner to corner, until it flaps; {COMPANION} watches so closely her nose nearly touches the paper'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pf_sort_gift",
-          "label": "Hand the folder the last tidy tray.",
+          "label": "Hand {ROUTE_B_KEEPER} the last tidy tray.",
           "target": "pf_gift"
         }
       ]
     },
     {
       "id": "pf_gift",
-      "body": "<<FILL role=rising words=75 beats='the paper folder thanks them, then cuts a fresh square of moon-white paper, creases it once into the special wish fold, and gives it to Pip, a wish paper just like the one she lost; he promises to sit near the front at the ceremony to watch it fly; Pip holds it flat like treasure; Milo can head back to the lantern square or on toward the ceremony steps'>>",
+      "body": "<<FILL role=rising words=75 beats='{ROUTE_B_KEEPER} thanks them, then cuts a fresh square of moon-white paper, creases it once into the special wish fold, and gives it to {COMPANION}, {ITEM1} just like the one she lost; he promises to sit near the front at {GOAL} to watch it fly; {COMPANION} holds it flat like treasure; {HERO} can head back to {HUB} or on toward {GOAL_STEPS}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pf_gift_hub",
-          "label": "Walk back to the lantern square.",
+          "label": "Walk back to {HUB}.",
           "target": "n_hub"
         },
         {
           "id": "c_pf_gift_steps",
-          "label": "Head for the ceremony steps with Pip.",
+          "label": "Head for {GOAL_STEPS} with {COMPANION}.",
           "target": "f_steps"
         }
       ]
     },
     {
       "id": "tc_entry",
-      "body": "<<FILL role=choice words=78 beats='the tea cart glows with a tiny iron stove, and Granny Osha pours amber tea in ribbons that steam in the night air; a line of thirsty stall keepers has formed and her kettle is running low all at once; she winks at Milo and Pip over her spectacles; Milo decides whether to help pass out the little clay cups or to help refill the big kettle from the water barrel'>>",
+      "body": "<<FILL role=choice words=78 beats='{ROUTE_C_STALL} glows with a tiny iron stove, and {ROUTE_C_KEEPER} pours amber {ROUTE_C_GOOD} in ribbons that steam in the night air; a line of thirsty stall keepers has formed and her kettle is running low all at once; she winks at {HERO} and {COMPANION} over her spectacles; {HERO} decides whether to help pass out the little clay cups or to help refill the big kettle from the water barrel'>>",
       "is_ending": false,
       "choices": [
         {
@@ -291,7 +291,7 @@
     },
     {
       "id": "tc_cups",
-      "body": "<<FILL role=choice words=72 beats='the little clay cups are warm as held hands and full to their happy brims; the waiting stall keepers chat and stretch; Pip walks beside Milo announcing each cup in her small voice, which gets a tiny bit louder each time; Milo decides whether to carry two cups at a time, nice and level, or to load the whole tray up and serve everyone in one go'>>",
+      "body": "<<FILL role=choice words=72 beats='the little clay cups are warm as held hands and full to their happy brims; the waiting stall keepers chat and stretch; {COMPANION} walks beside {HERO} announcing each cup in her small voice, which gets a tiny bit louder each time; {HERO} decides whether to carry two cups at a time, nice and level, or to load the whole tray up and serve everyone in one go'>>",
       "is_ending": false,
       "choices": [
         {
@@ -308,48 +308,48 @@
     },
     {
       "id": "tc_warm",
-      "body": "<<FILL role=rising words=62 beats='two cups at a time, steady as a bridge, Milo delivers tea all down the line; keepers warm their hands and sigh happy sighs; the toy mender toasts him with a raised cup and the fiddler hums a thank-you note; Granny Osha calls them back to the cart with a smile brewing'>>",
+      "body": "<<FILL role=rising words=62 beats='two cups at a time, steady as a bridge, {HERO} delivers {ROUTE_C_GOOD} all down the line; keepers warm their hands and sigh happy sighs; {ROUTE_D_KEEPER} toasts him with a raised cup and {ROUTE_F_KEEPER} hums a thank-you note; {ROUTE_C_KEEPER} calls them back to the cart with a smile brewing'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tc_warm_gift",
-          "label": "Head back to Granny Osha's cart.",
+          "label": "Head back to {ROUTE_C_KEEPER}'s cart.",
           "target": "tc_gift"
         }
       ]
     },
     {
       "id": "tc_kettle",
-      "body": "<<FILL role=rising words=66 beats='Milo ladles clear water from the barrel into the big kettle, one careful scoop after another, while Pip counts the scoops; Granny Osha sets it on the tiny stove and shows them how she banks the coals so the fire stays cozy but calm all night; the kettle begins its low singing; she looks like she has an idea'>>",
+      "body": "<<FILL role=rising words=66 beats='{HERO} ladles clear water from the barrel into the big kettle, one careful scoop after another, while {COMPANION} counts the scoops; {ROUTE_C_KEEPER} sets it on the tiny stove and shows them how she banks the coals so the fire stays cozy but calm all night; the kettle begins its low singing; she looks like she has an idea'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tc_kettle_gift",
-          "label": "See what Granny Osha has in mind.",
+          "label": "See what {ROUTE_C_KEEPER} has in mind.",
           "target": "tc_gift"
         }
       ]
     },
     {
       "id": "tc_gift",
-      "body": "<<FILL role=rising words=75 beats='Granny Osha lights a stubby candle from her stove and sets it inside a little tin with a hinged lid, a traveling flame for Pips lantern, just like the candle Pip lost; she tucks it into Pips paws and promises to bring her sweet tea to the ceremony steps; the tin is warm as a purring kitten; Milo can head back to the lantern square or on toward the ceremony steps'>>",
+      "body": "<<FILL role=rising words=75 beats='{ROUTE_C_KEEPER} lights a stubby candle from her stove and sets it inside a little tin with a hinged lid, a traveling flame for {COMPANION}'s lantern, just like {ITEM3} she lost; she tucks it into {COMPANION}'s paws and promises to bring her sweet {ROUTE_C_GOOD} to {GOAL_STEPS}; the tin is warm as a purring kitten; {HERO} can head back to {HUB} or on toward {GOAL_STEPS}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tc_gift_hub",
-          "label": "Walk back to the lantern square.",
+          "label": "Walk back to {HUB}.",
           "target": "n_hub"
         },
         {
           "id": "c_tc_gift_steps",
-          "label": "Head for the ceremony steps with Pip.",
+          "label": "Head for {GOAL_STEPS} with {COMPANION}.",
           "target": "f_steps"
         }
       ]
     },
     {
       "id": "tm_entry",
-      "body": "<<FILL role=choice words=78 beats='the toy menders table is a tiny hospital for toys, wind-up beetles, one-eared rabbits, a drum with a new skin; Mr. Fez peers through a lens the size of a teacup, hunting for a runaway brass gear while his tin of tiny screws sits in a jumble; Milo decides whether to sort the tin of tiny screws by size or to hunt for the runaway gear under the stall'>>",
+      "body": "<<FILL role=choice words=78 beats='{ROUTE_D_STALL} is a tiny hospital for {ROUTE_D_GOOD}, wind-up beetles, one-eared rabbits, a drum with a new skin; {ROUTE_D_KEEPER} peers through a lens the size of a teacup, hunting for a runaway brass gear while his tin of tiny screws sits in a jumble; {HERO} decides whether to sort the tin of tiny screws by size or to hunt for the runaway gear under the stall'>>",
       "is_ending": false,
       "choices": [
         {
@@ -366,7 +366,7 @@
     },
     {
       "id": "tm_screws",
-      "body": "<<FILL role=choice words=72 beats='the screws are small as sesame seeds and every size is different; Milo spreads them on the green felt while Pip sorts with the tips of her claws, which turn out to be perfect tweezers; nearby a shiny wind-up beetle sits waiting, its key just begging for a turn; Milo decides whether to keep lining the screws up in neat rows or to wind the beetles key as far as it can go'>>",
+      "body": "<<FILL role=choice words=72 beats='the screws are small as sesame seeds and every size is different; {HERO} spreads them on the green felt while {COMPANION} sorts with the tips of her claws, which turn out to be perfect tweezers; nearby a shiny wind-up beetle sits waiting, its key just begging for a turn; {HERO} decides whether to keep lining the screws up in neat rows or to wind the beetle's key as far as it can go'>>",
       "is_ending": false,
       "choices": [
         {
@@ -383,48 +383,48 @@
     },
     {
       "id": "tm_neat",
-      "body": "<<FILL role=rising words=60 beats='row by row the screws line up like a tiny parade, big to small; Mr. Fez looks up from his lens and blinks at the tidy felt as if elves had visited; now he can fix three toys in the time one used to take; he waves Milo and Pip closer, reaching for something on his shelf'>>",
+      "body": "<<FILL role=rising words=60 beats='row by row the screws line up like a tiny parade, big to small; {ROUTE_D_KEEPER} looks up from his lens and blinks at the tidy felt as if elves had visited; now he can fix three {ROUTE_D_GOOD} in the time one used to take; he waves {HERO} and {COMPANION} closer, reaching for something on his shelf'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tm_neat_gift",
-          "label": "Come see what Mr. Fez is reaching for.",
+          "label": "Come see what {ROUTE_D_KEEPER} is reaching for.",
           "target": "tm_gift"
         }
       ]
     },
     {
       "id": "tm_gear",
-      "body": "<<FILL role=rising words=66 beats='under the stall it is a shadow-land of table legs and wood shavings; Milo borrows a lantern and Pip squeezes into the narrow places, and there, winking in a floorboard crack, is the brass gear; Pip hooks it out with one careful claw; Mr. Fez cheers so loudly the one-eared rabbit falls over; he beckons them close, reaching for his shelf'>>",
+      "body": "<<FILL role=rising words=66 beats='under the stall it is a shadow-land of table legs and wood shavings; {HERO} borrows a lantern and {COMPANION} squeezes into the narrow places, and there, winking in a floorboard crack, is the brass gear; {COMPANION} hooks it out with one careful claw; {ROUTE_D_KEEPER} cheers so loudly the one-eared rabbit falls over; he beckons them close, reaching for his shelf'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tm_gear_gift",
-          "label": "Come see what Mr. Fez is reaching for.",
+          "label": "Come see what {ROUTE_D_KEEPER} is reaching for.",
           "target": "tm_gift"
         }
       ]
     },
     {
       "id": "tm_gift",
-      "body": "<<FILL role=rising words=75 beats='Mr. Fez notices the little dent in Pips carrying lantern frame and taps it round again with three soft taps, then oils the tiny door until it swings like new; last of all he clips a wind-up firefly to the handle, a night-light friend for a shy walker; he promises to watch the ceremony from his stool; Milo can head back to the lantern square or on toward the ceremony steps'>>",
+      "body": "<<FILL role=rising words=75 beats='{ROUTE_D_KEEPER} notices the little dent in {COMPANION}'s carrying lantern frame and taps it round again with three soft taps, then oils the tiny door until it swings like new; last of all he clips {ROUTE_D_CHARM} to the handle, a night-light friend for a shy walker; he promises to watch {GOAL} from his stool; {HERO} can head back to {HUB} or on toward {GOAL_STEPS}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_tm_gift_hub",
-          "label": "Walk back to the lantern square.",
+          "label": "Walk back to {HUB}.",
           "target": "n_hub"
         },
         {
           "id": "c_tm_gift_steps",
-          "label": "Head for the ceremony steps with Pip.",
+          "label": "Head for {GOAL_STEPS} with {COMPANION}.",
           "target": "f_steps"
         }
       ]
     },
     {
       "id": "fs_entry",
-      "body": "<<FILL role=choice words=80 beats='the fruit stand is a city of bright pyramids, oranges, star fruit, plums with dusty purple cheeks; a passing cart has bumped the corner and Auntie Plums grandest orange pyramid has tumbled into a rolling puddle of oranges; she is laughing about it, but her hands are full weighing plums; Milo decides whether to rebuild the orange pyramid or to help tie fruit bundles with her golden string'>>",
+      "body": "<<FILL role=choice words=80 beats='{ROUTE_E_STALL} is a city of bright pyramids, oranges, star fruit, plums with dusty purple cheeks; a passing cart has bumped the corner and {ROUTE_E_KEEPER}'s grandest orange pyramid has tumbled into a rolling puddle of oranges; she is laughing about it, but her hands are full weighing plums; {HERO} decides whether to rebuild the orange pyramid or to help tie {ROUTE_E_GOOD} bundles with her {ITEM2}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -434,14 +434,14 @@
         },
         {
           "id": "c_fs_bundle",
-          "label": "Tie fruit bundles with the golden string.",
+          "label": "Tie {ROUTE_E_GOOD} bundles with {ITEM2}.",
           "target": "fs_bundle"
         }
       ]
     },
     {
       "id": "fs_stack",
-      "body": "<<FILL role=choice words=70 beats='Milo and Pip herd the runaway oranges home, Pip rolling them in with her nose; now comes the fun engineering part; Milo decides whether to build it the classic way, biggest oranges on the bottom in a solid square, or to try a fancy pattern with stripes of orange and green star fruit'>>",
+      "body": "<<FILL role=choice words=70 beats='{HERO} and {COMPANION} herd the runaway oranges home, {COMPANION} rolling them in with her nose; now comes the fun engineering part; {HERO} decides whether to build it the classic way, biggest oranges on the bottom in a solid square, or to try a fancy pattern with stripes of orange and green star fruit'>>",
       "is_ending": false,
       "choices": [
         {
@@ -458,60 +458,60 @@
     },
     {
       "id": "fs_tower",
-      "body": "<<FILL role=rising words=60 beats='big oranges on the bottom, smaller and smaller to the top, and the pyramid rises steady as a castle; Milo places the last orange like a crown and the whole stand seems to stand up straighter; Auntie Plum whistles, impressed, and dusts off her hands to find them a thank-you'>>",
+      "body": "<<FILL role=rising words=60 beats='big oranges on the bottom, smaller and smaller to the top, and the pyramid rises steady as a castle; {HERO} places the last orange like a crown and the whole stand seems to stand up straighter; {ROUTE_E_KEEPER} whistles, impressed, and dusts off her hands to find them a thank-you'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fs_tower_gift",
-          "label": "Go get Auntie Plum's thank-you.",
+          "label": "Go get {ROUTE_E_KEEPER}'s thank-you.",
           "target": "fs_gift"
         }
       ]
     },
     {
       "id": "fs_pattern",
-      "body": "<<FILL role=rising words=62 beats='orange, green, orange, green, the stripes climb the pyramid like a lighthouse; a few customers stop just to look at it, and one takes a picture with a very long camera; Auntie Plum declares it the prettiest pyramid the market has ever grown and waves Milo and Pip over with a twinkle'>>",
+      "body": "<<FILL role=rising words=62 beats='orange, green, orange, green, the stripes climb the pyramid like a lighthouse; a few customers stop just to look at it, and one takes a picture with a very long camera; {ROUTE_E_KEEPER} declares it the prettiest pyramid {THRESHOLD} has ever grown and waves {HERO} and {COMPANION} over with a twinkle'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fs_pattern_gift",
-          "label": "Go see what Auntie Plum is twinkling about.",
+          "label": "Go see what {ROUTE_E_KEEPER} is twinkling about.",
           "target": "fs_gift"
         }
       ]
     },
     {
       "id": "fs_bundle",
-      "body": "<<FILL role=rising words=66 beats='Auntie Plum teaches Milo the bundle knot, loop, loop, pull, and soon plums and star fruit sit in tidy golden-tied bundles ready for shoppers; Pip holds the string spool and lets it spin; loop, loop, pull, Pip whispers along, learning it too; the spool of golden string glints in the lantern light as Auntie Plum reaches for her scissors'>>",
+      "body": "<<FILL role=rising words=66 beats='{ROUTE_E_KEEPER} teaches {HERO} the bundle knot, loop, loop, pull, and soon plums and star fruit sit in tidy golden-tied bundles ready for shoppers; {COMPANION} holds the string spool and lets it spin; loop, loop, pull, {COMPANION} whispers along, learning it too; the spool of {ITEM2} glints in the lantern light as {ROUTE_E_KEEPER} reaches for her scissors'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fs_bundle_gift",
-          "label": "Watch what Auntie Plum snips off the spool.",
+          "label": "Watch what {ROUTE_E_KEEPER} snips off the spool.",
           "target": "fs_gift"
         }
       ]
     },
     {
       "id": "fs_gift",
-      "body": "<<FILL role=rising words=75 beats='Auntie Plum measures out a long golden string from her spool, just like the string Pip lost, and coils it into Pips paws along with one perfect star fruit for luck; she promises to bring a fruit plate to the ceremony steps for after the lanterns fly; Pip practices the knot in the air, loop, loop, pull; Milo can head back to the lantern square or on toward the ceremony steps'>>",
+      "body": "<<FILL role=rising words=75 beats='{ROUTE_E_KEEPER} measures out a long {ITEM2} from her spool, just like the one {COMPANION} lost, and coils it into {COMPANION}'s paws along with one perfect star fruit for luck; she promises to bring a {ROUTE_E_GOOD} plate to {GOAL_STEPS} for after the lanterns fly; {COMPANION} practices the knot in the air, loop, loop, pull; {HERO} can head back to {HUB} or on toward {GOAL_STEPS}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fs_gift_hub",
-          "label": "Walk back to the lantern square.",
+          "label": "Walk back to {HUB}.",
           "target": "n_hub"
         },
         {
           "id": "c_fs_gift_steps",
-          "label": "Head for the ceremony steps with Pip.",
+          "label": "Head for {GOAL_STEPS} with {COMPANION}.",
           "target": "f_steps"
         }
       ]
     },
     {
       "id": "mc_entry",
-      "body": "<<FILL role=choice words=78 beats='in the musicians corner a fiddler grandpa, a flute player, and a girl with a drum are warming up the evenings songs, music like warm honey over the whole square; the breeze keeps flipping the songbook pages and the drummers little brass bells sit waiting for extra hands; Milo decides whether to hold the songbook pages open against the breeze or to try the little brass bells with the drummer girl'>>",
+      "body": "<<FILL role=choice words=78 beats='in {ROUTE_F_STALL} {ROUTE_F_KEEPER}, a flute player, and a girl with a drum are warming up the evening's songs, {ROUTE_F_GOOD} like warm honey over the whole square; the breeze keeps flipping the songbook pages and the drummer's little brass bells sit waiting for extra hands; {HERO} decides whether to hold the songbook pages open against the breeze or to try the little brass bells with the drummer girl'>>",
       "is_ending": false,
       "choices": [
         {
@@ -528,7 +528,7 @@
     },
     {
       "id": "mc_bells",
-      "body": "<<FILL role=choice words=72 beats='the drummer girl hands Milo the strap of little brass bells and shows him the trick, shake them soft on the drumbeat, like rain agreeing with thunder; beside the drum hangs a great shiny gong with a padded mallet that is very tempting; Milo decides whether to ring the bells softly in time with the drum or to give the big gong one mighty whack'>>",
+      "body": "<<FILL role=choice words=72 beats='the drummer girl hands {HERO} the strap of little brass bells and shows him the trick, shake them soft on the drumbeat, like rain agreeing with thunder; beside the drum hangs a great shiny gong with a padded mallet that is very tempting; {HERO} decides whether to ring the bells softly in time with the drum or to give the big gong one mighty whack'>>",
       "is_ending": false,
       "choices": [
         {
@@ -545,7 +545,7 @@
     },
     {
       "id": "mc_time",
-      "body": "<<FILL role=rising words=62 beats='shake, shake, on the beat, and the bells stitch a silver edge onto the drum song; the fiddler grandpa grins around his bow and the flute swoops happily; Pip taps her tail on the cobbles in perfect time, surprising herself; when the song lands, the whole corner applauds its two newest musicians'>>",
+      "body": "<<FILL role=rising words=62 beats='shake, shake, on the beat, and the bells stitch a silver edge onto the drum song; {ROUTE_F_KEEPER} grins around his bow and the flute swoops happily; {COMPANION} taps her tail on the cobbles in perfect time, surprising herself; when the song lands, the whole corner applauds its two newest musicians'>>",
       "is_ending": false,
       "choices": [
         {
@@ -557,70 +557,70 @@
     },
     {
       "id": "mc_pages",
-      "body": "<<FILL role=rising words=64 beats='Milo stands like a music stand with very good manners, holding the pages flat while the breeze tries every trick it knows; he learns to turn the page exactly on the fiddler grandpas nod; the songs pour out smooth with no flapping at all; between songs the fiddler leans down to ask Pip a question in a kind, quiet voice'>>",
+      "body": "<<FILL role=rising words=64 beats='{HERO} stands like a music stand with very good manners, holding the pages flat while the breeze tries every trick it knows; he learns to turn the page exactly on {ROUTE_F_KEEPER}'s nod; the songs pour out smooth with no flapping at all; between songs {ROUTE_F_KEEPER} leans down to ask {COMPANION} a question in a kind, quiet voice'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mc_pages_gift",
-          "label": "Listen to what the fiddler asks Pip.",
+          "label": "Listen to what {ROUTE_F_KEEPER} asks {COMPANION}.",
           "target": "mc_gift"
         }
       ]
     },
     {
       "id": "mc_gift",
-      "body": "<<FILL role=rising words=75 beats='the band promises Pip they will play the wish-lantern song the moment her lantern rises, and right there they teach Milo and Pip the humming part, low and warm like a kettle thinking; Pip hums it once, a tiny brave sound, then again a little stronger; the drummer girl declares Pip an official member of the band; Milo can head back to the lantern square or on toward the ceremony steps'>>",
+      "body": "<<FILL role=rising words=75 beats='the band promises {COMPANION} they will play {GOAL}'s song the moment her lantern rises, and right there they teach {HERO} and {COMPANION} the humming part, low and warm like a kettle thinking; {COMPANION} hums it once, a tiny brave sound, then again a little stronger; the drummer girl declares {COMPANION} an official member of the band; {HERO} can head back to {HUB} or on toward {GOAL_STEPS}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_mc_gift_hub",
-          "label": "Walk back to the lantern square.",
+          "label": "Walk back to {HUB}.",
           "target": "n_hub"
         },
         {
           "id": "c_mc_gift_steps",
-          "label": "Head for the ceremony steps with Pip.",
+          "label": "Head for {GOAL_STEPS} with {COMPANION}.",
           "target": "f_steps"
         }
       ]
     },
     {
       "id": "f_steps",
-      "body": "<<FILL role=choice words=95 beats='the wide stone steps at the head of the square glow under the thickest lantern strings, and the ceremony keepers are setting out the wish-lantern rack; on a long tray they lay spare moon-white wish paper, coils of golden string, and little flames in tins, because no shy latecomer is ever left out at this market; so whatever the evening has held, between Pips basket and the keepers tray, everything her lantern needs is here; write this scene so it works no matter which stalls were visited or in what order; steam drifts up the steps, paper crinkles, string music floats over; helpers and stall keepers begin to gather; Pip takes a deep breath and looks to Milo, and three things could happen next, they could fold and write the wish, get the lantern ready to fly, or gather the stall friends around Pip first'>>",
+      "body": "<<FILL role=choice words=95 beats='{GOAL_STEPS} glow under the thickest lantern strings, and the ceremony keepers are setting out the {GOAL} rack; on a long tray they lay spare {ITEM1}, coils of {ITEM2}, and little flames in tins, because no shy latecomer is ever left out at {THRESHOLD}; so whatever the evening has held, between {COMPANION}'s basket and the keeper's tray, everything {COMPANION}'s lantern needs is here; write this scene so it works no matter which stalls were visited or in what order; steam drifts up the steps, paper crinkles, string music floats over; helpers and stall keepers begin to gather; {COMPANION} takes a deep breath and looks to {HERO}, and three things could happen next, they could fold and write the wish, get {LANTERN} ready to fly, or gather the stall friends around {COMPANION} first'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fsteps_paper",
-          "label": "Help Pip fold and write her wish.",
+          "label": "Help {COMPANION} fold and write her wish.",
           "target": "f_paper"
         },
         {
           "id": "c_fsteps_lantern",
-          "label": "Help Pip get her lantern ready to fly.",
+          "label": "Help {COMPANION} get {LANTERN} ready to fly.",
           "target": "f_lantern"
         },
         {
           "id": "c_fsteps_friends",
-          "label": "Gather the stall friends around Pip first.",
+          "label": "Gather the stall friends around {COMPANION} first.",
           "target": "f_friends"
         }
       ]
     },
     {
       "id": "f_paper",
-      "body": "<<FILL role=rising words=68 beats='Milo and Pip smooth the moon-white wish paper flat on the cool stone step, and a keeper lends them a thin brush and a pot of night-blue ink; all around, other families are folding their own wishes; Pip stares at the empty paper, wanting the wish to be exactly right, and shuffles a little closer to Milo'>>",
+      "body": "<<FILL role=rising words=68 beats='{HERO} and {COMPANION} smooth {ITEM1} flat on the cool stone step, and a keeper lends them a thin brush and a pot of night-blue ink; all around, other families are folding their own wishes; {COMPANION} stares at the empty paper, wanting the wish to be exactly right, and shuffles a little closer to {HERO}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fpaper_whisper",
-          "label": "Lean in so Pip can whisper her wish.",
+          "label": "Lean in so {COMPANION} can whisper her wish.",
           "target": "f_whisper"
         }
       ]
     },
     {
       "id": "f_whisper",
-      "body": "<<FILL role=rising words=66 beats='Pip cups her paws around Milos ear and whispers the wish, so quiet it is almost only warm air; it is a good one, simple and kind, the sort of wish that makes you smile with your whole face; Milo nods solemnly, keeper of the secret; now there is just the writing to decide'>>",
+      "body": "<<FILL role=rising words=66 beats='{COMPANION} cups her paws around {HERO}'s ear and whispers the wish, so quiet it is almost only warm air; it is a good one, simple and kind, the sort of wish that makes you smile with your whole face; {HERO} nods solemnly, keeper of the secret; now there is just the writing to decide'>>",
       "is_ending": false,
       "choices": [
         {
@@ -632,58 +632,58 @@
     },
     {
       "id": "f_write",
-      "body": "<<FILL role=choice words=80 beats='the brush hovers over the moon-white paper and the night-blue ink shines; Milo and Pip decide how the wish should go down; he can write Pips wish exactly as she whispered it, or they can add a second line wishing something warm for the whole market too, or Milo can hand Pip the brush so she writes it herself in her own wobbly letters; each way feels right in its own way'>>",
+      "body": "<<FILL role=choice words=80 beats='the brush hovers over {ITEM1} and the night-blue ink shines; {HERO} and {COMPANION} decide how the wish should go down; he can write {COMPANION}'s wish exactly as she whispered it, or they can add a second line wishing something warm for all of {THRESHOLD} too, or {HERO} can hand {COMPANION} the brush so she writes it herself in her own wobbly letters; each way feels right in its own way'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fwrite_pip",
-          "label": "Write Pip's wish just as she whispered it.",
+          "label": "Write {COMPANION}'s wish just as she whispered it.",
           "target": "e_wish_pip"
         },
         {
           "id": "c_fwrite_market",
-          "label": "Add a second wish for the whole market.",
+          "label": "Add a second wish for all of {THRESHOLD}.",
           "target": "e_wish_market"
         },
         {
           "id": "c_fwrite_brave",
-          "label": "Hand Pip the brush to write it herself.",
+          "label": "Hand {COMPANION} the brush to write it herself.",
           "target": "e_wish_brave"
         }
       ]
     },
     {
       "id": "f_lantern",
-      "body": "<<FILL role=rising words=68 beats='Milo settles the little lantern frame on his knees, its paper walls glowing faintly like a small moon waiting to happen; Pip crouches beside him, nose to nose with it; a keeper kneels to check the frame and pronounces it a fine flyer; there is string to tie and a flame to set before it can go anywhere'>>",
+      "body": "<<FILL role=rising words=68 beats='{HERO} settles {LANTERN}'s little frame on his knees, its paper walls glowing faintly like a small moon waiting to happen; {COMPANION} crouches beside him, nose to nose with it; a keeper kneels to check the frame and pronounces it a fine flyer; there is string to tie and a flame to set before it can go anywhere'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_flantern_string",
-          "label": "Tie on the golden string first.",
+          "label": "Tie on {ITEM2} first.",
           "target": "f_string"
         }
       ]
     },
     {
       "id": "f_string",
-      "body": "<<FILL role=rising words=66 beats='the golden string goes on with a simple loop-loop-pull knot, easy enough for small paws, so the folded wish can hang beneath the lantern like the clapper of a tiny bell; Pip pulls the last loop snug herself and checks it twice; the lantern is dressed and ready; now only the flame is left, the biggest moment of all'>>",
+      "body": "<<FILL role=rising words=66 beats='{ITEM2} goes on with a simple loop-loop-pull knot, easy enough for small paws, so the folded wish can hang beneath {LANTERN} like the clapper of a tiny bell; {COMPANION} pulls the last loop snug herself and checks it twice; {LANTERN} is dressed and ready; now only the flame is left, the biggest moment of all'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fstring_flame",
-          "label": "Get ready to light the lantern.",
+          "label": "Get ready to light {LANTERN}.",
           "target": "f_flame"
         }
       ]
     },
     {
       "id": "f_flame",
-      "body": "<<FILL role=choice words=80 beats='a small flame waits in its tin, steady and warm, and the lantern wick stands ready; the keepers say the lighting can be done any way the wisher likes best; Pip can touch the flame to the wick first, all by herself, or Milo and Pip can light it together on a count of three, or they can ask the oldest keeper to light it the old way with the long brass taper; Pip looks at each in turn'>>",
+      "body": "<<FILL role=choice words=80 beats='a small flame waits in its tin, steady and warm, and {LANTERN}'s wick stands ready; the keepers say the lighting can be done any way the wisher likes best; {COMPANION} can touch the flame to the wick first, all by herself, or {HERO} and {COMPANION} can light it together on a count of three, or they can ask the oldest keeper to light it the old way with the long brass taper; {COMPANION} looks at each in turn'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fflame_pip",
-          "label": "Let Pip light the wick all by herself.",
+          "label": "Let {COMPANION} light the wick all by herself.",
           "target": "e_light_pip"
         },
         {
@@ -700,36 +700,36 @@
     },
     {
       "id": "f_friends",
-      "body": "<<FILL role=rising words=70 beats='Milo trots around the square gathering company for Pip, and the market answers the way this market always does; every stall keeper who waved to them tonight comes over, and plenty of neighbors who simply love a ceremony come too, wiping hands on aprons, carrying cups and stools; write this so it rings true no matter which stalls were visited; a warm crowd gathers at the steps around one small pangolin'>>",
+      "body": "<<FILL role=rising words=70 beats='{HERO} trots around {HUB} gathering company for {COMPANION}, and {THRESHOLD} answers the way it always does; every stall keeper who waved to them tonight comes over, and plenty of neighbors who simply love a ceremony come too, wiping hands on aprons, carrying cups and stools; write this so it rings true no matter which stalls were visited; a warm crowd gathers at the steps around one small {COMPANION_KIND}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ffriends_circle",
-          "label": "Bring everyone into a circle around Pip.",
+          "label": "Bring everyone into a circle around {COMPANION}.",
           "target": "f_circle"
         }
       ]
     },
     {
       "id": "f_circle",
-      "body": "<<FILL role=rising words=66 beats='the circle of lantern-lit faces settles on the steps, aprons and spectacles and one drum, all smiling at Pip; and Pip, who began the evening curled behind a barrel, stands in the very middle holding her lantern and does not hide at all; her scales shine like little lanterns themselves; the launch is moments away'>>",
+      "body": "<<FILL role=rising words=66 beats='the circle of lantern-lit faces settles on the steps, aprons and spectacles and one drum, all smiling at {COMPANION}; and {COMPANION}, who began the evening curled behind a barrel, stands in the very middle holding her lantern and does not hide at all; she shines like a little lantern herself; the launch is moments away'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fcircle_countdown",
-          "label": "Get ready to send the lantern up.",
+          "label": "Get ready to send {LANTERN} up.",
           "target": "f_countdown"
         }
       ]
     },
     {
       "id": "f_countdown",
-      "body": "<<FILL role=choice words=80 beats='the lantern glows in Pips paws, tugging gently upward like a puppy on a string, and the circle leans in; all that is left is choosing how to send it off; Pip can lead the count of three in her new brave voice, or the whole circle can count together like one big warm voice, or instead of counting everyone can hum the wish-lantern song and let the music lift it; Milo squeezes Pips paw'>>",
+      "body": "<<FILL role=choice words=80 beats='{LANTERN} glows in {COMPANION}'s paws, tugging gently upward like a puppy on a string, and the circle leans in; all that is left is choosing how to send it off; {COMPANION} can lead the count of three in her new brave voice, or the whole circle can count together like one big warm voice, or instead of counting everyone can hum {GOAL}'s song and let the music lift it; {HERO} squeezes {COMPANION}'s paw'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_fcount_pip",
-          "label": "Let Pip lead the count of three.",
+          "label": "Let {COMPANION} lead the count of three.",
           "target": "e_up_pip"
         },
         {
@@ -739,152 +739,152 @@
         },
         {
           "id": "c_fcount_song",
-          "label": "Hum the wish song and let it lift.",
+          "label": "Hum {GOAL}'s song and let it lift.",
           "target": "e_up_song"
         }
       ]
     },
     {
       "id": "e_ds_spill",
-      "body": "<<FILL role=ending words=72 beats='three trays is two trays too many; the tower tips and dumplings bounce and roll everywhere like escaping ping-pong balls; nobody is hurt and Auntie Mo laughs loudest of all, but the big cleanup eats the rest of the evening, and cousin Ada calls it a night; the keepers promise to save Pip a lantern for the very next market night, and Pip walks home between Milo and Ada, already planning; gentle and warm, a try-again, never sad'>>",
+      "body": "<<FILL role=ending words=72 beats='three trays is two trays too many; the tower tips and {ROUTE_A_GOOD} bounce and roll everywhere like escaping ping-pong balls; nobody is hurt and {ROUTE_A_KEEPER} laughs loudest of all, but the big cleanup eats the rest of the evening, and {CHAPERONE} calls it a night; the keepers promise to save {COMPANION} a lantern for the very next market night, and {COMPANION} walks home between {HERO} and {CHAPERONE}, already planning; gentle and warm, a try-again, never sad'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ds_spill",
         "valence": "negative",
         "kind": "setback",
-        "title": "Runaway Dumplings"
+        "title": "Runaway {ROUTE_A_MISHAP}"
       }
     },
     {
       "id": "e_tc_slosh",
-      "body": "<<FILL role=ending words=72 beats='the whole tray at once is a wobbly idea; the cups slide, the cozy-warm tea sloshes over Milos shoes, and half the cups need washing before anyone else can drink; no one is burned and Granny Osha only chuckles, but by the time the washing is done cousin Ada says it is home time; Granny sends them off with honey tea for the road and a promise of level-tray lessons next market night; Pip waves to the lantern square as they go, not one bit gloomy; gentle try-again'>>",
+      "body": "<<FILL role=ending words=72 beats='the whole tray at once is a wobbly idea; the cups slide, the cozy-warm {ROUTE_C_GOOD} sloshes over {HERO}'s shoes, and half the cups need washing before anyone else can drink; no one is burned and {ROUTE_C_KEEPER} only chuckles, but by the time the washing is done {CHAPERONE} says it is home time; {ROUTE_C_KEEPER} sends them off with honey tea for the road and a promise of level-tray lessons next market night; {COMPANION} waves to {HUB} as they go, not one bit gloomy; gentle try-again'>>",
       "is_ending": true,
       "ending": {
         "id": "end_tc_slosh",
         "valence": "negative",
         "kind": "setback",
-        "title": "One Tray Too Full"
+        "title": "{ROUTE_C_MISHAP}"
       }
     },
     {
       "id": "e_tm_spring",
-      "body": "<<FILL role=ending words=72 beats='Milo winds the beetles key one turn too far and SPROING, the spring pops out and the beetle does one heroic backflip and lies still; Mr. Fez is not cross at all, springs pop every week, but the beetle needs a whole evening of careful surgery and the table becomes an operating room; cousin Ada says that is their cue to head home; Mr. Fez promises the beetle will be marching by next market night and saves Pip a front-row stool for the next ceremony; a funny, gentle try-again'>>",
+      "body": "<<FILL role=ending words=72 beats='{HERO} winds the beetle's key one turn too far and SPROING, the spring pops out and the beetle does one heroic backflip and lies still; {ROUTE_D_KEEPER} is not cross at all, springs pop every week, but the beetle needs a whole evening of careful surgery and the table becomes an operating room; {CHAPERONE} says that is their cue to head home; {ROUTE_D_KEEPER} promises the beetle will be marching by next market night and saves {COMPANION} a front-row stool for the next ceremony; a funny, gentle try-again'>>",
       "is_ending": true,
       "ending": {
         "id": "end_tm_spring",
         "valence": "negative",
         "kind": "setback",
-        "title": "Sproing Goes the Beetle"
+        "title": "{ROUTE_D_MISHAP}"
       }
     },
     {
       "id": "e_mc_gong",
-      "body": "<<FILL role=ending words=72 beats='the gong says BWOOONNNG so hugely that pigeons burst off every rooftop and the whole band stops mid-note; everyone laughs, even the fiddler grandpa, but ears are ringing and the band declares a long tea break to recover, and cousin Ada decides that is the evenings big finish; the drummer girl tells Milo the gong gets everyone exactly once, and makes Pip promise to come hum with the band next market night; giggly, gentle try-again, no one upset'>>",
+      "body": "<<FILL role=ending words=72 beats='the gong says BWOOONNNG so hugely that pigeons burst off every rooftop and the whole band stops mid-note; everyone laughs, even {ROUTE_F_KEEPER}, but ears are ringing and the band declares a long tea break to recover, and {CHAPERONE} decides that is the evening's big finish; the drummer girl tells {HERO} the gong gets everyone exactly once, and makes {COMPANION} promise to come hum with the band next market night; giggly, gentle try-again, no one upset'>>",
       "is_ending": true,
       "ending": {
         "id": "end_mc_gong",
         "valence": "negative",
         "kind": "setback",
-        "title": "The Mighty Gong Whack"
+        "title": "{ROUTE_F_MISHAP}"
       }
     },
     {
       "id": "e_wish_pip",
-      "body": "<<FILL role=completion words=82 beats='Milo writes Pips wish in careful night-blue letters, exactly as whispered, not one word changed, and Pip watches every stroke; the folded wish is tied beneath the lantern, the flame set, and up it sails over the market with dozens of others, but theirs is easy to spot because it carries a secret only two friends know; the stall keepers cheer from the steps as Pip leans on Milos arm and watches her very own wish join the stars'>>",
+      "body": "<<FILL role=completion words=82 beats='{HERO} writes {COMPANION}'s wish in careful night-blue letters, exactly as whispered, not one word changed, and {COMPANION} watches every stroke; the folded wish is tied beneath {LANTERN}, the flame set, and up it sails over {THRESHOLD} with dozens of others, but theirs is easy to spot because it carries a secret only two friends know; the stall keepers cheer from the steps as {COMPANION} leans on {HERO}'s arm and watches her very own wish join the stars'>>",
       "is_ending": true,
       "ending": {
         "id": "end_wish_pip",
         "valence": "positive",
         "kind": "completion",
-        "title": "Pip's Own Wish"
+        "title": "{WISH_PIP}"
       }
     },
     {
       "id": "e_wish_market",
-      "body": "<<FILL role=completion words=82 beats='under Pips wish Milo adds one more line, a warm wish for the whole night market, for its steam and songs and kind hands, and Pip nods hard at every word; when the lantern rises the stall keepers on the steps cheer as if they can feel the extra wish riding along; the lantern climbs until it is a gold freckle among the stars, carrying kindness up for everyone who traded a little of it tonight'>>",
+      "body": "<<FILL role=completion words=82 beats='under {COMPANION}'s wish {HERO} adds one more line, a warm wish for all of {THRESHOLD}, for its steam and songs and kind hands, and {COMPANION} nods hard at every word; when {LANTERN} rises the stall keepers on the steps cheer as if they can feel the extra wish riding along; {LANTERN} climbs until it is a gold freckle among the stars, carrying kindness up for everyone who traded a little of it tonight'>>",
       "is_ending": true,
       "ending": {
         "id": "end_wish_market",
         "valence": "positive",
         "kind": "success",
-        "title": "A Wish Big Enough to Share"
+        "title": "{WISH_MARKET}"
       }
     },
     {
       "id": "e_wish_brave",
-      "body": "<<FILL role=completion words=82 beats='Milo hands Pip the brush and Pip, who whispered all evening, writes her own wish in wobbly, proud letters while the keepers pretend not to peek; the wobbliest letters, the oldest keeper says, always fly the truest; when the lantern lifts off with Pips own writing swinging beneath it, Pip discovers that her voice works out loud too, and she cheers, actually cheers, as her wish climbs the dark; the shy pangolin from behind the barrel is gone for good'>>",
+      "body": "<<FILL role=completion words=82 beats='{HERO} hands {COMPANION} the brush and {COMPANION}, who whispered all evening, writes her own wish in wobbly, proud letters while the keepers pretend not to peek; the wobbliest letters, the oldest keeper says, always fly the truest; when {LANTERN} lifts off with {COMPANION}'s own writing swinging beneath it, {COMPANION} discovers that her voice works out loud too, and she cheers, actually cheers, as her wish climbs the dark; the shy {COMPANION_KIND} from behind the barrel is gone for good'>>",
       "is_ending": true,
       "ending": {
         "id": "end_wish_brave",
         "valence": "positive",
         "kind": "discovery",
-        "title": "Wobbly Brave Letters"
+        "title": "{WISH_BRAVE}"
       }
     },
     {
       "id": "e_light_pip",
-      "body": "<<FILL role=completion words=82 beats='Pip touches the little flame to the wick all by herself, steady as anything, and the lantern wakes up glowing like a small tame moon; the crowd on the steps hushes, then cheers as it rises from her open paws; Pip stands tall watching her light climb over the rooftops, and Milo thinks she does not look like a shy pangolin at all anymore, she looks like a lighthouse keeper; warm, proud, glowing finish'>>",
+      "body": "<<FILL role=completion words=82 beats='{COMPANION} touches the little flame to the wick all by herself, steady as anything, and {LANTERN} wakes up glowing like a small tame moon; the crowd on the steps hushes, then cheers as it rises from her open paws; {COMPANION} stands tall watching her light climb over the rooftops, and {HERO} thinks she does not look like a shy {COMPANION_KIND} at all anymore, she looks like a lighthouse keeper; warm, proud, glowing finish'>>",
       "is_ending": true,
       "ending": {
         "id": "end_light_pip",
         "valence": "positive",
         "kind": "completion",
-        "title": "Pip Lights the Way"
+        "title": "{LIGHT_PIP}"
       }
     },
     {
       "id": "e_light_together",
-      "body": "<<FILL role=completion words=82 beats='one, two, three, and Milo and Pip touch the flame to the wick at the exact same moment, so the lantern belongs to both of them forever; it rises trailing its golden string over the steam and the music and the lantern strings, and the whole market seems to glow a shade brighter as it goes; best market night ever, Pip says, out loud, in a voice that does not whisper at all; two friends, one light, one sky'>>",
+      "body": "<<FILL role=completion words=82 beats='one, two, three, and {HERO} and {COMPANION} touch the flame to the wick at the exact same moment, so {LANTERN} belongs to both of them forever; it rises trailing {ITEM2} over the steam and the music and the lantern strings, and all of {THRESHOLD} seems to glow a shade brighter as it goes; best market night ever, {COMPANION} says, out loud, in a voice that does not whisper at all; two friends, one light, one sky'>>",
       "is_ending": true,
       "ending": {
         "id": "end_light_together",
         "valence": "positive",
         "kind": "success",
-        "title": "One, Two, Three, Glow"
+        "title": "{LIGHT_TOGETHER}"
       }
     },
     {
       "id": "e_light_keeper",
-      "body": "<<FILL role=completion words=82 beats='the oldest keeper lights the wick with the long brass taper, the way it was done when the market was young, and tells them the taper has lit a thousand first wishes; a thousand and one now, says Pip, and the old keeper laughs like dry leaves; the lantern rises slow and stately, and the whole square watches the newest wish go up the oldest way, with Pip and Milo standing right at the heart of the tradition'>>",
+      "body": "<<FILL role=completion words=82 beats='the oldest keeper lights the wick with the long brass taper, the way it was done when {THRESHOLD} was young, and tells them the taper has lit a thousand first wishes; a thousand and one now, says {COMPANION}, and the old keeper laughs like dry leaves; {LANTERN} rises slow and stately, and {HUB} watches the newest wish go up the oldest way, with {COMPANION} and {HERO} standing right at the heart of the tradition'>>",
       "is_ending": true,
       "ending": {
         "id": "end_light_keeper",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Old Way"
+        "title": "{LIGHT_KEEPER}"
       }
     },
     {
       "id": "e_up_pip",
-      "body": "<<FILL role=completion words=82 beats='Pip lifts her chin and counts, one, two, THREE, in a clear little voice that surprises even the pigeons, and the lantern leaps for the sky as if it had been waiting for exactly that voice; the circle of stall keepers roars and the band strikes up; Milo cheers loudest, because he heard where that voice began tonight, in a whisper behind a barrel, and look at it now, leading the whole square'>>",
+      "body": "<<FILL role=completion words=82 beats='{COMPANION} lifts her chin and counts, one, two, THREE, in a clear little voice that surprises even the pigeons, and {LANTERN} leaps for the sky as if it had been waiting for exactly that voice; the circle of stall keepers roars and the band strikes up; {HERO} cheers loudest, because he heard where that voice began tonight, in a whisper behind a barrel, and look at it now, leading all of {HUB}'>>",
       "is_ending": true,
       "ending": {
         "id": "end_up_pip",
         "valence": "positive",
         "kind": "success",
-        "title": "Pip Counts Us Down"
+        "title": "{UP_PIP}"
       }
     },
     {
       "id": "e_up_chorus",
-      "body": "<<FILL role=completion words=82 beats='the whole circle counts together, one, two, three, aprons and spectacles and drum and all, one big warm voice under the lantern strings, and Pips lantern sails up on the sound; it climbs past the rooftops with its wish swinging gently below, and the crowd keeps cheering long after; Pip spins slowly to look at every single face that counted for her, memorizing the best crowd a small pangolin ever had'>>",
+      "body": "<<FILL role=completion words=82 beats='the whole circle counts together, one, two, three, aprons and spectacles and drum and all, one big warm voice under the lantern strings, and {COMPANION}'s {LANTERN} sails up on the sound; it climbs past the rooftops with its wish swinging gently below, and the crowd keeps cheering long after; {COMPANION} spins slowly to look at every single face that counted for her, memorizing the best crowd a small {COMPANION_KIND} ever had'>>",
       "is_ending": true,
       "ending": {
         "id": "end_up_chorus",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Whole Square Counts"
+        "title": "{UP_CHORUS}"
       }
     },
     {
       "id": "e_up_song",
-      "body": "<<FILL role=completion words=82 beats='nobody counts at all; instead the band begins the wish-lantern song and the whole circle hums the low warm part, and on the swell of the music Pips lantern simply rises, as if the song itself were lifting it; it drifts up through the humming and the steam and the strings of little lights, glowing gold; Pip hums until the lantern is a spark among the stars, and the music sends the wish the whole way up'>>",
+      "body": "<<FILL role=completion words=82 beats='nobody counts at all; instead the band begins {GOAL}'s song and the whole circle hums the low warm part, and on the swell of the music {COMPANION}'s {LANTERN} simply rises, as if the song itself were lifting it; it drifts up through the humming and the steam and the strings of little lights, glowing gold; {COMPANION} hums until {LANTERN} is a spark among the stars, and the music sends the wish the whole way up'>>",
       "is_ending": true,
       "ending": {
         "id": "end_up_song",
         "valence": "positive",
         "kind": "success",
-        "title": "Sung into the Sky"
+        "title": "{UP_SONG}"
       }
     }
   ]

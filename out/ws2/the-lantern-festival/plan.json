@@ -1,0 +1,141 @@
+{
+  "beats": {
+    "n_start": "{HERO} the young {SPECIES} stands in {HOME}; tonight is {EVENT} and there is still so much to gather; {HERO} counts on her paws what she needs and decides where to set out first; warm and excited, never worried",
+    "n_berry1": "at {ROUTE_A_PLACE} the low {LIGHT_SOURCE} are ripe and glowing softly, but {ROUTE_A_HIGH} hangs high on a wobbly branch; {HERO} decides whether to fill her basket with the easy low ones or stretch up for the high ones",
+    "n_berry2": "{HERO} fills her basket with glowing {LIGHT_SOURCE} that light her chin from below; the gathering is beginning to grow; {HERO} can carry the {LIGHT_SOURCE} onward to {VENUE} or trot back to {HOME} to fetch more things first",
+    "n_willow1": "under {ROUTE_B_PLACE} {HERO} finds her friends dozing in the warm afternoon; {HERO} wants to invite them all to {EVENT}; {HERO} decides whether to knock gently and wake them softly or clang {ROUTE_B_SUMMON} to hurry things along",
+    "n_willow2": "her friends yawn, smile, and say yes at once, grabbing their little {LANTERN_ITEM}s; the group is growing; {HERO} can lead the happy troop straight to {VENUE} or swing back by {HOME} to grab the next thing on her list",
+    "n_reed1": "at {ROUTE_C_PLACE} {HERO} needs stalks to bend into {LANTERN_ITEM} frames; the tall dry {ROUTE_C_ITEM} rustle on the bank while fresh green ones lean out over the water; {HERO} decides which {ROUTE_C_ITEM} to cut",
+    "n_reed2": "the dry {ROUTE_C_ITEM} snap free in a neat golden bundle, perfect for bending; {HERO} can start weaving the {LANTERN_ITEM} frames right here by {ROUTE_C_PLACE} or lug the whole bundle back to {HOME} to work by her stump",
+    "n_reed3": "{HERO} bends the {ROUTE_C_ITEM} into round little {LANTERN_ITEM} frames, humming as she works; a stack of them balances in her arms; there is only one thing to do now, carry the finished frames to {VENUE}",
+    "n_honey1": "at {ROUTE_D_PLACE} {HERO} asks {ROUTE_D_HELPER} for a few {ROUTE_D_ITEM} for the festival feast; {ROUTE_D_HELPER} buzz kindly; {HERO} decides whether to wait politely for them to pack a basket or dash back to {HOME} and come by for the cakes later",
+    "n_honey2": "{ROUTE_D_HELPER} load a basket with warm golden {ROUTE_D_ITEM} that smell of clover; the feast is coming together; {HERO} thanks them and carries the sweet-smelling basket straight to {VENUE}",
+    "n_shed1": "in {ROUTE_E_PLACE} {ROUTE_E_ITEM} from last year sit dusty on a shelf; {HERO} decides whether to dust each one off carefully now or scoot back to {HOME} and fetch them on the next trip",
+    "n_shed2": "{ROUTE_E_ITEM} come up bright and pretty under {HERO}'s little cloth, their painted patterns good as new; her armful of festival treasures keeps growing; {HERO} carries them off toward {VENUE}",
+    "n_cricket1": "by {ROUTE_F_PLACE} {ROUTE_F_HELPER} tunes their tiny fiddles; {HERO} asks if they will play at {EVENT}; they chirp eagerly; {HERO} decides whether to lead them along right away or pop back to {HOME} to gather one more thing first",
+    "n_cricket2": "{ROUTE_F_HELPER} forms a cheerful little parade behind {HERO}, fiddles under their arms; music will make the night complete; {HERO} leads the chirping players all the way to {VENUE}",
+    "n_meadow": "{VENUE} opens wide at dusk, ringed by {LANDMARK_TREE} and {WATER_FEATURE}; everything {HERO} has gathered is piling up and friends are arriving; {HERO} decides whether to start setting the festival up now or make one last trip back to {HOME} for anything forgotten",
+    "n_setup": "in {VENUE} the {LANTERN_ITEM} frames get wrapped in bright paper and the {LIGHT_SOURCE} tucked inside to shimmer; friends bustle everywhere; {HERO} decides whether to hang the {LANTERN_ITEM}s up in {LANDMARK_TREE} or spread out the picnic feast first",
+    "n_hang": "friends lift the finished {LANTERN_ITEM}s into the branches of {LANDMARK_TREE}, where they sway like sleepy fireflies; the sky is turning purple; {HERO} decides whether to light them right this moment or wait for the very first star to appear",
+    "n_light": "one by one the {LANTERN_ITEM}s wake up with warm {LIGHT_SOURCE} light and {VENUE} glows entirely gold; everyone gasps with delight; {HERO} decides whether to set some {LANTERN_ITEM}s floating out across {WATER_FEATURE} or keep them all glowing high in {LANDMARK_TREE}",
+    "n_star": "everyone grows hushed and watches the darkening sky until the first tiny star blinks awake over {VENUE}; a happy cheer goes up; that is the signal, and {HERO} lights the very first {LANTERN_ITEM} to begin the festival glow",
+    "n_glow": "{LANTERN_ITEM} after {LANTERN_ITEM} flickers on until {VENUE} is a sea of soft golden light and {WATER_FEATURE} mirrors it all; {ROUTE_F_HELPER} lift their fiddles; {HERO} decides whether to start {SONG_NAME} for everyone or gather her friends to make a wish together",
+    "n_song": "{ROUTE_F_HELPER} strike up a bouncy tune and {HERO} leads the first verse of {SONG_NAME}; friends join line by line until {VENUE} rings with song, {LANDMARK_TREE} glowing overhead",
+    "n_wish": "the friends gather in a ring around the brightest {LANTERN_ITEM}, close their eyes, and hold paws; {HERO} counts softly to three so everyone can make the same warm wish for the woodland at once",
+    "n_picnic": "{HERO} spreads a checked cloth on the grass and lays out {ROUTE_D_ITEM} and berry treats while {LANTERN_ITEM}s glow softly overhead; friends settle around; {HERO} decides whether to start sharing {ROUTE_D_ITEM} now or wait for old {ELDER} to arrive and bless the feast",
+    "n_feast": "{ROUTE_D_ITEM} go round the glowing circle and everyone munches happily under the swaying {LANTERN_ITEM}s; the feast is a merry success; {HERO} decides whether to let the feast roll on into the night or start a round of giggly {H1_GAME}s between bites",
+    "n_riddle": "between bites of {ROUTE_D_ITEM} the friends trade silly {H1_GAME}s, each one sillier than the last, until everyone is laughing so hard the {LANTERN_ITEM} light seems to giggle too; {HERO} saves the very best one for the end",
+    "n_bless": "{ELDER} arrives, {H2_ELDER_DETAIL}; the friends make room and grow quiet; {ELDER} smiles and begins {H2_LEGEND}, just as she does every year",
+    "e_berry_oops": "{HERO} stretches for {ROUTE_A_HIGH}, the wobbly branch springs back, and her whole basket of {LIGHT_SOURCE} bounces away into {ROUTE_A_MISHAP} with a comic boing; nobody is hurt and {HERO} laughs, dusting off to trot back to {HOME} and start her gathering again",
+    "e_willow_oops": "{ROUTE_B_SUMMON} clangs and every sleepy friend tumbles out of {ROUTE_B_PLACE} at once in a giggly, grumbly heap, blankets over their heads; it takes ages to sort out the muddle, so {HERO} decides to start over and invite them the gentle way next time",
+    "e_reed_oops": "the fresh green {ROUTE_C_ITEM} are far too soft and wet to hold a shape; every frame {HERO} bends just flops over like cooked noodles and drips on her paws; {HERO} laughs at the soggy mess and heads back to {HOME} to begin again with the right {ROUTE_C_ITEM}",
+    "e_finale_pond": "{HERO} and her friends set glowing {LANTERN_ITEM}s adrift on {WATER_FEATURE}, where they float like little golden moons doubled in the water; everyone in {VENUE} ohhs together; the festival is beautiful and complete, and {HERO} glows as bright as her {LANTERN_ITEM}s",
+    "e_finale_oak": "{LANDMARK_TREE} blazes with hanging {LANTERN_ITEM}s like a tree full of warm stars, and everyone dances slowly beneath its golden branches; {HERO} looks up at all she and her friends have made together, her heart as full and bright as the festival glow",
+    "e_finale_song": "{VENUE} rings with {SONG_NAME}, {LANDMARK_TREE} glowing above and {ROUTE_F_HELPER} fiddles sailing over every voice; the music rolls out over {WATER_FEATURE} and into the night; {HERO} sings loudest of all, proud of the festival her gathering has grown into",
+    "e_finale_wish": "in the ring of {LANTERN_ITEM} light the friends make one warm wish together for a happy woodland year, then open their eyes to {VENUE} glowing all around them; {HERO} squeezes her friends' paws, sure that this is the best festival there ever was",
+    "e_finale_feast": "{ROUTE_D_ITEM} and berry treats go round and round beneath the swaying {LANTERN_ITEM}s while everyone laughs and nibbles late into the glowing night; the feast {HERO} gathered piece by piece has brought the whole woodland together, warm and merry",
+    "e_finale_riddle": "{HERO} tells the very best {H1_GAME} of all and the whole glowing circle roars with laughter, {ROUTE_D_ITEM} nearly forgotten; the {LANTERN_ITEM}s seem to twinkle along with the giggling; it is the merriest festival night the woodland friends can remember",
+    "e_finale_story": "{ELDER} finishes {H2_LEGEND} just as every {LANTERN_ITEM} in {VENUE} glows its brightest, and the friends clap softly; {HERO} leans against {ELDER}, happy that her gathering has kept the gentle festival alive one more year"
+  },
+  "titles": {
+    "e_berry_oops": "{A_MISHAP_TITLE}",
+    "e_willow_oops": "{B_MISHAP_TITLE}",
+    "e_reed_oops": "{C_MISHAP_TITLE}",
+    "e_finale_pond": "{FINALE_POND_TITLE}",
+    "e_finale_oak": "{FINALE_OAK_TITLE}",
+    "e_finale_song": "{FINALE_SONG_TITLE}",
+    "e_finale_wish": "{FINALE_WISH_TITLE}",
+    "e_finale_feast": "{FINALE_FEAST_TITLE}",
+    "e_finale_riddle": "{FINALE_RIDDLE_TITLE}",
+    "e_finale_story": "{FINALE_STORY_TITLE}"
+  },
+  "labels": {
+    "n_start": {
+      "c_start_berries": "Go pick {LIGHT_SOURCE} by {ROUTE_A_PLACE}.",
+      "c_start_willow": "Go invite your friends at {ROUTE_B_PLACE}.",
+      "c_start_reeds": "Go cut {ROUTE_C_ITEM} for {LANTERN_ITEM} frames.",
+      "c_start_honey": "Go ask {ROUTE_D_HELPER} for {ROUTE_D_ITEM}.",
+      "c_start_shed": "Go fetch {ROUTE_E_ITEM}.",
+      "c_start_crickets": "Go ask {ROUTE_F_HELPER} to play."
+    },
+    "n_berry1": {
+      "c_berry_low": "Pick the ripe low {LIGHT_SOURCE}."
+    },
+    "n_berry2": {
+      "c_berry_meadow": "Carry the {LIGHT_SOURCE} to {VENUE}.",
+      "c_berry_back": "Go back to {HOME} for more."
+    },
+    "n_willow1": {
+      "c_willow_knock": "Knock gently on {ROUTE_B_PLACE} door.",
+      "c_willow_bell": "Clang {ROUTE_B_SUMMON}."
+    },
+    "n_willow2": {
+      "c_willow_meadow": "Lead your friends to {VENUE}.",
+      "c_willow_back": "Pop back to {HOME} first."
+    },
+    "n_reed1": {
+      "c_reed_dry": "Cut the tall dry {ROUTE_C_ITEM}.",
+      "c_reed_wet": "Cut the fresh green {ROUTE_C_ITEM}."
+    },
+    "n_reed2": {
+      "c_reed_weave": "Weave the frames here by {ROUTE_C_PLACE}.",
+      "c_reed_back": "Carry the bundle back to {HOME}."
+    },
+    "n_reed3": {
+      "c_reed_meadow": "Carry the {LANTERN_ITEM} frames to {VENUE}."
+    },
+    "n_honey1": {
+      "c_honey_wait": "Wait politely for {ROUTE_D_ITEM}.",
+      "c_honey_back": "Head back to {HOME} for now."
+    },
+    "n_honey2": {
+      "c_honey_meadow": "Carry the {ROUTE_D_ITEM} to {VENUE}."
+    },
+    "n_shed1": {
+      "c_shed_dust": "Dust off {ROUTE_E_ITEM}.",
+      "c_shed_back": "Go back to {HOME} for now."
+    },
+    "n_shed2": {
+      "c_shed_meadow": "Carry {ROUTE_E_ITEM} to {VENUE}."
+    },
+    "n_cricket1": {
+      "c_cricket_lead": "Ask {ROUTE_F_HELPER} to follow you now.",
+      "c_cricket_back": "Go back to {HOME} first."
+    },
+    "n_cricket2": {
+      "c_cricket_meadow": "Lead {ROUTE_F_HELPER} to {VENUE}."
+    },
+    "n_meadow": {
+      "c_meadow_back": "Make one last trip to {HOME}."
+    },
+    "n_setup": {
+      "c_setup_hang": "Hang the {LANTERN_ITEM}s in {LANDMARK_TREE}."
+    },
+    "n_hang": {
+      "c_hang_light": "Light the {LANTERN_ITEM}s right now."
+    },
+    "n_light": {
+      "c_light_pond": "Float {LANTERN_ITEM}s on {WATER_FEATURE}.",
+      "c_light_oak": "Keep the {LANTERN_ITEM}s in {LANDMARK_TREE}."
+    },
+    "n_star": {
+      "c_star_glow": "Light the first {LANTERN_ITEM} and begin."
+    },
+    "n_glow": {
+      "c_glow_song": "Start {SONG_NAME}."
+    },
+    "n_picnic": {
+      "c_picnic_feast": "Start sharing {ROUTE_D_ITEM}.",
+      "c_picnic_bless": "Wait for {ELDER}."
+    },
+    "n_feast": {
+      "c_feast_riddle": "Start a round of {H1_GAME}s."
+    },
+    "n_riddle": {
+      "c_riddle_end": "Tell the very best {H1_GAME}."
+    },
+    "n_bless": {
+      "c_bless_end": "Listen to {ELDER}'s {LANTERN_ITEM} story."
+    }
+  }
+}

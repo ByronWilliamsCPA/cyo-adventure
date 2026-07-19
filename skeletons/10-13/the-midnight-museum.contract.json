@@ -1,0 +1,1612 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-midnight-museum",
+  "age_band": "10-13",
+  "legacy_lexicon": [
+    "Nadia",
+    "Ellery",
+    "Ellery Museum",
+    "Gallery of Gems",
+    "Egyptian Wing",
+    "Astronomy Hall",
+    "Map Room",
+    "Clock Corridor",
+    "jewelled owl"
+  ],
+  "default_binding": {
+    "HERO": "Nadia",
+    "THRESHOLD": "the Ellery Museum",
+    "HUB": "the rotunda",
+    "FOUNDER": "the founder",
+    "GUARD": "the night guard",
+    "CURATOR": "the curator",
+    "MARK": "brass symbol",
+    "KEY_ITEM": "the brass key",
+    "CODE": "the coded note",
+    "CIPHER_TOOL": "the cipher wheel",
+    "MAP": "the torn map",
+    "GOAL": "hidden collection",
+    "STUDY_TABLE": "reading table",
+    "ROUTE_A_PLACE": "the Gallery of Gems",
+    "ROUTE_B_PLACE": "the Egyptian Wing",
+    "ROUTE_C_PLACE": "the old Archive",
+    "A1_SIGN": "a big central case",
+    "A1_LANDMARK1": "a tilted vitrine",
+    "A1_LANDMARK2": "a little card fallen behind it",
+    "A2_SIGN": "a soft electronic beeping",
+    "A2_GATE": "Caught at the Case",
+    "ROUTE_A_PASSAGE": "a service corridor",
+    "ROUTE_A_LOCK": "a small locked door",
+    "ROUTE_A_CACHE": "a loose skirting board",
+    "B1_SIGN": "a great sarcophagus",
+    "B1_LID": "the loose lid",
+    "B1_LANDMARK": "an amulet display",
+    "B2_SIGN": "a faded wall map",
+    "B2_TORCH": "a display torch",
+    "B2_GATE": "The Roped-Off Gallery",
+    "ROUTE_B_PASSAGE": "a connecting hall",
+    "ROUTE_B_LOCK": "a small locked door",
+    "ROUTE_B_CACHE": "one loose floor tile",
+    "C1_SIGN": "a dusty visitor ledger",
+    "C1_INDEX": "a card index",
+    "C1_DRAWER": "a sticking bottom drawer",
+    "C1_CARD": "an out-of-order index card",
+    "C1_PLAN": "a folded plan with one shelf circled",
+    "ROUTE_C_VAULT": "a low cabinet",
+    "ROUTE_C_CACHE": "a shallow gap behind the books",
+    "C2_SIGN": "the back stacks",
+    "C2_GATE": "Lost in the Stacks",
+    "C2_LANTERN": "a battery lantern",
+    "KEY_A_PLACE": "study",
+    "KEY_B_PLACE": "sealed display cabinet",
+    "KEY_C_PLACE": "service stairs",
+    "KA_DESK": "a roll-top desk",
+    "KA_PORTRAIT": "a stern painted portrait",
+    "KA_NOTEBOOK": "a leather notebook",
+    "KB_JOURNALS": "travel journals",
+    "KB_LEDGER": "a slim ledger",
+    "KB_GATE": "The Cracked Glass",
+    "KC_CUPBOARD": "a small cupboard",
+    "KC_CHART": "a rolled chart",
+    "CIPHER_CLUE": "follow the stars",
+    "CIPHER_A_PLACE": "the Astronomy Hall",
+    "CIPHER_B_PLACE": "the Map Room",
+    "CIPHER_C_PLACE": "the Clock Corridor",
+    "CA_DOME": "a painted star dome",
+    "CA_LADDER": "a maintenance ladder",
+    "CA_CATWALK": "a narrow catwalk",
+    "CA_GATE": "High in the Dome",
+    "CB_GLOBE": "a great floor globe",
+    "CB_ATLAS": "a giant bound atlas",
+    "CC_GEARS": "the gear room",
+    "CC_PENDULUM": "a slow, heavy pendulum",
+    "CC_GATE": "Under the Pendulum",
+    "RA_GLOBE": "a great clockwork globe of brass rings",
+    "RB_PEDESTAL": "the pedestal",
+    "RC_ROOM": "records room",
+    "RA_STAIR": "a stair going down",
+    "RA_GATE": "The Jammed Globe",
+    "RB_WORKSHOP": "a dusty room crowded with half-built clockwork",
+    "RB_PRIZE": "The Hidden Workshop",
+    "RC_LOG": "a rounds log",
+    "RC_PHONE": "a heavy black telephone",
+    "RC_RESULT": "The Call Home",
+    "V_CHAMBER": "chamber",
+    "V_LETTER": "a sealed letter",
+    "V_MAP": "an old treasure map",
+    "VA_CATALOGUE": "catalogue",
+    "VA_PRIZE1": "The Whole Truth",
+    "VA_PRIZE2": "Keeper of the Letter",
+    "VB_WING": "a walled-up wing",
+    "VB_GALLERY": "a small sealed gallery of paintings",
+    "VB_PRIZE1": "The Walled-Up Wing",
+    "VB_RESULT1": "Proof in a Photo",
+    "VB_GATE": "Out of Night",
+    "VC_PRIZE1": "Morning Heroes",
+    "VC_PRIZE2": "A Secret Among Friends",
+    "VC_PRIZE3": "Left for the Light",
+    "VD_OWL": "a small jewelled owl",
+    "VD_GATE": "Caught Red-Handed",
+    "VD_RESULT": "Wiser by Morning"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A single kid-relatable explorer; capable, curious, not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable place the story happens inside.",
+      "guidance": "A locked-for-the-night building the hero is briefly stuck inside; wonder over dread; no toxic air, no lethal hazard anywhere in it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HUB",
+      "scope": "global",
+      "meaning": "The central landmark the hero starts near and that every later stage's paths reconverge on.",
+      "guidance": "A grand, safe, recurring architectural space; never a source of danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FOUNDER",
+      "scope": "global",
+      "meaning": "The offstage historical figure whose hidden legacy drives the whole mystery.",
+      "guidance": "A benevolent, long-dead or long-retired figure; referenced only through objects and writing, never appears as a threat.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GUARD",
+      "scope": "global",
+      "meaning": "The one adult figure who might catch the hero; the story's only human risk.",
+      "guidance": "Stern but fundamentally kind; any 'catch' is a safe, mildly embarrassing setback, never harm or real trouble.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CURATOR",
+      "scope": "global",
+      "meaning": "The trusted adult authority the hero can choose to bring the discovery to.",
+      "guidance": "Delighted and grateful, not angry; a warm authority figure.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MARK",
+      "scope": "global",
+      "meaning": "The recurring identifying mark that ties every clue and lock together.",
+      "guidance": "A small, consistent visual/tactile motif (a stamp, carving, or seal); purely a clue device, never dangerous to touch.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEY_ITEM",
+      "scope": "global",
+      "meaning": "The single object found at the first bottleneck that unlocks all three second-stage doors.",
+      "guidance": "A plain, safe-to-handle found object.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CODE",
+      "scope": "global",
+      "meaning": "The written cipher clue that must be paired with the cipher tool.",
+      "guidance": "A short paper or card clue; purely informational.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CIPHER_TOOL",
+      "scope": "global",
+      "meaning": "The decoding device that, paired with the coded note, resolves into a direction.",
+      "guidance": "A harmless mechanical or paper decoding aid.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MAP",
+      "scope": "global",
+      "meaning": "The hero's own half-torn map, referenced whenever a clue lines up with it.",
+      "guidance": "A carried paper prop; purely informational, never a hazard.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GOAL",
+      "scope": "global",
+      "meaning": "The overarching prize: what the founder hid and the whole mystery is ultimately about.",
+      "guidance": "A benign donated collection/treasure; a discovery to be shared, never a source of danger.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STUDY_TABLE",
+      "scope": "global",
+      "meaning": "The recurring landmark all three second-stage sub-routes converge on to read the cipher.",
+      "guidance": "A quiet, safe reading spot; a lamp-lit table.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_PLACE",
+      "scope": "route",
+      "meaning": "The named wing/gallery the hero can choose first (route A).",
+      "guidance": "A distinct, safe museum wing or room; distinguishable from the other two starting choices.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_B_PLACE",
+          "ROUTE_C_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_PLACE",
+      "scope": "route",
+      "meaning": "The named wing/gallery the hero can choose first (route B).",
+      "guidance": "A distinct, safe museum wing or room; distinguishable from the other two starting choices.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_C_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_PLACE",
+      "scope": "route",
+      "meaning": "The named wing/gallery the hero can choose first (route C).",
+      "guidance": "A distinct, safe museum wing or room; distinguishable from the other two starting choices.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_A_PLACE",
+          "ROUTE_B_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "A1_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for A1 (the case track).",
+      "guidance": "A benign visual cue that draws attention to the display case.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A1_LANDMARK1",
+      "scope": "track",
+      "meaning": "The first disturbed item found at the case.",
+      "guidance": "A safe, examinable disturbed display piece.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_LANDMARK2"
+        ]
+      }
+    },
+    {
+      "id": "A1_LANDMARK2",
+      "scope": "track",
+      "meaning": "The second disturbed item found at the case.",
+      "guidance": "A safe, readable fallen note/label.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_LANDMARK1"
+        ]
+      }
+    },
+    {
+      "id": "A2_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for A2 (the alarm track).",
+      "guidance": "A benign, non-threatening sound cue.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "A1_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "A2_GATE",
+      "scope": "ending",
+      "meaning": "Ending: the freeze-and-get-caught setback on the alarm track.",
+      "guidance": "Non-lethal, non-toxic, unarmed; a kindly, embarrassing catch-and-escort, never real trouble. Must read as safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_GATE",
+          "C2_GATE",
+          "KB_GATE",
+          "CA_GATE",
+          "CC_GATE",
+          "RA_GATE",
+          "VB_GATE",
+          "VD_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_A_PASSAGE",
+      "scope": "track",
+      "meaning": "The corridor both A sub-tracks converge on before the key bottleneck.",
+      "guidance": "A plain, safe back-of-house corridor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_LOCK",
+      "scope": "track",
+      "meaning": "The locked obstacle at the end of route A's corridor.",
+      "guidance": "A door with no key yet in sight; not dangerous, just locked.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_A_CACHE",
+      "scope": "track",
+      "meaning": "Where the hidden key turns out to be, on route A.",
+      "guidance": "A safe, easily-pried hiding spot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for B1 (the sarcophagus track).",
+      "guidance": "A benign historical display piece.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B2_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "B1_LID",
+      "scope": "track",
+      "meaning": "The sarcophagus's loose lid, the B1a sub-choice.",
+      "guidance": "Safe and liftable; heavier-looking than it is.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B1_LANDMARK",
+      "scope": "track",
+      "meaning": "The B1b sub-choice: a nearby display with a missing piece.",
+      "guidance": "A safe display case with an empty mount.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for B2 (the map track).",
+      "guidance": "A benign historical document on the wall.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "B1_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "B2_TORCH",
+      "scope": "track",
+      "meaning": "The safe tool the hero can take on the B2 map track.",
+      "guidance": "A working, harmless hand torch.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "B2_GATE",
+      "scope": "ending",
+      "meaning": "Ending: the roped-off gallery that traps the hero for the night on the B2 map track.",
+      "guidance": "Non-lethal, non-toxic, unarmed; the door locks her in safely until morning, not in danger. Must read as safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_GATE",
+          "C2_GATE",
+          "KB_GATE",
+          "CA_GATE",
+          "CC_GATE",
+          "RA_GATE",
+          "VB_GATE",
+          "VD_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_B_PASSAGE",
+      "scope": "track",
+      "meaning": "The hall both B sub-tracks converge on before the key bottleneck.",
+      "guidance": "A plain, safe connecting hall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_LOCK",
+      "scope": "track",
+      "meaning": "The locked obstacle at the end of route B's hall.",
+      "guidance": "A door with no key yet in sight; not dangerous, just locked.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_B_CACHE",
+      "scope": "track",
+      "meaning": "Where the hidden key turns out to be, on route B.",
+      "guidance": "A safe, easily-lifted hiding spot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for C1 (the ledger track).",
+      "guidance": "A benign historical record book.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C2_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "C1_INDEX",
+      "scope": "track",
+      "meaning": "The C1a sub-choice: the archive's card catalogue.",
+      "guidance": "A safe, browsable index.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_DRAWER",
+      "scope": "track",
+      "meaning": "The C1b sub-choice: a stiff drawer in the same desk.",
+      "guidance": "A safe, if stubborn, drawer.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_CARD",
+      "scope": "track",
+      "meaning": "The clue card found in the card index.",
+      "guidance": "A safe, readable single card.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C1_PLAN",
+      "scope": "track",
+      "meaning": "The clue found in the sticking drawer.",
+      "guidance": "A safe, readable floor plan.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_VAULT",
+      "scope": "track",
+      "meaning": "The locked receptacle deep in the stacks that the key opens.",
+      "guidance": "A plain locked cabinet; not dangerous, just locked.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_C_CACHE",
+      "scope": "track",
+      "meaning": "Where the hidden key turns out to be, on route C.",
+      "guidance": "A safe, hand-sized hiding spot.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "C2_SIGN",
+      "scope": "track",
+      "meaning": "Fork cue for C2 (the dark-stacks track).",
+      "guidance": "A dim but harmless part of the archive.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "C1_SIGN"
+        ]
+      }
+    },
+    {
+      "id": "C2_GATE",
+      "scope": "ending",
+      "meaning": "Ending: getting turned around blind in the dark stacks on the C2 track.",
+      "guidance": "Non-lethal, non-toxic, unarmed; sitting tight until morning, dusty but perfectly safe. Must read as safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_GATE",
+          "B2_GATE",
+          "KB_GATE",
+          "CA_GATE",
+          "CC_GATE",
+          "RA_GATE",
+          "VB_GATE",
+          "VD_GATE"
+        ]
+      }
+    },
+    {
+      "id": "C2_LANTERN",
+      "scope": "track",
+      "meaning": "The safe light source the hero can find in the dark stacks.",
+      "guidance": "A working, harmless hand lantern.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KEY_A_PLACE",
+      "scope": "track",
+      "meaning": "The first of the three doors the found key can open.",
+      "guidance": "The founder's old study; safe, dusty, undisturbed for decades.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "KEY_B_PLACE",
+          "KEY_C_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "KEY_B_PLACE",
+      "scope": "track",
+      "meaning": "The second of the three doors/receptacles the found key can open.",
+      "guidance": "A sealed display case; safe, just stuck with age.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "KEY_A_PLACE",
+          "KEY_C_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "KEY_C_PLACE",
+      "scope": "track",
+      "meaning": "The third of the three doors the found key can open.",
+      "guidance": "A plain back stairwell; safe to climb.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "KEY_A_PLACE",
+          "KEY_B_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "KA_DESK",
+      "scope": "track",
+      "meaning": "The furniture searched in the founder's study.",
+      "guidance": "A safe, browsable antique desk.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KA_PORTRAIT",
+      "scope": "track",
+      "meaning": "The portrait hiding a safe behind it.",
+      "guidance": "A safe, ordinary painting; nothing eerie or threatening.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KA_NOTEBOOK",
+      "scope": "track",
+      "meaning": "The clue-bearing item found in the desk.",
+      "guidance": "A safe, readable notebook.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KB_JOURNALS",
+      "scope": "track",
+      "meaning": "What the sealed display cabinet holds.",
+      "guidance": "Safe historical documents under glass.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KB_LEDGER",
+      "scope": "track",
+      "meaning": "The clue-bearing item found in the display cabinet.",
+      "guidance": "A safe, readable ledger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KB_GATE",
+      "scope": "ending",
+      "meaning": "Ending: forcing the display cabinet's latch too hard on the KEY_B track.",
+      "guidance": "Non-lethal, non-toxic, unarmed; only the display glass is harmed, the hero is unhurt, just embarrassed. Must read as safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_GATE",
+          "B2_GATE",
+          "C2_GATE",
+          "CA_GATE",
+          "CC_GATE",
+          "RA_GATE",
+          "VB_GATE",
+          "VD_GATE"
+        ]
+      }
+    },
+    {
+      "id": "KC_CUPBOARD",
+      "scope": "track",
+      "meaning": "The furniture searched at the base of the service stairs.",
+      "guidance": "A safe, low cupboard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "KC_CHART",
+      "scope": "track",
+      "meaning": "The clue-bearing item found in the cupboard.",
+      "guidance": "A safe, readable rolled chart.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CIPHER_CLUE",
+      "scope": "track",
+      "meaning": "The short phrase the first cipher line resolves into.",
+      "guidance": "A safe, evocative instruction phrase.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CIPHER_A_PLACE",
+      "scope": "track",
+      "meaning": "The first of the three named rooms the cipher's direction points to.",
+      "guidance": "A distinct, safe museum room; distinguishable from the other two cipher choices.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "CIPHER_B_PLACE",
+          "CIPHER_C_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "CIPHER_B_PLACE",
+      "scope": "track",
+      "meaning": "The second of the three named rooms the cipher's direction points to.",
+      "guidance": "A distinct, safe museum room; distinguishable from the other two cipher choices.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "CIPHER_A_PLACE",
+          "CIPHER_C_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "CIPHER_C_PLACE",
+      "scope": "track",
+      "meaning": "The third of the three named rooms the cipher's direction points to.",
+      "guidance": "A distinct, safe museum room; distinguishable from the other two cipher choices.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "CIPHER_A_PLACE",
+          "CIPHER_B_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "CA_DOME",
+      "scope": "track",
+      "meaning": "The wonder-feature of the Astronomy Hall.",
+      "guidance": "A safe, awe-inducing painted ceiling.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CA_LADDER",
+      "scope": "track",
+      "meaning": "The shortcut option in the Astronomy Hall.",
+      "guidance": "A safe, sturdy ladder.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CA_CATWALK",
+      "scope": "track",
+      "meaning": "The safe crossing high over the hall.",
+      "guidance": "A safe, if narrow, walkway with no fall risk when crossed with care.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CA_GATE",
+      "scope": "ending",
+      "meaning": "Ending: climbing too high into the dark dome instead of crossing the catwalk.",
+      "guidance": "Non-lethal, non-toxic, unarmed; a tired, dizzy climb back down, never a fall or real danger. Must read as safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_GATE",
+          "B2_GATE",
+          "C2_GATE",
+          "KB_GATE",
+          "CC_GATE",
+          "RA_GATE",
+          "VB_GATE",
+          "VD_GATE"
+        ]
+      }
+    },
+    {
+      "id": "CB_GLOBE",
+      "scope": "track",
+      "meaning": "The interactive fixture in the Map Room.",
+      "guidance": "A safe, turnable floor globe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CB_ATLAS",
+      "scope": "track",
+      "meaning": "The alternative clue-bearing fixture in the Map Room.",
+      "guidance": "A safe, browsable oversized atlas.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CC_GEARS",
+      "scope": "track",
+      "meaning": "The room behind the Clock Corridor's ticking clocks.",
+      "guidance": "A safe mechanical room.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CC_PENDULUM",
+      "scope": "track",
+      "meaning": "The timed obstacle across the Clock Corridor's only doorway.",
+      "guidance": "A slow, predictable swing that only nudges, never strikes hard; safe to time past.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CC_GATE",
+      "scope": "ending",
+      "meaning": "Ending: rushing the pendulum crossing instead of timing it.",
+      "guidance": "Non-lethal, non-toxic, unarmed; a gentle bump back to the safe side, nothing more. Must read as safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_GATE",
+          "B2_GATE",
+          "C2_GATE",
+          "KB_GATE",
+          "CA_GATE",
+          "RA_GATE",
+          "VB_GATE",
+          "VD_GATE"
+        ]
+      }
+    },
+    {
+      "id": "RA_GLOBE",
+      "scope": "track",
+      "meaning": "The centerpiece mechanism under the rotunda's dome.",
+      "guidance": "A safe, turnable clockwork fixture.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RB_PEDESTAL",
+      "scope": "track",
+      "meaning": "The carved base under the globe hiding a sliding-tile puzzle.",
+      "guidance": "A safe, puzzle-bearing pedestal.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RC_ROOM",
+      "scope": "track",
+      "meaning": "The night guard's room off the rotunda.",
+      "guidance": "A safe office-like room.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RA_STAIR",
+      "scope": "track",
+      "meaning": "The hidden stair the globe/panel/records paths all open onto, leading to the final vault.",
+      "guidance": "A safe, ordinary descending stair.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RA_GATE",
+      "scope": "ending",
+      "meaning": "Ending: forcing the globe's rings after guessing wrong instead of decoding properly.",
+      "guidance": "Non-lethal, non-toxic, unarmed; the rings just lock up, the hero is unhurt, only the route is lost for the night. Must read as safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_GATE",
+          "B2_GATE",
+          "C2_GATE",
+          "KB_GATE",
+          "CA_GATE",
+          "CC_GATE",
+          "VB_GATE",
+          "VD_GATE"
+        ]
+      }
+    },
+    {
+      "id": "RB_WORKSHOP",
+      "scope": "track",
+      "meaning": "The founder's hidden private workshop, found via the pedestal's side door.",
+      "guidance": "A safe, wonder-filled sealed room.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RB_PRIZE",
+      "scope": "ending",
+      "meaning": "Ending: discovering and reporting the founder's hidden workshop (success).",
+      "guidance": "Positive; a shareable historical discovery, nothing taken or harmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "VA_PRIZE1",
+          "VA_PRIZE2",
+          "VB_PRIZE1",
+          "VB_RESULT1",
+          "VC_PRIZE1",
+          "VC_PRIZE2",
+          "VC_PRIZE3",
+          "RC_RESULT",
+          "VD_RESULT"
+        ]
+      }
+    },
+    {
+      "id": "RC_LOG",
+      "scope": "track",
+      "meaning": "The record the guard keeps, readable in the records room.",
+      "guidance": "A safe, readable logbook.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RC_PHONE",
+      "scope": "track",
+      "meaning": "The safe way to call for a lift home from the records room.",
+      "guidance": "A safe, working desk phone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RC_RESULT",
+      "scope": "ending",
+      "meaning": "Ending: calling home from the records room instead of continuing (neutral).",
+      "guidance": "Neutral but warm; safe and content, not a failure, just a different good stopping point.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "VA_PRIZE1",
+          "VA_PRIZE2",
+          "VB_PRIZE1",
+          "VB_RESULT1",
+          "VC_PRIZE1",
+          "VC_PRIZE2",
+          "VC_PRIZE3",
+          "RB_PRIZE",
+          "VD_RESULT"
+        ]
+      }
+    },
+    {
+      "id": "V_CHAMBER",
+      "scope": "track",
+      "meaning": "The founder's secret final room, holding the collection.",
+      "guidance": "A safe, wonder-filled hidden room.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "V_LETTER",
+      "scope": "track",
+      "meaning": "The founder's explanatory letter, found in the vault.",
+      "guidance": "A safe, readable letter.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "V_MAP",
+      "scope": "track",
+      "meaning": "The second vault item, marking a further hidden wing.",
+      "guidance": "A safe, readable old map.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "VA_CATALOGUE",
+      "scope": "track",
+      "meaning": "The full inventory the letter's final clue reveals.",
+      "guidance": "A safe, readable ledger of the whole collection.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "VA_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: following the letter's clue to the full catalogue (the main triumphant success).",
+      "guidance": "Positive; the whole mystery resolved and given back to the town.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "RB_PRIZE",
+          "VA_PRIZE2",
+          "VB_PRIZE1",
+          "VB_RESULT1",
+          "VC_PRIZE1",
+          "VC_PRIZE2",
+          "VC_PRIZE3",
+          "RC_RESULT",
+          "VD_RESULT"
+        ]
+      }
+    },
+    {
+      "id": "VA_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: keeping the letter safe and leaving the rest untouched (success).",
+      "guidance": "Positive; a calm, honour-bound outcome.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "RB_PRIZE",
+          "VA_PRIZE1",
+          "VB_PRIZE1",
+          "VB_RESULT1",
+          "VC_PRIZE1",
+          "VC_PRIZE2",
+          "VC_PRIZE3",
+          "RC_RESULT",
+          "VD_RESULT"
+        ]
+      }
+    },
+    {
+      "id": "VB_WING",
+      "scope": "track",
+      "meaning": "The hidden wing the treasure map marks.",
+      "guidance": "A safe, sealed-off part of the museum.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "VB_GALLERY",
+      "scope": "track",
+      "meaning": "What is found inside the walled-up wing.",
+      "guidance": "A safe gallery of recovered artwork.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "VB_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: following the map to the hidden gallery (success).",
+      "guidance": "Positive; a proud, shareable discovery.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "RB_PRIZE",
+          "VA_PRIZE1",
+          "VA_PRIZE2",
+          "VB_RESULT1",
+          "VC_PRIZE1",
+          "VC_PRIZE2",
+          "VC_PRIZE3",
+          "RC_RESULT",
+          "VD_RESULT"
+        ]
+      }
+    },
+    {
+      "id": "VB_RESULT1",
+      "scope": "ending",
+      "meaning": "Ending: photographing the map as evidence instead of exploring further (neutral).",
+      "guidance": "Neutral; a measured, sensible outcome, leaving the decision to adults.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "RB_PRIZE",
+          "VA_PRIZE1",
+          "VA_PRIZE2",
+          "VB_PRIZE1",
+          "VC_PRIZE1",
+          "VC_PRIZE2",
+          "VC_PRIZE3",
+          "RC_RESULT",
+          "VD_RESULT"
+        ]
+      }
+    },
+    {
+      "id": "VB_GATE",
+      "scope": "ending",
+      "meaning": "Ending: losing track of time tracing the map until staff arrive (setback).",
+      "guidance": "Non-lethal, non-toxic, unarmed; simply runs out of night and leaves to return later. Must read as safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_GATE",
+          "B2_GATE",
+          "C2_GATE",
+          "KB_GATE",
+          "CA_GATE",
+          "CC_GATE",
+          "RA_GATE",
+          "VD_GATE"
+        ]
+      }
+    },
+    {
+      "id": "VC_PRIZE1",
+      "scope": "ending",
+      "meaning": "Ending: waking the curator with proof (success).",
+      "guidance": "Positive; a warm, complete, celebrated outcome.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "RB_PRIZE",
+          "VA_PRIZE1",
+          "VA_PRIZE2",
+          "VB_PRIZE1",
+          "VB_RESULT1",
+          "VC_PRIZE2",
+          "VC_PRIZE3",
+          "RC_RESULT",
+          "VD_RESULT"
+        ]
+      }
+    },
+    {
+      "id": "VC_PRIZE2",
+      "scope": "ending",
+      "meaning": "Ending: keeping the discovery a secret with close friends (success).",
+      "guidance": "Positive; a happy, private bond, nothing harmed or hidden forever from safety.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "RB_PRIZE",
+          "VA_PRIZE1",
+          "VA_PRIZE2",
+          "VB_PRIZE1",
+          "VB_RESULT1",
+          "VC_PRIZE1",
+          "VC_PRIZE3",
+          "RC_RESULT",
+          "VD_RESULT"
+        ]
+      }
+    },
+    {
+      "id": "VC_PRIZE3",
+      "scope": "ending",
+      "meaning": "Ending: leaving an anonymous clue for the museum to find (success).",
+      "guidance": "Positive; a quiet, generous outcome.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "RB_PRIZE",
+          "VA_PRIZE1",
+          "VA_PRIZE2",
+          "VB_PRIZE1",
+          "VB_RESULT1",
+          "VC_PRIZE1",
+          "VC_PRIZE2",
+          "RC_RESULT",
+          "VD_RESULT"
+        ]
+      }
+    },
+    {
+      "id": "VD_OWL",
+      "scope": "track",
+      "meaning": "The takeable item in the vault the hero can consider grabbing.",
+      "guidance": "A safe, small keepsake object; not a weapon or hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "VD_GATE",
+      "scope": "ending",
+      "meaning": "Ending: taking the owl and getting caught by its pressure-set alarm (setback).",
+      "guidance": "Non-lethal, non-toxic, unarmed; a stern word and a handback, no real trouble. Must read as safe.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "lethal",
+          "toxic",
+          "weapon"
+        ],
+        "distinct_from": [
+          "A2_GATE",
+          "B2_GATE",
+          "C2_GATE",
+          "KB_GATE",
+          "CA_GATE",
+          "CC_GATE",
+          "RA_GATE",
+          "VB_GATE"
+        ]
+      }
+    },
+    {
+      "id": "VD_RESULT",
+      "scope": "ending",
+      "meaning": "Ending: setting the owl back and leaving with only notes (neutral).",
+      "guidance": "Neutral; a thoughtful, clean-conscience outcome.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "graphic",
+          "lethal",
+          "weapon"
+        ],
+        "distinct_from": [
+          "RB_PRIZE",
+          "VA_PRIZE1",
+          "VA_PRIZE2",
+          "VB_PRIZE1",
+          "VB_RESULT1",
+          "VC_PRIZE1",
+          "VC_PRIZE2",
+          "VC_PRIZE3",
+          "RC_RESULT"
+        ]
+      }
+    }
+  ]
+}

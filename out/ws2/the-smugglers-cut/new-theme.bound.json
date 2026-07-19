@@ -1,0 +1,3750 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_smugglers_cut",
+  "version": 1,
+  "title": "The Smuggler's Cut",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "heist",
+      "nerve",
+      "the canals",
+      "the cost of the take"
+    ],
+    "estimated_minutes": 16,
+    "ending_count": 80,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=86 beats='you run cargo that pays no toll through the black canals of Aurelport; tonight the Whitmore Gallery tallies the season and its relic vault stands open until the closing chime, one night only; inside waits the gallery's lost frieze, a strongbox of coin and the donor ledger that names every runner in the city; Priya the courier the boatman idles in the reeds below the Gull Pier; establish the stakes and the single clock, the closing chime'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Climb down to Priya the courier and the skiff.",
+          "target": "n_quay"
+        }
+      ]
+    },
+    {
+      "id": "n_quay",
+      "body": "<<FILL role=setup words=88 beats='Priya the courier poles you toward the drop and gives the warnings you will live or die by, spoken plain: the tide turns at the second chime and after it the low sluices and cuts drown a person in a breath; the glass atrium is watched every night by gallery guards who miss nothing; the Whitmore Gallery keeps a sleepy guard dog that will not bark; and never fight the current, it keeps whoever fights it; he waits at the Old Carousel until the closing chime, no later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_quay_1",
+          "label": "Slip into the water at the drop.",
+          "target": "n_drop"
+        }
+      ]
+    },
+    {
+      "id": "n_drop",
+      "body": "<<FILL role=setup words=82 beats='you go over the side into the cold and Priya the courier is gone into the reeds behind you, the skiff a shadow among shadows; the Whitmore Gallery stands off across the black water, a single lit window high in it, the season's whole take waiting behind a cipher lock inside; you fix the shape of it against the sky, count the bridges once more, and start the long quiet swim toward its walls'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_drop_1",
+          "label": "Start toward the Whitmore Gallery.",
+          "target": "n_approach"
+        }
+      ]
+    },
+    {
+      "id": "n_approach",
+      "body": "<<FILL role=hub words=82 beats='three ways lead from the drop to the Whitmore Gallery service gate; you weigh them in the dark; the open loading dock is fast but runs under the quay lamps; the flooded flooded boiler room is quiet though the tide is climbing inside it; and the glass atrium crosses over the top, the watched bridge Priya the courier named, gallery guards on it every night; restate each danger plainly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_approach_1",
+          "label": "Run the open loading dock, low and fast.",
+          "target": "ap_cut1"
+        },
+        {
+          "id": "c_n_approach_2",
+          "label": "Wade through the flooded flooded boiler room.",
+          "target": "ap_loft1"
+        },
+        {
+          "id": "c_n_approach_3",
+          "label": "Cross over the watched glass atrium.",
+          "target": "ap_bridge"
+        }
+      ]
+    },
+    {
+      "id": "ap_cut1",
+      "body": "<<FILL role=rising words=58 beats='you keep to the shadow of the moored hulls in the loading dock, breathing slow; a quay lamp sweeps the water and passes; ahead the iron service gate waits, but a low lighter is moored across the lane'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ap_cut1_1",
+          "label": "Reach the moored lighter.",
+          "target": "ap_cut2"
+        }
+      ]
+    },
+    {
+      "id": "ap_cut2",
+      "body": "<<FILL role=choice words=66 beats='the lighter blocks the lane; two ways past it; under its hull is a breath-held glide through the dark, the way Priya the courier taught, trusting the water; around it means out into the open where the quay lamp has a clear sweep of the lane and will find you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ap_cut2_1",
+          "label": "Duck under the lighter's hull.",
+          "target": "wg_gate"
+        },
+        {
+          "id": "c_ap_cut2_2",
+          "label": "Go around it into the open lane.",
+          "target": "ap_cut_caught"
+        }
+      ]
+    },
+    {
+      "id": "ap_cut_caught",
+      "body": "<<FILL role=failure words=60 beats='the lamp catches you full in the open lane and holds you; a whistle goes up along the quay and is answered; there is no shadow to reach before the watch closes in, and they close in; the job ends here, in their hands'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ap_cut_caught",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Taken on the Quay"
+      }
+    },
+    {
+      "id": "ap_loft1",
+      "body": "<<FILL role=rising words=60 beats='the flooded boiler room is waist-deep and rising, rotten canvas hanging like weed, a single lantern swinging that you must not knock; the water is colder than the canal and it is coming up; two ways cross the loft ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ap_loft1_1",
+          "label": "Look for the way across.",
+          "target": "ap_loft2"
+        }
+      ]
+    },
+    {
+      "id": "ap_loft2",
+      "body": "<<FILL role=choice words=72 beats='far off the second chime begins to toll, and Priya the courier's warning rings with it, the low ways drown after the turn; the high beam walk runs dry above the flood, slow but sound; the low sluice runs fast and level but it is a low way and the bell is tolling now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ap_loft2_1",
+          "label": "Take the high beam walk.",
+          "target": "wg_gate"
+        },
+        {
+          "id": "c_ap_loft2_2",
+          "label": "Chance the low sluice as the bell tolls.",
+          "target": "ap_loft_drown"
+        }
+      ]
+    },
+    {
+      "id": "ap_loft_drown",
+      "body": "<<FILL role=failure words=60 beats='the last stroke of the second chime falls and the sluice fills in a heartbeat, just as Priya the courier said it would; the current takes you and does not give you back; you fought the water, and the water kept you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ap_loft_drown",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Turning Tide"
+      }
+    },
+    {
+      "id": "ap_bridge",
+      "body": "<<FILL role=failure words=58 beats='you are barely onto the glass atrium when the gallery guards turn as one; a bridge has no shadow and no water to drop into that they cannot watch you fall; they take you between them without hurry; Priya the courier warned you, and the bridge was exactly what he said'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ap_bridge",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "The Watched Bridge"
+      }
+    },
+    {
+      "id": "wg_gate",
+      "body": "<<FILL role=bottleneck words=80 beats='the Whitmore Gallery service gate, an iron portcullis half-drowned in the canal, entry-agnostic to whichever lane brought you; the rusty padlock is fat with rust; the bars are wide enough to slip under if you go beneath the water; and a wicket door sits above the tide-line with a latch that has never sat true'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wg_gate_1",
+          "label": "Slip under the drowned bars.",
+          "target": "wg_under1"
+        },
+        {
+          "id": "c_wg_gate_2",
+          "label": "Work the wicket's stiff hinge.",
+          "target": "wg_wicket1"
+        },
+        {
+          "id": "c_wg_gate_3",
+          "label": "Force the rusted rusty padlock.",
+          "target": "wg_chain1"
+        }
+      ]
+    },
+    {
+      "id": "wg_under1",
+      "body": "<<FILL role=rising words=56 beats='you go under, the cold closing over your head, the bars sliding past; but an old net is snagged across the gap below, invisible until it is around your arm and holding'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wg_under1_1",
+          "label": "Deal with the tangled tarp.",
+          "target": "wg_under2"
+        }
+      ]
+    },
+    {
+      "id": "wg_under2",
+      "body": "<<FILL role=choice words=66 beats='the net holds your arm underwater and your air is going; Priya the courier's last warning is the one that matters now, panic is what drowns people here; your knife is at your hip; or you can wrench and thrash for the surface and hope the net tears'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wg_under2_1",
+          "label": "Cut yourself free and glide up calm.",
+          "target": "yard"
+        },
+        {
+          "id": "c_wg_under2_2",
+          "label": "Thrash hard for the surface.",
+          "target": "wg_under_drown"
+        }
+      ]
+    },
+    {
+      "id": "wg_under_drown",
+      "body": "<<FILL role=failure words=56 beats='you thrash and the net only draws tighter, the way a snare does; the air goes out of you in a silver rope; you fought the water instead of the knot, and Priya the courier told you how that ends'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_wg_under_drown",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Held Under the Bars"
+      }
+    },
+    {
+      "id": "wg_wicket1",
+      "body": "<<FILL role=rising words=58 beats='the wicket's latch lifts with patience and a thin blade, quiet as a held breath; you fold through the gap dry-shouldered into the shadow beyond the gate, the far door of the yard just ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wg_wicket1_1",
+          "label": "Ease into the yard.",
+          "target": "yard"
+        }
+      ]
+    },
+    {
+      "id": "wg_chain1",
+      "body": "<<FILL role=choice words=66 beats='the rusty padlock will move the gate, but rust means noise, and noise this close to the house is a bell of its own; you can ease it link by patient link, or haul it fast and be through before anyone places the sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wg_chain1_1",
+          "label": "Ease the chain link by link.",
+          "target": "yard"
+        },
+        {
+          "id": "c_wg_chain1_2",
+          "label": "Haul the chain fast and hard.",
+          "target": "wg_alarm"
+        }
+      ]
+    },
+    {
+      "id": "wg_alarm",
+      "body": "<<FILL role=rising words=60 beats='the chain screeches once, short and loud, and you are through and flattened in the yard shadow before it dies; no one comes at a run, but somewhere inside the house a floorboard answers, and the night has teeth now; you move on, wary'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wg_alarm_1",
+          "label": "Press into the yard, wary.",
+          "target": "yard"
+        }
+      ]
+    },
+    {
+      "id": "yard",
+      "body": "<<FILL role=bottleneck words=82 beats='the Whitmore Gallery yard, walled and wet, entry-agnostic to how you came through the gate; near the far door a sleepy guard dog sits chained and silent, the dog that does not bark that Priya the courier named, watching you with pale eyes; three ways lead inward; a loading chute drops into the cellars; a clerks' stair climbs to a lit landing; and the main door lies past the sleepy guard dog, whose chain runs just short of the wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_yard_1",
+          "label": "Go down the loading chute.",
+          "target": "yd_coal1"
+        },
+        {
+          "id": "c_yard_2",
+          "label": "Climb the clerks' stair.",
+          "target": "yd_stair1"
+        },
+        {
+          "id": "c_yard_3",
+          "label": "Cross past the silent sleepy guard dog to the main door.",
+          "target": "yd_dog1"
+        },
+        {
+          "id": "c_yard_4",
+          "label": "Search the outbuildings for another way.",
+          "target": "m1_h1"
+        }
+      ]
+    },
+    {
+      "id": "yd_coal1",
+      "body": "<<FILL role=rising words=56 beats='the loading chute drops you into a black cellar that smells of dust and river; you find your feet among the coal and grope for a way up and in; an old iron grate and a steep coal-chute offer themselves'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_yd_coal1_1",
+          "label": "Choose your way up.",
+          "target": "yd_coal2"
+        }
+      ]
+    },
+    {
+      "id": "yd_coal2",
+      "body": "<<FILL role=choice words=68 beats='the grate is locked but the lock is old and honest and will pick; the coal-chute is faster but it drops away blind into a dark you cannot sound, and a blind drop in a strange house can end anywhere, on stone or on nothing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_yd_coal2_1",
+          "label": "Pick the old iron grate.",
+          "target": "hall"
+        },
+        {
+          "id": "c_yd_coal2_2",
+          "label": "Ride the blind coal-chute down.",
+          "target": "yd_coal_trap"
+        }
+      ]
+    },
+    {
+      "id": "yd_coal_trap",
+      "body": "<<FILL role=failure words=58 beats='the chute spills you into a dry cistern with walls too smooth and too high to climb, no coal, no rope, no way up; you are not hurt and you are not caught, but you are held, and the closing chime will ring with you still down here; the job is over'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_yd_coal_trap",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Chute"
+      }
+    },
+    {
+      "id": "yd_stair1",
+      "body": "<<FILL role=rising words=56 beats='the clerks' stair climbs toward a landing where a candle burns; a night curator is awake up here, closer than you would like, his shadow moving on the wall as you reach the top step'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_yd_stair1_1",
+          "label": "Study the lit landing.",
+          "target": "yd_stair2"
+        }
+      ]
+    },
+    {
+      "id": "yd_stair2",
+      "body": "<<FILL role=choice words=68 beats='the clerk sits at his ledgers with his back half to you; wait in the stairwell dark and he will carry his candle off on his round soon enough; or slip past behind him now while he writes, close enough to touch, betting he does not turn'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_yd_stair2_1",
+          "label": "Wait for the clerk to move off.",
+          "target": "hall"
+        },
+        {
+          "id": "c_yd_stair2_2",
+          "label": "Slip past behind the writing clerk.",
+          "target": "yd_stair_caught"
+        }
+      ]
+    },
+    {
+      "id": "yd_stair_caught",
+      "body": "<<FILL role=failure words=56 beats='you are a stride behind him when the floor speaks under your foot; he turns, and his shout is up before your hand can reach him; the house wakes around you and there is nowhere in a lit room to go; they have you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_yd_stair_caught",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Behind the Night Curator"
+      }
+    },
+    {
+      "id": "yd_dog1",
+      "body": "<<FILL role=rising words=54 beats='you edge along the yard wall toward the far door, and the silent sleepy guard dog rises to the length of its chain, pale eyes tracking you, no sound at all from it, which is somehow worse than any growl; you measure the reach of the chain against the door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_yd_dog1_1",
+          "label": "Judge the sleepy guard dog's chain.",
+          "target": "yd_dog2"
+        }
+      ]
+    },
+    {
+      "id": "yd_dog2",
+      "body": "<<FILL role=choice words=70 beats='the sleepy guard dog will not bark, but it will bite, and its chain reaches almost to the door; hug the wall and its arc falls just short, a hand's breadth of safe stone the whole way; cross straight and quick and you are inside its reach the entire crossing, trusting it to be slow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_yd_dog2_1",
+          "label": "Hug the wall past the sleepy guard dog's chain.",
+          "target": "hall"
+        },
+        {
+          "id": "c_yd_dog2_2",
+          "label": "Cross straight for the door.",
+          "target": "yd_dog_bite"
+        }
+      ]
+    },
+    {
+      "id": "yd_dog_bite",
+      "body": "<<FILL role=failure words=60 beats='it comes off its haunches without a sound and it is not slow; the chain snaps taut a heartbeat too late to save you; no one in the house hears a thing, which is the whole terrible point of a dog that does not bark'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_yd_dog_bite",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Dog That Does Not Bark"
+      }
+    },
+    {
+      "id": "hall",
+      "body": "<<FILL role=bottleneck words=84 beats='the counting-hall, entry-agnostic to which way you came inside; long tables of ledgers, iron strongboxes, and set in the far wall behind a clerk's cage the relic vault door itself; the closing chime is not far now; three ways cross to it; the open counting-floor runs straight but a security guard's lantern crosses it on a slow round; the crate stacks give cover along the wall; and a catwalk ladder climbs to the relic vault's upper hatch, the long way round'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hall_1",
+          "label": "Cross the open counting-floor.",
+          "target": "hl_floor"
+        },
+        {
+          "id": "c_hall_2",
+          "label": "Work along the crate stacks.",
+          "target": "hl_stack1"
+        },
+        {
+          "id": "c_hall_3",
+          "label": "Climb to the catwalk hatch.",
+          "target": "hl_mezz1"
+        },
+        {
+          "id": "c_hall_4",
+          "label": "Lose yourself among the record offices.",
+          "target": "m2_h1"
+        }
+      ]
+    },
+    {
+      "id": "hl_floor",
+      "body": "<<FILL role=choice words=72 beats='the security guard's lantern crosses the open floor and returns on a slow count you can measure; go on the dark of his turn and the floor is yours for a handful of heartbeats; go now, while his light still rakes the boards, and you cross lit, in the open, counting on speed you do not have'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hl_floor_1",
+          "label": "Time the dark and cross on his turn.",
+          "target": "vlanding"
+        },
+        {
+          "id": "c_hl_floor_2",
+          "label": "Hurry across now, in his light.",
+          "target": "hl_floor_caught"
+        }
+      ]
+    },
+    {
+      "id": "hl_floor_caught",
+      "body": "<<FILL role=failure words=58 beats='his light swings back before you are halfway and pins you on the open floor with nowhere to fold into; the security guard does not even raise his voice, only his lantern and a hand; the counting-floor was never a place to hurry'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hl_floor_caught",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Caught in the Lantern"
+      }
+    },
+    {
+      "id": "hl_stack1",
+      "body": "<<FILL role=rising words=56 beats='the crate stacks tower along the wall, years of the Whitmore Gallery piled into paper cliffs; you move in their cover toward the cage, and the way pinches between a leaning stack and the wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hl_stack1_1",
+          "label": "Get past the leaning stack.",
+          "target": "hl_stack2"
+        }
+      ]
+    },
+    {
+      "id": "hl_stack2",
+      "body": "<<FILL role=choice words=66 beats='the leaning stack sways at a touch, a slow paper avalanche waiting; squeeze low underneath it and you pass beneath the sway; climb over the top and your weight is the one thing it cannot hold, and a fallen stack is a drum the whole house will hear'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hl_stack2_1",
+          "label": "Squeeze low under the stack.",
+          "target": "vlanding"
+        },
+        {
+          "id": "c_hl_stack2_2",
+          "label": "Climb over the top of the stack.",
+          "target": "hl_stack_fall"
+        }
+      ]
+    },
+    {
+      "id": "hl_stack_fall",
+      "body": "<<FILL role=failure words=58 beats='the stack goes over with a roar of paper and you go down with it, unhurt but loud, so loud; boots wake and turn toward the sound; you are up and running the wrong way, out and empty, the frieze left behind you in a house that is now awake'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hl_stack_fall",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Buried in Ledgers"
+      }
+    },
+    {
+      "id": "hl_mezz1",
+      "body": "<<FILL role=rising words=58 beats='the catwalk ladder takes you up above the counting-floor into rafters and dust, the long way to the relic vault's upper hatch; you cross a catwalk of old boards toward the hatch above the door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hl_mezz1_1",
+          "label": "Cross toward the upper hatch.",
+          "target": "hl_mezz2"
+        }
+      ]
+    },
+    {
+      "id": "hl_mezz2",
+      "body": "<<FILL role=rising words=60 beats='the upper hatch gives onto a short iron ladder that drops you straight down the inside of the cage to the relic vault door itself; you take it rung by rung and set your feet at the foot of the door'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hl_mezz2_1",
+          "label": "Drop to the relic vault door.",
+          "target": "g_vault"
+        }
+      ]
+    },
+    {
+      "id": "vlanding",
+      "body": "<<FILL role=bottleneck words=74 beats='the clerk's cage stands before the relic vault, its gate the last thing between you and the door; entry-agnostic to which way crossed the hall; the gate is chained loosely, pickable, or you can go around by the long counter where a tray of counted coin has been left out overnight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vlanding_1",
+          "label": "Pick the cage gate's chain.",
+          "target": "land_cross"
+        },
+        {
+          "id": "c_vlanding_2",
+          "label": "Go around by the counter.",
+          "target": "land_counter"
+        }
+      ]
+    },
+    {
+      "id": "land_counter",
+      "body": "<<FILL role=choice words=66 beats='the counter runs the long way to the door, and on it sits the donation box, silver already counted and stacked, close enough to sweep into a pocket; greed is noise, though, and a sweep of loose coin is a sound; leave it and move quiet, or take it and gamble the sound against the reward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_land_counter_1",
+          "label": "Leave the coin and move on.",
+          "target": "land_cross"
+        },
+        {
+          "id": "c_land_counter_2",
+          "label": "Sweep the counted donation box.",
+          "target": "land_greed"
+        }
+      ]
+    },
+    {
+      "id": "land_greed",
+      "body": "<<FILL role=failure words=56 beats='the loose silver chimes as it goes, one clear bright sound in a silent house, and one sound is all it takes; the cage answers, then the hall; you had the relic vault a step away and you spent it on a handful of counted coin'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_land_greed",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "The Price of the Donation Box"
+      }
+    },
+    {
+      "id": "land_cross",
+      "body": "<<FILL role=rising words=56 beats='the last stretch of floor to the relic vault, quiet now, the cage behind you; you set your hands on the great door and feel the old cold iron of it, and the cipher lock waiting in its heart'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_land_cross_1",
+          "label": "Face the relic vault door.",
+          "target": "g_vault"
+        }
+      ]
+    },
+    {
+      "id": "g_vault",
+      "body": "<<FILL role=bottleneck words=84 beats='the relic vault door, and only the door; a Aurelport cipher lock built to be read, not forced, three wards that must turn in their season, and behind it the gallery's lost frieze, the strongbox and the donor ledger; the closing chime is the true clock and it is close; describe only the door, the lock, the wards, and the prize within, nothing of the room behind you or the way you came'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_vault_1",
+          "label": "Read the cipher lock and work the wards in turn.",
+          "target": "vk_work1"
+        },
+        {
+          "id": "c_g_vault_2",
+          "label": "Force the door with your pry-bar.",
+          "target": "vk_force"
+        },
+        {
+          "id": "c_g_vault_3",
+          "label": "Try the donor ledger for the door's cipher first.",
+          "target": "vk_ledger"
+        }
+      ]
+    },
+    {
+      "id": "vk_work1",
+      "body": "<<FILL role=rising words=58 beats='the first ward gives to a patient hand, a soft iron sigh, the cipher lock reading true under your fingers; the second ward is the one with teeth, and you feel it waiting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vk_work1_1",
+          "label": "Set the second ward.",
+          "target": "vk_work2"
+        }
+      ]
+    },
+    {
+      "id": "vk_work2",
+      "body": "<<FILL role=choice words=70 beats='the second ward is a false gate, and a Aurelport false gate bites the hand that hurries it, snapping shut for good on too much force; you can set it gently, feeling for its true seat, or turn it hard and trust to strength, which is the one thing it is built to punish'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vk_work2_1",
+          "label": "Set the false gate gently.",
+          "target": "vk_open"
+        },
+        {
+          "id": "c_vk_work2_2",
+          "label": "Turn the ward hard.",
+          "target": "vk_snap"
+        }
+      ]
+    },
+    {
+      "id": "vk_snap",
+      "body": "<<FILL role=failure words=58 beats='the false gate snaps shut under your force with a small final click, and the cipher lock seizes solid, dead for the night and the season; no alarm, no hand on your shoulder, only a door that will never open now; you leave the way you came, empty'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_vk_snap",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Snapped Ward"
+      }
+    },
+    {
+      "id": "vk_force",
+      "body": "<<FILL role=choice words=70 beats='the pry-bar bites the door's edge, and through the steel you feel a thin wire tighten, the inner bell-wire, one more pound of force from ringing the house awake; ease off now and go back to picking the wards by hand, or throw your full weight on the bar and take the door before the bell can matter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vk_force_1",
+          "label": "Ease off and pick the wards instead.",
+          "target": "vk_work2"
+        },
+        {
+          "id": "c_vk_force_2",
+          "label": "Throw your weight on the bar.",
+          "target": "vk_force_bell"
+        }
+      ]
+    },
+    {
+      "id": "vk_force_bell",
+      "body": "<<FILL role=failure words=58 beats='the bar wins the last inch and the bell-wire wins the last heartbeat; a bell rings deep inside the door and the whole house rings after it; the relic vault is open and you are standing in front of it as the boots arrive; you forced what was meant to be read'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_vk_force_bell",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "The Inner Bell"
+      }
+    },
+    {
+      "id": "vk_ledger",
+      "body": "<<FILL role=choice words=68 beats='the donor ledger holds the door's cipher written plain, but a Aurelport lock turns its false way first and its true way second, and the ledger gives only the numbers, not the order; trust the true turn against the plain reading, or turn it the plain way the ledger seems to say'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vk_ledger_1",
+          "label": "Trust the lock's true turn.",
+          "target": "vk_open"
+        },
+        {
+          "id": "c_vk_ledger_2",
+          "label": "Turn it the plain way the ledger reads.",
+          "target": "vk_ledger_lock"
+        }
+      ]
+    },
+    {
+      "id": "vk_ledger_lock",
+      "body": "<<FILL role=failure words=56 beats='you turn it the plain way and the cipher lock takes the wrong order as a refusal and seizes, locking itself for the season; the numbers were true and the order was everything, and the ledger never told you the order; the door stays shut, and you go'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_vk_ledger_lock",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "What the Ledger Did Not Say"
+      }
+    },
+    {
+      "id": "vk_open",
+      "body": "<<FILL role=rising words=78 beats='the cipher lock sighs its whole length and the relic vault swings; inside, the strongbox of coin and the donor ledger, the gallery's lost frieze entire, every runner's name and the season's silver in your hands at last; the closing chime is very close now, and a full relic vault is only half the night; you take the frieze and turn for the water'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vk_open_1",
+          "label": "Turn for the water with the frieze.",
+          "target": "vk_secure1"
+        }
+      ]
+    },
+    {
+      "id": "vk_secure1",
+      "body": "<<FILL role=rising words=58 beats='you swing the relic vault to and reset the outer ward behind you, so the theft will read as a locked door until someone tries it come morning, buying yourself the whole of the escape before the house even knows; the frieze is heavy and whole against your chest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vk_secure1_1",
+          "label": "Move for the way out.",
+          "target": "vk_secure2"
+        }
+      ]
+    },
+    {
+      "id": "vk_secure2",
+      "body": "<<FILL role=rising words=58 beats='back across the counting-hall you go, keeping low along the tables, the frieze a dead weight now that every sense is bent on the way out; you reach the head of the routes back to the water with the closing chime nearer than you would like'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vk_secure2_1",
+          "label": "Choose the way back to the water.",
+          "target": "h_escape"
+        }
+      ]
+    },
+    {
+      "id": "h_escape",
+      "body": "<<FILL role=hub words=82 beats='the frieze is yours and now the night is only the way out, before the closing chime and before Priya the courier gives up the Old Carousel; the tide stands high now, which changes every low way; three routes back to the water; the service gate you came by, though the tide has risen over its bars; the loading chute drops to a fast side canal; and the skylight ledges climb high and exposed over the whole quarter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_escape_1",
+          "label": "Retrace to the service gate.",
+          "target": "es_gate1"
+        },
+        {
+          "id": "c_h_escape_2",
+          "label": "Out the loading chute to the side canal.",
+          "target": "es_side1"
+        },
+        {
+          "id": "c_h_escape_3",
+          "label": "Over the skylight ledges.",
+          "target": "es_roof1"
+        },
+        {
+          "id": "c_h_escape_4",
+          "label": "frieze through the canal warren below.",
+          "target": "m3_h1"
+        }
+      ]
+    },
+    {
+      "id": "es_gate1",
+      "body": "<<FILL role=rising words=56 beats='the service gate again, but the risen tide has closed over the bars where you slipped under before, no air gap left below now; only the high wicket still stands dry above the flood'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_es_gate1_1",
+          "label": "Judge the flooded gate.",
+          "target": "es_gate2"
+        }
+      ]
+    },
+    {
+      "id": "es_gate2",
+      "body": "<<FILL role=choice words=66 beats='the wicket is dry and slow and sure; the drowned bars are fast and the way you know, but the tide has taken the air from beneath them and Priya the courier's warning stands, the low ways drown after the turn, and the turn is long past'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_es_gate2_1",
+          "label": "Take the high wicket out.",
+          "target": "junction"
+        },
+        {
+          "id": "c_es_gate2_2",
+          "label": "Duck the drowned bars as before.",
+          "target": "es_gate_drown"
+        }
+      ]
+    },
+    {
+      "id": "es_gate_drown",
+      "body": "<<FILL role=failure words=58 beats='you go under expecting the gap that let you in and there is no gap now, only the risen tide packed solid against iron; you turn back and there is no air behind you either; the tide closed the door you came through, exactly when Priya the courier said it would'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_es_gate_drown",
+        "valence": "negative",
+        "kind": "death",
+        "title": "No Air Beneath the Bars"
+      }
+    },
+    {
+      "id": "es_side1",
+      "body": "<<FILL role=rising words=56 beats='the loading chute lets you out above a side canal running hard and loud with the turned tide, a drainage flume funneling the whole flood through the narrows; a footbridge crosses above it, and the fast black water runs below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_es_side1_1",
+          "label": "Look for the crossing.",
+          "target": "es_side2"
+        }
+      ]
+    },
+    {
+      "id": "es_side2",
+      "body": "<<FILL role=choice words=66 beats='the footbridge is a plank and sound; the race below is faster and would carry you to the basin in a breath, but a drainage flume drowns whatever it carries, you have seen it, it does not let go until the narrows are past and by then the person it holds is past too'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_es_side2_1",
+          "label": "Cross by the footbridge.",
+          "target": "junction"
+        },
+        {
+          "id": "c_es_side2_2",
+          "label": "Ride the drainage flume down.",
+          "target": "es_side_drown"
+        }
+      ]
+    },
+    {
+      "id": "es_side_drown",
+      "body": "<<FILL role=failure words=56 beats='the race takes you the instant you give yourself to it and it does not carry, it holds; the narrows come and go and you do not; the water reaches the basin without you; you knew what it did and you gave yourself to it anyway'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_es_side_drown",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Flume's Grip"
+      }
+    },
+    {
+      "id": "es_roof1",
+      "body": "<<FILL role=rising words=56 beats='the skylight ledges are wet slate and steep, the whole quarter black below, the canals threading silver four floors down; you work along the ridge toward a drainpipe that climbs down into shadow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_es_roof1_1",
+          "label": "Reach the roof's edge.",
+          "target": "es_roof2"
+        }
+      ]
+    },
+    {
+      "id": "es_roof2",
+      "body": "<<FILL role=choice words=66 beats='the drainpipe is old but bolted and it will hold you down the wall to a ledge above the water; the other way is a jump to the next roof, a gap that clears nothing but open air and, four floors below it, the black canal that will not care how well you jumped'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_es_roof2_1",
+          "label": "Climb down the drainpipe.",
+          "target": "junction"
+        },
+        {
+          "id": "c_es_roof2_2",
+          "label": "Jump the gap to the next roof.",
+          "target": "es_roof_fall"
+        }
+      ]
+    },
+    {
+      "id": "es_roof_fall",
+      "body": "<<FILL role=failure words=56 beats='your foot leaves the wet slate and you know at once the gap was longer than the dark let it look; there is only air, and then the water, four floors down and hard as a floor from that height; the jump cleared nothing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_es_roof_fall",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Four Floors of Air"
+      }
+    },
+    {
+      "id": "junction",
+      "body": "<<FILL role=bottleneck words=80 beats='the canal junction where every way to the Old Carousel comes together, entry-agnostic to which route reached the water; the closing chime trembles near now, minutes not hours; Priya the courier's skiff must be just past the far arch; three last ways lie open; a hedge maze path hides quiet along the bank; the open basin runs straight and fast under the last camera post; and the smugglers cut itself, the low pipe under the road that gives the run its name, though the tide is filling it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_junction_1",
+          "label": "Slip along the hedge maze path.",
+          "target": "jn_reed"
+        },
+        {
+          "id": "c_junction_2",
+          "label": "Sprint the open basin.",
+          "target": "jn_basin"
+        },
+        {
+          "id": "c_junction_3",
+          "label": "Take the smuggler's cut under the road.",
+          "target": "jn_cut"
+        }
+      ]
+    },
+    {
+      "id": "jn_reed",
+      "body": "<<FILL role=rising words=56 beats='the hedge maze path is slow and silent and long, the reeds closing over you as you go, the camera post's light never once finding the bank; it draws you the long quiet way around the basin's edge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_jn_reed_1",
+          "label": "Follow the reeds around.",
+          "target": "jn_reed2"
+        }
+      ]
+    },
+    {
+      "id": "jn_reed2",
+      "body": "<<FILL role=rising words=54 beats='the reeds thin at last and the black shape of the Old Carousel leans out over the water just ahead, Priya the courier's skiff somewhere in its shadow; you cover the last stretch of open bank low and slow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_jn_reed2_1",
+          "label": "Come out by the Old Carousel.",
+          "target": "boat"
+        }
+      ]
+    },
+    {
+      "id": "jn_basin",
+      "body": "<<FILL role=choice words=66 beats='the open basin is the fast way and the last camera post stands over it with a bell and a clear flat shot of the whole water; keep to the shadowed rim and the crossing is long but dark; cut straight across the open and it is quick and lit and watched every stroke'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_jn_basin_1",
+          "label": "Keep to the basin's shadowed rim.",
+          "target": "boat"
+        },
+        {
+          "id": "c_jn_basin_2",
+          "label": "Cut straight across the open basin.",
+          "target": "jn_basin_caught"
+        }
+      ]
+    },
+    {
+      "id": "jn_basin_caught",
+      "body": "<<FILL role=failure words=58 beats='you are three strokes into the open when the post's bell starts and does not stop; the flat water gives you nowhere and the watch has boats of its own; they run you down before the far side; the shadowed rim was right there, the whole slow safe length of it'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jn_basin_caught",
+        "valence": "negative",
+        "kind": "capture",
+        "title": "Under the Camera Post"
+      }
+    },
+    {
+      "id": "jn_cut",
+      "body": "<<FILL role=choice words=70 beats='the low pipe runs under the road to the Old Carousel, the smugglers cut, and the tide is filling it fast, one clear run left in it before it drowns; run it now and beat the water by a breath; or wait for the patrol crossing the road above to pass first and give the tide that breath instead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_jn_cut_1",
+          "label": "Run the pipe now, ahead of the tide.",
+          "target": "boat"
+        },
+        {
+          "id": "c_jn_cut_2",
+          "label": "Wait for the patrol, then run it.",
+          "target": "jn_cut_drown"
+        }
+      ]
+    },
+    {
+      "id": "jn_cut_drown",
+      "body": "<<FILL role=failure words=56 beats='the patrol passes and you drop into the pipe a breath too late; the tide has taken the last of the air and filled the cut wall to wall; there is no room to turn in a pipe and no air to turn for; the run that named the whole job is the run that keeps you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jn_cut_drown",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Cut Fills"
+      }
+    },
+    {
+      "id": "boat",
+      "body": "<<FILL role=bottleneck words=82 beats='the Old Carousel, and Priya the courier's skiff low in its shadow, oars shipped and ready, entry-agnostic to which last way brought you; the closing chime is a breath from ringing; the frieze is heavy and whole against your chest; but out on the black water a watch-skiff has nosed into the basin, not yet turned your way; the choice now is only how much of the night you carry out of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_boat_1",
+          "label": "Board and push off with the whole frieze.",
+          "target": "e_clean"
+        },
+        {
+          "id": "c_boat_2",
+          "label": "Ditch the heavy strongbox, keep the ledger, and row.",
+          "target": "e_cost"
+        },
+        {
+          "id": "c_boat_3",
+          "label": "Sink the whole take and go clean before they board.",
+          "target": "e_walkaway"
+        }
+      ]
+    },
+    {
+      "id": "e_clean",
+      "body": "<<FILL role=ending words=90 beats='you are into the skiff and Priya the courier has you off the Old Carousel before the watch-skiff finishes its slow turn; the reeds take you, then the dark, then the wide safe water below the city; the closing chime rings behind you over a Whitmore Gallery that does not yet know its relic vault is empty; the strongbox and the donor ledger ride whole at your feet, the gallery's lost frieze entire, every name and every coin, carried clean out of Aurelport in the last dark of the night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_clean",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Clean Retrieval"
+      }
+    },
+    {
+      "id": "e_cost",
+      "body": "<<FILL role=failure words=88 beats='the watch-skiff turns and you make your one hard choice, the strongbox over the side to lighten the skiff, its splash the price of the rowing that follows; Priya the courier pulls and you pull and the reeds swallow you before the watch can close; the silver is gone to the canal but the donor ledger rides against your chest, every runner's name safe out of the Whitmore Gallery, which was always the frieze that counted; you carry the true prize home and leave the watch the coin's cold splash'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_cost",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Frieze That Mattered"
+      }
+    },
+    {
+      "id": "e_walkaway",
+      "body": "<<FILL role=failure words=86 beats='the watch-skiff swings its lantern toward the Old Carousel and you do the last thing a runner ever wants to, the whole frieze into the black water, strongbox and ledger both, gone where no search will find them tonight; when the watch draws alongside you are only a boatman and his mate on the dawn tide with nothing to hold; they let you go because there is nothing to hold you for; you carry out no silver and no names, only your life and Priya the courier's, empty-handed and alive and free to run again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_walkaway",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Empty Hands, Free Feet"
+      }
+    },
+    {
+      "id": "m1_p0a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, old brick weeping white salt, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p0a_1",
+          "label": "Follow it further.",
+          "target": "m1_p0b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p0b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p0b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p0e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p0e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p0e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Saltpetre Vault"
+      }
+    },
+    {
+      "id": "m1_p1a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, coils of rope gone to slime, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p1a_1",
+          "label": "Follow it further.",
+          "target": "m1_p1b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p1b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p1b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p1e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p1e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p1e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Among the Rotted Rope"
+      }
+    },
+    {
+      "id": "m1_h1",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a low brick vaulting furred with saltpetre; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h1_1",
+          "label": "Try the saltpetre vault.",
+          "target": "m1_p0a"
+        },
+        {
+          "id": "c_m1_h1_2",
+          "label": "Search the rope store.",
+          "target": "m1_p1a"
+        },
+        {
+          "id": "c_m1_h1_3",
+          "label": "Push on deeper.",
+          "target": "m1_h2"
+        }
+      ]
+    },
+    {
+      "id": "m1_p2a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, cold water round tumbled coppers, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p2a_1",
+          "label": "Follow it further.",
+          "target": "m1_p2b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p2b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p2b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p2e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p2e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p2e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sunken Laundry"
+      }
+    },
+    {
+      "id": "m1_p3a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a dark that swallows your hand, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p3a_1",
+          "label": "Follow it further.",
+          "target": "m1_p3b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p3b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p3b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p3e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p3e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p3e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Black"
+      }
+    },
+    {
+      "id": "m1_h2",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a store of rotted rope and broken tide-gear; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h2_1",
+          "label": "Wade the sunken laundry.",
+          "target": "m1_p2a"
+        },
+        {
+          "id": "c_m1_h2_2",
+          "label": "Feel down the black passage.",
+          "target": "m1_p3a"
+        },
+        {
+          "id": "c_m1_h2_3",
+          "label": "Push on deeper.",
+          "target": "m1_h3"
+        }
+      ]
+    },
+    {
+      "id": "m1_p4a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a round room throwing your breath back, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p4a_1",
+          "label": "Follow it further.",
+          "target": "m1_p4b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p4b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p4b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p4e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p4e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p4e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Echoing Cistern"
+      }
+    },
+    {
+      "id": "m1_p5a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, bare shelves and standing damp, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p5a_1",
+          "label": "Follow it further.",
+          "target": "m1_p5b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p5b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p5b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p5e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p5e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p5e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Emptied Pantries"
+      }
+    },
+    {
+      "id": "m1_h3",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a sunken laundry half-full of standing water; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h3_1",
+          "label": "Enter the cistern room.",
+          "target": "m1_p4a"
+        },
+        {
+          "id": "c_m1_h3_2",
+          "label": "Move through the pantries.",
+          "target": "m1_p5a"
+        },
+        {
+          "id": "c_m1_h3_3",
+          "label": "Push on deeper.",
+          "target": "m1_h4"
+        }
+      ]
+    },
+    {
+      "id": "m1_p6a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a stair walled off at its top, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p6a_1",
+          "label": "Follow it further.",
+          "target": "m1_p6b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p6b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p6b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p6e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p6e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p6e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Three Steps to Nothing"
+      }
+    },
+    {
+      "id": "m1_p7a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a low gallery ankle-deep and going nowhere, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p7a_1",
+          "label": "Follow it further.",
+          "target": "m1_p7b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p7b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p7b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p7e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p7e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p7e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drain Gallery"
+      }
+    },
+    {
+      "id": "m1_h4",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a coal-black passage that forgets which way is up; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h4_1",
+          "label": "Climb the short stair.",
+          "target": "m1_p6a"
+        },
+        {
+          "id": "c_m1_h4_2",
+          "label": "Follow the drain gallery.",
+          "target": "m1_p7a"
+        },
+        {
+          "id": "c_m1_h4_3",
+          "label": "Push on deeper.",
+          "target": "m1_h5"
+        }
+      ]
+    },
+    {
+      "id": "m1_p8a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a dead iron furnace and its ash, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p8a_1",
+          "label": "Follow it further.",
+          "target": "m1_p8b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p8b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p8b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p8e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p8e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p8e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Boiler"
+      }
+    },
+    {
+      "id": "m1_p9a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, bin after bin of black coal, all alike, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p9a_1",
+          "label": "Follow it further.",
+          "target": "m1_p9b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p9b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p9b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p9e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p9e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p9e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Among the Bunkers"
+      }
+    },
+    {
+      "id": "m1_h5",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a cistern room where your own breath comes back at you; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h5_1",
+          "label": "Search the cold boiler cellar.",
+          "target": "m1_p8a"
+        },
+        {
+          "id": "c_m1_h5_2",
+          "label": "Try the coal bunkers.",
+          "target": "m1_p9a"
+        },
+        {
+          "id": "c_m1_h5_3",
+          "label": "Push on deeper.",
+          "target": "m1_h6"
+        }
+      ]
+    },
+    {
+      "id": "m1_p10a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, stone that runs with the canal behind it, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p10a_1",
+          "label": "Follow it further.",
+          "target": "m1_p10b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p10b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p10b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p10e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p10e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p10e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Weeping Wall"
+      }
+    },
+    {
+      "id": "m1_p11a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a way that makes you crawl and then stops, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p11a_1",
+          "label": "Follow it further.",
+          "target": "m1_p11b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p11b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p11b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p11e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p11e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p11e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Stooping Arch"
+      }
+    },
+    {
+      "id": "m1_h6",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a warren of pantries emptied and left to the damp; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h6_1",
+          "label": "Feel along the weeping wall.",
+          "target": "m1_p10a"
+        },
+        {
+          "id": "c_m1_h6_2",
+          "label": "Push through the low arch.",
+          "target": "m1_p11a"
+        },
+        {
+          "id": "c_m1_h6_3",
+          "label": "Push on deeper.",
+          "target": "m1_h7"
+        }
+      ]
+    },
+    {
+      "id": "m1_p12a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a black shaft of standing water, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p12a_1",
+          "label": "Follow it further.",
+          "target": "m1_p12b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p12b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p12b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p12e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p12e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p12e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Flooded Well"
+      }
+    },
+    {
+      "id": "m1_p13a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, seized winches and snapped chain, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p13a_1",
+          "label": "Follow it further.",
+          "target": "m1_p13b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p13b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p13b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p13e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p13e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p13e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Tide-Gear"
+      }
+    },
+    {
+      "id": "m1_h7",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a stair that climbs three steps and stops at bricked stone; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h7_1",
+          "label": "Sound the flooded well.",
+          "target": "m1_p12a"
+        },
+        {
+          "id": "c_m1_h7_2",
+          "label": "Try the store of tide-gear.",
+          "target": "m1_p13a"
+        },
+        {
+          "id": "c_m1_h7_3",
+          "label": "Push on deeper.",
+          "target": "m1_h8"
+        }
+      ]
+    },
+    {
+      "id": "m1_p14a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a floor of cold soft ash that gives underfoot, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p14a_1",
+          "label": "Follow it further.",
+          "target": "m1_p14b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p14b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p14b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p14e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p14e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p14e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Ash Pit"
+      }
+    },
+    {
+      "id": "m1_p15a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, shelves under a foot of dark water, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p15a_1",
+          "label": "Follow it further.",
+          "target": "m1_p15b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p15b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p15b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p15e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p15e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p15e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sunken Pantry"
+      }
+    },
+    {
+      "id": "m1_h8",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a long drain gallery ankle-deep and going nowhere; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h8_1",
+          "label": "Cross the ash pit.",
+          "target": "m1_p14a"
+        },
+        {
+          "id": "c_m1_h8_2",
+          "label": "Search the sunken pantry.",
+          "target": "m1_p15a"
+        },
+        {
+          "id": "c_m1_h8_3",
+          "label": "Push on deeper.",
+          "target": "m1_h9"
+        }
+      ]
+    },
+    {
+      "id": "m1_p16a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a way built for no grown person, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p16a_1",
+          "label": "Follow it further.",
+          "target": "m1_p16b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p16b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p16b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p16e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p16e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p16e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Servant's Crawl"
+      }
+    },
+    {
+      "id": "m1_p17a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a sound of water that leads nowhere, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p17a_1",
+          "label": "Follow it further.",
+          "target": "m1_p17b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p17b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p17b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p17e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p17e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p17e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Chasing the Drip"
+      }
+    },
+    {
+      "id": "m1_h9",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a boiler cellar cold a hundred years; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h9_1",
+          "label": "Take the servant's crawl.",
+          "target": "m1_p16a"
+        },
+        {
+          "id": "c_m1_h9_2",
+          "label": "Follow the drip.",
+          "target": "m1_p17a"
+        },
+        {
+          "id": "c_m1_h9_3",
+          "label": "Push on deeper.",
+          "target": "m1_h10"
+        }
+      ]
+    },
+    {
+      "id": "m1_p18a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a doorway filled in with fitted stone, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p18a_1",
+          "label": "Follow it further.",
+          "target": "m1_p18b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p18b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p18b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p18e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p18e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p18e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Bricked Door"
+      }
+    },
+    {
+      "id": "m1_p19a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, another blind drop into the dark, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p19a_1",
+          "label": "Follow it further.",
+          "target": "m1_p19b"
+        }
+      ]
+    },
+    {
+      "id": "m1_p19b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the Whitmore Gallery cellars, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_p19b_1",
+          "label": "Press to the end of it.",
+          "target": "m1_p19e"
+        }
+      ]
+    },
+    {
+      "id": "m1_p19e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_p19e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Second Chute"
+      }
+    },
+    {
+      "id": "m1_pfin_a",
+      "body": "<<FILL role=rising words=52 beats='the last way out of the Whitmore Gallery cellars draws you on, promising it must lead somewhere, they always seem to'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_pfin_a_1",
+          "label": "Take it to the end.",
+          "target": "m1_pfin_b"
+        }
+      ]
+    },
+    {
+      "id": "m1_pfin_b",
+      "body": "<<FILL role=rising words=52 beats='it narrows and turns once more and the light and the sound of the world are gone behind you now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_pfin_b_1",
+          "label": "Follow it to whatever waits.",
+          "target": "m1_pfin_e"
+        }
+      ]
+    },
+    {
+      "id": "m1_pfin_e",
+      "body": "<<FILL role=failure words=56 beats='the cellars close on themselves one last time and you understand you have been going in circles under the Whitmore Gallery; there is no vault down here and no water out; the closing chime reaches even this deep, and you are still lost when it rings, the frieze untouched above you'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m1_pfin_e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cellars Keep You"
+      }
+    },
+    {
+      "id": "m1_h10",
+      "body": "<<FILL role=hub words=66 beats='deeper into the Whitmore Gallery cellars, and it keeps giving you more of itself, a maze of coal bunkers all alike in the dark; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m1_h10_1",
+          "label": "Try the bricked door.",
+          "target": "m1_p18a"
+        },
+        {
+          "id": "c_m1_h10_2",
+          "label": "Feel down the coal chute.",
+          "target": "m1_p19a"
+        },
+        {
+          "id": "c_m1_h10_3",
+          "label": "Chance the last way on.",
+          "target": "m1_pfin_a"
+        }
+      ]
+    },
+    {
+      "id": "m2_p0a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, door after identical door, none of them giving, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p0a_1",
+          "label": "Follow it further.",
+          "target": "m2_p0b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p0b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p0b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p0e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p0e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p0e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Corridor of Doors"
+      }
+    },
+    {
+      "id": "m2_p1a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, iron walls and nothing in them but records, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p1a_1",
+          "label": "Follow it further.",
+          "target": "m2_p1b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p1b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p1b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p1e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p1e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p1e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Strongroom of Paper"
+      }
+    },
+    {
+      "id": "m2_h1",
+      "body": "<<FILL role=hub words=66 beats='deeper into the record offices, and it keeps giving you more of itself, a corridor of identical clerks' doors, all locked; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_h1_1",
+          "label": "Try the locked corridor.",
+          "target": "m2_p0a"
+        },
+        {
+          "id": "c_m2_h1_2",
+          "label": "Search the paper strongroom.",
+          "target": "m2_p1a"
+        },
+        {
+          "id": "c_m2_h1_3",
+          "label": "Push on deeper.",
+          "target": "m2_h2"
+        }
+      ]
+    },
+    {
+      "id": "m2_p2a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, abandoned desks and ink not yet dry, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p2a_1",
+          "label": "Follow it further.",
+          "target": "m2_p2b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p2b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p2b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p2e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p2e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p2e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wet Pens"
+      }
+    },
+    {
+      "id": "m2_p3a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, steps that deliver you where you began, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p3a_1",
+          "label": "Follow it further.",
+          "target": "m2_p3b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p3b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p3b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p3e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p3e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p3e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Stair That Loops"
+      }
+    },
+    {
+      "id": "m2_h2",
+      "body": "<<FILL role=hub words=66 beats='deeper into the record offices, and it keeps giving you more of itself, a strongroom of nothing but paper and dust; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_h2_1",
+          "label": "Enter the copying room.",
+          "target": "m2_p2a"
+        },
+        {
+          "id": "c_m2_h2_2",
+          "label": "Climb the looping stair.",
+          "target": "m2_p3a"
+        },
+        {
+          "id": "c_m2_h2_3",
+          "label": "Push on deeper.",
+          "target": "m2_h3"
+        }
+      ]
+    },
+    {
+      "id": "m2_p4a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, shelves you cannot see the top of, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p4a_1",
+          "label": "Follow it further.",
+          "target": "m2_p4b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p4b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p4b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p4e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p4e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p4e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Archive"
+      }
+    },
+    {
+      "id": "m2_p5a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a room sealed but for its one door, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p5a_1",
+          "label": "Follow it further.",
+          "target": "m2_p5b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p5b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p5b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p5e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p5e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p5e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Bricked Window"
+      }
+    },
+    {
+      "id": "m2_h3",
+      "body": "<<FILL role=hub words=66 beats='deeper into the record offices, and it keeps giving you more of itself, a copying room with pens still wet and no clerk; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_h3_1",
+          "label": "Feel through the dark archive.",
+          "target": "m2_p4a"
+        },
+        {
+          "id": "c_m2_h3_2",
+          "label": "Cross the bricked office.",
+          "target": "m2_p5a"
+        },
+        {
+          "id": "c_m2_h3_3",
+          "label": "Push on deeper.",
+          "target": "m2_h4"
+        }
+      ]
+    },
+    {
+      "id": "m2_p6a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, old deeds furred with mildew, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p6a_1",
+          "label": "Follow it further.",
+          "target": "m2_p6b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p6b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p6b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p6e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p6e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p6e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Muniment Room"
+      }
+    },
+    {
+      "id": "m2_p7a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, shelves of accounts nobody will ever read, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p7a_1",
+          "label": "Follow it further.",
+          "target": "m2_p7b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p7b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p7b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p7e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p7e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p7e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Two Hundred Years of Ledgers"
+      }
+    },
+    {
+      "id": "m2_h4",
+      "body": "<<FILL role=hub words=66 beats='deeper into the record offices, and it keeps giving you more of itself, a stair that loops back onto its own landing; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_h4_1",
+          "label": "Search the muniment room.",
+          "target": "m2_p6a"
+        },
+        {
+          "id": "c_m2_h4_2",
+          "label": "Try the ledger gallery.",
+          "target": "m2_p7a"
+        },
+        {
+          "id": "c_m2_h4_3",
+          "label": "Push on deeper.",
+          "target": "m2_h5"
+        }
+      ]
+    },
+    {
+      "id": "m2_p8a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, furniture shrouded like a room of ghosts, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p8a_1",
+          "label": "Follow it further.",
+          "target": "m2_p8b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p8b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p8b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p8e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p8e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p8e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Under the Dust Sheets"
+      }
+    },
+    {
+      "id": "m2_p9a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a narrow run behind the offices, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p9a_1",
+          "label": "Follow it further.",
+          "target": "m2_p9b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p9b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p9b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p9e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p9e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p9e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Clerks' Passage"
+      }
+    },
+    {
+      "id": "m2_h5",
+      "body": "<<FILL role=hub words=66 beats='deeper into the record offices, and it keeps giving you more of itself, an archive stacked to the rafters and unlit; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_h5_1",
+          "label": "Cross the sheeted desks.",
+          "target": "m2_p8a"
+        },
+        {
+          "id": "c_m2_h5_2",
+          "label": "Take the clerks' passage.",
+          "target": "m2_p9a"
+        },
+        {
+          "id": "c_m2_h5_3",
+          "label": "Push on deeper.",
+          "target": "m2_h6"
+        }
+      ]
+    },
+    {
+      "id": "m2_p10a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, pigeonholes to the ceiling, all empty, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p10a_1",
+          "label": "Follow it further.",
+          "target": "m2_p10b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p10b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p10b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p10e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p10e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p10e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sorting Room"
+      }
+    },
+    {
+      "id": "m2_p11a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a chimney passage too narrow to climb, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p11a_1",
+          "label": "Follow it further.",
+          "target": "m2_p11b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p11b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p11b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p11e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p11e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p11e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Flue"
+      }
+    },
+    {
+      "id": "m2_h6",
+      "body": "<<FILL role=hub words=66 beats='deeper into the record offices, and it keeps giving you more of itself, a counting-office with its window bricked over; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_h6_1",
+          "label": "Try the sorting room.",
+          "target": "m2_p10a"
+        },
+        {
+          "id": "c_m2_h6_2",
+          "label": "Follow the cold flue.",
+          "target": "m2_p11a"
+        },
+        {
+          "id": "c_m2_h6_3",
+          "label": "Push on deeper.",
+          "target": "m2_h7"
+        }
+      ]
+    },
+    {
+      "id": "m2_p12a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, an iron press holding only dust, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p12a_1",
+          "label": "Follow it further.",
+          "target": "m2_p12b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p12b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p12b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p12e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p12e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p12e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Strong Cupboard"
+      }
+    },
+    {
+      "id": "m2_p13a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a long table and a ring of empty chairs, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p13a_1",
+          "label": "Follow it further.",
+          "target": "m2_p13b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p13b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p13b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p13e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p13e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p13e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Auditors' Room"
+      }
+    },
+    {
+      "id": "m2_h7",
+      "body": "<<FILL role=hub words=66 beats='deeper into the record offices, and it keeps giving you more of itself, a muniment room smelling of mildew and wax; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_h7_1",
+          "label": "Search the strong cupboard.",
+          "target": "m2_p12a"
+        },
+        {
+          "id": "c_m2_h7_2",
+          "label": "Cross the auditors' room.",
+          "target": "m2_p13a"
+        },
+        {
+          "id": "c_m2_h7_3",
+          "label": "Push on deeper.",
+          "target": "m2_h8"
+        }
+      ]
+    },
+    {
+      "id": "m2_p14a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a servant's flight that ends at a locked door, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p14a_1",
+          "label": "Follow it further.",
+          "target": "m2_p14b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p14b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p14b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p14e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p14e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p14e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Back Stair"
+      }
+    },
+    {
+      "id": "m2_p15a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, walls that sound hollow and open on nothing, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p15a_1",
+          "label": "Follow it further.",
+          "target": "m2_p15b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p15b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p15b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p15e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p15e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p15e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The False Panelling"
+      }
+    },
+    {
+      "id": "m2_h8",
+      "body": "<<FILL role=hub words=66 beats='deeper into the record offices, and it keeps giving you more of itself, a gallery of ledgers going back two hundred years; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_h8_1",
+          "label": "Try the back stair.",
+          "target": "m2_p14a"
+        },
+        {
+          "id": "c_m2_h8_2",
+          "label": "Feel along the panelling.",
+          "target": "m2_p15a"
+        },
+        {
+          "id": "c_m2_h8_3",
+          "label": "Push on deeper.",
+          "target": "m2_h9"
+        }
+      ]
+    },
+    {
+      "id": "m2_p16a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a room of seals and melted stubs, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p16a_1",
+          "label": "Follow it further.",
+          "target": "m2_p16b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p16b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p16b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p16e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p16e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p16e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wax Room"
+      }
+    },
+    {
+      "id": "m2_p17a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a low attic packed with rotting files, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p17a_1",
+          "label": "Follow it further.",
+          "target": "m2_p17b"
+        }
+      ]
+    },
+    {
+      "id": "m2_p17b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the record offices, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_p17b_1",
+          "label": "Press to the end of it.",
+          "target": "m2_p17e"
+        }
+      ]
+    },
+    {
+      "id": "m2_p17e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_p17e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Record Loft"
+      }
+    },
+    {
+      "id": "m2_pfin_a",
+      "body": "<<FILL role=rising words=52 beats='the last way out of the record offices draws you on, promising it must lead somewhere, they always seem to'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_pfin_a_1",
+          "label": "Take it to the end.",
+          "target": "m2_pfin_b"
+        }
+      ]
+    },
+    {
+      "id": "m2_pfin_b",
+      "body": "<<FILL role=rising words=52 beats='it narrows and turns once more and the light and the sound of the world are gone behind you now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_pfin_b_1",
+          "label": "Follow it to whatever waits.",
+          "target": "m2_pfin_e"
+        }
+      ]
+    },
+    {
+      "id": "m2_pfin_e",
+      "body": "<<FILL role=failure words=56 beats='the offices give onto more offices and you have lost the vault, the hall, the count of your own turnings; somewhere ahead is the counting-hall and somewhere the door, but the closing chime rings before you find either; the night is spent and the frieze is not yours'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m2_pfin_e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Offices Swallow the Hour"
+      }
+    },
+    {
+      "id": "m2_h9",
+      "body": "<<FILL role=hub words=66 beats='deeper into the record offices, and it keeps giving you more of itself, a mezzanine of desks under dust sheets; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m2_h9_1",
+          "label": "Enter the wax room.",
+          "target": "m2_p16a"
+        },
+        {
+          "id": "c_m2_h9_2",
+          "label": "Take the record loft.",
+          "target": "m2_p17a"
+        },
+        {
+          "id": "c_m2_h9_3",
+          "label": "Chance the last way on.",
+          "target": "m2_pfin_a"
+        }
+      ]
+    },
+    {
+      "id": "m3_p0a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, hulls rafted gunwale to gunwale, no water between, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p0a_1",
+          "label": "Follow it further.",
+          "target": "m3_p0b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p0b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p0b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p0e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p0e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p0e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Choked Backwater"
+      }
+    },
+    {
+      "id": "m3_p1a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a canal that ends in fitted stone, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p1a_1",
+          "label": "Follow it further.",
+          "target": "m3_p1b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p1b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p1b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p1e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p1e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p1e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Walled Cut"
+      }
+    },
+    {
+      "id": "m3_h1",
+      "body": "<<FILL role=hub words=66 beats='deeper into the canal warren, and it keeps giving you more of itself, a backwater choked with moored hulls and no lane through; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_h1_1",
+          "label": "Try the moored backwater.",
+          "target": "m3_p0a"
+        },
+        {
+          "id": "c_m3_h1_2",
+          "label": "Follow the dead cut.",
+          "target": "m3_p1a"
+        },
+        {
+          "id": "c_m3_h1_3",
+          "label": "Push on deeper.",
+          "target": "m3_h2"
+        }
+      ]
+    },
+    {
+      "id": "m3_p2a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, arches so alike you cannot tell them apart, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p2a_1",
+          "label": "Follow it further.",
+          "target": "m3_p2b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p2b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p2b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p2e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p2e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p2e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Under the Same Bridge Twice"
+      }
+    },
+    {
+      "id": "m3_p3a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, reeds that thicken to a green wall, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p3a_1",
+          "label": "Follow it further.",
+          "target": "m3_p3b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p3b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p3b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p3e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p3e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p3e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wall of Reed"
+      }
+    },
+    {
+      "id": "m3_h2",
+      "body": "<<FILL role=hub words=66 beats='deeper into the canal warren, and it keeps giving you more of itself, a dead cut walled off at its head with old stone; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_h2_1",
+          "label": "Thread the low bridges.",
+          "target": "m3_p2a"
+        },
+        {
+          "id": "c_m3_h2_2",
+          "label": "Push into the reeds.",
+          "target": "m3_p3a"
+        },
+        {
+          "id": "c_m3_h2_3",
+          "label": "Push on deeper.",
+          "target": "m3_h3"
+        }
+      ]
+    },
+    {
+      "id": "m3_p4a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a courtyard the tide has claimed for canal, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p4a_1",
+          "label": "Follow it further.",
+          "target": "m3_p4b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p4b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p4b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p4e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p4e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p4e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Yard"
+      }
+    },
+    {
+      "id": "m3_p5a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, channels that braid tighter the further you go, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p5a_1",
+          "label": "Follow it further.",
+          "target": "m3_p5b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p5b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p5b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p5e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p5e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p5e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Tangle of Rios"
+      }
+    },
+    {
+      "id": "m3_h3",
+      "body": "<<FILL role=hub words=66 beats='deeper into the canal warren, and it keeps giving you more of itself, a slip of water under low bridges that all look the same; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_h3_1",
+          "label": "Cross the drowned yard.",
+          "target": "m3_p4a"
+        },
+        {
+          "id": "c_m3_h3_2",
+          "label": "Take the narrow rios.",
+          "target": "m3_p5a"
+        },
+        {
+          "id": "c_m3_h3_3",
+          "label": "Push on deeper.",
+          "target": "m3_h4"
+        }
+      ]
+    },
+    {
+      "id": "m3_p6a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, an open edge with no Old Carousel and no Priya the courier on it, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p6a_1",
+          "label": "Follow it further.",
+          "target": "m3_p6b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p6b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p6b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p6e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p6e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p6e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wrong Water"
+      }
+    },
+    {
+      "id": "m3_p7a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, dark sheds locked against the water, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p7a_1",
+          "label": "Follow it further.",
+          "target": "m3_p7b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p7b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p7b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p7e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p7e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p7e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Shuttered Boathouses"
+      }
+    },
+    {
+      "id": "m3_h4",
+      "body": "<<FILL role=hub words=66 beats='deeper into the canal warren, and it keeps giving you more of itself, a reed bank that closes to a wall of reed; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_h4_1",
+          "label": "Row for the open lagoon.",
+          "target": "m3_p6a"
+        },
+        {
+          "id": "c_m3_h4_2",
+          "label": "Try the shuttered boathouses.",
+          "target": "m3_p7a"
+        },
+        {
+          "id": "c_m3_h4_3",
+          "label": "Push on deeper.",
+          "target": "m3_h5"
+        }
+      ]
+    },
+    {
+      "id": "m3_p8a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, mud where the channel was an hour ago, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p8a_1",
+          "label": "Follow it further.",
+          "target": "m3_p8b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p8b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p8b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p8e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p8e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p8e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Emptying Flat"
+      }
+    },
+    {
+      "id": "m3_p9a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a pipe that runs under the road to nothing, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p9a_1",
+          "label": "Follow it further.",
+          "target": "m3_p9b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p9b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p9b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p9e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p9e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p9e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Culvert"
+      }
+    },
+    {
+      "id": "m3_h5",
+      "body": "<<FILL role=hub words=66 beats='deeper into the canal warren, and it keeps giving you more of itself, a drowned yard where the canal has taken the ground; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_h5_1",
+          "label": "Cross the tide-flat.",
+          "target": "m3_p8a"
+        },
+        {
+          "id": "c_m3_h5_2",
+          "label": "Follow the culvert.",
+          "target": "m3_p9a"
+        },
+        {
+          "id": "c_m3_h5_3",
+          "label": "Push on deeper.",
+          "target": "m3_h6"
+        }
+      ]
+    },
+    {
+      "id": "m3_p10a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a stilled race behind a shut sluice, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p10a_1",
+          "label": "Follow it further.",
+          "target": "m3_p10b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p10b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p10b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p10e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p10e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p10e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silent Mill-Race"
+      }
+    },
+    {
+      "id": "m3_p11a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a slipway of rotted planks and no boat, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p11a_1",
+          "label": "Follow it further.",
+          "target": "m3_p11b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p11b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p11b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p11e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p11e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p11e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Fishermen's Slip"
+      }
+    },
+    {
+      "id": "m3_h6",
+      "body": "<<FILL role=hub words=66 beats='deeper into the canal warren, and it keeps giving you more of itself, a lattice of narrow rios that only tangle tighter; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_h6_1",
+          "label": "Take the mill-race.",
+          "target": "m3_p10a"
+        },
+        {
+          "id": "c_m3_h6_2",
+          "label": "Try the fishermen's slip.",
+          "target": "m3_p11a"
+        },
+        {
+          "id": "c_m3_h6_3",
+          "label": "Push on deeper.",
+          "target": "m3_h7"
+        }
+      ]
+    },
+    {
+      "id": "m3_p12a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a forest of black piles and slack water, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p12a_1",
+          "label": "Follow it further.",
+          "target": "m3_p12b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p12b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p12b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p12e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p12e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p12e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Beneath the Wharf"
+      }
+    },
+    {
+      "id": "m3_p13a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a mudbank island with the tide coming back, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p13a_1",
+          "label": "Follow it further.",
+          "target": "m3_p13b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p13b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p13b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p13e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p13e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p13e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Nameless Eyot"
+      }
+    },
+    {
+      "id": "m3_h7",
+      "body": "<<FILL role=hub words=66 beats='deeper into the canal warren, and it keeps giving you more of itself, a lagoon-edge open and wrong, the Old Carousel nowhere on it; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_h7_1",
+          "label": "Push under the wharf.",
+          "target": "m3_p12a"
+        },
+        {
+          "id": "c_m3_h7_2",
+          "label": "Cross to the eyot.",
+          "target": "m3_p13a"
+        },
+        {
+          "id": "c_m3_h7_3",
+          "label": "Push on deeper.",
+          "target": "m3_h8"
+        }
+      ]
+    },
+    {
+      "id": "m3_p14a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a straight dull channel to a barred grate, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p14a_1",
+          "label": "Follow it further.",
+          "target": "m3_p14b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p14b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p14b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p14e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p14e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p14e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drainage Cut"
+      }
+    },
+    {
+      "id": "m3_p15a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, rings and bollards and not one boat, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p15a_1",
+          "label": "Follow it further.",
+          "target": "m3_p15b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p15b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p15b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p15e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p15e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p15e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Empty Moorings"
+      }
+    },
+    {
+      "id": "m3_h8",
+      "body": "<<FILL role=hub words=66 beats='deeper into the canal warren, and it keeps giving you more of itself, a run of boathouses shuttered and dark; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_h8_1",
+          "label": "Take the drainage cut.",
+          "target": "m3_p14a"
+        },
+        {
+          "id": "c_m3_h8_2",
+          "label": "Follow the moorings.",
+          "target": "m3_p15a"
+        },
+        {
+          "id": "c_m3_h8_3",
+          "label": "Push on deeper.",
+          "target": "m3_h9"
+        }
+      ]
+    },
+    {
+      "id": "m3_p16a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, a raft of floating logs and no way between, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p16a_1",
+          "label": "Follow it further.",
+          "target": "m3_p16b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p16b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p16b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p16e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p16e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p16e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Timber Pond"
+      }
+    },
+    {
+      "id": "m3_p17a",
+      "body": "<<FILL role=rising words=52 beats='the turning narrows and darkens, the city's outer gate closed against the night, the sounds of the house or the water fading behind you'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p17a_1",
+          "label": "Follow it further.",
+          "target": "m3_p17b"
+        }
+      ]
+    },
+    {
+      "id": "m3_p17b",
+      "body": "<<FILL role=rising words=52 beats='it leads you on and down and gives you nothing but more of the canal warren, the way back already unsure'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_p17b_1",
+          "label": "Press to the end of it.",
+          "target": "m3_p17e"
+        }
+      ]
+    },
+    {
+      "id": "m3_p17e",
+      "body": "<<FILL role=failure words=54 beats='the way simply ends, a blank wall or a drowned door or a locked dark, no vault and no water beyond it; you are not caught and not hurt, only lost and out of night; the closing chime finds you here and the job is done, unfinished'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_p17e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Shut Sea-Gate"
+      }
+    },
+    {
+      "id": "m3_pfin_a",
+      "body": "<<FILL role=rising words=52 beats='the last way out of the canal warren draws you on, promising it must lead somewhere, they always seem to'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_pfin_a_1",
+          "label": "Take it to the end.",
+          "target": "m3_pfin_b"
+        }
+      ]
+    },
+    {
+      "id": "m3_pfin_b",
+      "body": "<<FILL role=rising words=52 beats='it narrows and turns once more and the light and the sound of the world are gone behind you now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_pfin_b_1",
+          "label": "Follow it to whatever waits.",
+          "target": "m3_pfin_e"
+        }
+      ]
+    },
+    {
+      "id": "m3_pfin_e",
+      "body": "<<FILL role=failure words=56 beats='the warren turns you and turns you until every dark rio looks like the last, and the Old Carousel is a place you can no longer find; then the closing chime rings out over the water and Priya the courier, true to his word, gives up the Old Carousel and is gone; you are alive and free and adrift with the frieze and nowhere left to carry it tonight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_m3_pfin_e",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warren and the Bell"
+      }
+    },
+    {
+      "id": "m3_h9",
+      "body": "<<FILL role=hub words=66 beats='deeper into the canal warren, and it keeps giving you more of itself, a tide-flat going out to mud and no channel at all; two dead turns and one way on offer themselves, and the closing chime is not waiting for you to choose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_m3_h9_1",
+          "label": "Try the timber pond.",
+          "target": "m3_p16a"
+        },
+        {
+          "id": "c_m3_h9_2",
+          "label": "Row for the sea-gate.",
+          "target": "m3_p17a"
+        },
+        {
+          "id": "c_m3_h9_3",
+          "label": "Chance the last way on.",
+          "target": "m3_pfin_a"
+        }
+      ]
+    }
+  ]
+}

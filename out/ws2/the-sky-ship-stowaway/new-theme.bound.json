@@ -1,0 +1,1568 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_sky_ship_stowaway",
+  "title": "The Sky-Ship Stowaway",
+  "version": 1,
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "adventure",
+      "wonder",
+      "friendship",
+      "courage"
+    ],
+    "estimated_minutes": 11,
+    "ending_count": 20,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=115 beats='Mira has dreamed of the sky her whole life, so when the deep-sea submarine Selkie casts off from the harbor dock she is already aboard, hidden in a coil of rope, safely hidden below decks; the humming boarding deck stretches around her and nobody has spotted her yet; four passages lead away into the belly of the ship, and she must choose one before a crewman turns around'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_eng",
+          "label": "Slip down toward the humming reactor bay.",
+          "target": "a_eng1"
+        },
+        {
+          "id": "c_start_hold",
+          "label": "Creep into the supply hold.",
+          "target": "b_hold1"
+        },
+        {
+          "id": "c_start_nest",
+          "label": "Climb up toward the observation dome.",
+          "target": "c_nest1"
+        },
+        {
+          "id": "c_start_salon",
+          "label": "Sneak into the officers' mess.",
+          "target": "d_salon1"
+        }
+      ]
+    },
+    {
+      "id": "a_eng1",
+      "body": "<<FILL role=rising words=100 beats='the humming reactor bay roars with brass pistons and the warm smell of oil; a broad-shouldered engineer shovels coal with his back to her, and a narrow gangway runs above the machines toward a quieter corner where the pipes glow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_deep",
+          "label": "Creep along a narrow gangway deeper in.",
+          "target": "a_eng_deep"
+        },
+        {
+          "id": "c_eng_risk",
+          "label": "Dart straight across the open floor.",
+          "target": "a_eng_risk"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_deep",
+      "body": "<<FILL role=choice words=100 beats='past the pistons the humming reactor bay opens into a maze of humming coolant pipes; one way is bright with gauges and dials that show the ship's heartbeat, the other drops toward the spare parts locker where something small is scuffling in the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_a",
+          "label": "Study gauges and dials.",
+          "target": "a_eng_a"
+        },
+        {
+          "id": "c_eng_b",
+          "label": "Climb down toward the scuffling.",
+          "target": "a_eng_b"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_a",
+      "body": "<<FILL role=rising words=95 beats='gauges and dials tick and tremble, showing steam and lift and altitude; Mira works out how the huge engine breathes, and a low hatch beyond the gauges leads toward the middle of the ship where the corridors join'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_a_go",
+          "label": "Duck through a low hatch.",
+          "target": "a_eng_a2"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_a2",
+      "body": "<<FILL role=rising words=95 beats='a low hatch lets onto a snug maintenance passage warmed by the engines; oil-lamps swing on hooks, and a faint mewing sound drifts down the corridor toward the heart of the Selkie'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_a2_go",
+          "label": "Follow the mewing along the passage.",
+          "target": "a_eng_conv"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_b",
+      "body": "<<FILL role=rising words=95 beats='the spare parts locker are hot and dim; the scuffling turns out to be nothing frightening, only a loose panel swinging, but through it she glimpses a warmer passage and hears a small, hopeful mewing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_b_go",
+          "label": "Squeeze through a loose panel.",
+          "target": "a_eng_b2"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_b2",
+      "body": "<<FILL role=rising words=95 beats='beyond a loose panel a service corridor runs warm and quiet along the engine's flank; the mewing is closer now, coming from somewhere near the middle of the ship where all the low passages seem to meet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_b2_go",
+          "label": "Head toward the meeting of the passages.",
+          "target": "a_eng_conv"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_conv",
+      "body": "<<FILL role=rising words=95 beats='the warm engine passages funnel Mira into a snug alcove full of spare rope and folded canvas; the mewing is very near now, and a small pair of eyes shines at her from behind a crate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_conv_go",
+          "label": "Kneel down and look behind the crate.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_risk",
+      "body": "<<FILL role=choice words=100 beats='Mira dashes across the open floor, but a broad-shouldered engineer begins to turn; she can throw herself flat behind the tool locker and hope, or freeze where she stands in the lamplight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_recover",
+          "label": "Dive behind the tool locker.",
+          "target": "a_eng_recover"
+        },
+        {
+          "id": "c_eng_fail",
+          "label": "Freeze in the open lamplight.",
+          "target": "e_set_eng"
+        }
+      ]
+    },
+    {
+      "id": "a_eng_recover",
+      "body": "<<FILL role=rising words=90 beats='crouched behind the tool locker, Mira holds her breath until a broad-shouldered engineer shrugs and turns back to his fire; when his shovel starts again she slips deeper into a maze of humming coolant pipes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_eng_recover_go",
+          "label": "Slip on into the pipe maze.",
+          "target": "a_eng_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_eng",
+      "body": "<<FILL role=failure words=88 beats='a broad-shouldered engineer spots her at once and, not unkindly, walks her up to the quartermaster's office; she waits on a bench while the Selkie flies on, then is set down safe and sound at the very next the harbor dock, her stowaway voyage over before it truly began'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_eng",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Caught by the reactor heat"
+      }
+    },
+    {
+      "id": "b_hold1",
+      "body": "<<FILL role=rising words=100 beats='the supply hold is a cavern of lashed crates and swaying lanterns; ropes creak overhead, and two ways beckon, a tidy row of crates stacked with labelled boxes and a loose strap where the netting has come loose'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_deep",
+          "label": "Follow a tidy row of crates of crates.",
+          "target": "b_hold_deep"
+        },
+        {
+          "id": "c_hold_risk",
+          "label": "Wriggle into a loose strap.",
+          "target": "b_hold_risk"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_deep",
+      "body": "<<FILL role=choice words=100 beats='a tidy row of crates runs deep into the hold; one row of crates is stamped with the seal of a distant port, and beside it a low tunnel of stacked drums leads toward the warm middle of the ship'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_a",
+          "label": "Read the seal of a distant port on the crates.",
+          "target": "b_hold_a"
+        },
+        {
+          "id": "c_hold_b",
+          "label": "Crawl through a low tunnel of stacked drums.",
+          "target": "b_hold_b"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_a",
+      "body": "<<FILL role=rising words=95 beats='the seal of a distant port is a diving fish above three waves, the mark of a coast Mira has only read about; the crates hum faintly, and past them a gap in the crates opens toward the heart of the Selkie'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_a_go",
+          "label": "Slip through a gap in the crates.",
+          "target": "b_hold_a2"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_a2",
+      "body": "<<FILL role=rising words=95 beats='a gap in the crates becomes a snug walkway between towers of freight; a lantern sways, throwing soft light, and somewhere ahead a small pair of eyes catches the glow and blinks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_a2_go",
+          "label": "Walk softly toward the shining eyes.",
+          "target": "b_hold_conv"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_b",
+      "body": "<<FILL role=rising words=95 beats='a low tunnel of stacked drums is snug and creaking, but it holds; Mira wriggles along it and out the far end into a warmer part of the hold, where the cargo thins and a walkway leads inward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_b_go",
+          "label": "Take the walkway inward.",
+          "target": "b_hold_b2"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_b2",
+      "body": "<<FILL role=rising words=95 beats='the walkway is lit by one swinging lantern; the deep-hold roar of the engines softens here, and a small, hopeful sound, half mew and half chirp, guides her toward the middle of the ship'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_b2_go",
+          "label": "Follow the hopeful little sound.",
+          "target": "b_hold_conv"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_conv",
+      "body": "<<FILL role=rising words=95 beats='the hold walkways bring Mira to a snug nook of coiled rope and spare canvas near the Selkie's heart; the little sound comes again, and two bright eyes peep at her from behind a crate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_conv_go",
+          "label": "Peek gently behind the crate.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_risk",
+      "body": "<<FILL role=choice words=100 beats='the loose cargo net drops Mira into a maze of unlashed crates that shift as the ship rolls; a wall of cargo leans toward her, and she must scramble clear at once or squeeze into a gap and wait it out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_recover",
+          "label": "Scramble clear of the leaning crates.",
+          "target": "b_hold_recover"
+        },
+        {
+          "id": "c_hold_fail",
+          "label": "Squeeze into the gap and wait.",
+          "target": "e_set_hold"
+        }
+      ]
+    },
+    {
+      "id": "b_hold_recover",
+      "body": "<<FILL role=rising words=90 beats='Mira rolls clear just as the crates settle with a groan; heart thumping, she steadies the nearest box, then picks a safer route back toward a tidy row of crates deeper in the hold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_recover_go",
+          "label": "Take the safer route deeper in.",
+          "target": "b_hold_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_hold",
+      "body": "<<FILL role=failure words=88 beats='the shifting cargo boxes her into a snug corner she cannot climb out of, and she has to call for help; a surprised deckhand lifts the crates aside and, once she is safe, the quartermaster sees her ashore at the harbor dock, dusty and disappointed but perfectly unharmed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_hold",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Boxed In Below"
+      }
+    },
+    {
+      "id": "c_nest1",
+      "body": "<<FILL role=rising words=100 beats='the ladder to the observation dome climbs through cold, whistling air; far below the deck tilts and the clouds slide past; two ways offer themselves, the sheltered inner ladder and the open outer rungs along the swaying mast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_deep",
+          "label": "Climb the sheltered inner ladder.",
+          "target": "c_nest_deep"
+        },
+        {
+          "id": "c_nest_risk",
+          "label": "Edge along the open outer rungs.",
+          "target": "c_nest_risk"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_deep",
+      "body": "<<FILL role=choice words=100 beats='the sheltered inner ladder brings her to the little round nest where a periscope hangs on a hook; from here she can study the great pressure hull above or slide down a maintenance chute toward the warm inner decks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_a",
+          "label": "Study the great pressure hull through a periscope.",
+          "target": "c_nest_a"
+        },
+        {
+          "id": "c_nest_b",
+          "label": "Slide down a maintenance chute inward.",
+          "target": "c_nest_b"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_a",
+      "body": "<<FILL role=rising words=95 beats='through a periscope the great pressure hull is a whole silver sky of ribs and seams; Mira sees how the great gasbags give the ship its lift, then follows a rigging line down toward the warmer inner decks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_a_go",
+          "label": "Climb down the rigging line.",
+          "target": "c_nest_a2"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_a2",
+      "body": "<<FILL role=rising words=95 beats='the rigging line leads to a sheltered gangway out of the wind; the roar of the sky fades, lanterns glow, and a small, curious sound drifts up toward her from the heart of the ship'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_a2_go",
+          "label": "Follow the curious sound down.",
+          "target": "c_nest_conv"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_b",
+      "body": "<<FILL role=rising words=95 beats='a maintenance chute carries her quickly down out of the biting wind; she lands soft on a coil of canvas, and a warm inner passage opens ahead, humming with the distant engines'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_b_go",
+          "label": "Take the warm inner passage.",
+          "target": "c_nest_b2"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_b2",
+      "body": "<<FILL role=rising words=95 beats='the inner passage is snug and lamplit; the wind is only a memory now, and a small hopeful mewing echoes along the corridor, drawing her toward the middle of the Cirrus'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_b2_go",
+          "label": "Follow the mewing toward the middle.",
+          "target": "c_nest_conv"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_conv",
+      "body": "<<FILL role=rising words=95 beats='the inner ways bring Mira to a cosy nook of rope and folded sail near the Selkie's heart; the mewing sounds again, close by, and two shining eyes watch her from behind a crate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_conv_go",
+          "label": "Look softly behind the crate.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_risk",
+      "body": "<<FILL role=choice words=100 beats='out on the open outer rungs the wind snatches at Mira's coat and the mast sways under her hands; a gust rocks the ship, and she must grab the safety line at once or try to scramble up before the next gust hits'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_recover",
+          "label": "Grab the safety line and hold on.",
+          "target": "c_nest_recover"
+        },
+        {
+          "id": "c_nest_fail",
+          "label": "Scramble up before the next gust.",
+          "target": "e_set_nest"
+        }
+      ]
+    },
+    {
+      "id": "c_nest_recover",
+      "body": "<<FILL role=rising words=90 beats='Mira clips onto the safety line just as the gust punches past; she waits, knuckles white, until the air steadies, then climbs back to the sheltered inner ladder with her heart hammering'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_nest_recover_go",
+          "label": "Return to the sheltered ladder.",
+          "target": "c_nest_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_nest",
+      "body": "<<FILL role=failure words=88 beats='the gust leaves her clinging and calling until the lookout hauls her in over the rail of the nest, safe but shaking; kindly, the lookout keeps her warm until the Selkie reaches the harbor dock, where she is helped down to the ground, foiled but entirely unhurt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_nest",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Down from the open rungs"
+      }
+    },
+    {
+      "id": "d_salon1",
+      "body": "<<FILL role=rising words=100 beats='the officers' mess glows with brass and velvet, passengers laughing over supper; the serving cart rolls by, and Mira spies two ways to slip through unseen, along the curtained galley wall or under the long mess tables'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_deep",
+          "label": "Edge along the curtained galley wall.",
+          "target": "d_salon_deep"
+        },
+        {
+          "id": "c_salon_risk",
+          "label": "Duck under the long mess tables.",
+          "target": "d_salon_risk"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_deep",
+      "body": "<<FILL role=choice words=100 beats='the curtained galley wall hide a service alcove; from here a case of model submarines catches Mira's eye, and beside it the steward's hatch swings toward the working heart of the Selkie'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_a",
+          "label": "Peer into a case of model submarines.",
+          "target": "d_salon_a"
+        },
+        {
+          "id": "c_salon_b",
+          "label": "Slip through the steward's hatch.",
+          "target": "d_salon_b"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_a",
+      "body": "<<FILL role=rising words=95 beats='a case of model submarines show the Selkie in cutaway, and one deck is painted over as if hidden on purpose; puzzled, Mira notes it, then follows the steward's corridor toward the inner decks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_a_go",
+          "label": "Follow the steward's corridor.",
+          "target": "d_salon_a2"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_a2",
+      "body": "<<FILL role=rising words=95 beats='the corridor leaves the music behind and grows plain and warm; lanterns hang low, and a small, hopeful sound, half mew and half chirp, echoes from somewhere near the ship's heart'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_a2_go",
+          "label": "Follow the hopeful sound inward.",
+          "target": "d_salon_conv"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_b",
+      "body": "<<FILL role=rising words=95 beats='the steward's hatch lets onto a pantry passage stacked with trays; Mira pinches a crust of bread for later and follows the plain corridor away from the officers' mess toward the working decks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_b_go",
+          "label": "Follow the plain corridor onward.",
+          "target": "d_salon_b2"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_b2",
+      "body": "<<FILL role=rising words=95 beats='the corridor turns snug and dim, warmed by the engines below; a small mewing drifts to her on the smell of oil and bread, leading her steadily toward the middle of the Cirrus'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_b2_go",
+          "label": "Follow the mewing toward the middle.",
+          "target": "d_salon_conv"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_conv",
+      "body": "<<FILL role=rising words=95 beats='the inner corridors gather Mira into a quiet nook of rope and sailcloth near the heart of the Selkie; the little sound comes once more, and two bright eyes shine at her from behind a crate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_conv_go",
+          "label": "Look gently behind the crate.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_risk",
+      "body": "<<FILL role=choice words=100 beats='under the long mess tables Mira freezes between passengers' shoes, and a waiter's foot swings straight toward her; she can roll aside behind the serving cart and stay hidden, or bolt for the nearest door in the open'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_recover",
+          "label": "Roll behind the serving cart.",
+          "target": "d_salon_recover"
+        },
+        {
+          "id": "c_salon_fail",
+          "label": "Bolt for the door in the open.",
+          "target": "e_set_salon"
+        }
+      ]
+    },
+    {
+      "id": "d_salon_recover",
+      "body": "<<FILL role=rising words=90 beats='Mira tucks behind the serving cart just as the waiter passes, close enough to smell the soup; when the coast clears she slips out the other side and makes for the curtained service alcove'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_salon_recover_go",
+          "label": "Make for the service alcove.",
+          "target": "d_salon_deep"
+        }
+      ]
+    },
+    {
+      "id": "e_set_salon",
+      "body": "<<FILL role=failure words=88 beats='she bolts into full view and a startled passenger cries out; the steward catches her gently by the sleeve and sits her in the quartermaster's office with a warm bun while the Selkie flies on, then sees her safely ashore at the harbor dock, her secret out too soon'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_salon",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Spotted in the mess hall"
+      }
+    },
+    {
+      "id": "n_friend",
+      "body": "<<FILL role=choice words=115 beats='BOTTLENECK: whichever way Mira came, all the inner passages meet at this cosy nook, and here she finds the secret the Selkie has been keeping, a stray fish named Glimmer who has been living on scraps and hiding from the crew; a stray fish named Glimmer trusts her at once, and now she has a friend aboard; three ways lead on, toward the galley, the commander's quarters, or up into the maintenance shaft'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_friend_galley",
+          "label": "Sneak to the galley with a stray fish named Glimmer for food.",
+          "target": "f_galley1"
+        },
+        {
+          "id": "c_friend_cabin",
+          "label": "Slip toward the commander's quarters.",
+          "target": "f_cabin1"
+        },
+        {
+          "id": "c_friend_rig",
+          "label": "Climb into the maintenance shaft with a stray fish named Glimmer.",
+          "target": "f_rig1"
+        }
+      ]
+    },
+    {
+      "id": "f_galley1",
+      "body": "<<FILL role=choice words=100 beats='the galley steams with the smell of stew; the cook is busy at the far stove, and a stray fish named Glimmer's nose twitches; Mira can creep to the open pantry or wait behind the rice sacks for a clear moment'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_galley_a",
+          "label": "Creep to the open pantry.",
+          "target": "f_galley_a"
+        },
+        {
+          "id": "c_galley_b",
+          "label": "Wait behind the rice sacks.",
+          "target": "f_galley_b"
+        }
+      ]
+    },
+    {
+      "id": "f_galley_a",
+      "body": "<<FILL role=rising words=95 beats='the open pantry is a treasure of bread and cheese; Mira fills her pockets and sets a scrap down for a stray fish named Glimmer, and as they eat, a flashing red light and a hum sweeps through the ship'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_galley_a_go",
+          "label": "Steady yourself as the ship lurches.",
+          "target": "f_galley_mid"
+        }
+      ]
+    },
+    {
+      "id": "f_galley_b",
+      "body": "<<FILL role=choice words=100 beats='behind the rice sacks Mira waits, but a stray fish named Glimmer sneezes at the dust; the cook's head starts to turn, and she must scoop a stray fish named Glimmer up and slip out fast or hold still and hope he did not hear'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_galley_b_go",
+          "label": "Scoop up a stray fish named Glimmer and slip out fast.",
+          "target": "f_galley_mid"
+        },
+        {
+          "id": "c_galley_fail",
+          "label": "Hold still and hope.",
+          "target": "e_set_galley"
+        }
+      ]
+    },
+    {
+      "id": "f_galley_mid",
+      "body": "<<FILL role=rising words=95 beats='out in the corridor a flashing red light and a hum rolls through the ship; loose tins roll past and a bell begins to clang somewhere above; Mira tucks a stray fish named Glimmer into her coat and hurries toward the noise and the swaying light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_galley_mid_go",
+          "label": "Hurry toward the clanging bell.",
+          "target": "n_storm"
+        }
+      ]
+    },
+    {
+      "id": "e_set_galley",
+      "body": "<<FILL role=failure words=88 beats='the cook turns and finds a girl and a stray fish named Glimmer among the rice sacks; more astonished than angry, he feeds them both and marches Mira to the quartermaster, who keeps her safe until the Selkie lands and sees her home from the harbor dock, well fed and foiled'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_galley",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cook Catches On"
+      }
+    },
+    {
+      "id": "f_cabin1",
+      "body": "<<FILL role=choice words=100 beats='the commander's quarters door stands ajar on a room of maps and dials; the commander is not there, but voices murmur near; Mira can slip inside for a quick look or listen at the door first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cabin_a",
+          "label": "Listen carefully at the door.",
+          "target": "f_cabin_a"
+        },
+        {
+          "id": "c_cabin_b",
+          "label": "Slip inside for a quick look.",
+          "target": "f_cabin_b"
+        }
+      ]
+    },
+    {
+      "id": "f_cabin_a",
+      "body": "<<FILL role=rising words=95 beats='through the gap Mira hears the officers speak low of a secret cargo and a course set to outrun the pressure alarm rising; before she can hear more, a flashing red light and a hum begins'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cabin_a_go",
+          "label": "Back away as the bell rings.",
+          "target": "f_cabin_mid"
+        }
+      ]
+    },
+    {
+      "id": "f_cabin_b",
+      "body": "<<FILL role=choice words=100 beats='inside, a room of maps and dials show a route bending sharply around a great grey smudge of the pressure alarm rising; footsteps approach the door, and Mira must duck behind the long curtain at once or dive under the chart table'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cabin_b_go",
+          "label": "Duck behind the long curtain.",
+          "target": "f_cabin_mid"
+        },
+        {
+          "id": "c_cabin_fail",
+          "label": "Dive under the chart table.",
+          "target": "e_set_cabin"
+        }
+      ]
+    },
+    {
+      "id": "f_cabin_mid",
+      "body": "<<FILL role=rising words=95 beats='the corridor outside pitches as the Selkie meets rough air; a flashing red light and a hum clangs harder and boots pound overhead; Mira holds a stray fish named Glimmer close and follows the running crew toward the trouble'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cabin_mid_go",
+          "label": "Follow the running crew.",
+          "target": "n_storm"
+        }
+      ]
+    },
+    {
+      "id": "e_set_cabin",
+      "body": "<<FILL role=failure words=88 beats='the first officer strides in and finds two small feet under the chart table; surprised but gentle, she hands Mira to the quartermaster, who keeps her safe through the flight and sends her ashore at the harbor dock, her peek at the commander's secret cut short'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cabin",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Under the chart table"
+      }
+    },
+    {
+      "id": "f_rig1",
+      "body": "<<FILL role=choice words=100 beats='the maintenance shaft is a warm forest of ropes between the decks; a stray fish named Glimmer scampers ahead, sure-footed, and Mira follows; the steady walkway runs one way and the swinging cable bridge sways the other toward the great pressure hull'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rig_a",
+          "label": "Take the steady walkway.",
+          "target": "f_rig_a"
+        },
+        {
+          "id": "c_rig_b",
+          "label": "Cross the swinging cable bridge.",
+          "target": "f_rig_b"
+        }
+      ]
+    },
+    {
+      "id": "f_rig_a",
+      "body": "<<FILL role=rising words=95 beats='the steady walkway gives Mira a grand view of the great pressure hull's inner sky of gasbags; a stray fish named Glimmer walks the rail like a rope-dancer, and then the Selkie leans as a flashing red light and a hum shoves against the hull'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rig_a_go",
+          "label": "Grip the rail as the ship leans.",
+          "target": "f_rig_mid"
+        }
+      ]
+    },
+    {
+      "id": "f_rig_b",
+      "body": "<<FILL role=choice words=100 beats='halfway across the swinging cable bridge a gust sets it swinging wildly and a stray fish named Glimmer clings to Mira's shoulder; she must lunge for the far platform now or freeze and grip the ropes until it settles'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rig_b_go",
+          "label": "Lunge for the far platform.",
+          "target": "f_rig_mid"
+        },
+        {
+          "id": "c_rig_fail",
+          "label": "Freeze and grip the swinging ropes.",
+          "target": "e_set_rig"
+        }
+      ]
+    },
+    {
+      "id": "f_rig_mid",
+      "body": "<<FILL role=rising words=95 beats='the maintenance shaft shakes as the pressure alarm rising takes hold; below, a flashing red light and a hum and officers shout orders; Mira tucks a stray fish named Glimmer safe and climbs down toward the din to see what is happening to the Selkie'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rig_mid_go",
+          "label": "Climb down toward the shouting.",
+          "target": "n_storm"
+        }
+      ]
+    },
+    {
+      "id": "e_set_rig",
+      "body": "<<FILL role=failure words=88 beats='the swinging cable bridge bucks until a rigger swings across and carries Mira and a stray fish named Glimmer back to solid footing, safe but scolded; he keeps them beside him out of the wind for the rest of the flight, and at the harbor dock Mira is helped down to the ground, grounded from the sky for now'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_rig",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Grounded from the cable bridge"
+      }
+    },
+    {
+      "id": "n_storm",
+      "body": "<<FILL role=choice words=115 beats='BOTTLENECK: every path brings Mira into the heart of the Selkie just as the pressure alarm rising truly hits; rain lashes the ports, the Selkie pitches, and lift is failing as the great pressure hull strains; the crew are stretched thin and frightened, and a small stowaway who knows the ship might actually help; she can head to the outer hull deck, join the struggling crew, or go down to the lower cargo bay where the ship is groaning worst'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_storm_deck",
+          "label": "Fight your way to the outer hull deck.",
+          "target": "s_deck1"
+        },
+        {
+          "id": "c_storm_crew",
+          "label": "Join the struggling crew.",
+          "target": "s_crew1"
+        },
+        {
+          "id": "c_storm_hold",
+          "label": "Go down to the groaning the lower cargo bay.",
+          "target": "s_hold1"
+        }
+      ]
+    },
+    {
+      "id": "s_deck1",
+      "body": "<<FILL role=choice words=100 beats='the outer hull deck is a roar of wind and spray; a loose tether line whips free near the rail, and the deck tilts hard; Mira can crawl low to reach the line or grab a handrail and steady herself first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_deck_a",
+          "label": "Crawl low toward a loose tether line.",
+          "target": "s_deck_a"
+        },
+        {
+          "id": "c_deck_b",
+          "label": "Grab a handrail and steady up.",
+          "target": "s_deck_b"
+        }
+      ]
+    },
+    {
+      "id": "s_deck_a",
+      "body": "<<FILL role=rising words=95 beats='flat on her belly Mira snags a loose tether line and loops it round a cleat; a soaked officer sees, gives her a startled nod, and points her toward a hatch that drops into the Selkie's the lower cargo bay'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_deck_a_go",
+          "label": "Take the hatch down into the ship.",
+          "target": "s_deck_mid"
+        }
+      ]
+    },
+    {
+      "id": "s_deck_b",
+      "body": "<<FILL role=choice words=100 beats='clinging to a handrail, Mira catches her breath, but a wave of wind sends a crate skidding at her; she can scramble down the deck hatch to safety now or make a dash across the open deck for the wheelhouse'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_deck_b_go",
+          "label": "Scramble down the deck hatch.",
+          "target": "s_deck_mid"
+        },
+        {
+          "id": "c_deck_fail",
+          "label": "Dash across the open deck.",
+          "target": "e_set_storm1"
+        }
+      ]
+    },
+    {
+      "id": "s_deck_mid",
+      "body": "<<FILL role=rising words=95 beats='below decks the noise softens to a deep groan of straining timber; the sound is worst from far down in the lower cargo bay, where the Selkie seems to be fighting to hold something in; Mira follows the groan downward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_deck_mid_go",
+          "label": "Follow the groan down to the hold.",
+          "target": "n_secret"
+        }
+      ]
+    },
+    {
+      "id": "e_set_storm1",
+      "body": "<<FILL role=failure words=88 beats='the wind is too strong for a dash and a rigger drags Mira back and bundles her below to a safe cabin, a stray fish named Glimmer and all, to wait out the blow; she is warm and unhurt, but by the time the pressure alarm rising passes the crew have set things right without her, and she rides quietly to the harbor dock'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_storm1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Waiting Out the Blow"
+      }
+    },
+    {
+      "id": "s_crew1",
+      "body": "<<FILL role=choice words=100 beats='the crew heave together on the ballast winch, boots sliding on the wet floor; they are one pair of hands short, and Mira is small but willing; she can grab the rope's end and pull or run for the ballast weights they keep shouting for'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_crew_a",
+          "label": "Grab the rope and pull with them.",
+          "target": "s_crew_a"
+        },
+        {
+          "id": "c_crew_b",
+          "label": "Run for the ballast weights they need.",
+          "target": "s_crew_b"
+        }
+      ]
+    },
+    {
+      "id": "s_crew_a",
+      "body": "<<FILL role=rising words=95 beats='Mira throws her weight on the rope and the extra pull is just enough; the ballast winch holds, the crew cheer her hoarsely, and the chief diver jerks a thumb toward a ladder leading down into the lower cargo bay where help is needed next'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_crew_a_go",
+          "label": "Head down the ladder to the hold.",
+          "target": "s_crew_mid"
+        }
+      ]
+    },
+    {
+      "id": "s_crew_b",
+      "body": "<<FILL role=choice words=100 beats='Mira hauls the ballast weights over, but the deck heaves and a bucket tips; she can steady the load and finish the job or let it go and scramble clear as it slides'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_crew_b_go",
+          "label": "Steady the load and finish the job.",
+          "target": "s_crew_mid"
+        },
+        {
+          "id": "c_crew_fail",
+          "label": "Let it go and scramble clear.",
+          "target": "e_set_storm2"
+        }
+      ]
+    },
+    {
+      "id": "s_crew_mid",
+      "body": "<<FILL role=rising words=95 beats='the crew have Mira's measure now and wave her on; a deep, sad groan rolls up from the very bottom of the Selkie, unlike any storm sound, and the chief diver mutters that the trouble is in the sealed the lower cargo bay below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_crew_mid_go",
+          "label": "Go down toward the sealed hold.",
+          "target": "n_secret"
+        }
+      ]
+    },
+    {
+      "id": "e_set_storm2",
+      "body": "<<FILL role=failure words=88 beats='the sliding the ballast weights knock Mira off her feet and a big kind hand catches her before she tumbles; the chief diver sits her safely out of the way with a stray fish named Glimmer until the worst is over, and though she is unhurt, the Selkie is steadied without her and carried on to the harbor dock'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_storm2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Knocked Off Her Feet"
+      }
+    },
+    {
+      "id": "s_hold1",
+      "body": "<<FILL role=choice words=100 beats='the lower cargo bay is where the Selkie groans loudest, and the sound is not just timber, it is alive and afraid; a great sealed hatch blocks the way, with a small viewing porthole beside it and a keyed control panel above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_hatch",
+          "label": "Peer through a small viewing porthole.",
+          "target": "s_hold_a"
+        },
+        {
+          "id": "c_hold_panel",
+          "label": "Study a keyed control panel.",
+          "target": "s_hold_b"
+        }
+      ]
+    },
+    {
+      "id": "s_hold_a",
+      "body": "<<FILL role=rising words=95 beats='through a small viewing porthole Mira sees a vast dim chamber and in it something huge and gentle and frightened, pale as cloud; a stray fish named Glimmer presses to the glass and mews, and the great shape answers with a low, sad note'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shold_a_go",
+          "label": "Find a way in to the frightened creature.",
+          "target": "s_hold_mid"
+        }
+      ]
+    },
+    {
+      "id": "s_hold_b",
+      "body": "<<FILL role=rising words=95 beats='a keyed control panel is labelled in the commander's careful hand, tending, feeding, calming; it is not a cargo lock at all but the door to a living thing's shelter, and it stands ajar as the pressure alarm rising rattles the Selkie'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shold_b_go",
+          "label": "Ease the sheltering door open.",
+          "target": "s_hold_mid"
+        }
+      ]
+    },
+    {
+      "id": "s_hold_mid",
+      "body": "<<FILL role=rising words=95 beats='Mira slips inside the great chamber; the pressure alarm rising booms against the hull and the huge pale shape shivers, and she understands she is standing in the Selkie's deepest secret, close enough now to see what the Selkie truly carries'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_mid_go",
+          "label": "Step closer to the ship's secret.",
+          "target": "n_secret"
+        }
+      ]
+    },
+    {
+      "id": "n_secret",
+      "body": "<<FILL role=choice words=120 beats='BOTTLENECK: all roads lead to the sealed heart of the Selkie, and here Mira learns the secret the Selkie has been keeping; the hold holds a baby sea-serpent, a wondrous cloud-grey creature the commander rescued and is smuggling to a protected reef far from those who would hunt it; the calf is called Coral, and the pressure alarm rising has it panicked, its thrashing making the ship pitch worse; Mira can move to help save the ship, hurry to reveal the secret to those who can steer, or fetch the crew and the commander'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_secret_save",
+          "label": "Try to help calm Coral and save the ship.",
+          "target": "p_save1"
+        },
+        {
+          "id": "c_secret_reveal",
+          "label": "Race to tell the bridge what you found.",
+          "target": "p_reveal1"
+        },
+        {
+          "id": "c_secret_people",
+          "label": "Fetch the crew and the commander.",
+          "target": "p_people1"
+        }
+      ]
+    },
+    {
+      "id": "p_save1",
+      "body": "<<FILL role=choice words=100 beats='Coral rolls and bumps the hull, and every bump throws the ship; Mira edges closer with a stray fish named Glimmer, who is not afraid at all; she can hum the low sound a stray fish named Glimmer makes to soothe the calf, or reach up to loosen the tangled tether pinning one great fin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_save_a",
+          "label": "Hum softly to calm the frightened calf.",
+          "target": "p_save_a"
+        },
+        {
+          "id": "c_save_b",
+          "label": "Loosen the tangled tether.",
+          "target": "p_save_b"
+        }
+      ]
+    },
+    {
+      "id": "p_save_a",
+      "body": "<<FILL role=rising words=95 beats='Mira hums the way a stray fish named Glimmer does and Coral stills, one huge cloudy eye fixing on her; its thrashing slows, and with it the wild pitching of the ship eases a little, enough for her to think what to do next'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_save_a_go",
+          "label": "Head for the bridge with a plan.",
+          "target": "p_save_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_save_b",
+      "body": "<<FILL role=rising words=95 beats='Mira works the tangled tether free of the calf's fin; Coral gives a grateful shudder and settles lower in the hold, steadier now, and the ship stops lurching quite so hard beneath her feet'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_save_b_go",
+          "label": "Hurry up toward the bridge.",
+          "target": "p_save_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_save_mid",
+      "body": "<<FILL role=rising words=95 beats='calmer now, Coral follows Mira's humming; she realises the calf steadies when she is near, and that if she can reach the bridge she can tell the commander how to use that; she climbs toward the wheelhouse with a stray fish named Glimmer leading'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_save_mid_go",
+          "label": "Climb to the wheelhouse.",
+          "target": "n_bridge"
+        }
+      ]
+    },
+    {
+      "id": "p_reveal1",
+      "body": "<<FILL role=choice words=100 beats='Mira turns to race for the bridge with her news, but the pressure alarm rising has jammed the main companionway; she can take the long safe ladder around or risk the short flooding corridor that is quicker but rising with rainwater'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_a",
+          "label": "Take the long safe ladder.",
+          "target": "p_reveal_a"
+        },
+        {
+          "id": "c_reveal_fail",
+          "label": "Risk the short flooding corridor.",
+          "target": "e_set_reveal"
+        }
+      ]
+    },
+    {
+      "id": "p_reveal_a",
+      "body": "<<FILL role=rising words=95 beats='the long safe ladder is slow but sound; Mira climbs it two steps at a time with a stray fish named Glimmer clinging to her collar, rehearsing what she will say, that the hold holds a baby sea-serpent and its fear is what rocks the ship'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_a_go",
+          "label": "Keep climbing toward the bridge.",
+          "target": "p_reveal_a2"
+        }
+      ]
+    },
+    {
+      "id": "p_reveal_a2",
+      "body": "<<FILL role=rising words=95 beats='near the top the long safe ladder opens on the officers' corridor, loud with orders and the boom of the pressure alarm rising; the wheelhouse door is just ahead, and Mira gathers her breath to burst in with the truth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_a2_go",
+          "label": "Push on to the wheelhouse door.",
+          "target": "p_reveal_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_reveal_mid",
+      "body": "<<FILL role=rising words=95 beats='Mira reaches the wheelhouse door as the ship shudders again; she can hear the commander calling for anything that might steady the vessel, and she knows the answer is a baby sea-serpent frightened in the hold; she steps in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_mid_go",
+          "label": "Step into the wheelhouse.",
+          "target": "n_bridge"
+        }
+      ]
+    },
+    {
+      "id": "e_set_reveal",
+      "body": "<<FILL role=failure words=88 beats='the short flooding corridor rises faster than Mira expects and she has to wade back before it is too deep, cold and dripping and delayed; by the time she reaches the bridge the crew have wrestled the ship level on their own, and she is bundled off to dry out and ride safely to the harbor dock'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_reveal",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Slow Through the flood"
+      }
+    },
+    {
+      "id": "p_people1",
+      "body": "<<FILL role=choice words=100 beats='Mira decides she cannot fix this alone and goes for help; she can find the friendly the chief diver she pulled ropes with, or go straight to the commander who alone knows the calf's ways'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_people_a",
+          "label": "Fetch the friendly the chief diver.",
+          "target": "p_people_a"
+        },
+        {
+          "id": "c_people_b",
+          "label": "Go straight to the commander.",
+          "target": "p_people_b"
+        }
+      ]
+    },
+    {
+      "id": "p_people_a",
+      "body": "<<FILL role=rising words=95 beats='the chief diver listens wide-eyed as Mira gasps out the secret, then grins and says the commander will want to hear this from her own mouth; together they push up through the pressure alarm rising toward the wheelhouse'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_people_a_go",
+          "label": "Go with the chief diver to the wheelhouse.",
+          "target": "p_people_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_people_b",
+      "body": "<<FILL role=rising words=95 beats='Mira finds the commander braced at a rain-streaked port, grim and tired; when she blurts that she has seen Coral and can calm the calf, the commander's eyes go sharp with sudden hope, and she waves Mira toward the wheel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_people_b_go",
+          "label": "Follow the commander to the wheel.",
+          "target": "p_people_mid"
+        }
+      ]
+    },
+    {
+      "id": "p_people_mid",
+      "body": "<<FILL role=rising words=95 beats='crew and the commander and stowaway crowd toward the bridge with one shared hope; the ship pitches under them, but for the first time the grown-ups are listening to Mira, and the wheelhouse doors swing open ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_people_mid_go",
+          "label": "Enter the bridge together.",
+          "target": "n_bridge"
+        }
+      ]
+    },
+    {
+      "id": "n_bridge",
+      "body": "<<FILL role=choice words=120 beats='BOTTLENECK: every route ends here on the storm-tossed bridge, where the commander and crew turn to Mira as the one person who has calmed a baby sea-serpent; the Selkie is losing height and the pressure alarm rising is close to winning; there is time for one clear choice to save the ship, and Mira must decide how she will help, by steadying Coral so the ship flies true, patching the great pressure hull, taking a hand at the great wheel, or telling everyone the secret so the crew can act as one'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bridge_steer",
+          "label": "Steady Coral so the ship can fly true.",
+          "target": "b_steer1"
+        },
+        {
+          "id": "c_bridge_patch",
+          "label": "Help patch the great pressure hull.",
+          "target": "b_patch1"
+        },
+        {
+          "id": "c_bridge_free",
+          "label": "Help ease Coral to open air.",
+          "target": "b_free1"
+        },
+        {
+          "id": "c_bridge_tell",
+          "label": "Tell everyone the secret and rally the crew.",
+          "target": "b_tell1"
+        }
+      ]
+    },
+    {
+      "id": "b_steer1",
+      "body": "<<FILL role=choice words=100 beats='the commander asks Mira to keep Coral calm through a speaking-tube while the crew fly the ship; steadiness is everything now; Mira can hum slow and sure into the tube, or rush her song, frightened, as the pressure alarm rising howls'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_steer_ok",
+          "label": "Hum slow and sure into a speaking-tube.",
+          "target": "b_steer_ok"
+        },
+        {
+          "id": "c_steer_fail",
+          "label": "Rush the song in a panic.",
+          "target": "e_set_final"
+        }
+      ]
+    },
+    {
+      "id": "b_steer_ok",
+      "body": "<<FILL role=rising words=95 beats='Mira keeps her voice slow and warm, and far below Coral answers, growing still; with the calf calm the ship stops fighting itself and the crew feel the wheel come alive under their hands again'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_steer_ok_go",
+          "label": "Hold the calf steady through the worst of it.",
+          "target": "b_steer_ok2"
+        }
+      ]
+    },
+    {
+      "id": "b_steer_ok2",
+      "body": "<<FILL role=climax words=100 beats='minute by minute Mira hums a baby sea-serpent through the heart of the pressure alarm rising while the crew hold their course; the lift steadies, the pitching fades, and at last the Selkie climbs out above the clouds into calm, moonlit air, saved by a stowaway's steady song'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_steer_win",
+          "label": "Ride out into the calm moonlit sky.",
+          "target": "e_win_save_ship"
+        }
+      ]
+    },
+    {
+      "id": "e_set_final",
+      "body": "<<FILL role=failure words=88 beats='Mira's song comes out too fast and frightened, and Coral will not settle; the crew have to fight the pressure alarm rising the hard way and win it without her, safe but exhausted; grateful all the same, the commander lands to set Mira gently ashore at the harbor dock with a promise she may try again someday'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_final",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Put Ashore at Port"
+      }
+    },
+    {
+      "id": "e_win_save_ship",
+      "body": "<<FILL role=completion words=95 beats='the Selkie sails on through clean night air, saved because a stowaway kept a baby sea-serpent calm; the commander shakes Mira's hand before the whole crew and names her the ship's own, and Coral reaches a protected reef safe; Mira has found her place in the sky at last, with a stray fish named Glimmer purring on her shoulder; the greatest ending of all'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_save_ship",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Cirrus Sails On"
+      }
+    },
+    {
+      "id": "b_patch1",
+      "body": "<<FILL role=choice words=100 beats='the great pressure hull is tearing where the gasbags strain; a rigger needs a small brave pair of hands to help thread the patch-line through the ribs; Mira can climb the maintenance shaft to reach the crack in the hull or work the winch that pulls the patch tight from below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_patch_ok",
+          "label": "Climb the maintenance shaft to reach the crack in the hull.",
+          "target": "b_patch_ok"
+        },
+        {
+          "id": "c_patch_alt",
+          "label": "Work the winch from below.",
+          "target": "b_patch_alt"
+        }
+      ]
+    },
+    {
+      "id": "b_patch_ok",
+      "body": "<<FILL role=rising words=95 beats='light and quick, Mira scrambles where a grown rigger cannot fit and threads the patch-line through the straining ribs; the rigger hauls it tight, the crack in the hull closes, and the ship stops bleeding away its precious lift'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_patch_win",
+          "label": "Watch the mended envelope hold.",
+          "target": "e_win_patch"
+        }
+      ]
+    },
+    {
+      "id": "b_patch_alt",
+      "body": "<<FILL role=rising words=95 beats='Mira throws herself on the winch handle and cranks with all her weight; slowly the patch draws tight over the crack in the hull, the rigger cheers, and steady lift returns just as the crew wrestle the ship level'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_patch_alt_win",
+          "label": "Feel the ship steady beneath you.",
+          "target": "e_win_steer"
+        }
+      ]
+    },
+    {
+      "id": "e_win_patch",
+      "body": "<<FILL role=completion words=92 beats='with the great pressure hull patched the Selkie rides out the pressure alarm rising and climbs into the stars; the riggers swear the little stowaway saved them, and the commander, hearing all, lets Mira stay aboard as helper to the crew; Coral reaches a protected reef, and Mira has earned her passage through the sky'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_patch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Mended hull"
+      }
+    },
+    {
+      "id": "e_win_steer",
+      "body": "<<FILL role=completion words=92 beats='steady lift wins the day, and the Selkie rights herself over the calming sea of cloud; the crew lift Mira onto their shoulders, and the commander, laughing for the first time all night, says any sailor who works the winch like that has a berth on the Selkie whenever she likes'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_steer",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Steady Lift Wins"
+      }
+    },
+    {
+      "id": "b_free1",
+      "body": "<<FILL role=choice words=100 beats='Mira sees that Coral is frantic because it longs for the open sky; the calf is nearly grown, and the pressure alarm rising has torn loose a great hatch to open water; she can help ease a baby sea-serpent out to fly beside the ship, or coax it to a calmer holding tank first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_free_ok",
+          "label": "Help ease Nimbus out to the open air.",
+          "target": "b_free_ok"
+        },
+        {
+          "id": "c_free_alt",
+          "label": "Coax Coral to a calmer holding tank.",
+          "target": "b_free_alt"
+        }
+      ]
+    },
+    {
+      "id": "b_free_ok",
+      "body": "<<FILL role=rising words=95 beats='with the commander's nod Mira hums Coral toward a great hatch to open water; the great calf gathers itself and slips out into the storm-wind, and instead of falling it rises, spreading cloud-grey fins, wheeling free beside the labouring ship'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_free_ok_go",
+          "label": "Watch the sky-whale take to the air.",
+          "target": "b_free_ok2"
+        }
+      ]
+    },
+    {
+      "id": "b_free_ok2",
+      "body": "<<FILL role=climax words=100 beats='free at last, Coral swims through the pressure alarm rising as easily as through calm water, and where it flies the winds seem to gentle; a baby sea-serpent shepherds the Selkie out of the worst of the weather, then soars ahead to guide the ship the last miles to a protected reef'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_free_win",
+          "label": "Follow Nimbus toward safe harbour.",
+          "target": "e_win_free"
+        }
+      ]
+    },
+    {
+      "id": "e_win_free",
+      "body": "<<FILL role=completion words=95 beats='a baby sea-serpent leads the Selkie safe out of the pressure alarm rising and home, and the whole crew watch in wonder as Coral circles the harbor dock once before winging off to the wild sky; the commander tells Mira the calf owes its freedom to her, and she may sail with them always; a soaring, joyful ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_free",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The sea-serpent Rises"
+      }
+    },
+    {
+      "id": "b_free_alt",
+      "body": "<<FILL role=rising words=95 beats='judging the pressure alarm rising too wild for a young calf, Mira instead hums Coral into a calmer holding tank and pads it round with canvas; safe and calm, a baby sea-serpent stops thrashing, and the ship steadies enough for the crew to fly it clear'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_free_alt_win",
+          "label": "Settle Nimbus safe for the voyage.",
+          "target": "e_win_friend"
+        }
+      ]
+    },
+    {
+      "id": "e_win_friend",
+      "body": "<<FILL role=completion words=92 beats='snug in a calmer holding tank, Coral rides out the pressure alarm rising calm and safe, and the Selkie carries it gently on to a protected reef at journey's end; the keepers there marvel that a stowaway kept the calf so quiet, and Mira gets to see Coral set free among its own kind; a warm, tender ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_friend",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Coral Safe Ashore"
+      }
+    },
+    {
+      "id": "b_tell1",
+      "body": "<<FILL role=choice words=100 beats='Mira decides the ship's best chance is everyone pulling together, so she tells the whole secret aloud; how she shares it now will shape what happens, to the working crew who can act, to the commander who must choose, or by showing them all Coral itself'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tell_crew",
+          "label": "Rally the working crew.",
+          "target": "b_tell_crew"
+        },
+        {
+          "id": "c_tell_captain",
+          "label": "Put it to the commander.",
+          "target": "b_tell_captain"
+        },
+        {
+          "id": "c_tell_reveal",
+          "label": "Show them all Coral.",
+          "target": "b_tell_reveal"
+        }
+      ]
+    },
+    {
+      "id": "b_tell_crew",
+      "body": "<<FILL role=rising words=95 beats='the crew take Mira's word without a blink and split into teams, some to soothe the calf, some to fly the ship; with everyone working as one the Selkie fights clear of the pressure alarm rising, and the sailors count Mira one of their own'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tell_crew_win",
+          "label": "Take your place among the crew.",
+          "target": "e_win_crew"
+        }
+      ]
+    },
+    {
+      "id": "e_win_crew",
+      "body": "<<FILL role=completion words=92 beats='the crew win through the pressure alarm rising together, and afterward they hang a hammock for Mira in their own quarters and stitch her name on a spare jersey; the chief diver says a girl who works this hard is no stowaway but a shipmate, and Mira sails on as the youngest of the Selkie's crew; a proud, happy ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_crew",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One of the Crew"
+      }
+    },
+    {
+      "id": "b_tell_captain",
+      "body": "<<FILL role=choice words=100 beats='the commander hears Mira out, then must decide; she can trust this brave stowaway with a real task at the calf's side, or thank her and send her below to safety while the officers handle the pressure alarm rising'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tell_cap_win",
+          "label": "Accept the commander's trust and a real task.",
+          "target": "e_win_captain"
+        },
+        {
+          "id": "c_tell_cap_home",
+          "label": "Let the commander send you safely below.",
+          "target": "e_neu_home"
+        }
+      ]
+    },
+    {
+      "id": "e_win_captain",
+      "body": "<<FILL role=completion words=95 beats='the commander gives Mira a real task and she rises to it, keeping Coral calm at the officers' side until the pressure alarm rising breaks; when the sky clears the commander enters her name in the ship's log with her own hand and calls her the bravest passenger the Selkie ever carried; a triumphant, honoured ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_captain",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Captain's Word"
+      }
+    },
+    {
+      "id": "e_neu_home",
+      "body": "<<FILL role=ending words=88 beats='Mira lets the commander tuck her safely below with a stray fish named Glimmer, and the crew bring the ship through without her; she never gets to help save the day, but she has ridden the pressure alarm rising in a real sky-ship and glimpsed a baby sea-serpent, and she is set down at the harbor dock with a wave and a wonderful secret to keep; a safe, wondering ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_neu_home",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Safe Below, Secret Kept"
+      }
+    },
+    {
+      "id": "b_tell_reveal",
+      "body": "<<FILL role=rising words=95 beats='instead of only telling, Mira leads the commander and crew down to the hatch and shows them Coral in the flesh, cloud-grey and gentle; the sight melts every doubt, and together, awed and united, they set about calming the calf and saving the ship'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_tell_reveal_win",
+          "label": "Save the ship together, secret and all.",
+          "target": "e_win_discovery"
+        }
+      ]
+    },
+    {
+      "id": "e_win_discovery",
+      "body": "<<FILL role=completion words=95 beats='with the whole ship let in on the wonder, crew and the commander work as one to soothe Coral and fly the Selkie safe through the pressure alarm rising; the secret is a secret no more but a shared marvel, and Mira, the stowaway who revealed it, is thanked by every soul aboard and welcomed to sail on; a wondrous, uniting ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_win_discovery",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Secret of the Selkie"
+      }
+    }
+  ]
+}

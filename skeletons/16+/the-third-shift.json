@@ -34,7 +34,7 @@
   "nodes": [
     {
       "id": "se05",
-      "body": "<<FILL role=setback words=156 beats='Wren signs the camera faulty and closes the nine-year ticket; the snow goes on unwatched; Odette says nothing, and the shape inside the static keeps its shift alone while the new hire looks at easier screens'>>",
+      "body": "<<FILL role=setback words=156 beats='{HERO} signs the camera faulty and closes the nine-year ticket; the snow goes on unwatched; {ROUTE_A_CHAR} says nothing, and the shape inside the {SE_STATIC} keeps its shift alone while the new hire looks at easier screens'>>",
       "is_ending": true,
       "ending": {
         "id": "se05",
@@ -46,7 +46,7 @@
     },
     {
       "id": "se18",
-      "body": "<<FILL role=resolution words=162 beats='Wren keeps the watch to the last minute, sole witness to a man the Annex will not let itself record; the feed goes to snow at 5:44 and she carries the knowing home, the one place he still exists now behind her eyes'>>",
+      "body": "<<FILL role=resolution words=162 beats='{HERO} keeps the watch to the last minute, sole witness to a man the {ANNEX} will not let itself record; the feed goes to snow at 5:44 and she carries the knowing home, the one place he still exists now behind her eyes'>>",
       "is_ending": true,
       "ending": {
         "id": "se18",
@@ -70,7 +70,7 @@
     },
     {
       "id": "se16",
-      "body": "<<FILL role=rising words=172 beats='for one long stretch the snow clears almost to a picture and Wren sees the desk, the lamp, the coat over the chair, a whole small life held in a room that is not on any floor'>>",
+      "body": "<<FILL role=rising words=172 beats='for one long stretch the snow clears almost to a picture and {HERO} sees the desk, the lamp, the {MA_COAT} over the chair, a whole small life held in a room that is not on any floor'>>",
       "is_ending": false,
       "choices": [
         {
@@ -82,7 +82,7 @@
     },
     {
       "id": "se15",
-      "body": "<<FILL role=rising words=170 beats='Odette says every watch inherits him and every watch loses the argument with the drive; the kindest thing left is to not look away'>>",
+      "body": "<<FILL role=rising words=170 beats='{ROUTE_A_CHAR} says every watch inherits him and every watch loses the argument with the drive; the kindest thing left is to not look away'>>",
       "is_ending": false,
       "choices": [
         {
@@ -94,7 +94,7 @@
     },
     {
       "id": "se14",
-      "body": "<<FILL role=rising words=166 beats='the more Wren watches, the surer she is that this dead feed is the only place in the waking world the man still exists'>>",
+      "body": "<<FILL role=rising words=166 beats='the more {HERO} watches, the surer she is that this dead feed is the only place in the waking world the man still exists'>>",
       "is_ending": false,
       "choices": [
         {
@@ -106,7 +106,7 @@
     },
     {
       "id": "se13",
-      "body": "<<FILL role=rising words=172 beats='cross-checking the sign-in cards on the terminal, Wren finds the name the building lost: Case, signed in years ago, never signed out'>>",
+      "body": "<<FILL role=rising words=172 beats='cross-checking the sign-in cards on the terminal, {HERO} finds the name the building lost: {GHOST_NAME}, signed in years ago, never signed out'>>",
       "is_ending": false,
       "choices": [
         {
@@ -130,7 +130,7 @@
     },
     {
       "id": "se11",
-      "body": "<<FILL role=rising words=176 beats='Wren copies a single frame to the shared drive and the file is blank the instant it lands, the man scrubbed out of his own picture'>>",
+      "body": "<<FILL role=rising words=176 beats='{HERO} copies a single frame to the shared drive and the file is blank the instant it lands, the man scrubbed out of his own picture'>>",
       "is_ending": false,
       "choices": [
         {
@@ -142,7 +142,7 @@
     },
     {
       "id": "se10",
-      "body": "<<FILL role=rising words=171 beats='Odette admits she has watched him for twelve years across this one dead feed and has never once been able to save him'>>",
+      "body": "<<FILL role=rising words=171 beats='{ROUTE_A_CHAR} admits she has watched him for twelve years across this one dead feed and has never once been able to save him'>>",
       "is_ending": false,
       "choices": [
         {
@@ -166,7 +166,7 @@
     },
     {
       "id": "se08",
-      "body": "<<FILL role=rising words=166 beats='the breathing on the meter deepens as the count climbs nearer, the man in the snow aware, somehow, of being approached'>>",
+      "body": "<<FILL role=rising words=166 beats='the breathing on the meter deepens as the {RECKONING} climbs nearer, the man in the snow aware, somehow, of being approached'>>",
       "is_ending": false,
       "choices": [
         {
@@ -178,7 +178,7 @@
     },
     {
       "id": "se07",
-      "body": "<<FILL role=rising words=164 beats='the twitching audio meter falls into step with the amber count climbing down the building, breath timed to the sweep'>>",
+      "body": "<<FILL role=rising words=164 beats='the twitching audio meter falls into step with the {DEADLINE_SIGN} count climbing down the building, breath timed to the sweep'>>",
       "is_ending": false,
       "choices": [
         {
@@ -190,7 +190,7 @@
     },
     {
       "id": "se06",
-      "body": "<<FILL role=rising words=168 beats='the shape in the snow resolves by degrees into a man seated at a desk that Sub-Level 3, by every floor plan, does not contain'>>",
+      "body": "<<FILL role=rising words=168 beats='the shape in the snow resolves by degrees into a man seated at a desk that {SEALED_FLOOR}, by every floor plan, does not contain'>>",
       "is_ending": false,
       "choices": [
         {
@@ -202,7 +202,7 @@
     },
     {
       "id": "se04",
-      "body": "<<FILL role=choice words=184 beats='the cold-floor feed is nothing but snow, yet the timecode runs and the audio meter twitches as if a room in it were breathing; Odette says the camera has shown static for nine years and the work order to replace it is nine years old; Wren can keep watching the snow for the shape inside it, or mark the camera faulty and close the ticket the way every watch before her has'>>",
+      "body": "<<FILL role=choice words=184 beats='the {COLD_ROOM} feed is nothing but snow, yet the timecode runs and the audio meter twitches as if a room in it were breathing; {ROUTE_A_CHAR} says the camera has shown {SE_STATIC} for nine years and the work order to replace it is nine years old; {HERO} can keep watching the snow for the shape inside it, or mark the camera faulty and close the ticket the way every watch before her has'>>",
       "is_ending": false,
       "choices": [
         {
@@ -219,7 +219,7 @@
     },
     {
       "id": "se20",
-      "body": "<<FILL role=peril_ending words=164 beats='Wren steps off the wall into a corridor gone amber; the gold does not whiten around her; when Odette calls the roll at dawn the tally is even and correct, and one of the names it settles on is a new hire nobody on the day staff will remember hiring'>>",
+      "body": "<<FILL role=peril_ending words=164 beats='{HERO} steps off the {ROUTE_A_PLACE} into a corridor gone {DEADLINE_SIGN}; the {DEADLINE_SIGN} does not whiten around her; when {ROUTE_A_CHAR} calls the roll at dawn the {RECKONING} is even and correct, and one of the names it settles on is a new hire nobody on the day staff will remember hiring'>>",
       "is_ending": true,
       "ending": {
         "id": "se20",
@@ -231,7 +231,7 @@
     },
     {
       "id": "se34",
-      "body": "<<FILL role=success words=166 beats='Wren signs, and the ink names Case entry and exit both; the gold at the cold-floor door whitens all at once, the tally comes even, and for the first time in twelve years the building stops counting; Odette reads the page, nods, and lets the new hire clock out into a plain gray morning'>>",
+      "body": "<<FILL role=success words=166 beats='{HERO} signs, and the ink names {GHOST_NAME} entry and exit both; the {DEADLINE_SIGN} at the {COLD_ROOM} door whitens all at once, the {RECKONING} comes even, and for the first time in twelve years the building stops counting; {ROUTE_A_CHAR} reads the page, nods, and lets the new hire clock out into a plain gray morning'>>",
       "is_ending": true,
       "ending": {
         "id": "se34",
@@ -243,7 +243,7 @@
     },
     {
       "id": "se35",
-      "body": "<<FILL role=setback words=164 beats='Wren sets the pen down unused; at 5:44 the doors unlock, the sweep dies mid-corridor, and every clock loses its eleven minutes again to start the ledger clean; the count is one short, as it was, as it will be, and the silence of the watch is kept one more night'>>",
+      "body": "<<FILL role=setback words=164 beats='{HERO} sets the pen down unused; at 5:44 the doors unlock, the sweep dies mid-corridor, and every clock loses its eleven minutes again to start the {AR_LEDGER} clean; the {RECKONING} is one short, as it was, as it will be, and the silence of the watch is kept one more night'>>",
       "is_ending": true,
       "ending": {
         "id": "se35",
@@ -255,12 +255,12 @@
     },
     {
       "id": "se33",
-      "body": "<<FILL role=choice words=188 beats='5:41; Wren holds the pen over the permanent witness log while the count waits at the cold-floor door; she can sign her name to what she watched all night and hand the Annex the record of Case it has hunted for years, or keep the silence every watch before her kept and let dawn break the count still one short'>>",
+      "body": "<<FILL role=choice words=188 beats='5:41; {HERO} holds the pen over the permanent {SE_A2_LOG} while the {RECKONING} waits at the {COLD_ROOM} door; she can sign her name to what she watched all night and hand the {ANNEX} the record of {GHOST_NAME} it has hunted for years, or keep the silence every watch before her kept and let dawn break the {RECKONING} still one short'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_se33_0",
-          "label": "Sign the witness log.",
+          "label": "Sign the {SE_A2_LOG}.",
           "target": "se34"
         },
         {
@@ -272,7 +272,7 @@
     },
     {
       "id": "se32",
-      "body": "<<FILL role=rising words=166 beats='it is nearing 5:44; the sweep has stalled, still one short, gold pooled at the cold-floor door with nowhere left to look'>>",
+      "body": "<<FILL role=rising words=166 beats='it is nearing 5:44; the sweep has stalled, still one short, {DEADLINE_SIGN} pooled at the {COLD_ROOM} door with nowhere left to look'>>",
       "is_ending": false,
       "choices": [
         {
@@ -284,7 +284,7 @@
     },
     {
       "id": "se31",
-      "body": "<<FILL role=rising words=168 beats='Odette says the last keeper to chase proof of him retired talking to screens; she has learned to settle for witnessing instead'>>",
+      "body": "<<FILL role=rising words=168 beats='{ROUTE_A_CHAR} says the last keeper to chase proof of him retired talking to screens; she has learned to settle for witnessing instead'>>",
       "is_ending": false,
       "choices": [
         {
@@ -296,7 +296,7 @@
     },
     {
       "id": "se30",
-      "body": "<<FILL role=rising words=172 beats='on the terminal Wren finds him, Case, signed in and never signed out, the one discrepancy the Annex has counted around since before her time'>>",
+      "body": "<<FILL role=rising words=172 beats='on the terminal {HERO} finds him, {GHOST_NAME}, signed in and never signed out, the one discrepancy the {ANNEX} has counted around since before her time'>>",
       "is_ending": false,
       "choices": [
         {
@@ -308,7 +308,7 @@
     },
     {
       "id": "se29",
-      "body": "<<FILL role=rising words=176 beats='the tally comes up one short, has come up one short for years, and the sweep runs and reruns hunting the missing entry it can feel but not name'>>",
+      "body": "<<FILL role=rising words=176 beats='the {RECKONING} comes up one short, has come up one short for years, and the sweep runs and reruns hunting the missing entry it can feel but not name'>>",
       "is_ending": false,
       "choices": [
         {
@@ -320,7 +320,7 @@
     },
     {
       "id": "se28",
-      "body": "<<FILL role=rising words=178 beats='Odette explains the reconciliation at last: each third shift the building checks that everyone who entered has a record and that the living match the ledger'>>",
+      "body": "<<FILL role=rising words=178 beats='{ROUTE_A_CHAR} explains the {RECKONING} at last: each {SHIFT_NAME} the building checks that everyone who entered has a record and that the living match the {AR_LEDGER}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -332,7 +332,7 @@
     },
     {
       "id": "se27",
-      "body": "<<FILL role=rising words=174 beats='between passes the cold-floor feed shows the seated man lift his head each time the count nears, hopeful, then settle again when it moves on'>>",
+      "body": "<<FILL role=rising words=174 beats='between passes the {COLD_ROOM} feed shows the seated man lift his head each time the {RECKONING} nears, hopeful, then settle again when it moves on'>>",
       "is_ending": false,
       "choices": [
         {
@@ -344,7 +344,7 @@
     },
     {
       "id": "se26",
-      "body": "<<FILL role=rising words=170 beats='the gold reaches Sub-Level 3 and stops; the count holds there, on the floor the plans say is empty, and will not move on'>>",
+      "body": "<<FILL role=rising words=170 beats='the {DEADLINE_SIGN} reaches {SEALED_FLOOR} and stops; the {RECKONING} holds there, on the floor the plans say is empty, and will not move on'>>",
       "is_ending": false,
       "choices": [
         {
@@ -356,7 +356,7 @@
     },
     {
       "id": "se25",
-      "body": "<<FILL role=rising words=178 beats='Wren traces the sweep's path onto the wall's floor plan and the gold spirals inward and down, every night ending at the same sealed door on Sub-Level 3'>>",
+      "body": "<<FILL role=rising words=178 beats='{HERO} traces the sweep's path onto the {ROUTE_A_PLACE}'s floor plan and the {DEADLINE_SIGN} spirals inward and down, every night ending at the same sealed door on {SEALED_FLOOR}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -368,7 +368,7 @@
     },
     {
       "id": "se24",
-      "body": "<<FILL role=rising words=174 beats='at 1:14 every clock on the wall skips eleven minutes as one; the sweep pauses, then resumes exactly where it left the count'>>",
+      "body": "<<FILL role=rising words=174 beats='at 1:14 every clock on the {ROUTE_A_PLACE} skips eleven minutes as one; the sweep pauses, then resumes exactly where it left the {RECKONING}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -380,7 +380,7 @@
     },
     {
       "id": "se23",
-      "body": "<<FILL role=rising words=176 beats='on the fourth-floor feed a corridor goes amber while Wren watches and a maintenance man inside it freezes mid-step and waits it out, proof the whole night staff lives by the one rule'>>",
+      "body": "<<FILL role=rising words=176 beats='on the fourth-floor feed a corridor goes {DEADLINE_SIGN} while {HERO} watches and a maintenance man inside it freezes mid-step and waits it out, proof the whole night staff lives by the one rule'>>",
       "is_ending": false,
       "choices": [
         {
@@ -392,7 +392,7 @@
     },
     {
       "id": "se22",
-      "body": "<<FILL role=rising words=172 beats='Odette pulls the older watch logs and the same sweep sits clocked at the same minutes on nights years apart, the building counting the identical hole again and again'>>",
+      "body": "<<FILL role=rising words=172 beats='{ROUTE_A_CHAR} pulls the older watch logs and the same sweep sits clocked at the same minutes on nights years apart, the building counting the identical hole again and again'>>",
       "is_ending": false,
       "choices": [
         {
@@ -404,7 +404,7 @@
     },
     {
       "id": "se21",
-      "body": "<<FILL role=rising words=166 beats='Wren logs the sweep floor by floor, and the times line up against the cold-floor feed like tumblers falling into a lock'>>",
+      "body": "<<FILL role=rising words=166 beats='{HERO} logs the sweep floor by floor, and the times line up against the {COLD_ROOM} feed like tumblers falling into a lock'>>",
       "is_ending": false,
       "choices": [
         {
@@ -416,24 +416,24 @@
     },
     {
       "id": "se19",
-      "body": "<<FILL role=choice words=182 beats='the amber sweep is the rule made visible, corridor after corridor going gold from the top floor down; Odette repeats it plainly, amber means the building is counting and you sit still inside it; Wren can hold the wall and log the sweep floor by floor as instructed, or take a radio and walk out into a gold corridor to see the count with her own eyes'>>",
+      "body": "<<FILL role=choice words=182 beats='the {DEADLINE_SIGN} sweep is the rule made visible, corridor after corridor going {DEADLINE_SIGN} from the top floor down; {ROUTE_A_CHAR} repeats it plainly, {DEADLINE_SIGN} means the building is counting and you sit still inside it; {HERO} can hold the {ROUTE_A_PLACE} and log the sweep floor by floor as instructed, or take a radio and walk out into a {DEADLINE_SIGN} corridor to see the {RECKONING} with her own eyes'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_se19_0",
-          "label": "Walk into the amber.",
+          "label": "Walk into the {DEADLINE_SIGN}.",
           "target": "se20"
         },
         {
           "id": "c_se19_1",
-          "label": "Hold the wall and log it.",
+          "label": "Hold the {ROUTE_A_PLACE} and log it.",
           "target": "se21"
         }
       ]
     },
     {
       "id": "se37",
-      "body": "<<FILL role=peril_ending words=164 beats='Wren finds him on the half-landing of stairwell B, close enough to speak; before she can, her own badge turns on its clip to face inward against her chest, the sign that means she is not to be spoken to, and the man looks through the new hire as through one more thing the building is keeping'>>",
+      "body": "<<FILL role=peril_ending words=164 beats='{HERO} finds him on the half-landing of {SE_A3_PLACE}, close enough to speak; before she can, her own {BADGE} turns on its clip to face inward against her chest, the sign that means she is not to be spoken to, and the man looks through the new hire as through one more thing the building is keeping'>>",
       "is_ending": true,
       "ending": {
         "id": "se37",
@@ -445,7 +445,7 @@
     },
     {
       "id": "se49",
-      "body": "<<FILL role=resolution words=162 beats='Wren hands the drive across at the shift change; the day supervisor plays it back and finds only gray, the clip gone the moment daylight touched it, and files a note that the new hire needs rest; Wren knows what she saw, and knows the Annex has won the argument again'>>",
+      "body": "<<FILL role=resolution words=162 beats='{HERO} hands the drive across at the shift change; the day supervisor plays it back and finds only gray, the clip gone the moment daylight touched it, and files a note that the new hire needs rest; {HERO} knows what she saw, and knows the {ANNEX} has won the argument again'>>",
       "is_ending": true,
       "ending": {
         "id": "se49",
@@ -457,7 +457,7 @@
     },
     {
       "id": "se50",
-      "body": "<<FILL role=resolution words=164 beats='Wren drags the clip to nothing before dawn can take it on the building's terms; if Case cannot be kept kindly he will at least not be kept as evidence; she clocks out having chosen the man over the proof, the one mercy the watch could still offer him'>>",
+      "body": "<<FILL role=resolution words=164 beats='{HERO} drags the clip to nothing before dawn can take it on the building's terms; if {GHOST_NAME} cannot be kept kindly he will at least not be kept as evidence; she clocks out having chosen the man over the proof, the one mercy the watch could still offer him'>>",
       "is_ending": true,
       "ending": {
         "id": "se50",
@@ -469,7 +469,7 @@
     },
     {
       "id": "se48",
-      "body": "<<FILL role=choice words=182 beats='the off-system drive holds one clean clip of Case, the only proof that survives the building's scrubbing; Wren can carry it up to the day staff as evidence the Annex has refused for a decade, or wipe it herself and spare the man being filed, studied, and reduced to the record he was never allowed to become'>>",
+      "body": "<<FILL role=choice words=182 beats='the {SE_A3_DRIVE} holds one clean clip of {GHOST_NAME}, the only proof that survives the building's scrubbing; {HERO} can carry it up to the day staff as evidence the {ANNEX} has refused for a decade, or wipe it herself and spare the man being filed, studied, and reduced to the record he was never allowed to become'>>",
       "is_ending": false,
       "choices": [
         {
@@ -479,14 +479,14 @@
         },
         {
           "id": "c_se48_1",
-          "label": "Wipe the drive yourself.",
+          "label": "Wipe the {SE_A3_DRIVE} yourself.",
           "target": "se50"
         }
       ]
     },
     {
       "id": "se47",
-      "body": "<<FILL role=rising words=174 beats='on that off-system drive, one Wren is not supposed to know about, a single unbroken clip of Case slowly assembles'>>",
+      "body": "<<FILL role=rising words=174 beats='on that {SE_A3_DRIVE}, one {HERO} is not supposed to know about, a single unbroken clip of {GHOST_NAME} slowly assembles'>>",
       "is_ending": false,
       "choices": [
         {
@@ -498,7 +498,7 @@
     },
     {
       "id": "se46",
-      "body": "<<FILL role=rising words=172 beats='Wren splices her night's rewinds into Odette's archive and the man steadies, gains a walk, a way of setting down a mug, the small habits a face only shows when it forgets it is watched'>>",
+      "body": "<<FILL role=rising words=172 beats='{HERO} splices her night's rewinds into {ROUTE_A_CHAR}'s archive and the man steadies, gains a walk, a way of setting down a mug, the small habits a face only shows when it forgets it is watched'>>",
       "is_ending": false,
       "choices": [
         {
@@ -522,7 +522,7 @@
     },
     {
       "id": "se44",
-      "body": "<<FILL role=rising words=170 beats='Odette keeps a spare drive off the system because the wall itself will not, a private museum of a man the Annex disowns'>>",
+      "body": "<<FILL role=rising words=170 beats='{ROUTE_A_CHAR} keeps a spare drive off the system because the {ROUTE_A_PLACE} itself will not, a private museum of a man the {ANNEX} disowns'>>",
       "is_ending": false,
       "choices": [
         {
@@ -534,7 +534,7 @@
     },
     {
       "id": "se43",
-      "body": "<<FILL role=rising words=172 beats='Odette gives him a name off an old roster, Case, a night-shift worker who signed in and simply never signed the line to leave'>>",
+      "body": "<<FILL role=rising words=172 beats='{ROUTE_A_CHAR} gives him a name off an old roster, {GHOST_NAME}, a night-shift worker who signed in and simply never signed the line to leave'>>",
       "is_ending": false,
       "choices": [
         {
@@ -558,7 +558,7 @@
     },
     {
       "id": "se41",
-      "body": "<<FILL role=rising words=166 beats='the last frame before every drop is the same, Case reaching for a sign-out sheet that is never quite in shot'>>",
+      "body": "<<FILL role=rising words=166 beats='the last frame before every drop is the same, {GHOST_NAME} reaching for a sign-out sheet that is never quite in shot'>>",
       "is_ending": false,
       "choices": [
         {
@@ -570,7 +570,7 @@
     },
     {
       "id": "se40",
-      "body": "<<FILL role=rising words=174 beats='the clip she does assemble shows Case clocking in on a winter night years past, coat over his arm, badge face out, ordinary and alive'>>",
+      "body": "<<FILL role=rising words=174 beats='the clip she does assemble shows {GHOST_NAME} clocking in on a winter night years past, {MA_COAT} over his arm, {BADGE} face out, ordinary and alive'>>",
       "is_ending": false,
       "choices": [
         {
@@ -594,7 +594,7 @@
     },
     {
       "id": "se38",
-      "body": "<<FILL role=rising words=174 beats='frame by frame Wren isolates the man across hours that refuse to connect, a 2011 timecode, tonight's, and an hour not yet arrived'>>",
+      "body": "<<FILL role=rising words=174 beats='frame by frame {HERO} isolates the man across hours that refuse to connect, a 2011 timecode, tonight's, and an hour not yet arrived'>>",
       "is_ending": false,
       "choices": [
         {
@@ -606,34 +606,34 @@
     },
     {
       "id": "se36",
-      "body": "<<FILL role=choice words=183 beats='the stairwell-B feed keeps admitting a man who will not stay recorded, in frame and then dropped, in frame and then dropped; Odette warns the badge stays face out and you do not follow a feed off the wall; Wren can rewind and rewind at her seat to catch him, or take a radio down to stairwell B in person to head him off'>>",
+      "body": "<<FILL role=choice words=183 beats='the {SE_A3_PLACE} feed keeps admitting a man who will not stay recorded, in frame and then dropped, in frame and then dropped; {ROUTE_A_CHAR} warns the {BADGE} stays face out and you do not follow a feed off the {ROUTE_A_PLACE}; {HERO} can rewind and rewind at her seat to catch him, or take a radio down to {SE_A3_PLACE} in person to head him off'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_se36_0",
-          "label": "Go down to stairwell B.",
+          "label": "Go down to {SE_A3_PLACE}.",
           "target": "se37"
         },
         {
           "id": "c_se36_1",
-          "label": "Rewind at the wall.",
+          "label": "Rewind at the {ROUTE_A_PLACE}.",
           "target": "se38"
         }
       ]
     },
     {
       "id": "se03",
-      "body": "<<FILL role=choice words=191 beats='first hour on the wall; three feeds pull at Wren at once, the Sub-Level 3 cold-floor camera showing only snow, the upper corridors where the amber sweep has just begun its slow crawl downward, and a stairwell feed where a man keeps stepping into frame while the playback keeps losing him; Odette watches to see which one the new hire will chase'>>",
+      "body": "<<FILL role=choice words=191 beats='first hour on the {ROUTE_A_PLACE}; three feeds pull at {HERO} at once, the {SEALED_FLOOR} {COLD_ROOM} camera showing only snow, the upper corridors where the {DEADLINE_SIGN} sweep has just begun its slow crawl downward, and a stairwell feed where a man keeps stepping into frame while the playback keeps losing him; {ROUTE_A_CHAR} watches to see which one the new hire will chase'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_se03_0",
-          "label": "Stare into the static.",
+          "label": "Stare into the {SE_STATIC}.",
           "target": "se04"
         },
         {
           "id": "c_se03_1",
-          "label": "Log the amber sweep.",
+          "label": "Log the {DEADLINE_SIGN} sweep.",
           "target": "se19"
         },
         {
@@ -645,7 +645,7 @@
     },
     {
       "id": "se02",
-      "body": "<<FILL role=rising words=168 beats='Odette runs Wren through the wall's oddities before midnight, the feed that loops an hour behind, the corridors that read empty when she knows a cleaner is in them, the dead grey square that has never been repaired and never been removed; she says the trick of the watch is knowing which lies are the building's and which are just old cable'>>",
+      "body": "<<FILL role=rising words=168 beats='{ROUTE_A_CHAR} runs {HERO} through the {ROUTE_A_PLACE}'s oddities before midnight, the feed that loops an hour behind, the corridors that read empty when she knows a cleaner is in them, the dead grey square that has never been repaired and never been removed; she says the trick of the watch is knowing which lies are the building's and which are just old cable'>>",
       "is_ending": false,
       "choices": [
         {
@@ -657,19 +657,19 @@
     },
     {
       "id": "se01",
-      "body": "<<FILL role=rising words=171 beats='Odette Marsh seats Wren Calloway at the far end of the camera wall in the Meridian Annex watch room, forty live monitors and one dead grey square; Odette recites the watch rules while the clocks tick past 11:52 and the building comes awake: badge on the left breast face out all shift, if a corridor goes amber you sit still until it whitens, and you never write on the log what the cameras will not save'>>",
+      "body": "<<FILL role=rising words=171 beats='{ROUTE_A_CHAR} seats {HERO} at the far end of the {ROUTE_A_PLACE} in the {ANNEX} watch room, forty live monitors and one dead grey square; {ROUTE_A_CHAR} recites the watch rules while the clocks tick past 11:52 and the building comes awake: {BADGE} on the left breast face out all shift, if a corridor goes {DEADLINE_SIGN} you sit still until it whitens, and you never write on the log what the cameras will not save'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_se01_0",
-          "label": "Settle in at the wall.",
+          "label": "Settle in at the {ROUTE_A_PLACE}.",
           "target": "se02"
         }
       ]
     },
     {
       "id": "ar12",
-      "body": "<<FILL role=resolution words=160 beats='Wren files the forecast cards in order and the night unfolds to their letter, amber at 1:14, the stall at the cold-floor door; she leaves at 5:44 exactly as her card foretold, having learned only that the Annex keeps its future on file and lets no one edit it'>>",
+      "body": "<<FILL role=resolution words=160 beats='{HERO} files the forecast cards in order and the night unfolds to their letter, {DEADLINE_SIGN} at 1:14, the stall at the {COLD_ROOM} door; she leaves at 5:44 exactly as her card foretold, having learned only that the {ANNEX} keeps its future on file and lets no one edit it'>>",
       "is_ending": true,
       "ending": {
         "id": "ar12",
@@ -681,7 +681,7 @@
     },
     {
       "id": "ar21",
-      "body": "<<FILL role=success words=168 beats='Wren fills the card in a steady hand, Case out at 5:44, and slots it home; the recopied cards in the drawer still to one clean original, the 1:14 skip does not come, and the count comes even for the first time in Ibsen's long memory; the ledger is complete, and a man is signed home'>>",
+      "body": "<<FILL role=success words=168 beats='{HERO} fills the card in a steady hand, {GHOST_NAME} out at 5:44, and slots it home; the recopied cards in the drawer still to one clean original, the 1:14 skip does not come, and the {RECKONING} comes even for the first time in {ROUTE_B_CHAR}'s long memory; the {AR_LEDGER} is complete, and a man is signed home'>>",
       "is_ending": true,
       "ending": {
         "id": "ar21",
@@ -693,7 +693,7 @@
     },
     {
       "id": "ar22",
-      "body": "<<FILL role=resolution words=164 beats='Wren sets the blank card down unwritten; a departure no one witnessed is not hers to invent, and the ledger's gap is at least true; the count stays one short, the drawer keeps recopying Case's entry, and Ibsen nods as though she has passed some test by leaving the wound open and honest'>>",
+      "body": "<<FILL role=resolution words=164 beats='{HERO} sets the blank card down unwritten; a departure no one witnessed is not hers to invent, and the {AR_LEDGER}'s gap is at least true; the {RECKONING} stays one short, the drawer keeps recopying {GHOST_NAME}'s entry, and {ROUTE_B_CHAR} nods as though she has passed some test by leaving the wound open and honest'>>",
       "is_ending": true,
       "ending": {
         "id": "ar22",
@@ -705,12 +705,12 @@
     },
     {
       "id": "ar20",
-      "body": "<<FILL role=choice words=186 beats='Wren stands at the drawer with a blank card and Ibsen's pen; she can write Case's sign-out in her own hand and close the entry the Annex has failed to complete since he vanished, or refuse to file a departure for a man whose leaving nobody living ever witnessed, and let the ledger keep its honest gap'>>",
+      "body": "<<FILL role=choice words=186 beats='{HERO} stands at the drawer with a blank card and {ROUTE_B_CHAR}'s pen; she can write {GHOST_NAME}'s sign-out in her own hand and close the entry the {ANNEX} has failed to complete since he vanished, or refuse to file a departure for a man whose leaving nobody living ever witnessed, and let the {AR_LEDGER} keep its honest gap'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ar20_0",
-          "label": "Write Case his sign-out.",
+          "label": "Write {GHOST_NAME} his sign-out.",
           "target": "ar21"
         },
         {
@@ -722,7 +722,7 @@
     },
     {
       "id": "ar19",
-      "body": "<<FILL role=rising words=176 beats='Wren understands the fix the building cannot make itself, a sign-out card for Case, filed by a living hand, closing the entry that has run open for years'>>",
+      "body": "<<FILL role=rising words=176 beats='{HERO} understands the fix the building cannot make itself, a sign-out card for {GHOST_NAME}, filed by a living hand, closing the entry that has run open for years'>>",
       "is_ending": false,
       "choices": [
         {
@@ -734,7 +734,7 @@
     },
     {
       "id": "ar18",
-      "body": "<<FILL role=rising words=172 beats='at 1:14 the room's clock skips its eleven minutes and every open drawer resets a fraction, the ledger blanking itself to start the tally clean'>>",
+      "body": "<<FILL role=rising words=172 beats='at 1:14 the room's clock skips its eleven minutes and every open drawer resets a fraction, the {AR_LEDGER} blanking itself to start the {RECKONING} clean'>>",
       "is_ending": false,
       "choices": [
         {
@@ -746,7 +746,7 @@
     },
     {
       "id": "ar17",
-      "body": "<<FILL role=rising words=178 beats='Ibsen says the reconciliation runs every third shift, the count checking the living against the kept, and it has been one short since the night Case did not sign out'>>",
+      "body": "<<FILL role=rising words=178 beats='{ROUTE_B_CHAR} says the {RECKONING} runs every {SHIFT_NAME}, the {RECKONING} checking the living against the kept, and it has been one short since the night {GHOST_NAME} did not sign out'>>",
       "is_ending": false,
       "choices": [
         {
@@ -758,7 +758,7 @@
     },
     {
       "id": "ar16",
-      "body": "<<FILL role=rising words=168 beats='Wren finds Case's original sign-in at the drawer's back, the ink pressed hard, the time 11:03, the little box for a departure left clean and waiting'>>",
+      "body": "<<FILL role=rising words=168 beats='{HERO} finds {GHOST_NAME}'s original sign-in at the drawer's back, the ink pressed hard, the time 11:03, the little box for a departure left clean and waiting'>>",
       "is_ending": false,
       "choices": [
         {
@@ -770,7 +770,7 @@
     },
     {
       "id": "ar15",
-      "body": "<<FILL role=rising words=170 beats='each recopied card is the building trying to complete the entry and failing, the ledger worrying the same missing line the way a tongue worries a gap'>>",
+      "body": "<<FILL role=rising words=170 beats='each recopied card is the building trying to complete the entry and failing, the {AR_LEDGER} worrying the same missing line the way a tongue worries a gap'>>",
       "is_ending": false,
       "choices": [
         {
@@ -782,7 +782,7 @@
     },
     {
       "id": "ar14",
-      "body": "<<FILL role=rising words=172 beats='the earliest cards are in a young hand and the latest in Ibsen's own, one keeper after another recopying the same open entry and none of them able to close it'>>",
+      "body": "<<FILL role=rising words=172 beats='the earliest cards are in a young hand and the latest in {ROUTE_B_CHAR}'s own, one keeper after another recopying the same open entry and none of them able to close it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -794,7 +794,7 @@
     },
     {
       "id": "ar13",
-      "body": "<<FILL role=rising words=174 beats='the cold-floor drawer holds one recurring name across decades of third shifts, Case, a sign-in with no matching sign-out, recopied a thousand times in a thousand hands'>>",
+      "body": "<<FILL role=rising words=174 beats='the {COLD_ROOM} drawer holds one recurring name across decades of {SHIFT_NAME}s, {GHOST_NAME}, a sign-in with no matching sign-out, recopied a thousand times in a thousand hands'>>",
       "is_ending": false,
       "choices": [
         {
@@ -806,7 +806,7 @@
     },
     {
       "id": "ar11",
-      "body": "<<FILL role=choice words=182 beats='the cards forecast the night exactly, down to the minute the count will stall at Sub-Level 3; Wren can file them straight and let the foretold night simply happen as written, or start pulling every card that touches the cold floor to learn who the count keeps stalling for'>>",
+      "body": "<<FILL role=choice words=182 beats='the cards forecast the night exactly, down to the minute the {RECKONING} will stall at {SEALED_FLOOR}; {HERO} can file them straight and let the foretold night simply happen as written, or start pulling every card that touches the {COLD_ROOM} to learn who the {RECKONING} keeps stalling for'>>",
       "is_ending": false,
       "choices": [
         {
@@ -816,14 +816,14 @@
         },
         {
           "id": "c_ar11_1",
-          "label": "Pull the cold-floor cards.",
+          "label": "Pull the {COLD_ROOM} cards.",
           "target": "ar13"
         }
       ]
     },
     {
       "id": "ar10",
-      "body": "<<FILL role=rising words=170 beats='he will not say who taught him to read the forward cards, only that the last keeper left the vault mid-shift and the building filed her departure a week before she walked out'>>",
+      "body": "<<FILL role=rising words=170 beats='he will not say who taught him to read the forward cards, only that the last keeper left the {ROUTE_B_PLACE} mid-shift and the building filed her departure a week before she walked out'>>",
       "is_ending": false,
       "choices": [
         {
@@ -835,7 +835,7 @@
     },
     {
       "id": "ar09",
-      "body": "<<FILL role=rising words=174 beats='pressed, Ibsen pulls a drawer neither of them touched and shows her a run of cards for events still hours off, an amber count at 1:14, a stall at the cold-floor door near dawn'>>",
+      "body": "<<FILL role=rising words=174 beats='pressed, {ROUTE_B_CHAR} pulls a drawer neither of them touched and shows her a run of cards for events still hours off, an {DEADLINE_SIGN} count at 1:14, a stall at the {COLD_ROOM} door near dawn'>>",
       "is_ending": false,
       "choices": [
         {
@@ -847,7 +847,7 @@
     },
     {
       "id": "ar27",
-      "body": "<<FILL role=resolution words=160 beats='Wren files the whole night through by Ibsen's grammar, warm entries in, cool completions filed, the cold drawer left cold; at 5:44 he tells her she has the hands for the work, and she leaves not knowing the man in the cold drawer's name, only that she kept his record as faithfully as the rest'>>",
+      "body": "<<FILL role=resolution words=160 beats='{HERO} files the whole night through by {ROUTE_B_CHAR}'s grammar, warm entries in, cool completions filed, the {COLD_ROOM} drawer left cold; at 5:44 he tells her she has the hands for the work, and she leaves not knowing the man in the {COLD_ROOM} drawer's name, only that she kept his record as faithfully as the rest'>>",
       "is_ending": true,
       "ending": {
         "id": "ar27",
@@ -859,7 +859,7 @@
     },
     {
       "id": "ar34",
-      "body": "<<FILL role=success words=166 beats='Wren copies Case whole into the permanent ledger, the shift he worked, the night he did not leave, the years the drawer kept him cold; the entry still lacks its exit but at last it lacks nothing else, and the building's endless recopying quiets to a record it can finally hold still'>>",
+      "body": "<<FILL role=success words=166 beats='{HERO} copies {GHOST_NAME} whole into the permanent {AR_LEDGER}, the shift he worked, the night he did not leave, the years the drawer kept him cold; the entry still lacks its exit but at last it lacks nothing else, and the building's endless recopying quiets to a record it can finally hold still'>>",
       "is_ending": true,
       "ending": {
         "id": "ar34",
@@ -871,7 +871,7 @@
     },
     {
       "id": "ar35",
-      "body": "<<FILL role=resolution words=160 beats='Wren slides the cold drawer shut with more care than she has shown anything all night; Case's entry stays open, unfinished, warm now where her hand rested; she leaves at dawn having read the whole of a man and written none of it, trusting the drawer to keep waiting'>>",
+      "body": "<<FILL role=resolution words=160 beats='{HERO} slides the {COLD_ROOM} drawer shut with more care than she has shown anything all night; {GHOST_NAME}'s entry stays open, unfinished, warm now where her hand rested; she leaves at dawn having read the whole of a man and written none of it, trusting the drawer to keep waiting'>>",
       "is_ending": true,
       "ending": {
         "id": "ar35",
@@ -883,7 +883,7 @@
     },
     {
       "id": "ar33",
-      "body": "<<FILL role=choice words=184 beats='Ibsen offers Wren the drawer and its long grief; she can spend what is left of the shift copying Case's story true into the permanent record so the man is at least fully written down, or close the cold drawer gently and leave his entry as she found it, open and waiting for a night that may never come'>>",
+      "body": "<<FILL role=choice words=184 beats='{ROUTE_B_CHAR} offers {HERO} the drawer and its long grief; she can spend what is left of the shift copying {GHOST_NAME}'s story true into the permanent record so the man is at least fully written down, or close the {COLD_ROOM} drawer gently and leave his entry as she found it, open and waiting for a night that may never come'>>",
       "is_ending": false,
       "choices": [
         {
@@ -900,7 +900,7 @@
     },
     {
       "id": "ar32",
-      "body": "<<FILL role=rising words=176 beats='he explains the reconciliation, the count one short since Case, the 1:14 reset that keeps the ledger from ever finishing its arithmetic'>>",
+      "body": "<<FILL role=rising words=176 beats='he explains the {RECKONING}, the {RECKONING} one short since {GHOST_NAME}, the 1:14 reset that keeps the {AR_LEDGER} from ever finishing its arithmetic'>>",
       "is_ending": false,
       "choices": [
         {
@@ -912,7 +912,7 @@
     },
     {
       "id": "ar31",
-      "body": "<<FILL role=rising words=172 beats='Wren reads the recopied cards in order and watches the man thin from a person into a clerical problem, a name kept only because the arithmetic will not balance without it'>>",
+      "body": "<<FILL role=rising words=172 beats='{HERO} reads the recopied cards in order and watches the man thin from a person into a clerical problem, a name kept only because the arithmetic will not balance without it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -924,7 +924,7 @@
     },
     {
       "id": "ar30",
-      "body": "<<FILL role=rising words=170 beats='he lays out the years for her, the winter Case worked, the shift he stayed past, the morning his card was found still open on the counter'>>",
+      "body": "<<FILL role=rising words=170 beats='he lays out the years for her, the winter {GHOST_NAME} worked, the shift he stayed past, the morning his card was found still open on the counter'>>",
       "is_ending": false,
       "choices": [
         {
@@ -936,7 +936,7 @@
     },
     {
       "id": "ar29",
-      "body": "<<FILL role=rising words=172 beats='Ibsen finds her there and does not scold; he says the drawer has waited a long time for a reader who would not simply refile it and walk away'>>",
+      "body": "<<FILL role=rising words=172 beats='{ROUTE_B_CHAR} finds her there and does not scold; he says the drawer has waited a long time for a reader who would not simply refile it and walk away'>>",
       "is_ending": false,
       "choices": [
         {
@@ -948,7 +948,7 @@
     },
     {
       "id": "ar28",
-      "body": "<<FILL role=rising words=174 beats='the cold drawer gives up Case, one endless entry with no exit, and the temperature of the cards climbs the instant Wren reads his name, as if the record woke'>>",
+      "body": "<<FILL role=rising words=174 beats='the {COLD_ROOM} drawer gives up {GHOST_NAME}, one endless entry with no exit, and the temperature of the cards climbs the instant {HERO} reads his name, as if the record woke'>>",
       "is_ending": false,
       "choices": [
         {
@@ -960,7 +960,7 @@
     },
     {
       "id": "ar26",
-      "body": "<<FILL role=choice words=182 beats='the work teaches her more than questions would; the cold-floor drawer alone stays cold under her fingers, its cards refusing to complete; Wren can keep to the honest filing Ibsen models until dawn, or slip that one cold drawer open against his rhythm to read what will not warm'>>",
+      "body": "<<FILL role=choice words=182 beats='the work teaches her more than questions would; the {COLD_ROOM} drawer alone stays cold under her fingers, its cards refusing to complete; {HERO} can keep to the honest filing {ROUTE_B_CHAR} models until dawn, or slip that one {COLD_ROOM} drawer open against his rhythm to read what will not warm'>>",
       "is_ending": false,
       "choices": [
         {
@@ -970,14 +970,14 @@
         },
         {
           "id": "c_ar26_1",
-          "label": "Open the cold drawer.",
+          "label": "Open the {COLD_ROOM} drawer.",
           "target": "ar28"
         }
       ]
     },
     {
       "id": "ar25",
-      "body": "<<FILL role=rising words=170 beats='the warmth of a fresh card in her palm starts to feel like a pulse she is responsible for, and she understands why Ibsen calls the vault a kind of nursing, not a kind of storage'>>",
+      "body": "<<FILL role=rising words=170 beats='the warmth of a fresh card in her palm starts to feel like a pulse she is responsible for, and she understands why {ROUTE_B_CHAR} calls the {ROUTE_B_PLACE} a kind of nursing, not a kind of storage'>>",
       "is_ending": false,
       "choices": [
         {
@@ -989,7 +989,7 @@
     },
     {
       "id": "ar24",
-      "body": "<<FILL role=rising words=168 beats='he teaches her the sorting the way a man teaches a craft he expects to hand on, and she notices he never lets her file toward the cold end, only away from it'>>",
+      "body": "<<FILL role=rising words=168 beats='he teaches her the sorting the way a man teaches a craft he expects to hand on, and she notices he never lets her file toward the {COLD_ROOM} end, only away from it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1001,7 +1001,7 @@
     },
     {
       "id": "ar23",
-      "body": "<<FILL role=rising words=174 beats='Wren files at Ibsen's shoulder for an hour, learning the vault's grammar, how a live entry sits warm in the hand and a completed one goes cool, how the cold-floor drawer stays cold all night'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} files at {ROUTE_B_CHAR}'s shoulder for an hour, learning the {ROUTE_B_PLACE}'s grammar, how a live entry sits warm in the hand and a completed one goes cool, how the {COLD_ROOM} drawer stays cold all night'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1013,7 +1013,7 @@
     },
     {
       "id": "ar08",
-      "body": "<<FILL role=choice words=184 beats='Ibsen's calm is its own kind of warning; Wren can press him on how a record can precede the event it records and what he is not saying, or accept the ledger's strange tense and learn the drawers his way before she judges them'>>",
+      "body": "<<FILL role=choice words=184 beats='{ROUTE_B_CHAR}'s calm is its own kind of warning; {HERO} can press him on how a record can precede the event it records and what he is not saying, or accept the {AR_LEDGER}'s strange tense and learn the drawers his way before she judges them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1030,7 +1030,7 @@
     },
     {
       "id": "ar07",
-      "body": "<<FILL role=rising words=172 beats='it unsettles her more than fear would, the tidiness of it, a building so sure she will leave on time that it has already filed the paperwork; Ibsen says the only card it never manages to fill is the one that matters'>>",
+      "body": "<<FILL role=rising words=172 beats='it unsettles her more than fear would, the tidiness of it, a building so sure she will leave on time that it has already filed the paperwork; {ROUTE_B_CHAR} says the only card it never manages to fill is the one that matters'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1042,7 +1042,7 @@
     },
     {
       "id": "ar06",
-      "body": "<<FILL role=rising words=174 beats='he turns Wren's own pre-filled departure card to the lamp and shows her the hand it is written in is hers, a signature she has not yet made tonight, waiting for her to catch up to it'>>",
+      "body": "<<FILL role=rising words=174 beats='he turns {HERO}'s own pre-filled departure card to the lamp and shows her the hand it is written in is hers, a signature she has not yet made tonight, waiting for her to catch up to it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1054,7 +1054,7 @@
     },
     {
       "id": "ar05",
-      "body": "<<FILL role=rising words=176 beats='Ibsen barely looks up; the ledger writes ahead on third shifts, he says, and the cards for a night are often complete before the night is, because the building keeps its count in a tense he stopped arguing with years ago'>>",
+      "body": "<<FILL role=rising words=176 beats='{ROUTE_B_CHAR} barely looks up; the {AR_LEDGER} writes ahead on {SHIFT_NAME}s, he says, and the cards for a night are often complete before the night is, because the building keeps its count in a tense he stopped arguing with years ago'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1066,7 +1066,7 @@
     },
     {
       "id": "ar48",
-      "body": "<<FILL role=success words=160 beats='Wren fills the empty field, Case out, and the card stops moving for the first time in years; down the vault the count reaches the cold-floor door, finds its record waiting complete, and settles even at last; Ibsen exhales like a man setting down a weight, and thanks the new hire by the man's name'>>",
+      "body": "<<FILL role=success words=160 beats='{HERO} fills the empty field, {GHOST_NAME} out, and the card stops moving for the first time in years; down the {ROUTE_B_PLACE} the {RECKONING} reaches the {COLD_ROOM} door, finds its record waiting complete, and settles even at last; {ROUTE_B_CHAR} exhales like a man setting down a weight, and thanks the new hire by the man's name'>>",
       "is_ending": true,
       "ending": {
         "id": "ar48",
@@ -1078,7 +1078,7 @@
     },
     {
       "id": "ar49",
-      "body": "<<FILL role=setback words=160 beats='Wren lifts her pen away and the card resumes its slow edit, name to no-name and back; some files are not hers to end, she tells herself, and maybe a man half-written is a man not yet given up on; the count comes up short again at dawn and the drawer keeps its restless grief'>>",
+      "body": "<<FILL role=setback words=160 beats='{HERO} lifts her pen away and the card resumes its slow edit, name to no-name and back; some files are not hers to end, she tells herself, and maybe a man half-written is a man not yet given up on; the {RECKONING} comes up short again at dawn and the drawer keeps its restless grief'>>",
       "is_ending": true,
       "ending": {
         "id": "ar49",
@@ -1090,7 +1090,7 @@
     },
     {
       "id": "ar47",
-      "body": "<<FILL role=choice words=184 beats='the rewriting card wants an ending and Wren can give it one; she can steady the card and pen the missing sign-out so the file completes and the count can settle, or let the card go on rewriting itself unfinished, unwilling to be the hand that decides a vanished man is gone'>>",
+      "body": "<<FILL role=choice words=184 beats='the rewriting card wants an ending and {HERO} can give it one; she can steady the card and pen the missing sign-out so the file completes and the {RECKONING} can settle, or let the card go on rewriting itself unfinished, unwilling to be the hand that decides a vanished man is gone'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1107,7 +1107,7 @@
     },
     {
       "id": "ar46",
-      "body": "<<FILL role=rising words=178 beats='Ibsen explains the count then, one short since Case, the 1:14 reset, the reconciliation that will run at the cold-floor door before dawn hunting the entry this card is trying to become'>>",
+      "body": "<<FILL role=rising words=178 beats='{ROUTE_B_CHAR} explains the {RECKONING} then, one short since {GHOST_NAME}, the 1:14 reset, the {RECKONING} that will run at the {COLD_ROOM} door before dawn hunting the entry this card is trying to become'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1119,7 +1119,7 @@
     },
     {
       "id": "ar45",
-      "body": "<<FILL role=rising words=172 beats='Ibsen brings the old roster and the winter timesheet and together they fix the real shape of the night the man did not clock out'>>",
+      "body": "<<FILL role=rising words=172 beats='{ROUTE_B_CHAR} brings the old roster and the winter timesheet and together they fix the real shape of the night the man did not clock out'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1131,7 +1131,7 @@
     },
     {
       "id": "ar44",
-      "body": "<<FILL role=rising words=172 beats='Wren steadies the card under the lamp and reads the drafts as they surface, a walk to the door, a coat taken, a coat left, the exit rewritten and unwritten between blinks'>>",
+      "body": "<<FILL role=rising words=172 beats='{HERO} steadies the card under the lamp and reads the drafts as they surface, a walk to the door, a {MA_COAT} taken, a {MA_COAT} left, the exit rewritten and unwritten between blinks'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1143,7 +1143,7 @@
     },
     {
       "id": "ar43",
-      "body": "<<FILL role=rising words=170 beats='each draft the card writes and erases is a version of Case leaving, none of them true, the building guessing at a departure nobody recorded'>>",
+      "body": "<<FILL role=rising words=170 beats='each draft the card writes and erases is a version of {GHOST_NAME} leaving, none of them true, the building guessing at a departure nobody recorded'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1155,7 +1155,7 @@
     },
     {
       "id": "ar42",
-      "body": "<<FILL role=rising words=174 beats='letting the ink lead, Wren watches the card settle toward one missing field it keeps circling, a sign-out time, a leaving, the single line that would let the file rest'>>",
+      "body": "<<FILL role=rising words=174 beats='letting the ink lead, {HERO} watches the card settle toward one missing field it keeps circling, a sign-out time, a leaving, the single line that would let the file rest'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1167,7 +1167,7 @@
     },
     {
       "id": "ar50",
-      "body": "<<FILL role=resolution words=160 beats='Wren lays the restless card back in its drawer and lets it rewrite itself in the dark; she has read enough to know the Annex is editing a man it lost and never told her whom; she files the rest of the night's cards straight and leaves the one that moves to move alone'>>",
+      "body": "<<FILL role=resolution words=160 beats='{HERO} lays the restless card back in its drawer and lets it rewrite itself in the dark; she has read enough to know the {ANNEX} is editing a man it lost and never told her whom; she files the rest of the night's cards straight and leaves the one that moves to move alone'>>",
       "is_ending": true,
       "ending": {
         "id": "ar50",
@@ -1179,7 +1179,7 @@
     },
     {
       "id": "ar41",
-      "body": "<<FILL role=choice words=182 beats='Ibsen watches Wren hold the restless card and says softly that it has rewritten itself since the man stopped coming and going; she can follow the rewrite to whatever it is reaching for and help it land, or set it down before it reaches anything and keep her hands clean of a record that edits itself'>>",
+      "body": "<<FILL role=choice words=182 beats='{ROUTE_B_CHAR} watches {HERO} hold the restless card and says softly that it has rewritten itself since the man stopped coming and going; she can follow the rewrite to whatever it is reaching for and help it land, or set it down before it reaches anything and keep her hands clean of a record that edits itself'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1196,7 +1196,7 @@
     },
     {
       "id": "ar40",
-      "body": "<<FILL role=rising words=168 beats='under the lamp the ink is warm and moving, and Ibsen stands close as though the card were an animal that might bolt, telling Wren softly not to grip it, only to let it run'>>",
+      "body": "<<FILL role=rising words=168 beats='under the lamp the ink is warm and moving, and {ROUTE_B_CHAR} stands close as though the card were an animal that might bolt, telling {HERO} softly not to grip it, only to let it run'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1208,7 +1208,7 @@
     },
     {
       "id": "ar39",
-      "body": "<<FILL role=rising words=176 beats='the card names Case, then unnames him, then names him again, an employment file the Annex keeps trying to complete and cannot, a decade of failed drafts in one square of stock'>>",
+      "body": "<<FILL role=rising words=176 beats='the card names {GHOST_NAME}, then unnames him, then names him again, an employment file the {ANNEX} keeps trying to complete and cannot, a decade of failed drafts in one square of stock'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1220,7 +1220,7 @@
     },
     {
       "id": "ar60",
-      "body": "<<FILL role=success words=160 beats='Wren and Ibsen fill Case's sign-out between them at the cold drawer, two living hands on one long-open entry; the amber stall at the cold-floor door whitens, the count comes even, and the old keeper tells her that in twelve years she is the first to walk down to the drawer instead of away from it'>>",
+      "body": "<<FILL role=success words=160 beats='{HERO} and {ROUTE_B_CHAR} fill {GHOST_NAME}'s sign-out between them at the {COLD_ROOM} drawer, two living hands on one long-open entry; the {DEADLINE_SIGN} stall at the {COLD_ROOM} door whitens, the {RECKONING} comes even, and the old keeper tells her that in twelve years she is the first to walk down to the drawer instead of away from it'>>",
       "is_ending": true,
       "ending": {
         "id": "ar60",
@@ -1232,7 +1232,7 @@
     },
     {
       "id": "ar61",
-      "body": "<<FILL role=resolution words=160 beats='Wren stays at the plain drawers and files the night out honest and small; the count stalls at the cold-floor door near dawn as Ibsen said it would, one short, and resets its eleven minutes at 5:44; she leaves having understood the Annex's grief exactly and having chosen, this once, not to carry it'>>",
+      "body": "<<FILL role=resolution words=160 beats='{HERO} stays at the plain drawers and files the night out honest and small; the {RECKONING} stalls at the {COLD_ROOM} door near dawn as {ROUTE_B_CHAR} said it would, one short, and resets its eleven minutes at 5:44; she leaves having understood the {ANNEX}'s grief exactly and having chosen, this once, not to carry it'>>",
       "is_ending": true,
       "ending": {
         "id": "ar61",
@@ -1244,7 +1244,7 @@
     },
     {
       "id": "ar59",
-      "body": "<<FILL role=choice words=184 beats='now that she knows, Ibsen leaves the choice to Wren as he says he has left it to every new hire who thought to ask; she can go with him to the cold-floor drawer and help him attempt the sign-out that might close Case's entry, or thank him and keep to the plain drawers, letting the old count run as it has run for years'>>",
+      "body": "<<FILL role=choice words=184 beats='now that she knows, {ROUTE_B_CHAR} leaves the choice to {HERO} as he says he has left it to every new hire who thought to ask; she can go with him to the {COLD_ROOM} drawer and help him attempt the sign-out that might close {GHOST_NAME}'s entry, or thank him and keep to the plain drawers, letting the old count run as it has run for years'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1261,7 +1261,7 @@
     },
     {
       "id": "ar58",
-      "body": "<<FILL role=rising words=174 beats='the 1:14 skip is the ledger blanking to start clean, he says, and the stall at the cold-floor door near dawn is the count finding the same hole it always finds'>>",
+      "body": "<<FILL role=rising words=174 beats='the 1:14 skip is the {AR_LEDGER} blanking to start clean, he says, and the stall at the {COLD_ROOM} door near dawn is the {RECKONING} finding the same hole it always finds'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1285,7 +1285,7 @@
     },
     {
       "id": "ar56",
-      "body": "<<FILL role=rising words=172 beats='the drawer is heavier than its cards, Ibsen says, because a place keeps what it cannot account for, and the weight of Case has been the vault's ballast for years'>>",
+      "body": "<<FILL role=rising words=172 beats='the drawer is heavier than its cards, {ROUTE_B_CHAR} says, because a place keeps what it cannot account for, and the weight of {GHOST_NAME} has been the {ROUTE_B_PLACE}'s ballast for years'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1297,7 +1297,7 @@
     },
     {
       "id": "ar55",
-      "body": "<<FILL role=rising words=170 beats='he walks her the length of the vault to the cold drawer and lets her feel it, the one run of cards that stays cold no matter how the room warms'>>",
+      "body": "<<FILL role=rising words=170 beats='he walks her the length of the {ROUTE_B_PLACE} to the {COLD_ROOM} drawer and lets her feel it, the one run of cards that stays cold no matter how the room warms'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1309,7 +1309,7 @@
     },
     {
       "id": "ar54",
-      "body": "<<FILL role=rising words=178 beats='Ibsen tells it flat: every third shift the building counts the living against the kept, and it has run one short since a worker named Case signed in and never signed the line to leave'>>",
+      "body": "<<FILL role=rising words=178 beats='{ROUTE_B_CHAR} tells it flat: every {SHIFT_NAME} the building counts the living against the kept, and it has run one short since a worker named {GHOST_NAME} signed in and never signed the line to leave'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1321,7 +1321,7 @@
     },
     {
       "id": "ar62",
-      "body": "<<FILL role=setback words=160 beats='Wren takes the silence and files until 5:44, the amber count crawling and stalling overhead, unasked and unexplained; the doors open on a gray morning and she carries out nothing but sore hands and the sense of a question she chose not to open; the drawers will keep, Ibsen says, they always keep'>>",
+      "body": "<<FILL role=setback words=160 beats='{HERO} takes the silence and files until 5:44, the {DEADLINE_SIGN} count crawling and stalling overhead, unasked and unexplained; the doors open on a gray morning and she carries out nothing but sore hands and the sense of a question she chose not to open; the drawers will keep, {ROUTE_B_CHAR} says, they always keep'>>",
       "is_ending": true,
       "ending": {
         "id": "ar62",
@@ -1333,12 +1333,12 @@
     },
     {
       "id": "ar53",
-      "body": "<<FILL role=choice words=182 beats='for a while the plain work steadies her, until the amber count starts its crawl overhead and Ibsen goes still, listening to the building tally itself through the ceiling; Wren can ask him plainly what the count is for, or take the safe silence he offers and file until the doors unlock'>>",
+      "body": "<<FILL role=choice words=182 beats='for a while the plain work steadies her, until the {DEADLINE_SIGN} count starts its crawl overhead and {ROUTE_B_CHAR} goes still, listening to the building count itself through the ceiling; {HERO} can ask him plainly what the {RECKONING} is for, or take the safe silence he offers and file until the doors unlock'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ar53_0",
-          "label": "Ask what the count is for.",
+          "label": "Ask what the {RECKONING} is for.",
           "target": "ar54"
         },
         {
@@ -1350,7 +1350,7 @@
     },
     {
       "id": "ar52",
-      "body": "<<FILL role=rising words=166 beats='the plain work is a mercy for an hour, entries with names and dates that hold still, and Ibsen hums over the drawers like a man who has made his peace with the one that will not'>>",
+      "body": "<<FILL role=rising words=166 beats='the plain work is a mercy for an hour, entries with names and dates that hold still, and {ROUTE_B_CHAR} hums over the drawers like a man who has made his peace with the one that will not'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1362,7 +1362,7 @@
     },
     {
       "id": "ar51",
-      "body": "<<FILL role=rising words=174 beats='Wren slots the rewriting card back unread, and Ibsen's shoulders ease; some drawers you file around, he says, not into, and hands her a stack of plain entries to keep her honest and busy'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} slots the rewriting card back unread, and {ROUTE_B_CHAR}'s shoulders ease; some drawers you file around, he says, not into, and hands her a stack of plain entries to keep her honest and busy'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1374,7 +1374,7 @@
     },
     {
       "id": "ar38",
-      "body": "<<FILL role=choice words=184 beats='the self-rewriting card is a record that cannot settle, a man whose file the building edits and re-edits without ever finishing him; Wren can open the drawer and read the rewriting card while it moves, or reshelve it untouched the way Ibsen plainly wants and pretend she saw nothing'>>",
+      "body": "<<FILL role=choice words=184 beats='the self-rewriting card is a record that cannot settle, a man whose file the building edits and re-edits without ever finishing him; {HERO} can open the drawer and read the rewriting card while it moves, or reshelve it untouched the way {ROUTE_B_CHAR} plainly wants and pretend she saw nothing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1403,7 +1403,7 @@
     },
     {
       "id": "ar36",
-      "body": "<<FILL role=rising words=172 beats='Wren files quietly and watches Ibsen instead, learning his tells, the drawers he opens without looking and the one at the vault's cold end he circles and never quite reaches'>>",
+      "body": "<<FILL role=rising words=172 beats='{HERO} files quietly and watches {ROUTE_B_CHAR} instead, learning his tells, the drawers he opens without looking and the one at the {ROUTE_B_PLACE}'s {COLD_ROOM} end he circles and never quite reaches'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1415,12 +1415,12 @@
     },
     {
       "id": "ar04",
-      "body": "<<FILL role=choice words=186 beats='Wren holds the card that says she has already gone; the ledger has written her leaving before she lived it; she can ask Ibsen outright what a card that runs ahead of the clock means, or file it and keep her questions quiet while she watches how the old man works the drawers'>>",
+      "body": "<<FILL role=choice words=186 beats='{HERO} holds the card that says she has already gone; the {AR_LEDGER} has written her leaving before she lived it; she can ask {ROUTE_B_CHAR} outright what a card that runs ahead of the clock means, or file it and keep her questions quiet while she watches how the old man works the drawers'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ar04_0",
-          "label": "Ask Ibsen about the card.",
+          "label": "Ask {ROUTE_B_CHAR} about the card.",
           "target": "ar05"
         },
         {
@@ -1432,7 +1432,7 @@
     },
     {
       "id": "ar03",
-      "body": "<<FILL role=rising words=178 beats='he hands her tonight's sign-in cards to file, and among them Wren finds her own departure card already written and inked, timestamped 5:44 tonight, though the night has barely started and she has not left'>>",
+      "body": "<<FILL role=rising words=178 beats='he hands her tonight's sign-in cards to file, and among them {HERO} finds her own departure card already written and inked, timestamped 5:44 tonight, though the night has barely started and she has not left'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1444,7 +1444,7 @@
     },
     {
       "id": "ar02",
-      "body": "<<FILL role=rising words=174 beats='the vault runs three storeys deep, drawer upon drawer, and Ibsen keeps a kettle, a ledger older than the building's wiring, and a habit of never quite finishing a sentence about the cold-floor drawer at the far end'>>",
+      "body": "<<FILL role=rising words=174 beats='the {ROUTE_B_PLACE} runs three storeys deep, drawer upon drawer, and {ROUTE_B_CHAR} keeps a kettle, a {AR_LEDGER} older than the building's wiring, and a habit of never quite finishing a sentence about the {COLD_ROOM} drawer at the far end'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1456,7 +1456,7 @@
     },
     {
       "id": "ar01",
-      "body": "<<FILL role=rising words=180 beats='Mr. Ibsen brings Wren down into the record room of the Meridian Annex, a long vault of card drawers under a single green lamp; he tells her the one law of the place, every entry must have a matching card and the ledger is never wrong, only ever incomplete'>>",
+      "body": "<<FILL role=rising words=180 beats='{ROUTE_B_CHAR} brings {HERO} down into the record room of the {ANNEX}, a long vault of card drawers under a single green lamp; he tells her the one law of the place, every entry must have a matching card and the {AR_LEDGER} is never wrong, only ever incomplete'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1468,7 +1468,7 @@
     },
     {
       "id": "ma05",
-      "body": "<<FILL role=setback words=160 beats='Wren takes the offered chair in the bright break room and lets Boyd chase the draw alone; the night passes in vending-machine light and the hum of a floor she never sees; at 5:44 Boyd clocks her out with a tired nod and never says what he found, and she never asks, and that is the shape of her first third shift'>>",
+      "body": "<<FILL role=setback words=160 beats='{HERO} takes the offered chair in the bright break room and lets {ROUTE_C_CHAR} chase the draw alone; the night passes in vending-machine light and the hum of a floor she never sees; at 5:44 {ROUTE_C_CHAR} clocks her out with a tired nod and never says what he found, and she never asks, and that is the shape of her first {SHIFT_NAME}'>>",
       "is_ending": true,
       "ending": {
         "id": "ma05",
@@ -1480,7 +1480,7 @@
     },
     {
       "id": "ma12",
-      "body": "<<FILL role=setback words=162 beats='Wren bridges the breaker to save the minute and the old bus answers with a bang and a dark that swallows three floors; when the emergency lights come up Boyd is not angry, only quiet, resetting what she cut, and the amber count has jumped ahead of them in the blackout to somewhere they can no longer follow'>>",
+      "body": "<<FILL role=setback words=162 beats='{HERO} bridges the {MA_BREAKER} to save the minute and the old bus answers with a bang and a dark that swallows three floors; when the emergency lights come up {ROUTE_C_CHAR} is not angry, only quiet, resetting what she cut, and the {DEADLINE_SIGN} count has jumped ahead of them in the blackout to somewhere they can no longer follow'>>",
       "is_ending": true,
       "ending": {
         "id": "ma12",
@@ -1492,7 +1492,7 @@
     },
     {
       "id": "ma19",
-      "body": "<<FILL role=peril_ending words=164 beats='They shoulder the cold door open on their own authority, and the building notes two entries with no order to match them; the reconciliation near dawn finds the tally two long instead of one short and settles the arithmetic the only way it can, and the day staff will log the plant as running one engineer, as it always has, and never the new hire'>>",
+      "body": "<<FILL role=peril_ending words=164 beats='They shoulder the cold door open on their own authority, and the building notes two entries with no order to match them; the {RECKONING} near dawn finds the {RECKONING} two long instead of one short and settles the arithmetic the only way it can, and the day staff will log the {ROUTE_C_PLACE} as running one engineer, as it always has, and never the new hire'>>",
       "is_ending": true,
       "ending": {
         "id": "ma19",
@@ -1504,7 +1504,7 @@
     },
     {
       "id": "ma25",
-      "body": "<<FILL role=peril_ending words=162 beats='Wren lifts the folded coat and the cold room remembers an occupant; the badge on the floor turns to face her, warm, and reads a name that is now also partly hers; Boyd gets her back up the stairs before 5:44 but she leaves the Annex carrying a coat's weight on her shoulders that no one else will ever see her set down'>>",
+      "body": "<<FILL role=peril_ending words=162 beats='{HERO} lifts the folded {MA_COAT} and the {COLD_ROOM} remembers an occupant; the {BADGE} on the floor turns to face her, warm, and reads a name that is now also partly hers; {ROUTE_C_CHAR} gets her back up the stairs before 5:44 but she leaves the {ANNEX} carrying a {MA_COAT}'s weight on her shoulders that no one else will ever see her set down'>>",
       "is_ending": true,
       "ending": {
         "id": "ma25",
@@ -1516,7 +1516,7 @@
     },
     {
       "id": "ma33",
-      "body": "<<FILL role=peril_ending words=164 beats='Wren kills the climate and the perfect cold begins, at last, to fail toward ordinary cold; whatever the Annex was keeping comfortable is let go into plain temperature and time; the draw falls off the meter, the count loses the thing it tracked, and Boyd says nothing on the long stairs up but that some mercies only look like switching a thing off'>>",
+      "body": "<<FILL role=peril_ending words=164 beats='{HERO} kills the {MA_CLIMATE} and the perfect cold begins, at last, to fail toward ordinary cold; whatever the {ANNEX} was keeping comfortable is let go into plain temperature and time; the draw falls off the meter, the {RECKONING} loses the thing it tracked, and {ROUTE_C_CHAR} says nothing on the long stairs up but that some mercies only look like switching a thing off'>>",
       "is_ending": true,
       "ending": {
         "id": "ma33",
@@ -1528,7 +1528,7 @@
     },
     {
       "id": "ma34",
-      "body": "<<FILL role=success words=168 beats='Wren stands the fallen badge upright on the chair and turns it face out, the sign that says this one may be spoken to at last; the amber stall at the doorway whitens, the climate draw settles to nothing needed, and the count comes even as the building finally finds the man it kept and lets the record of Case rest facing the world instead of the wall'>>",
+      "body": "<<FILL role=success words=168 beats='{HERO} stands the fallen {BADGE} upright on the chair and turns it face out, the sign that says this one may be spoken to at last; the {DEADLINE_SIGN} stall at the doorway whitens, the {MA_CLIMATE} draw settles to nothing needed, and the {RECKONING} comes even as the building finally finds the man it kept and lets the record of {GHOST_NAME} rest facing the world instead of the {ROUTE_A_PLACE}'>>",
       "is_ending": true,
       "ending": {
         "id": "ma34",
@@ -1540,7 +1540,7 @@
     },
     {
       "id": "ma35",
-      "body": "<<FILL role=setback words=164 beats='Wren cuts the count subsystem out of the old bus and the amber sweeps stop for good; the building will not hunt the cold floor again, but it will not find Case either, the one who was almost found left forever unsearched-for in a room no system now remembers to keep; Boyd calls it peace and does not sound sure'>>",
+      "body": "<<FILL role=setback words=164 beats='{HERO} cuts the {RECKONING} subsystem out of the old bus and the {DEADLINE_SIGN} sweeps stop for good; the building will not hunt the {COLD_ROOM} again, but it will not find {GHOST_NAME} either, the one who was almost found left forever unsearched-for in a room no system now remembers to keep; {ROUTE_C_CHAR} calls it peace and does not sound sure'>>",
       "is_ending": true,
       "ending": {
         "id": "ma35",
@@ -1552,7 +1552,7 @@
     },
     {
       "id": "ma36",
-      "body": "<<FILL role=setback words=166 beats='Wren seals the cold-floor door and leaves every system set as they came, the coat folded, the badge face down, the climate humming its long vigil on; at 1:14 next third shift the clocks will lose their eleven minutes again and the count will start once more toward the room; the Annex keeps what it keeps, and the new hire clocks out having changed nothing but herself'>>",
+      "body": "<<FILL role=setback words=166 beats='{HERO} seals the {COLD_ROOM} door and leaves every system set as they came, the {MA_COAT} folded, the {BADGE} face down, the {MA_CLIMATE} humming its long vigil on; at 1:14 next {SHIFT_NAME} the clocks will lose their eleven minutes again and the {RECKONING} will start once more toward the room; the {ANNEX} keeps what it keeps, and the new hire clocks out having changed nothing but herself'>>",
       "is_ending": true,
       "ending": {
         "id": "ma36",
@@ -1564,22 +1564,22 @@
     },
     {
       "id": "ma32",
-      "body": "<<FILL role=choice words=190 beats='the cold-floor panel lays four last acts before Wren and Boyd stands aside to let the new hire decide how the Annex answers the man it has kept: cut the climate and let the room finally go cold, set Case's fallen badge upright and facing out, patch the count subsystem so the building stops its endless searching, or seal the door and leave every system exactly as found'>>",
+      "body": "<<FILL role=choice words=190 beats='the {COLD_ROOM} panel lays four last acts before {HERO} and {ROUTE_C_CHAR} stands aside to let the new hire decide how the {ANNEX} answers the man it has kept: cut the {MA_CLIMATE} and let the room finally go cold, set {GHOST_NAME}'s fallen {BADGE} upright and facing out, patch the {RECKONING} subsystem so the building stops its endless searching, or seal the door and leave every system exactly as found'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ma32_0",
-          "label": "Cut the climate.",
+          "label": "Cut the {MA_CLIMATE}.",
           "target": "ma33"
         },
         {
           "id": "c_ma32_1",
-          "label": "Set the badge facing out.",
+          "label": "Set the {BADGE} facing out.",
           "target": "ma34"
         },
         {
           "id": "c_ma32_2",
-          "label": "Patch the count subsystem.",
+          "label": "Patch the {RECKONING} subsystem.",
           "target": "ma35"
         },
         {
@@ -1591,7 +1591,7 @@
     },
     {
       "id": "ma31",
-      "body": "<<FILL role=rising words=174 beats='Boyd steps back from the panel and tells Wren the systems will answer to whatever she does here, that a new pair of hands sometimes settles a thing his own never could, and that dawn is twenty minutes off'>>",
+      "body": "<<FILL role=rising words=174 beats='{ROUTE_C_CHAR} steps back from the panel and tells {HERO} the systems will answer to whatever she does here, that a new pair of hands sometimes settles a thing his own never could, and that dawn is twenty minutes off'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1603,7 +1603,7 @@
     },
     {
       "id": "ma30",
-      "body": "<<FILL role=rising words=180 beats='near 5:20 the amber count reaches Sub-Level 3 and stalls at the doorway, the building arriving at the room it has been counting toward all night and finding, as always, the man it kept but cannot account for'>>",
+      "body": "<<FILL role=rising words=180 beats='near 5:20 the {DEADLINE_SIGN} count reaches {SEALED_FLOOR} and stalls at the doorway, the building arriving at the room it has been counting toward all night and finding, as always, the man it kept but cannot account for'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1627,7 +1627,7 @@
     },
     {
       "id": "ma28",
-      "body": "<<FILL role=rising words=172 beats='Boyd traces the climate feed to a single thermostat that has never once been allowed to fail, wired around three generations of upgrades so no one could switch it off by accident'>>",
+      "body": "<<FILL role=rising words=172 beats='{ROUTE_C_CHAR} traces the {MA_CLIMATE} feed to a single thermostat that has never once been allowed to fail, wired around three generations of upgrades so no one could switch it off by accident'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1639,7 +1639,7 @@
     },
     {
       "id": "ma27",
-      "body": "<<FILL role=rising words=174 beats='the desk holds a mug gone to dust, a shift roster from a year Boyd was a boy, and a sign-out sheet with every name struck through but one, the pen still uncapped beside it'>>",
+      "body": "<<FILL role=rising words=174 beats='the desk holds a mug gone to dust, a shift roster from a year {ROUTE_C_CHAR} was a boy, and a sign-out sheet with every name struck through but one, the pen still uncapped beside it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1651,7 +1651,7 @@
     },
     {
       "id": "ma26",
-      "body": "<<FILL role=rising words=176 beats='Wren keeps her hands to herself and reads the room instead; the badge on the floor names Case, and the panel shows the Annex has run this cold vigil since the third shift he did not clock out'>>",
+      "body": "<<FILL role=rising words=176 beats='{HERO} keeps her hands to herself and reads the room instead; the {BADGE} on the floor names {GHOST_NAME}, and the panel shows the {ANNEX} has run this cold vigil since the {SHIFT_NAME} he did not clock out'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1663,12 +1663,12 @@
     },
     {
       "id": "ma24",
-      "body": "<<FILL role=choice words=182 beats='the coat is folded as if its owner meant to be back within the hour, and the fallen badge reads face inward, the sign that says do not speak to me; Wren feels the pull to lift the coat and learn the name stitched in its collar, though Boyd has told her twice to touch nothing on the cold floor that the building is still keeping'>>",
+      "body": "<<FILL role=choice words=182 beats='the {MA_COAT} is folded as if its owner meant to be back within the hour, and the fallen {BADGE} reads face inward, the sign that says do not speak to me; {HERO} feels the pull to lift the {MA_COAT} and learn the name stitched in its collar, though {ROUTE_C_CHAR} has told her twice to touch nothing on the {COLD_ROOM} that the building is still keeping'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ma24_0",
-          "label": "Lift the coat.",
+          "label": "Lift the {MA_COAT}.",
           "target": "ma25"
         },
         {
@@ -1680,7 +1680,7 @@
     },
     {
       "id": "ma23",
-      "body": "<<FILL role=rising words=180 beats='Boyd reads the wall panel and goes quiet; the climate has run for this room's comfort for years, the Annex keeping a post warm for someone the ledger lost, and the amber count is the building walking the halls looking for him'>>",
+      "body": "<<FILL role=rising words=180 beats='{ROUTE_C_CHAR} reads the {ROUTE_A_PLACE} panel and goes quiet; the {MA_CLIMATE} has run for this room's comfort for years, the {ANNEX} keeping a post warm for someone the {AR_LEDGER} lost, and the {DEADLINE_SIGN} count is the building walking the halls looking for him'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1692,7 +1692,7 @@
     },
     {
       "id": "ma22",
-      "body": "<<FILL role=rising words=172 beats='the air inside is wrong in its rightness, room temperature in a building that runs cold, the one comfortable place in the whole dark Annex and no one alive meant to be warmed by it'>>",
+      "body": "<<FILL role=rising words=172 beats='the air inside is wrong in its rightness, room temperature in a building that runs cold, the one comfortable place in the whole dark {ANNEX} and no one alive meant to be warmed by it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1704,7 +1704,7 @@
     },
     {
       "id": "ma21",
-      "body": "<<FILL role=rising words=178 beats='the door opens on a small climate-perfect room the plans deny, a chair squared to a desk, a folded coat, and a badge on the floor lying face inward'>>",
+      "body": "<<FILL role=rising words=178 beats='the door opens on a small {MA_CLIMATE}-perfect room the plans deny, a chair squared to a desk, a folded {MA_COAT}, and a {BADGE} on the floor lying face inward'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1716,7 +1716,7 @@
     },
     {
       "id": "ma20",
-      "body": "<<FILL role=rising words=174 beats='Halvers takes a long moment on the radio and then authorizes it in a voice that has said yes to this before, and tells Wren only to leave the room the way she finds it if she can'>>",
+      "body": "<<FILL role=rising words=174 beats='{SUPERVISOR} takes a long moment on the radio and then authorizes it in a voice that has said yes to this before, and tells {HERO} only to leave the room the way she finds it if she can'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1728,7 +1728,7 @@
     },
     {
       "id": "ma18",
-      "body": "<<FILL role=choice words=184 beats='the cold-floor door is iced at its edges and the climate line runs into it like a fed vein; the rule is plain, no Sub-Level 3 unless a supervisor sends you, and no one has sent them; Boyd is reaching for the handle out of pure momentum, and Wren can force the door with him now, or make him stop and radio Halvers for the authorization the rule demands'>>",
+      "body": "<<FILL role=choice words=184 beats='the {COLD_ROOM} door is iced at its edges and the {MA_CLIMATE} line runs into it like a fed vein; the rule is plain, no {SEALED_FLOOR} unless a supervisor sends you, and no one has sent them; {ROUTE_C_CHAR} is reaching for the handle out of pure momentum, and {HERO} can force the door with him now, or make him stop and radio {SUPERVISOR} for the authorization the rule demands'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1738,14 +1738,14 @@
         },
         {
           "id": "c_ma18_1",
-          "label": "Radio Halvers first.",
+          "label": "Radio {SUPERVISOR} first.",
           "target": "ma20"
         }
       ]
     },
     {
       "id": "ma17",
-      "body": "<<FILL role=rising words=172 beats='descending, they pass the SL1 and SL2 landings where the stair lights hold amber, and Boyd stops them dead on each step until the gold whitens'>>",
+      "body": "<<FILL role=rising words=172 beats='descending, they pass the SL1 and SL2 landings where the stair lights hold {DEADLINE_SIGN}, and {ROUTE_C_CHAR} stops them dead on each step until the {DEADLINE_SIGN} whitens'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1757,7 +1757,7 @@
     },
     {
       "id": "ma16",
-      "body": "<<FILL role=rising words=176 beats='it is past 3:00 now and the freight elevator answers nothing, exactly as Boyd warned; they take the switchback stairs down toward the cold floor with the draw singing in the conduit beside them'>>",
+      "body": "<<FILL role=rising words=176 beats='it is past 3:00 now and the {MA_ELEVATOR} answers nothing, exactly as {ROUTE_C_CHAR} warned; they take the switchback stairs down toward the {COLD_ROOM} with the draw singing in the conduit beside them'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1769,7 +1769,7 @@
     },
     {
       "id": "ma15",
-      "body": "<<FILL role=rising words=168 beats='the thermostat spec, when Boyd finds it, is set to a living body's comfort, not a store's preservation, tuned for a person and not a thing'>>",
+      "body": "<<FILL role=rising words=168 beats='the thermostat spec, when {ROUTE_C_CHAR} finds it, is set to a living body's comfort, not a store's preservation, tuned for a person and not a thing'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1781,7 +1781,7 @@
     },
     {
       "id": "ma14",
-      "body": "<<FILL role=rising words=174 beats='the maintenance history for that line runs decades deep, the same three technicians signing off the cold-floor climate year on year, none ever writing down what it keeps comfortable'>>",
+      "body": "<<FILL role=rising words=174 beats='the maintenance history for that line runs decades deep, the same three technicians signing off the {COLD_ROOM} {MA_CLIMATE} year on year, none ever writing down what it keeps comfortable'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1793,7 +1793,7 @@
     },
     {
       "id": "ma13",
-      "body": "<<FILL role=rising words=174 beats='Wren resets the breaker the slow correct way and the trace holds; with power steady, Boyd runs the climate line straight down the schematic to a single sealed door on Sub-Level 3'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} resets the {MA_BREAKER} the slow correct way and the trace holds; with power steady, {ROUTE_C_CHAR} runs the {MA_CLIMATE} line straight down the schematic to a single sealed door on {SEALED_FLOOR}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1805,12 +1805,12 @@
     },
     {
       "id": "ma11",
-      "body": "<<FILL role=choice words=182 beats='the surge has kicked the SL2 breaker and the trace stalls until it is reset; Boyd is already three floors ahead in his head and tells Wren to just jump it fast so they do not lose the thread, though the panel is old and jumping a breaker on this bus is exactly the shortcut the safety card forbids'>>",
+      "body": "<<FILL role=choice words=182 beats='the surge has kicked the SL2 {MA_BREAKER} and the trace stalls until it is reset; {ROUTE_C_CHAR} is already three floors ahead in his head and tells {HERO} to just jump it fast so they do not lose the thread, though the panel is old and jumping a {MA_BREAKER} on this bus is exactly the shortcut the safety card forbids'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_ma11_0",
-          "label": "Jump the breaker.",
+          "label": "Jump the {MA_BREAKER}.",
           "target": "ma12"
         },
         {
@@ -1822,7 +1822,7 @@
     },
     {
       "id": "ma10",
-      "body": "<<FILL role=rising words=176 beats='at 1:14 the generator surges and every clock in the plant skips eleven minutes as one; Boyd says it happens every third shift and trips the same tired breaker on Sub-Level 2 each time'>>",
+      "body": "<<FILL role=rising words=176 beats='at 1:14 the generator surges and every clock in the {ROUTE_C_PLACE} skips eleven minutes as one; {ROUTE_C_CHAR} says it happens every {SHIFT_NAME} and trips the same tired {MA_BREAKER} on Sub-Level 2 each time'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1834,7 +1834,7 @@
     },
     {
       "id": "ma09",
-      "body": "<<FILL role=rising words=166 beats='the conduit hums a low even note Boyd calls the count itself riding the old copper, a sound he says he has learned to sleep through'>>",
+      "body": "<<FILL role=rising words=166 beats='the conduit hums a low even note {ROUTE_C_CHAR} calls the {RECKONING} itself riding the old copper, a sound he says he has learned to sleep through'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1846,7 +1846,7 @@
     },
     {
       "id": "ma08",
-      "body": "<<FILL role=rising words=172 beats='Boyd shows her the load chart, the cold-floor draw dwarfing every real tenant system, a comfort bill for a room the building swears is empty'>>",
+      "body": "<<FILL role=rising words=172 beats='{ROUTE_C_CHAR} shows her the load chart, the {COLD_ROOM} draw dwarfing every real tenant system, a comfort bill for a room the building swears is empty'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1858,7 +1858,7 @@
     },
     {
       "id": "ma07",
-      "body": "<<FILL role=rising words=170 beats='the count wiring is spliced into the fire panel, the door locks, and the clocks, older than any of them, so that whatever tallies the building also holds its doors and keeps its time'>>",
+      "body": "<<FILL role=rising words=170 beats='the {RECKONING} wiring is spliced into the fire panel, the door locks, and the clocks, older than any of them, so that whatever tallies the building also holds its doors and keeps its time'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1870,7 +1870,7 @@
     },
     {
       "id": "ma06",
-      "body": "<<FILL role=rising words=174 beats='Wren follows Boyd along the conduit, and he reads the amber count off the old bus like a meter, a subsystem that wakes each third shift and tallies something the manuals never named'>>",
+      "body": "<<FILL role=rising words=174 beats='{HERO} follows {ROUTE_C_CHAR} along the conduit, and he reads the {DEADLINE_SIGN} count off the old bus like a meter, a subsystem that wakes each {SHIFT_NAME} and tallies something the manuals never named'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1882,7 +1882,7 @@
     },
     {
       "id": "ma04",
-      "body": "<<FILL role=choice words=184 beats='the cold floor is heating and cooling a room the building calls empty, and the bill for it rises with the amber count; Boyd, watching Wren's face, offers her an easy out, he can sign her off early to the break room and handle the strange draw himself, or she can stay on her feet and help him trace where the power actually goes'>>",
+      "body": "<<FILL role=choice words=184 beats='the {COLD_ROOM} is heating and cooling a room the building calls empty, and the bill for it rises with the {DEADLINE_SIGN} count; {ROUTE_C_CHAR}, watching {HERO}'s face, offers her an easy out, he can sign her off early to the break room and handle the strange draw himself, or she can stay on her feet and help him trace where the power actually goes'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1899,7 +1899,7 @@
     },
     {
       "id": "ma03",
-      "body": "<<FILL role=rising words=176 beats='Boyd stops at a metering panel and shows her the wrong number, Sub-Level 3 drawing climate power all night though the logs swear it is empty, and the draw climbing each time the corridors overhead go amber'>>",
+      "body": "<<FILL role=rising words=176 beats='{ROUTE_C_CHAR} stops at a metering panel and shows her the wrong number, {SEALED_FLOOR} drawing {MA_CLIMATE} power all night though the logs swear it is empty, and the draw climbing each time the corridors overhead go {DEADLINE_SIGN}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1911,7 +1911,7 @@
     },
     {
       "id": "ma02",
-      "body": "<<FILL role=rising words=174 beats='the plant is a museum of upgrades stacked on upgrades, Boyd says, forty years of engineers who each left the strange parts alone; he points out the panels nobody has ever been cleared to open and the ones that open themselves at 1:14'>>",
+      "body": "<<FILL role=rising words=174 beats='the {ROUTE_C_PLACE} is a museum of upgrades stacked on upgrades, {ROUTE_C_CHAR} says, forty years of engineers who each left the strange parts alone; he points out the panels nobody has ever been cleared to open and the ones that open themselves at 1:14'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1923,7 +1923,7 @@
     },
     {
       "id": "ma01",
-      "body": "<<FILL role=rising words=182 beats='Boyd walks Wren the plant of the Meridian Annex at a half-run, generator, chillers, water, and the old power bus, talking the whole way; his rules come fast, after 3:00 the freight elevator answers no button so you take the stairs, and you do not go to Sub-Level 3, the cold floor, unless a supervisor sends you'>>",
+      "body": "<<FILL role=rising words=182 beats='{ROUTE_C_CHAR} walks {HERO} the {ROUTE_C_PLACE} of the {ANNEX} at a half-run, generator, chillers, water, and the old power bus, talking the whole way; his rules come fast, after 3:00 the {MA_ELEVATOR} answers no button so you take the stairs, and you do not go to {SEALED_FLOOR}, the {COLD_ROOM}, unless a supervisor sends you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1935,29 +1935,29 @@
     },
     {
       "id": "n03",
-      "body": "<<FILL role=choice words=196 beats='Halvers reads the roster and names the three posts the Annex needs filled tonight, each with its own lead and its own way of seeing what the building does after dark: Security under Odette Marsh at the camera wall, watching what the cameras refuse to record; Archives under Mr. Ibsen in the record vault, keeping cards for events not yet happened or long erased; and Maintenance under Boyd in the plant, tending systems that serve something besides the tenants; Wren picks where she stands'>>",
+      "body": "<<FILL role=choice words=196 beats='{SUPERVISOR} reads the roster and names the three posts the {ANNEX} needs filled tonight, each with its own lead and its own way of seeing what the building does after dark: Security under {ROUTE_A_CHAR} at the {ROUTE_A_PLACE}, watching what the cameras refuse to record; Archives under {ROUTE_B_CHAR} in the {ROUTE_B_PLACE}, keeping cards for events not yet happened or long erased; and Maintenance under {ROUTE_C_CHAR} in the {ROUTE_C_PLACE}, tending systems that serve something besides the tenants; {HERO} picks where she stands'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_n03_0",
-          "label": "Take the camera wall.",
+          "label": "Take the {ROUTE_A_PLACE}.",
           "target": "se01"
         },
         {
           "id": "c_n03_1",
-          "label": "Take the record vault.",
+          "label": "Take the {ROUTE_B_PLACE}.",
           "target": "ar01"
         },
         {
           "id": "c_n03_2",
-          "label": "Take the plant.",
+          "label": "Take the {ROUTE_C_PLACE}.",
           "target": "ma01"
         }
       ]
     },
     {
       "id": "n02",
-      "body": "<<FILL role=setup words=211 beats='the night supervisor, Halvers, twelve years on the job and calm about all of it, runs Wren through induction: badge face out or you are not to be spoken to, stand still in any corridor that goes amber, stay off Sub-Level 3 unless sent, and mind that after 3:00 the freight elevator stops answering; then he sorts the new hires'>>",
+      "body": "<<FILL role=setup words=211 beats='the night supervisor, {SUPERVISOR}, twelve years on the job and calm about all of it, runs {HERO} through induction: {BADGE} face out or you are not to be spoken to, stand still in any corridor that goes {DEADLINE_SIGN}, stay off {SEALED_FLOOR} unless sent, and mind that after 3:00 the {MA_ELEVATOR} stops answering; then he sorts the new hires'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1969,7 +1969,7 @@
     },
     {
       "id": "n01",
-      "body": "<<FILL role=setup words=206 beats='Wren Calloway reports for a first third shift at the Meridian Annex, a records-and-holdings complex with an unlisted address that stands locked and lightless by day and only comes awake from 11:00 at night to 5:44 before dawn; the doors will not open early, and everyone works the whole shift through'>>",
+      "body": "<<FILL role=setup words=206 beats='{HERO} reports for a first {SHIFT_NAME} at the {ANNEX}, a records-and-holdings complex with an unlisted address that stands locked and lightless by day and only comes awake from 11:00 at night to 5:44 before dawn; the doors will not open early, and everyone works the whole shift through'>>",
       "is_ending": false,
       "choices": [
         {

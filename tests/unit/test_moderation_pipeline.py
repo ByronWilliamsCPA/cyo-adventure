@@ -24,6 +24,7 @@ from __future__ import annotations
 import copy
 import json
 import uuid
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, cast
 from unittest.mock import AsyncMock, MagicMock
 
@@ -33,9 +34,14 @@ from sqlalchemy.dialects import postgresql
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.diversity.history import HistoryEntry
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
+from cyo_adventure.moderation import leaf_diversity as leaf_diversity_mod
 from cyo_adventure.moderation import pipeline as pipeline_mod
+from cyo_adventure.moderation.leaf_diversity import (
+    run_leaf_diversity_check as _real_run_leaf_diversity_check,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -692,3 +698,252 @@ async def test_review_model_override_reaches_build_review_provider(
 
     assert captured["review_openrouter_model"] == "anthropic/claude-opus-4.8"
     submit.assert_awaited_once()
+
+
+# ---------------------------------------------------------------------------
+# WS-1 D1: the advisory leaf-diversity (anti-template) guard wiring.
+#
+# load_family_history/load_version_blob are monkeypatched at the
+# moderation.leaf_diversity import site (design doc section 6): the real
+# run_leaf_diversity_check and findings_from_anti_template execute, only the
+# two DB reads are doubled, keeping this file's AsyncMock session simple.
+# ---------------------------------------------------------------------------
+
+
+def _version_with_slug(
+    skeleton_slug: str | None = "the-cave-of-echoes",
+) -> StorybookVersion:
+    return StorybookVersion(
+        storybook_id="s1",
+        version=1,
+        blob=_BLOB,
+        model="gen-model",
+        skeleton_slug=skeleton_slug,
+    )
+
+
+def _history_entry(
+    *, storybook_id: str = "other-book", skeleton_slug: str = "the-cave-of-echoes"
+) -> HistoryEntry:
+    return HistoryEntry(
+        storybook_id=storybook_id,
+        version=5,
+        skeleton_slug=skeleton_slug,
+        theme_sig=frozenset(),
+        created_at=datetime(2026, 7, 1, tzinfo=UTC),
+    )
+
+
+@pytest.mark.unit
+async def test_atg_fail_triggers_single_repair_then_submit(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A same-tree ATG FAIL (partner blob identical to the current draft, so
+    every node's masked distance is 0.0) drives exactly one bounded repair
+    through the real per-node FLAG findings, then submit.
+
+    The ATG seam (``run_leaf_diversity_check``) is spied rather than stubbed
+    (``AsyncMock(side_effect=...)`` wrapping the real function), so this also
+    proves the "run once, never re-run on the repaired blob" contract
+    (design doc section 3.6): the seam must be invoked exactly once even
+    though ``_run_all_stages`` runs twice (initial pass plus post-repair
+    re-moderation).
+    """
+    story, version = _story(), _version_with_slug()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+
+    partner_blob = copy.deepcopy(_BLOB)
+    monkeypatch.setattr(
+        leaf_diversity_mod,
+        "load_family_history",
+        AsyncMock(return_value=[_history_entry()]),
+    )
+    monkeypatch.setattr(
+        leaf_diversity_mod,
+        "load_version_blob",
+        AsyncMock(return_value=partner_blob),
+    )
+    atg_spy = AsyncMock(side_effect=_real_run_leaf_diversity_check)
+    monkeypatch.setattr(pipeline_mod, "run_leaf_diversity_check", atg_spy)
+
+    revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
+    generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    assert atg_spy.await_count == 1
+    assert len(generation_provider.calls) == 1
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["repaired"] is True
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    leaf_flags = [f for f in findings if f.get("category") == "leaf_diversity"]
+    leaf_summaries = [
+        f for f in findings if f.get("category") == "leaf_diversity_summary"
+    ]
+    # The adopted repaired_report replaces `report` wholesale (pipeline.py:196)
+    # and the ATG is not re-run on it (design doc section 3.6), so the
+    # pre-repair ATG findings do not survive adoption (supervisor ruling,
+    # section 10, OQ4 declined for v1): neither the per-node FLAGs nor the
+    # summary ADVISORY appear in the persisted report.
+    assert leaf_flags == []
+    assert leaf_summaries == []
+
+
+@pytest.mark.unit
+async def test_atg_warn_is_advisory_no_repair(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """An ATG WARN (stubbed at the run_leaf_diversity_check seam) contributes
+    only an ADVISORY finding: no repair is triggered, and the story still
+    routes to submit exactly like any other clean-except-advisory pass."""
+    story, version = _story(), _version_with_slug()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+
+    warn_finding = pipeline_mod.Finding(
+        stage=0,
+        source=pipeline_mod.Source.PIPELINE,
+        category="leaf_diversity_summary",
+        verdict=pipeline_mod.Verdict.ADVISORY,
+        message="anti-template guard warn vs storybook other-book v5",
+    )
+    monkeypatch.setattr(
+        pipeline_mod,
+        "run_leaf_diversity_check",
+        AsyncMock(return_value=[warn_finding]),
+    )
+
+    generation_provider = MockProvider(responses=[])
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    assert len(generation_provider.calls) == 0
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["repaired"] is False
+    findings = cast("list[dict[str, object]]", moderation_report["findings"])
+    assert any(f.get("category") == "leaf_diversity_summary" for f in findings)
+
+
+@pytest.mark.unit
+async def test_atg_skipped_on_hard_block(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A hard block from Stage 1 safety skips the ATG guard entirely: the
+    ``if not report.has_hard_block:`` gate at the call site must never invoke
+    ``run_leaf_diversity_check`` once routing is already decided."""
+    story, version = _story(), _version_with_slug()
+    _load(mock_session, story, version)
+    review_seam(_safety_block_review_provider())
+
+    atg_mock = AsyncMock(return_value=[])
+    monkeypatch.setattr(pipeline_mod, "run_leaf_diversity_check", atg_mock)
+    auto_reject = AsyncMock()
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
+    atg_mock.assert_not_awaited()
+
+
+@pytest.mark.unit
+async def test_atg_no_partner_path_matches_atg_fully_stubbed_noop(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """The real ATG code's no-partner fail-open branch (empty family history)
+    must leave the pipeline outcome byte-identical to a run where the ATG
+    seam is stubbed out to return ``[]`` directly, proving the guard's
+    error/no-op paths add nothing observable (design doc section 6)."""
+    # Run A: the REAL run_leaf_diversity_check executes; the family has no
+    # history at all, so it exits at the "no partner" fail-open branch.
+    story_a, version_a = _story(), _version_with_slug()
+    _load(mock_session, story_a, version_a)
+    review_seam(_verdict_review_provider())
+    monkeypatch.setattr(
+        leaf_diversity_mod, "load_family_history", AsyncMock(return_value=[])
+    )
+    submit_a = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit_a)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    # Run B: the ATG seam is stubbed to return [] directly, bypassing every
+    # internal branch (no history load, no partner selection, nothing).
+    story_b, version_b = _story(), _version_with_slug()
+    _load(mock_session, story_b, version_b)
+    review_seam(_verdict_review_provider())
+    monkeypatch.setattr(
+        pipeline_mod, "run_leaf_diversity_check", AsyncMock(return_value=[])
+    )
+    submit_b = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit_b)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    submit_a.assert_awaited_once()
+    submit_b.assert_awaited_once()
+    assert version_a.moderation_report == version_b.moderation_report

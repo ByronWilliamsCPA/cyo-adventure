@@ -1,0 +1,1063 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-hundred-door-hotel",
+  "age_band": "8-11",
+  "legacy_lexicon": [
+    "June",
+    "Voss",
+    "Great-Aunt Vera",
+    "Vera",
+    "Meridian",
+    "Pearl",
+    "Otto",
+    "Wren",
+    "Milo",
+    "Min"
+  ],
+  "default_binding": {
+    "HERO": "June",
+    "HERO_SURNAME": "Voss",
+    "PRIOR_KEEPER": "Great-Aunt Vera",
+    "THRESHOLD": "Meridian",
+    "MATRIARCH": "Pearl",
+    "COOK": "Otto",
+    "GARDENER": "Wren",
+    "TWIN_A": "Milo",
+    "TWIN_B": "Min",
+    "OCCASION": "hundredth-birthday ball",
+    "FINALE_ZONE": "ballroom",
+    "ROUTE_L_ZONE": "lobby wing",
+    "ROUTE_K_ZONE": "kitchens",
+    "ROUTE_G_ZONE": "winter garden",
+    "ROUTE_F_ZONE": "numbered guest floors",
+    "ROUTE_R_ZONE": "rooftop observatory",
+    "L_MAILROOM": "mail room",
+    "L_MENU": "menu card",
+    "L_DARTS": "paper darts",
+    "L_SCORESHEET": "score sheet",
+    "L_LADDER": "wheeled ladder",
+    "L_GARDENIA_KEEPSAKE": "pressed gardenia",
+    "L_SWITCHBOARD": "switchboard room",
+    "L_OFFICE": "manager's office",
+    "L_PORTRAIT": "framed portrait",
+    "L_LEDGER": "reservation ledger",
+    "L_CLOCK": "mantel clock",
+    "L_KEYWALL": "wall of numbered key hooks",
+    "L_LETTERBUNDLE": "bundle of letters",
+    "L_HORN": "speaking horn",
+    "K_TICKET": "yellowed ticket",
+    "K_CAKE": "frosted cake",
+    "K_CAKE_FIGURES": "sugar figures",
+    "K_JAR": "preserve jar",
+    "K_BUNS": "birthday buns",
+    "K_DUMBWAITER": "dumbwaiter",
+    "K_LOAF": "braided loaf",
+    "K_STAFFTABLE": "staff table",
+    "G_CAN": "watering can",
+    "G_GARDENBED": "gardenia bed",
+    "G_FOUNTAIN": "fountain court",
+    "G_FISH": "light-fish",
+    "G_SHED": "potting shed",
+    "G_FIGTREE": "fig tree",
+    "G_FIGTREE_CROWN": "fig tree's crown",
+    "G_ROSE": "climbing rose",
+    "G_PEPPER": "pepper plant",
+    "G_VINES": "twin vines",
+    "G_LEDGER": "planting ledger",
+    "F_TROLLEY": "luggage trolley",
+    "F_SCOREWALL": "score wall",
+    "F_LINEN": "linen room",
+    "F_DRAWING": "five-figure drawing",
+    "F_BOTTLECAPS": "bottle-cap collection",
+    "F_LIFT": "service lift",
+    "F_CHUTE": "laundry chute",
+    "F_FORT": "blanket fort",
+    "R_TELESCOPE": "great telescope",
+    "R_CHARTS": "star charts",
+    "R_LOG": "observation log",
+    "R_ORRERY": "brass orrery",
+    "R_SWITCHBOX": "switch box",
+    "R_CHEST": "cedar chest",
+    "R_WHISTLE": "brass whistle",
+    "R_TURRET": "flag turret",
+    "FIN_CHANDELIER": "chandelier",
+    "FIN_GRAMOPHONE": "gramophone",
+    "FIN_TABLE": "long family table",
+    "FIN_GONG": "dinner gong",
+    "FIN_BELLWIRE": "bell-wire"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A single kid-relatable eleven-year-old explorer (name only); curious and kind, not reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HERO_SURNAME",
+      "scope": "global",
+      "meaning": "The hero's family surname.",
+      "guidance": "A short, ordinary surname; carried once at introduction.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PRIOR_KEEPER",
+      "scope": "global",
+      "meaning": "The relative who last kept the place and left it to the hero's family.",
+      "guidance": "A warm, absent elder; never on-page, referenced only in memory and letters.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded, explorable building the story happens inside.",
+      "guidance": "One grand entrance, several internal wings reachable from a central hub; wonder over dread; no lethal hazards, no toxic air, nothing capture-like anywhere in it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "MATRIARCH",
+      "scope": "global",
+      "meaning": "The family's matriarch, a friendly ghost who keeps the front desk.",
+      "guidance": "Warm, dignified, gently forgetful about her own family; never frightening; the emotional anchor of the reunion.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COOK",
+          "GARDENER",
+          "TWIN_A",
+          "TWIN_B"
+        ]
+      }
+    },
+    {
+      "id": "COOK",
+      "scope": "global",
+      "meaning": "The matriarch's son, a ghost who still cooks in the kitchens.",
+      "guidance": "Warm, proud, a little melancholy; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GARDENER",
+          "MATRIARCH",
+          "TWIN_A",
+          "TWIN_B"
+        ]
+      }
+    },
+    {
+      "id": "GARDENER",
+      "scope": "global",
+      "meaning": "The matriarch's daughter, a ghost who still tends the greenhouse.",
+      "guidance": "Gentle, practical, plainspoken; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COOK",
+          "MATRIARCH",
+          "TWIN_A",
+          "TWIN_B"
+        ]
+      }
+    },
+    {
+      "id": "TWIN_A",
+      "scope": "global",
+      "meaning": "One of the matriarch's twin grandchildren, a ghost bellhop.",
+      "guidance": "Playful, energetic, inseparable from the other twin; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COOK",
+          "GARDENER",
+          "MATRIARCH",
+          "TWIN_B"
+        ]
+      }
+    },
+    {
+      "id": "TWIN_B",
+      "scope": "global",
+      "meaning": "The other twin grandchild, a ghost bellhop.",
+      "guidance": "Playful, energetic, inseparable from the other twin; never a source of peril.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "COOK",
+          "GARDENER",
+          "MATRIARCH",
+          "TWIN_A"
+        ]
+      }
+    },
+    {
+      "id": "OCCASION",
+      "scope": "global",
+      "meaning": "The unfinished celebration the whole story is working to complete.",
+      "guidance": "A joyous, once-interrupted family occasion; benign, worth throwing a party for.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FINALE_ZONE",
+      "scope": "global",
+      "meaning": "The mandatory final destination: the grand hall where the reunion happens.",
+      "guidance": "Safe, awe-inducing, currently dusty and unfinished; the room the whole story is preparing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "ROUTE_F_ZONE",
+          "ROUTE_G_ZONE",
+          "ROUTE_K_ZONE",
+          "ROUTE_L_ZONE",
+          "ROUTE_R_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_L_ZONE",
+      "scope": "route",
+      "meaning": "The lobby/front-desk wing, the matriarch's domain.",
+      "guidance": "Warm, lamplit, safe; distinguishable from the other four wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "FINALE_ZONE",
+          "ROUTE_F_ZONE",
+          "ROUTE_G_ZONE",
+          "ROUTE_K_ZONE",
+          "ROUTE_R_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_K_ZONE",
+      "scope": "route",
+      "meaning": "The kitchens wing, the cook's domain.",
+      "guidance": "Warm, food-smelling, safe; distinguishable from the other four wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "FINALE_ZONE",
+          "ROUTE_F_ZONE",
+          "ROUTE_G_ZONE",
+          "ROUTE_L_ZONE",
+          "ROUTE_R_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_G_ZONE",
+      "scope": "route",
+      "meaning": "The glasshouse garden wing, the gardener's domain.",
+      "guidance": "Green, growing, safe; distinguishable from the other four wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "FINALE_ZONE",
+          "ROUTE_F_ZONE",
+          "ROUTE_K_ZONE",
+          "ROUTE_L_ZONE",
+          "ROUTE_R_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_F_ZONE",
+      "scope": "route",
+      "meaning": "The guest-floors wing, the twins' domain.",
+      "guidance": "Playful, corridor-and-game safe; distinguishable from the other four wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "FINALE_ZONE",
+          "ROUTE_G_ZONE",
+          "ROUTE_K_ZONE",
+          "ROUTE_L_ZONE",
+          "ROUTE_R_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_R_ZONE",
+      "scope": "route",
+      "meaning": "The rooftop wing, kept for stargazing.",
+      "guidance": "Open-air, wind and stars, safe with a rail; distinguishable from the other four wings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "FINALE_ZONE",
+          "ROUTE_F_ZONE",
+          "ROUTE_G_ZONE",
+          "ROUTE_K_ZONE",
+          "ROUTE_L_ZONE"
+        ]
+      }
+    },
+    {
+      "id": "L_MAILROOM",
+      "scope": "track",
+      "meaning": "The room of numbered mailboxes behind the front desk.",
+      "guidance": "A safe, dusty archive room; nothing dangerous inside it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_MENU",
+      "scope": "track",
+      "meaning": "A keepsake found in the mail room: a handwritten menu card.",
+      "guidance": "A small, harmless paper keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_DARTS",
+      "scope": "track",
+      "meaning": "A keepsake found in the mail room: folded paper toys and a game score.",
+      "guidance": "Small, harmless paper keepsakes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_SCORESHEET",
+      "scope": "track",
+      "meaning": "The tally sheet tucked with the paper darts.",
+      "guidance": "A harmless scrap of paper recording an old game.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_LADDER",
+      "scope": "track",
+      "meaning": "The wheeled ladder used to reach the top mailbox row.",
+      "guidance": "A safe, sturdy library-style ladder, mobile but not tippy in a harmful way.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_GARDENIA_KEEPSAKE",
+      "scope": "track",
+      "meaning": "A pressed flower kept in the top mailbox row.",
+      "guidance": "A delicate, harmless keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_SWITCHBOARD",
+      "scope": "track",
+      "meaning": "The old switchboard room off the lobby.",
+      "guidance": "A safe, disused equipment room; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_OFFICE",
+      "scope": "track",
+      "meaning": "The manager's office behind the desk.",
+      "guidance": "A safe, quiet study; nothing hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_PORTRAIT",
+      "scope": "track",
+      "meaning": "The framed family portrait in the office.",
+      "guidance": "A faded, harmless painting.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_LEDGER",
+      "scope": "track",
+      "meaning": "The reservation ledger found in the rolltop desk.",
+      "guidance": "A harmless book of handwritten names.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_CLOCK",
+      "scope": "track",
+      "meaning": "The stopped mantel clock in the office.",
+      "guidance": "A harmless, decorative timepiece.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_KEYWALL",
+      "scope": "track",
+      "meaning": "The wall of numbered key hooks behind the desk.",
+      "guidance": "A tidy, harmless display of keys.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_LETTERBUNDLE",
+      "scope": "track",
+      "meaning": "The bundle of old letters in the office drawer.",
+      "guidance": "Harmless paper keepsakes.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_HORN",
+      "scope": "track",
+      "meaning": "The speaking horn used to page the whole building.",
+      "guidance": "A safe, old-fashioned communication device.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_TICKET",
+      "scope": "track",
+      "meaning": "The old order ticket the cook keeps on the rail.",
+      "guidance": "A harmless scrap of paper with a kitchen order written on it.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_CAKE",
+      "scope": "track",
+      "meaning": "The finished celebration cake kept in the cold room.",
+      "guidance": "A beautiful, edible, entirely benign cake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_CAKE_FIGURES",
+      "scope": "track",
+      "meaning": "The small sugar figures decorating the cake.",
+      "guidance": "Charming, edible decorations, harmless.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_JAR",
+      "scope": "track",
+      "meaning": "A preserve jar on the pantry's high shelf.",
+      "guidance": "An ordinary jar of preserves; harmless.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_BUNS",
+      "scope": "track",
+      "meaning": "The tray of birthday buns kept warm in the oven.",
+      "guidance": "Fresh, edible, benign baked goods.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_DUMBWAITER",
+      "scope": "track",
+      "meaning": "The small mechanical lift connecting the kitchens to the floors above.",
+      "guidance": "A safe, slow, child-sized dumbwaiter; never actually stuck or dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_LOAF",
+      "scope": "track",
+      "meaning": "The braided loaf of bread on the bakery worktable.",
+      "guidance": "A warm, edible, benign loaf.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "K_STAFFTABLE",
+      "scope": "track",
+      "meaning": "The kitchen's own staff table, set for five.",
+      "guidance": "An ordinary dining table; harmless.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_CAN",
+      "scope": "track",
+      "meaning": "The watering can that moves on its own, tending the beds.",
+      "guidance": "A charming, harmless, self-propelled garden tool.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_GARDENBED",
+      "scope": "track",
+      "meaning": "The bed of flowers at the garden's heart.",
+      "guidance": "A safe, fragrant flower bed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_FOUNTAIN",
+      "scope": "track",
+      "meaning": "The dry fountain court that still seems to sing.",
+      "guidance": "A safe, decorative courtyard feature.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_FISH",
+      "scope": "track",
+      "meaning": "The glowing fish swimming in the empty fountain basin.",
+      "guidance": "Harmless, luminous, friendly creatures made of light.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_SHED",
+      "scope": "track",
+      "meaning": "The potting shed off the main garden path.",
+      "guidance": "A safe, cluttered garden outbuilding.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_FIGTREE",
+      "scope": "track",
+      "meaning": "The large tree that has grown up through the shed roof.",
+      "guidance": "A safe, climbable tree.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_FIGTREE_CROWN",
+      "scope": "track",
+      "meaning": "The upper branches of the tree, above the child-built platform.",
+      "guidance": "Higher, less secure climbing; a fall here is only ever a soft, safe setback.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_ROSE",
+      "scope": "track",
+      "meaning": "The rose the gardener named after the matriarch.",
+      "guidance": "A harmless flowering vine.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_PEPPER",
+      "scope": "track",
+      "meaning": "The pepper plant the gardener named after the cook.",
+      "guidance": "A harmless kitchen-garden plant.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_VINES",
+      "scope": "track",
+      "meaning": "The two vines the gardener named after the twins.",
+      "guidance": "Harmless, playful climbing plants.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_LEDGER",
+      "scope": "track",
+      "meaning": "The planting ledger left open on the potting-shed bench.",
+      "guidance": "A harmless record book.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_TROLLEY",
+      "scope": "track",
+      "meaning": "The luggage trolley the twins use as a game prop.",
+      "guidance": "A safe, wheeled prop for corridor games.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_SCOREWALL",
+      "scope": "track",
+      "meaning": "The wall where the twins keep their game's running tally.",
+      "guidance": "A harmless, decades-long scorekeeping wall.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_LINEN",
+      "scope": "track",
+      "meaning": "The twins' den in the linen room.",
+      "guidance": "A safe, cozy hideaway room.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_DRAWING",
+      "scope": "track",
+      "meaning": "The child-drawn picture of the five family members on the linen room wall.",
+      "guidance": "A harmless, sentimental kid's drawing.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_BOTTLECAPS",
+      "scope": "track",
+      "meaning": "The twins' ranked collection of bottle caps.",
+      "guidance": "A harmless, proudly displayed collection.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_LIFT",
+      "scope": "track",
+      "meaning": "The old caged service lift between floors.",
+      "guidance": "A safe, slow, birdcage-style lift; never actually stuck or dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_CHUTE",
+      "scope": "track",
+      "meaning": "The laundry chute connecting the floors to the basement.",
+      "guidance": "A safe, harmless chute; never a hazard.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "F_FORT",
+      "scope": "track",
+      "meaning": "The blanket fort the twins built in their den.",
+      "guidance": "A cozy, safe play structure.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "R_TELESCOPE",
+      "scope": "track",
+      "meaning": "The great telescope in the dome.",
+      "guidance": "A safe, wonder-inducing instrument.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "R_CHARTS",
+      "scope": "track",
+      "meaning": "The star charts papering the dome's curved walls.",
+      "guidance": "Harmless, annotated reference charts.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "R_LOG",
+      "scope": "track",
+      "meaning": "The leather observation log kept on the dome's desk.",
+      "guidance": "A harmless record book.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "R_ORRERY",
+      "scope": "track",
+      "meaning": "The little clockwork orrery modeling the family's daily rounds.",
+      "guidance": "A charming, harmless mechanical toy.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "R_SWITCHBOX",
+      "scope": "track",
+      "meaning": "The switch box controlling the rooftop sign.",
+      "guidance": "A safe electrical box with two labeled switches.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "R_CHEST",
+      "scope": "track",
+      "meaning": "The cedar chest of roof-party supplies in the flag turret.",
+      "guidance": "A safe storage chest; never something a child gets shut inside.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon",
+          "capture"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "R_WHISTLE",
+      "scope": "track",
+      "meaning": "The brass whistle used to call the family to supper.",
+      "guidance": "A harmless signaling instrument.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "R_TURRET",
+      "scope": "track",
+      "meaning": "The flag turret at the end of the roof walk.",
+      "guidance": "A safe lookout structure with a supply locker.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FIN_CHANDELIER",
+      "scope": "track",
+      "meaning": "The ballroom's great chandelier.",
+      "guidance": "A safe, wonder-inducing light fixture, lowered and raised by winch.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FIN_GRAMOPHONE",
+      "scope": "track",
+      "meaning": "The gramophone on the ballroom's little stage.",
+      "guidance": "A safe, wind-up music player.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FIN_TABLE",
+      "scope": "track",
+      "meaning": "The long table set for the family at the reunion.",
+      "guidance": "A harmless banquet table.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FIN_GONG",
+      "scope": "track",
+      "meaning": "The bronze dinner gong used to call the family home.",
+      "guidance": "A safe, ceremonial instrument.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "FIN_BELLWIRE",
+      "scope": "track",
+      "meaning": "The braided wire that rings the desk bell from the ballroom.",
+      "guidance": "A harmless mechanical signal line.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    }
+  ]
+}

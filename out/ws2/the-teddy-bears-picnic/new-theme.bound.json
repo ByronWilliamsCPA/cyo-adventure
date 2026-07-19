@@ -1,0 +1,478 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_teddy_bears_picnic",
+  "version": 1,
+  "title": "The Teddy Bears' Picnic",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "sharing",
+      "kindness",
+      "celebration"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 11,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=46 beats='Nova spreads the launch pad tarp in the sunny backyard for a backyard rocket launch party; the crate is empty and no the rocket pups are here yet; she claps her paws and decides what to fetch first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the soda pop for a bottle of fizzy fuel.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_berry",
+          "label": "Go pick shiny star stickers at the glitter patch.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_ball",
+          "label": "Go find the shiny toy rocket.",
+          "target": "n_ball1"
+        },
+        {
+          "id": "c_start_kite",
+          "label": "Go fetch the bright countdown banner.",
+          "target": "n_kite1"
+        },
+        {
+          "id": "c_start_owl",
+          "label": "Go wake Pepper the pup in a blanket under the porch.",
+          "target": "n_owl1"
+        },
+        {
+          "id": "c_start_music",
+          "label": "Go find the little walkie-talkie.",
+          "target": "n_music1"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "<<FILL role=choice words=42 beats='Nova pads to the fizzy soda fountain to ask for a bottle of fizzy fuel; the soda pop hum kindly in the sun; she can ask nicely and wait or poke the fizzy soda fountain to hurry them along'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_ask",
+          "label": "Ask the soda pop nicely and wait.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_poke",
+          "label": "Poke the fizzy soda fountain to hurry.",
+          "target": "e_honey_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "<<FILL role=rising words=40 beats='the soda pop fill a bottle of fizzy fuel and Nova hugs it close; the backyard rocket launch party is growing; she can carry it back to the launch pad tarp or call the rocket pups and start the backyard rocket launch party now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_back",
+          "label": "Carry a bottle of fizzy fuel back to the launch pad tarp.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_honey_start",
+          "label": "Ring the countdown whistle and start the backyard rocket launch party.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_honey_oops",
+      "body": "<<FILL role=ending words=44 beats='Nova pokes the fizzy soda fountain and out floats Foamy Fizz that chase her in a silly circle round the sunny backyard; nobody is stung and she giggles, trotting back to the launch pad tarp to try again the gentle way'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_honey_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Foamy Fizz"
+      }
+    },
+    {
+      "id": "n_berry1",
+      "body": "<<FILL role=choice words=42 beats='Nova skips to the glitter patch for a sheet of star stickers; plump ripe ones sit low and shiny; she can pick the easy low berries or stretch up for the wobbly high ones'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the easy low shiny star stickers.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Stretch for the wobbly high ones.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "<<FILL role=rising words=40 beats='Nova's basket fills with sweet shiny star stickers that stain her paws pink; the backyard rocket launch party keeps growing; she can carry them back to the launch pad tarp or call the rocket pups and start the backyard rocket launch party now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_back",
+          "label": "Carry a sheet of star stickers back to the launch pad tarp.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_berry_start",
+          "label": "Ring the countdown whistle and start the backyard rocket launch party.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "<<FILL role=ending words=44 beats='Nova stretches for the high shiny star stickers, the branch springs back, and a sheet of star stickers tips into the soft grass with a plop; Sticky Sparkles roll everywhere and she laughs, heading back to the launch pad tarp to start over'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Sticky Sparkles"
+      }
+    },
+    {
+      "id": "n_ball1",
+      "body": "<<FILL role=choice words=40 beats='Nova remembers the shiny toy rocket is somewhere in the toolshed shelf; she hunts for it happily; she can follow the little bounce marks or just dive into the grass headfirst'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_track",
+          "label": "Follow the little bounce marks.",
+          "target": "n_ball2"
+        },
+        {
+          "id": "c_ball_dive",
+          "label": "Dive into the toolshed shelf.",
+          "target": "e_ball_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_ball2",
+      "body": "<<FILL role=rising words=38 beats='there in the toolshed shelf sits the shiny toy rocket, just right for a backyard rocket launch party game; the fun is growing; she can roll it back to the launch pad tarp or call the rocket pups and start the backyard rocket launch party now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_back",
+          "label": "Roll the shiny toy rocket back to the launch pad tarp.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_ball_start",
+          "label": "Ring the countdown whistle and start the backyard rocket launch party.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_ball_oops",
+      "body": "<<FILL role=ending words=44 beats='Nova dives into the toolshed shelf and pops up with a Wobbly Spin on her nose instead of the shiny toy rocket; she sneezes a giggly sneeze and trots back to the launch pad tarp to look for the shiny toy rocket again later'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Wobbly Spin"
+      }
+    },
+    {
+      "id": "n_kite1",
+      "body": "<<FILL role=choice words=42 beats='Nova wants the bright countdown banner for the breezy the sunny backyard; it lies folded by the old garden gate; she can carry it gently under her arm or let it flap wide open in the wind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_carry",
+          "label": "Carry the bright countdown banner gently under her arm.",
+          "target": "n_kite2"
+        },
+        {
+          "id": "c_kite_flap",
+          "label": "Let the bright countdown banner flap open in the wind.",
+          "target": "e_kite_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_kite2",
+      "body": "<<FILL role=rising words=38 beats='Nova tucks the bright countdown banner safely under her arm, ready for flying; the backyard rocket launch party keeps growing; she can bring it back to the launch pad tarp or call the rocket pups and start the backyard rocket launch party now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_back",
+          "label": "Bring the bright countdown banner back to the launch pad tarp.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_kite_start",
+          "label": "Ring the countdown whistle and start the backyard rocket launch party.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_kite_oops",
+      "body": "<<FILL role=ending words=44 beats='Nova lets the bright countdown banner flap open and a gust tugs it into a Tangled Banner that wraps the string around a fence post; she untangles the muddle, laughing, and heads back to the launch pad tarp to try again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Tangled Banner"
+      }
+    },
+    {
+      "id": "n_owl1",
+      "body": "<<FILL role=choice words=44 beats='Pepper the pup dozes on a blanket under the porch and Nova wants to invite him to the backyard rocket launch party; his round eyes are shut tight; she can hoot softly to wake him gently or shake the whole branch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_hoot",
+          "label": "Hoot softly to wake Pepper the pup gently.",
+          "target": "n_owl2"
+        },
+        {
+          "id": "c_owl_shake",
+          "label": "Shake the whole branch.",
+          "target": "e_owl_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_owl2",
+      "body": "<<FILL role=rising words=40 beats='Pepper the pup blinks his big eyes, yawns, and says yes to the backyard rocket launch party with a happy hoot; the rocket pups are growing; Nova can walk him back to the launch pad tarp or call the rocket pups and start the backyard rocket launch party now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_back",
+          "label": "Walk Pepper the pup back to the launch pad tarp.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_owl_start",
+          "label": "Ring the countdown whistle and start the backyard rocket launch party.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_owl_oops",
+      "body": "<<FILL role=ending words=44 beats='Nova shakes the branch and a Heap of Cushions tumbles down and buries her in a giggly pile; Pepper the pup only snores a little louder; she brushes off the leaves and heads back to the launch pad tarp to try again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_owl_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Heap of Cushions"
+      }
+    },
+    {
+      "id": "n_music1",
+      "body": "<<FILL role=choice words=42 beats='Nova looks for the little walkie-talkie to play backyard rocket launch party tunes; it sits closed on a wooden crate; she can lift the lid carefully and peek inside or give the handle a big fast wind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_lift",
+          "label": "Lift the lid carefully.",
+          "target": "n_music2"
+        },
+        {
+          "id": "c_music_wind",
+          "label": "Give the handle a big fast wind.",
+          "target": "e_music_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_music2",
+      "body": "<<FILL role=rising words=38 beats='the little walkie-talkie tinkles a soft, sweet backyard rocket launch party tune and Nova hums along; the backyard rocket launch party keeps growing; she can carry it back to the launch pad tarp or call the rocket pups and start the backyard rocket launch party now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_back",
+          "label": "Carry the little walkie-talkie back to the launch pad tarp.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_music_start",
+          "label": "Ring the countdown whistle and start the backyard rocket launch party.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_music_oops",
+      "body": "<<FILL role=ending words=44 beats='Nova winds the handle too fast and the little walkie-talkie plays a Crackly Squawk that makes her paws dance all wrong; she giggles at the muddle and heads back to the launch pad tarp to try again slowly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Crackly Squawk"
+      }
+    },
+    {
+      "id": "n_gather",
+      "body": "<<FILL role=rising words=40 beats='Nova rings the countdown whistle and the rocket pups come waddling from every corner of the sunny backyard; the launch pad tarp is ready at last; she waves them all over to the launch pad tarp'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gather_welcome",
+          "label": "Welcome the rocket pups in.",
+          "target": "n_welcome"
+        }
+      ]
+    },
+    {
+      "id": "n_welcome",
+      "body": "<<FILL role=rising words=40 beats='the rocket pups settle in a happy ring on the launch pad tarp, wiggling with excitement; everything Nova fetched is piled up in the middle; she looks at the growing feast and gets ready to begin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_welcome_arrange",
+          "label": "Lay out all the backyard rocket launch party treats.",
+          "target": "n_arrange"
+        }
+      ]
+    },
+    {
+      "id": "n_arrange",
+      "body": "<<FILL role=choice words=40 beats='Nova spreads out a bottle of fizzy fuel, a sheet of star stickers, and all the treats in the warm sun; the rocket pups lick their lips and wiggle their paws; she decides how to start the backyard rocket launch party fun'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrange_share",
+          "label": "Share a bottle of fizzy fuel and a sheet of star stickers.",
+          "target": "n_share"
+        },
+        {
+          "id": "c_arrange_game",
+          "label": "Start a backyard rocket launch party game.",
+          "target": "n_game"
+        }
+      ]
+    },
+    {
+      "id": "n_share",
+      "body": "<<FILL role=choice words=40 beats='a bottle of fizzy fuel and a sheet of star stickers go round the circle and everyone munches happily in the sunshine; the backyard rocket launch party is merry and full; Nova thinks of the coziest way to keep the good fun going'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_song",
+          "label": "Sing The Countdown Song.",
+          "target": "e_song"
+        },
+        {
+          "id": "c_share_music",
+          "label": "Wind up the little walkie-talkie and sway.",
+          "target": "e_music_finale"
+        },
+        {
+          "id": "c_share_nap",
+          "label": "Curl up for a cozy nap in the sun.",
+          "target": "e_nap"
+        }
+      ]
+    },
+    {
+      "id": "n_game",
+      "body": "<<FILL role=choice words=36 beats='the rocket pups are ready to play in the breezy the sunny backyard and Nova claps with joy; the backyard rocket launch party is a happy, growing party; she decides which cheerful game the rocket pups should have'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_game_ball",
+          "label": "Roll the shiny toy rocket around the ring.",
+          "target": "e_ball_game"
+        },
+        {
+          "id": "c_game_kite",
+          "label": "Fly the bright countdown banner in the breeze.",
+          "target": "e_kite_game"
+        }
+      ]
+    },
+    {
+      "id": "e_song",
+      "body": "<<FILL role=completion words=46 beats='everyone joins paws and sings The Countdown Song under the warm sun, swaying together in the sunny backyard; Nova's backyard rocket launch party has come together just perfectly, and her heart is as full as a bottle of fizzy fuel'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Countdown Song"
+      }
+    },
+    {
+      "id": "e_music_finale",
+      "body": "<<FILL role=completion words=44 beats='the little walkie-talkie tinkles its sweet tune and all the rocket pups sway and hum along on the launch pad tarp; Nova's backyard rocket launch party is cozy and complete, and she beams at every one of her happy friends'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_finale",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Crackly Countdown"
+      }
+    },
+    {
+      "id": "e_nap",
+      "body": "<<FILL role=completion words=44 beats='full of a bottle of fizzy fuel and a sheet of star stickers, the rocket pups and Nova curl up in a soft heap on the launch pad tarp for a happy afternoon nap; the backyard rocket launch party she built piece by piece is perfect and peaceful'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_nap",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Sleepy Starlit Rest"
+      }
+    },
+    {
+      "id": "e_ball_game",
+      "body": "<<FILL role=completion words=44 beats='the shiny toy rocket rolls round and round the giggling ring of the rocket pups in the sunny backyard; Nova's backyard rocket launch party is a bouncy, happy success and all the rocket pups cheer for one more roll'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Soaring Toy Rocket"
+      }
+    },
+    {
+      "id": "e_kite_game",
+      "body": "<<FILL role=completion words=44 beats='the bright countdown banner dips and soars over the sunny backyard while the rocket pups cheer from the launch pad tarp; Nova's backyard rocket launch party has come together beautifully and she flies the bright countdown banner proudly in the warm breeze'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Bright Countdown Banner"
+      }
+    }
+  ]
+}
