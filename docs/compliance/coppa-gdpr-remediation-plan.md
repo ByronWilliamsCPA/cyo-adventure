@@ -388,6 +388,69 @@ Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1
 - **8c. Set an annual (or pre-major-feature) compliance review cadence**, re-running this plan's
   Phase 1-6 checks against whatever has shipped since.
 
+### Phase 9: GDPR-K / UK AADC-specific conformance
+
+Documentation-heavy; needs the launch-geography decision confirmed, and most items build on
+Phases 2/3/7 artifacts existing first.
+
+"GDPR-K" is not a separate statute; it is GDPR's ordinary rules as applied to children (Article
+8's consent age, Article 25's design-by-default duty, Article 35's risk-based DPIA), plus, for
+UK users specifically, the ICO's Age Appropriate Design Code (AADC, "Children's Code", DPA 2018
+s.123). Phases 1-8 above already build the GDPR/COPPA foundation GDPR-K sits on (egress
+guarding, consent, rights, retention, processor terms, security, DPIA/RoPA/DPO, ongoing ops).
+This phase is what is *additionally* required once a service is "likely to be accessed by
+children" under UK law, a lower bar than "directed at children," so a US-hosted app with even
+one UK child user is in scope regardless of App Store storefront geography (the same Article
+3(2) extraterritorial logic as Pressure Point P-1 and finding G-08, applied to the AADC's UK
+statutory basis specifically rather than GDPR generally).
+
+- **9a. Formally record the Article 8 self-consent bypass.** The app's actual design (a guardian
+  provisions every profile; no child ever supplies their own consent, regardless of `AgeBand`,
+  including `16+`) sidesteps Article 8's per-member-state 13-16 consent-age lookup entirely. This
+  is already true in code today; the gap is that it is not written down anywhere as a deliberate
+  compliance position. Costs nothing to build; costs a paragraph in the DPIA (Phase 7b) and RoPA
+  (Phase 7a) to state explicitly, so it reads as a documented design decision instead of an
+  unexamined gap during a review.
+- **9b. Confirm AADC applicability with the same rigor as Pressure Point P-1.** Determine whether
+  any current or planned user is UK-resident; if so, the AADC binds today, not at a future public
+  launch, the same conclusion the GDPR review already reached for GDPR generally. This is a fact
+  question about the current user base, not an engineering task; see the new open question below.
+- **9c. Run a 15-standard AADC conformance self-assessment** and record the result (pass, gap, or
+  not-applicable) for each standard. Most of the underlying engineering already exists via Phases
+  1-8 or the "already decided" list in ADR-018; this item is the paperwork that turns existing
+  practice into a defensible, citable record:
+
+  | AADC standard | Status against current build | Where the gap (if any) is tracked |
+  |---|---|---|
+  | 1. Best interests of the child | Not yet a named DPIA section | New: fold into Phase 7b's DPIA as an explicit subsection, not just generic Article 35 risk-to-rights analysis |
+  | 2. Age-appropriate application | Likely satisfied: all child data collection sits behind a guardian gate (once Phase 2's 2a makes that gate a real precondition, not just the intended attachment point it is today) | Depends on Phase 2 landing |
+  | 3. Transparency | Gap: G-07's privacy notice is a single adult-legal document; AADC wants content pitched to the child's age/development stage too | New: 9e below, extends Phase 2's notice build |
+  | 4. Detrimental use of data | Likely satisfied (no ads, no dark-pattern engagement loops); not yet self-certified in writing | New: one-paragraph sign-off once Phase 2/7 notices exist to point to |
+  | 5. Policies and community standards | Depends on the published notice/terms existing | Depends on Phase 2 |
+  | 6. Default settings ("high privacy" unless justified) | Needs an explicit default-settings audit; cross-family recommendation sharing (G-10, Phase 8b) is the concrete item most likely to need a default flipped to off/opt-in | New: audit item, feeds Phase 8b |
+  | 7. Data minimization | Satisfied; already the headline strength of both the COPPA audit and GDPR review (Article 25-by-design) | Reference existing findings, no new work |
+  | 8. Data sharing | Same underlying gap as G-10 (no documented Article 6 basis for cross-family disclosure) | Tracked at G-10 / Phase 8b already |
+  | 9. Geolocation | Satisfied: no geolocation collected anywhere in the data inventory (Section 3) | Confirm explicitly in the RoPA (Phase 7a), no code change |
+  | 10. Parental controls | Guardian consoles exist by design; needs child-facing copy explaining what a guardian can see/do | New: small copy addition, pairs with 9e |
+  | 11. Profiling | The moderation/recommendation pipeline is profiling-adjacent (already flagged in G-04's DPIA discussion); needs its own compelling-reason-and-safeguards note distinct from the general DPIA entry | New: DPIA subsection, pairs with 9a |
+  | 12. Nudge techniques | Likely satisfied (no ads, no engagement dark patterns); not yet self-certified | New: one-paragraph UX sign-off |
+  | 13. Connected toys and devices | Not applicable; no IoT/connected-device component | Document as N/A with reasoning, no work |
+  | 14. Online tools for exercising rights | Gap: Phase 3's deletion/export endpoints are guardian-only, matching COPPA/GDPR's rights model; AADC additionally expects a prominent, *child-accessible* way to seek help (e.g., an in-reader "tell a grown-up" control), which is new product surface, not just a Phase 3 extension | New: scope as a small kid-shell feature once Phase 3 ships |
+  | 15. Governance and accountability | Depends on Phase 7c's DPO/accountable-owner assessment | Depends on Phase 7c |
+
+- **9d. Assess UK ICO registration/notification.** Separate from GDPR's Article 30 RoPA duty
+  (Phase 7a), UK controllers processing personal data generally owe the ICO an annual
+  data-protection fee under DPA 2018 ss.137-138. Gated on 9b's applicability confirmation.
+- **9e. Add age-band-specific child-facing notice content.** Extends Phase 2's consent/notice
+  build (finding G-07) with a second, simpler layer of copy actually shown to the child across
+  `AgeBand` tiers (kid-shell help text, in-reader copy), distinct from the guardian-facing legal
+  notice; AADC Standard 3 treats these as separate obligations, not one document serving both
+  audiences.
+- **9f. Extend the Phase 7b DPIA with an explicit "best interests of the child" section**
+  (AADC Standard 1), a distinct, mandatory lens under UK law beyond GDPR's generic
+  risk-to-rights-and-freedoms standard; folds in the age-appropriate-application (9c row 2) and
+  profiling (9c row 11) findings as supporting evidence rather than duplicating the analysis.
+
 ---
 
 ## 4. Cross-reference: this plan vs. the existing Phase 7 plan and ADR-018
@@ -402,10 +465,12 @@ Directly addresses the gaps found in Section 1. **Status as of 2026-07-19: 1a, 1
 | Phase 7 (DPIA, RoPA, DPO) | P7-08 | D2, D3, D4 |
 | Phase 1 (PII-guard hardening) | not separately tracked | data-minimization spine (already-decided item 5) |
 | Phase 8 (ongoing ops) | not separately tracked | new |
+| Phase 9 (GDPR-K / AADC conformance) | not separately tracked | D3 (launch geography), D4 |
 
 This plan does not replace `PROJECT-PLAN.md` Phase 7 or ADR-018; it sequences them into
-dependency order and adds Phase 1 (the specific egress gaps found in Section 1) and Phase 8
-(ongoing operations), neither of which the existing plan tracks as discrete items.
+dependency order and adds Phase 1 (the specific egress gaps found in Section 1), Phase 8
+(ongoing operations), and Phase 9 (GDPR-K/AADC-specific conformance), none of which the existing
+plan tracks as discrete items.
 
 ---
 
@@ -521,6 +586,16 @@ marked **(no default)** genuinely need your input.
   vendors.** Who pursues this, and on what timeline? ADR-018 already calls it the standing
   blocker; it just needs an owner and a deadline. **(no default; needs an owner assigned)**
 
+**Gates Phase 9 (GDPR-K / AADC conformance):**
+
+- **UK-user confirmation.** Same underlying fact question as Pressure Point P-1 (does an
+  EU/UK-resident guardian or child use the app today, in the current private tier), asked here
+  specifically because the AADC's "likely to be accessed by children" test is a lower bar than
+  GDPR's general Article 3(2) targeting test; if the answer to P-1 is "yes, UK," Phase 9 is not
+  a future expansion gate, it is current-state work. **(no default; same fact-finding as P-1,
+  not a new question, but it independently gates Phase 9's start rather than only Pressure Point
+  P-1's GDPR conclusion)**
+
 **Gates Phase 7 (formal documentation), and the retention-windows decision above:**
 
 - **Artifact owner.** **Who owns and signs off on the compliance artifacts** (privacy notice,
@@ -563,6 +638,11 @@ Once the artifact-owner and counsel-timing decisions land and Phases 1-6 are sub
 
 Ongoing, once the above is stable:
   Phase 8 (admin-audit logging, ADR-016 consent UI, annual review cadence)
+
+Once UK-user status is confirmed (independently of, but using the same fact-finding as,
+Pressure Point P-1), and Phases 2/3/7 have produced their artifacts:
+  Phase 9 (GDPR-K / AADC conformance: Article 8 bypass write-up, 15-standard self-assessment,
+  ICO registration check, child-facing notice layer, best-interests DPIA addendum)
 ```
 
 ---
