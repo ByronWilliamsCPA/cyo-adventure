@@ -527,6 +527,18 @@ async def test_cross_band_override_producer_binds_consumer_fill(
 
     monkeypatch.setattr(worker_module, "load_skeleton", _recording_load_skeleton)
 
+    # the-sunspire-ascent now ships a WS-2 theme contract, which would route the
+    # worker through the bound (parameterized) dispatch and its extra binding
+    # provider call this MockProvider does not script. This test covers cross-
+    # band path RESOLUTION, not the bound dispatch (which has dedicated coverage
+    # in tests/unit/test_worker.py), so pin it to the legacy free-text fill path
+    # exactly as test_generation_worker.py's _force_legacy_skeleton_fill fixture
+    # does, keeping it deterministic regardless of the on-disk contract sidecar.
+    def _no_contract(skeleton_path: Path, skeleton: dict[str, object]) -> None:
+        return None
+
+    monkeypatch.setattr(worker_module, "load_contract_for", _no_contract)
+
     # #ASSUME: external-resources: the injected MockProvider keeps the worker
     # hermetic (no network); the per-job provider="anthropic" override is
     # intentionally bypassed exactly as in
