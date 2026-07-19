@@ -153,6 +153,12 @@ _BUNDLES: dict[str, frozenset[str]] = {
     "despair": _DESPAIR,
 }
 
+# Public: the known denylist bundle ids, so a caller (e.g.
+# scripts/check_theme_contract.py) can reject a contract that declares an
+# unknown `forbid` bundle id (a typo that would otherwise silently
+# contribute zero terms to a slot's effective denylist).
+BUNDLE_IDS: frozenset[str] = frozenset(_BUNDLES)
+
 # #CRITICAL: security: this union is the band-mandatory denylist floor
 # (ws2-parameterized-catalog-design.md section 3.1, mirrored against the real
 # fail-state policy in validator/band_profile.py:38-92: 3-5 and 5-8 forbid
