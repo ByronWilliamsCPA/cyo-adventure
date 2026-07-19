@@ -40,6 +40,29 @@ _CROSS_BAND_SKELETON_PATH = (
 )
 
 
+@pytest.fixture(autouse=True)
+def _force_legacy_skeleton_fill(  # pyright: ignore[reportUnusedFunction]
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Pin the two worker-running tests in this module to the legacy fill path.
+
+    Both ``run_generation_job`` tests here drive real catalog skeletons that now
+    ship WS-2 theme contracts (one auto-picked by the planner, one the explicit
+    ``the-sunspire-ascent`` cross-band override), which would otherwise route the
+    worker through the bound (parameterized) dispatch and its extra binding
+    provider call the injected ``MockProvider``s do not script; the bind step
+    then fails to parse a filled-skeleton response as a slot map and the job
+    never reaches the terminal status these tests assert. The bound dispatch has
+    dedicated coverage in ``tests/unit/test_worker.py``; these tests cover the
+    producer/consumer plan plumbing and cross-band path resolution. Forcing
+    ``load_contract_for`` to ``None`` keeps them deterministic regardless of the
+    on-disk contract sidecars, mirroring
+    ``test_generation_worker.py::_force_legacy_skeleton_fill``. The producer-side
+    tests never run the worker, so this patch is a harmless no-op for them.
+    """
+    monkeypatch.setattr(worker_module, "load_contract_for", lambda *_a, **_k: None)
+
+
 def _filled_skeleton_json_for(skeleton_path: Path) -> str:
     """Return a JSON string: the given skeleton with every FILL body replaced.
 
@@ -526,18 +549,8 @@ async def test_cross_band_override_producer_binds_consumer_fill(
         return real_load_skeleton(path)
 
     monkeypatch.setattr(worker_module, "load_skeleton", _recording_load_skeleton)
-
-    # the-sunspire-ascent now ships a WS-2 theme contract, which would route the
-    # worker through the bound (parameterized) dispatch and its extra binding
-    # provider call this MockProvider does not script. This test covers cross-
-    # band path RESOLUTION, not the bound dispatch (which has dedicated coverage
-    # in tests/unit/test_worker.py), so pin it to the legacy free-text fill path
-    # exactly as test_generation_worker.py's _force_legacy_skeleton_fill fixture
-    # does, keeping it deterministic regardless of the on-disk contract sidecar.
-    def _no_contract(skeleton_path: Path, skeleton: dict[str, object]) -> None:
-        return None
-
-    monkeypatch.setattr(worker_module, "load_contract_for", _no_contract)
+    # The bound-dispatch neutralization (load_contract_for -> None) is applied
+    # module-wide by the _force_legacy_skeleton_fill autouse fixture above.
 
     # #ASSUME: external-resources: the injected MockProvider keeps the worker
     # hermetic (no network); the per-job provider="anthropic" override is
