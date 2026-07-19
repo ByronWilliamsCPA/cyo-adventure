@@ -24,14 +24,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   push-to-main trigger still cover 3.11/3.13 compatibility drift. Together
   these remove the largest source of duplicate work between a PR's own CI run
   and the merge-queue's re-run of the same commit.
-- CI: `sonarcloud.yml` now skips the coverage-generating build+pytest run
-  (`no-build: true`, no `coverage-paths`) on `pull_request`/`workflow_dispatch`,
-  doing static analysis only. Job-level timing data from recent PRs showed
-  the job costing ~12 min per PR, of which ~11 min was a duplicate full
-  pytest run (on Python 3.14, for coverage.xml) rather than the
-  sonar-scanner analysis itself (well under 90s); with that run removed,
-  `pull_request` is back as a trigger since fast per-PR static feedback is
-  now cheap. `push` to `main`/`develop` keeps the full coverage-generating,
+- CI: `sonarcloud.yml` no longer runs on `pull_request` at all (only `push`
+  to `main`/`develop` and `workflow_dispatch`). Job-level timing data from
+  recent PRs showed the job costing ~12 min per PR, ~11 of which was a
+  duplicate full pytest run (on Python 3.14, for coverage.xml) rather than
+  the sonar-scanner analysis itself (well under 90s); `fail-on-quality-gate`
+  was already forced off outside `push`, so the PR-time run was always
+  advisory with no way to act on the result. A `no-build: true` variant was
+  tried to keep fast static-only PR feedback without the pytest run, but
+  `--no-build` requires a pre-built wheel and this project has none (local
+  editable install only), so `uv sync` hard-fails; reverted rather than
+  pursued further without reading the reusable workflow's source first.
+  `push` to `main`/`develop` keeps the full coverage-generating,
   gate-enforced run so the SonarCloud dashboard's coverage% stays accurate.
 
 ## [0.18.0] - 2026-07-19

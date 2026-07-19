@@ -15,16 +15,24 @@ on:
     branches:
       - main
       - develop
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - main
-      - develop
-  # No merge_group: the pull_request run below already covers the commit
-  # content; merge_group would just repeat the same fast static-only analysis
-  # with no new merged-state signal (Sonar can't enforce anything there
-  # anyway, see fail-on-quality-gate below), consistent with tightening
-  # merge_group to skip file-content-only checks elsewhere in this repo.
+  # No pull_request, no merge_group. A prior version of this workflow tried
+  # `no-build: true` on pull_request to skip the coverage-generating pytest
+  # run and get fast static-only Sonar feedback; that failed every PR run
+  # with `error: Distribution cyo-adventure==... @ editable+. can't be
+  # installed because it is marked as --no-build but has no binary
+  # distribution` (uv exit code 2) -- `--no-build` means "only install
+  # pre-built wheels," which this local editable-only package (no published
+  # wheel) can never satisfy. There is no known lighter-weight input on the
+  # reusable workflow (ByronWilliamsCPA/.github/python-sonarcloud.yml, not
+  # read from this repo) that installs deps without running the full test
+  # suite, so a fast, correct pull_request path isn't available without
+  # reading that workflow's source first. `fail-on-quality-gate` below is
+  # already forced off outside `push`, so a PR-time run was always advisory
+  # with no way to act on the result; push-to-main keeps full, gate-enforced,
+  # coverage-backed analysis on every merge.
+  # #VERIFY: if per-PR Sonar feedback is wanted again, add the org's
+  # `.github` repo to a session and check python-sonarcloud.yml for a
+  # skip-tests-but-still-install input before trying `no-build` again.
   workflow_dispatch:
 
 permissions:
@@ -51,27 +59,12 @@ jobs:
       # them correctly, so it is the truthful measurement interpreter.
       python-version: '3.14'
       source-directory: 'src'
-      # Only the push run has a coverage.xml to read (see no-build below);
-      # pass an empty path on pull_request so Sonar does static analysis
-      # without a coverage report instead of pointing at a file that was
-      # never generated.
-      # #VERIFY: confirm the reusable workflow treats an empty
-      # coverage-paths as "skip coverage import" rather than an error --
-      # inferred from its own no-build default (true = skip build/test),
-      # not confirmed by reading its source (a separate org repo not in
-      # this session).
-      coverage-paths: ${{ github.event_name == 'push' && 'coverage.xml' || '' }}
-      # Enforce the quality gate only on push to a protected branch; it is
-      # advisory (and, on pull_request, coverage-less) everywhere else.
+      coverage-paths: 'coverage.xml'
+      # Advisory except on push to a protected branch (see the `on:` comment
+      # above for why pull_request/merge_group are excluded entirely rather
+      # than run advisory-and-slow).
       fail-on-quality-gate: ${{ github.event_name == 'push' }}
       skip-if-no-token: true
-      # push: false (generated project ships as an installable package;
-      # upstream default of true would block 'uv sync' from installing the
-      # editable project for coverage). pull_request/workflow_dispatch: true
-      # -- skip the build+full-pytest-run entirely (that run was measured at
-      # ~11-12 min of a ~12.5 min job on PRs, vs. well under 90s for the
-      # sonar-scanner analysis alone), so PR feedback stays static-analysis
-      # fast instead of re-running the suite ci.yml's own buckets already ran.
-      no-build: ${{ github.event_name != 'push' }}
+      no-build: false  # generated project ships as an installable package; upstream default of true would block 'uv sync' from installing the editable project for coverage
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
