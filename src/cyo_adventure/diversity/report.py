@@ -17,7 +17,7 @@ from pydantic import BaseModel, ConfigDict
 class AntiTemplateVerdict(StrEnum):
     """The anti-template guard's verdict for one same-tree fill pair."""
 
-    PASS_ = "pass"  # noqa: S105 -- a verdict label, not a credential
+    PASS_ = "pass"  # noqa: S105 # nosec B105 -- a verdict label, not a credential
     WARN = "warn"
     FAIL = "fail"
 
