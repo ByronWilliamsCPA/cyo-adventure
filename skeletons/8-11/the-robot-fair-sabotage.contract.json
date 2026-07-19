@@ -1,0 +1,554 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-robot-fair-sabotage",
+  "age_band": "8-11",
+  "legacy_lexicon": [
+    "Priya",
+    "Ben",
+    "Gizmo",
+    "Marcus",
+    "Sana",
+    "Poppy",
+    "Jade",
+    "Okafor",
+    "Herbie",
+    "Vasquez",
+    "Vulcan",
+    "Daisy",
+    "Thunderbolt",
+    "Gearheads",
+    "Circuit Sparks",
+    "Maplewood",
+    "Room 12",
+    "assembly bell",
+    "storage closet",
+    "boiler room",
+    "waxy scuff loops",
+    "doughnuts",
+    "chore card",
+    "work log",
+    "punch card",
+    "LEARN switch",
+    "battery latch",
+    "confetti cannon",
+    "servo box",
+    "sketchbook",
+    "charging dock",
+    "crayon drawing",
+    "engineering award",
+    "Problem Solver prize",
+    "showmanship",
+    "anniversary guest",
+    "school song",
+    "shared first",
+    "Second Debut"
+  ],
+  "default_binding": {
+    "HERO": "Priya",
+    "COMPANION": "her teammate Ben",
+    "THRESHOLD": "the Maplewood School robot fair",
+    "ENTRANCE": "the Room 12 workshop",
+    "TEAM": "Team Circuit Sparks",
+    "HERO_ROBOT": "Gizmo",
+    "PRINCIPAL": "Principal Vasquez",
+    "CUSTODIAN": "Mr. Okafor",
+    "OLD_ROBOT": "Herbie",
+    "DEADLINE_SIGN": "the assembly bell",
+    "TREAT": "a bag of doughnuts",
+    "RIVAL_TEAM_A": "Team Thunderbolt",
+    "RIVAL_ROBOT_A": "Vulcan",
+    "RIVAL_TEAM_B": "the Gearheads",
+    "RIVAL_ROBOT_B": "Daisy",
+    "SUSPECT_MARCUS": "Marcus",
+    "SUSPECT_MARCUS_MATE": "Sana",
+    "SUSPECT_POPPY": "Poppy",
+    "SUSPECT_POPPY_SIS": "Jade",
+    "CLOSET": "the storage closet",
+    "TRACK_MARKS": "waxy scuff loops",
+    "GYM": "the gym",
+    "CHORE_CARD": "the chore card",
+    "WORK_LOG": "the work log",
+    "BINS_LABEL_WORDS": "SMALL and ROUND and SHINY",
+    "BINS_EVIDENCE": "a label",
+    "BOILER_ROOM": "the boiler room",
+    "PUNCH_CARD": "the punch card",
+    "LEARN_SWITCH": "the LEARN switch",
+    "BATTERY_LATCH": "the battery latch",
+    "CONFETTI_CANNON": "the confetti cannon",
+    "SERVO_BOX": "a servo box",
+    "SKETCHBOOK": "her sketchbook",
+    "CHARGING_DOCK": "the charging dock",
+    "CRAYON_DRAWING": "a crayon drawing",
+    "SCHOOL_SONG": "the school song",
+    "HONOR_TITLE": "Herbie's Second Debut",
+    "ENGINEERING_AWARD": "the judges' engineering award",
+    "PROBLEM_SOLVER_PRIZE": "a Problem Solver prize",
+    "SHOWMANSHIP_RIBBON": "the blue ribbon for showmanship",
+    "ANNIVERSARY_GUEST_TITLE": "the fair's official anniversary guest",
+    "SHARED_FIRST_AWARD": "a shared first"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The child protagonist.",
+      "guidance": "A single kid-relatable investigator (name or role); curious and fair-minded, never reckless.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["COMPANION"]
+      }
+    },
+    {
+      "id": "COMPANION",
+      "scope": "global",
+      "meaning": "The hero's teammate who investigates and repairs alongside them.",
+      "guidance": "A loyal, capable teammate; never a source of peril; shares credit and helps repair, not just watch.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO"]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The whole bounded event the story happens inside.",
+      "guidance": "A single-day school or community event with a public demonstration/judging moment at its close; wonder and fair-play over dread; no lethal or unbreathable hazards.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRANCE",
+      "scope": "global",
+      "meaning": "The single home-base location the investigation keeps returning to.",
+      "guidance": "A workroom/clubroom that is normally locked overnight and reachable at lunch for repairs; always safe to enter.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TEAM",
+      "scope": "global",
+      "meaning": "The hero's own team/club.",
+      "guidance": "A named kid team the hero belongs to; distinct from the two rival teams.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["RIVAL_TEAM_A", "RIVAL_TEAM_B"]
+      }
+    },
+    {
+      "id": "HERO_ROBOT",
+      "scope": "global",
+      "meaning": "The hero's own project/device, found disassembled at the start.",
+      "guidance": "A harmless, buildable device a kid team could plausibly make; never a source of peril to anyone.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["OLD_ROBOT", "RIVAL_ROBOT_A", "RIVAL_ROBOT_B"]
+      }
+    },
+    {
+      "id": "PRINCIPAL",
+      "scope": "global",
+      "meaning": "The adult authority figure who runs the event and hears the resolution.",
+      "guidance": "A fair, listening adult in charge; not a suspect, a source of calm authority.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["CUSTODIAN", "SUSPECT_MARCUS", "SUSPECT_POPPY", "HERO", "COMPANION"]
+      }
+    },
+    {
+      "id": "CUSTODIAN",
+      "scope": "global",
+      "meaning": "The adult staff member secretly responsible, working on a kind surprise.",
+      "guidance": "A sympathetic adult with a heartfelt, non-malicious secret project; never the true villain, only mistaken.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["PRINCIPAL", "SUSPECT_MARCUS", "SUSPECT_POPPY", "HERO", "COMPANION"]
+      }
+    },
+    {
+      "id": "OLD_ROBOT",
+      "scope": "global",
+      "meaning": "The real, non-malicious cause of the sabotage: an old device woken early with garbled instructions.",
+      "guidance": "A gentle, helpful machine that only ever tidies/assists; the 'culprit' with no ill intent, never armed or dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO_ROBOT", "RIVAL_ROBOT_A", "RIVAL_ROBOT_B"]
+      }
+    },
+    {
+      "id": "DEADLINE_SIGN",
+      "scope": "global",
+      "meaning": "The recurring cue that cuts off the morning investigation window.",
+      "guidance": "A routine, survivable school-schedule cue (a bell, a announcement); never itself dangerous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TREAT",
+      "scope": "global",
+      "meaning": "The small shareable snack the hero brings and later offers as a peace gesture.",
+      "guidance": "An ordinary, safe kid-friendly food or treat; edible without concern.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "RIVAL_TEAM_A",
+      "scope": "global",
+      "meaning": "The first rival team, also sabotaged.",
+      "guidance": "A friendly-rival kid team, not antagonists.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["TEAM", "RIVAL_TEAM_B"]
+      }
+    },
+    {
+      "id": "RIVAL_ROBOT_A",
+      "scope": "global",
+      "meaning": "The first rival team's device, also disassembled.",
+      "guidance": "A harmless kid-built device.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO_ROBOT", "OLD_ROBOT", "RIVAL_ROBOT_B"]
+      }
+    },
+    {
+      "id": "RIVAL_TEAM_B",
+      "scope": "global",
+      "meaning": "The second rival team, also sabotaged.",
+      "guidance": "A friendly-rival kid team, not antagonists.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["TEAM", "RIVAL_TEAM_A"]
+      }
+    },
+    {
+      "id": "RIVAL_ROBOT_B",
+      "scope": "global",
+      "meaning": "The second rival team's device, also disassembled.",
+      "guidance": "A harmless kid-built device.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": ["HERO_ROBOT", "OLD_ROBOT", "RIVAL_ROBOT_A"]
+      }
+    },
+    {
+      "id": "SUSPECT_MARCUS",
+      "scope": "global",
+      "meaning": "The first red-herring suspect: a rival-team kid with an innocent, embarrassing secret.",
+      "guidance": "A nervous but decent kid; his secret is small and non-malicious (a borrowed part, a late errand).",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["SUSPECT_MARCUS_MATE", "SUSPECT_POPPY", "SUSPECT_POPPY_SIS", "HERO", "COMPANION", "CUSTODIAN", "PRINCIPAL"]
+      }
+    },
+    {
+      "id": "SUSPECT_MARCUS_MATE",
+      "scope": "global",
+      "meaning": "This suspect's own teammate, who unknowingly confirms his alibi.",
+      "guidance": "A candid, unworried teammate.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["SUSPECT_MARCUS"]
+      }
+    },
+    {
+      "id": "SUSPECT_POPPY",
+      "scope": "global",
+      "meaning": "The second red-herring suspect: a much younger sibling who witnessed something real out of fear of being blamed.",
+      "guidance": "A young, frightened but honest child; never actually responsible, needs gentle handling not accusation.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["SUSPECT_POPPY_SIS", "SUSPECT_MARCUS", "HERO", "COMPANION", "CUSTODIAN", "PRINCIPAL"]
+      }
+    },
+    {
+      "id": "SUSPECT_POPPY_SIS",
+      "scope": "global",
+      "meaning": "This suspect's older sibling, one of the hero's own teammates.",
+      "guidance": "A protective older sibling who helps coax the truth out gently.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": ["weapon"],
+        "distinct_from": ["SUSPECT_POPPY"]
+      }
+    },
+    {
+      "id": "CLOSET",
+      "scope": "global",
+      "meaning": "The storage space inside the workshop where the real culprit is eventually found.",
+      "guidance": "An ordinary, safe storage space; never a source of physical danger.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "TRACK_MARKS",
+      "scope": "global",
+      "meaning": "The recurring physical clue (unidentified marks) that eventually reveals wheels, not feet.",
+      "guidance": "A benign physical trace; harmless once explained.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GYM",
+      "scope": "global",
+      "meaning": "The venue for the assembly and the final demonstrations.",
+      "guidance": "A large, safe public gathering space.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CHORE_CARD",
+      "scope": "track",
+      "meaning": "The garbled instruction card that caused the old device's confused behavior.",
+      "guidance": "A harmless instruction medium; the 'bug' behind the mystery, not a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "WORK_LOG",
+      "scope": "track",
+      "meaning": "The custodian's written record explaining the secret project.",
+      "guidance": "A plain written record; the mechanism by which the truth is confirmed.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BINS_LABEL_WORDS",
+      "scope": "track",
+      "meaning": "The stencil label words found on the sorted bins.",
+      "guidance": "Short, blocky category words; a physical-evidence detail, not a taunt or threat.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BINS_EVIDENCE",
+      "scope": "track",
+      "meaning": "The single piece of physical evidence the hero pockets from the bins clue.",
+      "guidance": "A small, harmless item.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BOILER_ROOM",
+      "scope": "track",
+      "meaning": "The custodian's own workroom, glimpsed as a secondary clue location.",
+      "guidance": "A staff workroom; safe, if a little off-limits to kids.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["toxic"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PUNCH_CARD",
+      "scope": "track",
+      "meaning": "The physical chewed card found in the charging dock, later identified as the garbled instruction.",
+      "guidance": "A small inert artifact.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "LEARN_SWITCH",
+      "scope": "track",
+      "meaning": "The risky manual-reteach control on the old device.",
+      "guidance": "A control that is safe to use but easy to use wrong; never itself hazardous.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "BATTERY_LATCH",
+      "scope": "track",
+      "meaning": "The safe emergency shutoff on the old device.",
+      "guidance": "A simple, safe stop control; using it is always harmless, just costs time.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CONFETTI_CANNON",
+      "scope": "track",
+      "meaning": "The celebratory prop offered to the old device for the finale.",
+      "guidance": "A safe, fun party prop.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SERVO_BOX",
+      "scope": "track",
+      "meaning": "The spare part a red-herring suspect is nervously carrying.",
+      "guidance": "An ordinary spare mechanical part, not a weapon.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["weapon"],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SKETCHBOOK",
+      "scope": "track",
+      "meaning": "The item the young witness clutches protectively.",
+      "guidance": "A comforting personal item, e.g. a book of drawings.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CHARGING_DOCK",
+      "scope": "track",
+      "meaning": "The empty docking station found in the closet.",
+      "guidance": "An ordinary piece of equipment furniture; inert.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CRAYON_DRAWING",
+      "scope": "track",
+      "meaning": "The young witness's good-luck drawing, dropped and later found put away with care.",
+      "guidance": "A small, sweet handmade keepsake.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "SCHOOL_SONG",
+      "scope": "track",
+      "meaning": "The old device's fanfare/song, sung along by the crowd in more than one ending.",
+      "guidance": "A warm, communal, harmless tradition.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "HONOR_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: the old device's honored second debut (completion).",
+      "guidance": "Positive; names the old device's redemption. Names ending e_honor.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["ENGINEERING_AWARD", "PROBLEM_SOLVER_PRIZE", "SHOWMANSHIP_RIBBON", "ANNIVERSARY_GUEST_TITLE", "SHARED_FIRST_AWARD"]
+      }
+    },
+    {
+      "id": "ENGINEERING_AWARD",
+      "scope": "ending",
+      "meaning": "The special prize won for the steady-hands repair-and-run ending (success).",
+      "guidance": "Positive; a judge-created recognition, not a top prize. Names ending e_grit.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["HONOR_TITLE", "PROBLEM_SOLVER_PRIZE", "SHOWMANSHIP_RIBBON", "ANNIVERSARY_GUEST_TITLE", "SHARED_FIRST_AWARD"]
+      }
+    },
+    {
+      "id": "PROBLEM_SOLVER_PRIZE",
+      "scope": "ending",
+      "meaning": "The invented prize for the live-repair-on-stage ending (discovery).",
+      "guidance": "Positive; celebrates problem-solving over a clean run. Names ending e_showfix.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["HONOR_TITLE", "ENGINEERING_AWARD", "SHOWMANSHIP_RIBBON", "ANNIVERSARY_GUEST_TITLE", "SHARED_FIRST_AWARD"]
+      }
+    },
+    {
+      "id": "SHOWMANSHIP_RIBBON",
+      "scope": "ending",
+      "meaning": "The prize for the hero-and-old-device duet ending (success).",
+      "guidance": "Positive; rewards a joyful shared performance. Names ending e_duo.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["HONOR_TITLE", "ENGINEERING_AWARD", "PROBLEM_SOLVER_PRIZE", "ANNIVERSARY_GUEST_TITLE", "SHARED_FIRST_AWARD"]
+      }
+    },
+    {
+      "id": "ANNIVERSARY_GUEST_TITLE",
+      "scope": "ending",
+      "meaning": "The honorary status the old device is given in the duet ending (success).",
+      "guidance": "Positive; a warm honorary recognition. Names ending e_duo.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["HONOR_TITLE", "ENGINEERING_AWARD", "PROBLEM_SOLVER_PRIZE", "SHOWMANSHIP_RIBBON", "SHARED_FIRST_AWARD"]
+      }
+    },
+    {
+      "id": "SHARED_FIRST_AWARD",
+      "scope": "ending",
+      "meaning": "The shared prize for the all-three-teams-together finale (success).",
+      "guidance": "Positive; celebrates cooperation among former rivals. Names ending e_team.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": ["lethal", "weapon", "graphic"],
+        "distinct_from": ["HONOR_TITLE", "ENGINEERING_AWARD", "PROBLEM_SOLVER_PRIZE", "SHOWMANSHIP_RIBBON", "ANNIVERSARY_GUEST_TITLE"]
+      }
+    }
+  ]
+}

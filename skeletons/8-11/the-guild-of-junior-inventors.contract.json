@@ -1,0 +1,2379 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-guild-of-junior-inventors",
+  "age_band": "8-11",
+  "legacy_lexicon": [
+    "Admiral",
+    "Cog Lane",
+    "Felix",
+    "Gadgets",
+    "Gears",
+    "Gliders",
+    "Gran Tinker",
+    "Guild of Junior Inventors",
+    "Inventor's Fair",
+    "Juno Vale",
+    "Marisol Wrench",
+    "Market Row",
+    "Market Street",
+    "Midsummer Rewinding",
+    "Mr. Crumb",
+    "Ms. Okafor",
+    "Odessa Pin",
+    "Pip",
+    "Priya Sharma",
+    "Rooftop Glider Derby",
+    "Sky Marsh",
+    "Wrench",
+    "apple-catcher",
+    "autumn hare",
+    "chime train",
+    "dart wing",
+    "drain gate",
+    "dumbwaiter",
+    "escapement anchor",
+    "proofing-clock",
+    "rumble-damper",
+    "soarer wing",
+    "spring heron",
+    "summer fox",
+    "trainer glider",
+    "twin-rail catapult",
+    "winter owl"
+  ],
+  "default_binding": {
+    "THRESHOLD": "the old Guild of Junior Inventors hall on Cog Lane",
+    "GUILDMASTER": "Guildmaster Marisol Wrench",
+    "ENTRY_TOKEN": "acceptance letter",
+    "ENTRY_TEST": "tinker-test",
+    "STREET_NAME": "Market Street",
+    "ROUTE_G_NAME": "Gears",
+    "ROUTE_L_NAME": "Gliders",
+    "ROUTE_M_NAME": "Gadgets",
+    "ROUTE_G_LURE": "crowned with turning brass gears",
+    "ROUTE_L_LURE": "hung with canvas wings",
+    "ROUTE_M_LURE": "framed by a wall of little labeled drawers",
+    "ROUTE_G_MENTOR": "Master Odessa Pin",
+    "ROUTE_L_MENTOR": "Sky Marsh",
+    "ROUTE_M_MENTOR": "Gran Tinker",
+    "ROUTE_G_EVENT": "the Midsummer Rewinding",
+    "ROUTE_L_EVENT": "the Rooftop Glider Derby",
+    "ROUTE_M_EVENT": "the Inventor's Fair",
+    "ROUTE_G_TASK": "restoring the town square's four-season fountain clock",
+    "ROUTE_L_TASK": "building gliders and racing message pigeons",
+    "ROUTE_M_TASK": "inventing helpers for the Market Street shopkeepers",
+    "ROUTE_G_RIVAL": "Felix",
+    "ROUTE_L_RIVAL": "Juno Vale",
+    "ROUTE_L_RIVAL_ANIMAL": "Admiral",
+    "ROUTE_M_RIVAL": "Priya Sharma",
+    "ROUTE_L_LOFT": "loft",
+    "G_FIGURE_SPRING": "spring heron",
+    "G_FIGURE_SUMMER": "summer fox",
+    "G_FIGURE_AUTUMN": "autumn hare",
+    "G_FIGURE_WINTER": "winter owl",
+    "G_BELLS": "chime train",
+    "G_WHEEL": "water wheel",
+    "G_ANCHOR": "escapement anchor",
+    "G_DRAIN_GATE": "drain gate",
+    "G_KEY": "winding key",
+    "L_TRAINER": "trainer glider",
+    "L_SOARER": "soarer wing",
+    "L_DART": "dart wing",
+    "L_CATAPULT": "twin-rail catapult",
+    "L_RAIL": "launch rail",
+    "L_CAPSULE": "message capsule",
+    "L_STORM_LEG": "storm-bell return",
+    "L_SPRINT_LEG": "market sprint",
+    "L_PIGEON": "Pip",
+    "M_BAKER": "Mr. Crumb",
+    "M_GREENGROCER": "Ms. Okafor",
+    "M_CLOCK_DEVICE": "proofing-clock",
+    "M_LIFT_DEVICE": "dumbwaiter lift",
+    "M_DAMPER_DEVICE": "rumble-damper",
+    "M_CATCHER_DEVICE": "apple-catcher rail",
+    "M_FAIR_EVENT": "Market Row",
+    "GF_SETBACK": "The Fox That Waited",
+    "GF_DISCOVERY": "Keeper of Springs",
+    "GG_SETBACK": "Three Seasons Out of Four",
+    "GH_SUCCESS": "The Dry-Run Parade",
+    "GI_SUCCESS_A": "The Seasons Wake at Noon",
+    "GI_DISCOVERY": "The Hidden Crank",
+    "GK_SETBACK": "The Wheel Comes Out",
+    "GK_DISCOVERY": "The Paddle-Carver's Summer",
+    "GL_SETBACK": "The Hand-Rung Noon",
+    "GM_SUCCESS_A": "The Midsummer Rewinding",
+    "GM_SUCCESS_B": "The Conductor of Bells",
+    "GM_SETBACK": "The Four-Minute Noon",
+    "LF_SETBACK": "Adrift at the Second Hoop",
+    "LF_DISCOVERY": "The Trim Doctor",
+    "LG_SETBACK": "The Slipped Hook",
+    "LH_SUCCESS_A": "Three Clean Hoops",
+    "LI_SUCCESS_A": "The Chimney Line",
+    "LI_DISCOVERY": "The Thermal River",
+    "LK_SETBACK": "The Featherweight Mistake",
+    "LK_DISCOVERY": "Signed for the Winter Mail",
+    "LL_SETBACK": "Grounded",
+    "LM_COMPLETION": "First Bell, Two Birds",
+    "LM_SUCCESS": "Co-Captains of the Loft",
+    "LM_SETBACK": "The Early Launch",
+    "MF_DISCOVERY": "The First Order Slip",
+    "MF_SETBACK": "The Extra-Crusty Specials",
+    "MH_SUCCESS": "The Breakfast Bun",
+    "MG_SETBACK": "The Day It Rained Rolls",
+    "MK_DISCOVERY": "The Jar-of-Peas Chart",
+    "MK_SETBACK": "The Cobble-Box Demo",
+    "ML_SETBACK": "A Certificate and a Knot",
+    "MM_SUCCESS_A": "Priya's First Ribbon",
+    "MM_COMPLETION": "Forty Apples Home",
+    "MM_SETBACK": "The Stall That Moved"
+  },
+  "slots": [
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The guild's home building where the story opens and every junior is admitted.",
+      "guidance": "A welcoming, wonder-filled workshop building with a memorable street address; safe, no hazards.",
+      "constraints": {
+        "max_words": 10,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GUILDMASTER",
+      "scope": "global",
+      "meaning": "The head of the guild who runs the entrance trial and assigns new juniors to a workshop.",
+      "guidance": "A kind, sharply observant adult judge; appears only in the shared opening scenes, not within any one workshop's summer.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRY_TOKEN",
+      "scope": "global",
+      "meaning": "The item a new junior presents to be admitted to the guild.",
+      "guidance": "A small, ordinary object proving acceptance; no ceremony required beyond holding it.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ENTRY_TEST",
+      "scope": "global",
+      "meaning": "The short hands-on trial every new junior takes before being assigned a workshop.",
+      "guidance": "A brief build-something challenge that reveals character (how a junior handles failure), not just skill.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "STREET_NAME",
+      "scope": "global",
+      "meaning": "The street the guild's gadget-workshop door opens directly onto.",
+      "guidance": "A lived-in commercial street with a handful of shopkeepers; ordinary, safe, bustling.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_G_NAME",
+      "scope": "route",
+      "meaning": "The short name of the gears-workshop route.",
+      "guidance": "A one or two word workshop name a kid would say out loud when picking it.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_L_NAME",
+          "ROUTE_M_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_G_EVENT",
+      "scope": "route",
+      "meaning": "The named end-of-summer event the gears workshop is racing to be ready for.",
+      "guidance": "A festival, contest, or showcase day; exciting, public, and clearly dated; never itself dangerous.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_L_EVENT",
+          "ROUTE_M_EVENT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_G_MENTOR",
+      "scope": "route",
+      "meaning": "The adult expert who runs the gears workshop all summer.",
+      "guidance": "A skilled, patient adult craftsperson mentor; kind but exacting; never a source of danger.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_L_MENTOR",
+          "ROUTE_M_MENTOR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_G_RIVAL",
+      "scope": "route",
+      "meaning": "The other junior working in the gears workshop who starts out as friendly-rival competition.",
+      "guidance": "A same-age junior with more experience in this workshop; prickly at first, becomes a genuine ally.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_L_RIVAL",
+          "ROUTE_M_RIVAL"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_L_NAME",
+      "scope": "route",
+      "meaning": "The short name of the gliders-workshop route.",
+      "guidance": "A one or two word workshop name a kid would say out loud when picking it.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_G_NAME",
+          "ROUTE_M_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_L_EVENT",
+      "scope": "route",
+      "meaning": "The named end-of-summer event the gliders workshop is racing to be ready for.",
+      "guidance": "A festival, contest, or showcase day; exciting, public, and clearly dated; never itself dangerous.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_G_EVENT",
+          "ROUTE_M_EVENT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_L_MENTOR",
+      "scope": "route",
+      "meaning": "The adult expert who runs the gliders workshop all summer.",
+      "guidance": "A skilled, patient adult craftsperson mentor; kind but exacting; never a source of danger.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_G_MENTOR",
+          "ROUTE_M_MENTOR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_L_RIVAL",
+      "scope": "route",
+      "meaning": "The other junior working in the gliders workshop who starts out as friendly-rival competition.",
+      "guidance": "A same-age junior with more experience in this workshop; prickly at first, becomes a genuine ally.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_G_RIVAL",
+          "ROUTE_M_RIVAL"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_M_NAME",
+      "scope": "route",
+      "meaning": "The short name of the gadgets-workshop route.",
+      "guidance": "A one or two word workshop name a kid would say out loud when picking it.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_G_NAME",
+          "ROUTE_L_NAME"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_M_EVENT",
+      "scope": "route",
+      "meaning": "The named end-of-summer event the gadgets workshop is racing to be ready for.",
+      "guidance": "A festival, contest, or showcase day; exciting, public, and clearly dated; never itself dangerous.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_G_EVENT",
+          "ROUTE_L_EVENT"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_M_MENTOR",
+      "scope": "route",
+      "meaning": "The adult expert who runs the gadgets workshop all summer.",
+      "guidance": "A skilled, patient adult craftsperson mentor; kind but exacting; never a source of danger.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_G_MENTOR",
+          "ROUTE_L_MENTOR"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_M_RIVAL",
+      "scope": "route",
+      "meaning": "The other junior working in the gadgets workshop who starts out as friendly-rival competition.",
+      "guidance": "A same-age junior with more experience in this workshop; prickly at first, becomes a genuine ally.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "ROUTE_G_RIVAL",
+          "ROUTE_L_RIVAL"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_G_LURE",
+      "scope": "route",
+      "meaning": "The visual detail on the Gears workshop's door at the very first choice.",
+      "guidance": "A short, inviting glimpse of clockwork craft; distinguishable from the other two doors.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_L_LURE",
+          "ROUTE_M_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_L_LURE",
+      "scope": "route",
+      "meaning": "The visual detail on the Gliders workshop's door at the very first choice.",
+      "guidance": "A short, inviting glimpse of flight craft; distinguishable from the other two doors.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_G_LURE",
+          "ROUTE_M_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_M_LURE",
+      "scope": "route",
+      "meaning": "The visual detail on the Gadgets workshop's door at the very first choice.",
+      "guidance": "A short, inviting glimpse of tinkering craft; distinguishable from the other two doors.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": [
+          "ROUTE_G_LURE",
+          "ROUTE_L_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_G_TASK",
+      "scope": "route",
+      "meaning": "The one-line summary of the Gears workshop's summer project, given at the sorting moment.",
+      "guidance": "A short phrase naming the big fix-it project; achievable-sounding, not overwhelming.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_L_TASK",
+      "scope": "route",
+      "meaning": "The one-line summary of the Gliders workshop's summer project, given at the sorting moment.",
+      "guidance": "A short phrase naming the flight-craft project; achievable-sounding, not overwhelming.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_M_TASK",
+      "scope": "route",
+      "meaning": "The one-line summary of the Gadgets workshop's summer project, given at the sorting moment.",
+      "guidance": "A short phrase naming the helper-building project; achievable-sounding, not overwhelming.",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_L_RIVAL_ANIMAL",
+      "scope": "route",
+      "meaning": "The rival junior's champion animal partner, undefeated for several seasons before this summer.",
+      "guidance": "A skilled, likeable working animal; a source of pride and, later, a hidden vulnerability, never of danger.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ROUTE_L_LOFT",
+      "scope": "route",
+      "meaning": "The home base for the Gliders workshop's messenger-animal program.",
+      "guidance": "A cozy, purpose-built shelter for the workshop's message-carrying partners.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_FIGURE_SPRING",
+      "scope": "track",
+      "meaning": "One of four seasonal figures on the town clock; this one represents spring.",
+      "guidance": "A small mechanical figure needing careful, patient repair; charming, not eerie.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "G_FIGURE_SUMMER",
+          "G_FIGURE_AUTUMN",
+          "G_FIGURE_WINTER"
+        ]
+      }
+    },
+    {
+      "id": "G_FIGURE_SUMMER",
+      "scope": "track",
+      "meaning": "One of four seasonal figures on the town clock; this one represents summer.",
+      "guidance": "A small mechanical figure whose repair centers on forging and tempering a new spring part.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "G_FIGURE_SPRING",
+          "G_FIGURE_AUTUMN",
+          "G_FIGURE_WINTER"
+        ]
+      }
+    },
+    {
+      "id": "G_FIGURE_AUTUMN",
+      "scope": "track",
+      "meaning": "One of four seasonal figures on the town clock; this one represents autumn.",
+      "guidance": "A small mechanical figure; the rival junior's own side project.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "G_FIGURE_SPRING",
+          "G_FIGURE_SUMMER",
+          "G_FIGURE_WINTER"
+        ]
+      }
+    },
+    {
+      "id": "G_FIGURE_WINTER",
+      "scope": "track",
+      "meaning": "One of four seasonal figures on the town clock; this one represents winter.",
+      "guidance": "A small mechanical figure whose repair centers on freeing a seized internal part with a press.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "G_FIGURE_SPRING",
+          "G_FIGURE_SUMMER",
+          "G_FIGURE_AUTUMN"
+        ]
+      }
+    },
+    {
+      "id": "G_BELLS",
+      "scope": "track",
+      "meaning": "The set of tower bells and their striking mechanism, restored in the second Gears sub-project.",
+      "guidance": "A named chiming mechanism; the sound is delightful, never alarming.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_WHEEL",
+      "scope": "track",
+      "meaning": "The large mill wheel below the square that powers the whole clock mechanism.",
+      "guidance": "A big, safely-accessed mechanical wheel; jammed with old debris, not dangerous to approach.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_ANCHOR",
+      "scope": "track",
+      "meaning": "The precise clockwork part that keeps the tower's timing honest; the object of the escapement sub-plot.",
+      "guidance": "A small, skill-testing precision part; failing to make it well is a craft setback, never a safety issue.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_DRAIN_GATE",
+      "scope": "track",
+      "meaning": "The long-lost mechanism that lowers the fountain basin so the parade can run without getting the figures wet.",
+      "guidance": "An old, forgotten valve-like mechanism; a rediscovered piece of the clock's original design.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "G_KEY",
+      "scope": "track",
+      "meaning": "The ceremonial key used to wind the great clock weight at the festival's climax.",
+      "guidance": "A single symbolic, honor-bearing object; handed to whoever the story gives credit to.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_TRAINER",
+      "scope": "track",
+      "meaning": "The battered practice glider the hero inherits to rebuild for the derby.",
+      "guidance": "A well-worn hand-me-down flying machine, structurally sound under its damage.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_SOARER",
+      "scope": "track",
+      "meaning": "The long, patient wing design built for the derby's high, slow route.",
+      "guidance": "A graceful long-winged glider; steady and forgiving to fly once trimmed.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "L_DART"
+        ]
+      }
+    },
+    {
+      "id": "L_DART",
+      "scope": "track",
+      "meaning": "The short, quick wing design built for the derby's fast, low route.",
+      "guidance": "A twitchy, exciting short-winged glider; unforgiving of a sloppy launch.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "L_SOARER"
+        ]
+      }
+    },
+    {
+      "id": "L_CATAPULT",
+      "scope": "track",
+      "meaning": "The new twin-rail launcher improvised from storm wreckage after the original launch rail is destroyed.",
+      "guidance": "A bold, faster-launching invention built under time pressure; thrilling but untested.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_RAIL",
+      "scope": "track",
+      "meaning": "The fixed launch-rail infrastructure gliders are released from.",
+      "guidance": "Ordinary roof-mounted launch equipment; a storm can damage it, but it is not itself hazardous.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_CAPSULE",
+      "scope": "track",
+      "meaning": "The small capsule a message-carrying bird wears to hold its message, weighed for fairness in races.",
+      "guidance": "A tiny, lightweight carried object; the choice of capsule is a fairness-versus-speed dilemma, not a danger.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_STORM_LEG",
+      "scope": "track",
+      "meaning": "The riskiest of the three post-race legs, flown home through worsening weather.",
+      "guidance": "A weather-tested endurance race leg; challenging but survivable with the right safety protocol.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_SPRINT_LEG",
+      "scope": "track",
+      "meaning": "The short, fast post-race leg that rewards raw speed.",
+      "guidance": "A brisk, straightforward race leg between two fixed points.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "L_PIGEON",
+      "scope": "track",
+      "meaning": "The hero's own young message-carrying animal partner for the summer.",
+      "guidance": "A small, thoughtful working animal; deliberate rather than reckless, a source of pride not peril.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "M_BAKER",
+      "scope": "track",
+      "meaning": "The street baker whose four-in-the-morning routine the hero is assigned to help.",
+      "guidance": "A warm, overworked shopkeeper with an honest, solvable scheduling problem.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "M_GREENGROCER",
+      "scope": "track",
+      "meaning": "The street greengrocer whose tilted, tram-shaken display the hero is assigned to help.",
+      "guidance": "A good-humored shopkeeper whose display problem is genuinely tricky, not merely careless.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "M_CLOCK_DEVICE",
+      "scope": "track",
+      "meaning": "The invented device that tracks proofing/baking time across the baker's several ovens.",
+      "guidance": "A clever small timekeeping helper; safe around food and heat.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "M_LIFT_DEVICE",
+      "scope": "track",
+      "meaning": "The invented device that carries heavy trays up the baker's narrow stair.",
+      "guidance": "A counterweighted small hoist; must be shown safe (guarded) before use near people.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "M_DAMPER_DEVICE",
+      "scope": "track",
+      "meaning": "The invented device that absorbs the passing tram's shudder so the greengrocer's display stays still.",
+      "guidance": "A tuned shock-absorbing helper; the build-versus-test dilemma is about permission and patience, not hazard.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "M_CATCHER_DEVICE"
+        ]
+      }
+    },
+    {
+      "id": "M_CATCHER_DEVICE",
+      "scope": "track",
+      "meaning": "The invented device that gently catches and returns apples that roll free of the tilted display.",
+      "guidance": "A padded, non-destructive catching helper; safe for produce and passersby alike.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "M_DAMPER_DEVICE"
+        ]
+      }
+    },
+    {
+      "id": "M_FAIR_EVENT",
+      "scope": "track",
+      "meaning": "The Inventor's Fair's special session where every helper runs live at its own real shopfront.",
+      "guidance": "A judged, working demonstration morning across the whole street.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "GF_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: the fast-quenched forge spring shatters, missing the fourth figure at the festival (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GF_DISCOVERY",
+      "scope": "ending",
+      "meaning": "Ending title: skipping the tower entirely to master springs across all four figures (neutral discovery).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GG_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: the improvised press cracks the winter figure's crown gear, leaving three figures to parade (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GH_SUCCESS",
+      "scope": "ending",
+      "meaning": "Ending title: the parade runs on a drained basin, safe and celebrated (success).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GI_SUCCESS_A",
+      "scope": "ending",
+      "meaning": "Ending title: the recovered drain gate lets the parade run over real flowing water (success).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GI_DISCOVERY",
+      "scope": "ending",
+      "meaning": "Ending title: working the hidden drain mechanism out of sight while the rival takes the visible honor (neutral discovery).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GK_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: patched paddles fail and choke the wheel on test morning (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GK_DISCOVERY",
+      "scope": "ending",
+      "meaning": "Ending title: a summer spent carving proper paddles reveals a trade the hero is suited for (neutral discovery).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GL_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: hand-ringing the bells without the true anchor, a near-perfect stopgap (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GM_SUCCESS_A",
+      "scope": "ending",
+      "meaning": "Ending title: the finished anchor lets the hero wind the town's first honest noon in twenty years (success).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GM_SUCCESS_B",
+      "scope": "ending",
+      "meaning": "Ending title: conducting bells, wheel, and figures together as one timed performance (success).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "GM_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: an untested surprise chime rings four minutes late in front of the crowd (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LF_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: flying the long-wing solo, the glider drifts off course into a market awning (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LF_DISCOVERY",
+      "scope": "ending",
+      "meaning": "Ending title: the hero becomes known for tuning other fliers' wings rather than winning outright (neutral discovery).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LG_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: a copied launch-release hook misfires at the trials (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LH_SUCCESS_A",
+      "scope": "ending",
+      "meaning": "Ending title: the safely rebuilt single launch rail earns a strong derby placing (success).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LI_SUCCESS_A",
+      "scope": "ending",
+      "meaning": "Ending title: the new twin-rail launcher wins the fastest recorded run on the low route (success).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LI_DISCOVERY",
+      "scope": "ending",
+      "meaning": "Ending title: choosing the untried high route reveals a rising-air path nobody had charted (neutral discovery).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LK_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: a too-light message capsule voids the young pigeon's record-breaking sprint (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LK_DISCOVERY",
+      "scope": "ending",
+      "meaning": "Ending title: the honestly-trained pigeon takes second place but earns a working role (neutral discovery).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LL_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: proving the storm-flight protocol alone breaks a safety rule and costs the trials (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LM_COMPLETION",
+      "scope": "ending",
+      "meaning": "Ending title: two message-birds, one young and one veteran, complete the storm route together (completion).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LM_SUCCESS",
+      "scope": "ending",
+      "meaning": "Ending title: the veteran champion bird finally flies through the weather it always avoided (success).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "LM_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: launching ahead of the safety schedule to chase a record backfires safely (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "MF_DISCOVERY",
+      "scope": "ending",
+      "meaning": "Ending title: the finished small proofing-clock draws no ribbon but a paying repeat customer (neutral discovery).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "MF_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: the overreaching eight-oven clock tangles itself in front of the judges (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "MH_SUCCESS",
+      "scope": "ending",
+      "meaning": "Ending title: the finished, safety-caged lift helper wins its own special recognition (success).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "MG_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: an improvised brake fails and spills a basket of goods down the street (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "MK_DISCOVERY",
+      "scope": "ending",
+      "meaning": "Ending title: patient overnight data-gathering (not a rushed test) earns second place and a buyer for the data itself (neutral discovery).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "MK_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: testing the invention on the street without permission draws a penalty (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "ML_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: polishing a solo entry instead of helping a struggling neighbor costs the row its ribbon (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "MM_SUCCESS_A",
+      "scope": "ending",
+      "meaning": "Ending title: standing by a neighbor's rescued invention instead of one's own wins the shared ribbon (success).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_COMPLETION",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "MM_COMPLETION",
+      "scope": "ending",
+      "meaning": "Ending title: every stall's helper runs together and the whole row is honored as one invention (completion).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_SETBACK"
+        ]
+      }
+    },
+    {
+      "id": "MM_SETBACK",
+      "scope": "ending",
+      "meaning": "Ending title: moving a helper to a flashier spot away from the real problem it was built for backfires (setback).",
+      "guidance": "Short evocative ending name (title-cased); tone matches the ending's valence (setback/discovery/success/completion).",
+      "constraints": {
+        "max_words": 8,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "GF_SETBACK",
+          "GF_DISCOVERY",
+          "GG_SETBACK",
+          "GH_SUCCESS",
+          "GI_SUCCESS_A",
+          "GI_DISCOVERY",
+          "GK_SETBACK",
+          "GK_DISCOVERY",
+          "GL_SETBACK",
+          "GM_SUCCESS_A",
+          "GM_SUCCESS_B",
+          "GM_SETBACK",
+          "LF_SETBACK",
+          "LF_DISCOVERY",
+          "LG_SETBACK",
+          "LH_SUCCESS_A",
+          "LI_SUCCESS_A",
+          "LI_DISCOVERY",
+          "LK_SETBACK",
+          "LK_DISCOVERY",
+          "LL_SETBACK",
+          "LM_COMPLETION",
+          "LM_SUCCESS",
+          "LM_SETBACK",
+          "MF_DISCOVERY",
+          "MF_SETBACK",
+          "MH_SUCCESS",
+          "MG_SETBACK",
+          "MK_DISCOVERY",
+          "MK_SETBACK",
+          "ML_SETBACK",
+          "MM_SUCCESS_A",
+          "MM_COMPLETION"
+        ]
+      }
+    }
+  ]
+}
