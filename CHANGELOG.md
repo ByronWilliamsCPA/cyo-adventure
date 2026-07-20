@@ -71,6 +71,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The test now restores the constraint in a `finally` block. Also
   deduplicated the catalog-family seed insert (`_pg_url` and `engine`
   fixtures) into a shared `_seed_catalog_family_stmt()` helper.
+- CI: restored the `merge_group` trigger on `security-analysis.yml` and
+  `reuse.yml`, dropped earlier in `[Unreleased]` above as file-content-only
+  and not merged-state-sensitive. In practice the org ruleset requires
+  "Security Gate Validation" and "REUSE Compliance" as status checks
+  regardless of event context, so the merge queue waited forever for a
+  check that could never report on a `merge_group` entry; confirmed live
+  when the PR carrying this exact change was kicked from the queue with
+  `CI_TIMEOUT`. Both scans are fast (bandit/OSV-Scanner and a license-header
+  check, no pytest/build cost), so restoring them on `merge_group` is cheap
+  and needs no org-level ruleset access to fix.
 
 ## [0.18.0] - 2026-07-19
 

@@ -13,13 +13,17 @@ name: Security Analysis
     branches: [main, master]
   pull_request:
     branches: [main, master]
-  # No merge_group: this scan is file-content-only (bandit + OSV-Scanner over
-  # the tree), not merged-state-sensitive, and already ran on the PR that's
-  # entering the queue. The push-to-main trigger above re-scans the real
-  # commit right after the queue lands it. #VERIFY: if branch protection
-  # marks this job "required" specifically for the merge_group context,
-  # remove that requirement in the ruleset or the queue will stall waiting
-  # for a check that never reports.
+  # merge_group restored (#306 initially dropped it as file-content-only,
+  # not merged-state-sensitive, already covered by the PR run). In practice
+  # the org ruleset requires "Security Gate Validation" as a status check
+  # regardless of event context, so removing the trigger left the merge
+  # queue waiting forever for a check that could never report -- confirmed
+  # live: PR #306 itself was kicked from the queue with CI_TIMEOUT after
+  # this exact change landed. Re-added rather than filed as a ruleset
+  # follow-up: this scan is fast (bandit + OSV-Scanner, no pytest/build
+  # cost), so keeping it on merge_group is cheap and needs no org-level
+  # access to fix.
+  merge_group:
   schedule:
     # Run security scans weekly on Monday at 9 AM UTC
     - cron: '0 9 * * 1'
