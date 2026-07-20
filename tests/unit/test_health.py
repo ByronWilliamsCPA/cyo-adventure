@@ -356,6 +356,180 @@ class TestCheckCache:
 
 
 # ---------------------------------------------------------------------------
+# check_generation_queue helper (ADR-021 Phase 1: worker observability)
+# ---------------------------------------------------------------------------
+
+
+def _fake_session_with_scalars(
+    values: list[int],
+) -> tuple[AsyncMock, Callable[[], AsyncGenerator[AsyncMock, None]]]:
+    """Build a mock AsyncSession whose scalar() calls return values in order.
+
+    Mirrors the check_database mocking pattern (an async-context-managed
+    session), extended with a ``scalar`` side_effect list so each of
+    check_generation_queue's three COUNT queries (stale-queued,
+    stale-running, recent-failed) returns a distinct, ordered result.
+    """
+    mock_session = AsyncMock(spec=AsyncSession)
+    mock_session.scalar = AsyncMock(side_effect=values)
+
+    @asynccontextmanager
+    async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+        yield mock_session
+
+    return mock_session, _fake_get_session
+
+
+class TestCheckGenerationQueue:
+    """Tests for the check_generation_queue() async helper (ADR-021).
+
+    Real production failure mode (a schema-drift incident): jobs FAILING,
+    not merely piling up queued. The check surfaces three signals: rows
+    stranded at "queued" past DEFAULT_STALE_AFTER, rows stranded at
+    "running" past the job-timeout-derived threshold (mirroring
+    requeue_stranded_jobs exactly so the alarm and the actual sweep never
+    disagree), and rows that recently failed (the schema-drift catcher).
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_generation_queue_ok_when_all_counts_zero(self) -> None:
+        """status=True, state='ok' when no stale/failed rows exist."""
+        from cyo_adventure.api.health import check_generation_queue
+
+        _, fake_get_session = _fake_session_with_scalars([0, 0, 0])
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_generation_queue()
+
+        assert result.name == "generation_queue"
+        assert result.status is True
+        assert result.state == "ok"
+        assert result.error is None
+        assert result.latency_ms is not None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_generation_queue_degraded_on_stale_queued(self) -> None:
+        """status=False, state='degraded' when stale-queued rows exist."""
+        from cyo_adventure.api.health import check_generation_queue
+
+        _, fake_get_session = _fake_session_with_scalars([3, 0, 0])
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_generation_queue()
+
+        assert result.status is False
+        assert result.state == "degraded"
+        assert result.error is not None
+        assert "3" in result.error
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_generation_queue_degraded_on_stale_running(self) -> None:
+        """status=False, state='degraded' when stale-running rows exist."""
+        from cyo_adventure.api.health import check_generation_queue
+
+        _, fake_get_session = _fake_session_with_scalars([0, 2, 0])
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_generation_queue()
+
+        assert result.status is False
+        assert result.state == "degraded"
+        assert result.error is not None
+        assert "2" in result.error
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_generation_queue_degraded_on_recent_failed(self) -> None:
+        """status=False, state='degraded' when jobs recently failed.
+
+        This is the signal that would have caught the real schema-drift
+        incident: jobs failing outright, not merely piling up queued.
+        """
+        from cyo_adventure.api.health import check_generation_queue
+
+        _, fake_get_session = _fake_session_with_scalars([0, 0, 5])
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_generation_queue()
+
+        assert result.status is False
+        assert result.state == "degraded"
+        assert result.error is not None
+        assert "5" in result.error
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_generation_queue_db_error_returns_false_status(self) -> None:
+        """status=False, generic error, when the database is unreachable."""
+        from cyo_adventure.api.health import check_generation_queue
+
+        @asynccontextmanager
+        async def _failing_get_session() -> AsyncGenerator[None, None]:
+            raise RuntimeError("connection refused")
+            yield  # pragma: no cover
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=_failing_get_session,
+        ):
+            result = await check_generation_queue()
+
+        assert result.status is False
+        assert result.name == "generation_queue"
+        # Must NOT leak the raw exception text (OWASP A09)
+        assert result.error == "dependency unavailable"
+        assert "connection refused" not in (result.error or "")
+        assert result.latency_ms is not None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_generation_queue_uses_queue_module_stale_after(self) -> None:
+        """The stale-queued cutoff is derived from queue.DEFAULT_STALE_AFTER.
+
+        Regression guard for the ADR-021 invariant: the health check must
+        import the same constant requeue_stranded_jobs defaults to, not a
+        hardcoded duplicate, so the alarm and the actual sweep never drift
+        apart.
+        """
+        from datetime import timedelta
+
+        from cyo_adventure.api.health import check_generation_queue
+
+        _, fake_get_session = _fake_session_with_scalars([0, 0, 0])
+
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=fake_get_session,
+            ),
+            patch(
+                "cyo_adventure.generation.queue.DEFAULT_STALE_AFTER",
+                timedelta(minutes=5),
+            ) as patched_stale_after,
+        ):
+            result = await check_generation_queue()
+
+        assert result.state == "ok"
+        # Sanity: the patched constant is what the test believes it patched.
+        assert patched_stale_after == timedelta(minutes=5)
+
+
+# ---------------------------------------------------------------------------
 # check_external_service helper
 # ---------------------------------------------------------------------------
 
@@ -407,6 +581,10 @@ class TestReadiness:
         """GET /health/ready returns 200 when database check passes."""
         mock_session = AsyncMock(spec=AsyncSession)
         mock_session.execute = AsyncMock()
+        # check_generation_queue shares get_session; explicit zero counts
+        # keep this test's intent (a fully healthy readiness probe) clear
+        # rather than relying on MagicMock's implicit int() coercion.
+        mock_session.scalar = AsyncMock(return_value=0)
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -500,6 +678,7 @@ class TestReadinessCacheDoesNotGate:
         """A down Redis is reported in checks but still returns HTTP 200."""
         mock_session = AsyncMock(spec=AsyncSession)
         mock_session.execute = AsyncMock()
+        mock_session.scalar = AsyncMock(return_value=0)
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -538,6 +717,7 @@ class TestReadinessCacheDoesNotGate:
         """An unconfigured (memory-backend) cache is reported but returns HTTP 200."""
         mock_session = AsyncMock(spec=AsyncSession)
         mock_session.execute = AsyncMock()
+        mock_session.scalar = AsyncMock(return_value=0)
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -561,6 +741,87 @@ class TestReadinessCacheDoesNotGate:
         assert response.status_code == 200
         assert body["checks"]["cache"]["status"] is True
         assert body["checks"]["cache"]["state"] == "unconfigured"
+
+
+# ---------------------------------------------------------------------------
+# Readiness endpoint: generation queue does not gate readiness (ADR-021)
+# ---------------------------------------------------------------------------
+
+
+class TestReadinessQueueDoesNotGate:
+    """A degraded generation_queue check is reported but never flips /health/ready.
+
+    Only ``database`` is in ``_CRITICAL_READINESS_CHECKS``; a stuck or failing
+    worker must not pull API pods out of the load-balancer rotation for
+    endpoints that touch nothing worker-related.
+    """
+
+    @pytest.mark.unit
+    def test_readiness_returns_200_when_queue_degraded_and_database_healthy(
+        self,
+    ) -> None:
+        """A degraded generation_queue is reported but still returns HTTP 200."""
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_session.execute = AsyncMock()
+        # stale_queued=4, stale_running=0, recent_failed=0
+        mock_session.scalar = AsyncMock(side_effect=[4, 0, 0])
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+            yield mock_session
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_fake_get_session,
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "memory",
+            ),
+        ):
+            client = TestClient(app, raise_server_exceptions=True)
+            response = client.get("/health/ready")
+
+        body = response.json()
+        assert response.status_code == 200
+        assert body["status"] == "ok"
+        assert body["checks"]["generation_queue"]["status"] is False
+        assert body["checks"]["generation_queue"]["state"] == "degraded"
+
+    @pytest.mark.unit
+    def test_readiness_returns_503_on_database_failure_regardless_of_queue(
+        self,
+    ) -> None:
+        """A database failure still 503s even though generation_queue is unrelated.
+
+        get_session fails for every caller (check_database AND
+        check_generation_queue both use it), proving the 503 gate is driven
+        by the database check, not incidentally by the queue check sharing
+        the same failure.
+        """
+
+        @asynccontextmanager
+        async def _failing_get_session() -> AsyncGenerator[None, None]:
+            raise RuntimeError("db down")
+            yield  # pragma: no cover
+
+        app = _make_app()
+        with (
+            patch(
+                "cyo_adventure.core.database.get_session",
+                side_effect=_failing_get_session,
+            ),
+            patch(
+                "cyo_adventure.api.health.settings.rate_limit_backend",
+                "memory",
+            ),
+        ):
+            client = TestClient(app, raise_server_exceptions=False)
+            response = client.get("/health/ready")
+
+        assert response.status_code == 503
 
 
 # ---------------------------------------------------------------------------

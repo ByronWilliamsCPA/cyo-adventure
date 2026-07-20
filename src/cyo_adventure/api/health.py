@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import sys
 import time
+from datetime import UTC, datetime, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, status
@@ -43,7 +44,17 @@ _START_TIME = time.time()
 # Dependency names whose failure actually flips /health/ready to 503. See
 # check_cache's docstring and readiness()'s #ASSUME note: cache is
 # deliberately excluded, since the app fails open without Redis.
+# check_generation_queue (ADR-021) is deliberately excluded too: see its
+# docstring and TestReadinessQueueDoesNotGate.
 _CRITICAL_READINESS_CHECKS = frozenset({"database"})
+
+# #ASSUME: timing dependencies: 24 hours is the lookback window for the
+# recent-failed-jobs signal in check_generation_queue. This is calibrated to
+# catch a sustained failure mode (e.g. a schema-drift incident where every
+# job fails outright) within one operator work day, without keeping an old,
+# already-investigated failure flagging "degraded" indefinitely.
+# #VERIFY: tests/unit/test_health.py::TestCheckGenerationQueue.
+_RECENT_FAILED_WINDOW = timedelta(hours=24)
 
 
 class HealthStatus(BaseModel):
@@ -211,6 +222,132 @@ async def check_cache() -> ReadinessCheck:
         )
 
 
+async def check_generation_queue() -> ReadinessCheck:
+    """Check the RQ generation-job pipeline for a stopped or failing worker.
+
+    ADR-021 Phase 1: the real production failure mode already diagnosed was
+    jobs FAILING outright (a schema-drift incident), not merely jobs piling
+    up queued. This check surfaces three independent signals from the
+    ``generation_job`` table:
+
+    1. **stale_queued**: rows at ``status="queued"`` older than
+       :data:`~cyo_adventure.generation.queue.DEFAULT_STALE_AFTER`. Mirrors
+       the exact threshold :func:`~cyo_adventure.generation.queue.requeue_stranded_jobs`
+       uses to decide a queued row is lost, so the alarm and the actual
+       sweep can never disagree.
+    2. **stale_running**: rows at ``status="running"`` older than
+       ``generation_job_timeout_seconds`` plus
+       :data:`~cyo_adventure.generation.queue.RUNNING_STALE_MARGIN`. Also
+       mirrors ``requeue_stranded_jobs``'s own running-row threshold, rather
+       than a flat constant, so a legitimately long-running job is never
+       flagged early.
+    3. **recent_failed**: rows at ``status="failed"`` whose ``updated_at``
+       falls within :data:`_RECENT_FAILED_WINDOW` (24h). This is the signal
+       that would have caught the real incident: a stopped worker shows up
+       as stale_queued/stale_running, but a *running* worker whose jobs are
+       failing outright (e.g. a schema-drift error on every write) shows up
+       here instead.
+
+    Deliberately non-gating (see readiness()'s docstring and
+    ``_CRITICAL_READINESS_CHECKS``): a stuck or failing generation pipeline
+    must not pull API pods out of the load-balancer rotation for endpoints
+    that never touch generation at all. The response exposes only three
+    counts, no PII, on an already-unauthenticated endpoint (OWASP A09: no
+    raw exception text on failure, matching check_database/check_cache).
+
+    #ASSUME: external resources: this reads through the API's own
+    ``get_session`` (the ``cyo_api`` role once ADR-021's Phase 2 role split
+    lands), not a separate worker connection; a database outage here is
+    already covered by the gating ``database`` check.
+    #VERIFY: tests/unit/test_health.py::TestCheckGenerationQueue covers ok,
+    each of the three degraded signals, and the DB-error path;
+    TestReadinessQueueDoesNotGate proves this check never flips readiness.
+
+    Returns:
+        ReadinessCheck: generation-queue status, latency, and fine-grained
+        state ("ok" or "degraded"; this check has no "unconfigured" concept).
+    """
+    start = time.time()
+    try:
+        # Import here to avoid circular dependencies, matching check_database.
+        from sqlalchemy import func, select
+
+        from cyo_adventure.core.database import get_session
+        from cyo_adventure.db.models import GenerationJob
+        from cyo_adventure.generation.queue import (
+            DEFAULT_STALE_AFTER,
+            RUNNING_STALE_MARGIN,
+        )
+
+        now = datetime.now(UTC)
+        queued_cutoff = now - DEFAULT_STALE_AFTER
+        running_cutoff = now - (
+            timedelta(seconds=settings.generation_job_timeout_seconds)
+            + RUNNING_STALE_MARGIN
+        )
+        failed_cutoff = now - _RECENT_FAILED_WINDOW
+
+        async with get_session() as session:
+            stale_queued = await session.scalar(
+                select(func.count())
+                .select_from(GenerationJob)
+                .where(
+                    GenerationJob.status == "queued",
+                    GenerationJob.updated_at < queued_cutoff,
+                )
+            )
+            stale_running = await session.scalar(
+                select(func.count())
+                .select_from(GenerationJob)
+                .where(
+                    GenerationJob.status == "running",
+                    GenerationJob.updated_at < running_cutoff,
+                )
+            )
+            recent_failed = await session.scalar(
+                select(func.count())
+                .select_from(GenerationJob)
+                .where(
+                    GenerationJob.status == "failed",
+                    GenerationJob.updated_at >= failed_cutoff,
+                )
+            )
+
+        stale_queued_count = int(stale_queued or 0)
+        stale_running_count = int(stale_running or 0)
+        recent_failed_count = int(recent_failed or 0)
+        latency_ms = round((time.time() - start) * 1000, 2)
+
+        if stale_queued_count or stale_running_count or recent_failed_count:
+            return ReadinessCheck(
+                name="generation_queue",
+                status=False,
+                latency_ms=latency_ms,
+                error=(
+                    f"{stale_queued_count} stale queued, "
+                    f"{stale_running_count} stale running, "
+                    f"{recent_failed_count} recently failed generation job(s)"
+                ),
+                state="degraded",
+            )
+        return ReadinessCheck(
+            name="generation_queue",
+            status=True,
+            latency_ms=latency_ms,
+            state="ok",
+        )
+    except Exception as exc:
+        latency_ms = (time.time() - start) * 1000
+        logger.warning(_CHECK_FAILED_LOG, check="generation_queue", error=str(exc))
+        return ReadinessCheck(
+            name="generation_queue",
+            status=False,
+            latency_ms=round(latency_ms, 2),
+            error=_CHECK_FAILED_MESSAGE,
+            state="degraded",
+        )
+
+
 async def check_external_service() -> ReadinessCheck:
     """Check external API/service connectivity.
 
@@ -267,6 +404,8 @@ async def readiness() -> ReadinessStatus:
     - Database connectivity (gates readiness; 503 on failure).
     - Cache/Redis availability (reported, does not gate readiness; see
       check_cache's docstring and the #ASSUME note below).
+    - Generation-queue health (reported, does not gate readiness; see
+      check_generation_queue's docstring, ADR-021 Phase 1).
     - External service health: not wired in (check_external_service exists
       but is unused; see api/health.py module history / docs/operations/runbook.md).
 
@@ -293,6 +432,7 @@ async def readiness() -> ReadinessStatus:
     # For now, run sequentially - can be optimized with asyncio.gather()
     checks["database"] = await check_database()
     checks["cache"] = await check_cache()
+    checks["generation_queue"] = await check_generation_queue()
 
     # check_external_service remains unwired here: LLM/story-generation
     # providers are optional and provider-specific (generation_provider is
