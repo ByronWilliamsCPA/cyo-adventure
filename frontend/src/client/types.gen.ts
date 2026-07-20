@@ -761,6 +761,18 @@ export type CompletionBody = {
 };
 
 /**
+ * CompletionListView
+ *
+ * A profile's recorded completions (COPPA 312.6(a) / GDPR Article 15 read path).
+ */
+export type CompletionListView = {
+    /**
+     * Completions
+     */
+    completions: Array<CompletionView>;
+};
+
+/**
  * CompletionView
  *
  * A recorded completion.
@@ -1284,6 +1296,62 @@ export type FamilyCreateBody = {
      * Name
      */
     name: string;
+};
+
+/**
+ * FamilyExportView
+ *
+ * A guardian's full family data export.
+ *
+ * COPPA 312.6(a) access / GDPR Article 20 portability (remediation plan
+ * Phase 3c), in one endpoint: every record tied to the family and each
+ * child profile, as a single machine-readable (portable) JSON document.
+ * Nested entities are loosely-typed dicts, not per-entity Pydantic models:
+ * this endpoint's job is completeness of the export, not a stable typed API
+ * contract for any one entity (the normal per-resource endpoints already
+ * serve that role); each dict's keys mirror the corresponding ORM row's
+ * columns as built in ``api/me.py``.
+ *
+ * Attributes:
+ * exported_at: When this export was generated (UTC).
+ * family: The family row (id, name, created_at).
+ * guardians: Every guardian/admin/child login row in the family
+ * (id, role, is_admin, email, created_at); no ``pin_hash`` or
+ * ``authn_subject`` (credential material, never exported).
+ * profiles: Every child profile, each with its own nested
+ * ``reading_state``, ``completions``, ``ratings``, and
+ * ``assignments`` lists.
+ * story_requests: Every story request tied to the family.
+ */
+export type FamilyExportView = {
+    /**
+     * Exported At
+     */
+    exported_at: string;
+    /**
+     * Family
+     */
+    family: {
+        [key: string]: unknown;
+    };
+    /**
+     * Guardians
+     */
+    guardians: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Profiles
+     */
+    profiles: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Story Requests
+     */
+    story_requests: Array<{
+        [key: string]: unknown;
+    }>;
 };
 
 /**
@@ -2140,11 +2208,15 @@ export type OnboardingBody = {
 /**
  * OnboardingConsent
  *
- * Consent-capture seam for onboarding (accepted, recorded by P7-02).
+ * Verifiable-parental-consent payload (Phase 2 / ADR-018 D1).
  *
- * This is the extension point P7-02 (consent capture) fills; onboarding
- * accepts it today but records nothing. Keep it minimal: do NOT add consent
- * business logic here.
+ * A signature-capture step layered on the Supabase/Google OAuth login that
+ * already authenticates the guardian: ``signer_name`` is a typed
+ * full-legal-name attestation, standing in for the FTC's "sign and submit
+ * electronically" method (312.5(b)(2)(i)). ``accepted``, ``policy_version``,
+ * and ``signer_name`` must all be present together to actually record
+ * consent; a request that omits or falsifies any of them records nothing
+ * (see ``onboarding._record_consent``), it does not partially persist.
  */
 export type OnboardingConsent = {
     /**
@@ -2155,6 +2227,10 @@ export type OnboardingConsent = {
      * Policy Version
      */
     policy_version?: string | null;
+    /**
+     * Signer Name
+     */
+    signer_name?: string | null;
 };
 
 /**
@@ -2183,6 +2259,14 @@ export type OnboardingView = {
      * Created
      */
     created: boolean;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Consent Recorded
+     */
+    consent_recorded: boolean;
 };
 
 /**
@@ -2287,6 +2371,10 @@ export type ProfileUpdateBody = {
      * Monthly Request Envelope
      */
     monthly_request_envelope?: number | null;
+    /**
+     * Processing Restricted
+     */
+    processing_restricted?: boolean | null;
 };
 
 /**
@@ -2342,6 +2430,10 @@ export type ProfileView = {
      * Monthly Request Envelope
      */
     monthly_request_envelope: number | null;
+    /**
+     * Processing Restricted
+     */
+    processing_restricted: boolean;
     /**
      * Created At
      */
@@ -3603,7 +3695,7 @@ export type UserUpdateBody = {
     /**
      * Status
      */
-    status?: 'pending' | 'active' | 'deactivated' | null;
+    status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | null;
 };
 
 /**
@@ -3639,7 +3731,7 @@ export type UserView = {
     /**
      * Status
      */
-    status: 'pending' | 'active' | 'deactivated';
+    status: 'pending' | 'active' | 'deactivated' | 'awaiting_approval';
     /**
      * Created At
      */
@@ -4025,6 +4117,48 @@ export type RecordCompletionApiV1CompletionsPostResponses = {
 
 export type RecordCompletionApiV1CompletionsPostResponse = RecordCompletionApiV1CompletionsPostResponses[keyof RecordCompletionApiV1CompletionsPostResponses];
 
+export type ListCompletionsApiV1CompletionsProfileIdGetData = {
+    body?: never;
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/completions/{profile_id}';
+};
+
+export type ListCompletionsApiV1CompletionsProfileIdGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListCompletionsApiV1CompletionsProfileIdGetError = ListCompletionsApiV1CompletionsProfileIdGetErrors[keyof ListCompletionsApiV1CompletionsProfileIdGetErrors];
+
+export type ListCompletionsApiV1CompletionsProfileIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: CompletionListView;
+};
+
+export type ListCompletionsApiV1CompletionsProfileIdGetResponse = ListCompletionsApiV1CompletionsProfileIdGetResponses[keyof ListCompletionsApiV1CompletionsProfileIdGetResponses];
+
 export type GetReadingHistoryApiV1ReadingHistoryProfileIdGetData = {
     body?: never;
     path: {
@@ -4368,6 +4502,10 @@ export type CreateProfileApiV1ProfilesPostData = {
 
 export type CreateProfileApiV1ProfilesPostErrors = {
     /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
      * Missing, malformed, expired, or unknown bearer token.
      */
     401: ErrorResponse;
@@ -4391,6 +4529,48 @@ export type CreateProfileApiV1ProfilesPostResponses = {
 };
 
 export type CreateProfileApiV1ProfilesPostResponse = CreateProfileApiV1ProfilesPostResponses[keyof CreateProfileApiV1ProfilesPostResponses];
+
+export type DeleteProfileApiV1ProfilesProfileIdDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+    };
+    query?: never;
+    url: '/api/v1/profiles/{profile_id}';
+};
+
+export type DeleteProfileApiV1ProfilesProfileIdDeleteErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * The referenced resource does not exist.
+     */
+    404: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteProfileApiV1ProfilesProfileIdDeleteError = DeleteProfileApiV1ProfilesProfileIdDeleteErrors[keyof DeleteProfileApiV1ProfilesProfileIdDeleteErrors];
+
+export type DeleteProfileApiV1ProfilesProfileIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteProfileApiV1ProfilesProfileIdDeleteResponse = DeleteProfileApiV1ProfilesProfileIdDeleteResponses[keyof DeleteProfileApiV1ProfilesProfileIdDeleteResponses];
 
 export type UpdateProfileApiV1ProfilesProfileIdPatchData = {
     body: ProfileUpdateBody;
@@ -5744,6 +5924,76 @@ export type WhoamiApiV1MeGetResponses = {
 
 export type WhoamiApiV1MeGetResponse = WhoamiApiV1MeGetResponses[keyof WhoamiApiV1MeGetResponses];
 
+export type ExportMyFamilyApiV1MeExportGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/export';
+};
+
+export type ExportMyFamilyApiV1MeExportGetErrors = {
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ExportMyFamilyApiV1MeExportGetError = ExportMyFamilyApiV1MeExportGetErrors[keyof ExportMyFamilyApiV1MeExportGetErrors];
+
+export type ExportMyFamilyApiV1MeExportGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyExportView;
+};
+
+export type ExportMyFamilyApiV1MeExportGetResponse = ExportMyFamilyApiV1MeExportGetResponses[keyof ExportMyFamilyApiV1MeExportGetResponses];
+
+export type DeleteMyFamilyApiV1MeFamilyDeleteData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/family';
+};
+
+export type DeleteMyFamilyApiV1MeFamilyDeleteErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
+     * Missing, malformed, expired, or unknown bearer token.
+     */
+    401: ErrorResponse;
+    /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteMyFamilyApiV1MeFamilyDeleteError = DeleteMyFamilyApiV1MeFamilyDeleteErrors[keyof DeleteMyFamilyApiV1MeFamilyDeleteErrors];
+
+export type DeleteMyFamilyApiV1MeFamilyDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteMyFamilyApiV1MeFamilyDeleteResponse = DeleteMyFamilyApiV1MeFamilyDeleteResponses[keyof DeleteMyFamilyApiV1MeFamilyDeleteResponses];
+
 export type ListStoryRequestsApiV1StoryRequestsGetData = {
     body?: never;
     path?: never;
@@ -5795,6 +6045,10 @@ export type CreateStoryRequestApiV1StoryRequestsPostData = {
 
 export type CreateStoryRequestApiV1StoryRequestsPostErrors = {
     /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
      * Missing, malformed, expired, or unknown bearer token.
      */
     401: ErrorResponse;
@@ -5835,6 +6089,10 @@ export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData = {
 };
 
 export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
     /**
      * Missing, malformed, expired, or unknown bearer token.
      */
@@ -6400,7 +6658,7 @@ export type ListUsersApiV1AdminUsersGetData = {
         /**
          * Status
          */
-        status?: 'pending' | 'active' | 'deactivated' | null;
+        status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | null;
     };
     url: '/api/v1/admin/users';
 };

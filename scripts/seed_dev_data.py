@@ -325,6 +325,10 @@ async def _seed_dual_role_user(session: AsyncSession) -> bool:
             role="guardian",
             is_admin=True,
             authn_subject=_DUAL_SUBJECT,
+            consent_accepted_at=datetime.now(UTC),
+            consent_policy_version="dev-seed",
+            consent_signer_name="Dev Dual-Role Guardian",
+            consent_ip="127.0.0.1",
         )
     )
     return True
@@ -490,10 +494,24 @@ async def seed_dev_data(
         session.add(profile)
         await session.flush()
 
+        # Phase 2 / ADR-018 D1 (VPC): api/profiles.py::_require_consent rejects
+        # POST /api/v1/profiles for a guardian with no recorded consent, so
+        # every seeded guardian must carry it -- otherwise the newman suite
+        # (docs/api/postman-collection.json), which authenticates as
+        # dev-guardian via this exact row, 400s on profile creation. Mirrors
+        # tests/integration/conftest.py::_consented.
+        consent_kwargs = {
+            "consent_accepted_at": datetime.now(UTC),
+            "consent_policy_version": "dev-seed",
+            "consent_signer_name": "Dev Guardian",
+            "consent_ip": "127.0.0.1",
+        }
+
         guardian = User(
             family_id=family.id,
             role="guardian",
             authn_subject=_GUARDIAN_SUBJECT,
+            **consent_kwargs,
         )
         session.add(guardian)
         await session.flush()
@@ -520,6 +538,7 @@ async def seed_dev_data(
                 role="guardian",
                 is_admin=True,
                 authn_subject=_DUAL_SUBJECT,
+                **{**consent_kwargs, "consent_signer_name": "Dev Dual-Role Guardian"},
             )
         )
 

@@ -67,5 +67,27 @@ CYO Adventure is a choose-your-own-adventure reading app for kids, built on Fast
 - **Story-content injection**: User-generated or author-supplied story content could embed malicious scripts or links targeting child readers. Mitigations: strict output encoding, content-security-policy headers via security middleware, and input validation on all story payloads.
 - **Dependency supply-chain**: Third-party packages introduce transitive vulnerabilities. Mitigations: Bandit static analysis, OSV-Scanner and pip-audit in CI, Dependabot automated updates, and a 60-day remediation policy for unfixed CVEs.
 - **CI/CD secret exposure**: Workflow secrets (API tokens, signing keys) could be exfiltrated via malicious PR changes. Mitigations: secret scanning (GitHub native), trufflehog pre-commit hook, required-status-check rulesets on the default branch, and signed commits enforced by GPG.
-- **Child-safety data handling**: The app processes account and reading data for minors. Mitigations: data minimization by design (a coarse age band and a nickname/display name only, no birthdate, exact age, photo, email, phone, or geolocation collected from a child), a PII egress guard blocking real-child identifiers and email/phone/address-shaped content before it reaches any external provider, and encryption in transit (TLS). **Not yet implemented**: verifiable parental consent gating child-profile creation or data collection, and a published data-retention policy. See [`docs/compliance/coppa-compliance-audit.md`](docs/compliance/coppa-compliance-audit.md) and [`docs/compliance/gdpr-compliance-review.md`](docs/compliance/gdpr-compliance-review.md) for the full assessment; do not rely on this bullet alone as a compliance claim.
+- **Child-safety data handling**: The app processes account and reading data for minors.
+  Mitigations: data minimization by design (a coarse age band and a nickname/display name
+  only, no birthdate, exact age, photo, email, phone, or geolocation collected from a
+  child), a PII egress guard blocking real-child identifiers and email/phone/address-shaped
+  content before it reaches any external provider, cover images served only via
+  short-lived presigned R2 URLs (never a permanent public one), verifiable parental
+  consent (a typed full-legal-name signature attestation, layered on the guardian's
+  OAuth login) gating child-profile creation (`POST /api/v1/profiles` returns 400 until
+  recorded), a guardian self-signup admin-approval gate (`User.status='awaiting_approval'`
+  blocks every authenticated endpoint, including `GET /v1/me`, until an admin approves
+  via `PATCH /api/v1/admin/users/{id}`), a per-profile data-processing restriction flag
+  (`PATCH /api/v1/profiles/{id}` with `processing_restricted`) that blocks new
+  story-request submission without deleting existing data, scheduled retention purges
+  for blocked/declined story-request text and stale deactivated-profile activity,
+  guardian-facing erasure (`DELETE /api/v1/profiles/{id}`, `DELETE /api/v1/me/family`)
+  and data export/portability (`GET /api/v1/me/export`) endpoints, an append-only audit
+  log of every admin cross-family read of child-linked data (`GET /api/v1/admin/profiles`,
+  logged as a `profile_viewed` event queryable via `GET /api/v1/admin/audit`) alongside
+  every admin/system mutation, and encryption in transit (TLS). **Not yet implemented**:
+  a published, guardian-facing privacy notice. See
+  [`docs/compliance/coppa-compliance-audit.md`](docs/compliance/coppa-compliance-audit.md)
+  and [`docs/compliance/gdpr-compliance-review.md`](docs/compliance/gdpr-compliance-review.md)
+  for the full assessment; do not rely on this bullet alone as a compliance claim.
 - **Authentication and authorization**: Unauthenticated access to story management or admin endpoints could allow content tampering. Mitigations: authentication middleware, OWASP-aligned security headers via `cyo_adventure.middleware.security`, and correlation-ID tracing for incident investigation.

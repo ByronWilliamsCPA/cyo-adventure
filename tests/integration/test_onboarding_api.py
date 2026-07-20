@@ -39,7 +39,12 @@ async def test_first_login_creates_family_and_guardian(
     sessions: async_sessionmaker[AsyncSession],
     seed: Seed,
 ) -> None:
-    """A verified subject with no user row provisions a family + guardian (201)."""
+    """A verified subject with no user row provisions a family + guardian (201).
+
+    The row starts 'awaiting_approval', not 'active' (the self-signup
+    approval track): an admin must approve it before anything else
+    authenticates for this subject.
+    """
     _ = seed  # seed builds the schema/rows the app queries against
     families_before = await _count(sessions, Family)
 
@@ -49,6 +54,7 @@ async def test_first_login_creates_family_and_guardian(
     payload = cast("dict[str, object]", resp.json())
     assert payload["created"] is True
     assert payload["role"] == "guardian"
+    assert payload["status"] == "awaiting_approval"
     assert payload["family_id"]
     assert payload["user_id"]
     assert await _count(sessions, Family) == families_before + 1
@@ -59,8 +65,78 @@ async def test_first_login_creates_family_and_guardian(
         )
     assert user is not None
     assert user.role == "guardian"
+    assert user.status == "awaiting_approval"
     # Local dev seam supplies no email claim, so the contact column is null.
     assert user.email is None
+
+
+async def test_self_signup_guardian_cannot_authenticate_until_approved(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A freshly self-signed-up guardian's GET /v1/me fails until admin approval.
+
+    require_principal rejects any non-'active' status with the same
+    "unknown subject" message as a nonexistent one (api/deps.py); this pins
+    that the self-signup track actually blocks access, not just that the
+    row is tagged correctly.
+    """
+    _ = seed
+    onboard_resp = await client.post(
+        _ONBOARDING, headers=auth("unapproved-guardian"), json={}
+    )
+    assert onboard_resp.status_code == 201
+
+    me_resp = await client.get("/api/v1/me", headers=auth("unapproved-guardian"))
+    assert me_resp.status_code == 401
+
+
+async def test_admin_approves_self_signup_guardian(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An admin approving a self-signed-up guardian lets them authenticate.
+
+    End-to-end: self-signup (awaiting_approval) -> PATCH .../approve
+    (active) -> GET /v1/me succeeds.
+    """
+    onboard_resp = await client.post(
+        _ONBOARDING, headers=auth("soon-approved-guardian"), json={}
+    )
+    assert onboard_resp.status_code == 201
+    user_id = onboard_resp.json()["user_id"]
+
+    approve_resp = await client.patch(
+        f"/api/v1/admin/users/{user_id}",
+        json={"status": "active"},
+        headers=auth(seed.admin_token),
+    )
+    assert approve_resp.status_code == 200, approve_resp.text
+    assert approve_resp.json()["status"] == "active"
+
+    me_resp = await client.get("/api/v1/me", headers=auth("soon-approved-guardian"))
+    assert me_resp.status_code == 200
+    assert me_resp.json()["role"] == "guardian"
+
+
+async def test_admin_denies_self_signup_guardian(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An admin denying a self-signed-up guardian keeps them locked out."""
+    onboard_resp = await client.post(
+        _ONBOARDING, headers=auth("denied-guardian"), json={}
+    )
+    assert onboard_resp.status_code == 201
+    user_id = onboard_resp.json()["user_id"]
+
+    deny_resp = await client.patch(
+        f"/api/v1/admin/users/{user_id}",
+        json={"status": "deactivated"},
+        headers=auth(seed.admin_token),
+    )
+    assert deny_resp.status_code == 200, deny_resp.text
+    assert deny_resp.json()["status"] == "deactivated"
+
+    me_resp = await client.get("/api/v1/me", headers=auth("denied-guardian"))
+    assert me_resp.status_code == 401
 
 
 async def test_retry_is_idempotent_same_ids(
@@ -148,18 +224,89 @@ async def test_empty_body_is_accepted(client: AsyncClient, seed: Seed) -> None:
     assert resp.json()["created"] is True
 
 
-async def test_consent_seam_is_accepted_without_side_effect(
+async def test_onboarding_without_consent_still_provisions(
     client: AsyncClient, seed: Seed
 ) -> None:
-    """A consent payload is accepted (P7-02 seam) and does not block provisioning."""
+    """Omitting consent entirely still provisions the guardian; nothing is gated here.
+
+    Phase 2 / ADR-018 D1's gate lives at POST /api/v1/profiles
+    (api/profiles.py::_require_consent), not at onboarding itself: a
+    guardian may finish sign-in and look around before completing consent,
+    they simply cannot create a child profile until they do.
+    """
+    _ = seed
+    resp = await client.post(_ONBOARDING, headers=auth("no-consent-guardian"), json={})
+    assert resp.status_code == 201
+    assert resp.json()["created"] is True
+
+
+async def test_consent_requires_policy_version_and_signer_name(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """accepted=True with no signer_name is rejected (422), not silently dropped."""
     _ = seed
     resp = await client.post(
         _ONBOARDING,
-        headers=auth("consenting-guardian"),
+        headers=auth("half-consenting-guardian"),
         json={"consent": {"accepted": True, "policy_version": "2026-07"}},
     )
-    assert resp.status_code == 201
-    assert resp.json()["created"] is True
+    assert resp.status_code == 422
+
+
+async def test_onboarding_records_consent_once_and_is_idempotent(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A valid consent payload is persisted onto the guardian's own User row.
+
+    A second onboarding call with a DIFFERENT consent payload does not
+    overwrite the first: consent is written once, matching
+    api/onboarding.py::_record_consent's idempotency contract.
+    """
+    _ = seed
+    subject = "consenting-guardian"
+    first = await client.post(
+        _ONBOARDING,
+        headers=auth(subject),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2026-07",
+                "signer_name": "Jane A. Guardian",
+            }
+        },
+    )
+    assert first.status_code == 201
+
+    async with sessions() as session:
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
+    assert user is not None
+    assert user.consent_accepted_at is not None
+    assert user.consent_policy_version == "2026-07"
+    assert user.consent_signer_name == "Jane A. Guardian"
+    assert user.consent_ip is not None
+    first_recorded_at = user.consent_accepted_at
+
+    second = await client.post(
+        _ONBOARDING,
+        headers=auth(subject),
+        json={
+            "consent": {
+                "accepted": True,
+                "policy_version": "2027-01",
+                "signer_name": "Someone Else",
+            }
+        },
+    )
+    assert second.status_code == 200
+
+    async with sessions() as session:
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
+    assert user is not None
+    assert user.consent_accepted_at == first_recorded_at
+    assert user.consent_policy_version == "2026-07"
+    assert user.consent_signer_name == "Jane A. Guardian"
 
 
 async def test_onboarding_race_recovers_winner(

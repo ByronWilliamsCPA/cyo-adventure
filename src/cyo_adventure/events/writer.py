@@ -61,6 +61,11 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # G6: the node id only, never the edited prose (spec D3); see
     # api/node_edit.py::edit_node.
     EventType.NODE_EDITED: frozenset({"node_id"}),
+    # Phase 8a: the family_id filter (None when the admin listed across
+    # every family) and the row count returned; no profile-level detail, so
+    # the log itself never becomes a second copy of the child data it is
+    # auditing access to.
+    EventType.PROFILE_VIEWED: frozenset({"family_id", "count"}),
 }
 
 

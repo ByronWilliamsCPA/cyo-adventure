@@ -42,6 +42,19 @@ const ME = {
   profile_ids: ['p1', 'p2'],
 }
 
+// AuthContext.syncPrincipal calls POST /v1/onboarding before every GET /v1/me
+// (see the '#CRITICAL: security: resolve onboarding BEFORE /v1/me' comment in
+// AuthContext.tsx); an unmocked call here strands the app on the
+// awaiting-approval/needs-consent branches instead of reaching /me.
+const ONBOARDING = {
+  family_id: 'fam-a',
+  user_id: 'guardian-a',
+  role: 'guardian',
+  created: false,
+  status: 'active',
+  consent_recorded: true,
+}
+
 const DRAGON_REQUEST = {
   id: 'req-1',
   profile_id: 'p1',
@@ -98,6 +111,7 @@ test.beforeEach(async ({ context }) => {
     },
     [SUPABASE_SESSION_KEY, JSON.stringify(GUARDIAN_SESSION)] as const
   )
+  await context.route('**/api/v1/onboarding', (route) => route.fulfill({ json: ONBOARDING }))
 })
 
 test('approve removes the approved row, then decline empties the list', async ({ page }) => {

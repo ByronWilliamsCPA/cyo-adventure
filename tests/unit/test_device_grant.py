@@ -14,7 +14,8 @@ import base64
 import json
 import uuid
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from types import SimpleNamespace
+from typing import TYPE_CHECKING, Any, cast
 
 import jwt
 import pytest
@@ -22,6 +23,9 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from pydantic import SecretStr
 
 from cyo_adventure.api import deps
+
+if TYPE_CHECKING:
+    from fastapi import Request
 from cyo_adventure.core import device_grant
 from cyo_adventure.core.child_session import unverified_audience
 from cyo_adventure.core.config import Settings
@@ -401,8 +405,11 @@ def test_device_principal_never_carries_admin_capability() -> None:
 async def test_device_grant_cannot_onboard() -> None:
     """A device grant token cannot provision a guardian Family+User."""
     token = _mint()
+    fake_request = cast("Request", SimpleNamespace(client=None))
     with pytest.raises(AuthorizationError):
-        await deps.require_onboarding_identity(authorization=f"Bearer {token}")
+        await deps.require_onboarding_identity(
+            fake_request, authorization=f"Bearer {token}"
+        )
 
 
 # ---------------------------------------------------------------------------

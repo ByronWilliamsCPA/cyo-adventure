@@ -182,6 +182,60 @@ async def test_completion_recorded(client: AsyncClient, seed: Seed) -> None:
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+async def test_list_completions_returns_profile_completions(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A recorded completion appears in the profile's completion list (Phase 3d)."""
+    await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+            "version": seed.version,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.child_token),
+    )
+    resp = await client.get(
+        f"/api/v1/completions/{seed.child_profile_id}",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 200, resp.text
+    completions = resp.json()["completions"]
+    assert any(
+        c["storybook_id"] == seed.storybook_id and c["ending_id"] == "e_treasure_found"
+        for c in completions
+    )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_list_completions_other_profile_forbidden(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A child cannot list another profile's completions (403)."""
+    resp = await client.get(
+        f"/api/v1/completions/{seed.other_child_profile_id}",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_list_completions_invalid_profile_uuid_rejected(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A non-UUID profile id is rejected with 422."""
+    resp = await client.get(
+        "/api/v1/completions/not-a-uuid",
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
 async def test_sequential_updates_increment_revision(
     client: AsyncClient, seed: Seed
 ) -> None:

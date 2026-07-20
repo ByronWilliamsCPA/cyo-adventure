@@ -15,6 +15,8 @@ import {
   ConnectionsPage,
   ConsolePage,
   GuardianAuthLayout,
+  GuardianAwaitingApprovalPage,
+  GuardianConsentPage,
   GuardianShell,
   IntakePage,
   KidShell,
@@ -38,6 +40,8 @@ import {
 } from './routeElements'
 import {
   ADMIN_CONSOLE_PATH,
+  GUARDIAN_AWAITING_APPROVAL_PATH,
+  GUARDIAN_CONSENT_PATH,
   GUARDIAN_CONSOLE_PATH,
   GUARDIAN_LOGIN_PATH,
   KID_PICKER_PATH,
@@ -116,6 +120,22 @@ export const routes = [
       {
         path: GUARDIAN_LOGIN_PATH,
         element: suspended(<LoginPage />),
+      },
+      {
+        // Sits outside AdultGate/ProtectedRoute, like the login route above:
+        // a self-signed-up guardian has a real Supabase session (AdultGate's
+        // own session check would pass) but AuthStatus never reaches
+        // 'signed-in' for them, so ProtectedRoute redirects here directly
+        // rather than looping them through login or the step-up gate.
+        path: GUARDIAN_AWAITING_APPROVAL_PATH,
+        element: suspended(<GuardianAwaitingApprovalPage />),
+      },
+      {
+        // Same reasoning as the awaiting-approval route above: an approved
+        // guardian who has not yet completed Phase 2 / ADR-018 D1 consent
+        // has a real session too, just not a 'signed-in' AuthStatus yet.
+        path: GUARDIAN_CONSENT_PATH,
+        element: suspended(<GuardianConsentPage />),
       },
       {
         // Adult step-up gate (ADR-014 Phase 5): ONE pathless layout at the

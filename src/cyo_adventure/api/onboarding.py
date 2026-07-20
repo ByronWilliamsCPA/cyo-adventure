@@ -19,14 +19,24 @@ exact email match (see ``_bind_pending_invite``) instead of falling through
 to guardian provisioning; an unseeded, uninvited admin's first call would
 still silently create a guardian row plus a family that account should never
 hold.
+
+This self-service guardian provisioning path starts the new row at
+``status="awaiting_approval"``, not ``"active"``: an admin must approve it
+(``PATCH /api/v1/admin/users/{id}``) before ``require_principal`` will
+authenticate the subject for anything else, including ``GET /v1/me``. This
+is a deliberately parallel track to the admin-invite ``"pending"`` status
+above; the two never share state (see ``db/models.py``'s
+``_USER_STATUS_VALUES`` comment).
 """
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Response
 from sqlalchemy import select
+from sqlalchemy import update as sa_update
 from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api.deps import DbSession, OnboardingIdentity, OnboardingIdentityDep
@@ -36,6 +46,7 @@ from cyo_adventure.api.schemas import (
     OnboardingView,
     error_responses,
 )
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.integrity import is_authn_subject_conflict
 from cyo_adventure.db.models import Family, User
 from cyo_adventure.utils.logging import get_logger
@@ -54,29 +65,85 @@ router = APIRouter(
 # on the column, so a non-empty default is required.
 _DEFAULT_FAMILY_NAME = "My Family"
 _GUARDIAN_ROLE = "guardian"
+_AWAITING_APPROVAL_STATUS = "awaiting_approval"
 
 
-def _record_consent(consent: OnboardingConsent | None) -> None:
-    """Consent-capture seam for P7-02; intentionally a no-op today.
+async def _record_consent(
+    session: AsyncSession,
+    user: User,
+    consent: OnboardingConsent | None,
+    client_ip: str | None,
+) -> None:
+    """Persist the guardian's VPC signature-capture consent record (Phase 2 / ADR-018 D1).
 
-    P6-03 provides only the seam: the request may carry a consent payload, and
-    this hook is where P7-02 will persist a durable consent record. It records
-    nothing now so onboarding stays idempotent and no half-built consent path
-    ships.
+    A no-op when ``consent`` is absent, not accepted, or the user already has
+    a recorded consent (idempotent: a retried onboarding call must not
+    overwrite an existing record with a later timestamp). ``accepted=True``
+    without both ``policy_version`` and ``signer_name`` is rejected outright
+    rather than silently recording a partial attestation.
 
     Args:
+        session: The request unit-of-work session.
+        user: The guardian's own ``User`` row (existing, bound, or just
+            created); consent is recorded onto this row, never onto a
+            different user.
         consent: The optional consent payload from the request body.
+        client_ip: The requesting client's address, or ``None``.
+
+    Raises:
+        ValidationError: If ``accepted`` is ``True`` but ``policy_version``
+            or ``signer_name`` is missing (422).
     """
-    # #ASSUME: security: P6-03 does NOT persist or enforce consent; this is the
-    # extension point P7-02 fills. Nothing here gates provisioning until then.
-    # A presence-only debug line (no payload content, so no PII) marks the seam
-    # without building consent logic; P7-02 replaces this body with a durable
-    # consent record and its tests.
-    # #VERIFY: test_onboarding_api.py::test_consent_seam_is_accepted_without_side_effect
-    # asserts a consent payload is accepted with no provisioning side effect;
-    # P7-02 will add the record + tests.
-    if consent is not None:
-        logger.debug("onboarding.consent_seam_received")
+    # #CRITICAL: security: this is the sole writer of User.consent_*; no
+    # other code path may set these columns (mirrors family_connections.py's
+    # consent endpoints being the sole writer of FamilyConnection's consent
+    # columns). A record, once written, is never overwritten -- see the
+    # idempotency check below.
+    # #VERIFY: tests/integration/test_onboarding_api.py::
+    # test_onboarding_records_consent_once_and_is_idempotent.
+    if consent is None or consent.accepted is not True:
+        return
+    if not consent.policy_version or not consent.signer_name:
+        msg = "policy_version and signer_name are both required when accepted is true"
+        raise ValidationError(msg, field="consent")
+    if user.consent_accepted_at is not None:
+        return
+    # #CRITICAL: concurrency: the in-memory check above is a TOCTOU race --
+    # two concurrent onboarding calls for this same user could both observe
+    # consent_accepted_at IS NULL before either writes. An unconditional
+    # UPDATE would let the second call silently overwrite the first call's
+    # policy_version/signer_name/consent_ip, contradicting the "never
+    # overwritten" guarantee above. Guarding the UPDATE itself on
+    # consent_accepted_at IS NULL (mirroring _provision_guardian's own
+    # race-safe insert-then-recover pattern) makes only the first writer's
+    # values stick; a loser's WHERE clause matches zero rows and it refreshes
+    # to read back the winner's values instead of trusting its stale copy.
+    # #VERIFY: tests/unit/test_onboarding_handler.py::
+    # test_record_consent_race_keeps_first_writer_values.
+    result = await session.execute(
+        sa_update(User)
+        .where(User.id == user.id, User.consent_accepted_at.is_(None))
+        .values(
+            consent_accepted_at=datetime.now(UTC),
+            consent_policy_version=consent.policy_version,
+            consent_signer_name=consent.signer_name,
+            consent_ip=client_ip,
+        )
+        .execution_options(synchronize_session="evaluate")
+        .returning(User.id)
+    )
+    if result.scalar_one_or_none() is None:
+        await session.refresh(
+            user,
+            [
+                "consent_accepted_at",
+                "consent_policy_version",
+                "consent_signer_name",
+                "consent_ip",
+            ],
+        )
+        return
+    logger.info("onboarding.consent_recorded", user_id=str(user.id))
 
 
 def _view(user: User, *, created: bool) -> OnboardingView:
@@ -87,13 +154,19 @@ def _view(user: User, *, created: bool) -> OnboardingView:
         created: Whether this request provisioned the row.
 
     Returns:
-        OnboardingView: The family/user identity and the created flag.
+        OnboardingView: The family/user identity, the created flag, the
+        row's status (so the frontend can show a "your account is awaiting
+        approval" state instead of blindly calling GET /v1/me, which
+        require_principal would reject for any non-'active' status), and
+        whether VPC consent is already recorded (Phase 2 / ADR-018 D1).
     """
     return OnboardingView(
         family_id=str(user.family_id),
         user_id=str(user.id),
         role=user.role,
         created=created,
+        status=user.status,
+        consent_recorded=user.consent_accepted_at is not None,
     )
 
 
@@ -131,11 +204,23 @@ async def _provision_guardian(
             family = Family(name=_DEFAULT_FAMILY_NAME)
             session.add(family)
             await session.flush()
+            # #CRITICAL: security: self-signup approval track, parallel to
+            # (never sharing state with) the admin-invite 'pending' track:
+            # an uninvited guardian's own first login starts
+            # 'awaiting_approval', not 'active', so require_principal
+            # rejects every endpoint for them (including GET /v1/me) until
+            # an admin approves via PATCH /admin/users/{id}. An
+            # admin-created invite bypasses this entirely (_bind_pending_invite
+            # sets 'active' directly): the admin already vetted that case by
+            # creating the invite.
+            # #VERIFY: tests/integration/test_onboarding_api.py::
+            # test_self_signup_guardian_starts_awaiting_approval.
             user = User(
                 family_id=family.id,
                 role=_GUARDIAN_ROLE,
                 authn_subject=identity.subject,
                 email=identity.email,
+                status=_AWAITING_APPROVAL_STATUS,
             )
             session.add(user)
             await session.flush()
@@ -237,19 +322,28 @@ async def onboard(
     On first login (no ``User`` for the verified subject) this creates a
     ``Family`` and a guardian ``User`` atomically and returns 201. On any
     later call, or for an already-provisioned guardian/admin, it returns the
-    existing row with 200 and creates nothing.
+    existing row with 200 and creates nothing. A consent payload, if present,
+    is recorded onto whichever ``User`` row this call resolves to (Phase 2 /
+    ADR-018 D1), after that row is known -- never before, since there is
+    nothing to attach a consent record to until then.
 
     Args:
-        identity: The verified onboarding identity (subject + optional email).
+        identity: The verified onboarding identity (subject, optional email,
+            and observed client address for the consent record).
         session: The request unit-of-work session.
         response: The response, whose status code is set to 201 (created) or
             200 (idempotent) here.
-        body: The optional request body carrying only the P7-02 consent seam.
+        body: The optional request body carrying the Phase 2 consent payload.
 
     Returns:
         OnboardingView: The resolved or created family/guardian identity.
+
+    Raises:
+        ValidationError: If a consent payload has ``accepted=True`` but is
+            missing ``policy_version`` or ``signer_name`` (422).
     """
-    _record_consent(body.consent if body is not None else None)
+    consent = body.consent if body is not None else None
+    client_ip = identity.client_ip
 
     existing = await session.scalar(
         select(User).where(User.authn_subject == identity.subject)
@@ -260,6 +354,7 @@ async def onboard(
         # uninvited admin falls through and is provisioned as a guardian (see
         # the module docstring: seed or invite admin rows before first
         # sign-in).
+        await _record_consent(session, existing, consent, client_ip)
         response.status_code = 200
         return _view(existing, created=False)
 
@@ -267,9 +362,11 @@ async def onboard(
     if bound is not None:
         # Binding an existing (admin-created) row, not creating one: 200,
         # same as any other already-provisioned identity.
+        await _record_consent(session, bound, consent, client_ip)
         response.status_code = 200
         return _view(bound, created=False)
 
     user, created = await _provision_guardian(session, identity)
+    await _record_consent(session, user, consent, client_ip)
     response.status_code = 201 if created else 200
     return _view(user, created=created)

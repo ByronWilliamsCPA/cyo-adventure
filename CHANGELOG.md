@@ -42,6 +42,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Data-subject rights endpoints (GDPR Article 15/17/20, COPPA 312.6/312.10):
+  `DELETE /api/v1/profiles/{profile_id}` erases a single child profile and
+  every row linked to it; `DELETE /api/v1/me/family` erases a guardian's
+  entire family account; `GET /api/v1/me/export` returns a full, portable
+  JSON export of the family and its child profiles; `GET
+  /api/v1/completions/{profile_id}` fills the one remaining child-linked
+  table with no read path. Every family-/child-profile-owned foreign key in
+  the schema now cascades or nulls out on delete (previously all `NO
+  ACTION`, so a delete request could not have been executed at all without
+  hitting an FK violation).
+- Verifiable parental consent (GDPR Article 8(2), COPPA 312.5): a typed
+  full-legal-name signature attestation layered on the guardian's existing
+  OAuth login (`POST /v1/onboarding` with a `consent` payload), gating
+  `POST /api/v1/profiles` (400 until recorded). Frontend:
+  `GuardianConsentPage`, reached automatically via a new `needs-consent`
+  auth status. Also fixes an unrelated, independently-discovered gap: the
+  frontend previously never called `POST /v1/onboarding` at all, so a
+  brand-new guardian's very first `GET /v1/me` would 401.
+- Guardian self-signup admin-approval gate: an uninvited guardian's own
+  first login now starts `User.status='awaiting_approval'` rather than
+  `active`, blocking every authenticated endpoint (via the existing
+  non-active-status rejection in `require_principal`) until an admin
+  approves via `PATCH /api/v1/admin/users/{id}` (deny sets `deactivated`).
+  Parallel to, and shares no state with, the existing admin-invite
+  `pending` track. Frontend: `GuardianAwaitingApprovalPage`, reached via a
+  new `awaiting-approval` auth status.
+- A per-profile data-processing restriction flag (GDPR Article 18/21):
+  `PATCH /api/v1/profiles/{profile_id}` with `processing_restricted: true`
+  blocks new story-request submission for that profile (the point new data
+  would reach a third-party LLM/classifier provider) without deleting any
+  existing data.
+- Two more scheduled retention-purge jobs (`generation_job.report` already
+  had one, ADR-007): blocked/declined `story_request.request_text` is
+  overwritten with a fixed placeholder 30 days after decision; stale
+  `reading_state`/`completion`/`rating` rows are deleted 90 days after
+  their profile's deactivation.
 - Request interpretation and expectation-setting (WS-7 D1-D3, K19): a pure
   interpretation core (echo-safety floor, disposition derivation, and a fixed
   kid/guardian template catalog) plus a submission-time general layer that is
@@ -75,6 +111,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   row surfaces the generic interpretation (every element phrase null) alongside
   the existing `request_text=None` redaction (CR-1), and a pre-WS-7 row (null
   column) projects to `null`.
+
+### Security
+
+- Cover images are now served exclusively via short-lived (1-hour) presigned
+  R2 URLs, generated fresh on every read from the deterministic
+  `{storybook_id}/{version}.webp` object key, instead of the permanent
+  public URL previously stored and returned as-is. Closes the standing
+  exposure where anyone who guessed or was handed a cover URL could view a
+  specific child's cover art indefinitely without authentication. No R2
+  object migration was needed (the key never changes); the stored
+  `cover_image_url` column is now audit-only.
+- Admin cross-family reads of child-linked data are now audit-logged: `GET
+  /api/v1/admin/profiles` writes one `profile_viewed` `pipeline_event` per
+  call (never one per row returned), queryable via `GET
+  /api/v1/admin/audit?kind=profile_viewed` (GDPR Article 30 accountability).
+
+### Documentation
+
+- Added four more `docs/compliance/` artifacts, closing remaining low-dependency
+  items in the remediation plan: an Article 17(3) balancing-test justification
+  for indefinite `pipeline_event` retention (Phase 4d, inline in the
+  remediation plan), an internal information security program document
+  (`information-security-program.md`, Phase 6b), a breach-notification
+  runbook (`breach-notification-runbook.md`, Phase 6c), and a Records of
+  Processing Activities document (`records-of-processing-activities.md`,
+  Phase 7a).
+- Drafted three more counsel-review artifacts against the shipped Phase 2
+  consent design: a Data Protection Impact Assessment (`dpia.md`, Phase
+  7b), a guardian-facing Privacy Notice (`privacy-notice.md`, Phase 2c),
+  and a processor DPA execution checklist with every link live-verified
+  (`processor-dpa-checklist.md`, Phase 5).
 
 ## [0.19.0] - 2026-07-20
 
@@ -218,6 +285,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `CI_TIMEOUT`. Both scans are fast (bandit/OSV-Scanner and a license-header
   check, no pytest/build cost), so restoring them on `merge_group` is cheap
   and needs no org-level ruleset access to fix.
+
+## [0.18.1] - 2026-07-20
+
+### Changed
+
+- Testing: `tests/integration/conftest.py` creates the Postgres schema once
+  per test session (via a throwaway sync `psycopg` engine, avoiding any
+  asyncio event-loop entanglement) instead of once per test. Each test now
+  resets its data with a single multi-table `TRUNCATE ... RESTART IDENTITY
+  CASCADE` instead of a `drop_all`/`create_all` DDL cycle, which is
+  materially cheaper since it never touches table/constraint/index
+  definitions. The `engine` fixture is otherwise unchanged (still a real
+  per-test `AsyncEngine` with `NullPool`), so the tests and `scripts/
+  seed_dev_data.py` call sites that bind sessions directly to `engine` need
+  no changes. Verified locally: all 827 integration tests pass unchanged.
+
+### Fixed
+
+- Testing: `test_malformed_min_verdict_row_is_skipped_with_warning`
+  (`tests/integration/test_threshold_policy_loader.py`) drops the
+  `ck_moderation_threshold_min_verdict` CHECK constraint to exercise the
+  loader's malformed-row handling, but never restored it. That was safe
+  under the old per-test schema rebuild; under the new session-scoped
+  schema (see above), the dropped constraint leaked into any later test in
+  the same xdist worker, intermittently failing
+  `test_bad_min_verdict_insert_rejected_by_check` depending on test order.
+  The test now restores the constraint in a `finally` block. Also
+  deduplicated the catalog-family seed insert (`_pg_url` and `engine`
+  fixtures) into a shared `_seed_catalog_family_stmt()` helper.
 
 ## [0.18.0] - 2026-07-19
 

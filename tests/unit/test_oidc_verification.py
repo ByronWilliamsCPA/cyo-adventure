@@ -14,7 +14,8 @@ import hmac
 import json
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from types import SimpleNamespace
+from typing import TYPE_CHECKING, Any, cast
 
 import jwt
 import pytest
@@ -23,6 +24,9 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 
 from cyo_adventure.api import deps
 from cyo_adventure.core.exceptions import AuthenticationError
+
+if TYPE_CHECKING:
+    from fastapi import Request
 
 pytestmark = [pytest.mark.security]
 
@@ -397,3 +401,27 @@ async def test_future_not_before_is_rejected() -> None:
     token = _sign(_claims(nbf=now + timedelta(minutes=5)))
     with pytest.raises(AuthenticationError):
         await deps._verify_oidc_jwt(token)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_require_onboarding_identity_verifies_outside_local(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """require_onboarding_identity's non-local branch verifies a real token.
+
+    Exercises the counterpart to test_onboarding_identity.py's local-branch
+    coverage: outside 'local', require_onboarding_identity must route
+    through the real _verify_oidc_identity call rather than trusting the
+    bearer token as the subject, while still threading the observed
+    client_ip through on this return path too.
+    """
+    monkeypatch.setattr(deps.settings, "environment", "staging")
+    token = _sign(_claims(email="guardian@example.com"))
+    request = cast(
+        "Request", SimpleNamespace(client=SimpleNamespace(host="198.51.100.9"))
+    )
+    identity = await deps.require_onboarding_identity(request, f"Bearer {token}")
+    assert identity.subject == _SUBJECT
+    assert identity.email == "guardian@example.com"
+    assert identity.client_ip == "198.51.100.9"

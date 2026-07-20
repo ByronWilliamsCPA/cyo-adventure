@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 import pytest
+from sqlalchemy import select
 
 from cyo_adventure.api import deps
 from cyo_adventure.api.deps import OnboardingIdentity
@@ -217,6 +218,34 @@ async def test_status_transition_through_pending_is_rejected(
         f"{_USERS}/{pending_id}",
         headers=auth(seed.admin_token),
         json={"status": "active"},
+    )
+    assert resp.status_code == 422
+
+
+async def test_status_transition_into_awaiting_approval_is_rejected(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """PATCH cannot set status to 'awaiting_approval' directly (422).
+
+    That status is reachable only via a guardian's own self-signup JIT
+    provisioning (api/onboarding.py); an admin cannot fabricate it for an
+    existing, already-active account. Targets family B's guardian (a
+    different account than the caller, and already 'active', so this
+    isolates the awaiting_approval guard from the separate self-edit and
+    'pending' guards).
+    """
+    async with sessions() as session:
+        other_guardian = await session.scalar(
+            select(User).where(User.authn_subject == "guardian-b")
+        )
+    assert other_guardian is not None
+
+    resp = await client.patch(
+        f"{_USERS}/{other_guardian.id}",
+        headers=auth(seed.admin_token),
+        json={"status": "awaiting_approval"},
     )
     assert resp.status_code == 422
 

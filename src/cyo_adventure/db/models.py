@@ -118,21 +118,32 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated', "
     "'kid_flagged', 'flag_resolved', "
     "'user_managed', 'family_managed', 'family_connection_changed', "
-    "'node_edited'"
+    "'node_edited', 'profile_viewed'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
     "'story_request', 'generation_job', 'storybook', 'storybook_version', "
     "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
-    "'moderation_setting', 'kid_flag', 'user', 'family', 'family_connection'"
+    "'moderation_setting', 'kid_flag', 'user', 'family', 'family_connection', "
+    "'child_profile'"
 )
 
-# The three admin-user lifecycle states (WS-J admin user management): a
-# guardian/admin created via the JIT onboarding path or the seed script is
-# always 'active'; a row admin-created ahead of first sign-in starts
-# 'pending' (see api/onboarding.py's email-match bind); 'deactivated' blocks
+# The four admin-user lifecycle states (WS-J admin user management, plus the
+# self-signup approval track added alongside Phase 2): a guardian/admin
+# created via the seed script is always 'active'; a row admin-created ahead
+# of first sign-in starts 'pending' (see api/onboarding.py's email-match
+# bind) and is trusted immediately once bound, since an admin already vetted
+# it by creating the invite; an UNINVITED guardian's own first-login JIT
+# provisioning (api/onboarding.py::_provision_guardian) starts
+# 'awaiting_approval' instead of 'active' -- a deliberately parallel track
+# from the invite flow, never sharing its 'pending' status value, so the two
+# have no shared state to collide on (in particular, api/admin_users.py's
+# duplicate-pending-invite-by-email check has nothing to do with this state).
+# An admin approves ('awaiting_approval' -> 'active') or denies
+# ('awaiting_approval' -> 'deactivated') via the existing
+# PATCH /admin/users/{id} status transition. 'deactivated' blocks
 # authentication (api/deps.py::require_principal) without deleting the row.
-_USER_STATUS_VALUES = "'pending', 'active', 'deactivated'"
+_USER_STATUS_VALUES = "'pending', 'active', 'deactivated', 'awaiting_approval'"
 
 
 class Family(Base):
@@ -206,12 +217,20 @@ class Series(Base):
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
+    # family's own series are family-owned content, deleted along with it.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
+    )
     title: Mapped[str] = mapped_column(String(120))
     age_band: Mapped[str] = mapped_column(String(16))
     carries_state: Mapped[bool] = mapped_column()
+    # SET NULL (Phase 3a): a deleted guardian's attribution is dropped; the
+    # series row (family-owned content) survives independently of who
+    # created it.
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
@@ -245,10 +264,30 @@ class User(Base):
             "role <> 'admin' OR is_admin = true", name="ck_user_admin_role_flag"
         ),
         CheckConstraint(f"status IN ({_USER_STATUS_VALUES})", name="ck_user_status"),
+        # Phase 2 / ADR-018 D1 (VPC): the four consent columns are set or
+        # cleared together; there is no legitimate state with a signer name
+        # but no timestamp, or vice versa. Mirrors
+        # ck_family_connection_viewer_consent_pairing's pattern.
+        # api/onboarding.py::_record_consent is the sole writer and already
+        # only ever sets all four together or none; this CHECK is the at-rest
+        # backstop for any other write path.
+        # #VERIFY: tests/integration/test_onboarding_api.py::
+        # test_onboarding_records_consent_once_and_is_idempotent.
+        CheckConstraint(
+            "(consent_accepted_at IS NULL) = (consent_policy_version IS NULL) "
+            "AND (consent_accepted_at IS NULL) = (consent_signer_name IS NULL) "
+            "AND (consent_accepted_at IS NULL) = (consent_ip IS NULL)",
+            name="ck_user_consent_pairing",
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): every
+    # guardian/admin/child login row in a deleted family is deleted with it.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
+    )
     role: Mapped[str] = mapped_column(String(16))
     # #CRITICAL: timing dependencies: migration
     # supabase/migrations/20260712000000_user_is_admin.sql must be applied
@@ -281,8 +320,12 @@ class User(Base):
     # migration file.
     email: Mapped[str | None] = mapped_column(String(320), default=None)
     # Null for guardians; set for a child user to the single profile it may act on.
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a): deleting a ChildProfile
+    # (the child's primary identity) also deletes its login binding, so a
+    # child-profile-only deletion never strands a login row with no profile.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
     child_profile_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_CHILD_PROFILE), default=None
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     # #CRITICAL: security: 'pending' is an admin-created invite row (WS-J):
@@ -296,9 +339,33 @@ class User(Base):
     # #VERIFY: tests/integration/test_admin_users_api.py::
     # test_deactivated_guardian_cannot_authenticate,
     # test_pending_invite_cannot_authenticate.
+    # String(20): 'awaiting_approval' (17 chars) is the longest value in
+    # _USER_STATUS_VALUES; String(16) truncated it (StringDataRightTruncationError).
     status: Mapped[str] = mapped_column(
-        String(16), default="active", server_default=sa_text("'active'")
+        String(20), default="active", server_default=sa_text("'active'")
     )
+    # #CRITICAL: security: Phase 2 / ADR-018 D1 verifiable-parental-consent
+    # record. A guardian's typed full-legal-name attestation counts as the
+    # FTC's "sign and submit electronically" method (312.5(b)(2)(i)) layered
+    # on the OAuth login that already authenticates them; consent_ip and
+    # consent_accepted_at are the corroborating evidence a controller must be
+    # able to produce on request. Written once by
+    # api/onboarding.py::_record_consent and never overwritten afterward (a
+    # future re-consent-on-policy-change flow would be a distinct, explicit
+    # action, not an implicit overwrite of an existing record).
+    # #VERIFY: tests/integration/test_onboarding_api.py::
+    # test_onboarding_records_consent_once_and_is_idempotent.
+    consent_accepted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    consent_policy_version: Mapped[str | None] = mapped_column(String(32), default=None)
+    consent_signer_name: Mapped[str | None] = mapped_column(String(200), default=None)
+    # #ASSUME: data-integrity: stored as the request's observed
+    # request.client.host, which reflects the real client address (not the
+    # trusted reverse proxy's) because uvicorn's forwarded_allow_ips already
+    # trusts X-Forwarded-For from that proxy (see SECURITY.md's HTTPS
+    # redirect note for the same trust boundary). A raw string, not a
+    # Postgres INET column: this is an evidentiary record, never queried or
+    # joined on, so INET's validation/operator features add nothing here.
+    consent_ip: Mapped[str | None] = mapped_column(String(64), default=None)
 
 
 class ChildProfile(Base):
@@ -310,10 +377,22 @@ class ChildProfile(Base):
             "monthly_request_envelope IS NULL OR monthly_request_envelope >= 0",
             name="ck_child_profile_monthly_request_envelope_non_negative",
         ),
+        # Phase 4c: backs purge_stale_deactivated_profile_activity's WHERE
+        # clause (supabase/migrations/20260720150000_add_retention_purge_jobs.sql).
+        Index(
+            "ix_child_profile_deactivated_at",
+            "deactivated_at",
+            postgresql_where=sa_text("deactivated_at IS NOT NULL"),
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
+    # family's own child profiles are deleted along with it.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
+    )
     display_name: Mapped[str] = mapped_column(String(120))
     age_band: Mapped[str] = mapped_column(String(16))
     reading_level_cap: Mapped[float] = mapped_column(default=99.0)
@@ -376,6 +455,18 @@ class ChildProfile(Base):
     # #VERIFY: tests/integration/test_admin_profiles_api.py::
     # test_deactivated_profile_excluded_from_listing_and_session_mint.
     deactivated_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # GDPR Article 18 (restriction of processing) / Article 21 (objection):
+    # deliberately distinct from deactivated_at. Deactivation is the login/
+    # session-level soft-remove above; this is the narrower "keep the data,
+    # stop actively processing it" state Article 18 describes -- a restricted
+    # profile still reads its existing library and login normally, but
+    # api/story_requests.py refuses to submit a NEW request for it (the
+    # concrete point where this profile's data would newly reach a
+    # third-party LLM/classifier provider). Set/cleared only via
+    # api/profiles.py::update_profile (guardian-only).
+    # #VERIFY: tests/integration/test_profiles.py::
+    # test_restrict_processing_blocks_new_story_requests.
+    processing_restricted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
 class FamilyConnection(Base):
@@ -446,14 +537,33 @@ class FamilyConnection(Base):
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    # #CRITICAL: data-integrity: CASCADE both sides (Phase 3a): the connection
+    # is a permission edge between two families, not identity data with its
+    # own retention value; if either family is deleted, the edge is meaningless.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
+    )
     connected_family_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey(_FK_FAMILY), index=True
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
     )
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    # #CRITICAL: data-integrity: deliberately NOT ondelete=SET NULL. The
+    # viewer/sharer consent-pairing CHECK constraints below require
+    # user_id and at to be null together; a bare SET NULL on only the
+    # user_id FK would violate that CHECK the instant a cascade fires,
+    # independent of whether this row is also being deleted in the same
+    # statement (Postgres checks a non-deferred CHECK immediately per
+    # affected row, not after the whole cascade resolves). This is safe:
+    # every consenting user is a guardian in family_id or connected_family_id,
+    # and this row already CASCADEs (above) whenever either family is
+    # deleted, which is the only way this codebase ever deletes a User row.
+    # A future feature that deletes one guardian while their family survives
+    # would need to explicitly clear both columns in application code first.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
     consented_by_viewer_user_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER), default=None
     )
@@ -497,7 +607,12 @@ class Storybook(Base):
     )
 
     id: Mapped[str] = mapped_column(String(120), primary_key=True)
-    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
+    # family's own storybooks are family-owned content, deleted with it.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
+    )
     current_published_version: Mapped[int | None] = mapped_column(default=None)
     status: Mapped[str] = mapped_column(String(20), default="draft")
     # #CRITICAL: security: ``visibility`` widens who can browse/assign this book
@@ -508,8 +623,17 @@ class Storybook(Base):
         String(16), default="family", server_default=text("'family'")
     )
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
+    # #CRITICAL: data-integrity: deliberately NOT ondelete=SET NULL, unlike
+    # most nullable *_by/​*_id references in this file. The
+    # ck_storybook_series_index_pairing CHECK requires series_id and
+    # book_index to be null together; a bare SET NULL here would violate it
+    # immediately (book_index is a plain int, not a FK the cascade can also
+    # null). Not a real gap: this row always CASCADEs (family_id, above)
+    # whenever its family is deleted, which is the same family that owns the
+    # series, so there is no scenario in this codebase where a Series row is
+    # deleted while its Storybook rows survive.
     series_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_SERIES), default=None
     )
@@ -526,8 +650,11 @@ class StorybookVersion(Base):
 
     __tablename__ = "storybook_version"
 
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a): a version is owned
+    # entirely by its storybook; deleting the storybook deletes every version.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
     storybook_id: Mapped[str] = mapped_column(
-        ForeignKey(_FK_STORYBOOK), primary_key=True
+        ForeignKey(_FK_STORYBOOK, ondelete="CASCADE"), primary_key=True
     )
     version: Mapped[int] = mapped_column(primary_key=True)
     blob: Mapped[dict[str, object]] = mapped_column(JSONB)
@@ -539,7 +666,7 @@ class StorybookVersion(Base):
         JSONB, default=None
     )
     approved_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     published_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     model: Mapped[str | None] = mapped_column(String(120), default=None)
@@ -582,17 +709,25 @@ class ReadingState(Base):
     __table_args__ = (
         # A saved state is pinned to a concrete published version; the composite
         # FK prevents persisting a reading state for a version that does not exist.
+        # CASCADE (Phase 3a): the version this state is pinned to is deleted
+        # along with its storybook (see StorybookVersion.storybook_id).
+        # #VERIFY: tests/integration/test_deletion_drill.py.
         ForeignKeyConstraint(
             ["storybook_id", "version"],
             ["storybook_version.storybook_id", "storybook_version.version"],
+            ondelete="CASCADE",
         ),
     )
 
+    # #CRITICAL: data-integrity: CASCADE both FKs (Phase 3a): reading state is
+    # child-linked data, purged with either the profile or the story it is
+    # pinned to.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
     child_profile_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey(_FK_CHILD_PROFILE), primary_key=True
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), primary_key=True
     )
     storybook_id: Mapped[str] = mapped_column(
-        ForeignKey(_FK_STORYBOOK), primary_key=True
+        ForeignKey(_FK_STORYBOOK, ondelete="CASCADE"), primary_key=True
     )
     version: Mapped[int] = mapped_column()
     current_node: Mapped[str] = mapped_column(String(120))
@@ -615,14 +750,21 @@ class Completion(Base):
 
     __tablename__ = "completion"
     __table_args__ = (
+        # CASCADE (Phase 3a): the version this completion is pinned to is
+        # deleted along with its storybook (see StorybookVersion.storybook_id).
+        # #VERIFY: tests/integration/test_deletion_drill.py.
         ForeignKeyConstraint(
             ["storybook_id", "version"],
             ["storybook_version.storybook_id", "storybook_version.version"],
+            ondelete="CASCADE",
         ),
     )
 
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a): completions are
+    # child-linked data, purged with the profile.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
     child_profile_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey(_FK_CHILD_PROFILE), primary_key=True
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), primary_key=True
     )
     storybook_id: Mapped[str] = mapped_column(String(120), primary_key=True)
     version: Mapped[int] = mapped_column(primary_key=True)
@@ -645,11 +787,14 @@ class Rating(Base):
         CheckConstraint("value BETWEEN 1 AND 5", name="ck_rating_value_range"),
     )
 
+    # #CRITICAL: data-integrity: CASCADE both FKs (Phase 3a): ratings are
+    # child-linked data, purged with either the profile or the storybook.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
     child_profile_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey(_FK_CHILD_PROFILE), primary_key=True
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), primary_key=True
     )
     storybook_id: Mapped[str] = mapped_column(
-        String(120), ForeignKey(_FK_STORYBOOK), primary_key=True
+        String(120), ForeignKey(_FK_STORYBOOK, ondelete="CASCADE"), primary_key=True
     )
     # #CRITICAL: data integrity: ``value`` is bounded 1-5 at the API boundary by
     # RatingBody and enforced at rest by the ck_rating_value_range CHECK above,
@@ -685,14 +830,17 @@ class StorybookAssignment(Base):
     # paths on an EXISTS/IN over this table.
     __table_args__ = (Index("ix_storybook_assignment_storybook_id", "storybook_id"),)
 
+    # #CRITICAL: data-integrity: CASCADE both FKs (Phase 3a): an assignment
+    # grant is child-linked, purged with either the profile or the storybook.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
     child_profile_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey(_FK_CHILD_PROFILE), primary_key=True
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), primary_key=True
     )
     storybook_id: Mapped[str] = mapped_column(
-        String(120), ForeignKey(_FK_STORYBOOK), primary_key=True
+        String(120), ForeignKey(_FK_STORYBOOK, ondelete="CASCADE"), primary_key=True
     )
     assigned_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
@@ -717,7 +865,14 @@ class Concept(Base):
     __tablename__ = "concept"
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
+    # family's own concepts are family-owned content, deleted with it. Also
+    # cascades to GenerationJob.concept_id below (NOT NULL there), which
+    # would otherwise block this delete with an FK violation.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
+    )
     # #ASSUME: data integrity: ``brief`` shape is validated by ConceptBrief
     # Pydantic model before insertion; the DB stores raw JSON with no
     # column-level schema constraint.
@@ -725,7 +880,7 @@ class Concept(Base):
     # before calling session.add(Concept(...)).
     brief: Mapped[dict[str, object]] = mapped_column(JSONB)
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
@@ -856,12 +1011,23 @@ class StoryRequest(Base):
         # back the status-scoped ones.
         Index("ix_story_request_family_approved_at", "family_id", "approved_at"),
         Index("ix_story_request_profile_approved_at", "profile_id", "approved_at"),
+        # Phase 4c: backs purge_blocked_declined_story_request_text's WHERE
+        # clause (supabase/migrations/20260720150000_add_retention_purge_jobs.sql).
+        Index("ix_story_request_status_reviewed_at", "status", "reviewed_at"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY))
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
+    # family's own story requests are family-owned content, deleted with it.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE")
+    )
+    # SET NULL (Phase 3a): deleting one child profile de-links their
+    # requests rather than deleting them; the family-owned request (and its
+    # moderation history) survives at the family level.
     profile_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_CHILD_PROFILE), default=None
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="SET NULL"), default=None
     )
     request_text: Mapped[str] = mapped_column(String(500))
     status: Mapped[str] = mapped_column(String(16), default="pending")
@@ -898,18 +1064,26 @@ class StoryRequest(Base):
         JSONB, default=None
     )
     reviewed_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     reviewed_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     approved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     concept_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_CONCEPT), default=None
+        ForeignKey(_FK_CONCEPT, ondelete="SET NULL"), default=None
     )
+    # #CRITICAL: data-integrity: deliberately NOT ondelete=SET NULL, unlike
+    # most nullable references here. ck_story_request_anchor_requires_series
+    # requires series_id to be set whenever anchor_storybook_id is set; a bare
+    # SET NULL on series_id alone (with anchor_storybook_id still set) would
+    # violate that CHECK. Not a real gap: this row always CASCADEs (family_id,
+    # above) whenever its family is deleted, the same family that owns the
+    # series, so there is no scenario in this codebase where a Series row is
+    # deleted while a referencing StoryRequest survives.
     series_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_SERIES), default=None
     )
     anchor_storybook_id: Mapped[str | None] = mapped_column(
-        String(120), ForeignKey(_FK_STORYBOOK), default=None
+        String(120), ForeignKey(_FK_STORYBOOK, ondelete="SET NULL"), default=None
     )
     proposed_series_title: Mapped[str | None] = mapped_column(String(120), default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
@@ -972,8 +1146,11 @@ class ModerationThreshold(Base):
     category: Mapped[str] = mapped_column(String(64))
     min_verdict: Mapped[str] = mapped_column(String(16))
     min_score: Mapped[float | None] = mapped_column(default=None)
+    # SET NULL (Phase 3a): this is a global admin-config row, not family- or
+    # child-owned; a deleted admin's attribution is dropped, the override
+    # itself survives.
     updated_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     updated_at: Mapped[datetime] = mapped_column(
         _TS, server_default=func.now(), onupdate=func.now()
@@ -995,7 +1172,8 @@ class ModerationThresholdAudit(Base):
         new_min_verdict: Verdict floor after the edit, or ``None`` on delete.
         old_min_score: Score floor before the edit, or ``None``.
         new_min_score: Score floor after the edit, or ``None``.
-        changed_by: The admin who made the edit (required; see RAD tag).
+        changed_by: The admin who made the edit, or ``None`` if that admin's
+            account has since been erased (Phase 3a; see RAD tag).
         changed_at: When the edit was recorded (UTC, TIMESTAMPTZ).
     """
 
@@ -1023,16 +1201,24 @@ class ModerationThresholdAudit(Base):
     new_min_verdict: Mapped[str | None] = mapped_column(String(16), default=None)
     old_min_score: Mapped[float | None] = mapped_column(default=None)
     new_min_score: Mapped[float | None] = mapped_column(default=None)
-    # #CRITICAL: security / data integrity: every threshold edit must be
-    # attributable; ``changed_by`` is a NOT NULL FK to user.id so an anonymous
-    # or dangling edit record cannot be persisted. Rows are append-only by
-    # convention (no update/delete path in the application layer) until WS-D's
-    # pipeline_event log subsumes this table.
+    # #CRITICAL: security / data integrity: every threshold edit is
+    # attributable AT WRITE TIME (the WS-A admin API always stamps a real
+    # admin here; there is no code path that inserts NULL). The column is
+    # nullable with ON DELETE SET NULL, not NOT NULL, specifically so a
+    # guardian/admin's Article 17 self-deletion (Phase 3a) is never blocked
+    # by an FK violation on audit rows from before their account was erased;
+    # the audit row (what changed, when) survives, only the "who" attribution
+    # is dropped. Rows are append-only by convention (no update/delete path in
+    # the application layer) until WS-D's pipeline_event log subsumes this
+    # table.
     # #VERIFY: the round-trip test in
     # tests/integration/test_moderation_threshold_migration.py covers the
     # migration that creates this FK; the WS-A admin API must write one audit
-    # row per upsert/delete and never mutate existing rows.
-    changed_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
+    # row per upsert/delete and never mutate existing rows;
+    # tests/integration/test_deletion_drill.py covers the erasure path.
+    changed_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+    )
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
@@ -1075,9 +1261,21 @@ class PipelineEvent(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     occurred_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
-    actor_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), nullable=True
-    )
+    # #CRITICAL: data-integrity: deliberately NOT a ForeignKey (Phase 3a). This
+    # table is enforced append-only by a DB trigger that rejects any UPDATE or
+    # DELETE (module docstring); a FK with ON DELETE SET NULL would still fail
+    # under that trigger, since SET NULL is implemented as an UPDATE, so it
+    # would BLOCK deleting any user who has ever authored an event -- nearly
+    # every guardian. actor_id carries no PII (events/writer.py's payload
+    # allowlist already excludes it entirely; this is an opaque UUID), so
+    # there is no privacy need to null it on erasure, only a referential-
+    # integrity one; dropping the FK (like the existing polymorphic
+    # entity_id, which was never a FK either) leaves an inert historical
+    # reference once its user is deleted, exactly like entity_id already does
+    # for a deleted entity. See Phase 4d's Article 17(3) retention
+    # justification for pipeline_event as a whole.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    actor_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, nullable=True)
     actor_role: Mapped[str] = mapped_column(String(16))
     entity_type: Mapped[str] = mapped_column(String(32))
     # Composite entity_ids (e.g. f"{profile_id}:{storybook_id}") concatenate a
@@ -1134,8 +1332,10 @@ class ModerationSetting(Base):
 
     key: Mapped[str] = mapped_column(String(64), primary_key=True)
     value: Mapped[float] = mapped_column()
+    # SET NULL (Phase 3a): global admin-config row; a deleted admin's
+    # attribution is dropped, the setting itself survives.
     updated_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     updated_at: Mapped[datetime] = mapped_column(
         _TS, server_default=func.now(), onupdate=func.now()
@@ -1191,11 +1391,13 @@ class ProviderModelAllowlist(Base):
     model_id: Mapped[str] = mapped_column(String(120))
     enabled: Mapped[bool] = mapped_column(default=True, server_default=text("true"))
     display_name: Mapped[str | None] = mapped_column(String(120), default=None)
+    # SET NULL (Phase 3a): global admin-config row; a deleted admin's
+    # attribution is dropped, the allowlist entry itself survives.
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     updated_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER), default=None
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
@@ -1217,7 +1419,8 @@ class ProviderModelAllowlistAudit(Base):
         action: What happened: ``create``, ``update``, or ``delete``.
         old_enabled: The ``enabled`` value before the edit, or ``None`` on create.
         new_enabled: The ``enabled`` value after the edit, or ``None`` on delete.
-        changed_by: The admin who made the edit (required; see RAD tag).
+        changed_by: The admin who made the edit, or ``None`` if that admin's
+            account has since been erased (Phase 3a; see RAD tag).
         changed_at: When the edit was recorded (UTC, TIMESTAMPTZ).
     """
 
@@ -1241,14 +1444,21 @@ class ProviderModelAllowlistAudit(Base):
     action: Mapped[str] = mapped_column(String(16))
     old_enabled: Mapped[bool | None] = mapped_column(default=None)
     new_enabled: Mapped[bool | None] = mapped_column(default=None)
-    # #CRITICAL: security / data integrity: every allowlist edit must be
-    # attributable; changed_by is a NOT NULL FK to user.id so an anonymous or
-    # dangling edit record cannot be persisted. Rows are append-only by
-    # convention (no update/delete path in the application layer).
+    # #CRITICAL: security / data integrity: every allowlist edit is
+    # attributable AT WRITE TIME (the admin API always stamps a real admin
+    # here; there is no code path that inserts NULL). Nullable with ON DELETE
+    # SET NULL, not NOT NULL, so a guardian/admin's Article 17 self-deletion
+    # (Phase 3a) is never blocked by an FK violation on audit rows from
+    # before their account was erased; the audit row survives, only the
+    # "who" attribution is dropped. Rows are append-only by convention (no
+    # update/delete path in the application layer).
     # #VERIFY: tests/integration/test_provider_allowlist_api.py asserts one
     # audit row per POST/PUT/DELETE with the correct changed_by and
-    # old/new_enabled pairing.
-    changed_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
+    # old/new_enabled pairing; tests/integration/test_deletion_drill.py
+    # covers the erasure path.
+    changed_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+    )
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
@@ -1301,7 +1511,15 @@ class GenerationJob(Base):
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    concept_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_CONCEPT), index=True)
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): this
+    # FK is NOT NULL, so it MUST cascade rather than SET NULL; Concept.family_id
+    # already CASCADEs when a family is deleted, and without this cascade too,
+    # that concept delete would itself fail with an FK violation from any
+    # GenerationJob still referencing it.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    concept_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CONCEPT, ondelete="CASCADE"), index=True
+    )
     status: Mapped[str] = mapped_column(String(20), default="queued")
     model: Mapped[str | None] = mapped_column(String(120), default=None)
     provider: Mapped[str | None] = mapped_column(String(120), default=None)
@@ -1388,7 +1606,16 @@ class DeviceGrant(Base):
     __tablename__ = "device_grant"
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
+    # family's own device grants are deleted with it. authorized_by
+    # deliberately keeps no ondelete action: the authorizing guardian is
+    # always in this same family (deleted via the same cascade, a sibling
+    # path off family.id rather than a chain through this row), so the
+    # NOT NULL FK never independently blocks a delete in practice.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
+    )
     authorized_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
     label: Mapped[str | None] = mapped_column(String(120), default=None)
     jti: Mapped[uuid.UUID] = mapped_column(Uuid, unique=True)
@@ -1456,9 +1683,13 @@ class KidFlag(Base):
     # always sets resolved_by/resolved_at/resolution together, never
     # partially.
     __table_args__ = (
+        # CASCADE (Phase 3a): the version this flag was raised against is
+        # deleted along with its storybook (see StorybookVersion.storybook_id).
+        # #VERIFY: tests/integration/test_deletion_drill.py.
         ForeignKeyConstraint(
             ["storybook_id", "version"],
             ["storybook_version.storybook_id", "storybook_version.version"],
+            ondelete="CASCADE",
         ),
         CheckConstraint(
             f"reason IN ({_KID_FLAG_REASON_VALUES})",
@@ -1476,15 +1707,38 @@ class KidFlag(Base):
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
-    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
-    profile_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey(_FK_CHILD_PROFILE), index=True
+    # #CRITICAL: data-integrity: CASCADE both FKs (Phase 3a): a flag is
+    # child-linked data, purged with either the family or the flagging
+    # profile.
+    # #VERIFY: tests/integration/test_deletion_drill.py.
+    family_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
     )
-    storybook_id: Mapped[str] = mapped_column(String(120), ForeignKey(_FK_STORYBOOK))
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), index=True
+    )
+    storybook_id: Mapped[str] = mapped_column(
+        String(120), ForeignKey(_FK_STORYBOOK, ondelete="CASCADE")
+    )
     version: Mapped[int] = mapped_column()
     reason: Mapped[str] = mapped_column(String(16))
     node_id: Mapped[str | None] = mapped_column(String(120), default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    # #CRITICAL: data-integrity: deliberately NOT ondelete=SET NULL, unlike
+    # most nullable *_by references. ck_kid_flag_resolved_pairing requires
+    # resolved_by and resolved_at to be null together; a bare SET NULL on
+    # resolved_by alone (with resolved_at still set) would violate that
+    # CHECK. Unlike the other *_by cases in this file, this one IS reachable
+    # in practice: the resolving admin need not be in the flagged family
+    # (any admin can resolve any family's flags), so that admin's OWN
+    # whole-family self-deletion would otherwise be blocked by an FK
+    # violation here. The deletion endpoint (api/families.py) must
+    # explicitly UPDATE kid_flag SET resolved_by=NULL, resolved_at=NULL,
+    # resolution=NULL for every row this family's users resolved, BEFORE
+    # deleting the family -- reopening those flags is the only choice that
+    # keeps the pairing CHECK satisfied once the resolver is erased.
+    # #VERIFY: tests/integration/test_deletion_drill.py::
+    # test_deleting_admin_family_reopens_kid_flags_they_resolved.
     resolved_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER), default=None
     )

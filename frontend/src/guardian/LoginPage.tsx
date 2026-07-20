@@ -14,6 +14,8 @@ import {
   ADMIN_CONSOLE_PATH,
   AUTHORIZE_DEVICE_INTENT_PARAM,
   AUTHORIZE_DEVICE_INTENT_VALUE,
+  GUARDIAN_AWAITING_APPROVAL_PATH,
+  GUARDIAN_CONSENT_PATH,
   GUARDIAN_CONSOLE_PATH,
   KID_PICKER_PATH,
 } from '../routes'
@@ -391,6 +393,18 @@ export function LoginPage() {
         <SetNewPasswordForm />
       </div>
     )
+  }
+
+  // A guardian who navigates straight to /guardian/login already has a real
+  // Supabase session in these two states (AuthContext resolved that far
+  // before stopping short of 'signed-in'); send them to the matching
+  // interstitial instead of showing a login form for a session that already
+  // exists. Mirrors ProtectedRoute's own handling of the same two statuses.
+  if (status === 'awaiting-approval') {
+    return <Navigate to={GUARDIAN_AWAITING_APPROVAL_PATH} replace />
+  }
+  if (status === 'needs-consent') {
+    return <Navigate to={GUARDIAN_CONSENT_PATH} replace />
   }
 
   if (status === 'signed-in') {

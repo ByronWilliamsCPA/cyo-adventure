@@ -14,6 +14,7 @@ from cyo_adventure.core.exceptions import (
     ExternalServiceError,
     ResourceNotFoundError,
 )
+from cyo_adventure.covers.storage import generate_presigned_cover_url
 from cyo_adventure.covers.worker import enqueue_cover
 from cyo_adventure.db.models import StorybookVersion
 from cyo_adventure.middleware.correlation import get_correlation_id
@@ -34,6 +35,28 @@ def _require_admin(principal: CurrentPrincipal) -> None:
     if not principal.is_admin:
         msg = "admin role required"
         raise AuthorizationError(msg, required_permission="admin")
+
+
+async def _cover_url(row: StorybookVersion) -> str | None:
+    """Return a fresh presigned cover URL, or None if no cover is ready yet.
+
+    Args:
+        row: The storybook version row.
+
+    Returns:
+        str | None: A short-lived signed GET URL when ``cover_status`` is
+        ``"ready"``; otherwise None. Never reads ``row.cover_image_url``
+        directly (that column is an upload-time audit value, not a URL to
+        serve to readers -- see ``covers/storage.py``'s module note).
+    """
+    # #CRITICAL: security: covers are private-by-default in R2 (Phase 1d); the
+    # only way a client legitimately learns a cover's URL is a freshly
+    # generated, short-lived signed GET URL, computed here rather than read
+    # from the stored (permanent, audit-only) cover_image_url column.
+    # #VERIFY: test_covers_api.py::test_cover_status_returns_presigned_url_when_ready.
+    if row.cover_status != "ready":
+        return None
+    return await generate_presigned_cover_url(row.storybook_id, row.version, settings)
 
 
 @router.post(
@@ -69,7 +92,9 @@ async def request_cover(
     # billable Gemini job and reset visible progress. Treat in-flight as a no-op.
     # #VERIFY: test_request_cover_already_generating asserts no second enqueue.
     if row.cover_status == "generating":
-        return CoverStatusView(cover_status="generating", cover_url=row.cover_image_url)
+        return CoverStatusView(
+            cover_status="generating", cover_url=await _cover_url(row)
+        )
     # #CRITICAL: timing dependencies: the console starts polling ~2s after this
     # response, but the shared "generation" queue can sit busy for 10-30s
     # before a worker dequeues the job and sets cover_status itself. Persist
@@ -98,7 +123,7 @@ async def request_cover(
         await session.commit()
         msg = "cover queue is unavailable"
         raise ExternalServiceError(msg) from exc
-    return CoverStatusView(cover_status="generating", cover_url=row.cover_image_url)
+    return CoverStatusView(cover_status="generating", cover_url=await _cover_url(row))
 
 
 @router.get("/storybooks/{storybook_id}/versions/{version}/cover")
@@ -117,4 +142,6 @@ async def cover_status(
     if row is None:
         msg = "storybook version not found"
         raise ResourceNotFoundError(msg)
-    return CoverStatusView(cover_status=row.cover_status, cover_url=row.cover_image_url)
+    return CoverStatusView(
+        cover_status=row.cover_status, cover_url=await _cover_url(row)
+    )

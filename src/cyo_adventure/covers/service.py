@@ -14,7 +14,7 @@ from sqlalchemy import select
 from cyo_adventure.covers.optimize import optimize_cover as _optimize_cover
 from cyo_adventure.covers.prompt import build_cover_prompt
 from cyo_adventure.covers.provider import generate_cover_image
-from cyo_adventure.covers.storage import upload_cover
+from cyo_adventure.covers.storage import cover_object_key, upload_cover
 from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
@@ -189,7 +189,7 @@ async def generate_cover(
             quality=settings.cover_quality,
             max_bytes=settings.cover_max_bytes,
         )
-        key = f"{storybook_id}/{version}.webp"
+        key = cover_object_key(storybook_id, version)
         public_url = await upload(optimized, key, settings)
         row.cover_image_url = f"{public_url}?v={int(time.time())}"
         row.cover_status = "ready"
