@@ -193,22 +193,28 @@ evidence in the phase sections below and in [capability-register.md](./capabilit
 3. **A live-code, delivered feature has no register-table line item anywhere**: K19 (kid
    request-interpretation, WS-7, delivered 2026-07-20) and the broader content-diversity
    workstream it belongs to (WS-0/1/2/4, ADR-019) are absent from this document and
-   roadmap.md entirely, despite substantial merged code (PRs #300, #303, #314; #321 open).
+   roadmap.md entirely, despite substantial merged code (PRs #300, #303, #314, #321).
 4. **The "zero production-eligible skeletons" claim is stale** (see Section 1's Content
    workstream note above): 61 skeletons and 23 filled stories are committed to `main`.
 5. **This document's ADR table (Section 3) stops at ADR-011**; ADR-012 through ADR-019 all
    exist, are mostly Accepted, and describe shipped behavior with no entry here (corrected
-   below).
+   below). ADR-020 and ADR-021 merged the same day as this audit and are not yet reconciled
+   at all (see item 7).
 6. Several open design docs describe real, unscheduled work referenced nowhere in this
    document: [catalog-first-inventory-gap.md](./catalog-first-inventory-gap.md),
    [admin-guardian-dual-roles-plan.md](./admin-guardian-dual-roles-plan.md),
    [skeleton-corpus-story-generation-test-plan.md](./skeleton-corpus-story-generation-test-plan.md).
    Issues #125 (Supabase RLS not enabled on 13 public tables) and #214 (R2 cover-art backfill)
    are likewise untracked here by number or description.
-7. Three open, unmerged PRs represent real in-flight scope the "current status" table
-   doesn't reflect: #321 (WS-5 structure/state variation), #323 (draft ADR-020: service
-   accounts, RLS, worker deployment), #311 (a second, larger COPPA/GDPR remediation pass
-   beyond the one already merged as #304).
+7. **Update, same day**: #321 (WS-5 structure/state variation, ADR-020), #323 (ADR-021,
+   service accounts/RLS/worker deployment), and #311 (a second, larger COPPA/GDPR
+   remediation: data rights, verifiable parental consent, self-signup approval, audit
+   logging, plus new `docs/compliance/` artifacts - breach-notification runbook, DPIA,
+   infosec program, privacy notice, processor DPA checklist, records of processing) were
+   all still open when this audit began and **merged to `main` within hours of it**. #311
+   alone plausibly closes or advances several Phase 7 items (P7-02, P7-09, P7-13) noted as
+   open below, but that reconciliation has not been done in this pass - it needs its own
+   dedicated follow-up, not a same-day bolt-on.
 
 Full item-by-item corrections are inline in the Phase 4b/4c/4d/6/7 sections below, the ADR
 table (Section 3), and the Technology Stack table (Section 4, Python version).
@@ -1003,9 +1009,16 @@ per-item audit notes appear in the table below. **PR #304 ("GDPR/COPPA review, r
 plan, and Phase 1 PII-egress hardening", merged 2026-07-19) closed P7-10 in full** and half of
 P7-13 (the SECURITY.md correction); P7-09's purge mechanism predates it (shipped in PR #270,
 already reflected in Phase 5); P7-09's policy-doc/expiry components, all of P7-12, and P7-13's
-infosec-program artifact remain open. **A second, larger COPPA/GDPR remediation pass is an
-open, unmerged PR (#311, "data rights, VPC consent, self-signup approval, audit logging") as
-of 2026-07-20** - not yet mergeable evidence, tracked here as in-flight scope.
+infosec-program artifact remain open. **Update, same day**: a second, larger COPPA/GDPR
+remediation pass (#311, "data rights, VPC consent, self-signup approval, audit logging" -
+new `docs/compliance/breach-notification-runbook.md`, `dpia.md`,
+`information-security-program.md`, `privacy-notice.md`, `processor-dpa-checklist.md`,
+`records-of-processing-activities.md`, plus code changes across `api/me.py`,
+`api/onboarding.py`, `api/profiles.py`, new consent/retention migrations) was still open
+when this section was written and merged to `main` within hours of it. It plausibly closes
+or substantially advances P7-02 (consent), P7-09 (retention policy/expiry), and P7-13
+(infosec-program artifact) above, but that has not been independently verified - the
+statuses above predate #311 and need a dedicated follow-up check, not a same-day guess.
 
 **Objective**: Meet the obligations that make a child-directed public app lawful and
 App-Store-reviewable: COPPA/GDPR-K consent, privacy disclosures, account deletion, and the
@@ -1018,7 +1031,7 @@ label, the deletion contract, and the consent disclosure.
 | Plan item | Deliverable | Notes |
 |-----------|-------------|-------|
 | P7-01 | Apple Developer Program enrollment + EU DSA trader status | Prerequisite for P6-05, TestFlight, and submission; publish trader contact details |
-| P7-02 | Verifiable parental consent at onboarding | COPPA-acceptable method; persist a consent record (method, timestamp, policy version) on the family; re-consent flow on material policy change; **audit 2026-07-10**: no onboarding endpoint exists yet (P6-03 unbuilt) and `POST /profiles` is currently ungated, so consent has no host and child-profile creation must be blocked behind it (audit C-01). **Update 2026-07-20**: the onboarding endpoint itself now exists (P6-03 shipped 2026-07-17), so the "no host" blocker is resolved architecturally; whether consent capture/persistence is actually wired into it was not independently re-verified in this pass, and open PR #311 ("VPC consent") suggests it is still in flight, not merged |
+| P7-02 | Verifiable parental consent at onboarding | COPPA-acceptable method; persist a consent record (method, timestamp, policy version) on the family; re-consent flow on material policy change; **audit 2026-07-10**: no onboarding endpoint exists yet (P6-03 unbuilt) and `POST /profiles` is currently ungated, so consent has no host and child-profile creation must be blocked behind it (audit C-01). **Update 2026-07-20**: the onboarding endpoint itself now exists (P6-03 shipped 2026-07-17), so the "no host" blocker is resolved architecturally; whether consent capture/persistence is actually wired into it was not independently re-verified in this pass; PR #311 ("VPC consent") merged to `main` the same day as this audit and likely closes this item, but that has not been independently confirmed - see the Phase 7 status note above |
 | P7-03 | Privacy policy published + linked in-app | Drafted from `privacy-model.md`; hosted at a stable URL (App Store Connect requires one) |
 | P7-04 | In-app account deletion (Guideline 5.1.1(v)) | Full-family erasure driven by the child-linked data classification; removes the guardian identity via the Supabase Auth admin API; calls Apple's Sign in with Apple token-revocation endpoint (our code); async deletion job with audit record; drill test proves zero residual child-linked rows; **audit 2026-07-10**: no FK `ondelete` cascade exists on any child-linked table today (contradicts `privacy-model.md` line 133), so the job must add cascades or enumerate every child table plus the `pipeline_event` `BOOK_ASSIGNED` rows (audit C-03) |
 | P7-05 | Guardian data export | All family data in a portable format (GDPR access right) |
