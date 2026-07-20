@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- CI: release-automation PRs (`release.yml`'s `propose` job opens
+  `chore(release): vX.Y.Z` against a `release/v*` branch, touching only
+  `pyproject.toml`/`uv.lock`/`CHANGELOG.md`) now skip the full test/build
+  matrix entirely instead of re-running it up to three times (`pull_request`,
+  `merge_group`, and the post-merge `push`) over a diff whose underlying code
+  was already fully tested by the feature PR that triggered the release.
+  Added a `detect-release-pr` job to `ci.yml` (gates `ci`, `frontend`,
+  `design-system`, `contract`, `detect-api-collection`/`api-tests`, and
+  `coverage-upload` transitively via `ci`'s result; `ci-gate` treats a
+  release PR's all-skipped state as a pass) and to `sbom.yml` and
+  `container-security.yml` (both path-filter on `pyproject.toml`/`uv.lock`,
+  which every release PR touches, and `container-security.yml`'s job builds
+  a real Docker image to scan). On `pull_request`/`push` the detection reads
+  the branch name/commit message directly; on `merge_group` the event's own
+  `head_ref` is the synthetic queue ref, not the source branch, so the job
+  extracts the PR number from it and looks up the real head branch via the
+  GitHub API. Trade-off: a `uv lock` re-resolve on the release PR could in
+  principle pick up a newly-published transitive dependency version untested
+  by the original feature PR; accepted, since the weekly scheduled scans and
+  the next feature PR's own full run remain the backstop.
+
 ### Fixed
 
 - Testing: `DeviceAuthorizedRoute.test.tsx`'s "parks the adult gate after the

@@ -39,8 +39,50 @@ permissions:
   packages: read
 
 jobs:
+  # See ci.yml's detect-release-pr for the full rationale: release.yml's
+  # propose job opens a "chore(release): vX.Y.Z" PR (branch release/v*) that
+  # only ever touches pyproject.toml/uv.lock/CHANGELOG.md, which this
+  # workflow's own path filters above match on every single time. This job
+  # builds a real Docker image (build-image: true) to scan, the most
+  # expensive step here -- skip it for release PRs (weekly schedule + the
+  # next feature PR's own run remain the backstop for a `uv lock` re-resolve
+  # silently picking up a newly vulnerable transitive dependency).
+  detect-release-pr:
+    name: Detect release-automation PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      release_pr: ${{ steps.check.outputs.release_pr }}
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Check for release-automation branch/commit
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          RELEASE_PR=false
+          case "$EVENT_NAME" in
+            pull_request)
+              [[ "$HEAD_REF" == release/v* ]] && RELEASE_PR=true
+              ;;
+            push)
+              [[ "$HEAD_COMMIT_MESSAGE" == "chore(release):"* ]] && RELEASE_PR=true
+              ;;
+          esac
+          echo "release_pr=${RELEASE_PR}" >> "$GITHUB_OUTPUT"
+
   container-security:
     name: Container Security Scan
+    needs: detect-release-pr
+    if: needs.detect-release-pr.outputs.release_pr != 'true'
     uses: ByronWilliamsCPA/.github/.github/workflows/python-container-security.yml@c4ba2d18e4de831cbdbffcafd8e033473c0a0059  # main
     with:
       dockerfile-path: 'Dockerfile'
