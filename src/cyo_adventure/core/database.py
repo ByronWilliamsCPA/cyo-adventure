@@ -181,6 +181,19 @@ def _create_engine(url: str) -> AsyncEngine:
 # that branch (doing so would raise TypeError at engine construction).
 # #VERIFY: tests/unit/test_database.py::TestEngineKwargs pins both the
 # direct-branch wiring and the pooler-branch TypeError-avoidance guard.
+#
+# #ASSUME: security: both _engine and _worker_engine are constructed in
+# EVERY process (API and worker alike), so a process holds both DSNs in
+# memory regardless of which one it actually uses; the API process still
+# holds the cyo_worker credential and vice versa, which narrows the
+# blast-radius benefit ADR-021 is meant to buy. The mitigation is
+# config-only, not a code change: the API container's environment must
+# leave WORKER_DATABASE_URL unset (so worker_database_url_effective falls
+# back to database_url instead of resolving to a real cyo_worker DSN) and
+# the worker container's DATABASE_URL must point at the worker DSN.
+# #VERIFY: docs/operations/runbook.md Section 11 (ADR-021 cutover) is the
+# per-environment procedure that applies this; do not cut an environment
+# over without following it.
 _engine: AsyncEngine = _create_engine(settings.database_url)
 _session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
     _engine,
@@ -191,9 +204,11 @@ _session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
 # which falls back to database_url when worker_database_url is unset, so
 # pre-cutover this is a distinct connection pool with identical connection
 # identity to _engine, not a behavior change. Post-cutover (a separate,
-# manual, per-environment step; see docs/operations/runbook.md), this pool
-# connects as the least-privilege cyo_worker role instead of the shared
-# credential _engine uses.
+# manual, per-environment step; see docs/operations/runbook.md Section 11),
+# this pool connects as the least-privilege cyo_worker role instead of the
+# shared credential _engine uses. See the #ASSUME note above _engine: this
+# engine is still constructed in the API process too, so the cyo_worker DSN
+# is present in that process's memory even though it is never used there.
 _worker_engine: AsyncEngine = _create_engine(settings.worker_database_url_effective)
 _worker_session_factory: async_sessionmaker[AsyncSession] = async_sessionmaker(
     _worker_engine,

@@ -573,3 +573,105 @@ For an incident where content reached a child and needs to be traced and contain
 - [R1 live E2E checklist](../planning/r1-live-e2e-checklist.md)
 - [Authoring guide](authoring-guide.md) (this deliverable's companion document, written for
   non-technical guardians and admins)
+- [ADR-021: Service accounts, RLS, and in-repo worker deployment](../planning/adr/adr-021-service-account-rls-and-worker-deployment.md)
+  (Section 11 below is this ADR's per-environment cutover procedure)
+
+## 11. Service-account cutover (ADR-021)
+
+Per [ADR-021](../planning/adr/adr-021-service-account-rls-and-worker-deployment.md), the
+`cyo_api` and `cyo_worker` Postgres roles and their `service_rw` RLS policies ship as
+`NOLOGIN` migrations (`supabase/migrations/20260720170100_create_service_roles.sql`,
+`20260720170200_add_service_role_policies.sql`); applying those migrations changes nothing
+at runtime by itself. Every environment keeps connecting as the shared `postgres` owner
+role until an operator completes the steps below. **Merging the migrations is not the
+cutover; this section is.**
+
+### 11.1 Per-environment cutover procedure
+
+Do this once per environment (staging first, always; never production first):
+
+1. **Set each role's login password out-of-band.** Never in a migration file, never in this
+   repo. Via the Supabase dashboard SQL editor (or `psql` against the project's direct
+   connection, not the pooler):
+
+   ```sql
+   ALTER ROLE cyo_api LOGIN PASSWORD '<generated-secret>';
+   ALTER ROLE cyo_worker LOGIN PASSWORD '<generated-secret>';
+   ```
+
+   Generate each password independently (do not reuse one password across roles or
+   environments); store both in the environment's existing secrets mechanism (GitHub
+   Actions Environment secrets / `homelab-infra` secret store, matching how
+   `CYO_ADVENTURE_DATABASE_URL` is already stored today, Section 8).
+
+2. **Verify allow/deny before touching any running process.** From a workstation or CI job
+   with network access to the target database, run
+   `uv run pytest tests/integration/test_rls_service_roles.py` against that project (or, at
+   minimum, manually connect as `cyo_api`/`cyo_worker` with `psql` and confirm a `SELECT`
+   against `public."user"` succeeds, then connect as `anon`/`authenticated` if those roles
+   exist on the target and confirm the same query is denied). Do not proceed to step 3 on a
+   failed verification.
+
+3. **Flip the connection secrets, staging first.** Build the two new DSNs (same host/port/
+   database as today, `cyo_api`/`cyo_worker` in place of `postgres`, the passwords from step
+   1) and update:
+   - `CYO_ADVENTURE_DATABASE_URL` (or the unprefixed `DATABASE_URL` alias): the API process's
+     connection. Set it to the `cyo_api` DSN.
+   - `CYO_ADVENTURE_WORKER_DATABASE_URL` (or the unprefixed `WORKER_DATABASE_URL` alias): the
+     worker processes' connection. Set it to the `cyo_worker` DSN. Until this variable is
+     set, the worker silently keeps using `CYO_ADVENTURE_DATABASE_URL` (the
+     `worker_database_url_effective` fallback, `core/config.py`); this is intentional
+     non-breaking behavior, not a bug, but means an operator who forgets this step has not
+     actually completed the cutover for the worker process.
+
+   Redeploy (or restart) the API and worker processes so the new environment variables take
+   effect; both processes build their engine once at import time (`core/database.py`), so a
+   running process never picks up a changed URL without a restart.
+
+4. **Re-run the health check and a live smoke test** (Section 3; a guardian login, a library
+   fetch, and if staging, a full story-request-to-review-queue pass) before considering the
+   environment cut over. Watch logs (Section 4) for any `insufficient_privilege` /
+   `permission denied` error in the minutes after restart; that means a table is missing
+   from the grant/policy migrations (see the future-table checklist below) or a role/
+   password was set incorrectly in step 1.
+
+5. **Repeat for production only after staging has run clean for a reasonable soak period**
+   (ADR-012's existing staging-first rehearsal norm applies here unchanged).
+
+**Rollback**: revert `CYO_ADVENTURE_DATABASE_URL` / `CYO_ADVENTURE_WORKER_DATABASE_URL` (and
+the worker alias) to the prior `postgres`-role DSN and restart the affected process(es). The
+migrations themselves are forward-only (ADR-012) and never need to be undone: `cyo_api`/
+`cyo_worker` and their policies are additive and harmless to leave in place even while
+nothing connects as them. There is no data migration involved in this cutover, only a
+connection-identity change, so rollback is immediate and has no data-loss risk.
+
+### 11.2 Future-table checklist
+
+RLS enforcement for `cyo_api`/`cyo_worker` is an explicit, per-table `GRANT` plus an
+explicit, per-table `CREATE POLICY`; neither is inferred automatically from
+`ENABLE ROW LEVEL SECURITY`. Any migration that adds a new application table and enables RLS
+on it (following `20260711200745_enable_rls_all_tables.sql`'s precedent) must, in the same
+PR, also add:
+
+1. A `GRANT SELECT, INSERT, UPDATE, DELETE ON public.<new_table> TO cyo_api, cyo_worker;`
+   statement (extend `20260720170100_create_service_roles.sql`'s table list, or add a new
+   migration following the same shape if that file has already shipped to production).
+2. A matching `service_rw` policy:
+
+   ```sql
+   DROP POLICY IF EXISTS service_rw ON public.<new_table>;
+   CREATE POLICY service_rw ON public.<new_table>
+     FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK (true);
+   ```
+
+3. No `anon`/`authenticated` grant or policy, matching the deny-by-default posture
+   established by `20260711200745_enable_rls_all_tables.sql` and preserved by this ADR.
+
+Skipping either the `GRANT` or the policy leaves the new table effectively unreachable by
+the API/worker in any environment that has completed the cutover above: a policy without a
+`GRANT` is blocked at the privilege layer before RLS is even evaluated, and a `GRANT`
+without a policy is blocked by RLS itself (`USING` defaults to deny with no matching
+policy). `tests/integration/test_rls_service_roles.py`'s coverage-invariant test
+(`test_every_rls_table_grants_both_service_roles`) fails loudly on either gap, so a CI run
+against a PR that forgets this checklist should not pass silently, but the checklist exists
+because that test is currently the only thing that would notice.
