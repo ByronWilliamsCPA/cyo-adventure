@@ -325,7 +325,7 @@ considered verified rather than just implemented.**
 
 - **3a. DONE.** Added `ondelete=` (`CASCADE` or `SET NULL`) to every FK in `db/models.py` that
   sits on the family/child-profile ownership closure, mirrored in a new Supabase migration
-  (`supabase/migrations/20260719190000_add_erasure_cascades.sql`). Three edges needed
+  (`supabase/migrations/20260720170000_add_erasure_cascades.sql`). Three edges needed
   non-default handling, each documented with a `#CRITICAL` comment at its column:
   `pipeline_event.actor_id`'s FK is dropped entirely (the table's append-only trigger blocks
   the `UPDATE` a `SET NULL` cascade would issue, so it would otherwise block deleting any user

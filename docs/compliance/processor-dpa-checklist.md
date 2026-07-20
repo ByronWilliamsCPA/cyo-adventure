@@ -1,4 +1,16 @@
-# Phase 5 Processor DPA Checklist
+---
+title: "Phase 5 Processor DPA Checklist"
+schema_type: planning
+status: draft
+owner: core-maintainer
+purpose: "Working checklist for executing Data Processing Agreements with each processor CYO Adventure uses, tracked per coppa-gdpr-remediation-plan.md Section 6."
+tags:
+  - compliance
+  - privacy
+  - legal
+component: Development-Tools
+source: "Working checklist tracked in coppa-gdpr-remediation-plan.md Section 6; execution decided 2026-07-20."
+---
 
 Status: working checklist, not a compliance record. Owner: Byron Williams (execution decided
 2026-07-20: the account owner works through this directly, per
