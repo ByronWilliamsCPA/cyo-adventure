@@ -42,6 +42,26 @@ async def test_local_trusts_token_as_subject_with_no_email(
 
 
 @pytest.mark.asyncio
+async def test_client_ip_is_captured_when_request_client_is_present(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A real client host is threaded through onto OnboardingIdentity.client_ip.
+
+    Phase 2 / ADR-018 D1: consent_ip is sourced from this field, so the
+    request.client.host is not None branch (the counterpart to
+    _FAKE_REQUEST's client=None case above) must be independently exercised.
+    """
+    monkeypatch.setattr(deps.settings, "environment", "local")
+    request_with_client = cast(
+        "Request", SimpleNamespace(client=SimpleNamespace(host="203.0.113.7"))
+    )
+    identity = await deps.require_onboarding_identity(
+        request_with_client, "Bearer new-guardian-sub"
+    )
+    assert identity.client_ip == "203.0.113.7"
+
+
+@pytest.mark.asyncio
 async def test_missing_bearer_raises_authentication_error() -> None:
     """A missing Authorization header is a 401, not a silent anonymous onboard."""
     with pytest.raises(AuthenticationError):
