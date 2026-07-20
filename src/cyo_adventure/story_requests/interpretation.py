@@ -57,7 +57,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
@@ -90,6 +90,7 @@ __all__ = [
     "ReasonCode",
     "RequestInterpretation",
     "band_group_for",
+    "build_general_interpretation",
     "derive_dispositions",
     "render_interpretation",
     "sanitize_element",
@@ -1321,3 +1322,180 @@ def render_interpretation(  # noqa: PLR0913
         contract_version=contract_version,
         created_at=created_at,
     )
+
+
+# ---------------------------------------------------------------------------
+# The general layer: submission-time interpretation (D3, design section 4).
+#
+# Runs inside the two create endpoints immediately after screening, with NO
+# LLM call and NO skeleton knowledge: the "buildable now" half of K19. It never
+# attempts element extraction from the premise (there is no contract to
+# validate extracted phrases against at the request-scoped endpoint), so the
+# only premise-derived free text it can ever echo is a GUARDIAN's own
+# banned-theme string that the premise trips, and even that passes through the
+# echo floor for uniformity. The blocked path reads NO premise content at all
+# (CR-1).
+# ---------------------------------------------------------------------------
+
+
+class _ScreeningFlag(Protocol):
+    """The minimal shape :func:`build_general_interpretation` needs of a flag.
+
+    Structural (read-only) so the pure module never imports the heavier
+    ``story_requests.screening`` (httpx, api.schemas) at runtime: any object
+    exposing a ``category`` string satisfies it (e.g. ``StoryRequestFlag``).
+    """
+
+    @property
+    def category(self) -> str: ...
+
+
+class _ScreeningLike(Protocol):
+    """The minimal ``ScreeningResult`` shape the general layer consumes.
+
+    ``blocked`` gates the CR-1 generic path; ``flags`` supplies the advisory
+    classifier categories. Read-only members keep the match covariant so a
+    concrete ``ScreeningResult`` (``flags: list[StoryRequestFlag]``) satisfies
+    it without a runtime import.
+    """
+
+    @property
+    def blocked(self) -> bool: ...
+
+    @property
+    def flags(self) -> Sequence[_ScreeningFlag]: ...
+
+
+def _inject_advisory_categories(
+    interpretation: RequestInterpretation, categories: Sequence[str | None]
+) -> RequestInterpretation:
+    """Append each advisory element's classifier category to guardian_text only.
+
+    The category is classifier vocabulary, never premise text (design section
+    4), so it is safe in the guardian register and MUST NOT reach kid_text;
+    only ``guardian_text`` is augmented. ``categories`` is aligned by index
+    with ``interpretation.elements`` (``None`` = leave the element untouched).
+
+    Args:
+        interpretation: The rendered general-layer interpretation.
+        categories: Per-element advisory category, or ``None`` to leave as-is.
+
+    Returns:
+        A copy whose advisory elements carry the category in guardian_text.
+    """
+    updated: list[InterpretedElement] = []
+    for element, category in zip(interpretation.elements, categories, strict=True):
+        if category is None:
+            updated.append(element)
+            continue
+        updated.append(
+            element.model_copy(
+                update={
+                    "guardian_text": (
+                        f"{element.guardian_text} Advisory category: {category}."
+                    )
+                }
+            )
+        )
+    return interpretation.model_copy(update={"elements": updated})
+
+
+def build_general_interpretation(  # noqa: PLR0913
+    *,
+    screening: _ScreeningLike,
+    band: AgeBand,
+    banned_themes: Sequence[str],
+    premise: str,
+    created_at: datetime,
+) -> RequestInterpretation:
+    """Build the submission-time general interpretation (design section 4, D3).
+
+    Deterministic and LLM-free. Emits, in order:
+
+    - **Blocked screening:** exactly one ``(CANNOT_CARRY, SAFETY_POLICY,
+      element=None)`` element plus summaries, and reads NO ``premise`` content
+      whatsoever (CR-1): the blocked general layer is generic by construction,
+      matching the ``request_text=None`` redaction rule for blocked rows.
+    - **Non-blocked:** one ``(SET_ASIDE, SAFETY_POLICY, element=None)`` per
+      advisory flag category (the category is classifier vocabulary and is
+      appended to ``guardian_text`` only, never echoed to the kid); one
+      ``(SET_ASIDE, GUARDIAN_CONTROL)`` per ``banned_themes`` entry the premise
+      trips on a word boundary (the echoed element is the GUARDIAN's own
+      banned-theme string, still run through :func:`sanitize_element`, falling
+      back to ``element=None`` if it somehow fails the floor); and always
+      exactly one ``(BUILT_IN, STORY_FIT, element=None)`` band-expectation
+      element whose text states the band promise (grounded in the age band, not
+      the premise).
+
+    Args:
+        screening: The submission screening outcome (blocked flag + advisory
+            flags); only ``.blocked`` and ``.flags[].category`` are read.
+        band: The request's reading age band.
+        banned_themes: The requesting profile's G2 banned-theme strings, or an
+            empty sequence when no profile exists.
+        premise: The raw request text. Matched (word boundary) against
+            ``banned_themes`` on the NON-blocked path only; never read when
+            ``screening.blocked`` is true (CR-1).
+        created_at: The caller-supplied creation timestamp (endpoint clock).
+
+    Returns:
+        The echo-safe general-layer :class:`RequestInterpretation`.
+    """
+    if screening.blocked:
+        # CR-1: do NOT read `premise` here. A blocked row's general layer is a
+        # single generic safety element with no premise-derived content.
+        blocked_decision = ElementDecision(
+            None,
+            ElementDisposition.CANNOT_CARRY,
+            ReasonCode.SAFETY_POLICY,
+        )
+        return render_interpretation(
+            [blocked_decision], band=band, layer="general", created_at=created_at
+        )
+
+    decisions: list[ElementDecision] = []
+    # Aligned by index with `decisions`: the classifier category to append to
+    # an advisory SAFETY_POLICY element's guardian_text, else None.
+    advisory_categories: list[str | None] = []
+
+    # One SET_ASIDE / SAFETY_POLICY per advisory flag category (dedup, ordered).
+    seen_categories: set[str] = set()
+    for flag in screening.flags:
+        category = flag.category
+        if category in seen_categories:
+            continue
+        seen_categories.add(category)
+        decisions.append(
+            ElementDecision(
+                None, ElementDisposition.SET_ASIDE, ReasonCode.SAFETY_POLICY
+            )
+        )
+        advisory_categories.append(category)
+
+    # One SET_ASIDE / GUARDIAN_CONTROL per banned theme the premise trips.
+    for theme in banned_themes:
+        if not normalized_contains_any(premise, (theme,)):
+            continue
+        # The echoed phrase is the guardian's own banned-theme string (guardian
+        # vocabulary, not premise text); it passes the echo floor trivially, but
+        # fall back to element=None if it somehow does not (e.g. a guardian
+        # theme that itself trips the band floor).
+        safe, _ = sanitize_element(theme, band=band, child_names=_EMPTY_STR_SET)
+        decisions.append(
+            ElementDecision(
+                safe, ElementDisposition.SET_ASIDE, ReasonCode.GUARDIAN_CONTROL
+            )
+        )
+        advisory_categories.append(None)
+
+    # Always exactly one band-expectation element (the band promise, grounded in
+    # the age band via the template catalog, never in the premise).
+    decisions.append(
+        ElementDecision(None, ElementDisposition.BUILT_IN, ReasonCode.STORY_FIT)
+    )
+    advisory_categories.append(None)
+
+    interpretation = render_interpretation(
+        decisions, band=band, layer="general", created_at=created_at
+    )
+    return _inject_advisory_categories(interpretation, advisory_categories)

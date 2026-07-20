@@ -12,6 +12,7 @@ Pure tests: no network, no DB (tests/CLAUDE.md).
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import UTC, datetime
 
 import pytest
@@ -27,11 +28,28 @@ from cyo_adventure.story_requests.interpretation import (
     RequestInterpretation,
     _render_pair,  # pyright: ignore[reportPrivateUsage]
     band_group_for,
+    build_general_interpretation,
     derive_dispositions,
     render_interpretation,
     sanitize_element,
 )
 from cyo_adventure.storybook.models import AgeBand
+
+
+@dataclass(frozen=True)
+class _StubFlag:
+    """A minimal advisory flag exposing just ``category`` (Protocol match)."""
+
+    category: str
+
+
+@dataclass(frozen=True)
+class _StubScreening:
+    """A minimal ScreeningResult stand-in for the general-layer builder."""
+
+    blocked: bool
+    flags: list[_StubFlag]
+
 
 pytestmark = pytest.mark.unit
 
@@ -606,3 +624,169 @@ def test_all_bands_map_to_a_band_group() -> None:
     """Every declared age band resolves to a template band group."""
     for band in _ALL_BANDS:
         assert band_group_for(band) in _GROUP_BAND
+
+
+# ---------------------------------------------------------------------------
+# The general layer (design section 4, D3): build_general_interpretation.
+# ---------------------------------------------------------------------------
+
+
+def test_build_general_blocked_is_single_generic_safety_element() -> None:
+    """A blocked screening yields one CANNOT_CARRY/SAFETY_POLICY element (CR-1).
+
+    The blocked path must not read the premise at all: even a banned theme that
+    literally appears in the premise is neither matched nor echoed, and the
+    unique premise string appears in no field of the output.
+    """
+    premise = "a dragon that breathes zephyrqux fire everywhere"
+    result = build_general_interpretation(
+        screening=_StubScreening(blocked=True, flags=[_StubFlag("violence")]),
+        band=AgeBand.BAND_8_11,
+        banned_themes=["dragon"],
+        premise=premise,
+        created_at=_NOW,
+    )
+    assert result.layer == "general"
+    assert len(result.elements) == 1
+    (element,) = result.elements
+    assert element.disposition is ElementDisposition.CANNOT_CARRY
+    assert element.reason is ReasonCode.SAFETY_POLICY
+    assert element.element is None
+
+    # CR-1: no premise-derived content anywhere, including the banned theme
+    # "dragon" that is present in the premise (the blocked path never reads it).
+    serialized = str(result.model_dump())
+    haystacks = [
+        serialized,
+        result.kid_summary,
+        result.guardian_summary,
+        element.kid_text,
+        element.guardian_text,
+    ]
+    combined = "\n".join(haystacks)
+    assert premise not in combined
+    assert "zephyrqux" not in combined
+    assert "dragon" not in combined
+
+
+def test_build_general_advisory_flags_put_category_in_guardian_text_only() -> None:
+    """Each distinct advisory category yields a SAFETY_POLICY element.
+
+    The classifier category is echoed to the guardian register only, never to
+    kid_text, and is deduplicated (two 'violence' flags collapse to one).
+    """
+    result = build_general_interpretation(
+        screening=_StubScreening(
+            blocked=False,
+            flags=[
+                _StubFlag("violence"),
+                _StubFlag("violence"),
+                _StubFlag("scariness"),
+            ],
+        ),
+        band=AgeBand.BAND_8_11,
+        banned_themes=(),
+        premise="a mostly gentle woodland walk",
+        created_at=_NOW,
+    )
+    safety = [e for e in result.elements if e.reason is ReasonCode.SAFETY_POLICY]
+    assert len(safety) == 2  # deduped by category
+    assert all(e.disposition is ElementDisposition.SET_ASIDE for e in safety)
+    assert all(e.element is None for e in safety)
+
+    guardian_blob = " ".join(e.guardian_text for e in safety)
+    kid_blob = " ".join(e.kid_text for e in safety)
+    assert "violence" in guardian_blob
+    assert "scariness" in guardian_blob
+    assert "violence" not in kid_blob
+    assert "scariness" not in kid_blob
+
+
+def test_build_general_banned_theme_hit_is_guardian_control_echoing_guardian_word() -> (
+    None
+):
+    """A premise that trips a guardian banned theme yields GUARDIAN_CONTROL.
+
+    Only the tripped theme produces an element, and the echoed phrase is the
+    guardian's own banned-theme string (which passes the echo floor trivially).
+    """
+    result = build_general_interpretation(
+        screening=_StubScreening(blocked=False, flags=[]),
+        band=AgeBand.BAND_8_11,
+        banned_themes=["spider", "unrelatedtheme"],
+        premise="a story about a big spider in the garden",
+        created_at=_NOW,
+    )
+    guardian_control = [
+        e for e in result.elements if e.reason is ReasonCode.GUARDIAN_CONTROL
+    ]
+    assert len(guardian_control) == 1
+    assert guardian_control[0].disposition is ElementDisposition.SET_ASIDE
+    assert guardian_control[0].element == "spider"
+
+
+def test_build_general_always_exactly_one_band_expectation_element() -> None:
+    """A clean request yields exactly the single BUILT_IN/STORY_FIT band element."""
+    result = build_general_interpretation(
+        screening=_StubScreening(blocked=False, flags=[]),
+        band=AgeBand.BAND_3_5,
+        banned_themes=(),
+        premise="a friendly bunny hops home",
+        created_at=_NOW,
+    )
+    band_elements = [
+        e
+        for e in result.elements
+        if e.disposition is ElementDisposition.BUILT_IN
+        and e.reason is ReasonCode.STORY_FIT
+    ]
+    assert len(band_elements) == 1
+    assert band_elements[0].element is None
+    # With no advisory flags and no banned-theme hit, it is the only element.
+    assert len(result.elements) == 1
+
+
+def test_general_layer_template_pairs_are_bespoke_in_all_band_groups() -> None:
+    """The four general-layer pairs have bespoke catalog entries per band group.
+
+    Membership in ``_CATALOG`` means ``_render_pair`` uses the bespoke pair, not
+    the generic fallback, for young / middle / teen.
+    """
+    pairs = [
+        (ElementDisposition.CANNOT_CARRY, ReasonCode.SAFETY_POLICY),
+        (ElementDisposition.SET_ASIDE, ReasonCode.SAFETY_POLICY),
+        (ElementDisposition.SET_ASIDE, ReasonCode.GUARDIAN_CONTROL),
+        (ElementDisposition.BUILT_IN, ReasonCode.STORY_FIT),
+    ]
+    groups = [
+        band_group_for(AgeBand.BAND_3_5),
+        band_group_for(AgeBand.BAND_8_11),
+        band_group_for(AgeBand.BAND_16_PLUS),
+    ]
+    for disposition, reason in pairs:
+        for group in groups:
+            assert (disposition, reason, group) in _CATALOG, (
+                disposition,
+                reason,
+                group,
+            )
+
+
+def test_build_general_is_pure_and_repeatable() -> None:
+    """Same inputs render an equal serialized object (no wall-clock read)."""
+    screening = _StubScreening(blocked=False, flags=[_StubFlag("violence")])
+    first = build_general_interpretation(
+        screening=screening,
+        band=AgeBand.BAND_8_11,
+        banned_themes=["spider"],
+        premise="a spider adventure",
+        created_at=_NOW,
+    )
+    second = build_general_interpretation(
+        screening=screening,
+        band=AgeBand.BAND_8_11,
+        banned_themes=["spider"],
+        premise="a spider adventure",
+        created_at=_NOW,
+    )
+    assert first.model_dump() == second.model_dump()

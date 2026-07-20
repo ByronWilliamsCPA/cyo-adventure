@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Request interpretation and expectation-setting (WS-7 D1-D3, K19): a pure
+  interpretation core (echo-safety floor, disposition derivation, and a fixed
+  kid/guardian template catalog) plus a submission-time general layer that is
+  persisted on each story request, reflecting the band promise, guardian
+  banned-theme matches, and advisory safety findings without ever echoing
+  premise-derived content for a blocked request (CR-1).
+- Persistence for the interpretation: a nullable `story_request.interpretation`
+  JSONB column (no backfill) with a daily pg_cron retention purge that nulls
+  each element's premise-derived phrase on declined or blocked rows 30 days
+  after decision, keeping the dispositions, reasons, and template texts.
+
 ## [0.18.0] - 2026-07-19
 
 ### Security

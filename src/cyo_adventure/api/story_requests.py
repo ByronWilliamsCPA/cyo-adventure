@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Literal, cast, get_args
 
 from fastapi import APIRouter, BackgroundTasks
@@ -67,6 +68,7 @@ from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.anchoring import resolve_anchor
 from cyo_adventure.story_requests.authoring_plan import build_authoring_plan
+from cyo_adventure.story_requests.interpretation import build_general_interpretation
 from cyo_adventure.story_requests.screening import screen_request_text
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
@@ -362,12 +364,27 @@ async def create_story_request(
         "blocked": result.blocked,
         "flags": [f.model_dump(mode="json") for f in result.flags],
     }
+    # #CRITICAL: security: the WS-7 general interpretation (K19) is built here,
+    # after screening, and persisted at creation. For a blocked row it reads NO
+    # premise content (CR-1); for a pending row it echoes only band/guardian
+    # vocabulary, never premise text beyond a matched guardian banned-theme
+    # string that has passed the echo floor. `premise` is the raw request text.
+    # #VERIFY: tests/unit/test_interpretation.py (build_general_interpretation),
+    # tests/integration/test_story_requests.py (persisted at creation).
+    interpretation = build_general_interpretation(
+        screening=result,
+        band=AgeBand(profile.age_band),
+        banned_themes=profile.banned_themes or (),
+        premise=body.request_text,
+        created_at=datetime.now(tz=UTC),
+    )
     request = StoryRequest(
         family_id=ctx.principal.family_id,
         profile_id=profile_uuid,
         request_text=body.request_text,
         status=status,
         moderation_flags=flags_payload,
+        interpretation=interpretation.model_dump(mode="json"),
         age_band=profile.age_band,
         initiator_role="child",
         series_id=series_id,
@@ -630,6 +647,20 @@ async def create_authored_story_request(
         series_id=series_id,
         anchor_storybook_id=body.anchor_storybook_id,
     )
+    # #CRITICAL: security: mirror the kid create path (K19) for the authored
+    # endpoint. The row is created in the service, so the general interpretation
+    # is stamped on the returned ORM object before the request's unit-of-work
+    # commits. Blocked rows read no premise content (CR-1); `banned_themes` come
+    # from the target profile when one exists (else empty); `premise` is the raw
+    # request text; `band` is the author's confirmed band.
+    # #VERIFY: tests/integration/test_story_requests.py (authored persistence).
+    request.interpretation = build_general_interpretation(
+        screening=result,
+        band=body.age_band,
+        banned_themes=(profile.banned_themes or ()) if profile is not None else (),
+        premise=body.request_text,
+        created_at=datetime.now(tz=UTC),
+    ).model_dump(mode="json")
     return StoryRequestAuthoredCreatedView(
         id=str(request.id),
         status=cast("StoryRequestStatus", request.status),

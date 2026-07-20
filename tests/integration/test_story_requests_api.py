@@ -602,3 +602,68 @@ async def test_create_stamps_band_from_profile_and_child_role(
         assert profile is not None
         assert row.age_band == profile.age_band
         assert row.initiator_role == "child"
+
+
+async def test_create_persists_general_interpretation_for_pending_row(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """WS-7 D3: a pending row carries the general interpretation at creation."""
+    request_id = await _create_pending_request(
+        client, seed, request_text="a brave fox explores a friendly forest"
+    )
+    async with sessions() as session:
+        row = await session.get(StoryRequest, uuid.UUID(request_id))
+        assert row is not None
+        assert row.status == "pending"
+        interpretation = row.interpretation
+        assert isinstance(interpretation, dict)
+        assert interpretation["layer"] == "general"
+        elements = interpretation["elements"]
+        assert isinstance(elements, list)
+        # A clean request has exactly the single band-expectation element.
+        assert any(
+            isinstance(e, dict)
+            and e["disposition"] == "built_in"
+            and e["reason"] == "story_fit"
+            for e in elements
+        )
+
+
+async def test_create_blocked_interpretation_holds_no_premise_text(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """WS-7 D3 / CR-1: a blocked row's stored interpretation has no premise text.
+
+    'Reader A' is the seeded child's real name, so the request is PII-blocked;
+    the persisted interpretation must be the single generic safety element with
+    no premise-derived content of any kind.
+    """
+    premise = "a story about Reader A the zephyrqux dragon"
+    res = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": premise},
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 201, res.text
+    assert res.json()["status"] == "blocked"
+    request_id = res.json()["id"]
+
+    async with sessions() as session:
+        row = await session.get(StoryRequest, uuid.UUID(request_id))
+        assert row is not None
+        assert row.status == "blocked"
+        interpretation = row.interpretation
+        assert isinstance(interpretation, dict)
+        elements = interpretation["elements"]
+        assert isinstance(elements, list)
+        assert len(elements) == 1
+        (element,) = elements
+        assert isinstance(element, dict)
+        assert element["disposition"] == "cannot_carry"
+        assert element["reason"] == "safety_policy"
+        assert element["element"] is None
+        # CR-1: no premise-derived content anywhere in the persisted object.
+        serialized = str(interpretation)
+        assert "Reader A" not in serialized
+        assert "zephyrqux" not in serialized
+        assert "dragon" not in serialized
