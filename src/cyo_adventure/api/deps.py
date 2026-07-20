@@ -22,7 +22,7 @@ from enum import StrEnum
 from typing import TYPE_CHECKING, Annotated, Any
 
 import jwt
-from fastapi import Depends, Header
+from fastapi import Depends, Header, Request
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import select
 
@@ -755,13 +755,20 @@ class OnboardingIdentity:
         subject: The verified OIDC subject (the sole identity key).
         email: The optional email contact claim (may be an Apple private-relay
             address), or ``None``. Never an identity key.
+        client_ip: The requesting client's observed address, or ``None``.
+            Carried here (rather than as a separate ``Request`` parameter on
+            ``onboarding.onboard``) so that route handler stays within this
+            repo's function argument-count budget (PLR0913); Phase 2's
+            consent record is the sole consumer.
     """
 
     subject: str
     email: str | None
+    client_ip: str | None = None
 
 
 async def require_onboarding_identity(
+    request: Request,
     authorization: Annotated[str | None, Header()] = None,
 ) -> OnboardingIdentity:
     """Resolve a verified guardian identity for first-login provisioning.
@@ -773,10 +780,13 @@ async def require_onboarding_identity(
     unverified or forged token is rejected exactly as elsewhere.
 
     Args:
+        request: The inbound request, read only for its observed client
+            address (Phase 2 consent record; see ``OnboardingIdentity.client_ip``).
         authorization: The ``Authorization`` header.
 
     Returns:
-        OnboardingIdentity: The verified subject and optional email claim.
+        OnboardingIdentity: The verified subject, optional email claim, and
+        observed client address.
 
     Raises:
         AuthenticationError: If the token is missing, malformed, or fails OIDC
@@ -785,6 +795,11 @@ async def require_onboarding_identity(
             session is a reading credential, never an account-creation one, so
             it may not provision a guardian family (-> 403).
     """
+    # #ASSUME: security: reflects the real client, not the trusted reverse
+    # proxy's own address, because uvicorn's forwarded_allow_ips already
+    # trusts X-Forwarded-For from that proxy (see SECURITY.md's HTTPS
+    # redirect note for the same trust boundary this relies on).
+    client_ip = request.client.host if request.client is not None else None
     token = _extract_subject(authorization)
     # #CRITICAL: security: a child session token or a device grant must never
     # provision a guardian Family+User. Routing on the UNVERIFIED audience is
@@ -812,9 +827,9 @@ async def require_onboarding_identity(
     # #VERIFY: the ConfigurationError guard at import time blocks a non-local
     # process without OIDC config from ever reaching the local branch.
     if settings.environment == "local":
-        return OnboardingIdentity(subject=token, email=None)
+        return OnboardingIdentity(subject=token, email=None, client_ip=client_ip)
     subject, email = await _verify_oidc_identity(token)
-    return OnboardingIdentity(subject=subject, email=email)
+    return OnboardingIdentity(subject=subject, email=email, client_ip=client_ip)
 
 
 OnboardingIdentityDep = Annotated[

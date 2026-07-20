@@ -39,11 +39,16 @@ class _FakeSavepoint:
 @pytest.mark.asyncio
 async def test_onboarding_race_returns_winner_not_500() -> None:
     """A lost first-login race returns the winner's row with a 200, never a 500."""
+    # status="awaiting_approval" mirrors what a real _provision_guardian
+    # insert sets explicitly (the self-signup approval track); this test
+    # constructs the winner directly rather than through a real session
+    # flush, so nothing else would populate it.
     winner = User(
         id=uuid.uuid4(),
         family_id=uuid.uuid4(),
         role="guardian",
         authn_subject="raced-subject",
+        status="awaiting_approval",
     )
 
     unique_violation = IntegrityError(

@@ -128,12 +128,22 @@ _PIPELINE_ENTITY_TYPE_VALUES = (
     "'child_profile'"
 )
 
-# The three admin-user lifecycle states (WS-J admin user management): a
-# guardian/admin created via the JIT onboarding path or the seed script is
-# always 'active'; a row admin-created ahead of first sign-in starts
-# 'pending' (see api/onboarding.py's email-match bind); 'deactivated' blocks
+# The four admin-user lifecycle states (WS-J admin user management, plus the
+# self-signup approval track added alongside Phase 2): a guardian/admin
+# created via the seed script is always 'active'; a row admin-created ahead
+# of first sign-in starts 'pending' (see api/onboarding.py's email-match
+# bind) and is trusted immediately once bound, since an admin already vetted
+# it by creating the invite; an UNINVITED guardian's own first-login JIT
+# provisioning (api/onboarding.py::_provision_guardian) starts
+# 'awaiting_approval' instead of 'active' -- a deliberately parallel track
+# from the invite flow, never sharing its 'pending' status value, so the two
+# have no shared state to collide on (in particular, api/admin_users.py's
+# duplicate-pending-invite-by-email check has nothing to do with this state).
+# An admin approves ('awaiting_approval' -> 'active') or denies
+# ('awaiting_approval' -> 'deactivated') via the existing
+# PATCH /admin/users/{id} status transition. 'deactivated' blocks
 # authentication (api/deps.py::require_principal) without deleting the row.
-_USER_STATUS_VALUES = "'pending', 'active', 'deactivated'"
+_USER_STATUS_VALUES = "'pending', 'active', 'deactivated', 'awaiting_approval'"
 
 
 class Family(Base):
@@ -254,6 +264,21 @@ class User(Base):
             "role <> 'admin' OR is_admin = true", name="ck_user_admin_role_flag"
         ),
         CheckConstraint(f"status IN ({_USER_STATUS_VALUES})", name="ck_user_status"),
+        # Phase 2 / ADR-018 D1 (VPC): the four consent columns are set or
+        # cleared together; there is no legitimate state with a signer name
+        # but no timestamp, or vice versa. Mirrors
+        # ck_family_connection_viewer_consent_pairing's pattern.
+        # api/onboarding.py::_record_consent is the sole writer and already
+        # only ever sets all four together or none; this CHECK is the at-rest
+        # backstop for any other write path.
+        # #VERIFY: tests/integration/test_onboarding_api.py::
+        # test_onboarding_records_consent_once_and_is_idempotent.
+        CheckConstraint(
+            "(consent_accepted_at IS NULL) = (consent_policy_version IS NULL) "
+            "AND (consent_accepted_at IS NULL) = (consent_signer_name IS NULL) "
+            "AND (consent_accepted_at IS NULL) = (consent_ip IS NULL)",
+            name="ck_user_consent_pairing",
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
@@ -317,6 +342,30 @@ class User(Base):
     status: Mapped[str] = mapped_column(
         String(16), default="active", server_default=sa_text("'active'")
     )
+    # #CRITICAL: security: Phase 2 / ADR-018 D1 verifiable-parental-consent
+    # record. A guardian's typed full-legal-name attestation counts as the
+    # FTC's "sign and submit electronically" method (312.5(b)(2)(i)) layered
+    # on the OAuth login that already authenticates them; consent_ip and
+    # consent_accepted_at are the corroborating evidence a controller must be
+    # able to produce on request. Written once by
+    # api/onboarding.py::_record_consent and never overwritten afterward (a
+    # future re-consent-on-policy-change flow would be a distinct, explicit
+    # action, not an implicit overwrite of an existing record).
+    # #VERIFY: tests/integration/test_onboarding_api.py::
+    # test_onboarding_records_consent_once_and_is_idempotent.
+    consent_accepted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    consent_policy_version: Mapped[str | None] = mapped_column(
+        String(32), default=None
+    )
+    consent_signer_name: Mapped[str | None] = mapped_column(String(200), default=None)
+    # #ASSUME: data-integrity: stored as the request's observed
+    # request.client.host, which reflects the real client address (not the
+    # trusted reverse proxy's) because uvicorn's forwarded_allow_ips already
+    # trusts X-Forwarded-For from that proxy (see SECURITY.md's HTTPS
+    # redirect note for the same trust boundary). A raw string, not a
+    # Postgres INET column: this is an evidentiary record, never queried or
+    # joined on, so INET's validation/operator features add nothing here.
+    consent_ip: Mapped[str | None] = mapped_column(String(64), default=None)
 
 
 class ChildProfile(Base):
@@ -399,6 +448,20 @@ class ChildProfile(Base):
     # #VERIFY: tests/integration/test_admin_profiles_api.py::
     # test_deactivated_profile_excluded_from_listing_and_session_mint.
     deactivated_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    # GDPR Article 18 (restriction of processing) / Article 21 (objection):
+    # deliberately distinct from deactivated_at. Deactivation is the login/
+    # session-level soft-remove above; this is the narrower "keep the data,
+    # stop actively processing it" state Article 18 describes -- a restricted
+    # profile still reads its existing library and login normally, but
+    # api/story_requests.py refuses to submit a NEW request for it (the
+    # concrete point where this profile's data would newly reach a
+    # third-party LLM/classifier provider). Set/cleared only via
+    # api/profiles.py::update_profile (guardian-only).
+    # #VERIFY: tests/integration/test_profiles.py::
+    # test_restrict_processing_blocks_new_story_requests.
+    processing_restricted_at: Mapped[datetime | None] = mapped_column(
+        _TS, default=None
+    )
 
 
 class FamilyConnection(Base):

@@ -57,6 +57,35 @@ _LANTERN = (
 )
 
 
+def _consented(display_name: str) -> dict[str, object]:
+    """Kwargs marking a fixture guardian as having already completed VPC consent.
+
+    Every guardian the fixtures below construct goes straight into the
+    database via the ORM, bypassing ``POST /onboarding`` entirely -- so
+    without this, every seeded guardian would read back with
+    ``consent_accepted_at IS NULL`` and trip ``api/profiles.py::
+    _require_consent`` (Phase 2 / ADR-018 D1) the first time a test calls
+    ``POST /api/v1/profiles``. This represents "a guardian who already
+    completed onboarding," the realistic baseline for nearly every test
+    scenario; a test that specifically exercises the consent gate itself
+    constructs its own unconsented guardian instead (see
+    ``test_profiles.py::test_create_profile_requires_recorded_consent``).
+
+    Args:
+        display_name: A human-readable signer name distinguishing which
+            fixture guardian this is, for debugging only.
+
+    Returns:
+        dict[str, object]: The four ``User.consent_*`` kwargs.
+    """
+    return {
+        "consent_accepted_at": datetime.now(UTC),
+        "consent_policy_version": "test-fixture",
+        "consent_signer_name": display_name,
+        "consent_ip": "127.0.0.1",
+    }
+
+
 @dataclass(frozen=True)
 class Seed:
     """Identifiers and tokens for the seeded fixture data.
@@ -273,12 +302,18 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
         session.add_all(
             [
                 admin_a,
-                User(family_id=fam_a.id, role="guardian", authn_subject="guardian-a"),
+                User(
+                    family_id=fam_a.id,
+                    role="guardian",
+                    authn_subject="guardian-a",
+                    **_consented("Guardian A"),
+                ),
                 User(
                     family_id=fam_a.id,
                     role="guardian",
                     is_admin=True,
                     authn_subject="dual-a",
+                    **_consented("Dual-Role Guardian A"),
                 ),
                 User(
                     family_id=fam_a.id,
@@ -292,7 +327,12 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
                     authn_subject="child-b",
                     child_profile_id=profile_b.id,
                 ),
-                User(family_id=fam_b.id, role="guardian", authn_subject="guardian-b"),
+                User(
+                    family_id=fam_b.id,
+                    role="guardian",
+                    authn_subject="guardian-b",
+                    **_consented("Guardian B"),
+                ),
                 User(
                     family_id=fam_a.id,
                     role="child",
@@ -419,7 +459,12 @@ async def stranger(sessions: async_sessionmaker[AsyncSession]) -> Stranger:
 
         session.add_all(
             [
-                User(family_id=fam_c.id, role="guardian", authn_subject="guardian-c"),
+                User(
+                    family_id=fam_c.id,
+                    role="guardian",
+                    authn_subject="guardian-c",
+                    **_consented("Guardian C"),
+                ),
                 User(
                     family_id=fam_c.id,
                     role="child",

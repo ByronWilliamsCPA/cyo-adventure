@@ -69,6 +69,44 @@ async def test_child_creates_own_profile_request(
     assert res.json()["status"] == "pending"
 
 
+async def test_create_story_request_rejects_restricted_profile(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A profile under Article 18/21 restriction cannot submit a new request (400).
+
+    Restricting is done through the real guardian-facing endpoint
+    (PATCH /api/v1/profiles/{id}), not a direct DB write, so this exercises
+    the same path a guardian would actually use.
+    """
+    restrict = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"processing_restricted": True},
+        headers=auth(seed.guardian_token),
+    )
+    assert restrict.status_code == 200, restrict.text
+
+    res = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a brave fox"},
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 400, res.text
+
+    unrestrict = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"processing_restricted": False},
+        headers=auth(seed.guardian_token),
+    )
+    assert unrestrict.status_code == 200, unrestrict.text
+
+    retry = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a brave fox"},
+        headers=auth(seed.guardian_token),
+    )
+    assert retry.status_code == 201, retry.text
+
+
 async def test_create_rejects_cross_family_profile(
     client: AsyncClient, seed: Seed
 ) -> None:

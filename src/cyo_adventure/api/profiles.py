@@ -11,6 +11,7 @@ guardian management page need.
 from __future__ import annotations
 
 import asyncio
+from datetime import UTC, datetime
 
 from fastapi import APIRouter
 from sqlalchemy import select
@@ -33,10 +34,11 @@ from cyo_adventure.api.schemas import (
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
+    BusinessLogicError,
     ResourceNotFoundError,
 )
 from cyo_adventure.core.pin import hash_pin
-from cyo_adventure.db.models import ChildProfile
+from cyo_adventure.db.models import ChildProfile, User
 from cyo_adventure.storybook.models import AgeBand
 
 router = APIRouter(
@@ -75,6 +77,7 @@ def _view(row: ChildProfile) -> ProfileView:
         banned_themes=list(row.banned_themes or []),
         request_auto_approve=row.request_auto_approve,
         monthly_request_envelope=row.monthly_request_envelope,
+        processing_restricted=row.processing_restricted_at is not None,
         created_at=row.created_at,
     )
 
@@ -138,6 +141,37 @@ def _require_guardian(principal: Principal) -> None:
         raise AuthorizationError(msg)
 
 
+async def _require_consent(ctx: Context) -> None:
+    """Reject profile creation until the calling guardian has recorded VPC consent.
+
+    Phase 2 / ADR-018 D1: the concrete "block child-data collection until a
+    consent record exists" gate the remediation plan calls for.
+    ``api/onboarding.py::_record_consent`` is the sole writer of
+    ``User.consent_accepted_at``; this is the sole reader that turns its
+    absence into a hard stop.
+
+    Args:
+        ctx: The request context (principal + unit-of-work session).
+
+    Raises:
+        BusinessLogicError: If the calling guardian's own ``User`` row has no
+            recorded consent (400).
+    """
+    # #CRITICAL: security: a guardian who signed in before completing the
+    # consent step (or whose client skipped it) must not be able to create a
+    # child profile by calling this endpoint directly; there is no other
+    # enforcement point for the VPC requirement.
+    # #VERIFY: tests/integration/test_profiles.py::
+    # test_create_profile_requires_recorded_consent.
+    user = await ctx.session.get(User, ctx.principal.user_id)
+    if user is None or user.consent_accepted_at is None:
+        msg = (
+            "verifiable parental consent must be recorded (see POST "
+            "/onboarding) before creating a child profile"
+        )
+        raise BusinessLogicError(msg, rule="vpc_required")
+
+
 @router.get("/profiles")
 async def list_profiles(ctx: Context) -> ProfileListView:
     """List the child profiles the calling principal may act on.
@@ -192,7 +226,7 @@ async def list_profiles(ctx: Context) -> ProfileListView:
     return ProfileListView(profiles=[_view(row) for row in rows.all()])
 
 
-@router.post("/profiles", status_code=201)
+@router.post("/profiles", status_code=201, responses=error_responses(400))
 async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
     """Create a child profile in the calling guardian's family.
 
@@ -205,8 +239,11 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
 
     Raises:
         AuthorizationError: If the caller is not a guardian.
+        BusinessLogicError: If the calling guardian has no recorded VPC
+            consent (Phase 2 / ADR-018 D1).
     """
     _require_guardian(ctx.principal)
+    await _require_consent(ctx)
     # #ASSUME: data integrity: family_id comes from the verified principal,
     # never from the request body (extra=forbid also rejects it there).
     # #VERIFY: test_profiles.py::test_create_rejects_unknown_fields.
@@ -311,6 +348,14 @@ async def update_profile(
             row.pin_hash = await asyncio.to_thread(hash_pin, body.pin)
         else:
             row.pin_hash = None
+    # GDPR Article 18/21: non-null-applies (see ProfileUpdateBody). True sets
+    # processing_restricted_at; False clears it. Idempotent either way (no
+    # error re-setting an already-restricted profile, mirroring how
+    # request_auto_approve's toggle behaves).
+    if body.processing_restricted is not None:
+        row.processing_restricted_at = (
+            datetime.now(UTC) if body.processing_restricted else None
+        )
     _apply_g2_content_controls(row, body)
     await ctx.session.flush()
     return _view(row)
