@@ -39,6 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   specific child's cover art indefinitely without authentication. No R2
   object migration was needed (the key never changes); the stored
   `cover_image_url` column is now audit-only.
+- Admin cross-family reads of child-linked data are now audit-logged: `GET
+  /api/v1/admin/profiles` writes one `profile_viewed` `pipeline_event` per
+  call (never one per row returned), queryable via `GET
+  /api/v1/admin/audit?kind=profile_viewed` (GDPR Article 30 accountability).
 
 ### Documentation
 

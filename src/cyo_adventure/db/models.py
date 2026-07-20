@@ -118,13 +118,14 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated', "
     "'kid_flagged', 'flag_resolved', "
     "'user_managed', 'family_managed', 'family_connection_changed', "
-    "'node_edited'"
+    "'node_edited', 'profile_viewed'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
     "'story_request', 'generation_job', 'storybook', 'storybook_version', "
     "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
-    "'moderation_setting', 'kid_flag', 'user', 'family', 'family_connection'"
+    "'moderation_setting', 'kid_flag', 'user', 'family', 'family_connection', "
+    "'child_profile'"
 )
 
 # The three admin-user lifecycle states (WS-J admin user management): a

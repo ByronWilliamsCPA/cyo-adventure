@@ -418,9 +418,13 @@ considered verified rather than just implemented.**
 
 ### Phase 8: Ongoing compliance operations (start once Phases 1-7 are substantially done)
 
-- **8a. Log admin views of child-linked data**, not just admin mutations (currently
-  `admin_profiles.py`'s GET paths write no audit event, so an admin browsing a specific child's
-  profile leaves no trace, unlike write actions elsewhere).
+- **8a. DONE.** `GET /api/v1/admin/profiles` (`admin_profiles.py::list_admin_profiles`) now
+  writes one `profile_viewed` `pipeline_event` per call (not one per row returned), carrying the
+  `family_id` filter used (or `None`/`"all"` for an unfiltered cross-family listing) and the
+  count of profiles returned. This is the only cross-tenant read anywhere in the admin console
+  (every other admin GET is same-family or non-child data), and the only READ this audit log
+  covers at all: every other `EventType` member logs a mutation. Queryable via the existing
+  `GET /api/v1/admin/audit?kind=profile_viewed`; no new read surface was needed.
 - **8b. Complete ADR-016's guardian-facing consent UI** for cross-family recommendation
   sharing, so the consent columns already in the schema have an actual guardian-operated
   control in front of them.
@@ -678,7 +682,7 @@ Once the artifact-owner and counsel-timing decisions land and Phases 1-6 are sub
   Phase 7 (DPIA, Records of Processing, DPO assessment, ADR-018 D1-D4 closeout)
 
 Ongoing, once the above is stable:
-  Phase 8 (admin-audit logging, ADR-016 consent UI, annual review cadence)
+  Phase 8 (8a DONE; ADR-016 consent UI, annual review cadence remain)
 
 Once UK-user status is confirmed (independently of, but using the same fact-finding as,
 Pressure Point P-1), and Phases 2/3/7 have produced their artifacts:

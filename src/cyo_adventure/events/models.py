@@ -68,6 +68,15 @@ class EventType(StrEnum):
     # findings. The payload carries only the node id (never the edited prose)
     # per spec D3; see api/node_edit.py.
     NODE_EDITED = "node_edited"
+    # Phase 8a (GDPR Article 30 accountability): the only READ this
+    # taxonomy audits, deliberately. Every other member above logs a
+    # mutation; this one logs an admin's cross-family read of child-linked
+    # data (api/admin_profiles.py::list_admin_profiles), since that read
+    # crosses a tenant boundary no other GET in this API does (every other
+    # admin GET is either same-family or non-child data). One event per
+    # call, not one per row returned; see events/writer.py's payload
+    # allowlist for this type.
+    PROFILE_VIEWED = "profile_viewed"
 
 
 SYSTEM_ACTOR_ROLE = "system"
