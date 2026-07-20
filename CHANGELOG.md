@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Testing: `tests/integration/conftest.py` creates the Postgres schema once
+  per test session (via a throwaway sync `psycopg` engine, avoiding any
+  asyncio event-loop entanglement) instead of once per test. Each test now
+  resets its data with a single multi-table `TRUNCATE ... RESTART IDENTITY
+  CASCADE` instead of a `drop_all`/`create_all` DDL cycle, which is
+  materially cheaper since it never touches table/constraint/index
+  definitions. The `engine` fixture is otherwise unchanged (still a real
+  per-test `AsyncEngine` with `NullPool`), so the tests and `scripts/
+  seed_dev_data.py` call sites that bind sessions directly to `engine` need
+  no changes. Verified locally: all 827 integration tests pass unchanged.
+
 ## [0.18.0] - 2026-07-19
 
 ### Security

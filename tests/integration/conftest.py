@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import insert
+from sqlalchemy import create_engine, insert, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
@@ -83,7 +83,7 @@ class Seed:
 
 @pytest.fixture(scope="session")
 def _pg_url() -> Iterator[str]:
-    """Start a Postgres 16 container for the test session.
+    """Start a Postgres 16 container and create its schema once per session.
 
     Skips the integration suite when no Docker daemon is reachable so a developer
     without Docker is not blocked; CI runners provide Docker for testcontainers.
@@ -107,6 +107,31 @@ def _pg_url() -> Iterator[str]:
             )
         pytest.skip(f"Docker/Postgres testcontainer unavailable: {probe_error}")
     try:
+        # Schema DDL (drop_all/create_all) is real round-trip work against
+        # Postgres; doing it once per session here, instead of once per test
+        # in the `engine` fixture below, is the whole point of this split. A
+        # throwaway SYNC engine (psycopg -- already a dependency for
+        # testcontainers' own readiness checks) keeps this from entangling
+        # with any test's asyncio event loop: it runs to completion and is
+        # disposed before any test starts, so the per-test `engine` fixture
+        # still gets its own fresh asyncpg connection (NullPool) tied to
+        # that test's own loop, exactly as before.
+        sync_engine = create_engine(container.get_connection_url(driver="psycopg"))
+        try:
+            Base.metadata.drop_all(sync_engine)
+            Base.metadata.create_all(sync_engine)
+            with sync_engine.begin() as conn:
+                # See the `engine` fixture: create_all builds tables only,
+                # with no baseline data, so catalog-origin request tests
+                # would otherwise fail their family_id FK insert. Reseeded
+                # per-test there (after each TRUNCATE), not just here.
+                conn.execute(
+                    insert(Family.__table__).values(
+                        id=CATALOG_FAMILY_ID, name=CATALOG_FAMILY_NAME
+                    )
+                )
+        finally:
+            sync_engine.dispose()
         yield container.get_connection_url()
     finally:
         container.stop()
@@ -128,7 +153,19 @@ def pg_url(_pg_url: str) -> str:
 
 @pytest_asyncio.fixture
 async def engine(_pg_url: str) -> AsyncIterator[AsyncEngine]:
-    """Provide an async engine with a freshly-created schema per test.
+    """Provide an async engine with all tables truncated for test isolation.
+
+    The schema (tables/constraints/indexes) is created once per session by
+    `_pg_url`; each test only needs its DATA reset, not the structure rebuilt
+    from scratch. A single multi-table ``TRUNCATE ... CASCADE`` resets every
+    table atomically regardless of listing order (unlike per-table DELETE,
+    which needs FK-respecting order), and is materially cheaper than a
+    drop_all/create_all DDL cycle since it never touches table/constraint/
+    index definitions.
+
+    Table names are interpolated directly (not bound as SQL parameters)
+    because they come from this project's own ``Base.metadata``, never from
+    external input; TRUNCATE also does not support parameterized identifiers.
 
     ``NullPool`` ensures every operation uses a fresh connection bound to the
     current test's event loop, which keeps asyncpg from reusing a connection
@@ -136,13 +173,18 @@ async def engine(_pg_url: str) -> AsyncIterator[AsyncEngine]:
     """
     eng = create_async_engine(_pg_url, poolclass=NullPool)
     try:
+        table_names = ", ".join(
+            f'"{table.name}"' for table in Base.metadata.sorted_tables
+        )
         async with eng.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-            await conn.run_sync(Base.metadata.create_all)
-            # Seed the well-known system catalog family (#173). Production gets
-            # this row from supabase/migrations; create_all builds tables only,
-            # with no baseline data, so catalog-origin request tests would
-            # otherwise fail their family_id FK insert.
+            await conn.execute(
+                text(f"TRUNCATE TABLE {table_names} RESTART IDENTITY CASCADE")
+            )
+            # Seed the well-known system catalog family (#173) that a
+            # TRUNCATE just removed. Production gets this row from
+            # supabase/migrations; nothing else provides baseline data, so
+            # catalog-origin request tests would otherwise fail their
+            # family_id FK insert.
             await conn.execute(
                 insert(Family.__table__).values(
                     id=CATALOG_FAMILY_ID, name=CATALOG_FAMILY_NAME
