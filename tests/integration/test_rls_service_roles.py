@@ -2,7 +2,7 @@
 
 Proves the landmine this ADR closes stays closed: a connection authenticated
 as ``cyo_api`` or ``cyo_worker`` (the two roles created by
-``20260720170000_create_service_roles.sql``) can perform the full pipeline
+``20260720170100_create_service_roles.sql``) can perform the full pipeline
 CRUD chain against every RLS-enabled table, while a connection with no
 ADR-021 grant (``anon``/``authenticated``, the Supabase/PostgREST roles) is
 denied. It also enforces a coverage invariant: every table where
@@ -27,7 +27,6 @@ import secrets
 import uuid
 from typing import TYPE_CHECKING
 
-import asyncpg
 import pytest
 from sqlalchemy import make_url, text
 from sqlalchemy.exc import DBAPIError
@@ -58,7 +57,7 @@ if TYPE_CHECKING:
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
 # The two ADR-021 service roles (created NOLOGIN by
-# 20260720170000_create_service_roles.sql; this test flips them to LOGIN with
+# 20260720170100_create_service_roles.sql; this test flips them to LOGIN with
 # a process-local password so it can connect directly as each one).
 _SERVICE_ROLES = ("cyo_api", "cyo_worker")
 
@@ -74,7 +73,7 @@ _UNPRIVILEGED_ROLES = ("anon", "authenticated")
 # queries pg_tables directly rather than trusting this list, so a future
 # migration that enables RLS on a new table without a matching service_rw
 # policy still fails the sweep even if this constant is never updated).
-_MIN_EXPECTED_RLS_TABLE_COUNT = 19
+_MIN_EXPECTED_RLS_TABLE_COUNT = 22
 
 
 async def _create_role_if_absent(conn: AsyncConnection, role: str) -> None:
@@ -108,14 +107,13 @@ async def _grant_login_password(
             ``ALTER ROLE ... PASSWORD`` does not accept a bind parameter in
             that position (it is a string literal in the grammar, not an
             expression), so parameterizing it is not an option here.
-
+    """
     # #ASSUME: security: this is a throwaway password on a throwaway
     # role/database that lives only inside the session-scoped testcontainers
     # Postgres instance, destroyed when the container stops; it is never
     # written to disk, logged, or reused across roles.
     # #VERIFY: passwords are generated fresh per role per test run via
     # secrets.token_urlsafe (cryptographically random), never a fixed literal.
-    """
     await conn.execute(text(f"ALTER ROLE \"{role}\" LOGIN PASSWORD '{password}'"))
 
 
@@ -184,11 +182,10 @@ async def _assert_role_denied(engine: AsyncEngine, table: str) -> None:
 
     Accepts either outcome named in the ADR-021 test contract: this role has
     no GRANT at all here, so the expected outcome is a hard permission-denied
-    error (SQLSTATE 42501, asyncpg's ``InsufficientPrivilegeError``); a query
-    that somehow succeeds with zero rows is also accepted (RLS silently
-    filtering every row is likewise "denied" in effect, and this test should
-    not fail if a future migration adds a narrower read grant instead of none
-    at all).
+    error (SQLSTATE 42501, ``insufficient_privilege``); a query that somehow
+    succeeds with zero rows is also accepted (RLS silently filtering every
+    row is likewise "denied" in effect, and this test should not fail if a
+    future migration adds a narrower read grant instead of none at all).
 
     Args:
         engine: An engine authenticated as the role under test.
@@ -211,9 +208,19 @@ async def _assert_role_denied(engine: AsyncEngine, table: str) -> None:
         await engine.dispose()
 
     if denied_with is not None:
-        assert isinstance(
-            denied_with.orig, asyncpg.exceptions.InsufficientPrivilegeError
-        ), (
+        # #ASSUME: external resources: SQLAlchemy's asyncpg dialect never
+        # re-raises the raw asyncpg exception class; it wraps every driver
+        # error in its own ``sqlalchemy.exc`` shim (chained via ``raise ...
+        # from``), so ``.orig`` is that shim, not
+        # ``asyncpg.exceptions.InsufficientPrivilegeError``. An
+        # ``isinstance`` check against the asyncpg class is therefore always
+        # False and silently passes regardless of the actual failure mode.
+        # #VERIFY: check the wrapped exception's SQLSTATE instead
+        # (asyncpg exposes ``sqlstate``; ``.orig`` is typed ``BaseException |
+        # None`` in the SQLAlchemy stubs, so ``getattr`` rather than direct
+        # attribute access, matching db/integrity.py's own SQLSTATE check).
+        sqlstate = getattr(denied_with.orig, "sqlstate", None)
+        assert sqlstate == "42501", (  # 42501 = insufficient_privilege
             f"expected insufficient_privilege denying access to {table!r}, "
             f"got {denied_with.orig!r} instead"
         )
@@ -385,14 +392,18 @@ async def test_service_roles_full_pipeline_crud_under_rls(pg_url: str) -> None:
 
 
 async def test_unprivileged_roles_denied_on_sensitive_tables(pg_url: str) -> None:
-    """anon and authenticated (no ADR-021 grant) cannot read user/child_profile.
+    """anon and authenticated (no ADR-021 grant) cannot read any RLS-enabled table.
 
     These are the Supabase/PostgREST roles the RLS policies deliberately
-    exclude (``20260720170100_add_service_role_policies.sql``'s module
+    exclude (``20260720170200_add_service_role_policies.sql``'s module
     docstring: "anon and authenticated get NO policies"). This test creates
     them locally (the testcontainers image has no Supabase platform roles)
-    and proves the deny-by-default posture actually holds against the two
-    most sensitive tables in the schema.
+    and proves the deny-by-default posture holds across every RLS-enabled
+    table in the schema, not just a hand-picked sample: the table list is
+    discovered the same way the coverage-invariant test discovers it
+    (``_rowsecurity_tables``, a live ``pg_tables`` query) rather than
+    hardcoded, so a policy that accidentally attaches ``anon`` or
+    ``authenticated`` to some other table is still caught here.
 
     Args:
         pg_url: Public alias for the session-scoped testcontainers Postgres
@@ -409,18 +420,16 @@ async def test_unprivileged_roles_denied_on_sensitive_tables(pg_url: str) -> Non
             for role in _UNPRIVILEGED_ROLES:
                 await _create_role_if_absent(conn, role)
                 await _grant_login_password(conn, role, passwords[role])
+            tables = await _rowsecurity_tables(conn)
     finally:
         await admin_engine.dispose()
 
     for role in _UNPRIVILEGED_ROLES:
-        engine = create_async_engine(
-            _role_url(mig_url, role, passwords[role]), poolclass=NullPool
-        )
-        await _assert_role_denied(engine, "user")
-        engine = create_async_engine(
-            _role_url(mig_url, role, passwords[role]), poolclass=NullPool
-        )
-        await _assert_role_denied(engine, "child_profile")
+        for table in tables:
+            engine = create_async_engine(
+                _role_url(mig_url, role, passwords[role]), poolclass=NullPool
+            )
+            await _assert_role_denied(engine, table)
 
 
 async def test_every_rls_table_grants_both_service_roles(pg_url: str) -> None:
@@ -431,8 +440,8 @@ async def test_every_rls_table_grants_both_service_roles(pg_url: str) -> None:
     ``has_table_privilege`` confirming SELECT/INSERT/UPDATE/DELETE for both
     roles (the GRANT-layer allow; a policy with no underlying GRANT is inert).
     A future migration that enables RLS on a new table without updating
-    ``20260720170000_create_service_roles.sql`` /
-    ``20260720170100_add_service_role_policies.sql`` fails this test, which is
+    ``20260720170100_create_service_roles.sql`` /
+    ``20260720170200_add_service_role_policies.sql`` fails this test, which is
     the point: the checklist in the runbook's ADR-021 cutover section exists
     because this test would otherwise be the only thing that notices.
 
