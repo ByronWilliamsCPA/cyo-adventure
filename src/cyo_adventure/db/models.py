@@ -339,8 +339,10 @@ class User(Base):
     # #VERIFY: tests/integration/test_admin_users_api.py::
     # test_deactivated_guardian_cannot_authenticate,
     # test_pending_invite_cannot_authenticate.
+    # String(20): 'awaiting_approval' (17 chars) is the longest value in
+    # _USER_STATUS_VALUES; String(16) truncated it (StringDataRightTruncationError).
     status: Mapped[str] = mapped_column(
-        String(16), default="active", server_default=sa_text("'active'")
+        String(20), default="active", server_default=sa_text("'active'")
     )
     # #CRITICAL: security: Phase 2 / ADR-018 D1 verifiable-parental-consent
     # record. A guardian's typed full-legal-name attestation counts as the
@@ -354,9 +356,7 @@ class User(Base):
     # #VERIFY: tests/integration/test_onboarding_api.py::
     # test_onboarding_records_consent_once_and_is_idempotent.
     consent_accepted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
-    consent_policy_version: Mapped[str | None] = mapped_column(
-        String(32), default=None
-    )
+    consent_policy_version: Mapped[str | None] = mapped_column(String(32), default=None)
     consent_signer_name: Mapped[str | None] = mapped_column(String(200), default=None)
     # #ASSUME: data-integrity: stored as the request's observed
     # request.client.host, which reflects the real client address (not the
@@ -459,9 +459,7 @@ class ChildProfile(Base):
     # api/profiles.py::update_profile (guardian-only).
     # #VERIFY: tests/integration/test_profiles.py::
     # test_restrict_processing_blocks_new_story_requests.
-    processing_restricted_at: Mapped[datetime | None] = mapped_column(
-        _TS, default=None
-    )
+    processing_restricted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
 class FamilyConnection(Base):

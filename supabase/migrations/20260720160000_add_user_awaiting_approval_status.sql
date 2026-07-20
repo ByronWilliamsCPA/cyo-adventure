@@ -12,6 +12,13 @@
 -- acting), mirroring the pipeline_event CHECK-widening migrations, so it is
 -- a no-op if applied a second time or if the constraint already includes
 -- the new value.
+-- Widen the column itself first: 'awaiting_approval' (17 chars) does not fit
+-- the original character varying(16), and widening a varchar's length is
+-- always a no-op/no-rewrite metadata change in Postgres, so this is safe to
+-- run unconditionally (including as a no-op re-run).
+ALTER TABLE "public"."user"
+    ALTER COLUMN "status" TYPE character varying(20);
+
 DO $$
 BEGIN
     IF EXISTS (

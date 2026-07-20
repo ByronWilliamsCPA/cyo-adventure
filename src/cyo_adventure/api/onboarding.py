@@ -103,10 +103,7 @@ async def _record_consent(
     if consent is None or consent.accepted is not True:
         return
     if not consent.policy_version or not consent.signer_name:
-        msg = (
-            "policy_version and signer_name are both required when "
-            "accepted is true"
-        )
+        msg = "policy_version and signer_name are both required when accepted is true"
         raise ValidationError(msg, field="consent")
     if user.consent_accepted_at is not None:
         return

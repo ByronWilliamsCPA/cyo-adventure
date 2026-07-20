@@ -538,6 +538,13 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN, Role.CHILD}),
         json_body=_completion_body,
     ),
+    # Phase 3d: ownership-scoped read, mirrors ratings.py::list_ratings.
+    RouteSpec(
+        "GET",
+        "/api/v1/completions/{profile_id}",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        path_params=_child_profile_path,
+    ),
     # -- generation.py: guardian-only (is_guardian), admin rejected too -----
     RouteSpec(
         "POST",
@@ -577,6 +584,9 @@ _ROUTE_SPECS: list[RouteSpec] = [
     ),
     # -- me.py: identity introspection, no role gate ------------------------
     RouteSpec("GET", "/api/v1/me", ALL_ROLES),
+    # -- me.py: Phase 3c/3b, guardian-only (role checked before any DB read) -
+    RouteSpec("GET", "/api/v1/me/export", frozenset({Role.GUARDIAN})),
+    RouteSpec("DELETE", "/api/v1/me/family", frozenset({Role.GUARDIAN})),
     # -- profiles.py ---------------------------------------------------------
     RouteSpec("GET", "/api/v1/profiles", ALL_ROLES),
     RouteSpec(
@@ -594,6 +604,15 @@ _ROUTE_SPECS: list[RouteSpec] = [
         # guardian on an id it does not own.
         path_params=_child_profile_path,
         json_body=_profile_update_body,
+    ),
+    # Phase 3b: guardian-only, family-ownership-scoped (authorize_family, not
+    # authorize_profile -- see delete_profile's docstring for why a
+    # deactivated profile must still be reachable here).
+    RouteSpec(
+        "DELETE",
+        "/api/v1/profiles/{profile_id}",
+        frozenset({Role.GUARDIAN}),
+        path_params=_child_profile_path,
     ),
     # -- ratings.py: ownership-scoped ----------------------------------------
     RouteSpec(

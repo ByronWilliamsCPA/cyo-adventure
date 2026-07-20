@@ -235,9 +235,7 @@ async def test_onboarding_without_consent_still_provisions(
     they simply cannot create a child profile until they do.
     """
     _ = seed
-    resp = await client.post(
-        _ONBOARDING, headers=auth("no-consent-guardian"), json={}
-    )
+    resp = await client.post(_ONBOARDING, headers=auth("no-consent-guardian"), json={})
     assert resp.status_code == 201
     assert resp.json()["created"] is True
 
@@ -282,9 +280,7 @@ async def test_onboarding_records_consent_once_and_is_idempotent(
     assert first.status_code == 201
 
     async with sessions() as session:
-        user = await session.scalar(
-            select(User).where(User.authn_subject == subject)
-        )
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
     assert user is not None
     assert user.consent_accepted_at is not None
     assert user.consent_policy_version == "2026-07"
@@ -306,9 +302,7 @@ async def test_onboarding_records_consent_once_and_is_idempotent(
     assert second.status_code == 200
 
     async with sessions() as session:
-        user = await session.scalar(
-            select(User).where(User.authn_subject == subject)
-        )
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
     assert user is not None
     assert user.consent_accepted_at == first_recorded_at
     assert user.consent_policy_version == "2026-07"
