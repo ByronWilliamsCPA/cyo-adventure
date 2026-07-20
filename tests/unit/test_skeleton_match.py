@@ -292,6 +292,39 @@ def test_production_candidates_ignores_contract_json_sidecar(
     assert warnings_seen == []
 
 
+def test_production_candidates_ignores_lineage_json_sidecar(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A WS-5 `<slug>.lineage.json` sidecar is skipped: no candidate, no warning.
+
+    ADR-020 decision 2 / OQ-1 adds lineage as a second sidecar class in
+    `skeletons/<band>/`. The generalized `is_sidecar` skip must treat it exactly
+    like a contract sidecar: never a selectable skeleton, and never a spurious
+    `skeleton.missing_metadata_block` warning.
+    """
+    warnings_seen: list[tuple[str, dict[str, object]]] = []
+
+    class _CapturingLogger:
+        def warning(self, event: str, **kwargs: object) -> None:
+            warnings_seen.append((event, kwargs))
+
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    # A lineage sidecar carries no top-level "metadata" block; if treated as a
+    # skeleton candidate it would log skeleton.missing_metadata_block.
+    (band_dir / "mutant-slug.lineage.json").write_text(
+        json.dumps({"lineage_version": 1, "mutant_slug": "mutant-slug"}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(skeleton_match, "_SKELETON_ROOT", tmp_path)
+    monkeypatch.setattr(skeleton_match, "logger", _CapturingLogger())
+
+    candidates = skeleton_match._production_candidates("8-11")
+
+    assert candidates == []
+    assert warnings_seen == []
+
+
 def test_skeleton_matches_cell_true_for_exact_match() -> None:
     metadata = StoryMetadata.model_validate(
         {

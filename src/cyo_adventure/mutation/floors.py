@@ -31,6 +31,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.diversity.structure import structural_distance, structure_fingerprint
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.storybook.models import StoryMetadata
 from cyo_adventure.utils.logging import get_logger
 
@@ -125,8 +126,9 @@ def load_in_cell_catalog(  # noqa: C901 -- one cohesive sibling-catalog scan wit
     Discovers every production-eligible catalog skeleton that shares the
     candidate's ``(age_band, length, narrative_style)`` cell, EXCLUDING the parent
     (by slug and by structural identity) and any MVP seed (``production_eligible``
-    false). Reuses the ``skeleton_match`` discovery convention and its
-    ``*.contract.json`` sidecar skip.
+    false). Reuses the ``skeleton_match`` discovery convention and the shared
+    :func:`~cyo_adventure.generation.skeleton.is_sidecar` skip (contracts and
+    lineage records).
 
     Args:
         candidate: The mutated candidate document (its declared cell is used).
@@ -161,7 +163,7 @@ def load_in_cell_catalog(  # noqa: C901 -- one cohesive sibling-catalog scan wit
 
     siblings: list[dict[str, object]] = []
     for path in sorted(band_dir.glob("*.json")):
-        if path.name.endswith(".contract.json") or path.stem == parent_slug:
+        if is_sidecar(path) or path.stem == parent_slug:
             continue
         try:
             document = cast(

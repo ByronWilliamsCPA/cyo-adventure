@@ -426,15 +426,21 @@ class MutationOp(Protocol):
   only through ending titles, which are leaf content; therefore M2 alone does
   NOT count as a new tree, see the composition note below); ending multiset;
   all budgets and floors except PL-20.
-- **Composition note.** Because `structure_fingerprint` strips ending titles
-  and `structural_distance`'s ending histograms are position-blind, an M2-only
-  mutant is structurally indistinguishable from its parent and will (correctly)
-  fail the anti-clone floor. M2 is therefore a *composition* operator: it rides
-  along with M1/M3/M4 to decouple "which route" from "which outcome" in the
-  mutant, which is precisely its diversity payoff (the reader who knows the
-  parent cannot transfer outcome knowledge to the mutant). Standalone M2 is
-  permitted only for the state-composed form in section 5 (where the state
-  signature distance floor applies instead).
+- **Composition note.** `structure_fingerprint` retains each ending's kind and
+  id (it strips only the leaf-prose title), so an M2-only re-map, which permutes
+  which terminal position carries which ending kind within a valence class, DOES
+  change the fingerprint and therefore PASSES the anti-clone floor's fingerprint
+  clause (4.6 clause 1). What rejects an M2-only mutant is the distance clause
+  (4.6 clause 2): `structural_distance`'s ending histograms are aggregate and
+  position-blind, so a within-valence kind permutation leaves every shape feature
+  and every histogram unchanged and the parent distance is ~0. (This was verified
+  in the D3/D7 reviews and is the behavior `floors.structural_floor_reason`
+  implements.) M2 is therefore a *composition* operator: it rides along with
+  M1/M3/M4 to decouple "which route" from "which outcome" in the mutant, which is
+  precisely its diversity payoff (the reader who knows the parent cannot transfer
+  outcome knowledge to the mutant). Standalone M2 is permitted only for the
+  state-composed form in section 5 (where the state signature distance floor
+  applies instead).
 - **Re-guidance.** The affected leaves' beats and titles (title templates for
   parameterized parents) are reguide items; the approach nodes immediately
   upstream are flagged advisory.
@@ -521,8 +527,12 @@ of its parent adds a catalog row without adding a distinct tree, the
 structural dog-for-cat. Acceptance therefore requires, blocking at promotion:
 
 - `structure_fingerprint(mutant) != structure_fingerprint(parent)` (a pure
-  identity check; M2-only compositions fail here by design, section 4.3), and
-- `structural_distance(parent, mutant) >= TAU_STRUCT`, and
+  identity check; an M2-only re-map PASSES this clause, because
+  `structure_fingerprint` retains ending kind/id and so changes when M2 permutes
+  kinds within a valence class, section 4.3), and
+- `structural_distance(parent, mutant) >= TAU_STRUCT` (an M2-only mutant is
+  rejected HERE, its position-blind histograms leaving the distance ~0, not at
+  the fingerprint clause), and
 - `min over in-cell catalog skeletons s of structural_distance(s, mutant) >=
   TAU_CELL` (a mutant must not be a clone of ANY existing in-cell tree, not
   just its parent; `TAU_CELL <= TAU_STRUCT`).
