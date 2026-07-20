@@ -53,6 +53,35 @@ services:
         failure_action: rollback
         order: start-first
 
+  worker:
+    # Production image published to GHCR on release; must match the `app`
+    # override's tag so the worker always runs the same release as the API
+    # (ADR-021 Phase 1).
+    image: ghcr.io/byronwilliamscpa/cyo-adventure:${VERSION:?Set VERSION to an immutable release tag or digest}
+
+    # Don't mount source code in production
+    volumes: []
+
+    environment:
+      ENVIRONMENT: production
+      JSON_LOGS: "true"
+      LOG_LEVEL: ${LOG_LEVEL:-WARNING}
+
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
   frontend:
     # Production frontend (nginx serving built assets)
     build:

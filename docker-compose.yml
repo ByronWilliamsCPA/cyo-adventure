@@ -42,8 +42,10 @@ services:
       # forgeable tokens (docker-compose.prod.yml supplies real secrets).
       CHILD_SESSION_SECRET: ${CHILD_SESSION_SECRET:-local-dev-child-session-secret-not-for-production}
       DEVICE_GRANT_SECRET: ${DEVICE_GRANT_SECRET:-local-dev-device-grant-secret-not-for-production}
-      # Redis cache (if applicable)
-      # REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      # Redis: backs the RQ generation queue (worker service below) and, when
+      # RATE_LIMIT_BACKEND=redis, the rate limiter (core/config.py's redis_url
+      # AliasChoices binds this unprefixed name; ADR-021 Phase 1).
+      CYO_ADVENTURE_REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
 
       # Sentry (error tracking)
       # SENTRY_DSN: ${SENTRY_DSN:-}
@@ -114,6 +116,49 @@ services:
           - backend
 
 # =============================================================================
+  # Generation Worker Service (RQ, ADR-021 Phase 1)
+  # =============================================================================
+  # Runs the same image as `app` but as a blocking RQ worker process instead
+  # of the uvicorn server, so generation jobs enqueued by the API are
+  # actually consumed. Previously undefined in this repo (deployed only via
+  # homelab-infra), which is why prior worker-down incidents (schema drift,
+  # #VERIFY api/health.py::check_generation_queue) went unnoticed locally.
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_ENV: ${ENVIRONMENT:-development}
+    image: cyo_adventure:${VERSION:-latest}
+    container_name: cyo_adventure-worker
+    command: ["python", "-m", "cyo_adventure.generation.worker_main"]
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-local}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      JSON_LOGS: ${JSON_LOGS:-false}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://cyo_adventure:password@db:5432/cyo_adventure}
+      CHILD_SESSION_SECRET: ${CHILD_SESSION_SECRET:-local-dev-child-session-secret-not-for-production}
+      DEVICE_GRANT_SECRET: ${DEVICE_GRANT_SECRET:-local-dev-device-grant-secret-not-for-production}
+      CYO_ADVENTURE_REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+    volumes:
+      - ./src:/app/src:ro
+      - ./tests:/app/tests:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    # No container healthcheck: the DHI base image ships no shell (see the
+    # `app` service's `command:` comment above) and an RQ worker exposes no
+    # HTTP endpoint to probe. Liveness is instead observed via
+    # /health/ready's non-gating generation_queue check (api/health.py,
+    # docs/operations/runbook.md).
+    restart: unless-stopped
+    user: "1000:1000"
+    networks:
+      - cyo_adventure-network
+
+# =============================================================================
   # Frontend Service (React + Vite)
   # =============================================================================
   frontend:
@@ -173,29 +218,26 @@ services:
       - cyo_adventure-network
 
 # =============================================================================
-  # Redis Service (Caching/Sessions)
+  # Redis Service (RQ generation queue; ADR-021 Phase 1)
   # =============================================================================
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: cyo_adventure-redis
-  #   command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redispassword}
-  #
-  #   volumes:
-  #     - redis-data:/data
-  #
-  #   ports:
-  #     - "${REDIS_PORT:-6379}:6379"
-  #
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-  #     interval: 10s
-  #     timeout: 3s
-  #     retries: 5
-  #
-  #   restart: unless-stopped
-  #
-  #   networks:
-  #     - cyo_adventure-network
+  redis:
+    image: ghcr.io/byronwilliamscpa/dhi-redis:7-debian13
+    container_name: cyo_adventure-redis
+    command: ["redis-server", "--protected-mode", "no"]
+
+    volumes:
+      - redis-data:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+    restart: unless-stopped
+
+    networks:
+      - cyo_adventure-network
 
 # =============================================================================
 # Volumes (Persistent Storage)
@@ -203,8 +245,8 @@ services:
 volumes:
   postgres-data:
     driver: local
-# redis-data:
-  #   driver: local
+  redis-data:
+    driver: local
 
 # =============================================================================
 # Networks
