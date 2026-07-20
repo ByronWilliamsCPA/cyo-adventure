@@ -991,6 +991,19 @@ Risks (non-blocking):
 
 ## 13. Open questions for Opus sign-off
 
+**Sign-off status (2026-07-20).** Resolved before Phase B. Opus signed off the
+technical questions: **OQ-1** combined interpret-and-bind; **OQ-3** store the
+latest layer only (report keeps the audit copy); **OQ-4** ship the degraded
+refined layer for contract-less skeletons; **OQ-5** fixed template catalog, not
+LLM-phrased kid text; **OQ-6** general-at-submission plus refined-at-fill
+satisfies K19; **OQ-7** keep `ADAPTED` as an enum member but emit it only on the
+narrow retry-corrected trigger (default: collapse to `BUILT_IN`). The owner
+ratified the two product/compliance forks: **OQ-8 = persist** the interpretation
+(with the PR #304 Phase 3 deletion/export/30-day-retention obligations delivered
+in D2), and **OQ-2 = ship** the bounded alternate-skeleton re-route in v1
+(`_REROUTE_LIMIT = 2`, auto-pick-only, PII short-circuits it). The original
+question text is retained below for the record.
+
 - **OQ-1 (combined vs separate call).** Section 5.2 extends the bind call to
   return elements alongside bindings (zero added calls, asymmetric parse). The
   alternative is a separate interpret-only call after a successful bind (cleaner

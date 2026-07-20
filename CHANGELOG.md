@@ -36,6 +36,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`generation/skeleton.py`, ADR-020 decision 2 / OQ-1), so a lineage record in a
   band directory is never mistaken for a selectable skeleton.
 
+## [0.20.0] - 2026-07-20
+
+### Added
+
+- Request interpretation and expectation-setting (WS-7 D1-D3, K19): a pure
+  interpretation core (echo-safety floor, disposition derivation, and a fixed
+  kid/guardian template catalog) plus a submission-time general layer that is
+  persisted on each story request, reflecting the band promise, guardian
+  banned-theme matches, and advisory safety findings without ever echoing
+  premise-derived content for a blocked request (CR-1).
+- Persistence for the interpretation: a nullable `story_request.interpretation`
+  JSONB column (no backfill) with a daily pg_cron retention purge that nulls
+  each element's premise-derived phrase on declined or blocked rows 30 days
+  after decision, keeping the dispositions, reasons, and template texts.
+- The refined interpretation layer (WS-7 D4-D6): a combined interpret-and-bind
+  step returns the binder's element decomposition alongside the validated
+  slot bindings, and the generation worker derives per-element dispositions
+  from it (a degraded, keyword-decomposed variant for contract-less
+  skeletons), attaches the result to the job/version report block as a sibling
+  of the theme-contract audit block, and projects it onto the originating
+  story request row.
+- The rejection path and bounded re-route (WS-7 D7): on a theme a skeleton
+  cannot bind, the worker retries the bind on up to two in-cell alternate
+  skeletons (auto-pick only, contract-gated, recorded as `rerouted_from`)
+  before failing closed; a failed bound-path fill now stamps an honest
+  cannot-carry interpretation on both the failed job report and the request
+  row. A PII egress block and a theme incompatibility are kept distinct by
+  exception provenance (personal-details vs no-conforming-binding), and a PII
+  block never triggers a re-route.
+- The interpretation API surface (WS-7 D8, K19 exposed): the story-request view
+  now carries the K19 interpretation as `RequestInterpretationView`
+  (with `InterpretedElementView`), projected from the stored
+  `story_request.interpretation` column by `_to_view` for every caller. It is
+  a straight projection of the already-echo-safe stored object, so a blocked
+  row surfaces the generic interpretation (every element phrase null) alongside
+  the existing `request_text=None` redaction (CR-1), and a pre-WS-7 row (null
+  column) projects to `null`.
+
 ## [0.19.0] - 2026-07-20
 
 ### Changed
@@ -2181,7 +2219,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.19.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.20.0...HEAD
+[0.20.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.4...v0.19.0
 [0.18.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.3...v0.18.4
 [0.18.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.2...v0.18.3

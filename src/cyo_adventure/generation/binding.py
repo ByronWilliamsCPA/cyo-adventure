@@ -27,7 +27,11 @@ from pydantic import ValidationError as PydanticValidationError
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.diversity.structure import structure_fingerprint
 from cyo_adventure.generation.guarded import PiiGuardedProvider
-from cyo_adventure.generation.prompts import build_bind_prompt
+from cyo_adventure.generation.prompts import (
+    build_bind_prompt,
+    build_interpret_bind_prompt,
+)
+from cyo_adventure.story_requests.interpretation import RawElement
 from cyo_adventure.storybook.theme_contract import (
     SLOT_TOKEN_RE,
     ThemeContract,
@@ -46,9 +50,18 @@ if TYPE_CHECKING:
 __all__ = [
     "bind_theme_to_contract",
     "contract_path_for",
+    "interpret_and_bind",
     "load_contract_for",
     "render_bound_skeleton",
 ]
+
+# The interpret-and-bind element decomposition is advisory, not load-bearing:
+# it is capped so a malformed or adversarial response can never balloon the
+# persisted at-rest surface, and each phrase is length-bounded pre-sanitization
+# (design section 5.2). These bounds mirror the echo floor's own word cap
+# posture without importing it (the echo floor runs later, in derivation).
+_MAX_INTERPRET_ELEMENTS = 12
+_MAX_ELEMENT_PHRASE_CHARS = 120
 
 # The production FILL directive parse, reused verbatim from the pilot
 # (`out/pilot/_neutralize.py:337`) and matching `fill.md:32-36` and the
@@ -592,6 +605,227 @@ async def bind_theme_to_contract(  # noqa: PLR0913
         violations = validate_slot_bindings(contract, parsed)
         if not violations:
             return parsed
+
+    if parse_failed and not violations:
+        msg = (
+            f"unable to bind theme to contract '{contract.skeleton_slug}' "
+            f"after {max_attempts} attempt(s): provider output was not "
+            f"parseable as a flat JSON object of slot id to string value"
+        )
+        raise ValidationError(msg, field="theme_brief")
+
+    detail = [
+        {
+            "slot_id": violation.slot_id,
+            "rule": violation.rule,
+            "message": violation.message,
+        }
+        for violation in violations
+    ]
+    msg = (
+        f"unable to bind theme to contract '{contract.skeleton_slug}' after "
+        f"{max_attempts} attempt(s): the binding still violates its contract"
+    )
+    raise ValidationError(msg, field="theme_brief", details={"violations": detail})
+
+
+# ---------------------------------------------------------------------------
+# Interpret-and-bind (WS-7 D4, design section 5.2)
+# ---------------------------------------------------------------------------
+
+
+def _sanitize_elements(
+    raw_elements: object, contract: ThemeContract
+) -> list[RawElement]:
+    """Sanitize the ``elements`` half of an interpret-and-bind response.
+
+    Advisory-only, so this NEVER fails a parse: a malformed or missing value
+    degrades to ``[]`` rather than rejecting the attempt (design section 5.2,
+    the deliberate asymmetry vs the load-bearing ``bindings`` half). The
+    sanitization is structural/bounded only; the echo-safety floor (the PII and
+    denylist checks in :func:`cyo_adventure.story_requests.interpretation.sanitize_element`)
+    is applied LATER, in D5's ``derive_dispositions``, NOT here. This helper
+    therefore passes RAW phrases through, capping the list, dropping malformed
+    entries, and mapping unknown slot ids to ``None``.
+
+    Rules (design section 5.2):
+
+    - Not a list: degrade to ``[]``.
+    - Cap at :data:`_MAX_INTERPRET_ELEMENTS` entries (drop the extras).
+    - Drop any entry that is not an object, whose ``phrase`` is not a non-empty
+      ``str``, or whose ``phrase`` exceeds :data:`_MAX_ELEMENT_PHRASE_CHARS`
+      characters pre-sanitization.
+    - Map any ``slot_id`` not in ``slot_ids(contract)`` (including a non-string)
+      to ``None``.
+
+    Args:
+        raw_elements: The ``elements`` value straight from the parsed JSON
+            (untrusted, any shape).
+        contract: The theme contract, for the declared slot id set.
+
+    Returns:
+        The sanitized, capped list of :class:`RawElement`; ``[]`` when the value
+        is malformed or missing.
+    """
+    if not isinstance(raw_elements, list):
+        return []
+    declared = slot_ids(contract)
+    sanitized: list[RawElement] = []
+    for raw_entry in cast("list[object]", raw_elements):
+        if len(sanitized) >= _MAX_INTERPRET_ELEMENTS:
+            break
+        if not isinstance(raw_entry, dict):
+            continue
+        entry = cast("dict[str, object]", raw_entry)
+        phrase = entry.get("phrase")
+        if not isinstance(phrase, str) or not phrase:
+            continue
+        if len(phrase) > _MAX_ELEMENT_PHRASE_CHARS:
+            continue
+        raw_slot = entry.get("slot_id")
+        slot_id = (
+            raw_slot if isinstance(raw_slot, str) and raw_slot in declared else None
+        )
+        sanitized.append(RawElement(phrase=phrase, slot_id=slot_id))
+    return sanitized
+
+
+def _parse_interpret_bind_response(
+    raw: str, contract: ThemeContract
+) -> tuple[dict[str, str], list[RawElement]] | None:
+    """Parse an interpret-and-bind response into ``(bindings, elements)``.
+
+    Extends :func:`_parse_bind_response` with the asymmetric posture of design
+    section 5.2. The ``bindings`` half is LOAD-BEARING and validated exactly as
+    today: the whole response must be a JSON object carrying a ``bindings`` key
+    whose value is a flat ``dict[str, str]``; any deviation (non-JSON, non-dict,
+    missing ``bindings``, non-dict ``bindings``, or a non-string value inside
+    it) fails the WHOLE parse and returns ``None`` (a failed attempt, exactly as
+    ``_parse_bind_response`` does). The ``elements`` half is ADVISORY: a
+    malformed or missing value degrades to ``[]`` via :func:`_sanitize_elements`
+    and can NEVER fail the parse.
+
+    Args:
+        raw: The raw provider completion text.
+        contract: The theme contract, for element slot-id sanitization.
+
+    Returns:
+        ``(bindings, sanitized_elements)`` on a parseable ``bindings`` half, or
+        ``None`` when the ``bindings`` half fails (a failed attempt).
+    """
+    try:
+        parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(parsed, dict):
+        return None
+    parsed_map = cast("dict[str, object]", parsed)
+
+    # `bindings` is load-bearing: same flat dict[str, str] check as
+    # _parse_bind_response; any failure here is a failed attempt (None).
+    raw_bindings = parsed_map.get("bindings")
+    if not isinstance(raw_bindings, dict):
+        return None
+    bindings_map = cast("dict[str, object]", raw_bindings)
+    if not all(isinstance(value, str) for value in bindings_map.values()):
+        return None
+    bindings = cast("dict[str, str]", bindings_map)
+
+    # `elements` is advisory: never fails the parse; malformed -> [].
+    elements = _sanitize_elements(parsed_map.get("elements"), contract)
+    return bindings, elements
+
+
+async def interpret_and_bind(  # noqa: PLR0913
+    contract: ThemeContract,
+    theme_brief: Mapping[str, object],
+    provider: GenerationProvider,
+    pii: PiiContext,
+    *,
+    max_attempts: int = 2,
+) -> tuple[dict[str, str], list[RawElement]]:
+    """Bind exactly as :func:`bind_theme_to_contract`, plus element decomposition.
+
+    Mirrors :func:`bind_theme_to_contract` byte-for-byte in its safety posture
+    (WS-7 D4, design section 5.2): the same ``PiiGuardedProvider`` wrap, the same
+    ``_MAX_TOKENS_BIND`` ceiling, the same one bounded retry re-sending the exact
+    violation list, and the same fail-closed ``ValidationError`` messages/details
+    on exhaustion or unparseable output. The ONLY difference is the output
+    contract: the provider returns ``{"bindings": {...}, "elements": [...]}`` and
+    this function additionally returns the binder's sanitized element
+    decomposition alongside the validated bindings.
+
+    The ``bindings`` half is validated by the UNCHANGED
+    :func:`~cyo_adventure.validator.slots.validate_slot_bindings`, so it carries
+    the identical fail-closed contract; the ``elements`` half is advisory and
+    can NEITHER cause NOR rescue a bind failure (CR-2): it is derived from the
+    parsed response, never fed into the bind decision, the render, or the
+    violation loop. Only the PASSING attempt's elements are returned; a failed
+    attempt's elements are discarded, so the interpretation always describes the
+    binding that actually rendered.
+
+    Args:
+        contract: The theme contract to bind against.
+        theme_brief: The free-text (UNTRUSTED) child/guardian story request.
+        provider: The generation provider to call for completions.
+        pii: The PII context carrying real-child names that must never appear in
+            the interpret-and-bind prompt.
+        max_attempts: Maximum number of bind attempts (LLM calls). Defaults to 2
+            (one bounded retry with violation feedback).
+
+    Returns:
+        ``(validated_bindings, sanitized_elements)`` from the passing attempt:
+        a slot-value map that has passed
+        :func:`~cyo_adventure.validator.slots.validate_slot_bindings`, and the
+        advisory (structurally sanitized, NOT echo-floored) element list.
+
+    Raises:
+        ValidationError: If no attempt produces a conforming binding within
+            ``max_attempts`` (fail closed, identical to
+            :func:`bind_theme_to_contract`), or if the assembled prompt would
+            leak forbidden real-child PII (raised by the PII guard before any
+            provider call).
+    """
+    # #CRITICAL: security: theme_brief is untrusted free text (OWASP LLM01); the
+    # UNTRUSTED_USER_INPUT fence in interpret_bind.md (byte-identical to bind.md)
+    # plus the JSON parse below are the containment. Both response halves stay
+    # untrusted-derived: `bindings` is trusted only after validate_slot_bindings,
+    # and `elements` is trusted-enough-to-echo only after D5's echo floor; this
+    # function runs no provider call outside PiiGuardedProvider (CR-4).
+    # #CRITICAL: data-integrity: the `elements` half is advisory and CANNOT
+    # affect bind acceptance (CR-2): it is only read AFTER validate_slot_bindings
+    # decides, never fed into that check, the retry violations, or the return
+    # gate; a failed attempt's elements are discarded, so a malformed/adversarial
+    # decomposition can never rescue nor break a binding.
+    # #ASSUME: external-resources: bounded provider calls (at most max_attempts),
+    # each screened by PiiGuardedProvider before any network call.
+    # #VERIFY: test_interpret_bind.py.
+    guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
+
+    violations: list[SlotViolation] = []
+    parse_failed = False
+
+    for _attempt in range(max_attempts):
+        stage_prompt = build_interpret_bind_prompt(
+            contract, theme_brief, violations=violations or None
+        )
+        raw = await guarded_provider.complete(
+            system=stage_prompt.system,
+            prompt=stage_prompt.user,
+            max_tokens=_MAX_TOKENS_BIND,
+        )
+
+        parsed = _parse_interpret_bind_response(raw, contract)
+        if parsed is None:
+            parse_failed = True
+            violations = []
+            continue
+
+        bindings, elements = parsed
+        parse_failed = False
+        violations = validate_slot_bindings(contract, bindings)
+        if not violations:
+            return bindings, elements
 
     if parse_failed and not violations:
         msg = (

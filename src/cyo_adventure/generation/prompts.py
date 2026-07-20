@@ -52,6 +52,7 @@ __all__ = [
     "build_bound_fill_prompt",
     "build_fidelity_repair_prompt",
     "build_fill_prompt",
+    "build_interpret_bind_prompt",
     "build_prose_prompt",
     "build_repair_prompt",
     "build_structure_prompt",
@@ -503,6 +504,50 @@ def build_bind_prompt(
     # named placeholder token remains in the built prompt.
     text = (
         _load_template("bind.md")
+        .replace("{slot_table}", _slot_table(contract))
+        .replace("{theme_brief}", json.dumps(dict(theme_brief), indent=2))
+        .replace("{violations_block}", _violations_block(violations))
+    )
+    return _split_stage_prompt(text)
+
+
+def build_interpret_bind_prompt(
+    contract: ThemeContract,
+    theme_brief: Mapping[str, object],
+    *,
+    violations: list[SlotViolation] | None = None,
+) -> StagePrompt:
+    """Build the WS-7 interpret-and-bind prompt (bindings + element decomposition).
+
+    Identical to :func:`build_bind_prompt` except it loads ``interpret_bind.md``
+    (``bind.md`` with only its Output section changed): the binder returns a
+    single JSON object with a ``bindings`` map AND an ``elements`` list (its
+    decomposition of the fenced premise into short requester-vocabulary phrases,
+    each paired with the slot it was carried into or ``null``). The system/user
+    split, the ``{slot_table}``/``{theme_brief}``/``{violations_block}``
+    placeholders, and the byte-identical ``UNTRUSTED_USER_INPUT`` fence are all
+    the same as ``bind.md`` (design section 5.2, D4).
+
+    Args:
+        contract: The theme contract to bind against.
+        theme_brief: The free-text (UNTRUSTED) child/guardian story request.
+        violations: The exact violations from the previous attempt, to carry
+            into a bounded retry prompt. ``None`` (default) for the first
+            attempt.
+
+    Returns:
+        The interpret-and-bind :class:`StagePrompt` (no unfilled tokens).
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->`` marker.
+    """
+    # #ASSUME: data-integrity: theme_brief may contain literal `{` / `}`
+    # characters once serialised; .replace() handles this safely (never
+    # str.format).
+    # #VERIFY: test_interpret_bind.py asserts violations retry byte-parity with
+    # build_bind_prompt and that the untrusted fence is byte-identical.
+    text = (
+        _load_template("interpret_bind.md")
         .replace("{slot_table}", _slot_table(contract))
         .replace("{theme_brief}", json.dumps(dict(theme_brief), indent=2))
         .replace("{violations_block}", _violations_block(violations))
