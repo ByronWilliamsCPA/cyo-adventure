@@ -77,6 +77,12 @@ class EventType(StrEnum):
     # call, not one per row returned; see events/writer.py's payload
     # allowlist for this type.
     PROFILE_VIEWED = "profile_viewed"
+    # WS-8 catalog flywheel (docs/planning/ws8-catalog-flywheel-design.md section
+    # 4.1): a request-time cell-saturation signal, persisted so the flywheel's
+    # trigger can compute per-cell demand without ever recording theme text. The
+    # payload carries ONLY closed-vocabulary enum values (age band, length,
+    # style, differentiation level); see events/writer.py's allowlist.
+    CELL_SATURATED = "cell_saturated"
 
 
 SYSTEM_ACTOR_ROLE = "system"

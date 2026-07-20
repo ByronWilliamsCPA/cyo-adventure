@@ -91,6 +91,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   under the build toolchain).
 
 ## [0.22.1] - 2026-07-20
+### Added
+
+- WS-8 catalog flywheel, D1 (trigger persistence and scan): a request-time
+  cell-saturation signal is now persisted as an enum-only `CELL_SATURATED`
+  pipeline event (payload carries only the closed-vocabulary cell coordinate
+  `age_band`/`length`/`style` plus the escalation `level`, never theme text),
+  a new pure `flywheel/trigger.py` aggregates those rows into per-cell
+  saturation readings and applies the trigger thresholds, and a read-only
+  `scripts/flywheel_scan.py` reports which cells are over threshold. The
+  OWASP LLM01 safety property is enforced in both directions: the writer
+  allowlist rejects any non-enum or extra payload key, and the reader drops
+  any row whose values are not members of their closed vocabulary.
 
 ### Changed
 

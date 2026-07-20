@@ -421,14 +421,37 @@ async def _resolve_skeleton_fill(
             "the cell."
         )
     if sim_ctx.recommendation is not DifferentiationLevel.TREE:
-        # A signal for the WS-8 catalog flywheel (docs/planning/story-flexibility-plan.md
-        # section "WS-8: Catalog flywheel"): how often a cell escalates past
-        # tree-level differentiation is exactly the "this cell needs a new
-        # skeleton" pressure that workstream consumes later.
+        # A signal for the WS-8 catalog flywheel (design section 4.1): how often a
+        # cell escalates past tree-level differentiation is the "this cell needs a
+        # new skeleton" pressure the flywheel consumes. Persisted as an enum-only
+        # CELL_SATURATED event so the trigger has a durable, PII-free denominator
+        # (distinct requests per cell) without ever recording which theme saturated
+        # the cell (OWASP LLM01: the payload allowlist forbids free text).
         logger.info(
             "selection.cell_theme_saturated",
             band=band,
+            length=length,
+            style=style,
             level=sim_ctx.recommendation.value,
+        )
+        # #ASSUME: data-integrity: the event anchors to the request (entity_id),
+        # giving the trigger a distinct-request denominator, while the payload
+        # carries only closed-vocabulary enum values; the request anchor is the
+        # row FK, never payload content.
+        # #VERIFY: test round-trips a CELL_SATURATED event and asserts a non-enum
+        # or extra payload key is rejected by the writer (tests/unit).
+        await record_event(
+            session,
+            Actor.system(),
+            entity_type="story_request",
+            entity_id=str(request.id),
+            event_type=EventType.CELL_SATURATED,
+            payload={
+                "age_band": band,
+                "length": length,
+                "style": style,
+                "level": sim_ctx.recommendation.value,
+            },
         )
     return selection.slug, band, skeleton_alternatives, warnings
 

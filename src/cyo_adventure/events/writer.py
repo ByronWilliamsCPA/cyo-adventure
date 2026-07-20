@@ -61,6 +61,12 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # G6: the node id only, never the edited prose (spec D3); see
     # api/node_edit.py::edit_node.
     EventType.NODE_EDITED: frozenset({"node_id"}),
+    # WS-8 catalog flywheel: the full cell coordinate plus the escalation
+    # level, all closed-vocabulary enum values (AgeBand/Length/NarrativeStyle/
+    # DifferentiationLevel). No theme text, family, or child identifier ever
+    # rides this payload; the flywheel trigger's distinct-request denominator
+    # is the row's entity_id anchor, not payload content (design section 4.1).
+    EventType.CELL_SATURATED: frozenset({"age_band", "length", "style", "level"}),
     # Phase 8a: the family_id filter (None when the admin listed across
     # every family) and the row count returned; no profile-level detail, so
     # the log itself never becomes a second copy of the child data it is
