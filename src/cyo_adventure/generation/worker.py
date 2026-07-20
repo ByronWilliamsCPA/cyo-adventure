@@ -44,6 +44,7 @@ from cyo_adventure.db.models import (
 from cyo_adventure.diversity.normalize import theme_signature
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.authoring_metadata import (
+    SKELETON_ALTERNATIVES_KEY,
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
 )
@@ -82,8 +83,9 @@ from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping
+    from collections.abc import Callable, Iterable, Mapping
     from contextlib import AbstractAsyncContextManager
+    from pathlib import Path
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -113,6 +115,46 @@ _FIRST_VERSION = 1
 # Fallback model label for a provider that exposes no real model identifier
 # (the in-phase mock). Phase 2b providers carry their own model name.
 _MOCK_MODEL_LABEL = "mock"
+
+# WS-7 D7 (design section 6.2, OQ-2 ratified). The bounded alternate-skeleton
+# re-route budget: on a planned-skeleton bind failure with a theme
+# incompatibility (ValidationError field="theme_brief"), the worker retries the
+# bind on at most this many CONTRACT-BEARING in-cell alternates before failing
+# closed. A contract-less alternate is skipped WITHOUT spending an attempt. A
+# PII block (field="prompt") is NEVER re-routed (6.2 step 5): the same premise
+# trips the same egress guard on every candidate. Worst case: _REROUTE_LIMIT
+# alternates x the bind step's own small-JSON retry budget, never a fill call.
+_REROUTE_LIMIT = 2
+
+# WS-7 D7 (design section 6.3, CR-4). The two CANNOT_CARRY reasons are chosen by
+# the bind exception's `field` PROVENANCE ONLY, never by string-matching its
+# message: "prompt" is the PII egress guard raising before any provider dispatch
+# (a privacy block), "theme_brief" is bind exhaustion after the slot gate
+# rejected every attempt (a theme incompatibility). Any other field, or a
+# non-skeleton-fill job, is not a bound-path bind outcome and gets no surface.
+_CANNOT_CARRY_REASONS: dict[str, ReasonCode] = {
+    "prompt": ReasonCode.PERSONAL_DETAILS,
+    "theme_brief": ReasonCode.NO_CONFORMING_BINDING,
+}
+
+
+def _validation_field(exc: ValidationError) -> str | None:
+    """Return a :class:`ValidationError`'s ``field`` provenance, or ``None``.
+
+    The exception folds ``field`` into ``details`` (core/exceptions.py), so this
+    is the single typed accessor the WS-7 D7 CR-4 classification reads: the PII
+    egress guard raises ``field="prompt"``, bind exhaustion raises
+    ``field="theme_brief"``. Reading provenance, never the message.
+
+    Args:
+        exc: The validation error to inspect.
+
+    Returns:
+        The ``field`` string, or ``None`` when absent / non-string.
+    """
+    field = exc.details.get("field")
+    return field if isinstance(field, str) else None
+
 
 logger = get_logger(__name__)
 
@@ -375,25 +417,12 @@ def _degraded_interpretation(
         The degraded refined :class:`RequestInterpretation` (contract_version
         ``None``).
     """
-    child_names = ctx.pii.child_names
-    # Sorted for determinism: theme_signature returns a frozenset.
-    raw_elements = [
-        RawElement(phrase=tag, slot_id=None)
-        for tag in sorted(theme_signature(theme_brief))
-    ]
-    decisions: list[ElementDecision] = [
-        decision
-        for decision in derive_dispositions(
-            raw_elements,
-            band=band,
-            bindings={},
-            content_nogo=ctx.brief.content_nogo,
-            child_names=child_names,
-            self_names=child_names,
-        )
-        # NOT_THIS_STORY_KIND is not claimable without a contract (section 5.4).
-        if decision.reason is not ReasonCode.NOT_THIS_STORY_KIND
-    ]
+    decisions = _degraded_set_aside_decisions(
+        theme_brief=theme_brief,
+        band=band,
+        content_nogo=ctx.brief.content_nogo,
+        child_names=ctx.pii.child_names,
+    )
     # Always append the band-expectation element (the band promise).
     decisions.append(
         ElementDecision(None, ElementDisposition.BUILT_IN, ReasonCode.STORY_FIT)
@@ -405,6 +434,300 @@ def _degraded_interpretation(
         skeleton_slug=skeleton_slug,
         contract_version=None,
         created_at=created_at,
+    )
+
+
+def _degraded_set_aside_decisions(
+    *,
+    theme_brief: Mapping[str, object],
+    band: AgeBand,
+    content_nogo: Iterable[str],
+    child_names: frozenset[str],
+) -> list[ElementDecision]:
+    """Derive the SET_ASIDE facts from a keyword decomposition, no bindings.
+
+    Shared by the degraded refined layer (:func:`_degraded_interpretation`,
+    design 5.4) and the D7 CANNOT_CARRY failure surface
+    (:func:`_cannot_carry_interpretation`, design 6.1): decompose the premise
+    into WS-0 ``theme_signature`` tags (each catalog vocabulary and echo-safe by
+    construction, so no premise substring leaks), run
+    :func:`~cyo_adventure.story_requests.interpretation.derive_dispositions` with
+    EMPTY bindings so the bound-to-slot rule never fires, and drop
+    ``NOT_THIS_STORY_KIND`` (not claimable without a contract).
+
+    Args:
+        theme_brief: The job's theme brief dict; only ``premise`` is read by
+            :func:`~cyo_adventure.diversity.normalize.theme_signature`.
+        band: The reading age band the derivation runs against.
+        content_nogo: Guardian banned-theme strings (G2 controls).
+        child_names: Family child names for the echo-floor PII / self-naming
+            screens.
+
+    Returns:
+        The derived SET_ASIDE decisions, in the (sorted) tag order.
+    """
+    # Sorted for determinism: theme_signature returns a frozenset.
+    raw_elements = [
+        RawElement(phrase=tag, slot_id=None)
+        for tag in sorted(theme_signature(theme_brief))
+    ]
+    return [
+        decision
+        for decision in derive_dispositions(
+            raw_elements,
+            band=band,
+            bindings={},
+            content_nogo=content_nogo,
+            child_names=child_names,
+            self_names=child_names,
+        )
+        # NOT_THIS_STORY_KIND is not claimable without a contract (section 5.4).
+        if decision.reason is not ReasonCode.NOT_THIS_STORY_KIND
+    ]
+
+
+def _cannot_carry_interpretation(
+    *,
+    theme_brief: Mapping[str, object],
+    band: AgeBand,
+    content_nogo: Iterable[str],
+    child_names: frozenset[str],
+    reason: ReasonCode,
+    created_at: datetime,
+) -> RequestInterpretation:
+    """Build the D7 CANNOT_CARRY failure interpretation (design 6.1, 6.3).
+
+    The derivable SET_ASIDE facts (the same keyword decomposition the degraded
+    layer uses, bindings empty) keep the reflection honest, then ONE terminal
+    ``(CANNOT_CARRY, reason, element=None)`` element records why the whole theme
+    could not be carried. The caller chooses ``reason`` from the bind
+    exception's ``field`` provenance ALONE (CR-4): ``PERSONAL_DETAILS`` for a
+    PII block (``field="prompt"``), ``NO_CONFORMING_BINDING`` for a theme
+    incompatibility (``field="theme_brief"``). No ``skeleton_slug`` /
+    ``contract_version`` is stamped: the bind produced no contract, and the
+    honest claim is that the whole cell could not carry the theme, not one tree.
+
+    Args:
+        theme_brief: The job's theme brief dict (only ``premise`` is read).
+        band: The reading age band (the request's, or an override's, band).
+        content_nogo: Guardian banned-theme strings (G2 controls).
+        child_names: Family child names for the echo-floor screens.
+        reason: The terminal CANNOT_CARRY reason, chosen by the caller from
+            ``exc.field`` provenance only.
+        created_at: The worker's creation timestamp for the object.
+
+    Returns:
+        The refined CANNOT_CARRY :class:`RequestInterpretation`.
+    """
+    decisions = _degraded_set_aside_decisions(
+        theme_brief=theme_brief,
+        band=band,
+        content_nogo=content_nogo,
+        child_names=child_names,
+    )
+    decisions.append(ElementDecision(None, ElementDisposition.CANNOT_CARRY, reason))
+    return render_interpretation(
+        decisions, band=band, layer="refined", created_at=created_at
+    )
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class _BindResult:
+    """The resolved skeleton/contract/bindings a bound fill will render.
+
+    Either the planned skeleton's own bind (``rerouted_from is None``) or an
+    alternate skeleton's bind after the bounded WS-7 D7 re-route
+    (``rerouted_from`` = the planned slug the re-route left, design section 6.2).
+
+    Attributes:
+        skeleton: The (planned or alternate) skeleton dict to render.
+        contract: The theme contract that actually bound (supplies the audit
+            block's slug/version and the interpretation's band/slug/version).
+        contract_path: That contract's on-disk path (for the audit sha256).
+        bindings: The validated ``{slot_id: value}`` map.
+        raw_elements: The binder's advisory element decomposition.
+        rerouted_from: The planned slug the re-route left, or ``None`` when the
+            planned skeleton bound on the first try.
+    """
+
+    skeleton: dict[str, object]
+    contract: ThemeContract
+    contract_path: Path
+    bindings: dict[str, str]
+    raw_elements: list[RawElement]
+    rerouted_from: str | None
+
+
+def _load_alternate(
+    alt_slug: str, fill_band: str
+) -> tuple[dict[str, object], ThemeContract, Path] | None:
+    """Resolve and load an alternate skeleton and its theme contract.
+
+    Returns ``(skeleton, contract, contract_path)`` for a CONTRACT-BEARING
+    alternate, or ``None`` for a contract-less alternate (not eligible for the
+    re-route: it would take the free-text path, which fail-closed forbids,
+    design 6.2 step 2). A half-migrated/drift defect on an alternate raises a
+    ``ValidationError`` from ``load_contract_for`` exactly as the planned path
+    would.
+
+    Args:
+        alt_slug: The alternate skeleton's filename stem.
+        fill_band: The band directory to resolve the alternate under (the
+            request's own cell band; alternates are in-cell).
+
+    Returns:
+        The loaded ``(skeleton, contract, contract_path)``, or ``None`` when the
+        alternate has no contract sidecar.
+    """
+    alt_path = resolve_skeleton_path(fill_band, alt_slug)
+    alt_skeleton = load_skeleton(alt_path)
+    alt_contract = load_contract_for(alt_path, alt_skeleton)
+    if alt_contract is None:
+        return None
+    return alt_skeleton, alt_contract, contract_path_for(alt_path)
+
+
+async def _reroute_bind(
+    original: ValidationError,
+    *,
+    planned_slug: str,
+    fill_band: str,
+    theme_brief_dict: dict[str, object],
+    ctx: _SkeletonFillContext,
+) -> _BindResult:
+    """Try to bind an in-cell alternate after the planned skeleton failed closed.
+
+    WS-7 D7 (design section 6.2): iterate the persisted ``skeleton_alternatives``
+    (already sorted by the planner's blended weight), skipping the planned slug
+    and any already-tried, and any contract-less alternate. On the FIRST
+    contract-bearing alternate that binds, return its :class:`_BindResult` with
+    ``rerouted_from`` set to ``planned_slug``. At most :data:`_REROUTE_LIMIT`
+    contract-bearing alternates are attempted; if all are exhausted or none are
+    eligible, the ORIGINAL ``field="theme_brief"`` error is re-raised (fail
+    closed, design 6.1). The re-route only ever lands on another contract-gated
+    bind: it never falls through to the free-text path.
+
+    # #CRITICAL: security: a PII block on an alternate (ValidationError
+    # field="prompt") is re-raised immediately, never swallowed (6.2 step 5,
+    # CR-4); only a theme incompatibility (field="theme_brief") moves on to the
+    # next alternate. In practice the planned bind already cleared the same
+    # premise past the egress guard before this loop was entered, so a PII raise
+    # here is not expected, but the guard is preserved defensively.
+    # #VERIFY: test_run_skeleton_fill_reroute_* in tests/unit/test_worker.py.
+
+    Args:
+        original: The planned skeleton's fail-closed ``field="theme_brief"``
+            error, re-raised on exhaustion.
+        planned_slug: The planned skeleton's slug (skipped, and recorded as
+            ``rerouted_from`` on success).
+        fill_band: The band directory alternates resolve under.
+        theme_brief_dict: The same fenced brief the planned bind used.
+        ctx: The skeleton-fill context (provider + PII + authoring metadata).
+
+    Returns:
+        The alternate's :class:`_BindResult`.
+
+    Raises:
+        ValidationError: ``original`` on exhaustion (fail closed), or a
+            propagated PII / load-defect error from an alternate.
+    """
+    alternatives = ctx.authoring.get(SKELETON_ALTERNATIVES_KEY)
+    candidates = alternatives if isinstance(alternatives, list) else []
+    tried: set[str] = {planned_slug}
+    attempts = 0
+    for alt in cast("list[object]", candidates):
+        if attempts >= _REROUTE_LIMIT:
+            break
+        if not isinstance(alt, str) or alt in tried:
+            continue
+        tried.add(alt)
+        loaded = _load_alternate(alt, fill_band)
+        if loaded is None:
+            # Contract-less alternate: not eligible, and does NOT spend an
+            # attempt (no bind call was made).
+            continue
+        alt_skeleton, alt_contract, alt_contract_path = loaded
+        attempts += 1
+        try:
+            bindings, raw_elements = await interpret_and_bind(
+                alt_contract, theme_brief_dict, ctx.effective_provider, ctx.pii
+            )
+        except ValidationError as exc:
+            if _validation_field(exc) != "theme_brief":
+                raise
+            continue
+        return _BindResult(
+            skeleton=alt_skeleton,
+            contract=alt_contract,
+            contract_path=alt_contract_path,
+            bindings=bindings,
+            raw_elements=raw_elements,
+            rerouted_from=planned_slug,
+        )
+    raise original
+
+
+async def _bind_or_reroute(
+    *,
+    skeleton: dict[str, object],
+    contract: ThemeContract,
+    skeleton_path: Path,
+    planned_slug: str,
+    fill_band: str,
+    theme_brief_dict: dict[str, object],
+    ctx: _SkeletonFillContext,
+) -> _BindResult:
+    """Bind the planned skeleton, or the bounded re-route on a theme failure.
+
+    WS-7 D7 (design section 6.2). Binds the planned skeleton first. On a
+    fail-closed ``ValidationError``:
+
+    - ``field="prompt"`` (a PII egress block): re-raised IMMEDIATELY, never
+      re-routed (6.2 step 5, CR-4). The same premise trips the same guard on
+      every candidate, so alternates are pointless.
+    - ``field="theme_brief"`` (a theme incompatibility): the bounded re-route
+      over the in-cell alternates (:func:`_reroute_bind`).
+    - Any other field (e.g. a ``bound_skeleton`` render post-condition, raised
+      only AFTER a successful bind by the caller, never here): propagates.
+
+    Args:
+        skeleton: The planned skeleton dict.
+        contract: The planned skeleton's theme contract.
+        skeleton_path: The planned skeleton's on-disk path.
+        planned_slug: The planned skeleton's slug.
+        fill_band: The band directory alternates resolve under.
+        theme_brief_dict: The fenced brief to bind.
+        ctx: The skeleton-fill context.
+
+    Returns:
+        The :class:`_BindResult` for the planned skeleton or a re-routed
+        alternate.
+
+    Raises:
+        ValidationError: A PII block, an exhausted re-route (the original
+            theme-incompatibility error), or a propagated load defect.
+    """
+    try:
+        bindings, raw_elements = await interpret_and_bind(
+            contract, theme_brief_dict, ctx.effective_provider, ctx.pii
+        )
+    except ValidationError as exc:
+        if _validation_field(exc) != "theme_brief":
+            raise
+        return await _reroute_bind(
+            exc,
+            planned_slug=planned_slug,
+            fill_band=fill_band,
+            theme_brief_dict=theme_brief_dict,
+            ctx=ctx,
+        )
+    return _BindResult(
+        skeleton=skeleton,
+        contract=contract,
+        contract_path=contract_path_for(skeleton_path),
+        bindings=bindings,
+        raw_elements=raw_elements,
+        rerouted_from=None,
     )
 
 
@@ -526,32 +849,42 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             },
         )
 
-    # #CRITICAL: security: bind_theme_to_contract's return value is derived
-    # from an untrusted free-text theme_brief (OWASP LLM01) and stays
-    # untrusted-derived until validate_slot_bindings passes INSIDE that call
-    # (WS-2 design section 4.1). A ValidationError raised here (bind
-    # exhaustion) or by render_bound_skeleton (a post-condition failure) is
-    # deliberately left uncaught: it propagates into run_generation_job's
-    # existing `except Exception` around the _run_skeleton_fill call, which
-    # records the job "failed" and re-raises. There is no silent fallback to
-    # the free-text fill path (WS-2 OQ-1, ratified fail-closed) -- a brief the
-    # binder cannot fit to the contract must not bypass the deterministic
-    # slot validator by falling through to unconstrained free-text
-    # generation.
-    # #VERIFY: the bind-failure worker test asserts the fill provider's call
-    # log stays empty (no fill/repair call made) and the job fails with the
-    # violations recorded.
+    # #CRITICAL: security: interpret_and_bind's return value is derived from an
+    # untrusted free-text theme_brief (OWASP LLM01) and stays untrusted-derived
+    # until validate_slot_bindings passes INSIDE that call (WS-2 design section
+    # 4.1). A ValidationError raised by the bind (exhaustion / PII block) or by
+    # render_bound_skeleton (a post-condition failure) is deliberately left
+    # uncaught here: it propagates into run_generation_job's existing
+    # `except Exception` around the _run_skeleton_fill call, which records the
+    # job "failed" (with the D7 CANNOT_CARRY surface) and re-raises. There is no
+    # silent fallback to the free-text fill path (WS-2 OQ-1, ratified
+    # fail-closed): the WS-7 D7 re-route only ever lands on ANOTHER
+    # contract-gated bind (_bind_or_reroute), and an exhausted re-route
+    # re-raises the original theme-incompatibility error, so a brief the binder
+    # cannot fit to any in-cell contract never bypasses the deterministic slot
+    # validator.
+    # #VERIFY: the bind-failure and re-route worker tests assert the fill
+    # provider's call log stays empty on a fail-closed path and that a re-route
+    # only ever binds another contract-bearing skeleton.
     #
-    # WS-7 D5: interpret_and_bind returns the SAME validated bindings as
-    # bind_theme_to_contract (the render/fill below are byte-for-byte unchanged)
-    # plus the binder's advisory element decomposition, which feeds the refined
-    # interpretation. The elements half is advisory and cannot rescue nor break
-    # the bind (CR-2); a ValidationError on bind exhaustion propagates exactly as
-    # before, so no partial interpretation is ever persisted for a failed bind.
-    bindings, raw_elements = await interpret_and_bind(
-        contract, theme_brief_dict, ctx.effective_provider, ctx.pii
+    # WS-7 D5/D7: _bind_or_reroute returns the SAME validated bindings a bare
+    # bind would (the render/fill below are byte-for-byte unchanged) plus the
+    # binder's advisory element decomposition, and, on a re-route, the alternate
+    # skeleton/contract to render instead of the planned one. The elements half
+    # is advisory and cannot rescue nor break the bind (CR-2); a ValidationError
+    # on exhaustion propagates exactly as before, so no partial interpretation
+    # is ever persisted for a failed bind (that surface is built in the caller's
+    # except handler, design 6.1).
+    result = await _bind_or_reroute(
+        skeleton=skeleton,
+        contract=contract,
+        skeleton_path=skeleton_path,
+        planned_slug=skeleton_slug,
+        fill_band=fill_band,
+        theme_brief_dict=theme_brief_dict,
+        ctx=ctx,
     )
-    bound = render_bound_skeleton(skeleton, bindings)
+    bound = render_bound_skeleton(result.skeleton, result.bindings)
 
     outcome = await fill_skeleton(
         bound,
@@ -561,32 +894,36 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         settings=_default_settings,
         review_stage1_model=review_stage1_model,
         prep_model=ctx.prep_model,
-        slot_bindings=bindings,
+        slot_bindings=result.bindings,
     )
 
     # WS-2 design section 7: the audit block a reviewer needs to see exactly
     # what the theme changed. `bind_attempts` is deliberately omitted:
-    # bind_theme_to_contract does not report how many of its (at most
-    # max_attempts) LLM calls it actually used, and recording a hardcoded `1`
-    # would misrepresent a bind that succeeded only on its retry. Extending
-    # bind_theme_to_contract to return that count is out of this change's
-    # scope.
-    contract_path = contract_path_for(skeleton_path)
+    # interpret_and_bind does not report how many of its (at most max_attempts)
+    # LLM calls it actually used, and recording a hardcoded `1` would
+    # misrepresent a bind that succeeded only on its retry. The audit block
+    # describes the contract that ACTUALLY bound (the alternate on a re-route),
+    # and `rerouted_from` records the planned slug the re-route left (D7).
     theme_contract_report: dict[str, object] = {
-        "skeleton_slug": contract.skeleton_slug,
-        "contract_version": contract.contract_version,
-        "contract_sha256": hashlib.sha256(contract_path.read_bytes()).hexdigest(),
+        "skeleton_slug": result.contract.skeleton_slug,
+        "contract_version": result.contract.contract_version,
+        "contract_sha256": hashlib.sha256(
+            result.contract_path.read_bytes()
+        ).hexdigest(),
         "denylist_version": DENYLIST_VERSION,
-        "slot_bindings": bindings,
+        "slot_bindings": result.bindings,
     }
+    if result.rerouted_from is not None:
+        theme_contract_report["rerouted_from"] = result.rerouted_from
     # WS-7 D5/D6: the refined interpretation rides the report as a SIBLING of the
     # theme_contract audit block, so StorybookVersion.validation_report and
     # job.report both carry the audit copy; run_generation_job then projects it
-    # onto the originating request row (section 5.5).
+    # onto the originating request row (section 5.5). Its skeleton_slug is the
+    # contract that actually bound (the alternate, on a re-route).
     interpretation = _refined_interpretation_from_bind(
-        raw_elements=raw_elements,
-        bindings=bindings,
-        contract=contract,
+        raw_elements=result.raw_elements,
+        bindings=result.bindings,
+        contract=result.contract,
         ctx=ctx,
         created_at=datetime.now(UTC),
     )
@@ -1107,14 +1444,108 @@ async def _update_request_interpretation(
     interpretation = outcome.report.get("request_interpretation")
     if interpretation is None:
         return
+    await _stamp_request_interpretation(session, job_row, interpretation)
 
+
+async def _stamp_request_interpretation(
+    session: AsyncSession, job_row: GenerationJob, block: object
+) -> None:
+    """Resolve the originating request via the job's concept and stamp ``block``.
+
+    Shared by the D6 success projection (:func:`_update_request_interpretation`)
+    and the D7 failure surface (:func:`_record_cannot_carry_if_bound_path`).
+    Resolves ``StoryRequest WHERE concept_id == job.concept_id`` on the worker's
+    OWN session and sets ``StoryRequest.interpretation``. A missing request row
+    (an authored/catalog job, or a concept with no originating request) is a
+    silent no-op. Does NOT commit: the caller's terminal commit (or
+    :func:`_record_failure`'s commit) records it in the same transaction.
+
+    Args:
+        session: The worker's owned session.
+        job_row: The job whose ``concept_id`` resolves the request row.
+        block: The serialized interpretation dict to stamp.
+    """
     result = await session.execute(
         select(StoryRequest).where(StoryRequest.concept_id == job_row.concept_id)
     )
     request_row = result.scalar_one_or_none()
     if request_row is None:
         return
-    request_row.interpretation = cast("dict[str, object]", interpretation)
+    request_row.interpretation = cast("dict[str, object]", block)
+
+
+async def _record_cannot_carry_if_bound_path(
+    session: AsyncSession,
+    job_row: GenerationJob,
+    exc: Exception,
+    *,
+    authoring: dict[str, object] | None,
+    brief: ConceptBrief,
+    pii: PiiContext,
+    report: dict[str, object] | None,
+) -> dict[str, object] | None:
+    """Attach a CANNOT_CARRY interpretation for a failed bound-path fill (D7).
+
+    Returns ``report`` UNCHANGED unless all three hold (design 6.1, 6.3): ``exc``
+    is a :class:`ValidationError`; the job is a skeleton-fill job (a string
+    ``skeleton_slug`` in ``authoring``); and ``exc.field`` is a bound-path bind
+    provenance (:data:`_CANNOT_CARRY_REASONS`: ``"prompt"`` = PII block,
+    ``"theme_brief"`` = theme incompatibility). A fresh_generation, legacy
+    no-sidecar, or half-migrated failure therefore keeps today's behavior (no
+    interpretation): a fresh_generation PII block raises ``field="prompt"`` too,
+    which is why the skeleton-fill gate is required alongside the field check.
+
+    When it applies, it builds the CANNOT_CARRY interpretation (reason chosen
+    from ``exc.field`` ALONE, CR-4), stamps it on the originating request row
+    (no-op if absent), and returns ``report`` with the serialized block added
+    under ``"request_interpretation"``. Job status/retry semantics are
+    untouched: the caller still records the job "failed" and re-raises.
+
+    # #CRITICAL: security: CR-4 -- the two reasons are keyed on exc.field
+    # provenance ONLY, never the message. A PII block can never become
+    # NO_CONFORMING_BINDING, nor a theme reject become PERSONAL_DETAILS.
+    # #VERIFY: test_run_generation_job_bind_failure_records_cannot_carry and
+    # test_run_generation_job_pii_block_records_personal_details.
+
+    Args:
+        session: The worker's owned session.
+        job_row: The failed job (its concept resolves the request row).
+        exc: The pipeline exception being recorded.
+        authoring: The job's ``authoring_metadata`` dict, or ``None``.
+        brief: The concept brief (supplies band fallback + ``content_nogo``).
+        pii: The PII context (supplies family child names for the echo floor).
+        report: The report dict built so far (violations), or ``None``.
+
+    Returns:
+        ``report`` unchanged, or augmented with the serialized CANNOT_CARRY
+        interpretation.
+    """
+    if not isinstance(exc, ValidationError):
+        return report
+    if authoring is None or not isinstance(authoring.get(SKELETON_SLUG_KEY), str):
+        return report
+    reason = _CANNOT_CARRY_REASONS.get(_validation_field(exc) or "")
+    if reason is None:
+        return report
+
+    skeleton_band = authoring.get(SKELETON_BAND_KEY)
+    fill_band = (
+        skeleton_band if isinstance(skeleton_band, str) else brief.age_band.value
+    )
+    theme_brief = authoring.get("theme_brief")
+    theme_brief_dict = theme_brief if isinstance(theme_brief, dict) else {}
+
+    interpretation = _cannot_carry_interpretation(
+        theme_brief=theme_brief_dict,
+        band=AgeBand(fill_band),
+        content_nogo=brief.content_nogo,
+        child_names=pii.child_names,
+        reason=reason,
+        created_at=datetime.now(UTC),
+    )
+    serialized = interpretation.model_dump(mode="json")
+    await _stamp_request_interpretation(session, job_row, serialized)
+    return {**(report or {}), "request_interpretation": serialized}
 
 
 async def run_generation_job(
@@ -1303,17 +1734,34 @@ async def run_generation_job(
                     if isinstance(exc, ValidationError)
                     else None
                 )
+                report: dict[str, object] | None = (
+                    {"slot_binding_violations": violations}
+                    if violations is not None
+                    else None
+                )
+                # WS-7 D7 (design 6.1, 6.3): a bound-path skeleton-fill job that
+                # fails its bind gets an honest CANNOT_CARRY interpretation on
+                # BOTH the failed job report and the originating request row. The
+                # reason (PERSONAL_DETAILS vs NO_CONFORMING_BINDING) is chosen by
+                # exc.field provenance ONLY (CR-4); a fresh_generation, legacy,
+                # or half-migrated failure is a no-op here. This does not change
+                # job status/retry semantics: the job still fails below.
+                report = await _record_cannot_carry_if_bound_path(
+                    session,
+                    job_row,
+                    exc,
+                    authoring=authoring,
+                    brief=brief,
+                    pii=pii,
+                    report=report,
+                )
                 # Record failure and re-raise so RQ marks the job failed.
                 await _record_failure(
                     session,
                     job_row,
                     exc,
                     provider=effective_provider,
-                    report=(
-                        {"slot_binding_violations": violations}
-                        if violations is not None
-                        else None
-                    ),
+                    report=report,
                 )
                 logger.exception(
                     "generation_job.pipeline_error",

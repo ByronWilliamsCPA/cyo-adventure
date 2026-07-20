@@ -26,6 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   skeletons), attaches the result to the job/version report block as a sibling
   of the theme-contract audit block, and projects it onto the originating
   story request row.
+- The rejection path and bounded re-route (WS-7 D7): on a theme a skeleton
+  cannot bind, the worker retries the bind on up to two in-cell alternate
+  skeletons (auto-pick only, contract-gated, recorded as `rerouted_from`)
+  before failing closed; a failed bound-path fill now stamps an honest
+  cannot-carry interpretation on both the failed job report and the request
+  row. A PII egress block and a theme incompatibility are kept distinct by
+  exception provenance (personal-details vs no-conforming-binding), and a PII
+  block never triggers a re-route.
 
 ## [0.18.0] - 2026-07-19
 

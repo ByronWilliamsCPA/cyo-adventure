@@ -701,10 +701,18 @@ _FRESHGEN_BRIEF: dict[str, object] = {
 
 
 class _FreshGenResult:
-    """SQLAlchemy Result double yielding no child-name rows (empty PII)."""
+    """SQLAlchemy Result double yielding no child-name rows (empty PII).
+
+    Also answers ``scalar_one_or_none`` with ``None`` so the WS-7 D7 request-row
+    resolution (``_stamp_request_interpretation``) no-ops in the unit doubles
+    that reuse this result (no originating request row is modeled).
+    """
 
     def all(self) -> list[tuple[str]]:
         return []
+
+    def scalar_one_or_none(self) -> None:
+        return None
 
 
 class _FreshGenSession:
@@ -1643,9 +1651,18 @@ async def test_run_generation_job_bind_failure_records_violations_on_job_report(
     assert job.report is not None
     violations = cast("list[dict[str, object]]", job.report["slot_binding_violations"])
     assert any(v["rule"] == "forbid:weapon" for v in violations)
-    # WS-7 D6: a bind failure raises out of _run_skeleton_fill BEFORE the
-    # request-row update runs, so no partial interpretation is ever persisted.
-    assert "request_interpretation" not in job.report
+    # WS-7 D7: a bound-path bind failure (field="theme_brief") now also attaches
+    # an honest CANNOT_CARRY interpretation, as a sibling of the violations, on
+    # the failed job report. The whole-theme element is NO_CONFORMING_BINDING (a
+    # theme incompatibility), never PERSONAL_DETAILS.
+    interp = cast("dict[str, object]", job.report["request_interpretation"])
+    assert interp["layer"] == "refined"
+    elements = cast("list[dict[str, object]]", interp["elements"])
+    assert any(
+        e["disposition"] == "cannot_carry" and e["reason"] == "no_conforming_binding"
+        for e in elements
+    )
+    assert not any(e["reason"] == "personal_details" for e in elements)
 
 
 # ---------------------------------------------------------------------------
@@ -1952,4 +1969,393 @@ async def test_update_request_interpretation_no_block_skips_query() -> None:
         cast("AsyncSession", _RaisingSession()),
         job,
         _interp_outcome({"other": "data"}),
+    )
+
+
+# ---------------------------------------------------------------------------
+# WS-7 D7: the bounded alternate-skeleton re-route (design section 6.2) and the
+# CANNOT_CARRY failure surface (design sections 6.1, 6.3, CR-4).
+# ---------------------------------------------------------------------------
+
+
+def _named_contract(skeleton_slug: str) -> ThemeContract:
+    """A _bound_dispatch_contract variant carrying a distinct skeleton_slug.
+
+    The four declared slots match _bound_dispatch_skeleton's {SLOT} tokens (so
+    load_contract_for's cross-check passes); only the ``skeleton_slug`` label
+    differs, so a re-route can be observed by which contract's slug lands in the
+    audit block / interpretation.
+    """
+    return _bound_dispatch_contract().model_copy(
+        update={"skeleton_slug": skeleton_slug}
+    )
+
+
+def _setup_multi_skeleton(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    contracts: dict[str, str | None],
+    band: str = "8-11",
+) -> list[str]:
+    """Write per-slug contract sidecars and dispatch resolve/load per slug.
+
+    ``contracts`` maps a skeleton slug to its contract's ``skeleton_slug`` label,
+    or ``None`` for a CONTRACT-LESS alternate (no sidecar written). Every slug
+    shares _bound_dispatch_skeleton (identical {SLOT} tokens). Returns a list
+    that records, in order, every slug ``resolve_skeleton_path`` is called with,
+    so a test can assert exactly which alternates the re-route touched.
+    """
+    band_dir = tmp_path / band
+    band_dir.mkdir(exist_ok=True)
+    for slug, contract_slug in contracts.items():
+        if contract_slug is None:
+            continue
+        contract_path = band_dir / f"{slug}.contract.json"
+        contract_path.write_bytes(
+            _named_contract(contract_slug).model_dump_json().encode("utf-8")
+        )
+
+    # A contract-less alternate must be a legacy, TOKEN-FREE skeleton so
+    # load_contract_for returns None (a half-migrated skeleton -- {SLOT} tokens
+    # with no sidecar -- would instead fail closed with a ValidationError).
+    legacy_slugs = {slug for slug, cslug in contracts.items() if cslug is None}
+    resolved: list[str] = []
+
+    def _resolve(_band: str, slug: str) -> Path:
+        resolved.append(slug)
+        return band_dir / f"{slug}.json"
+
+    def _load(path: Path) -> dict[str, object]:
+        if path.stem in legacy_slugs:
+            return {"id": f"s_{path.stem}", "nodes": []}
+        return _bound_dispatch_skeleton()
+
+    monkeypatch.setattr(worker_module, "resolve_skeleton_path", _resolve)
+    monkeypatch.setattr(worker_module, "load_skeleton", _load)
+    return resolved
+
+
+_VIOLATING_RESPONSE = _interpret_bind_response(
+    {
+        "HERO": "a sword-wielder",  # trips the 3-5 band weapon floor every time
+        "A1_GATE": "the jammed hatch",
+        "A1_OFFER": "a glinting tide pool",
+        "PRIZE": "Glass Starfish",
+    }
+)
+_VALID_RESPONSE = _interpret_bind_response(_BOUND_DISPATCH_BINDINGS)
+
+
+def _reroute_ctx(
+    provider: GenerationProvider, alternatives: list[str]
+) -> _SkeletonFillContext:
+    return _SkeletonFillContext(
+        authoring={
+            "skeleton_slug": "planned",
+            "theme_brief": {"premise": "a fox"},
+            "skeleton_alternatives": alternatives,
+        },
+        brief=_dispatch_brief(),
+        effective_provider=provider,
+        pii=_dispatch_pii(),
+    )
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_reroute_binds_alternate_records_rerouted_from(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Planned bind fails closed, the first in-cell alternate binds: the fill
+    proceeds on the alternate and records rerouted_from (WS-7 D7, 6.2)."""
+    resolved = _setup_multi_skeleton(
+        tmp_path,
+        monkeypatch,
+        contracts={"planned": "s_planned", "alt1": "s_alt1"},
+    )
+    monkeypatch.setattr(worker_module, "fill_skeleton", _passed_fill_stub)
+
+    # planned: 2 violating attempts -> fail closed; alt1: 1 valid attempt -> bind.
+    provider = MockProvider(
+        responses=[_VIOLATING_RESPONSE, _VIOLATING_RESPONSE, _VALID_RESPONSE]
+    )
+
+    outcome = await _run_skeleton_fill(_reroute_ctx(provider, ["alt1"]))
+
+    # planned resolved first (initial load), then alt1 during the re-route.
+    assert resolved == ["planned", "alt1"]
+    assert len(provider.calls) == 3  # 2 planned + 1 alternate; no fill call
+    audit = cast("dict[str, object]", outcome.report["theme_contract"])
+    assert audit["skeleton_slug"] == "s_alt1"
+    assert audit["rerouted_from"] == "planned"
+    interp = cast("dict[str, object]", outcome.report["request_interpretation"])
+    assert interp["skeleton_slug"] == "s_alt1"
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_reroute_skips_contractless_alternate(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A contract-less alternate is not eligible and is skipped without a bind;
+    the next contract-bearing alternate binds (WS-7 D7, 6.2 step 2)."""
+    resolved = _setup_multi_skeleton(
+        tmp_path,
+        monkeypatch,
+        contracts={"planned": "s_planned", "altnc": None, "alt2": "s_alt2"},
+    )
+    monkeypatch.setattr(worker_module, "fill_skeleton", _passed_fill_stub)
+
+    provider = MockProvider(
+        responses=[_VIOLATING_RESPONSE, _VIOLATING_RESPONSE, _VALID_RESPONSE]
+    )
+
+    outcome = await _run_skeleton_fill(_reroute_ctx(provider, ["altnc", "alt2"]))
+
+    # altnc IS resolved+loaded (to discover it has no contract) but binds nothing.
+    assert resolved == ["planned", "altnc", "alt2"]
+    assert len(provider.calls) == 3  # 2 planned + 1 alt2; altnc consumed no call
+    audit = cast("dict[str, object]", outcome.report["theme_contract"])
+    assert audit["skeleton_slug"] == "s_alt2"
+    assert audit["rerouted_from"] == "planned"
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_reroute_respects_limit_third_alternate_untried(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """At most _REROUTE_LIMIT (2) contract-bearing alternates are bound; a 3rd
+    is never even resolved, and exhaustion re-raises the original error (6.2)."""
+    resolved = _setup_multi_skeleton(
+        tmp_path,
+        monkeypatch,
+        contracts={
+            "planned": "s_planned",
+            "alt1": "s_alt1",
+            "alt2": "s_alt2",
+            "alt3": "s_alt3",
+        },
+    )
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fail_if_fill_called)
+
+    # planned + alt1 + alt2 each exhaust 2 violating attempts (6 calls). alt3 is
+    # never tried, so 6 responses is exactly enough; a 7th call would over-run
+    # the mock and raise a different error, proving alt3 stays untouched.
+    provider = MockProvider(responses=[_VIOLATING_RESPONSE] * 6)
+
+    with pytest.raises(ValidationError) as exc_info:
+        await _run_skeleton_fill(_reroute_ctx(provider, ["alt1", "alt2", "alt3"]))
+
+    assert resolved == ["planned", "alt1", "alt2"]  # alt3 never resolved
+    assert len(provider.calls) == 6
+    # Fail closed with the ORIGINAL theme-incompatibility error and its details.
+    assert exc_info.value.details.get("field") == "theme_brief"
+    violations = cast("list[dict[str, object]]", exc_info.value.details["violations"])
+    assert any(v["rule"] == "forbid:weapon" for v in violations)
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_pii_block_short_circuits_reroute(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A PII egress block on the planned bind (field="prompt") propagates
+    immediately with ZERO alternate attempts (WS-7 D7, 6.2 step 5, CR-4)."""
+    resolved = _setup_multi_skeleton(
+        tmp_path,
+        monkeypatch,
+        contracts={"planned": "s_planned", "alt1": "s_alt1"},
+    )
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fail_if_fill_called)
+
+    # The premise carries an email; the PII guard raises inside interpret_and_bind
+    # BEFORE any provider.complete, so the mock is never called.
+    provider = MockProvider(responses=[_VALID_RESPONSE])
+    ctx = _SkeletonFillContext(
+        authoring={
+            "skeleton_slug": "planned",
+            "theme_brief": {"premise": "email me at foo@bar.com"},
+            "skeleton_alternatives": ["alt1"],
+        },
+        brief=_dispatch_brief(),
+        effective_provider=provider,
+        pii=_dispatch_pii(),
+    )
+
+    with pytest.raises(ValidationError) as exc_info:
+        await _run_skeleton_fill(ctx)
+
+    # Only the planned skeleton was resolved; the alternate was never touched.
+    assert resolved == ["planned"]
+    assert provider.calls == []  # guard fired before any dispatch
+    assert exc_info.value.details.get("field") == "prompt"
+
+
+@pytest.mark.asyncio
+async def test_run_generation_job_pii_block_records_personal_details(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A PII block on a bound-path job surfaces CANNOT_CARRY / PERSONAL_DETAILS
+    on the report, classified from exc.field alone (WS-7 D7, 6.3, CR-4)."""
+    import uuid as uuid_mod
+
+    from cyo_adventure.db.models import Concept, GenerationJob
+
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(_bound_dispatch_contract().model_dump_json().encode())
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    monkeypatch.setattr(
+        worker_module, "load_skeleton", lambda _path: _bound_dispatch_skeleton()
+    )
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fail_if_fill_called)
+
+    provider = MockProvider(responses=[_VALID_RESPONSE])  # never reached
+    job_id = uuid_mod.uuid4()
+    concept_id = uuid_mod.uuid4()
+    job = GenerationJob(
+        id=job_id,
+        concept_id=concept_id,
+        status="queued",
+        authoring_metadata={
+            "skeleton_slug": "themed-slug",
+            "theme_brief": {"premise": "reach me at foo@bar.com"},
+        },
+    )
+    concept = Concept(id=concept_id, family_id=uuid_mod.uuid4(), brief=_FRESHGEN_BRIEF)
+    session_ctx = _ThemeContractBindFailureSession(job, concept)
+
+    def factory() -> object:
+        class _Ctx:
+            async def __aenter__(self) -> _ThemeContractBindFailureSession:
+                return session_ctx
+
+            async def __aexit__(self, *exc: object) -> None:
+                return None
+
+        return _Ctx()
+
+    with pytest.raises(ValidationError):
+        await worker_module.run_generation_job(
+            job_id, provider=provider, session_factory=factory
+        )
+
+    assert job.status == "failed"
+    assert provider.calls == []  # PII guard fired before any provider dispatch
+    assert job.report is not None
+    assert "slot_binding_violations" not in job.report  # a PII block has none
+    interp = cast("dict[str, object]", job.report["request_interpretation"])
+    elements = cast("list[dict[str, object]]", interp["elements"])
+    assert any(
+        e["disposition"] == "cannot_carry" and e["reason"] == "personal_details"
+        for e in elements
+    )
+    assert not any(e["reason"] == "no_conforming_binding" for e in elements)
+
+
+class _StampSession:
+    """Session double whose StoryRequest lookup returns a preset request row."""
+
+    def __init__(self, request_row: object) -> None:
+        self._row = request_row
+        self.executed: list[object] = []
+
+    async def execute(self, statement: object) -> _UpdateResult:
+        self.executed.append(statement)
+        return _UpdateResult(self._row)
+
+
+def _cannot_carry_brief() -> ConceptBrief:
+    return cast(
+        "ConceptBrief",
+        SimpleNamespace(age_band=SimpleNamespace(value="8-11"), content_nogo=[]),
+    )
+
+
+@pytest.mark.asyncio
+async def test_record_cannot_carry_classifies_and_stamps_request_row() -> None:
+    """The D7 helper classifies by exc.field alone and stamps the request row.
+
+    field="theme_brief" -> NO_CONFORMING_BINDING; field="prompt" ->
+    PERSONAL_DETAILS. Both stamp the resolved request row and augment the report.
+    """
+    import uuid
+
+    for field, expected_reason in (
+        ("theme_brief", "no_conforming_binding"),
+        ("prompt", "personal_details"),
+    ):
+        request_row = SimpleNamespace(interpretation=None)
+        session = _StampSession(request_row)
+        job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+        exc = ValidationError("bind failed", field=field)
+
+        report = await worker_module._record_cannot_carry_if_bound_path(  # pyright: ignore[reportPrivateUsage]
+            cast("AsyncSession", session),
+            job,
+            exc,
+            authoring={"skeleton_slug": "themed-slug", "theme_brief": {"premise": "x"}},
+            brief=_cannot_carry_brief(),
+            pii=PiiContext(child_names=frozenset()),
+            report=None,
+        )
+
+        assert report is not None
+        block = cast("dict[str, object]", report["request_interpretation"])
+        elements = cast("list[dict[str, object]]", block["elements"])
+        assert any(
+            e["disposition"] == "cannot_carry" and e["reason"] == expected_reason
+            for e in elements
+        )
+        # The same block was stamped onto the resolved request row (D6 path).
+        assert request_row.interpretation == block
+
+
+@pytest.mark.asyncio
+async def test_record_cannot_carry_noop_for_non_skeleton_or_other_field() -> None:
+    """The D7 helper is a no-op for a non-skeleton-fill job, a non-bind field,
+    or a non-ValidationError (WS-7 D7 gating; fresh/legacy keep today's behavior).
+    """
+    import uuid
+
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+    brief = _cannot_carry_brief()
+    pii = PiiContext(child_names=frozenset())
+
+    async def _run(
+        exc: Exception, authoring: dict[str, object] | None
+    ) -> dict[str, object] | None:
+        session = _StampSession(SimpleNamespace(interpretation=None))
+        result = await worker_module._record_cannot_carry_if_bound_path(  # pyright: ignore[reportPrivateUsage]
+            cast("AsyncSession", session),
+            job,
+            exc,
+            authoring=authoring,
+            brief=brief,
+            pii=pii,
+            report=None,
+        )
+        # A no-op must never issue the request-row query.
+        assert session.executed == []
+        return result
+
+    # fresh_generation: no skeleton_slug in authoring.
+    assert await _run(ValidationError("x", field="theme_brief"), None) is None
+    # a bound-path job but a non-bind field (e.g. a render post-condition).
+    assert (
+        await _run(
+            ValidationError("x", field="bound_skeleton"),
+            {"skeleton_slug": "themed-slug", "theme_brief": {"premise": "x"}},
+        )
+        is None
+    )
+    # a non-ValidationError never triggers the surface.
+    assert (
+        await _run(
+            RuntimeError("boom"),
+            {"skeleton_slug": "themed-slug", "theme_brief": {"premise": "x"}},
+        )
+        is None
     )
