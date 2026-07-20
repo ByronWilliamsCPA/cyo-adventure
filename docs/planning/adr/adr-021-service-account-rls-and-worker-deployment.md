@@ -1,5 +1,5 @@
 ---
-title: "ADR-020: Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment"
+title: "ADR-021: Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment"
 schema_type: planning
 status: proposed
 owner: core-maintainer
@@ -15,7 +15,7 @@ tags:
   - security
 ---
 
-# ADR-020: Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment
+# ADR-021: Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment
 
 > **Status**: Proposed
 > **Date**: 2026-07-20
