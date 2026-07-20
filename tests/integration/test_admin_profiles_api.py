@@ -126,6 +126,59 @@ async def test_deactivated_profile_cannot_mint_child_session(
     assert mint.status_code == 404
 
 
+async def test_list_admin_profiles_records_profile_viewed_event(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Listing profiles cross-family logs one profile_viewed audit event.
+
+    GDPR Article 30 accountability (remediation plan Phase 8a): this is the
+    only cross-family read of child-linked data anywhere in the admin
+    console, so it is audited like a write. One event per call, not one per
+    row returned.
+    """
+    list_resp = await client.get(
+        _PROFILES,
+        params={"family_id": str(seed.family_id)},
+        headers=auth(seed.admin_token),
+    )
+    assert list_resp.status_code == 200
+    returned_count = len(list_resp.json()["profiles"])
+
+    audit_resp = await client.get(
+        "/api/v1/admin/audit",
+        params={"kind": "profile_viewed"},
+        headers=auth(seed.admin_token),
+    )
+    assert audit_resp.status_code == 200
+    events = audit_resp.json()["events"]
+    assert len(events) == 1
+    event = events[0]
+    assert event["entity_type"] == "child_profile"
+    assert event["entity_id"] == str(seed.family_id)
+    assert event["payload"] == {
+        "family_id": str(seed.family_id),
+        "count": returned_count,
+    }
+
+
+async def test_list_admin_profiles_without_filter_records_all_sentinel(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An unfiltered admin listing audits with entity_id/family_id 'all'/None."""
+    list_resp = await client.get(_PROFILES, headers=auth(seed.admin_token))
+    assert list_resp.status_code == 200
+
+    audit_resp = await client.get(
+        "/api/v1/admin/audit",
+        params={"kind": "profile_viewed"},
+        headers=auth(seed.admin_token),
+    )
+    assert audit_resp.status_code == 200
+    event = audit_resp.json()["events"][0]
+    assert event["entity_id"] == "all"
+    assert event["payload"]["family_id"] is None
+
+
 async def test_reactivated_profile_reappears_in_listing(
     client: AsyncClient, seed: Seed
 ) -> None:

@@ -35,7 +35,9 @@ from cyo_adventure.api.schemas import (
     LibraryView,
     error_responses,
 )
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
+from cyo_adventure.covers.storage import generate_presigned_cover_urls
 from cyo_adventure.db.models import (
     Rating,
     ReadingState,
@@ -219,8 +221,9 @@ def _library_item(
         series_id: The book's series, or None for a standalone story (WS-B
             PR 3). Sourced from the ``Storybook`` row, not the blob.
         book_index: The book's 1-based position in its series, or None.
-        cover_url: The generated cover image URL, or None if not yet
-            generated. Sourced from ``StorybookVersion.cover_image_url``.
+        cover_url: A freshly presigned cover image URL, or None if no cover
+            is ready yet. Generated from ``StorybookVersion.cover_status``
+            (never read from the stored ``cover_image_url`` audit column).
 
     Returns:
         LibraryItem: The listing item with safe, finite, correctly typed fields.
@@ -347,10 +350,18 @@ async def list_library(
         )
     )
     blobs: dict[tuple[str, int], dict[str, object]] = {}
-    covers: dict[tuple[str, int], str | None] = {}
+    ready_covers: list[tuple[str, int]] = []
     for row in version_rows:
         blobs[(row.storybook_id, row.version)] = row.blob
-        covers[(row.storybook_id, row.version)] = row.cover_image_url
+        if row.cover_status == "ready":
+            ready_covers.append((row.storybook_id, row.version))
+    # #CRITICAL: security: covers are private-by-default in R2 (Phase 1d); the
+    # only way a client legitimately learns a cover's URL is a freshly
+    # generated, short-lived signed GET URL, never the stored (permanent,
+    # audit-only) cover_image_url column. One batched call signs every
+    # ready cover in this listing instead of reading URLs off the rows above.
+    # #VERIFY: test_library_api.py::test_library_returns_presigned_cover_urls.
+    covers = await generate_presigned_cover_urls(ready_covers, settings)
     book_ids = [b[0] for b in books]
     # #ASSUME: external resources: per-profile state and ratings load in one
     # bulk query each (not per-book) so the listing stays two+2 queries total.

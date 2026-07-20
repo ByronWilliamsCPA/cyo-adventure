@@ -252,7 +252,7 @@ jobs:
         if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/coverage/lcov.info') != '' }}
         # See the coverage-upload job: a Qlty hiccup must not block a merge.
         continue-on-error: true
-        uses: qltysh/qlty-action/coverage@dafbc1e328f1f92525f1a3916724bd5fa01498e8 # v2.2.3
+        uses: qltysh/qlty-action/coverage@08a0a862c159eae9b9003081da6663d96efef637 # v2.3.0
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: frontend/coverage/lcov.info
@@ -337,7 +337,7 @@ jobs:
         if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/design-system/coverage/lcov.info') != '' }}
         # See the coverage-upload job: a Qlty hiccup must not block a merge.
         continue-on-error: true
-        uses: qltysh/qlty-action/coverage@dafbc1e328f1f92525f1a3916724bd5fa01498e8 # v2.2.3
+        uses: qltysh/qlty-action/coverage@08a0a862c159eae9b9003081da6663d96efef637 # v2.3.0
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: frontend/design-system/coverage/lcov.info
@@ -557,7 +557,7 @@ jobs:
         # A Qlty upload hiccup must not fail the job or block a merge, matching
         # the Codecov steps' fail_ci_if_error: false.
         continue-on-error: true
-        uses: qltysh/qlty-action/coverage@dafbc1e328f1f92525f1a3916724bd5fa01498e8 # v2.2.3
+        uses: qltysh/qlty-action/coverage@08a0a862c159eae9b9003081da6663d96efef637 # v2.3.0
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: coverage-reports/coverage-unit.xml,coverage-reports/coverage-integration.xml,coverage-reports/coverage-security.xml

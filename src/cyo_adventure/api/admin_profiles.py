@@ -26,6 +26,7 @@ from cyo_adventure.api.schemas import (
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
 from cyo_adventure.core.pin import hash_pin
 from cyo_adventure.db.models import ChildProfile, Family
+from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.storybook.models import AgeBand
 
 router = APIRouter(
@@ -115,6 +116,22 @@ async def list_admin_profiles(
             .limit(_PROFILE_LIST_LIMIT)
         )
     ).all()
+    # #CRITICAL: security: this is a cross-family read of child-linked data
+    # (age band, reading cap, PIN presence); unlike every other GET in this
+    # API, it crosses a tenant boundary, so it is audited the same way a
+    # write would be (GDPR Article 30 accountability, remediation plan
+    # Phase 8a). One event per call, never one per row, so the log cannot
+    # become a second copy of the data it audits access to.
+    # #VERIFY: tests/integration/test_admin_profiles_api.py::
+    # test_list_admin_profiles_records_profile_viewed_event.
+    await record_event(
+        ctx.session,
+        Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE),
+        entity_type="child_profile",
+        entity_id=family_id if family_id is not None else "all",
+        event_type=EventType.PROFILE_VIEWED,
+        payload={"family_id": family_id, "count": len(rows)},
+    )
     return AdminProfileListView(profiles=[_view(row) for row in rows])
 
 

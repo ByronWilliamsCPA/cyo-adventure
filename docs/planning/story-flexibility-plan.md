@@ -320,6 +320,23 @@ in WS-0 must detect and fail it.
 
 ### WS-5: Structure and state variation within the ADR-011 grammar (scaling)
 
+> **Status (2026-07-20): Delivered (D1-D8).** The full mutation-operator catalog
+> and promotion pipeline shipped per
+> `docs/planning/ws5-structure-state-variation-design.md`: D1 the pure operator
+> framework (`src/cyo_adventure/mutation/`: ops, subtree, identity); D2 M1 + the
+> acceptance harness + the `scripts/mutate_skeleton.py` CLI; D3 M2 ending re-map;
+> D4 M3 prune/graft; D5 M4 decisions-per-path; D6 M5 Tier-2 state variation +
+> the single-walk coverage/clock re-proof; D7 the calibrated
+> `TAU_STRUCT`/`TAU_CELL`/`TAU_STATE` floors + contract-acceptance integration;
+> D8 the promotion bundle (`mutation/bundle.py` lineage + `--verify-bundle`),
+> the re-guidance resolution flow (`mutation/reguide.py`), the stage-5 sample
+> fill (`mutation/sample_fill.py`), bounded operator chains
+> (`mutation/compose.py`, OQ-7), the lineage-sidecar scanner generalization, and
+> one end-to-end composed-chain promotion bundle as the ADR-020 evidence exhibit.
+> Everything runs catalog-time only; no mutant reaches `skeletons/` except through
+> a reviewed human PR (CR-1). ADR-020 (`docs/planning/adr/adr-020-...`) captures
+> the catalog-growth decision set, Status Proposed pending supervisor ratification.
+
 - **Goal:** new and mutated trees + state variety, for when leaf diversity alone
   no longer holds uniqueness up (heavy readers, larger per-cell libraries).
 - **Approach:** cheap **mutation operators** on verified trees first (sibling
@@ -415,10 +432,21 @@ prerequisite for WS-4, not parallel to it.
 
 ## 9. Open questions / ADR candidates
 
-- **ADR-019 candidate:** "Parameterized skeletons and theme-driven fills." Ratify
-  the parameterization scheme, the theme-contract format (per-band/per-slot safety
-  constraints, per-skeleton theme-compatibility), the label policy, and the rule
-  that leaves are generated fresh (not substituted), before migrating the catalog.
+- **ADR-019 (accepted 2026-07-19):** "Parameterized skeletons and machine-readable
+  theme contracts" (`docs/planning/adr/adr-019-...`) ratified the parameterization
+  scheme, the theme-contract format (per-band/per-slot safety constraints,
+  per-skeleton theme-compatibility), the label policy, and the fresh-leaf rule.
+  This bullet is resolved; no parameterization question remains open. The distinct
+  ADR for *growing the catalog from mutated trees* is **ADR-020** (below), raised
+  by WS-5.
+- **ADR-020 (proposed 2026-07-20):** "Mutation-derived skeletons and catalog
+  growth" (`docs/planning/adr/adr-020-...`), drafted at WS-5 D8 with the
+  composed-chain promotion bundle as its evidence exhibit. It ratifies that
+  mutants are first-class catalog citizens, lineage lives in a
+  `skeletons/<band>/<slug>.lineage.json` sidecar (scanner skip generalized), the
+  gate is byte-identical plus promotion-only floors, human structure approval is
+  the skeletons/ PR review, cell inheritance is fixed, and contract parity holds.
+  Status Proposed pending supervisor ratification.
 - Do fixed and parameterized skeletons coexist, or is parameterization the target
   end-state? Where does the theme contract live?
 - WS-8 promotion bar: what human approval gates a new tree into the catalog, and

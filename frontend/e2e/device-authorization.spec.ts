@@ -5,6 +5,7 @@ import {
   mockDeviceGrants,
   mockEmptyConsole,
   mockMe,
+  mockOnboarding,
   seedGuardianSession,
   seedPasswordGuardianSession,
 } from './support/auth'
@@ -30,6 +31,7 @@ test.describe('authorize-device intent (ADR-014 section 5)', () => {
     await page.route('**/auth/v1/token**', (route) =>
       route.fulfill({ json: makeGuardianSession('e2e-guardian-token') })
     )
+    await mockOnboarding(page)
     await mockMe(page)
     await mockDeviceGrants(page)
     await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: { profiles: [] } }))

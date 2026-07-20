@@ -83,7 +83,7 @@ jobs:
     name: Container Security Scan
     needs: detect-release-pr
     if: needs.detect-release-pr.outputs.release_pr != 'true'
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-container-security.yml@c4ba2d18e4de831cbdbffcafd8e033473c0a0059  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-container-security.yml@7aaf24d13d9ff61d0d231797bfa6fd3cad478e2b  # main
     with:
       dockerfile-path: 'Dockerfile'
       build-context: '.'

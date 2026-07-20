@@ -28,16 +28,20 @@ def test_allowlist_row_defaults_enabled_true() -> None:
     assert ProviderModelAllowlist.__table__.c.enabled.default.arg is True
 
 
-def test_audit_row_changed_by_column_is_non_nullable() -> None:
-    """changed_by has no silently-nullable Python default, and a row constructed
-    with it holds its fields.
+def test_audit_row_changed_by_is_nullable_with_set_null_ondelete() -> None:
+    """changed_by is nullable with ON DELETE SET NULL, not NOT NULL (Phase 3a).
 
-    The real NOT NULL FK guarantee is exercised by the migration round-trip test
-    in Task 3; this test only pins that the ORM column itself carries no
-    Python-side default that would mask a missing changed_by until the DB
-    constraint fires, and that a fully-specified row constructs cleanly.
+    Every real write path (the admin API) always stamps a real admin here;
+    this column is nullable specifically so a guardian/admin's Article 17
+    self-deletion is never blocked by an FK violation on audit rows from
+    before their account was erased. See the column's #CRITICAL comment in
+    db/models.py and tests/integration/test_deletion_drill.py for the erasure
+    path this enables.
     """
-    assert ProviderModelAllowlistAudit.__table__.c.changed_by.nullable is False
+    column = ProviderModelAllowlistAudit.__table__.c.changed_by
+    assert column.nullable is True
+    fk = next(iter(column.foreign_keys))
+    assert fk.ondelete == "SET NULL"
     audit = ProviderModelAllowlistAudit(
         provider="anthropic",
         model_id="claude-sonnet-4-6",

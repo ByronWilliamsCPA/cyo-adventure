@@ -76,12 +76,47 @@ surface), G12 (export and deletion), K14 (safe room), and A14 (compliance ops).
 COPPA requires consent verification stronger than a tap-through; the App Store parental
 gate does not satisfy VPC on its own. FTC-recognized methods include a payment-card
 transaction, signed consent form, government-ID match, knowledge-based authentication,
-and face-match-to-ID. **Working recommendation**: for the paid tier, treat the
-subscription purchase itself (card transaction via Apple IAP) as the VPC event where
-counsel confirms it qualifies; for any free tier that collects child-linked data before
-purchase, use email-plus or defer child-profile creation until after a purchase-backed
-consent. Decision needed: the exact mechanism per tier, and what the free tier may do
-pre-consent.
+and face-match-to-ID.
+
+**Decision recorded 2026-07-20 (owner choice; pending counsel confirmation, not yet
+"closed" per this ADR's own Validation checklist below).** The account owner ruled out a
+payment-card transaction (avoids introducing PCI scope) and a third-party ID-verification
+service (avoids a new processor and its own DPA/SCC/vendor-oversight burden). Chosen
+mechanism instead: a signature-capture step layered on the existing Supabase/Google OAuth
+login already used for guardian sign-in. Concretely, the guardian provides a
+signature-equivalent (a canvas-drawn signature or a typed full-legal-name attestation)
+plus an explicit checkbox affirming specific consent language; the app logs IP address,
+timestamp, and the OAuth-authenticated account id server-side alongside it. This is meant
+to satisfy the "sign and submit electronically" method already on the FTC's enumerated
+list (312.5(b)(2)(i)), with the OAuth login supplying the identity binding rather than a
+separate verification step. This applies uniformly regardless of tier; the prior working
+recommendation's paid-tier/free-tier split (Apple IAP as the VPC event) is superseded,
+since the app is not currently monetized and the owner does not want VPC design coupled to
+a future payment decision.
+
+**Flagged for counsel**: whether a typed-name or canvas signature captured this way
+satisfies 312.5(b)(2)(i)'s "signed" requirement is the single highest-risk open question in
+this decision and should be the first thing reviewed in the drafted consent-flow copy
+(`docs/compliance/` DPIA and Privacy Notice drafts, in progress).
+
+**Implemented 2026-07-20.** `POST /v1/onboarding`'s `consent` payload
+(`accepted`/`policy_version`/`signer_name`) persists onto
+`User.consent_accepted_at`/`consent_policy_version`/`consent_signer_name`/`consent_ip`
+(paired, CHECK-enforced); `api/profiles.py::_require_consent` gates
+`POST /api/v1/profiles` on it. Frontend: `GuardianConsentPage.tsx`, reached automatically via
+a new `AuthStatus = 'needs-consent'`. This is the engineering half of D1; the flagged
+counsel-review question above is unchanged by implementation and still needs an answer
+before this ADR can flip to Accepted.
+
+**Related, newly decided the same day, not itself part of D1**: a guardian self-signup
+admin-approval gate. An uninvited guardian's own first-login JIT provisioning now starts
+`User.status='awaiting_approval'` instead of `active`; `api/deps.py::require_principal`
+already rejects every endpoint for a non-`active` status, so this alone is the enforcement
+mechanism. An admin approves (`-> active`) or denies (`-> deactivated`) via the existing
+`PATCH /admin/users/{id}`. This is a parallel, non-overlapping track to the admin-invite
+`pending` status already in this ADR's "already decided" list; an admin-invited guardian is
+still trusted immediately on bind, unaffected by this gate. Frontend:
+`GuardianAwaitingApprovalPage.tsx`, reached via a new `AuthStatus = 'awaiting-approval'`.
 
 ### D2: Audience classification
 
@@ -98,6 +133,13 @@ DPIA, per-state consent ages (13-16), and AADC conformance (default-high privacy
 best-interests assessment) join Phase 7. **Working recommendation**: launch US storefront
 only, record EU/UK as an explicit later expansion with its own compliance gate. Decision
 needed: confirm.
+
+**Decision confirmed 2026-07-20 (owner choice; pending counsel confirmation).** No UK or
+EEA users exist today, and none are planned. US-only is confirmed as the working
+recommendation above, not merely proposed. `coppa-gdpr-remediation-plan.md` Phase 9
+(GDPR-K/AADC conformance) is shelved, not worked, pending a change in this fact; if UK/EEA
+users are ever expected, revisit this decision and Phase 9 together before that expansion
+ships, not after.
 
 ### D4: Public artifacts
 

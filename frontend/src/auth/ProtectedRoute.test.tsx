@@ -48,6 +48,47 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText('Login page')).toBeInTheDocument()
   })
 
+  it('redirects to the awaiting-approval interstitial, not login', () => {
+    // A real Supabase session exists here (AdultGate's own check already
+    // passed); looping through login would just re-establish the same
+    // session and land back here.
+    mockUseAuth.mockReturnValue({ status: 'awaiting-approval', principal: null })
+    render(
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route path="/login" element={<div>Login page</div>} />
+          <Route path="/guardian/awaiting-approval" element={<div>Awaiting approval</div>} />
+          <Route
+            element={<ProtectedRoute redirectTo="/login" allowedRoles={['guardian', 'admin']} />}
+          >
+            <Route path="/protected" element={<div>Protected content</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(screen.getByText('Awaiting approval')).toBeInTheDocument()
+    expect(screen.queryByText('Login page')).not.toBeInTheDocument()
+  })
+
+  it('redirects to the consent interstitial, not login', () => {
+    mockUseAuth.mockReturnValue({ status: 'needs-consent', principal: null })
+    render(
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route path="/login" element={<div>Login page</div>} />
+          <Route path="/guardian/consent" element={<div>Consent form</div>} />
+          <Route
+            element={<ProtectedRoute redirectTo="/login" allowedRoles={['guardian', 'admin']} />}
+          >
+            <Route path="/protected" element={<div>Protected content</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(screen.getByText('Consent form')).toBeInTheDocument()
+    expect(screen.queryByText('Login page')).not.toBeInTheDocument()
+  })
+
   it('sends a signed-in but disallowed role to the kid picker, not the login page', () => {
     // Regression guard for the redirect loop: a child hitting /guardian must
     // NOT be bounced to the guardian login (redirectTo), because a login page

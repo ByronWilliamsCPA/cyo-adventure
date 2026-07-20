@@ -192,6 +192,12 @@ class CompletionView(BaseModel):
     found_at: datetime
 
 
+class CompletionListView(BaseModel):
+    """A profile's recorded completions (COPPA 312.6(a) / GDPR Article 15 read path)."""
+
+    completions: list[CompletionView]
+
+
 class ReadingHistoryItem(BaseModel):
     """One storybook's reading-history summary for a profile (register K6/G9).
 
@@ -1146,6 +1152,11 @@ class ProfileView(BaseModel):
     banned_themes: list[str]
     request_auto_approve: bool
     monthly_request_envelope: int | None
+    # GDPR Article 18/21 (remediation plan, newly scoped): derived from
+    # ChildProfile.processing_restricted_at is not None, mirroring how
+    # has_pin derives from pin_hash is not None -- the timestamp itself is
+    # never serialized, only the boolean state.
+    processing_restricted: bool
     created_at: datetime
 
 
@@ -1207,6 +1218,11 @@ class ProfileUpdateBody(BaseModel):
     # inert even when the toggle is on, see story_requests.service.can_auto_approve).
     request_auto_approve: bool | None = None
     monthly_request_envelope: Annotated[int, Field(ge=0, le=100)] | None = None
+    # GDPR Article 18/21: non-null-applies, like tts_enabled/request_auto_approve
+    # (no "explicit null" semantics -- there is no legitimate reason to send
+    # a null here rather than simply omitting the field). True sets
+    # processing_restricted_at to now; False clears it back to None.
+    processing_restricted: bool | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -1506,6 +1522,37 @@ class MeResponse(BaseModel):
     profile_ids: list[str]
 
 
+class FamilyExportView(BaseModel):
+    """A guardian's full family data export.
+
+    COPPA 312.6(a) access / GDPR Article 20 portability (remediation plan
+    Phase 3c), in one endpoint: every record tied to the family and each
+    child profile, as a single machine-readable (portable) JSON document.
+    Nested entities are loosely-typed dicts, not per-entity Pydantic models:
+    this endpoint's job is completeness of the export, not a stable typed API
+    contract for any one entity (the normal per-resource endpoints already
+    serve that role); each dict's keys mirror the corresponding ORM row's
+    columns as built in ``api/me.py``.
+
+    Attributes:
+        exported_at: When this export was generated (UTC).
+        family: The family row (id, name, created_at).
+        guardians: Every guardian/admin/child login row in the family
+            (id, role, is_admin, email, created_at); no ``pin_hash`` or
+            ``authn_subject`` (credential material, never exported).
+        profiles: Every child profile, each with its own nested
+            ``reading_state``, ``completions``, ``ratings``, and
+            ``assignments`` lists.
+        story_requests: Every story request tied to the family.
+    """
+
+    exported_at: datetime
+    family: dict[str, object]
+    guardians: list[dict[str, object]]
+    profiles: list[dict[str, object]]
+    story_requests: list[dict[str, object]]
+
+
 # ---------------------------------------------------------------------------
 # Child-scoped session tokens (G1 / P6-04)
 # ---------------------------------------------------------------------------
@@ -1599,21 +1646,34 @@ class DeviceGrantListItem(BaseModel):
 
 
 class OnboardingConsent(BaseModel):
-    """Consent-capture seam for onboarding (accepted, recorded by P7-02).
+    """Verifiable-parental-consent payload (Phase 2 / ADR-018 D1).
 
-    This is the extension point P7-02 (consent capture) fills; onboarding
-    accepts it today but records nothing. Keep it minimal: do NOT add consent
-    business logic here.
+    A signature-capture step layered on the Supabase/Google OAuth login that
+    already authenticates the guardian: ``signer_name`` is a typed
+    full-legal-name attestation, standing in for the FTC's "sign and submit
+    electronically" method (312.5(b)(2)(i)). ``accepted``, ``policy_version``,
+    and ``signer_name`` must all be present together to actually record
+    consent; a request that omits or falsifies any of them records nothing
+    (see ``onboarding._record_consent``), it does not partially persist.
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    # #ASSUME: data integrity: these fields are the consent seam only. P6-03
-    # accepts and drops them; P7-02 will persist a consent record. Do not gate
-    # provisioning on them or treat them as authoritative until P7-02 lands.
-    # #VERIFY: onboarding._record_consent is a no-op referencing P7-02.
+    # #CRITICAL: security: onboarding._record_consent requires all three of
+    # accepted=True, policy_version, and signer_name before writing a
+    # User.consent_* row; this schema itself does not enforce that
+    # combination so a caller can still send accepted=True with no name (the
+    # 422 for that case comes from the route handler, not Pydantic, to keep
+    # the "what's missing" error message field-specific).
+    # #VERIFY: tests/integration/test_onboarding_api.py::
+    # test_consent_requires_policy_version_and_signer_name.
     accepted: bool | None = None
     policy_version: str | None = None
+    # A typed full legal name (e.g. "Jane A. Smith"), not a display name or
+    # nickname; the guardian is attesting to their own identity as the
+    # signer, distinct from ProfileCreateBody.display_name (a CHILD's
+    # nickname, an entirely different field on an entirely different model).
+    signer_name: str | None = None
 
 
 class OnboardingBody(BaseModel):
@@ -1641,6 +1701,19 @@ class OnboardingView(BaseModel):
     user_id: str
     role: str
     created: bool
+    # Lets the frontend show a "your account is awaiting admin approval"
+    # state for a self-signed-up guardian (status="awaiting_approval")
+    # instead of proceeding to GET /v1/me, which api/deps.py::require_principal
+    # rejects for any non-"active" status. An admin-invited guardian is
+    # always "active" by the time onboarding resolves them (the invite bind
+    # sets it); this field only ever surfaces "awaiting_approval" for the
+    # self-signup track.
+    status: str
+    # Phase 2 / ADR-018 D1: lets the frontend decide whether to show the
+    # consent-capture step without a separate lookup. Derived from
+    # User.consent_accepted_at is not None; always False for a non-guardian
+    # (admin/child) row, since VPC consent is a guardian-only concept.
+    consent_recorded: bool
 
 
 # ---------------------------------------------------------------------------
@@ -1832,7 +1905,7 @@ AdminEmail = Annotated[
 # ever the synthetic row api/child_sessions.py provisions for a ChildProfile,
 # never something an admin creates directly.
 AdminManagedRole = Literal["guardian", "admin"]
-UserStatus = Literal["pending", "active", "deactivated"]
+UserStatus = Literal["pending", "active", "deactivated", "awaiting_approval"]
 
 
 class UserView(BaseModel):

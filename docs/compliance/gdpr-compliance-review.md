@@ -216,6 +216,16 @@ in either audit's evidence.
 
 ### 4.3 Cross-family sharing as a distinct lawful-basis question (ADR-016)
 
+**Update 2026-07-20: resolved.** This section previously described the guardian-facing consent
+UI as "not yet built," which was stale by the time of this update:
+`frontend/src/guardian/ConnectionsPage.tsx` is a live, routed guardian page (`/guardian/connections`)
+where each guardian explicitly allows or revokes their side of a connection, and
+`recommendations.py::_is_dual_consented`/`_dual_consented_connected_family_ids` gate every read
+on BOTH `consented_by_viewer_user_id` and `consented_by_sharer_user_id` being set, not merely on
+the admin-managed connection row existing. An admin linking two families creates a permission
+edge only; nothing about either family's reading/rating data is disclosed to the other until
+both guardians have affirmatively clicked "Allow." See G-10 below.
+
 ADR-016's dual-guardian-consented Ring-2 recommendation sharing (confirmed implemented with
 real consent-tracking columns and endpoints per the auth/session research: `family_connections.py`,
 `recommendations.py`) is a genuinely strong control from a *disclosure* standpoint; better
@@ -223,11 +233,10 @@ than most COPPA-only apps build. From a GDPR standpoint it raises a question the
 address: cross-family disclosure of one family's reading/rating signal to another family is a
 new processing purpose (social recommendation) layered on data originally collected for a
 different purpose (personal reading tracking). GDPR's purpose-limitation principle (Article
-5(1)(b)) and the need for a lawful basis *for that specific disclosure* (the dual-consent UI
-that would supply Article 6(1)(a) consent is itself flagged in ADR-016 as "not yet built" per
-the auth/session research) mean the consent gate that exists today (an admin-managed
-connection table with consent *columns* but no guardian-facing consent *UI*) is a partial,
-not complete, basis for this processing.
+5(1)(b)) and the need for a lawful basis *for that specific disclosure* are now satisfiable by
+recording the guardian's explicit "Allow" click as the Article 6(1)(a) consent event: the
+dual-consent UI this section previously described as missing is built, routed, and enforced at
+the read layer.
 
 ---
 
@@ -495,9 +504,10 @@ constitutes Article 8(2) "reasonable efforts."
 
 ### G-03. No Records of Processing Activities document (Article 30) (Critical once GDPR applies / low engineering cost)
 
-**Evidence**: no such document exists in `docs/`; raw material scattered across the COPPA
-audit, `privacy-model.md`, and ADR-018. **Recommendation**: synthesize one document from
-existing sources (Section 5.6); assign an owner alongside ADR-018's D4.
+**Status: DONE.** See `docs/compliance/records-of-processing-activities.md` (remediation plan
+Phase 7a), synthesized from the COPPA audit, `privacy-model.md`, and ADR-018 per Section 5.6.
+**Residual**: keep it current as new processing activities are added; no owner has been formally
+assigned alongside ADR-018's D4.
 
 ### G-04. No Data Protection Impact Assessment (Article 35) (Critical once GDPR applies)
 
@@ -536,17 +546,22 @@ whether GDPR already applies to the current private tier's user base (Pressure P
 
 ### G-09. No breach-notification runbook (High)
 
-**GDPR**: Articles 33-34. Shares the "D4 incident-response plan" placeholder with ADR-018 but
-confirmed still unbuilt. **Recommendation**: draft an internal breach-classification and
-72-hour-notification runbook, distinct from `SECURITY.md`'s external vulnerability-reporting
-policy.
+**Status: DONE.** See `docs/compliance/breach-notification-runbook.md` (remediation plan Phase 6c).
+
+**GDPR**: Articles 33-34. An internal breach-classification and 72-hour-notification runbook,
+distinct from `SECURITY.md`'s external vulnerability-reporting policy, closing the "D4
+incident-response plan" placeholder ADR-018 shared with this finding.
 
 ### G-10. Cross-family sharing lacks a documented lawful basis for the *disclosure* itself (Medium)
 
-**Evidence**: Section 4.3; ADR-016's consent-column/no-consent-UI gap already flagged in the
-auth/session research. **Recommendation**: complete ADR-016's planned guardian-facing consent
-UI before treating Ring-2 sharing as GDPR-ready; record Article 6(1)(a) consent as the basis
-once that UI exists.
+**Status: DONE.** See Section 4.3's 2026-07-20 update. `ConnectionsPage.tsx` is a live, routed
+guardian page; `FamilyConnection.consented_by_viewer_user_id`/`_at` and
+`consented_by_sharer_user_id`/`_at` (paired and CHECK-enforced) record who consented and when,
+per side; nothing is disclosed until both are set; every consent/revoke action is additionally
+logged as a `family_connection_changed` `pipeline_event`. This finding was based on a stale
+"not yet built" read of ADR-016's status, corrected 2026-07-20 against the shipped code rather
+than re-scheduled as new work. Article 6(1)(a) consent is the recorded basis for the
+disclosure itself.
 
 ### G-11. No DPO designation analysis performed (Medium)
 
@@ -556,11 +571,11 @@ required and why) in ADR-018 or a successor document.
 
 ### G-12. Indefinite `pipeline_event` retention has no documented Article 17(3) balancing test (Medium)
 
-**Evidence**: confirmed no TTL/purge on `pipeline_event` (data-inventory research for this
-review); COPPA's H-01 flags the same table's indefinite retention from a COPPA 312.10 angle.
-**Recommendation**: when the retention policy required by both audits is drafted, include an
-explicit documented justification for why the audit log is exempted from erasure requests
-under Article 17(3), rather than leaving the exemption implicit.
+**Status: DONE.** See `coppa-gdpr-remediation-plan.md`'s "4d artifact" section for the documented
+balancing test (17(3)(b)/(e), proportionality against the PII-scrubbed-by-contract payload
+design, admin-only access) that makes the exemption explicit rather than implicit. COPPA's H-01
+flags the same table's indefinite retention from a COPPA 312.10 angle; the same artifact
+resolves both.
 
 ### G-13. Special-category-data risk in free-text story requests (Medium, no COPPA counterpart)
 

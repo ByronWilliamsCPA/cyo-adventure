@@ -11,10 +11,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.db.models import Family, User
 from tests.integration.conftest import Seed, auth, mint_device_token
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 
 @pytest.mark.integration
@@ -123,6 +125,64 @@ async def test_child_cannot_create_profile(client: AsyncClient, seed: Seed) -> N
         headers=auth(seed.child_token),
     )
     assert resp.status_code == 403
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_profile_requires_recorded_consent(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A guardian with no recorded VPC consent cannot create a profile (400).
+
+    Phase 2 / ADR-018 D1: seed's own guardians are pre-consented (see
+    conftest.py::_consented) so this test seeds its own, deliberately
+    unconsented, guardian instead.
+    """
+    _ = seed
+    async with sessions() as session:
+        family = Family(name="Unconsented Family")
+        session.add(family)
+        await session.flush()
+        session.add(
+            User(
+                family_id=family.id,
+                role="guardian",
+                authn_subject="unconsented-guardian",
+            )
+        )
+        await session.commit()
+
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=auth("unconsented-guardian"),
+    )
+    assert resp.status_code == 400, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_profile_toggles_processing_restricted(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """PATCH .../profiles/{id} sets and clears the Article 18/21 restrict flag."""
+    restrict = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"processing_restricted": True},
+        headers=auth(seed.guardian_token),
+    )
+    assert restrict.status_code == 200, restrict.text
+    assert restrict.json()["processing_restricted"] is True
+
+    unrestrict = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"processing_restricted": False},
+        headers=auth(seed.guardian_token),
+    )
+    assert unrestrict.status_code == 200, unrestrict.text
+    assert unrestrict.json()["processing_restricted"] is False
 
 
 @pytest.mark.integration

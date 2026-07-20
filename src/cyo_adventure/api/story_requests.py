@@ -51,6 +51,7 @@ from cyo_adventure.api.schemas import (
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
+    BusinessLogicError,
     ResourceNotFoundError,
     StateTransitionError,
     ValidationError,
@@ -207,6 +208,32 @@ def _parse_flag(item: object, ctx: _FlagContext) -> StoryRequestFlag | None:
     return StoryRequestFlag(category=category, verdict=parsed_verdict, message=message)
 
 
+def _require_not_restricted(profile: ChildProfile) -> None:
+    """Reject a new story request for a profile under Article 18/21 restriction.
+
+    GDPR Article 18 (restriction of processing) / Article 21 (objection),
+    newly scoped in the remediation plan. Submitting a story request is the
+    concrete point where this profile's data (its band, and the request text
+    itself) newly reaches a third-party LLM/classifier provider at intake
+    screening; a restricted profile still reads its existing library
+    normally (nothing here touches any other endpoint).
+
+    Args:
+        profile: The requesting child profile, already loaded.
+
+    Raises:
+        BusinessLogicError: If the profile is currently restricted (400).
+    """
+    # #CRITICAL: security: checked before any screening/classifier call, not
+    # after, so a restricted profile's request text never reaches an
+    # external provider at all.
+    # #VERIFY: tests/integration/test_story_requests_api.py::
+    # test_create_story_request_rejects_restricted_profile.
+    if profile.processing_restricted_at is not None:
+        msg = "this profile's data processing is currently restricted"
+        raise BusinessLogicError(msg, rule="processing_restricted")
+
+
 def _to_view(
     request: StoryRequest,
     *,
@@ -280,7 +307,9 @@ def _to_view(
     )
 
 
-@router.post("/story-requests", status_code=201, responses=error_responses(404, 409))
+@router.post(
+    "/story-requests", status_code=201, responses=error_responses(400, 404, 409)
+)
 async def create_story_request(
     body: StoryRequestCreateBody, ctx: Context
 ) -> StoryRequestCreatedView:
@@ -321,6 +350,8 @@ async def create_story_request(
         ValidationError: If ``profile_id`` is not a valid UUID; if the anchor
             storybook is not published or not series-linked; or if the
             profile's age band does not match the anchor's series (-> 422).
+        BusinessLogicError: If the profile is currently restricted (Article
+            18/21) (-> 400).
     """
     profile_uuid = parse_uuid(body.profile_id, "profile_id")
     # #CRITICAL: security: guardian may act on any family profile, a child only
@@ -336,6 +367,7 @@ async def create_story_request(
     if profile is None:
         msg = "profile not found"
         raise ResourceNotFoundError(msg)
+    _require_not_restricted(profile)
 
     # #CRITICAL: concurrency: enforce the per-profile pending cap before insert.
     # A rare off-by-one under concurrent submits is accepted here (see
@@ -535,6 +567,8 @@ async def _resolve_authored_profile(
         AuthorizationError: If a guardian names an inaccessible profile, or
             the profile does not belong to the target family.
         ResourceNotFoundError: If the named profile does not exist.
+        BusinessLogicError: If the named profile is currently restricted
+            (Article 18/21).
     """
     if body.profile_id is None:
         return None
@@ -558,11 +592,12 @@ async def _resolve_authored_profile(
     if profile.family_id != family_uuid:
         msg = "profile does not belong to the target family"
         raise AuthorizationError(msg, resource=str(profile_uuid))
+    _require_not_restricted(profile)
     return profile
 
 
 @router.post(
-    "/story-requests/authored", status_code=201, responses=error_responses(404)
+    "/story-requests/authored", status_code=201, responses=error_responses(400, 404)
 )
 async def create_authored_story_request(
     body: StoryRequestAuthoredCreateBody, ctx: Context

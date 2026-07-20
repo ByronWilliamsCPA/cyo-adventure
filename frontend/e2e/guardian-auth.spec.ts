@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test'
 
-import { makeGuardianSession, mockEmptyConsole, mockMe, seedGuardianSession } from './support/auth'
+import {
+  makeGuardianSession,
+  mockEmptyConsole,
+  mockMe,
+  mockOnboarding,
+  seedGuardianSession,
+} from './support/auth'
 
 /**
  * Guardian sign-in via the REAL login form (email/password, PR #101).
@@ -13,6 +19,7 @@ test('signs in with email and password and lands on the console', async ({ page 
   await page.route('**/auth/v1/token**', (route) =>
     route.fulfill({ json: makeGuardianSession('e2e-guardian-token') })
   )
+  await mockOnboarding(page)
   await mockMe(page)
   await mockEmptyConsole(page)
 
@@ -32,6 +39,7 @@ test('an admin-only adult lands on the admin console after sign-in', async ({ pa
   await page.route('**/auth/v1/token**', (route) =>
     route.fulfill({ json: makeGuardianSession('e2e-admin-token') })
   )
+  await mockOnboarding(page, { role: 'admin' })
   await mockMe(page, { role: 'admin' })
   await mockEmptyConsole(page)
 
@@ -49,6 +57,7 @@ test('a dual-role adult lands on the guardian console after sign-in', async ({ p
   await page.route('**/auth/v1/token**', (route) =>
     route.fulfill({ json: makeGuardianSession('e2e-guardian-token') })
   )
+  await mockOnboarding(page)
   await mockMe(page, { role: 'guardian', is_admin: true })
   await mockEmptyConsole(page)
 

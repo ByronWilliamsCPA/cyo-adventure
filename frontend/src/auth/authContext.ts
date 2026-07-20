@@ -2,7 +2,22 @@ import { createContext } from 'react'
 
 import type { Principal } from './types'
 
-export type AuthStatus = 'loading' | 'signed-out' | 'signed-in'
+/**
+ * 'awaiting-approval': a self-signed-up guardian whose account an admin has
+ * not yet approved (api/onboarding.py's self-signup track,
+ * User.status='awaiting_approval'); GET /v1/me would 401 for them, so this
+ * status short-circuits before ever calling it.
+ * 'needs-consent': an approved (or admin-invited) guardian who has not yet
+ * completed the Phase 2 / ADR-018 D1 signature-capture consent step. Never
+ * set for a non-guardian role (an admin-only adult has no VPC consent
+ * concept).
+ */
+export type AuthStatus =
+  | 'loading'
+  | 'signed-out'
+  | 'awaiting-approval'
+  | 'needs-consent'
+  | 'signed-in'
 
 /**
  * A session was established with Supabase but the backend could not resolve it
@@ -54,6 +69,14 @@ export interface AuthContextValue {
    * Supabase's error so the form can surface a retryable failure.
    */
   updatePassword: (newPassword: string) => Promise<void>
+  /**
+   * Submits the Phase 2 / ADR-018 D1 VPC signature-capture consent
+   * (GuardianConsentPage). On success, re-resolves the principal via GET
+   * /v1/me and transitions status to 'signed-in'; rethrows on failure (e.g.
+   * a 422 for a missing/invalid signer name) so the form can show it. Only
+   * meaningful while status === 'needs-consent'.
+   */
+  recordConsent: (signerName: string) => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)

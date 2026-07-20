@@ -208,6 +208,57 @@ async def create_user(body: UserCreateBody, ctx: Context) -> UserView:
     return _view(user)
 
 
+def _apply_status_transition(user: User, new_status: UserStatus | None) -> str:
+    """Validate and apply a status change, returning the audit-event action label.
+
+    Extracted from ``update_user`` to stay within this repo's cyclomatic
+    complexity budget (C901/PLR0912).
+
+    Args:
+        user: The row being updated (mutated in place on a valid transition).
+        new_status: The requested status, or ``None`` for no status change.
+
+    Returns:
+        str: ``"updated"`` when no status change was requested; otherwise
+        ``"deactivated"``, ``"denied"``, ``"approved"``, or ``"reactivated"``
+        describing what happened, for the ``USER_MANAGED`` audit event.
+
+    Raises:
+        ValidationError: If the transition is into/from ``'pending'`` (422),
+            or directly into ``'awaiting_approval'`` (422).
+    """
+    if new_status is None or new_status == user.status:
+        return "updated"
+    # #ASSUME: data-integrity: 'pending' is reachable only via create_user
+    # and left only via onboarding's email-match bind; a direct PATCH into
+    # or out of it here would either fabricate an unusable synthetic-subject
+    # account or silently discard an in-flight invite, so both are rejected.
+    # #VERIFY: tests/integration/test_admin_users_api.py::
+    # test_status_transition_through_pending_is_rejected.
+    if new_status == "pending" or user.status == "pending":
+        msg = "status cannot be set to or from 'pending' directly"
+        raise ValidationError(msg, field="status", value=new_status)
+    # #CRITICAL: security: 'awaiting_approval' is reachable only via a
+    # guardian's own self-signup JIT provisioning
+    # (onboarding.py::_provision_guardian); an admin PATCHing a row INTO
+    # this status would fabricate a fake "pending self-signup" for an
+    # account an admin is actively managing, which makes no sense for any
+    # existing row. Only leaving it (approve -> 'active', deny ->
+    # 'deactivated') is a real admin action.
+    # #VERIFY: tests/integration/test_admin_users_api.py::
+    # test_status_transition_into_awaiting_approval_is_rejected.
+    if new_status == "awaiting_approval":
+        msg = "status cannot be set to 'awaiting_approval' directly"
+        raise ValidationError(msg, field="status", value=new_status)
+    previous_status = user.status
+    user.status = new_status
+    if new_status == "deactivated":
+        return "denied" if previous_status == "awaiting_approval" else "deactivated"
+    if previous_status == "awaiting_approval":
+        return "approved"
+    return "reactivated"
+
+
 @router.patch("/admin/users/{user_id}", responses=error_responses(404))
 async def update_user(user_id: str, body: UserUpdateBody, ctx: Context) -> UserView:
     """Reassign, re-role, or activate/deactivate a guardian/admin (WS-J).
@@ -232,7 +283,8 @@ async def update_user(user_id: str, body: UserUpdateBody, ctx: Context) -> UserV
         ResourceNotFoundError: If no guardian/admin row with this id exists
             (404; a role='child' row 404s here too, see the module docstring).
         ValidationError: If a ``status`` transition through/from 'pending' is
-            requested, or ``family_id`` is not a valid UUID (422).
+            requested, or into 'awaiting_approval' directly, or
+            ``family_id`` is not a valid UUID (422).
     """
     _require_admin(ctx)
     parsed = parse_uuid(user_id, "user_id")
@@ -268,20 +320,7 @@ async def update_user(user_id: str, body: UserUpdateBody, ctx: Context) -> UserV
     if user.role == "admin":
         user.is_admin = True
 
-    action = "updated"
-    if body.status is not None and body.status != user.status:
-        # #ASSUME: data-integrity: 'pending' is reachable only via
-        # create_user and left only via onboarding's email-match bind; a
-        # direct PATCH into or out of it here would either fabricate an
-        # unusable synthetic-subject account or silently discard an
-        # in-flight invite, so both are rejected.
-        # #VERIFY: tests/integration/test_admin_users_api.py::
-        # test_status_transition_through_pending_is_rejected.
-        if body.status == "pending" or user.status == "pending":
-            msg = "status cannot be set to or from 'pending' directly"
-            raise ValidationError(msg, field="status", value=body.status)
-        user.status = body.status
-        action = "deactivated" if body.status == "deactivated" else "reactivated"
+    action = _apply_status_transition(user, body.status)
 
     await ctx.session.flush()
     await record_event(

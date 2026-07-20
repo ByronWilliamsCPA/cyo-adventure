@@ -21,6 +21,33 @@ if TYPE_CHECKING:
 
 FILL_MARKER = "<<FILL"
 
+# The sidecar filename suffixes that live next to a ``<slug>.json`` skeleton in a
+# band directory but are NOT themselves selectable skeletons: the WS-2 theme
+# contract (``<slug>.contract.json``) and the WS-5 lineage record
+# (``<slug>.lineage.json``, ADR-020 decision 2 / OQ-1). Every catalog scan that
+# globs ``*.json`` must skip these, so the set is defined once here and a future
+# sidecar type is a single edit. Ordered longest-suffix-first is unnecessary; a
+# sidecar name ends in exactly one of these.
+SIDECAR_SUFFIXES: tuple[str, ...] = (".contract.json", ".lineage.json")
+
+
+def is_sidecar(path: Path) -> bool:
+    """Return whether a catalog path is a sidecar rather than a skeleton.
+
+    A sidecar (a theme contract or a lineage record) shares the ``*.json`` glob
+    and the band directory with the skeleton it annotates, but carries no
+    ``id``/``nodes`` and must never be treated as a selectable skeleton. This is
+    the single predicate every catalog scanner uses in place of an inline
+    ``endswith(".contract.json")`` check (design 8, ADR-020 decision 2).
+
+    Args:
+        path: The catalog file path to classify.
+
+    Returns:
+        bool: True when ``path`` is a known sidecar, False for a skeleton.
+    """
+    return any(path.name.endswith(suffix) for suffix in SIDECAR_SUFFIXES)
+
 
 def load_skeleton(path: Path) -> dict[str, object]:
     """Load a skeleton JSON file and assert it is a structurally-valid shell.
