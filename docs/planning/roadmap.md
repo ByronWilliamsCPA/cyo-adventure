@@ -161,9 +161,10 @@ in PROJECT-PLAN.md section 1's audit note):
 - The entire "story-flexibility" content-diversity workstream (WS-0 metrics/harness, WS-1
   leaf diversity, WS-2 parameterized catalog/theme contracts per
   [ADR-019](./adr/adr-019-parameterized-skeletons-theme-contracts.md), WS-4 selection, WS-7
-  above) has merged substantial code (PRs #300, #303, #314, plus #321 open) with zero
+  above) has merged substantial code (PRs #300, #303, #314, #321) with zero
   mentions in either master document. ADR-017 (AI cover art, already shipped) and ADR-019 are
-  both missing from PROJECT-PLAN.md's ADR table.
+  both missing from PROJECT-PLAN.md's ADR table; ADR-020 and ADR-021 (merged the same day,
+  after this audit was written) are missing too and are not yet reconciled here at all.
 - The Content workstream note in PROJECT-PLAN.md section 1 ("main still has zero
   production-eligible skeletons") is stale: 61 skeletons (58 production-eligible) and 23
   filled stories are committed to `main` (PRs #289, #292, #297); none are yet imported to
@@ -178,10 +179,16 @@ in PROJECT-PLAN.md section 1's audit note):
 - Issues #125 (Supabase RLS not enabled on 13 public tables) and #214 (R2 cover-art backfill),
   both cited in `handoff-r2-readiness-2026-07-11.md`, appear in neither master document by
   number or description.
-- Open, unmerged PRs representing real in-flight scope not reflected in the "current status"
-  narrative: #321 (WS-5 structure/state variation), #323 (draft ADR-020, service accounts/RLS/
-  worker deployment), #311 (a second, larger COPPA/GDPR remediation pass beyond the one already
-  merged as #304).
+- **Update, same day**: #321 (WS-5 structure/state variation, ADR-020), #323 (ADR-021, service
+  accounts/RLS/worker deployment), and #311 (a second, larger COPPA/GDPR remediation pass:
+  data rights, verifiable parental consent, self-signup approval, audit logging, plus new
+  `docs/compliance/` artifacts - breach-notification runbook, DPIA, infosec program,
+  privacy notice, processor DPA checklist, records of processing) were all still open when
+  this audit was written and **merged to `main` within hours of it**, pulled into this
+  branch by a catch-up merge. Their content is real and substantial (#311 alone touches over
+  20 files including new Supabase migrations for consent/retention), but it has not been
+  reconciled against the Phase 5/6/7 corrections above - that reconciliation is a needed
+  follow-up pass, not done in this one.
 - An external-dependency ask in `handoff-homelab-infra-dev-environment-2026-07-16.md` (a `dev`
   frontend subdomain plus `staging` GitHub Environment secrets from the homelab-infra owner) is
   tracked here only as a generic unchecked test-matrix line, not by its specific asks.
