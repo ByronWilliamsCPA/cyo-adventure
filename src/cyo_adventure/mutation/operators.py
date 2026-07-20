@@ -16,13 +16,19 @@ imports nothing from ``db``, ``generation`` (beyond the pure surfaces), or
 from __future__ import annotations
 
 import copy
+import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
 import networkx as nx
 
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.mutation.identity import recompute_tier, resync_metadata
+from cyo_adventure.mutation.identity import (
+    host_id_namespace,
+    recompute_tier,
+    rename_region,
+    resync_metadata,
+)
 from cyo_adventure.mutation.ops import (
     REGISTRY,
     MutationResult,
@@ -31,13 +37,33 @@ from cyo_adventure.mutation.ops import (
     ReguideItem,
     ReguideTarget,
 )
-from cyo_adventure.mutation.subtree import adjacency, extract_subtree, node_ids
-from cyo_adventure.validator.band_profile import min_complete_floor
+from cyo_adventure.mutation.subtree import (
+    Subtree,
+    adjacency,
+    extract_subtree,
+    node_ids,
+)
+from cyo_adventure.storybook.theme_contract import (
+    SLOT_TOKEN_RE,
+    SlotConstraints,
+    SlotSpec,
+    ThemeContract,
+)
+from cyo_adventure.validator.band_profile import (
+    breadth_scaled_floors,
+    min_complete_floor,
+    profile_for,
+)
 from cyo_adventure.validator.layer1 import ScalePlacement, resolve_node_budget
 
 if TYPE_CHECKING:
     import random
-    from collections.abc import Mapping
+    from collections.abc import Callable, Mapping
+
+    # A donor resolver maps a catalog slug to its decoded skeleton document. M3's
+    # graft loads a donor through one of these; the default reads the git-versioned
+    # catalog, and tests inject an in-memory resolver to keep the operator pure.
+    DonorResolver = Callable[[str], dict[str, object]]
 
 # The M1 operator id, recorded in every lineage manifest and used as the
 # registry key. Kept as a module constant so the CLI and tests never spell the
@@ -1456,3 +1482,1327 @@ class M2EndingReMap:
 
 # Register the singleton M2 operator in the default catalog registry alongside M1.
 M2 = REGISTRY.register(M2EndingReMap())
+
+
+# --- M3: prune/graft within the cell envelope (design section 4.4) ---
+#
+# One operator, two sub-operations selected by the ``mode`` parameter
+# ("prune" or "graft"), matching the single-op-per-op-id shape M1/M2 use. D4 is
+# Tier-1 only, over closed self-contained subtrees, with same-band donors, and
+# grafts only variable-free/effect-free/condition-free regions (stateful grafts
+# are deferred to the composer, design 4.4). The WS-5 envelope is treated as
+# two-sided and blocking at acceptance: a prune may not exit the cell minimum and
+# a graft may not exit the cell maximum, even though L1-7 only WARNs below-min.
+
+# The M3 operator id, recorded in every lineage manifest and used as the registry
+# key. Kept as a module constant so the CLI and tests never spell the literal.
+M3_OP_ID = "M3"
+
+# The two M3 sub-operation modes.
+_M3_MODE_PRUNE = "prune"
+_M3_MODE_GRAFT = "graft"
+
+# ADR-011 section 6 choices-per-decision window (2-3). The gate does not
+# hard-enforce choices-per-decision (design 4.8), so M3 self-enforces it as a
+# graft precondition: adding the new choice must leave d within this window.
+_MIN_CHOICES_PER_DECISION = 2
+_MAX_CHOICES_PER_DECISION = 3
+
+# ADR-011 section 6 prose ending-ratio band (~15-22% terminals). M3 prune treats
+# this as ADVISORY only (a recorded note), never a discard, per design 4.4.
+_ENDING_RATIO_LO = 0.15
+_ENDING_RATIO_HI = 0.22
+
+# The FILL directive parse, mirrored from ``generation.binding._FILL_RE`` and
+# ``validator.policy`` (a local copy keeps the mutation layer from importing the
+# generation layer). Used to isolate the ``beats='...'`` segment when a graft
+# renames a donor region's ``{SLOT}`` tokens.
+_M3_FILL_RE = re.compile(r"^<<FILL role=(\w+) words=(\d+) beats='(.*)'>>$", re.DOTALL)
+
+# The placeholder label a graft's new choice carries until a reviewer authors it
+# (emitted as a re-guidance item; the schema requires a non-empty label).
+_M3_GRAFT_LABEL = "(graft seam: re-author this choice label)"
+
+# Static M3 precondition and error messages.
+_M3_TIER1_ONLY_MSG = (
+    "M3 (D4) is restricted to Tier-1 parents; stateful grafts are deferred to the "
+    "composer"
+)
+_M3_SERIES_MSG = "M3 requires metadata.series to be None; series books are out of scope"
+_M3_PRODUCTION_ONLY_MSG = (
+    "M3 requires a production-eligible parent; MVP seeds are out of scope"
+)
+_M3_MODE_MSG = "M3 requires a 'mode' parameter of 'prune' or 'graft'"
+_M3_PRUNE_PARAMS_MSG = (
+    "M3 prune's optional 'choice' parameter must be a choice id string"
+)
+_M3_GRAFT_PARAMS_MSG = (
+    "M3 graft requires 'subtree_root' and 'host_decision' id parameters"
+)
+_M3_DONOR_PARAM_MSG = "M3 graft's optional 'donor' parameter must be a slug string"
+
+
+def _node_by_id(
+    story: Mapping[str, object], node_id: str
+) -> Mapping[str, object] | None:
+    """Return the node dict with ``node_id``, or None when absent."""
+    for node in _nodes_of(story):
+        if _str_field(node, "id") == node_id:
+            return node
+    return None
+
+
+def _in_degree(story: Mapping[str, object], node_id: str) -> int:
+    """Return how many choice edges target ``node_id`` (existing targets only)."""
+    count = 0
+    for targets in adjacency(story).values():
+        count += sum(1 for target in targets if target == node_id)
+    return count
+
+
+def _ending_node_ids(story: Mapping[str, object]) -> set[str]:
+    """Return the ids of every ending node in the story."""
+    ids: set[str] = set()
+    for node in _nodes_of(story):
+        if node.get("is_ending") is not True:
+            continue
+        node_id = _str_field(node, "id")
+        if node_id is not None:
+            ids.add(node_id)
+    return ids
+
+
+def _cell_node_bounds(story: Mapping[str, object]) -> tuple[int, int] | None:
+    """Return the inherited cell's ``(min_nodes, max_nodes)`` envelope, or None.
+
+    Reuses ``validator.layer1.resolve_node_budget`` (the single budget path L1-7
+    uses); index 0 is the envelope minimum and index 1 the maximum, so the WS-5
+    two-sided check reads exactly the bounds the gate reads.
+    """
+    meta = _metadata_of(story)
+    band = _str_field(meta, "age_band")
+    if band is None:
+        return None
+    placement = ScalePlacement(
+        length=_str_field(meta, "length"),
+        narrative_style=_str_field(meta, "narrative_style") or "prose",
+        production_eligible=meta.get("production_eligible") is not False,
+    )
+    budget = resolve_node_budget(band, placement, scale="standard")
+    if budget is None:
+        return None
+    return budget[0], budget[1]
+
+
+def _min_endings_floor(story: Mapping[str, object], node_count: int) -> int:
+    """Return the effective PL-17 min-endings floor for a given node count.
+
+    Mirrors ``validator.policy._effective_floors``: the band floor, raised to the
+    breadth-scaled floor for a scale-classified production story so a large world
+    cannot pass with the band minimum. The node count is a parameter so a prune
+    can evaluate the floor against its shrunken post-prune graph.
+    """
+    meta = _metadata_of(story)
+    band = _str_field(meta, "age_band")
+    profile = profile_for(band) if band is not None else None
+    base = profile.min_endings if profile is not None else 0
+    length = _str_field(meta, "length")
+    style = _str_field(meta, "narrative_style") or "prose"
+    if length is not None and meta.get("production_eligible") is not False:
+        scaled_endings, _scaled_decisions = breadth_scaled_floors(node_count, style)
+        return max(base, scaled_endings)
+    return base
+
+
+def _min_decisions_floor(story: Mapping[str, object], node_count: int) -> int:
+    """Return the effective PL-17 min-decisions floor for a given node count."""
+    meta = _metadata_of(story)
+    band = _str_field(meta, "age_band")
+    profile = profile_for(band) if band is not None else None
+    base = profile.min_decisions if profile is not None else 0
+    length = _str_field(meta, "length")
+    style = _str_field(meta, "narrative_style") or "prose"
+    if length is not None and meta.get("production_eligible") is not False:
+        _scaled_endings, scaled_decisions = breadth_scaled_floors(node_count, style)
+        return max(base, scaled_decisions)
+    return base
+
+
+def _region_cleanliness_reason(
+    story: Mapping[str, object], region_ids: frozenset[str]
+) -> str | None:
+    """Return why a region is not graft-eligible, or None when it is clean.
+
+    D4 grafts only variable-free, effect-free, condition-free subtrees (design
+    4.4): merging state namespaces is composition, not mutation, so a region that
+    carries an ``on_enter`` effect, a choice ``effect``, or a choice ``condition``
+    is rejected here. A condition/effect is the only way a region references a
+    variable, so this scan is the complete state-freeness check.
+
+    Args:
+        story: The donor story document.
+        region_ids: The node ids forming the candidate graft region.
+
+    Returns:
+        str | None: The first disqualifying reason, or None when clean.
+    """
+    # #CRITICAL: data-integrity: the state-freeness scan is the load-bearing D4
+    # graft precondition. Grafting a region that mutates or reads state would
+    # import a variable namespace the host never declared, stranding
+    # configurations the Tier-1 host cannot represent; v1 forbids it outright and
+    # defers stateful grafts to the composer. The gate's L1-6 is the fail-closed
+    # backstop (an effect on an undeclared variable blocks), but the operator must
+    # never attempt the move.
+    # #VERIFY: tests/unit/test_mutation_m3.py pins that a region carrying an
+    # on_enter effect, a choice effect, or a choice condition is rejected.
+    for node in _nodes_of(story):
+        node_id = _str_field(node, "id")
+        if node_id is None or node_id not in region_ids:
+            continue
+        on_enter = node.get("on_enter")
+        if isinstance(on_enter, list) and on_enter:
+            return f"graft region node '{node_id}' carries on_enter effects (v1 is state-free)"
+        for choice in _choices_of(node):
+            if choice.get("condition") is not None:
+                return (
+                    f"graft region choice in node '{node_id}' carries a condition "
+                    f"(v1 is condition-free)"
+                )
+            effects = choice.get("effects")
+            if isinstance(effects, list) and effects:
+                return (
+                    f"graft region choice in node '{node_id}' carries effects "
+                    f"(v1 is effect-free)"
+                )
+    return None
+
+
+def region_referenced_slots(nodes: list[Mapping[str, object]]) -> frozenset[str]:
+    """Return the ``{SLOT}`` tokens a region references in its three surfaces.
+
+    The three slotted surfaces are exactly those ADR-019 permits: the
+    ``beats='...'`` segment of a ``<<FILL ...>>`` node body, an ending ``title``,
+    and a choice ``label``. Used both to rename a grafted region's tokens and to
+    drive the contract-merge transform (design 4.4).
+
+    Args:
+        nodes: The region's node dicts.
+
+    Returns:
+        frozenset[str]: The slot ids referenced anywhere in the region.
+    """
+    tokens: set[str] = set()
+    for node in nodes:
+        body = _str_field(node, "body")
+        if body is not None:
+            match = _M3_FILL_RE.match(body)
+            if match is not None:
+                tokens.update(SLOT_TOKEN_RE.findall(match.group(3)))
+        ending = node.get("ending")
+        if isinstance(ending, dict):
+            title = _str_field(cast("Mapping[str, object]", ending), "title")
+            if title is not None:
+                tokens.update(SLOT_TOKEN_RE.findall(title))
+        for choice in _choices_of(node):
+            label = _str_field(choice, "label")
+            if label is not None:
+                tokens.update(SLOT_TOKEN_RE.findall(label))
+    return frozenset(tokens)
+
+
+def graft_slot_id(slot_id: str, k: int) -> str:
+    """Return the ``M<k>_<SLOT>`` renamed slot id for a grafted slot (design 4.4)."""
+    return f"M{k}_{slot_id}"
+
+
+def _rename_slot_tokens_in_text(text: str, k: int) -> str:
+    """Rewrite every ``{SLOT}`` token in ``text`` to ``{M<k>_SLOT}`` form."""
+    return SLOT_TOKEN_RE.sub(lambda m: "{" + graft_slot_id(m.group(1), k) + "}", text)
+
+
+def _rename_region_slot_tokens(nodes: list[dict[str, object]], k: int) -> None:
+    """Rename a grafted region's ``{SLOT}`` tokens to ``M<k>_`` form, in place.
+
+    Keeps the mutant's slotted surfaces consistent with the merged contract's
+    renamed slot ids so ``load_contract_for``'s token-set equality holds. Only the
+    beats segment inside an intact FILL directive is rewritten (role/words are
+    reconstructed, never regex-substituted), plus every ending title and choice
+    label; a non-FILL body is left untouched.
+
+    Args:
+        nodes: The renamed region node dicts (mutated in place).
+        k: The mutation index used in the ``M<k>_`` prefix.
+    """
+    for node in nodes:
+        body = node.get("body")
+        if isinstance(body, str):
+            match = _M3_FILL_RE.match(body)
+            if match is not None:
+                role, words, beats = match.group(1), match.group(2), match.group(3)
+                new_beats = _rename_slot_tokens_in_text(beats, k)
+                node["body"] = f"<<FILL role={role} words={words} beats='{new_beats}'>>"
+        ending = node.get("ending")
+        if isinstance(ending, dict):
+            ending_map = cast("dict[str, object]", ending)
+            title = ending_map.get("title")
+            if isinstance(title, str):
+                ending_map["title"] = _rename_slot_tokens_in_text(title, k)
+        raw_choices = node.get("choices")
+        if isinstance(raw_choices, list):
+            for raw_choice in cast("list[object]", raw_choices):
+                if not isinstance(raw_choice, dict):
+                    continue
+                choice = cast("dict[str, object]", raw_choice)
+                label = choice.get("label")
+                if isinstance(label, str):
+                    choice["label"] = _rename_slot_tokens_in_text(label, k)
+
+
+# --- M3 prune ---
+
+
+@dataclass(frozen=True, slots=True)
+class _PrunePlan:
+    """A validated prune: the choice edge to cut and the subtree it roots.
+
+    Attributes:
+        choice_id: The single choice edge into the pruned subtree.
+        parent_node_id: The decision node holding ``choice_id``.
+        root: The pruned subtree's root node id.
+        region_ids: Every node id removed by the prune (the closed subtree).
+    """
+
+    choice_id: str
+    parent_node_id: str
+    root: str
+    region_ids: frozenset[str]
+
+
+def _post_prune_decision_count(
+    story: Mapping[str, object], parent_node_id: str, region: frozenset[str]
+) -> int:
+    """Return the decision-node count after a prune, without copying the document.
+
+    A decision node is a non-ending node with >= 2 choices (matching
+    ``validator.policy._check_floors``). Only the parent node's choice count
+    changes (it loses the pruned choice); the closed region's nodes vanish.
+    """
+    count = 0
+    for node in _nodes_of(story):
+        node_id = _str_field(node, "id")
+        if node_id is None or node_id in region or node.get("is_ending") is True:
+            continue
+        choice_count = len(_choices_of(node))
+        if node_id == parent_node_id:
+            choice_count -= 1
+        if choice_count >= 2:
+            count += 1
+    return count
+
+
+def _evaluate_prune(  # noqa: PLR0911 -- one cohesive precondition ladder, one reason each
+    story: Mapping[str, object], choice_id: str
+) -> tuple[_PrunePlan | None, str | None]:
+    """Validate a prune of the subtree behind one choice edge (design 4.4).
+
+    Runs every prune precondition in order: identity, self-containment and
+    closedness, single in-edge, the parent keeping a choice, the two-sided cell
+    envelope minimum, the PL-17 ending floors (count, breadth-scaled, and a
+    surviving success/completion), and the PL-17 decision floor.
+
+    Args:
+        story: The raw parent story document.
+        choice_id: The choice edge to cut.
+
+    Returns:
+        tuple[_PrunePlan | None, str | None]: ``(plan, None)`` when eligible,
+            else ``(None, reason)``.
+    """
+    refs = _choice_refs(story)
+    ref = refs.get(choice_id)
+    if ref is None:
+        return None, f"choice '{choice_id}' is not a choice in this story"
+    root = ref.target
+    if root not in node_ids(story):
+        return None, f"prune target '{root}' does not exist"
+    subtree = extract_subtree(story, root)
+    if not subtree.self_contained:
+        sources = [edge.source for edge in subtree.external_in_edges]
+        return None, (
+            f"subtree rooted at '{root}' is not self-contained "
+            f"(external in-edges: {sources})"
+        )
+    if not subtree.closed:
+        return None, (
+            f"subtree rooted at '{root}' is not closed; pruning would leave "
+            f"dangling out-edges"
+        )
+    in_degree = _in_degree(story, root)
+    if in_degree != 1:
+        return None, (
+            f"subtree root '{root}' has {in_degree} in-edges; prune removes a "
+            f"single choice edge only"
+        )
+    parent_node = _node_by_id(story, ref.node_id)
+    if parent_node is None:
+        return None, f"prune parent node '{ref.node_id}' is missing"
+    if len(_choices_of(parent_node)) <= 1:
+        return None, (
+            f"parent decision '{ref.node_id}' would have zero choices after "
+            f"removal (schema requires at least one)"
+        )
+    region = subtree.node_ids
+    post_count = len(node_ids(story) - region)
+    reason = _prune_floor_reason(story, ref.node_id, region, post_count)
+    if reason is not None:
+        return None, reason
+    return _PrunePlan(
+        choice_id=choice_id,
+        parent_node_id=ref.node_id,
+        root=root,
+        region_ids=region,
+    ), None
+
+
+def _prune_floor_reason(
+    story: Mapping[str, object],
+    parent_node_id: str,
+    region: frozenset[str],
+    post_count: int,
+) -> str | None:
+    """Return the first envelope/floor failure a prune would cause, or None.
+
+    Args:
+        story: The raw parent story document.
+        parent_node_id: The decision node losing the pruned choice.
+        region: The node ids the prune removes.
+        post_count: The post-prune node count.
+
+    Returns:
+        str | None: The first failing reason, or None when every floor holds.
+    """
+    # #CRITICAL: security: WS-5 treats the cell node envelope as two-sided and
+    # BLOCKING at acceptance (design 4.4), so a prune may not drop the node count
+    # below the cell minimum even though L1-7 only WARNs below-min for cell
+    # budgets. Exiting the declared cell would misrepresent the story's scale to
+    # selection and the reader-facing clocks; the operator rejects it here rather
+    # than emit a mutant that silently changes cell.
+    # #VERIFY: tests/unit/test_mutation_m3.py pins that a prune dropping below the
+    # cell minimum is discarded at preconditions.
+    bounds = _cell_node_bounds(story)
+    if bounds is not None and post_count < bounds[0]:
+        return (
+            f"post-prune node count {post_count} is below the cell envelope "
+            f"minimum {bounds[0]} (WS-5 two-sided blocking)"
+        )
+    remaining_endings = len(_ending_node_ids(story) - region)
+    endings_floor = _min_endings_floor(story, post_count)
+    if remaining_endings < endings_floor:
+        return (
+            f"post-prune endings {remaining_endings} below the PL-17 floor "
+            f"{endings_floor}"
+        )
+    # #CRITICAL: security: a prune may never remove the last success/completion
+    # ending. A story with no satisfying ending is a dead-end experience the
+    # reader can never win; PL-17 requires a satisfying ending, and this operator
+    # never proposes a candidate that would strip it (the gate re-proves PL-17 at
+    # stage 1 regardless).
+    # #VERIFY: tests/unit/test_mutation_m3.py pins that pruning the last
+    # success/completion ending is discarded.
+    if not (_satisfying_ending_ids(story) - region):
+        return "prune would remove the last success/completion ending (PL-17)"
+    post_decisions = _post_prune_decision_count(story, parent_node_id, region)
+    decisions_floor = _min_decisions_floor(story, post_count)
+    if post_decisions < decisions_floor:
+        return (
+            f"post-prune decision nodes {post_decisions} below the PL-17 floor "
+            f"{decisions_floor}"
+        )
+    return None
+
+
+def _prunable_choices(story: Mapping[str, object]) -> list[str]:
+    """Return every prunable choice id, in canonical (choice-id) order."""
+    prunable: list[str] = []
+    for ref in sorted(_choice_refs(story).values(), key=lambda ref: ref.choice_id):
+        plan, _reason = _evaluate_prune(story, ref.choice_id)
+        if plan is not None:
+            prunable.append(ref.choice_id)
+    return prunable
+
+
+def _is_choice_with_id(choice: object, choice_id: str) -> bool:
+    """Return whether ``choice`` is a choice dict whose id equals ``choice_id``."""
+    return (
+        isinstance(choice, dict)
+        and cast("dict[str, object]", choice).get("id") == choice_id
+    )
+
+
+def _apply_prune(parent: Mapping[str, object], plan: _PrunePlan) -> dict[str, object]:
+    """Return a deep copy of ``parent`` with the pruned subtree and edge removed.
+
+    Args:
+        parent: The raw parent story document (never mutated).
+        plan: The validated prune.
+
+    Returns:
+        dict[str, object]: The candidate graph, pre-metadata-resync.
+
+    Raises:
+        ValidationError: If the parent has no node list.
+    """
+    candidate = copy.deepcopy(dict(parent))
+    nodes = candidate.get("nodes")
+    if not isinstance(nodes, list):
+        msg = "parent story has no nodes list to prune"
+        raise ValidationError(msg, field="nodes", value=None)
+    kept: list[object] = []
+    for raw_node in cast("list[object]", nodes):
+        if not isinstance(raw_node, dict):
+            kept.append(raw_node)
+            continue
+        node = cast("dict[str, object]", raw_node)
+        node_id = node.get("id")
+        if isinstance(node_id, str) and node_id in plan.region_ids:
+            continue
+        if node_id == plan.parent_node_id:
+            raw_choices = node.get("choices")
+            if isinstance(raw_choices, list):
+                node["choices"] = [
+                    choice
+                    for choice in cast("list[object]", raw_choices)
+                    if not _is_choice_with_id(choice, plan.choice_id)
+                ]
+        kept.append(node)
+    candidate["nodes"] = kept
+    return candidate
+
+
+def _ending_ratio_advisory(candidate: Mapping[str, object]) -> tuple[str, ...]:
+    """Return an advisory note when the ending ratio leaves the ADR-011 band."""
+    total = len(_nodes_of(candidate))
+    if total == 0:
+        return ()
+    ratio = len(_ending_node_ids(candidate)) / total
+    if _ENDING_RATIO_LO <= ratio <= _ENDING_RATIO_HI:
+        return ()
+    note = (
+        f"advisory: post-prune ending ratio {ratio:.2f} is outside the ADR-011 "
+        f"~0.15-0.22 band (non-blocking)"
+    )
+    return (note,)
+
+
+# --- M3 graft ---
+
+
+@dataclass(frozen=True, slots=True)
+class _GraftPlan:
+    """A validated graft of a renamed donor subtree under a new host choice.
+
+    Attributes:
+        donor_slug: The donor's catalog slug (``"<self>"`` for a same-skeleton
+            graft).
+        subtree_root: The donor subtree's root id (pre-rename).
+        host_decision: The host decision node the new choice hangs from.
+        position: The insertion index of the new choice in that node.
+        k: The mutation index used in the ``m<k>_`` id / ``M<k>_`` slot prefix.
+        renamed_nodes: The graft region's node dicts, ids and slot tokens renamed.
+        root_new_id: The renamed graft root id (the new choice's target).
+        new_choice_id: The new choice's deterministic, collision-checked id.
+        new_choice_label: The placeholder label emitted as a re-guidance item.
+        region_size: The number of grafted nodes.
+    """
+
+    donor_slug: str
+    subtree_root: str
+    host_decision: str
+    position: int
+    k: int
+    renamed_nodes: tuple[dict[str, object], ...]
+    root_new_id: str
+    new_choice_id: str
+    new_choice_label: str
+    region_size: int
+
+
+def _region_all_ids(nodes: list[Mapping[str, object]]) -> set[str]:
+    """Return every node, choice, and ending id declared across a region."""
+    ids: set[str] = set()
+    for node in nodes:
+        node_id = _str_field(node, "id")
+        if node_id is not None:
+            ids.add(node_id)
+        for choice in _choices_of(node):
+            choice_id = _str_field(choice, "id")
+            if choice_id is not None:
+                ids.add(choice_id)
+        ending = node.get("ending")
+        if isinstance(ending, dict):
+            ending_id = _str_field(cast("Mapping[str, object]", ending), "id")
+            if ending_id is not None:
+                ids.add(ending_id)
+    return ids
+
+
+def _choose_graft_index(
+    host_namespace: set[str], region_nodes: list[Mapping[str, object]]
+) -> int:
+    """Return the smallest ``k >= 1`` whose ``m<k>_`` prefix avoids all collisions.
+
+    Deterministic: for a given host and donor region there is exactly one answer,
+    so a graft is byte-reproducible. Guarantees :func:`rename_region` never has to
+    raise on a host collision.
+    """
+    region_ids = _region_all_ids(region_nodes)
+    k = 1
+    while any(f"m{k}_{region_id}" in host_namespace for region_id in region_ids):
+        k += 1
+    return k
+
+
+def _unique_graft_choice_id(
+    k: int,
+    host_decision: str,
+    host_namespace: set[str],
+    renamed: list[dict[str, object]],
+) -> str:
+    """Return a deterministic, collision-free id for the graft's new choice."""
+    taken = set(host_namespace) | _region_all_ids(
+        cast("list[Mapping[str, object]]", renamed)
+    )
+    base = f"m{k}_graft_into_{host_decision}"
+    candidate = base
+    suffix = 0
+    while candidate in taken:
+        suffix += 1
+        candidate = f"{base}_{suffix}"
+    return candidate
+
+
+def _post_graft_graph(
+    host: Mapping[str, object],
+    renamed: list[dict[str, object]],
+    host_decision: str,
+    root_new_id: str,
+) -> nx.DiGraph[str]:
+    """Return the choice graph the host would have after applying the graft.
+
+    Renaming does not change path lengths, so depth and shortest-path measures
+    over this graph equal what the L1-7 and PL-20 gate rules will measure on the
+    candidate.
+    """
+    graph = _parent_graph(host)
+    for node in renamed:
+        node_id = _str_field(node, "id")
+        if node_id is None:
+            continue
+        graph.add_node(node_id)
+        for choice in _choices_of(node):
+            target = _str_field(choice, "target")
+            if target is not None:
+                graph.add_edge(node_id, target)
+    graph.add_edge(host_decision, root_new_id)
+    return graph
+
+
+def _satisfying_in_nodes(nodes: list[dict[str, object]]) -> set[str]:
+    """Return the ids of success/completion ending nodes within a region."""
+    targets: set[str] = set()
+    for node in nodes:
+        if node.get("is_ending") is not True:
+            continue
+        node_id = _str_field(node, "id")
+        ending = node.get("ending")
+        if node_id is None or not isinstance(ending, dict):
+            continue
+        kind = _str_field(cast("Mapping[str, object]", ending), "kind")
+        if kind in _SATISFYING_KINDS:
+            targets.add(node_id)
+    return targets
+
+
+def _clamp_position(position: int | None, current_len: int) -> int:
+    """Clamp a requested choice-insertion index to ``[0, current_len]``."""
+    if position is None or position > current_len:
+        return current_len
+    return max(0, position)
+
+
+def _evaluate_graft(  # noqa: PLR0911, PLR0913 -- one cohesive precondition ladder, one reason each
+    host: Mapping[str, object],
+    donor: Mapping[str, object],
+    donor_slug: str,
+    subtree_root: str,
+    host_decision: str,
+    position: int | None,
+) -> tuple[_GraftPlan | None, str | None]:
+    """Validate a graft of a donor subtree under a host decision (design 4.4).
+
+    Runs every graft precondition: the host decision exists, is non-ending, and
+    stays within the 2-3 choices window after the add; the donor band equals the
+    host band and the donor is a standalone book; the donor subtree exists, is
+    closed, self-contained, and state-free; and the post-graft node count and
+    depth stay within the cell envelope.
+
+    Args:
+        host: The raw host (parent) story document.
+        donor: The donor story document (may be ``host`` for a same-skeleton graft).
+        donor_slug: The donor's slug, for audit notes.
+        subtree_root: The donor subtree root to copy.
+        host_decision: The host decision node to attach the new choice to.
+        position: The new choice's insertion index, or None to append.
+
+    Returns:
+        tuple[_GraftPlan | None, str | None]: ``(plan, None)`` when eligible,
+            else ``(None, reason)``.
+    """
+    host_node = _node_by_id(host, host_decision)
+    if host_node is None:
+        return None, f"host decision '{host_decision}' does not exist"
+    if host_node.get("is_ending") is True:
+        return None, f"host decision '{host_decision}' is an ending node"
+    post_choices = len(_choices_of(host_node)) + 1
+    if not _MIN_CHOICES_PER_DECISION <= post_choices <= _MAX_CHOICES_PER_DECISION:
+        # #CRITICAL: security: the gate does not hard-enforce choices-per-decision
+        # (design 4.8), so the operator self-enforces the ADR-011 2-3 window: a
+        # graft that would push a decision to 4+ choices is a grammar violation a
+        # hand author would not make, rejected belt-and-braces before the gate.
+        # #VERIFY: test_mutation_m3.py pins that grafting onto a 3-choice decision
+        # is discarded at preconditions.
+        return None, (
+            f"grafting a choice onto '{host_decision}' yields {post_choices} "
+            f"choices, outside the ADR-011 2-3 window"
+        )
+    # #CRITICAL: security: donor band MUST equal host band. Same-band donors mean
+    # every grafted ending kind is band-legal by the donor's own PL-15 history and
+    # its beats were authored to the same band's content posture, so no
+    # out-of-band content can cross into the host (the K13 age guarantee, design
+    # section 10). A cross-band donor is rejected here and PL-15 re-runs at the
+    # gate regardless.
+    # #VERIFY: test_mutation_m3.py pins that a different-band donor is rejected.
+    host_band = _str_field(_metadata_of(host), "age_band")
+    donor_band = _str_field(_metadata_of(donor), "age_band")
+    if host_band is None or donor_band is None or host_band != donor_band:
+        return None, (
+            f"donor band '{donor_band}' does not equal host band '{host_band}'; "
+            f"cross-band grafts are forbidden"
+        )
+    if _metadata_of(donor).get("series") is not None:
+        return None, f"donor '{donor_slug}' is a series book; out of scope"
+    if subtree_root not in node_ids(donor):
+        return None, f"donor subtree root '{subtree_root}' does not exist"
+    subtree = extract_subtree(donor, subtree_root)
+    if not subtree.self_contained:
+        return None, f"donor subtree '{subtree_root}' is not self-contained"
+    if not subtree.closed:
+        return None, f"donor subtree '{subtree_root}' is not closed"
+    clean_reason = _region_cleanliness_reason(donor, subtree.node_ids)
+    if clean_reason is not None:
+        return None, clean_reason
+    return _build_graft_plan(
+        host, donor, donor_slug, subtree, host_decision, host_node, position
+    )
+
+
+def _build_graft_plan(  # noqa: PLR0913 -- the validated facts a graft plan needs
+    host: Mapping[str, object],
+    donor: Mapping[str, object],
+    donor_slug: str,
+    subtree: Subtree,
+    host_decision: str,
+    host_node: Mapping[str, object],
+    position: int | None,
+) -> tuple[_GraftPlan | None, str | None]:
+    """Rename the donor region and run the post-graft envelope checks.
+
+    Split from :func:`_evaluate_graft` so the precondition ladder stays flat. The
+    subtree has already been proven closed, self-contained, and state-free.
+
+    Args:
+        host: The raw host story document.
+        donor: The donor story document.
+        donor_slug: The donor's slug.
+        subtree: The validated donor :class:`~cyo_adventure.mutation.subtree.Subtree`.
+        host_decision: The host decision node id.
+        host_node: The host decision node dict.
+        position: The requested new-choice insertion index, or None.
+
+    Returns:
+        tuple[_GraftPlan | None, str | None]: ``(plan, None)`` when eligible,
+            else ``(None, reason)``.
+    """
+    region_ids = subtree.node_ids
+    subtree_root = subtree.root
+    region_nodes = [
+        node for node in _nodes_of(donor) if _str_field(node, "id") in region_ids
+    ]
+    host_namespace = host_id_namespace(host)
+    k = _choose_graft_index(host_namespace, region_nodes)
+    # #CRITICAL: data-integrity: every grafted id is renamed under the m<k>_
+    # scheme and collision-checked against the host's full namespace by
+    # rename_region, so a graft can never emit a duplicate id that would let one
+    # graph position shadow another; the schema's uniqueness rule is the
+    # fail-closed backstop (design CR-3).
+    # #VERIFY: test_mutation_m3.py asserts renamed ids are disjoint from the host
+    # namespace over real catalog donors.
+    renamed, node_id_map = rename_region(region_nodes, k, host_namespace)
+    _rename_region_slot_tokens(renamed, k)
+    root_new_id = node_id_map[subtree_root]
+    new_choice_id = _unique_graft_choice_id(k, host_decision, host_namespace, renamed)
+
+    bounds = _cell_node_bounds(host)
+    post_count = len(node_ids(host)) + len(renamed)
+    if bounds is not None and post_count > bounds[1]:
+        return None, (
+            f"post-graft node count {post_count} exceeds the cell envelope "
+            f"maximum {bounds[1]} (L1-7)"
+        )
+    graph = _post_graft_graph(host, renamed, host_decision, root_new_id)
+    start = _str_field(host, "start_node")
+    max_depth = _cell_max_depth(host)
+    if max_depth is not None:
+        depth = _branch_depth(graph, start)
+        if depth is not None and depth > max_depth:
+            return None, (
+                f"post-graft branch depth {depth} exceeds cell max_depth {max_depth}"
+            )
+    # #CRITICAL: security: a graft that lands a shallow success/completion ending
+    # can undercut the PL-20 fastest-finish arc floor (a hollow quick win), so the
+    # operator pre-computes the post-graft shortest satisfying path over the host
+    # and grafted satisfying endings and rejects below-floor. The gate re-proves
+    # PL-20 at stage 1 regardless; this avoids a wasted gate run.
+    # #VERIFY: test_mutation_m3.py accepts only grafts that hold the arc floor.
+    floor = _pl20_floor(host)
+    if floor is not None:
+        targets = _satisfying_ending_ids(host) | _satisfying_in_nodes(renamed)
+        shortest = _shortest_satisfying_nodes(graph, start, targets)
+        if shortest is not None and shortest < floor:
+            return None, (
+                f"post-graft shortest satisfying path is {shortest} node(s), below "
+                f"the PL-20 floor {floor}"
+            )
+    plan = _GraftPlan(
+        donor_slug=donor_slug,
+        subtree_root=subtree_root,
+        host_decision=host_decision,
+        position=_clamp_position(position, len(_choices_of(host_node))),
+        k=k,
+        renamed_nodes=tuple(renamed),
+        root_new_id=root_new_id,
+        new_choice_id=new_choice_id,
+        new_choice_label=_M3_GRAFT_LABEL,
+        region_size=len(renamed),
+    )
+    return plan, None
+
+
+def _apply_graft(host: Mapping[str, object], plan: _GraftPlan) -> dict[str, object]:
+    """Return a deep copy of ``host`` with the renamed region and new choice added.
+
+    Args:
+        host: The raw host story document (never mutated).
+        plan: The validated graft.
+
+    Returns:
+        dict[str, object]: The candidate graph, pre-metadata-resync.
+
+    Raises:
+        ValidationError: If the host has no node list.
+    """
+    candidate = copy.deepcopy(dict(host))
+    nodes = candidate.get("nodes")
+    if not isinstance(nodes, list):
+        msg = "host story has no nodes list to graft into"
+        raise ValidationError(msg, field="nodes", value=None)
+    node_list = cast("list[object]", nodes)
+    for renamed_node in plan.renamed_nodes:
+        node_list.append(copy.deepcopy(renamed_node))
+    for raw_node in node_list:
+        if not isinstance(raw_node, dict):
+            continue
+        node = cast("dict[str, object]", raw_node)
+        if node.get("id") != plan.host_decision:
+            continue
+        raw_choices = node.get("choices")
+        choices = (
+            list(cast("list[object]", raw_choices))
+            if isinstance(raw_choices, list)
+            else []
+        )
+        new_choice: dict[str, object] = {
+            "id": plan.new_choice_id,
+            "label": plan.new_choice_label,
+            "target": plan.root_new_id,
+        }
+        choices.insert(plan.position, new_choice)
+        node["choices"] = choices
+        break
+    return candidate
+
+
+def _graft_reguide_items(plan: _GraftPlan) -> tuple[ReguideItem, ...]:
+    """Return the two re-guidance items a graft emits (design 4.4).
+
+    The new choice's label and the graft root's entry beats are the seam where
+    donor content meets the host context, so both need re-authoring before the
+    mutant is promotable.
+    """
+    root_body = ""
+    for node in plan.renamed_nodes:
+        if _str_field(node, "id") == plan.root_new_id:
+            root_body = _str_field(node, "body") or ""
+            break
+    return (
+        ReguideItem(
+            target=ReguideTarget.CHOICE,
+            target_id=plan.new_choice_id,
+            reason="new graft-seam choice; author its label for the host context",
+            current_text=plan.new_choice_label,
+        ),
+        ReguideItem(
+            target=ReguideTarget.NODE,
+            target_id=plan.root_new_id,
+            reason="graft root now enters from a host decision; re-author its beats",
+            current_text=root_body,
+        ),
+    )
+
+
+def _load_catalog_donor(slug: str) -> dict[str, object]:
+    """Load a donor skeleton document by slug from the git-versioned catalog.
+
+    The default :class:`M3PruneGraft` donor resolver. Reuses the
+    ``generation.skeleton_match`` discovery helpers rather than hand-rolling a
+    glob, and is imported lazily so the mutation package's own import graph stays
+    free of the db/generation layers.
+
+    Args:
+        slug: The donor skeleton slug (a reviewer-supplied scalar parameter).
+
+    Returns:
+        dict[str, object]: The decoded donor document.
+
+    Raises:
+        ValidationError: If the slug names no catalog skeleton, resolves to a
+            missing file, or is not a JSON object.
+    """
+    # #ASSUME: external-resources: the donor is a git-versioned catalog file
+    # discovered exactly the way selection discovers skeletons (design 4.4); this
+    # is a deterministic read of trusted catalog data, never untrusted request
+    # input (CR-5). Resolved cwd-relative like every skeleton tool.
+    # #VERIFY: test_mutation_m3.py grafts real same-band donors through this
+    # resolver and pins that a different-band donor is rejected at preconditions.
+    import json  # noqa: PLC0415 -- lazy so mutation import stays db/generation-free
+
+    from cyo_adventure.generation.skeleton_match import (  # noqa: PLC0415
+        find_skeleton_metadata,
+        resolve_skeleton_path,
+    )
+
+    metadata = find_skeleton_metadata(slug)
+    if metadata is None:
+        msg = f"donor skeleton '{slug}' was not found in the catalog"
+        raise ValidationError(msg, field="donor", value=slug)
+    path = resolve_skeleton_path(metadata.age_band.value, slug)
+    if not path.is_file():
+        msg = f"donor skeleton '{slug}' resolved to a missing file"
+        raise ValidationError(msg, field="donor", value=slug)
+    data: object = json.loads(path.read_text(encoding="utf-8"))  # pyright: ignore[reportAny]
+    if not isinstance(data, dict):
+        msg = f"donor skeleton '{slug}' is not a JSON object"
+        raise ValidationError(msg, field="donor", value=slug)
+    return cast("dict[str, object]", data)
+
+
+# --- M3 contract-merge transform (dry in D4; wired into acceptance in D7) ---
+
+
+def merge_graft_contract(  # noqa: PLR0913 -- one cohesive contract-merge transform
+    host_contract: ThemeContract,
+    donor_contract: ThemeContract,
+    referenced_slot_ids: frozenset[str],
+    k: int,
+    mutant_slug: str,
+) -> ThemeContract:
+    """Return the host contract with a graft's donor slots imported (design 4.4).
+
+    Every donor slot the grafted region references is imported under its renamed
+    id ``M<k>_<SLOT>`` with its :class:`SlotConstraints` copied verbatim
+    (``distinct_from`` references are remapped to the renamed siblings and any
+    reference to a non-imported sibling is dropped so the merged contract stays
+    self-consistent), and its ``default_binding`` value carried over. The result
+    is a fresh contract (version 1) for the mutant.
+
+    This is the D4 dry transform: it is unit-tested against the WS-2 models and
+    the ``load_contract_for`` token-set equality rule, but is NOT wired into the
+    acceptance harness (contract acceptance is D7, design section 6 stage 4).
+
+    Args:
+        host_contract: The host skeleton's theme contract.
+        donor_contract: The donor skeleton's theme contract.
+        referenced_slot_ids: The donor slot ids the grafted region references.
+        k: The graft mutation index (the ``M<k>_`` slot prefix).
+        mutant_slug: The mutant's slug (the new ``skeleton_slug``).
+
+    Returns:
+        ThemeContract: The merged contract.
+    """
+    donor_by_id = {slot.id: slot for slot in donor_contract.slots}
+    imported: list[SlotSpec] = []
+    imported_binding: dict[str, str] = {}
+    for slot_id in sorted(referenced_slot_ids):
+        spec = donor_by_id.get(slot_id)
+        if spec is None:
+            continue
+        new_id = graft_slot_id(slot_id, k)
+        imported.append(
+            SlotSpec(
+                id=new_id,
+                scope=spec.scope,
+                meaning=spec.meaning,
+                guidance=spec.guidance,
+                constraints=SlotConstraints(
+                    max_words=spec.constraints.max_words,
+                    forbid=list(spec.constraints.forbid),
+                    distinct_from=[
+                        graft_slot_id(ref, k)
+                        for ref in spec.constraints.distinct_from
+                        if ref in referenced_slot_ids
+                    ],
+                    pattern=spec.constraints.pattern,
+                ),
+            )
+        )
+        if slot_id in donor_contract.default_binding:
+            imported_binding[new_id] = donor_contract.default_binding[slot_id]
+    binding = dict(host_contract.default_binding)
+    binding.update(imported_binding)
+    return ThemeContract(
+        contract_version=1,
+        skeleton_slug=mutant_slug,
+        age_band=host_contract.age_band,
+        legacy_lexicon=sorted(
+            set(host_contract.legacy_lexicon) | set(donor_contract.legacy_lexicon)
+        ),
+        default_binding=binding,
+        slots=[*host_contract.slots, *imported],
+    )
+
+
+def prune_contract(
+    host_contract: ThemeContract,
+    surviving_slot_ids: frozenset[str],
+    mutant_slug: str,
+) -> ThemeContract:
+    """Return the host contract with slots no surviving surface references dropped.
+
+    A pruned region's slots are removed if and only if the mutated skeleton no
+    longer references them (``surviving_slot_ids`` is the token set of the pruned
+    skeleton's three surfaces). ``distinct_from`` references to dropped siblings
+    are removed so the result stays self-consistent. The D4 dry transform,
+    unit-tested against the WS-2 models (contract acceptance is D7).
+
+    Args:
+        host_contract: The host skeleton's theme contract.
+        surviving_slot_ids: The slot tokens still present after the prune.
+        mutant_slug: The mutant's slug (the new ``skeleton_slug``).
+
+    Returns:
+        ThemeContract: The pruned contract.
+
+    Raises:
+        ValidationError: If the prune would leave the contract with no slots (a
+            skeleton with no tokens must ship contract-less, not with an empty
+            contract).
+    """
+    kept: list[SlotSpec] = []
+    for spec in host_contract.slots:
+        if spec.id not in surviving_slot_ids:
+            continue
+        kept.append(
+            SlotSpec(
+                id=spec.id,
+                scope=spec.scope,
+                meaning=spec.meaning,
+                guidance=spec.guidance,
+                constraints=SlotConstraints(
+                    max_words=spec.constraints.max_words,
+                    forbid=list(spec.constraints.forbid),
+                    distinct_from=[
+                        ref
+                        for ref in spec.constraints.distinct_from
+                        if ref in surviving_slot_ids
+                    ],
+                    pattern=spec.constraints.pattern,
+                ),
+            )
+        )
+    if not kept:
+        msg = (
+            "prune would drop every slot; a token-free skeleton must ship "
+            "contract-less rather than with an empty contract"
+        )
+        raise ValidationError(msg, field="slots", value=None)
+    binding = {
+        slot_id: value
+        for slot_id, value in host_contract.default_binding.items()
+        if slot_id in surviving_slot_ids
+    }
+    return ThemeContract(
+        contract_version=1,
+        skeleton_slug=mutant_slug,
+        age_band=host_contract.age_band,
+        legacy_lexicon=list(host_contract.legacy_lexicon),
+        default_binding=binding,
+        slots=kept,
+    )
+
+
+class M3PruneGraft:
+    """M3: prune a closed subtree or graft a donor subtree (design section 4.4).
+
+    Two sub-operations, selected by the ``mode`` parameter:
+
+    - **prune** (``mode=prune``): remove a closed, self-contained subtree and the
+      single choice edge into it. The pruned subtree is chosen by an explicit
+      ``choice`` id, or reproducibly from the seeded rng over the canonically
+      ordered prunable choices. Prune emits no re-guidance (design 4.4).
+    - **graft** (``mode=graft``): attach a copy of a closed, self-contained,
+      state-free subtree (from the same skeleton, or a same-band ``donor``) under
+      a new choice on ``host_decision``, with every id renamed under the ``m<k>_``
+      scheme and every ``{SLOT}`` token renamed to ``M<k>_`` form. Graft requires
+      explicit ``subtree_root`` and ``host_decision`` ids (plus optional ``donor``
+      slug and ``position``), so it is deterministic without an rng.
+
+    D4 is Tier-1 only. The two-sided cell envelope is blocking (a prune may not
+    drop below the cell minimum, a graft may not exceed the maximum), donors are
+    same-band only, and grafted regions must be variable/effect/condition-free.
+    The contract-merge transform (:func:`merge_graft_contract`,
+    :func:`prune_contract`) is implemented and unit-tested here but is not wired
+    into the acceptance harness; contract acceptance lands in D7.
+    """
+
+    op_id: str = M3_OP_ID
+
+    def __init__(self, donor_resolver: DonorResolver | None = None) -> None:
+        """Build the operator with a donor resolver.
+
+        Args:
+            donor_resolver: Maps a ``donor`` slug to its decoded document. The
+                default reads the git-versioned catalog; tests inject an
+                in-memory resolver to keep the operator a pure function.
+        """
+        self._donor_resolver: DonorResolver = (
+            donor_resolver if donor_resolver is not None else _load_catalog_donor
+        )
+
+    def preconditions(
+        self, parent: Mapping[str, object], params: OpParams
+    ) -> PreconditionReport:
+        """Return whether M3 may attempt a mutation on ``parent`` (design 4.4).
+
+        Args:
+            parent: The raw parent story document.
+            params: The operator parameters (``mode`` plus mode-specific ids).
+
+        Returns:
+            PreconditionReport: Satisfied when eligible, else the failing reasons.
+        """
+        failures = list(self._base_failures(parent))
+        mode = params.get("mode")
+        if mode == _M3_MODE_PRUNE:
+            failures.extend(self._prune_failures(parent, params))
+        elif mode == _M3_MODE_GRAFT:
+            failures.extend(self._graft_failures(parent, params))
+        else:
+            failures.append(_M3_MODE_MSG)
+        if failures:
+            return PreconditionReport.failed(*failures)
+        return PreconditionReport.passed()
+
+    def apply(
+        self, parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> MutationResult:
+        """Apply the selected sub-operation and return the resynced candidate.
+
+        Args:
+            parent: The raw parent story document (never mutated).
+            params: The operator parameters (``mode`` plus mode-specific ids).
+            rng: The injected random source (used only by prune's rng fallback).
+
+        Returns:
+            MutationResult: The candidate (metadata resynced) plus re-guidance.
+
+        Raises:
+            ValidationError: If the mode is unknown or the selected mutation is
+                ineligible.
+        """
+        mode = params.get("mode")
+        if mode == _M3_MODE_PRUNE:
+            return self._apply_prune_op(parent, params, rng)
+        if mode == _M3_MODE_GRAFT:
+            return self._apply_graft_op(parent, params)
+        raise ValidationError(_M3_MODE_MSG, field="mode", value=mode)
+
+    @staticmethod
+    def _base_failures(parent: Mapping[str, object]) -> list[str]:
+        """Return the parent-level (tier/series/production) precondition failures."""
+        failures: list[str] = []
+        meta = _metadata_of(parent)
+        if recompute_tier(parent) != 1:
+            failures.append(_M3_TIER1_ONLY_MSG)
+        if meta.get("series") is not None:
+            failures.append(_M3_SERIES_MSG)
+        if meta.get("production_eligible") is False:
+            failures.append(_M3_PRODUCTION_ONLY_MSG)
+        return failures
+
+    @staticmethod
+    def _prune_failures(parent: Mapping[str, object], params: OpParams) -> list[str]:
+        """Return prune-specific precondition failures."""
+        choice = params.get("choice")
+        if choice is not None:
+            if not isinstance(choice, str):
+                return [_M3_PRUNE_PARAMS_MSG]
+            _plan, reason = _evaluate_prune(parent, choice)
+            if reason is not None:
+                return [f"prune of choice '{choice}' is ineligible: {reason}"]
+            return []
+        if not _prunable_choices(parent):
+            return ["no eligible prune exists for this parent"]
+        return []
+
+    def _graft_failures(
+        self, parent: Mapping[str, object], params: OpParams
+    ) -> list[str]:
+        """Return graft-specific precondition failures."""
+        donor, donor_slug, reason = self._resolve_donor(parent, params)
+        if reason is not None or donor is None:
+            return [reason or _M3_DONOR_PARAM_MSG]
+        subtree_root = params.get("subtree_root")
+        host_decision = params.get("host_decision")
+        if not (isinstance(subtree_root, str) and isinstance(host_decision, str)):
+            return [_M3_GRAFT_PARAMS_MSG]
+        _plan, graft_reason = _evaluate_graft(
+            parent,
+            donor,
+            donor_slug,
+            subtree_root,
+            host_decision,
+            _int_param(params.get("position")),
+        )
+        if graft_reason is not None:
+            return [f"graft is ineligible: {graft_reason}"]
+        return []
+
+    def _resolve_donor(
+        self, parent: Mapping[str, object], params: OpParams
+    ) -> tuple[Mapping[str, object] | None, str, str | None]:
+        """Resolve the graft donor document (parent for a same-skeleton graft).
+
+        Args:
+            parent: The raw parent (host) story document.
+            params: The operator parameters (optional ``donor`` slug).
+
+        Returns:
+            tuple[Mapping[str, object] | None, str, str | None]: ``(donor,
+                donor_slug, reason)``; ``reason`` is set (and ``donor`` None) when
+                the donor could not be loaded.
+        """
+        donor = params.get("donor")
+        if donor is None:
+            return parent, "<self>", None
+        if not isinstance(donor, str):
+            return None, "", _M3_DONOR_PARAM_MSG
+        try:
+            document = self._donor_resolver(donor)
+        except ValidationError as exc:
+            return None, donor, f"donor '{donor}' could not be loaded: {exc}"
+        return document, donor, None
+
+    def _apply_prune_op(
+        self, parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> MutationResult:
+        """Apply a prune and return the resynced candidate (no re-guidance)."""
+        plan = self._select_prune(parent, params, rng)
+        candidate = resync_metadata(_apply_prune(parent, plan))
+        note = (
+            f"M3 prune: removed subtree '{plan.root}' ({len(plan.region_ids)} "
+            f"node(s)) and choice '{plan.choice_id}' on '{plan.parent_node_id}'"
+        )
+        notes = (note, *_ending_ratio_advisory(candidate))
+        return MutationResult(candidate=candidate, reguide=(), notes=notes)
+
+    @staticmethod
+    def _select_prune(
+        parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> _PrunePlan:
+        """Resolve the prune from an explicit ``choice`` or the seeded rng."""
+        choice = params.get("choice")
+        if choice is not None:
+            if not isinstance(choice, str):
+                raise ValidationError(
+                    _M3_PRUNE_PARAMS_MSG, field="choice", value=choice
+                )
+            plan, reason = _evaluate_prune(parent, choice)
+            if plan is None:
+                msg = f"M3 prune of '{choice}' is ineligible: {reason}"
+                raise ValidationError(msg, field="choice", value=choice)
+            return plan
+        candidates = _prunable_choices(parent)
+        rng.shuffle(candidates)
+        for choice_id in candidates:
+            plan, _reason = _evaluate_prune(parent, choice_id)
+            if plan is not None:
+                return plan
+        msg = "M3 found no eligible prune for this parent"
+        raise ValidationError(msg, field="parent", value=None)
+
+    def _apply_graft_op(
+        self, parent: Mapping[str, object], params: OpParams
+    ) -> MutationResult:
+        """Apply a graft and return the resynced candidate plus its re-guidance."""
+        donor, donor_slug, reason = self._resolve_donor(parent, params)
+        if reason is not None or donor is None:
+            raise ValidationError(
+                reason or _M3_DONOR_PARAM_MSG, field="donor", value=params.get("donor")
+            )
+        subtree_root = params.get("subtree_root")
+        host_decision = params.get("host_decision")
+        if not (isinstance(subtree_root, str) and isinstance(host_decision, str)):
+            raise ValidationError(
+                _M3_GRAFT_PARAMS_MSG, field="subtree_root", value=subtree_root
+            )
+        plan, graft_reason = _evaluate_graft(
+            parent,
+            donor,
+            donor_slug,
+            subtree_root,
+            host_decision,
+            _int_param(params.get("position")),
+        )
+        if plan is None:
+            msg = f"M3 graft is ineligible: {graft_reason}"
+            raise ValidationError(msg, field="subtree_root", value=subtree_root)
+        candidate = resync_metadata(_apply_graft(parent, plan))
+        note = (
+            f"M3 graft: copied donor '{donor_slug}' subtree '{plan.subtree_root}' "
+            f"({plan.region_size} node(s), m{plan.k}_ prefix) under new choice "
+            f"'{plan.new_choice_id}' on '{plan.host_decision}'"
+        )
+        return MutationResult(
+            candidate=candidate, reguide=_graft_reguide_items(plan), notes=(note,)
+        )
+
+
+def _int_param(value: object) -> int | None:
+    """Return an int parameter (rejecting bool), or None when absent/off-type."""
+    return value if isinstance(value, int) and not isinstance(value, bool) else None
+
+
+# Register the singleton M3 operator in the default catalog registry alongside
+# M1 and M2. The registered instance uses the default catalog donor resolver so
+# the CLI can express a graft donor as a scalar slug parameter.
+M3 = REGISTRY.register(M3PruneGraft())
