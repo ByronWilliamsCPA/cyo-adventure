@@ -52,52 +52,52 @@
 -- CASCADE: family-owned content, deleted along with the family.
 -- ---------------------------------------------------------------------
 
-alter table only "public"."series" drop constraint "series_family_id_fkey";
+alter table only "public"."series" drop constraint if exists "series_family_id_fkey";
 alter table only "public"."series"
     add constraint "series_family_id_fkey" foreign key ("family_id")
     references "public"."family"("id") on delete cascade;
 
-alter table only "public"."user" drop constraint "user_family_id_fkey";
+alter table only "public"."user" drop constraint if exists "user_family_id_fkey";
 alter table only "public"."user"
     add constraint "user_family_id_fkey" foreign key ("family_id")
     references "public"."family"("id") on delete cascade;
 
-alter table only "public"."child_profile" drop constraint "child_profile_family_id_fkey";
+alter table only "public"."child_profile" drop constraint if exists "child_profile_family_id_fkey";
 alter table only "public"."child_profile"
     add constraint "child_profile_family_id_fkey" foreign key ("family_id")
     references "public"."family"("id") on delete cascade;
 
-alter table only "public"."family_connection" drop constraint "family_connection_family_id_fkey";
+alter table only "public"."family_connection" drop constraint if exists "family_connection_family_id_fkey";
 alter table only "public"."family_connection"
     add constraint "family_connection_family_id_fkey" foreign key ("family_id")
     references "public"."family"("id") on delete cascade;
 
-alter table only "public"."family_connection" drop constraint "family_connection_connected_family_id_fkey";
+alter table only "public"."family_connection" drop constraint if exists "family_connection_connected_family_id_fkey";
 alter table only "public"."family_connection"
     add constraint "family_connection_connected_family_id_fkey" foreign key ("connected_family_id")
     references "public"."family"("id") on delete cascade;
 
-alter table only "public"."storybook" drop constraint "storybook_family_id_fkey";
+alter table only "public"."storybook" drop constraint if exists "storybook_family_id_fkey";
 alter table only "public"."storybook"
     add constraint "storybook_family_id_fkey" foreign key ("family_id")
     references "public"."family"("id") on delete cascade;
 
-alter table only "public"."concept" drop constraint "concept_family_id_fkey";
+alter table only "public"."concept" drop constraint if exists "concept_family_id_fkey";
 alter table only "public"."concept"
     add constraint "concept_family_id_fkey" foreign key ("family_id")
     references "public"."family"("id") on delete cascade;
 
-alter table only "public"."story_request" drop constraint "story_request_family_id_fkey";
+alter table only "public"."story_request" drop constraint if exists "story_request_family_id_fkey";
 alter table only "public"."story_request"
     add constraint "story_request_family_id_fkey" foreign key ("family_id")
     references "public"."family"("id") on delete cascade;
 
-alter table only "public"."device_grant" drop constraint "device_grant_family_id_fkey";
+alter table only "public"."device_grant" drop constraint if exists "device_grant_family_id_fkey";
 alter table only "public"."device_grant"
     add constraint "device_grant_family_id_fkey" foreign key ("family_id")
     references "public"."family"("id") on delete cascade;
 
-alter table only "public"."kid_flag" drop constraint "kid_flag_family_id_fkey";
+alter table only "public"."kid_flag" drop constraint if exists "kid_flag_family_id_fkey";
 alter table only "public"."kid_flag"
     add constraint "kid_flag_family_id_fkey" foreign key ("family_id")
     references "public"."family"("id") on delete cascade;
@@ -106,32 +106,32 @@ alter table only "public"."kid_flag"
 -- CASCADE: child-profile-owned data, deleted along with the profile.
 -- ---------------------------------------------------------------------
 
-alter table only "public"."user" drop constraint "user_child_profile_id_fkey";
+alter table only "public"."user" drop constraint if exists "user_child_profile_id_fkey";
 alter table only "public"."user"
     add constraint "user_child_profile_id_fkey" foreign key ("child_profile_id")
     references "public"."child_profile"("id") on delete cascade;
 
-alter table only "public"."reading_state" drop constraint "reading_state_child_profile_id_fkey";
+alter table only "public"."reading_state" drop constraint if exists "reading_state_child_profile_id_fkey";
 alter table only "public"."reading_state"
     add constraint "reading_state_child_profile_id_fkey" foreign key ("child_profile_id")
     references "public"."child_profile"("id") on delete cascade;
 
-alter table only "public"."completion" drop constraint "completion_child_profile_id_fkey";
+alter table only "public"."completion" drop constraint if exists "completion_child_profile_id_fkey";
 alter table only "public"."completion"
     add constraint "completion_child_profile_id_fkey" foreign key ("child_profile_id")
     references "public"."child_profile"("id") on delete cascade;
 
-alter table only "public"."rating" drop constraint "rating_child_profile_id_fkey";
+alter table only "public"."rating" drop constraint if exists "rating_child_profile_id_fkey";
 alter table only "public"."rating"
     add constraint "rating_child_profile_id_fkey" foreign key ("child_profile_id")
     references "public"."child_profile"("id") on delete cascade;
 
-alter table only "public"."storybook_assignment" drop constraint "storybook_assignment_child_profile_id_fkey";
+alter table only "public"."storybook_assignment" drop constraint if exists "storybook_assignment_child_profile_id_fkey";
 alter table only "public"."storybook_assignment"
     add constraint "storybook_assignment_child_profile_id_fkey" foreign key ("child_profile_id")
     references "public"."child_profile"("id") on delete cascade;
 
-alter table only "public"."kid_flag" drop constraint "kid_flag_profile_id_fkey";
+alter table only "public"."kid_flag" drop constraint if exists "kid_flag_profile_id_fkey";
 alter table only "public"."kid_flag"
     add constraint "kid_flag_profile_id_fkey" foreign key ("profile_id")
     references "public"."child_profile"("id") on delete cascade;
@@ -140,42 +140,42 @@ alter table only "public"."kid_flag"
 -- CASCADE: storybook-owned data, deleted along with the storybook.
 -- ---------------------------------------------------------------------
 
-alter table only "public"."storybook_version" drop constraint "storybook_version_storybook_id_fkey";
+alter table only "public"."storybook_version" drop constraint if exists "storybook_version_storybook_id_fkey";
 alter table only "public"."storybook_version"
     add constraint "storybook_version_storybook_id_fkey" foreign key ("storybook_id")
     references "public"."storybook"("id") on delete cascade;
 
-alter table only "public"."reading_state" drop constraint "reading_state_storybook_id_fkey";
+alter table only "public"."reading_state" drop constraint if exists "reading_state_storybook_id_fkey";
 alter table only "public"."reading_state"
     add constraint "reading_state_storybook_id_fkey" foreign key ("storybook_id")
     references "public"."storybook"("id") on delete cascade;
 
-alter table only "public"."reading_state" drop constraint "reading_state_storybook_id_version_fkey";
+alter table only "public"."reading_state" drop constraint if exists "reading_state_storybook_id_version_fkey";
 alter table only "public"."reading_state"
     add constraint "reading_state_storybook_id_version_fkey" foreign key ("storybook_id", "version")
     references "public"."storybook_version"("storybook_id", "version") on delete cascade;
 
-alter table only "public"."completion" drop constraint "completion_storybook_id_version_fkey";
+alter table only "public"."completion" drop constraint if exists "completion_storybook_id_version_fkey";
 alter table only "public"."completion"
     add constraint "completion_storybook_id_version_fkey" foreign key ("storybook_id", "version")
     references "public"."storybook_version"("storybook_id", "version") on delete cascade;
 
-alter table only "public"."rating" drop constraint "rating_storybook_id_fkey";
+alter table only "public"."rating" drop constraint if exists "rating_storybook_id_fkey";
 alter table only "public"."rating"
     add constraint "rating_storybook_id_fkey" foreign key ("storybook_id")
     references "public"."storybook"("id") on delete cascade;
 
-alter table only "public"."storybook_assignment" drop constraint "storybook_assignment_storybook_id_fkey";
+alter table only "public"."storybook_assignment" drop constraint if exists "storybook_assignment_storybook_id_fkey";
 alter table only "public"."storybook_assignment"
     add constraint "storybook_assignment_storybook_id_fkey" foreign key ("storybook_id")
     references "public"."storybook"("id") on delete cascade;
 
-alter table only "public"."kid_flag" drop constraint "kid_flag_storybook_id_fkey";
+alter table only "public"."kid_flag" drop constraint if exists "kid_flag_storybook_id_fkey";
 alter table only "public"."kid_flag"
     add constraint "kid_flag_storybook_id_fkey" foreign key ("storybook_id")
     references "public"."storybook"("id") on delete cascade;
 
-alter table only "public"."kid_flag" drop constraint "kid_flag_storybook_id_version_fkey";
+alter table only "public"."kid_flag" drop constraint if exists "kid_flag_storybook_id_version_fkey";
 alter table only "public"."kid_flag"
     add constraint "kid_flag_storybook_id_version_fkey" foreign key ("storybook_id", "version")
     references "public"."storybook_version"("storybook_id", "version") on delete cascade;
@@ -184,7 +184,7 @@ alter table only "public"."kid_flag"
 -- CASCADE: NOT NULL FKs that would otherwise block a family/concept delete.
 -- ---------------------------------------------------------------------
 
-alter table only "public"."generation_job" drop constraint "generation_job_concept_id_fkey";
+alter table only "public"."generation_job" drop constraint if exists "generation_job_concept_id_fkey";
 alter table only "public"."generation_job"
     add constraint "generation_job_concept_id_fkey" foreign key ("concept_id")
     references "public"."concept"("id") on delete cascade;
@@ -194,72 +194,72 @@ alter table only "public"."generation_job"
 -- does not own).
 -- ---------------------------------------------------------------------
 
-alter table only "public"."series" drop constraint "series_created_by_fkey";
+alter table only "public"."series" drop constraint if exists "series_created_by_fkey";
 alter table only "public"."series"
     add constraint "series_created_by_fkey" foreign key ("created_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."storybook" drop constraint "storybook_created_by_fkey";
+alter table only "public"."storybook" drop constraint if exists "storybook_created_by_fkey";
 alter table only "public"."storybook"
     add constraint "storybook_created_by_fkey" foreign key ("created_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."storybook_version" drop constraint "storybook_version_approved_by_fkey";
+alter table only "public"."storybook_version" drop constraint if exists "storybook_version_approved_by_fkey";
 alter table only "public"."storybook_version"
     add constraint "storybook_version_approved_by_fkey" foreign key ("approved_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."concept" drop constraint "concept_created_by_fkey";
+alter table only "public"."concept" drop constraint if exists "concept_created_by_fkey";
 alter table only "public"."concept"
     add constraint "concept_created_by_fkey" foreign key ("created_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."story_request" drop constraint "story_request_profile_id_fkey";
+alter table only "public"."story_request" drop constraint if exists "story_request_profile_id_fkey";
 alter table only "public"."story_request"
     add constraint "story_request_profile_id_fkey" foreign key ("profile_id")
     references "public"."child_profile"("id") on delete set null;
 
-alter table only "public"."story_request" drop constraint "story_request_reviewed_by_fkey";
+alter table only "public"."story_request" drop constraint if exists "story_request_reviewed_by_fkey";
 alter table only "public"."story_request"
     add constraint "story_request_reviewed_by_fkey" foreign key ("reviewed_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."story_request" drop constraint "story_request_concept_id_fkey";
+alter table only "public"."story_request" drop constraint if exists "story_request_concept_id_fkey";
 alter table only "public"."story_request"
     add constraint "story_request_concept_id_fkey" foreign key ("concept_id")
     references "public"."concept"("id") on delete set null;
 
-alter table only "public"."story_request" drop constraint "fk_story_request_anchor_storybook_id_storybook";
+alter table only "public"."story_request" drop constraint if exists "fk_story_request_anchor_storybook_id_storybook";
 alter table only "public"."story_request"
     add constraint "fk_story_request_anchor_storybook_id_storybook" foreign key ("anchor_storybook_id")
     references "public"."storybook"("id") on delete set null;
 
-alter table only "public"."storybook_assignment" drop constraint "storybook_assignment_assigned_by_fkey";
+alter table only "public"."storybook_assignment" drop constraint if exists "storybook_assignment_assigned_by_fkey";
 alter table only "public"."storybook_assignment"
     add constraint "storybook_assignment_assigned_by_fkey" foreign key ("assigned_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."moderation_threshold" drop constraint "moderation_threshold_updated_by_fkey";
+alter table only "public"."moderation_threshold" drop constraint if exists "moderation_threshold_updated_by_fkey";
 alter table only "public"."moderation_threshold"
     add constraint "moderation_threshold_updated_by_fkey" foreign key ("updated_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."moderation_setting" drop constraint "moderation_setting_updated_by_fkey";
+alter table only "public"."moderation_setting" drop constraint if exists "moderation_setting_updated_by_fkey";
 alter table only "public"."moderation_setting"
     add constraint "moderation_setting_updated_by_fkey" foreign key ("updated_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."provider_model_allowlist" drop constraint "provider_model_allowlist_created_by_fkey";
+alter table only "public"."provider_model_allowlist" drop constraint if exists "provider_model_allowlist_created_by_fkey";
 alter table only "public"."provider_model_allowlist"
     add constraint "provider_model_allowlist_created_by_fkey" foreign key ("created_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."provider_model_allowlist" drop constraint "provider_model_allowlist_updated_by_fkey";
+alter table only "public"."provider_model_allowlist" drop constraint if exists "provider_model_allowlist_updated_by_fkey";
 alter table only "public"."provider_model_allowlist"
     add constraint "provider_model_allowlist_updated_by_fkey" foreign key ("updated_by")
     references "public"."user"("id") on delete set null;
 
-alter table only "public"."family_connection" drop constraint "family_connection_created_by_fkey";
+alter table only "public"."family_connection" drop constraint if exists "family_connection_created_by_fkey";
 alter table only "public"."family_connection"
     add constraint "family_connection_created_by_fkey" foreign key ("created_by")
     references "public"."user"("id") on delete set null;
@@ -270,13 +270,13 @@ alter table only "public"."family_connection"
 -- ---------------------------------------------------------------------
 
 alter table "public"."moderation_threshold_audit" alter column "changed_by" drop not null;
-alter table only "public"."moderation_threshold_audit" drop constraint "moderation_threshold_audit_changed_by_fkey";
+alter table only "public"."moderation_threshold_audit" drop constraint if exists "moderation_threshold_audit_changed_by_fkey";
 alter table only "public"."moderation_threshold_audit"
     add constraint "moderation_threshold_audit_changed_by_fkey" foreign key ("changed_by")
     references "public"."user"("id") on delete set null;
 
 alter table "public"."provider_model_allowlist_audit" alter column "changed_by" drop not null;
-alter table only "public"."provider_model_allowlist_audit" drop constraint "provider_model_allowlist_audit_changed_by_fkey";
+alter table only "public"."provider_model_allowlist_audit" drop constraint if exists "provider_model_allowlist_audit_changed_by_fkey";
 alter table only "public"."provider_model_allowlist_audit"
     add constraint "provider_model_allowlist_audit_changed_by_fkey" foreign key ("changed_by")
     references "public"."user"("id") on delete set null;
@@ -287,4 +287,4 @@ alter table only "public"."provider_model_allowlist_audit"
 -- untouched; only referential integrity against user.id is removed.
 -- ---------------------------------------------------------------------
 
-alter table only "public"."pipeline_event" drop constraint "pipeline_event_actor_id_fkey";
+alter table only "public"."pipeline_event" drop constraint if exists "pipeline_event_actor_id_fkey";
