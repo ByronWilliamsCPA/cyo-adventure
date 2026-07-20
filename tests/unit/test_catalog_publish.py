@@ -1,4 +1,4 @@
-"""Unit tests for the catalog-publish CLI's authorization boundary.
+"""Unit tests for the catalog-publish CLI's authorization boundary and entrypoint.
 
 ``_load_admin_principal`` is documented as "the ONLY authorization check in
 this CLI path" (there is no HTTP request, so ``api/deps.py``'s admin gate
@@ -9,19 +9,34 @@ pattern) is enough to exercise every branch without a real Postgres
 connection. DB-backed coverage for ``_load_catalog_story_for_update`` (which
 runs a real ``SELECT ... FOR UPDATE``) lives in
 ``tests/integration/test_catalog_publish.py``.
+
+``main()`` is exercised here too (mocking ``_run`` rather than opening a real
+session), since it is pure CLI plumbing (argv parsing, exit codes, stdout/
+stderr messages) with no DB or moderation-pipeline behavior of its own to
+verify at the integration layer.
+
+Async tests are marked individually with ``@pytest.mark.asyncio`` (not a
+module-level ``pytestmark``) because this module mixes them with the sync
+``main()`` tests below; see ``tests/CLAUDE.md``'s pytest-conventions note.
 """
 
 from __future__ import annotations
 
 import uuid
+from unittest.mock import AsyncMock
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
-from cyo_adventure.db.models import User
-from cyo_adventure.publishing.catalog_publish import _load_admin_principal
+from cyo_adventure.db.models import StorybookVersion, User
+from cyo_adventure.publishing.catalog_publish import (
+    _latest_version,
+    _load_admin_principal,
+    main,
+)
 
-pytestmark = pytest.mark.asyncio
+_MODULE = "cyo_adventure.publishing.catalog_publish"
 
 
 class _FakeSession:
@@ -59,6 +74,8 @@ def _user(*, role: str, is_admin: bool) -> User:
     )
 
 
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_load_admin_principal_rejects_unknown_user() -> None:
     """No User row for ``approved_by`` raises ResourceNotFoundError."""
     session = _FakeSession(user=None)
@@ -68,6 +85,8 @@ async def test_load_admin_principal_rejects_unknown_user() -> None:
         await _load_admin_principal(session, approved_by)  # type: ignore[arg-type]
 
 
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_load_admin_principal_rejects_non_admin_user() -> None:
     """A real but non-admin User (a plain guardian) raises AuthorizationError.
 
@@ -81,6 +100,8 @@ async def test_load_admin_principal_rejects_non_admin_user() -> None:
         await _load_admin_principal(session, uuid.uuid4())  # type: ignore[arg-type]
 
 
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_load_admin_principal_rejects_a_row_with_an_unmodeled_role() -> None:
     """A User row whose ``role`` is outside the closed Role set is rejected cleanly.
 
@@ -95,3 +116,90 @@ async def test_load_admin_principal_rejects_a_row_with_an_unmodeled_role() -> No
 
     with pytest.raises(AuthorizationError, match="unrecognized role"):
         await _load_admin_principal(session, uuid.uuid4())  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_latest_version_raises_when_no_versions_exist() -> None:
+    """A storybook with zero StorybookVersion rows raises ResourceNotFoundError.
+
+    Covers the partial-import state this command must refuse rather than
+    crash on: import_catalog.py's own creation path always inserts version 1
+    in the same flush as the Storybook row, so this should not happen in
+    practice, but a hand-seeded or corrupted row with no version rows must
+    still fail cleanly (a ResourceNotFoundError, caught by main()'s handler)
+    rather than let ``max(...)`` returning ``None`` propagate as a bare
+    ``TypeError`` from an unguarded arithmetic/format use downstream.
+    """
+    session = AsyncMock(spec=AsyncSession)
+    session.scalar = AsyncMock(return_value=None)
+
+    with pytest.raises(ResourceNotFoundError, match="no versions"):
+        await _latest_version(session, "some-story-id")
+
+
+@pytest.mark.unit
+class TestMain:
+    """Sync tests for the ``main()`` entrypoint (argv parsing, exit codes).
+
+    ``main()`` itself is a sync function (it drives its own ``asyncio.run``
+    internally), so these tests call it directly rather than going through
+    pytest-asyncio; ``_run`` is patched so no real session or DB is touched.
+    """
+
+    def test_rejects_invalid_approved_by_uuid(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """A malformed --approved-by value is rejected before any async work runs."""
+        exit_code = main(["storybook-1", "--approved-by", "not-a-uuid"])
+
+        captured = capsys.readouterr()
+        assert exit_code == 1
+        assert "invalid --approved-by UUID: not-a-uuid" in captured.err
+
+    def test_reports_a_project_base_error_as_a_clean_failure(
+        self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """A ProjectBaseError from the publish path exits 1 with a clean message.
+
+        Regression for main()'s only exception handler: a
+        ProjectBaseError subclass (here AuthorizationError, e.g. a
+        non-admin --approved-by, or any other domain rejection from
+        promote_catalog_story) must produce an operator-facing
+        "promotion failed: ..." message and exit code 1, never an uncaught
+        traceback escaping to the shell.
+        """
+
+        async def _raise_authorization_error(
+            storybook_id: str, approved_by: uuid.UUID
+        ) -> StorybookVersion:
+            _ = (storybook_id, approved_by)
+            msg = "admin role required to approve a catalog story"
+            raise AuthorizationError(msg, required_permission="admin")
+
+        monkeypatch.setattr(f"{_MODULE}._run", _raise_authorization_error)
+
+        exit_code = main(["storybook-1", "--approved-by", str(uuid.uuid4())])
+
+        captured = capsys.readouterr()
+        assert exit_code == 1
+        assert "promotion failed: admin role required" in captured.err
+
+    def test_success_prints_the_published_summary(
+        self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """A clean run prints the published-summary line and exits 0."""
+
+        async def _fake_run(
+            storybook_id: str, approved_by: uuid.UUID
+        ) -> StorybookVersion:
+            _ = approved_by
+            return StorybookVersion(storybook_id=storybook_id, version=3, blob={})
+
+        monkeypatch.setattr(f"{_MODULE}._run", _fake_run)
+
+        exit_code = main(["storybook-1", "--approved-by", str(uuid.uuid4())])
+
+        captured = capsys.readouterr()
+        assert exit_code == 0
+        assert "published storybook-1 v3 (visibility=catalog)" in captured.out
