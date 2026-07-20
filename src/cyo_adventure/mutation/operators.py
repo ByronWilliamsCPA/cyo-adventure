@@ -26,6 +26,7 @@ from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.mutation.identity import (
     host_id_namespace,
     recompute_tier,
+    redeclare_topology,
     rename_region,
     resync_metadata,
 )
@@ -53,12 +54,13 @@ from cyo_adventure.validator.band_profile import (
     breadth_scaled_floors,
     min_complete_floor,
     profile_for,
+    words_per_node_profile,
 )
 from cyo_adventure.validator.layer1 import ScalePlacement, resolve_node_budget
 
 if TYPE_CHECKING:
     import random
-    from collections.abc import Callable, Mapping
+    from collections.abc import Callable, Mapping, Sequence
 
     # A donor resolver maps a catalog slug to its decoded skeleton document. M3's
     # graft loads a donor through one of these; the default reads the git-versioned
@@ -2806,3 +2808,1324 @@ def _int_param(value: object) -> int | None:
 # M1 and M2. The registered instance uses the default catalog donor resolver so
 # the CLI can express a graft donor as a scalar slug parameter.
 M3 = REGISTRY.register(M3PruneGraft())
+
+
+# --- M4: vary decisions-per-path (design section 4.5) ---
+#
+# One operator, three sub-operations selected by the ``mode`` parameter
+# ("insert-linear", "remove-linear", "insert-decision"), matching the
+# single-op-per-op-id shape M1/M2/M3 use. D5 is Tier-1 only and inserts
+# effect-free, condition-free nodes only: every minted node carries no
+# ``on_enter``, and every minted choice carries no ``effects`` and no
+# ``condition`` (constructor-enforced), so variables/state can never be added
+# (design 4.5, "v1 inserts effect-free nodes only"). The section 6 constant that
+# governs the operator, ADR-011 "length adds breadth, not depth" and the 4-8
+# decisions-per-path window, is enforced belt-and-braces as a precondition
+# (design 4.8); the gate does not check decisions-per-path.
+
+# The M4 operator id, recorded in every lineage manifest and used as the registry
+# key. Kept as a module constant so the CLI and tests never spell the literal.
+M4_OP_ID = "M4"
+
+# The three M4 sub-operation modes and the two insert-decision variants.
+_M4_MODE_INSERT_LINEAR = "insert-linear"
+_M4_MODE_REMOVE_LINEAR = "remove-linear"
+_M4_MODE_INSERT_DECISION = "insert-decision"
+_M4_VARIANT_RECONVERGENCE = "reconvergence"
+_M4_VARIANT_MICRO_STUB = "micro-stub"
+
+# ADR-011 section 6 decisions-per-path window (4-8 decisions per playthrough).
+# The gate does not enforce decisions-per-path (design 4.8), so M4 self-enforces
+# it: an operation may not push a path above the ceiling or drop a path below the
+# floor (the two-sided monotonic check in ``_decision_window_reason``).
+_MIN_DECISIONS_PER_PATH = 4
+_MAX_DECISIONS_PER_PATH = 8
+
+# The bounded number of root-to-ending simple paths the per-path decision counter
+# enumerates before it truncates. For an acyclic parent (the common Tier-1 case)
+# the path set is finite and this cap is never reached, so the count is EXACT;
+# for a cyclic (open_map / loop_and_grow) parent the simple-path set can be
+# combinatorially large, so the counter samples this many paths deterministically
+# (sorted DFS) and marks the result truncated. On a truncated sample the window
+# check is best-effort; the gate is the safety authority and does not depend on
+# it (decisions-per-path is a belt-and-braces grammar rule, design 4.8).
+_WALK_PATH_SAMPLE_CAP = 4096
+
+# The micro-stub ending's default (kind, valence). ``discovery`` is the one kind
+# no band forbids (only ``death`` and ``capture`` ever appear in a band's
+# forbidden set, band_profile._PROFILES), so a discovery ending is always
+# band-legal by PL-15; ``neutral`` is a valence that carries no arc obligation.
+# ``discovery`` is NOT a PL-20 satisfying kind (only success/completion are), so a
+# shallow micro-stub can never undercut the fastest-finish arc floor.
+_MICRO_STUB_KIND = "discovery"
+_MICRO_STUB_VALENCE = "neutral"
+
+# The passage-word fallback used only when a band has no words-per-node profile
+# (every catalog band has one; this is a defensive default so a minted node
+# always carries a positive word budget).
+_DEFAULT_PASSAGE_WORDS = 100
+
+# Placeholder beats/labels/titles minted nodes carry until a reviewer authors
+# them (every one is emitted as a re-guidance item). All are non-empty (the
+# schema requires a non-empty label/title) and free of em/en dashes.
+_M4_PASSAGE_BEATS = "re-author: linear passage bridging the split edge"
+_M4_PASSAGE_LABEL = "(inserted passage: re-author this choice label)"
+_M4_DECISION_BEATS = "re-author: new decision on the split edge"
+_M4_CONTINUE_LABEL = "(inserted decision: re-author the continuing choice label)"
+_M4_RECON_LABEL = "(inserted decision: re-author the reconverging choice label)"
+_M4_STUB_CHOICE_LABEL = "(inserted decision: re-author the micro-stub choice label)"
+_M4_STUB_BEATS = "re-author: short closed micro-stub ending"
+_M4_STUB_TITLE = "(micro-stub ending: re-author this title)"
+_M4_REMOVE_ADVISORY = (
+    "advisory: this choice now leads past the spliced passage; re-check its label"
+)
+
+# Static M4 precondition and error messages.
+_M4_TIER1_ONLY_MSG = (
+    "M4 (D5) is restricted to Tier-1 parents; stateful variation is a later family"
+)
+_M4_SERIES_MSG = "M4 requires metadata.series to be None; series books are out of scope"
+_M4_PRODUCTION_ONLY_MSG = (
+    "M4 requires a production-eligible parent; MVP seeds are out of scope"
+)
+_M4_MODE_MSG = (
+    "M4 requires a 'mode' parameter of 'insert-linear', 'remove-linear', or "
+    "'insert-decision'"
+)
+_M4_INSERT_LINEAR_PARAMS_MSG = (
+    "M4 insert-linear's optional 'choice' parameter must be a choice id string"
+)
+_M4_REMOVE_LINEAR_PARAMS_MSG = (
+    "M4 remove-linear's optional 'node' parameter must be a node id string"
+)
+_M4_INSERT_DECISION_PARAMS_MSG = (
+    "M4 insert-decision requires a 'choice' id and a 'variant' of 'reconvergence' "
+    "or 'micro-stub' (reconvergence also needs a 'target' node id)"
+)
+
+
+def _decision_node_ids(story: Mapping[str, object]) -> set[str]:
+    """Return the ids of decision nodes: non-ending nodes with two or more choices.
+
+    Matches ``validator.policy._check_floors``'s decision definition exactly, so
+    the per-path counter agrees with what the gate would call a decision.
+
+    Args:
+        story: The raw story document.
+
+    Returns:
+        set[str]: Every decision node id.
+    """
+    ids: set[str] = set()
+    for node in _nodes_of(story):
+        node_id = _str_field(node, "id")
+        if node_id is None or node.get("is_ending") is True:
+            continue
+        if len(_choices_of(node)) >= 2:
+            ids.add(node_id)
+    return ids
+
+
+def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], bool]:
+    """Return the decision count of every root-to-ending path, and a truncated flag.
+
+    Enumerates simple paths from ``start_node`` to any ending node via a
+    deterministic (sorted) depth-first search, counting the decision nodes on
+    each. For an acyclic parent the simple-path set is finite and the result is
+    EXACT; for a cyclic parent the search samples up to
+    :data:`_WALK_PATH_SAMPLE_CAP` paths and returns ``truncated=True`` (design
+    4.5: exact over the acyclic path set, bounded sample for cyclic graphs).
+
+    Args:
+        story: The raw story document.
+
+    Returns:
+        tuple[tuple[int, ...], bool]: The per-path decision counts and whether
+            the enumeration hit the sample cap.
+    """
+    graph = adjacency(story)
+    start = _str_field(story, "start_node")
+    if start is None or start not in graph:
+        return (), False
+    endings = _ending_node_ids(story)
+    decisions = _decision_node_ids(story)
+    counts: list[int] = []
+    truncated = False
+    seed_count = 1 if start in decisions else 0
+    stack: list[tuple[str, frozenset[str], int]] = [
+        (start, frozenset({start}), seed_count)
+    ]
+    while stack:
+        node, visited, dcount = stack.pop()
+        if node in endings:
+            counts.append(dcount)
+            if len(counts) >= _WALK_PATH_SAMPLE_CAP:
+                truncated = True
+                break
+            continue
+        for target in sorted(graph.get(node, ()), reverse=True):
+            if target in visited:
+                continue
+            add = 1 if target in decisions else 0
+            stack.append((target, visited | {target}, dcount + add))
+    return tuple(counts), truncated
+
+
+def _decision_window_reason(
+    parent: Mapping[str, object], candidate: Mapping[str, object]
+) -> str | None:
+    """Return why an op breaches the 4-8 decisions-per-path window, or None.
+
+    The check is two-sided and monotonic: the operation may not push any path
+    ABOVE the ceiling that the parent did not already exceed, and may not drop
+    any path BELOW the floor that the parent did not already sit below. A parent
+    already outside the window (the catalog is not uniformly 4-8, because the gate
+    never enforced decisions-per-path) is tolerated as inherited; only a
+    NEW breach the operator introduces is rejected. insert-linear and
+    remove-linear preserve every path's decision count by construction, so this
+    only ever bites insert-decision.
+
+    Args:
+        parent: The raw parent story document.
+        candidate: The mutated candidate document.
+
+    Returns:
+        str | None: A reason when the op newly breaches the window, else None.
+    """
+    # #CRITICAL: security: the 4-8 decisions-per-path window is the ADR-011
+    # section 6 grammar constant the gate does not enforce (design 4.8), so M4
+    # enforces it here. An insert-decision that would push a playthrough to 9+
+    # decisions (over-deep) or root a micro-stub / reconvergence path with under 4
+    # decisions (a hollow shortcut) is discarded PRE-GATE. The rule is monotonic
+    # so it never rejects a legitimate move toward the window on a parent the
+    # catalog authored slightly outside it; it rejects only a NEW breach.
+    # #VERIFY: tests/unit/test_mutation_m4.py pins the exact counter on acyclic
+    # fixtures and that an op pushing a path to 9, or dropping one below 4, is
+    # discarded at preconditions.
+    parent_counts, _parent_truncated = path_decision_counts(parent)
+    cand_counts, _cand_truncated = path_decision_counts(candidate)
+    if not parent_counts or not cand_counts:
+        return None
+    parent_min, parent_max = min(parent_counts), max(parent_counts)
+    cand_min, cand_max = min(cand_counts), max(cand_counts)
+    if cand_max > _MAX_DECISIONS_PER_PATH and cand_max > parent_max:
+        return (
+            f"insert would create a path with {cand_max} decisions, above the "
+            f"{_MIN_DECISIONS_PER_PATH}-{_MAX_DECISIONS_PER_PATH} window"
+        )
+    if cand_min < _MIN_DECISIONS_PER_PATH and cand_min < parent_min:
+        return (
+            f"insert would create a path with {cand_min} decisions, below the "
+            f"{_MIN_DECISIONS_PER_PATH}-{_MAX_DECISIONS_PER_PATH} window"
+        )
+    return None
+
+
+def _node_count_reason(
+    parent: Mapping[str, object], candidate: Mapping[str, object]
+) -> str | None:
+    """Return why the candidate leaves the two-sided cell node envelope, or None.
+
+    Reuses :func:`_cell_node_bounds` (the L1-7 budget path). WS-5 treats the
+    envelope as two-sided and blocking (design 4.4/4.5): an insert may not exceed
+    the cell maximum, and a remove may not drop below the cell minimum.
+    """
+    bounds = _cell_node_bounds(parent)
+    if bounds is None:
+        return None
+    count = len(node_ids(candidate))
+    if count > bounds[1]:
+        return (
+            f"post-op node count {count} exceeds the cell envelope maximum "
+            f"{bounds[1]} (L1-7)"
+        )
+    if count < bounds[0]:
+        return (
+            f"post-op node count {count} is below the cell envelope minimum "
+            f"{bounds[0]} (WS-5 two-sided blocking)"
+        )
+    return None
+
+
+def _depth_reason(
+    parent: Mapping[str, object], candidate: Mapping[str, object]
+) -> str | None:
+    """Return why the candidate exceeds the cell depth budget, or None (L1-7)."""
+    max_depth = _cell_max_depth(parent)
+    if max_depth is None:
+        return None
+    depth = _branch_depth(_parent_graph(candidate), _str_field(candidate, "start_node"))
+    if depth is not None and depth > max_depth:
+        return f"post-op branch depth {depth} exceeds cell max_depth {max_depth}"
+    return None
+
+
+def _pl20_reason(
+    parent: Mapping[str, object], candidate: Mapping[str, object]
+) -> str | None:
+    """Return why the candidate undercuts the PL-20 arc floor, or None.
+
+    Recomputes the shortest satisfying path over the candidate graph and its
+    satisfying endings, exactly as the gate does. insert-linear and
+    insert-decision only ever RAISE this measure on the touched path (the safe
+    direction, design 4.5), so the check is a no-op for them; it is the live
+    pre-check for remove-linear (which can LOWER it by splicing a node off the
+    shortest path) and for a micro-stub whose ending were ever a satisfying kind.
+    """
+    # #CRITICAL: security: remove-linear is the one M4 sub-operation that can
+    # shorten the structural path to a success/completion ending and so breach the
+    # PL-20 fastest-finish arc floor (a hollow quick win). The removal is
+    # pre-checked here against the inherited floor and discarded PRE-GATE when the
+    # post-removal shortest satisfying path drops below it; the unchanged gate
+    # re-proves PL-20 at stage 1 regardless.
+    # #VERIFY: tests/unit/test_mutation_m4.py pins that a remove-linear dropping
+    # the shortest satisfying path below the floor is discarded, and proves the
+    # insert-linear PL-20 monotonicity property over real Tier-1 skeletons.
+    floor = _pl20_floor(parent)
+    if floor is None:
+        return None
+    start = _str_field(candidate, "start_node")
+    graph = _parent_graph(candidate)
+    targets = _satisfying_ending_ids(candidate)
+    shortest = _shortest_satisfying_nodes(graph, start, targets)
+    if shortest is not None and shortest < floor:
+        return (
+            f"post-op shortest satisfying path is {shortest} node(s), below the "
+            f"PL-20 floor {floor}"
+        )
+    return None
+
+
+def _acyclicity_reason(
+    parent: Mapping[str, object], candidate: Mapping[str, object]
+) -> str | None:
+    """Return why the op adds a cycle to an acyclic parent, or None.
+
+    Mirrors :func:`_post_swap_is_acyclic`: a cyclic parent (a legitimate
+    open_map / loop_and_grow) is unconstrained; only an acyclic parent must stay
+    acyclic. This is the reconvergence cycle guard: an insert-decision whose
+    reconverging choice targets an ancestor of the split edge would close a loop.
+    """
+    # #CRITICAL: concurrency-free structural integrity: an insert-decision
+    # reconvergence edge that points back at an ancestor turns an acyclic story
+    # non-terminating for a reader. The post-op DAG check rejects it PRE-GATE for
+    # an acyclic parent; the gate's L1-5 trap-loop rule is the fail-closed
+    # backstop.
+    # #VERIFY: tests/unit/test_mutation_m4.py pins that a reconvergence to an
+    # ancestor is rejected on an acyclic parent.
+    if not nx.is_directed_acyclic_graph(_parent_graph(parent)):
+        return None
+    if nx.is_directed_acyclic_graph(_parent_graph(candidate)):
+        return None
+    return "the insert would create a cycle in an otherwise acyclic story"
+
+
+def _reconvergence_ceiling_reason(
+    parent: Mapping[str, object], candidate: Mapping[str, object]
+) -> str | None:
+    """Return why the candidate exceeds the band reconvergence ceiling, or None.
+
+    Reads ``BandProfile.reconvergence_ceiling`` for the parent band. No band
+    configures a ceiling today (every profile leaves it ``None``), so this is a
+    no-op for the current catalog; when a band DOES configure one, an
+    insert-decision reconvergence that pushes the count of reconverging nodes
+    (in-degree >= 2) past the ceiling is rejected (design 4.5, "where
+    configured").
+    """
+    band = _str_field(_metadata_of(parent), "age_band")
+    profile = profile_for(band) if band is not None else None
+    if profile is None or profile.reconvergence_ceiling is None:
+        return None
+    graph = _parent_graph(candidate)
+    reconverging = sum(1 for node in graph if graph.in_degree(node) >= 2)
+    if reconverging > profile.reconvergence_ceiling:
+        return (
+            f"post-op reconvergence count {reconverging} exceeds the band "
+            f"'{band}' reconvergence_ceiling {profile.reconvergence_ceiling}"
+        )
+    return None
+
+
+def _topology_reason(candidate: Mapping[str, object]) -> str | None:
+    """Return why the candidate has no band-admissible topology, or None (PL-18).
+
+    Anticipates :func:`redeclare_topology` (which ``resync_metadata`` runs): if no
+    topology is both admissible for the post-op graph shape and allowed for the
+    band's ADR-011 section 7 row, the mutant is inadmissible and is discarded at
+    preconditions rather than raising inside ``apply`` (design 4.8).
+    """
+    try:
+        redeclare_topology(candidate)
+    except ValidationError as exc:
+        return f"post-op topology is inadmissible: {exc}"
+    return None
+
+
+def _common_reason(
+    parent: Mapping[str, object], candidate: Mapping[str, object]
+) -> str | None:
+    """Return the first shared post-op precondition failure, or None.
+
+    The single check ladder every M4 sub-operation runs on its built candidate:
+    acyclicity, the two-sided node envelope, depth, the PL-20 arc floor, the band
+    reconvergence ceiling, the 4-8 decisions-per-path window, and topology
+    admissibility. Every check is re-proven by the unchanged gate at stage 1
+    regardless; these pre-checks only avoid a wasted gate run.
+
+    Args:
+        parent: The raw parent story document.
+        candidate: The built candidate document.
+
+    Returns:
+        str | None: The first failing reason, or None when all hold.
+    """
+    for reason in (
+        _acyclicity_reason(parent, candidate),
+        _node_count_reason(parent, candidate),
+        _depth_reason(parent, candidate),
+        _pl20_reason(parent, candidate),
+        _reconvergence_ceiling_reason(parent, candidate),
+        _decision_window_reason(parent, candidate),
+        _topology_reason(candidate),
+    ):
+        if reason is not None:
+            return reason
+    return None
+
+
+def _passage_words(story: Mapping[str, object]) -> int:
+    """Return the band+style words-per-node mean for a minted passage node.
+
+    Reads the ADR-011 words-per-node mean from ``band_profile`` (the same
+    words-per-node source the gate reads, never a hardcoded number, design 4.5),
+    falling back to :data:`_DEFAULT_PASSAGE_WORDS` only for an unconfigured band.
+    """
+    meta = _metadata_of(story)
+    band = _str_field(meta, "age_band")
+    style = _str_field(meta, "narrative_style") or "prose"
+    profile = words_per_node_profile(band, style) if band is not None else None
+    return profile[0] if profile is not None else _DEFAULT_PASSAGE_WORDS
+
+
+def _choose_mint_index(host_namespace: set[str], bases: Sequence[str]) -> int:
+    """Return the smallest ``k >= 1`` whose ``m<k>_`` prefix avoids all collisions.
+
+    Deterministic (mirrors :func:`_choose_graft_index`): for a given host and set
+    of id stems there is exactly one answer, so a minted-id insert is
+    byte-reproducible and collision-checked against the host's full namespace
+    (design 4.5: reuse ``host_id_namespace``).
+    """
+    k = 1
+    while any(f"m{k}_{base}" in host_namespace for base in bases):
+        k += 1
+    return k
+
+
+def _retarget_choice(
+    candidate: dict[str, object], choice_id: str, new_target: str
+) -> None:
+    """Rewrite the target of the choice with ``choice_id``, in place."""
+    for raw_node in cast("list[object]", candidate.get("nodes", [])):
+        if not isinstance(raw_node, dict):
+            continue
+        for raw_choice in cast(
+            "list[object]", cast("dict[str, object]", raw_node).get("choices", [])
+        ):
+            if isinstance(raw_choice, dict):
+                choice = cast("dict[str, object]", raw_choice)
+                if choice.get("id") == choice_id:
+                    choice["target"] = new_target
+
+
+def _candidate_nodes(candidate: dict[str, object]) -> list[object]:
+    """Return the candidate's node list, raising when it is absent.
+
+    Args:
+        candidate: The candidate story document under construction.
+
+    Returns:
+        list[object]: The mutable node list.
+
+    Raises:
+        ValidationError: If the candidate has no node list.
+    """
+    nodes = candidate.get("nodes")
+    if not isinstance(nodes, list):
+        msg = "parent story has no nodes list to mutate"
+        raise ValidationError(msg, field="nodes", value=None)
+    return cast("list[object]", nodes)
+
+
+# --- M4 insert-linear ---
+
+
+@dataclass(frozen=True, slots=True)
+class _InsertLinearPlan:
+    """A validated insert-linear: split one choice edge with a passage node.
+
+    Attributes:
+        choice_id: The choice edge to split (retargeted to the new node).
+        node_id: The node that holds ``choice_id``.
+        old_target: The choice's original target (the new node's single choice
+            points here).
+        new_node_id: The minted passage node id (``m<k>_ins_<node_id>``).
+        new_choice_id: The minted single choice id on the passage node.
+        words: The passage node's FILL word budget (the band+style mean).
+    """
+
+    choice_id: str
+    node_id: str
+    old_target: str
+    new_node_id: str
+    new_choice_id: str
+    words: int
+
+
+def _build_insert_linear_plan(
+    parent: Mapping[str, object], ref: _ChoiceRef
+) -> _InsertLinearPlan:
+    """Mint the collision-free ids for an insert-linear on one choice edge."""
+    namespace = host_id_namespace(parent)
+    base_node = f"ins_{ref.node_id}"
+    base_choice = f"ins_{ref.node_id}_c"
+    k = _choose_mint_index(namespace, (base_node, base_choice))
+    return _InsertLinearPlan(
+        choice_id=ref.choice_id,
+        node_id=ref.node_id,
+        old_target=ref.target,
+        new_node_id=f"m{k}_{base_node}",
+        new_choice_id=f"m{k}_{base_choice}",
+        words=_passage_words(parent),
+    )
+
+
+def _apply_insert_linear(
+    parent: Mapping[str, object], plan: _InsertLinearPlan
+) -> dict[str, object]:
+    """Return a deep copy of ``parent`` with a linear passage split into an edge.
+
+    Args:
+        parent: The raw parent story document (never mutated).
+        plan: The validated insert-linear.
+
+    Returns:
+        dict[str, object]: The candidate graph, pre-metadata-resync.
+
+    Raises:
+        ValidationError: If the parent has no node list.
+    """
+    # #CRITICAL: security: the minted passage node is effect-free and
+    # condition-free BY CONSTRUCTION here (no ``on_enter`` key, and the single
+    # choice carries no ``effects`` and no ``condition``), so insert-linear can
+    # never add a variable, effect, or condition to a Tier-1 story (design 4.5,
+    # "v1 inserts effect-free nodes only"). The tier is recomputed from variable
+    # presence at resync and stays 1.
+    # #VERIFY: tests/unit/test_mutation_m4.py asserts no M4 output introduces any
+    # variable, effect, or condition.
+    candidate = copy.deepcopy(dict(parent))
+    nodes = _candidate_nodes(candidate)
+    new_node: dict[str, object] = {
+        "id": plan.new_node_id,
+        "body": f"<<FILL role=passage words={plan.words} beats='{_M4_PASSAGE_BEATS}'>>",
+        "is_ending": False,
+        "choices": [
+            {
+                "id": plan.new_choice_id,
+                "label": _M4_PASSAGE_LABEL,
+                "target": plan.old_target,
+            }
+        ],
+    }
+    _retarget_choice(candidate, plan.choice_id, plan.new_node_id)
+    nodes.append(new_node)
+    return candidate
+
+
+def _evaluate_insert_linear(
+    parent: Mapping[str, object], choice_id: str
+) -> tuple[_InsertLinearPlan | None, str | None]:
+    """Validate an insert-linear on one choice edge (design 4.5).
+
+    Args:
+        parent: The raw parent story document.
+        choice_id: The choice edge to split.
+
+    Returns:
+        tuple[_InsertLinearPlan | None, str | None]: ``(plan, None)`` when
+            eligible, else ``(None, reason)``.
+    """
+    ref = _choice_refs(parent).get(choice_id)
+    if ref is None:
+        return None, f"choice '{choice_id}' is not a choice in this story"
+    if ref.target not in node_ids(parent):
+        return None, f"split target '{ref.target}' does not exist"
+    plan = _build_insert_linear_plan(parent, ref)
+    candidate = _apply_insert_linear(parent, plan)
+    reason = _common_reason(parent, candidate)
+    if reason is not None:
+        return None, reason
+    return plan, None
+
+
+def _insert_linear_reguide(plan: _InsertLinearPlan) -> tuple[ReguideItem, ...]:
+    """Return the two re-guidance items an insert-linear emits (design 4.5)."""
+    return (
+        ReguideItem(
+            target=ReguideTarget.NODE,
+            target_id=plan.new_node_id,
+            reason="new linear passage; author its entry beats for the split edge",
+            current_text=_M4_PASSAGE_BEATS,
+        ),
+        ReguideItem(
+            target=ReguideTarget.CHOICE,
+            target_id=plan.new_choice_id,
+            reason="new passage-to-target choice; author its label",
+            current_text=_M4_PASSAGE_LABEL,
+        ),
+    )
+
+
+# --- M4 remove-linear ---
+
+
+@dataclass(frozen=True, slots=True)
+class _RemoveLinearPlan:
+    """A validated remove-linear: splice a 1-choice passage node out of the graph.
+
+    Attributes:
+        node_id: The passage node to remove.
+        successor: The node its single choice targets (its in-edges retarget here).
+        retargeted_choice_ids: The in-edge choice ids rewired to ``successor``.
+    """
+
+    node_id: str
+    successor: str
+    retargeted_choice_ids: tuple[str, ...]
+
+
+def _in_choice_ids(story: Mapping[str, object], node_id: str) -> tuple[str, ...]:
+    """Return every choice id whose target is ``node_id``, in canonical order."""
+    ids = [
+        ref.choice_id for ref in _choice_refs(story).values() if ref.target == node_id
+    ]
+    return tuple(sorted(ids))
+
+
+def _apply_remove_linear(
+    parent: Mapping[str, object], plan: _RemoveLinearPlan
+) -> dict[str, object]:
+    """Return a deep copy of ``parent`` with the passage node spliced out.
+
+    Every choice that targeted the removed node is retargeted to its successor,
+    then the node itself is dropped.
+
+    Args:
+        parent: The raw parent story document (never mutated).
+        plan: The validated remove-linear.
+
+    Returns:
+        dict[str, object]: The candidate graph, pre-metadata-resync.
+
+    Raises:
+        ValidationError: If the parent has no node list.
+    """
+    candidate = copy.deepcopy(dict(parent))
+    nodes = _candidate_nodes(candidate)
+    kept: list[object] = []
+    for raw_node in nodes:
+        if not isinstance(raw_node, dict):
+            kept.append(raw_node)
+            continue
+        node = cast("dict[str, object]", raw_node)
+        if node.get("id") == plan.node_id:
+            continue
+        for raw_choice in cast("list[object]", node.get("choices", [])):
+            if isinstance(raw_choice, dict):
+                choice = cast("dict[str, object]", raw_choice)
+                if choice.get("target") == plan.node_id:
+                    choice["target"] = plan.successor
+        kept.append(node)
+    candidate["nodes"] = kept
+    return candidate
+
+
+def _evaluate_remove_linear(  # noqa: PLR0911, C901 -- one cohesive precondition ladder, one reason each
+    parent: Mapping[str, object], node_id: str
+) -> tuple[_RemoveLinearPlan | None, str | None]:
+    """Validate a remove-linear splice of one passage node (design 4.5).
+
+    Preconditions: the node exists, is non-ending, has exactly one choice, is
+    effect-free and condition-free, is not the start node (removing the start
+    needs re-rooting, out of scope), and its successor exists. The two-sided
+    envelope minimum and the PL-20 arc floor are then checked over the built
+    candidate.
+
+    Args:
+        parent: The raw parent story document.
+        node_id: The passage node to splice out.
+
+    Returns:
+        tuple[_RemoveLinearPlan | None, str | None]: ``(plan, None)`` when
+            eligible, else ``(None, reason)``.
+    """
+    node = _node_by_id(parent, node_id)
+    if node is None:
+        return None, f"node '{node_id}' does not exist"
+    if node.get("is_ending") is True:
+        return None, f"'{node_id}' is an ending; remove-linear splices a passage"
+    choices = _choices_of(node)
+    if len(choices) != 1:
+        return None, (
+            f"'{node_id}' has {len(choices)} choices; remove-linear needs exactly one"
+        )
+    if _str_field(parent, "start_node") == node_id:
+        return None, "cannot remove the start_node; re-rooting is out of scope"
+    on_enter = node.get("on_enter")
+    if isinstance(on_enter, list) and on_enter:
+        return (
+            None,
+            f"'{node_id}' carries on_enter effects; remove-linear needs it clean",
+        )
+    choice = choices[0]
+    if choice.get("condition") is not None:
+        return (
+            None,
+            f"'{node_id}'s choice carries a condition; remove-linear needs it clean",
+        )
+    effects = choice.get("effects")
+    if isinstance(effects, list) and effects:
+        return (
+            None,
+            f"'{node_id}'s choice carries effects; remove-linear needs it clean",
+        )
+    successor = _str_field(choice, "target")
+    if successor is None or successor not in node_ids(parent):
+        return None, f"'{node_id}'s successor does not exist"
+    if successor == node_id:
+        return None, f"'{node_id}' is a self-loop; remove-linear cannot splice it"
+    plan = _RemoveLinearPlan(
+        node_id=node_id,
+        successor=successor,
+        retargeted_choice_ids=_in_choice_ids(parent, node_id),
+    )
+    candidate = _apply_remove_linear(parent, plan)
+    reason = _common_reason(parent, candidate)
+    if reason is not None:
+        return None, reason
+    return plan, None
+
+
+def _remove_linear_reguide(
+    parent: Mapping[str, object], plan: _RemoveLinearPlan
+) -> tuple[ReguideItem, ...]:
+    """Return the advisory re-guidance items a remove-linear emits.
+
+    The predecessor choices that were retargeted now lead directly past the
+    spliced passage, so their labels are flagged advisory (design 4.5's re-guide
+    posture: a changed seam is re-checked).
+    """
+    refs = _choice_refs(parent)
+    items: list[ReguideItem] = []
+    for choice_id in plan.retargeted_choice_ids:
+        ref = refs.get(choice_id)
+        items.append(
+            ReguideItem(
+                target=ReguideTarget.CHOICE,
+                target_id=choice_id,
+                reason=_M4_REMOVE_ADVISORY,
+                current_text=ref.label if ref is not None else "",
+            )
+        )
+    return tuple(items)
+
+
+# --- M4 insert-decision ---
+
+
+@dataclass(frozen=True, slots=True)
+class _InsertDecisionPlan:
+    """A validated insert-decision: split one edge with a 2-choice decision node.
+
+    Attributes:
+        choice_id: The choice edge to split (retargeted to the new decision).
+        node_id: The node that holds ``choice_id``.
+        old_target: The original target (the continuing choice points here).
+        variant: ``"reconvergence"`` or ``"micro-stub"``.
+        recon_target: The existing downstream node the reconverging choice targets
+            (``None`` for the micro-stub variant).
+        new_node_id: The minted decision node id.
+        continue_choice_id: The minted continuing choice id.
+        extra_choice_id: The minted reconverging or micro-stub choice id.
+        stub_node_id: The minted micro-stub ending node id (``None`` for
+            reconvergence).
+        stub_ending_id: The minted micro-stub ending block id (``None`` for
+            reconvergence).
+        words: The decision node's FILL word budget (the band+style mean).
+    """
+
+    choice_id: str
+    node_id: str
+    old_target: str
+    variant: str
+    recon_target: str | None
+    new_node_id: str
+    continue_choice_id: str
+    extra_choice_id: str
+    stub_node_id: str | None
+    stub_ending_id: str | None
+    words: int
+
+
+def _build_insert_decision_plan(
+    parent: Mapping[str, object],
+    ref: _ChoiceRef,
+    variant: str,
+    recon_target: str | None,
+) -> _InsertDecisionPlan:
+    """Mint the collision-free ids for an insert-decision on one choice edge."""
+    namespace = host_id_namespace(parent)
+    base_node = f"dec_{ref.node_id}"
+    base_cont = f"dec_{ref.node_id}_cont"
+    base_extra = f"dec_{ref.node_id}_extra"
+    base_stub_node = f"stub_{ref.node_id}"
+    base_stub_end = f"end_{ref.node_id}"
+    k = _choose_mint_index(
+        namespace, (base_node, base_cont, base_extra, base_stub_node, base_stub_end)
+    )
+    is_stub = variant == _M4_VARIANT_MICRO_STUB
+    return _InsertDecisionPlan(
+        choice_id=ref.choice_id,
+        node_id=ref.node_id,
+        old_target=ref.target,
+        variant=variant,
+        recon_target=recon_target,
+        new_node_id=f"m{k}_{base_node}",
+        continue_choice_id=f"m{k}_{base_cont}",
+        extra_choice_id=f"m{k}_{base_extra}",
+        stub_node_id=f"m{k}_{base_stub_node}" if is_stub else None,
+        stub_ending_id=f"m{k}_{base_stub_end}" if is_stub else None,
+        words=_passage_words(parent),
+    )
+
+
+def _apply_insert_decision(
+    parent: Mapping[str, object], plan: _InsertDecisionPlan
+) -> dict[str, object]:
+    """Return a deep copy of ``parent`` with a 2-choice decision split into an edge.
+
+    Args:
+        parent: The raw parent story document (never mutated).
+        plan: The validated insert-decision.
+
+    Returns:
+        dict[str, object]: The candidate graph, pre-metadata-resync.
+
+    Raises:
+        ValidationError: If the parent has no node list.
+    """
+    # #CRITICAL: security: the minted decision node and (for the micro-stub
+    # variant) the minted ending node are effect-free and condition-free BY
+    # CONSTRUCTION: no ``on_enter`` key, and neither the continuing choice nor the
+    # extra choice carries ``effects`` or a ``condition``. So insert-decision can
+    # never add a variable, effect, or condition to a Tier-1 story (design 4.5).
+    # The micro-stub ending's (kind, valence) is a band-legal discovery/neutral
+    # by construction, so PL-15 is untouched.
+    # #VERIFY: tests/unit/test_mutation_m4.py asserts no M4 output introduces any
+    # variable, effect, or condition, and that the micro-stub ending is band-legal.
+    candidate = copy.deepcopy(dict(parent))
+    nodes = _candidate_nodes(candidate)
+    if plan.variant == _M4_VARIANT_MICRO_STUB:
+        extra_target = cast("str", plan.stub_node_id)
+        extra_label = _M4_STUB_CHOICE_LABEL
+    else:
+        extra_target = cast("str", plan.recon_target)
+        extra_label = _M4_RECON_LABEL
+    decision_node: dict[str, object] = {
+        "id": plan.new_node_id,
+        "body": f"<<FILL role=choice words={plan.words} beats='{_M4_DECISION_BEATS}'>>",
+        "is_ending": False,
+        "choices": [
+            {
+                "id": plan.continue_choice_id,
+                "label": _M4_CONTINUE_LABEL,
+                "target": plan.old_target,
+            },
+            {
+                "id": plan.extra_choice_id,
+                "label": extra_label,
+                "target": extra_target,
+            },
+        ],
+    }
+    _retarget_choice(candidate, plan.choice_id, plan.new_node_id)
+    nodes.append(decision_node)
+    if plan.variant == _M4_VARIANT_MICRO_STUB:
+        stub_body = f"<<FILL role=ending words={plan.words} beats='{_M4_STUB_BEATS}'>>"
+        nodes.append(
+            {
+                "id": plan.stub_node_id,
+                "body": stub_body,
+                "is_ending": True,
+                "ending": {
+                    "id": plan.stub_ending_id,
+                    "kind": _MICRO_STUB_KIND,
+                    "valence": _MICRO_STUB_VALENCE,
+                    "title": _M4_STUB_TITLE,
+                },
+            }
+        )
+    return candidate
+
+
+def _micro_stub_kind_reason(parent: Mapping[str, object]) -> str | None:
+    """Return why the micro-stub ending kind is band-illegal, or None (defensive).
+
+    ``discovery`` is never in any band's forbidden set, so this always returns
+    None for a configured band; the check exists so a future retune of
+    :data:`_MICRO_STUB_KIND` or of a band's forbidden set can never silently ship
+    a band-illegal micro-stub (PL-15 re-runs at the gate regardless).
+    """
+    band = _str_field(_metadata_of(parent), "age_band")
+    profile = profile_for(band) if band is not None else None
+    if profile is None:
+        return None
+    forbidden = {kind.value for kind in profile.forbidden_ending_kinds}
+    if _MICRO_STUB_KIND in forbidden:
+        return (
+            f"micro-stub ending kind '{_MICRO_STUB_KIND}' is forbidden for band "
+            f"'{band}' (PL-15)"
+        )
+    return None
+
+
+def _evaluate_insert_decision(  # noqa: PLR0911 -- one cohesive precondition ladder, one reason each
+    parent: Mapping[str, object],
+    choice_id: str,
+    variant: str,
+    recon_target: str | None,
+) -> tuple[_InsertDecisionPlan | None, str | None]:
+    """Validate an insert-decision on one choice edge (design 4.5).
+
+    Args:
+        parent: The raw parent story document.
+        choice_id: The choice edge to split.
+        variant: ``"reconvergence"`` or ``"micro-stub"``.
+        recon_target: The reconverging choice's existing target (reconvergence
+            variant only).
+
+    Returns:
+        tuple[_InsertDecisionPlan | None, str | None]: ``(plan, None)`` when
+            eligible, else ``(None, reason)``.
+    """
+    ref = _choice_refs(parent).get(choice_id)
+    if ref is None:
+        return None, f"choice '{choice_id}' is not a choice in this story"
+    if ref.target not in node_ids(parent):
+        return None, f"split target '{ref.target}' does not exist"
+    if variant == _M4_VARIANT_RECONVERGENCE:
+        if not isinstance(recon_target, str) or recon_target not in node_ids(parent):
+            return None, "reconvergence variant needs an existing 'target' node"
+        if recon_target == ref.target:
+            return None, "reconvergence target equals the continuing target (a no-op)"
+    elif variant == _M4_VARIANT_MICRO_STUB:
+        reason = _micro_stub_kind_reason(parent)
+        if reason is not None:
+            return None, reason
+    else:
+        return None, (
+            f"insert-decision variant '{variant}' must be "
+            f"'{_M4_VARIANT_RECONVERGENCE}' or '{_M4_VARIANT_MICRO_STUB}'"
+        )
+    plan = _build_insert_decision_plan(parent, ref, variant, recon_target)
+    candidate = _apply_insert_decision(parent, plan)
+    reason = _common_reason(parent, candidate)
+    if reason is not None:
+        return None, reason
+    return plan, None
+
+
+def _insert_decision_reguide(plan: _InsertDecisionPlan) -> tuple[ReguideItem, ...]:
+    """Return the re-guidance items an insert-decision emits (design 4.5).
+
+    Both choice labels and the decision's entry beats are new; the micro-stub
+    variant also emits the new ending node's beats and its ending title.
+    """
+    extra_reason = (
+        "new reconverging choice; author its label"
+        if plan.variant == _M4_VARIANT_RECONVERGENCE
+        else "new micro-stub choice; author its label"
+    )
+    items: list[ReguideItem] = [
+        ReguideItem(
+            target=ReguideTarget.NODE,
+            target_id=plan.new_node_id,
+            reason="new decision node; author its entry beats for the split edge",
+            current_text=_M4_DECISION_BEATS,
+        ),
+        ReguideItem(
+            target=ReguideTarget.CHOICE,
+            target_id=plan.continue_choice_id,
+            reason="new continuing choice; author its label",
+            current_text=_M4_CONTINUE_LABEL,
+        ),
+        ReguideItem(
+            target=ReguideTarget.CHOICE,
+            target_id=plan.extra_choice_id,
+            reason=extra_reason,
+            current_text=(
+                _M4_STUB_CHOICE_LABEL
+                if plan.variant == _M4_VARIANT_MICRO_STUB
+                else _M4_RECON_LABEL
+            ),
+        ),
+    ]
+    if plan.variant == _M4_VARIANT_MICRO_STUB:
+        items.append(
+            ReguideItem(
+                target=ReguideTarget.NODE,
+                target_id=cast("str", plan.stub_node_id),
+                reason="new micro-stub ending node; author its beats",
+                current_text=_M4_STUB_BEATS,
+            )
+        )
+        items.append(
+            ReguideItem(
+                target=ReguideTarget.ENDING,
+                target_id=cast("str", plan.stub_ending_id),
+                reason="new micro-stub ending; author its title",
+                current_text=_M4_STUB_TITLE,
+            )
+        )
+    return tuple(items)
+
+
+# --- M4 candidate enumeration (deterministic, for seeded selection) ---
+
+
+def _insert_linear_candidates(parent: Mapping[str, object]) -> list[str]:
+    """Return every insert-linear-eligible choice id, in canonical order."""
+    return [
+        ref.choice_id
+        for ref in sorted(_choice_refs(parent).values(), key=lambda ref: ref.choice_id)
+        if _evaluate_insert_linear(parent, ref.choice_id)[0] is not None
+    ]
+
+
+def _removable_node_ids(parent: Mapping[str, object]) -> list[str]:
+    """Return every remove-linear-eligible node id, in canonical (id) order."""
+    return [
+        node_id
+        for node_id in sorted(node_ids(parent))
+        if _evaluate_remove_linear(parent, node_id)[0] is not None
+    ]
+
+
+def _insert_decision_candidates(parent: Mapping[str, object]) -> list[str]:
+    """Return every micro-stub insert-decision-eligible choice id, canonically.
+
+    The seeded rng fallback uses the micro-stub variant (which needs no target),
+    so eligibility is evaluated against it; explicit reconvergence params take a
+    different path.
+    """
+    return [
+        ref.choice_id
+        for ref in sorted(_choice_refs(parent).values(), key=lambda ref: ref.choice_id)
+        if _evaluate_insert_decision(
+            parent, ref.choice_id, _M4_VARIANT_MICRO_STUB, None
+        )[0]
+        is not None
+    ]
+
+
+class M4VaryDecisions:
+    """M4: vary a tree's decisions-per-path within the ADR-011 4-8 window.
+
+    Three sub-operations, selected by the ``mode`` parameter, each inserting or
+    removing only effect-free, condition-free nodes (Tier-1 only, D5):
+
+    - **insert-linear** (``mode=insert-linear``): split a choice edge with a new
+      linear passage node (one choice to the old target), adding arc substance the
+      ADR-011 way (mandatory linear passages, not extra decisions). The passage
+      word budget is the band+style words-per-node mean read from
+      ``band_profile``. Selected by an explicit ``choice`` id or reproducibly from
+      the seeded rng over the canonically ordered splittable edges.
+    - **remove-linear** (``mode=remove-linear``): splice out a 1-choice,
+      effect-free, non-ending, non-start passage node, retargeting its in-edges to
+      its successor. This can LOWER the PL-20 fastest-finish and is pre-checked.
+      Selected by an explicit ``node`` id or the seeded rng.
+    - **insert-decision** (``mode=insert-decision``): split a choice edge with a
+      new 2-choice decision node. One choice continues to the old target; the
+      extra choice either reconverges onto an existing downstream node
+      (``variant=reconvergence`` + ``target``, in-degree rises, post-op acyclicity
+      and the band reconvergence ceiling checked) or roots a new closed micro-stub
+      ending (``variant=micro-stub``, a band-legal discovery/neutral ending, so
+      the ending multiset and count grow by one and PL-15/PL-17 are re-checked).
+      Selected by explicit params, or from the seeded rng using the micro-stub
+      variant.
+
+    Preconditions across all three: post-op per-path decision counts stay within
+    the 4-8 window (computed exactly over the acyclic path set, or a bounded
+    sample for a cyclic graph), depth within budget, node count within the
+    two-sided cell envelope, and the topology stays band-admissible. Every check
+    is re-proven by the unchanged gate at stage 1.
+    """
+
+    op_id: str = M4_OP_ID
+
+    def preconditions(
+        self, parent: Mapping[str, object], params: OpParams
+    ) -> PreconditionReport:
+        """Return whether M4 may attempt a mutation on ``parent`` (design 4.5).
+
+        Args:
+            parent: The raw parent story document.
+            params: The operator parameters (``mode`` plus mode-specific ids).
+
+        Returns:
+            PreconditionReport: Satisfied when eligible, else the failing reasons.
+        """
+        failures = list(self._base_failures(parent))
+        mode = params.get("mode")
+        if mode == _M4_MODE_INSERT_LINEAR:
+            failures.extend(self._insert_linear_failures(parent, params))
+        elif mode == _M4_MODE_REMOVE_LINEAR:
+            failures.extend(self._remove_linear_failures(parent, params))
+        elif mode == _M4_MODE_INSERT_DECISION:
+            failures.extend(self._insert_decision_failures(parent, params))
+        else:
+            failures.append(_M4_MODE_MSG)
+        if failures:
+            return PreconditionReport.failed(*failures)
+        return PreconditionReport.passed()
+
+    def apply(
+        self, parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> MutationResult:
+        """Apply the selected sub-operation and return the resynced candidate.
+
+        Args:
+            parent: The raw parent story document (never mutated).
+            params: The operator parameters (``mode`` plus mode-specific ids).
+            rng: The injected random source (used only by the rng fallbacks).
+
+        Returns:
+            MutationResult: The candidate (metadata resynced) plus re-guidance.
+
+        Raises:
+            ValidationError: If the mode is unknown or the selected mutation is
+                ineligible.
+        """
+        mode = params.get("mode")
+        if mode == _M4_MODE_INSERT_LINEAR:
+            return self._apply_insert_linear_op(parent, params, rng)
+        if mode == _M4_MODE_REMOVE_LINEAR:
+            return self._apply_remove_linear_op(parent, params, rng)
+        if mode == _M4_MODE_INSERT_DECISION:
+            return self._apply_insert_decision_op(parent, params, rng)
+        raise ValidationError(_M4_MODE_MSG, field="mode", value=mode)
+
+    @staticmethod
+    def _base_failures(parent: Mapping[str, object]) -> list[str]:
+        """Return the parent-level (tier/series/production) precondition failures."""
+        failures: list[str] = []
+        meta = _metadata_of(parent)
+        if recompute_tier(parent) != 1:
+            failures.append(_M4_TIER1_ONLY_MSG)
+        if meta.get("series") is not None:
+            failures.append(_M4_SERIES_MSG)
+        if meta.get("production_eligible") is False:
+            failures.append(_M4_PRODUCTION_ONLY_MSG)
+        return failures
+
+    @staticmethod
+    def _insert_linear_failures(
+        parent: Mapping[str, object], params: OpParams
+    ) -> list[str]:
+        """Return insert-linear-specific precondition failures."""
+        choice = params.get("choice")
+        if choice is not None:
+            if not isinstance(choice, str):
+                return [_M4_INSERT_LINEAR_PARAMS_MSG]
+            _plan, reason = _evaluate_insert_linear(parent, choice)
+            if reason is not None:
+                return [f"insert-linear on choice '{choice}' is ineligible: {reason}"]
+            return []
+        if not _insert_linear_candidates(parent):
+            return ["no eligible insert-linear exists for this parent"]
+        return []
+
+    @staticmethod
+    def _remove_linear_failures(
+        parent: Mapping[str, object], params: OpParams
+    ) -> list[str]:
+        """Return remove-linear-specific precondition failures."""
+        node = params.get("node")
+        if node is not None:
+            if not isinstance(node, str):
+                return [_M4_REMOVE_LINEAR_PARAMS_MSG]
+            _plan, reason = _evaluate_remove_linear(parent, node)
+            if reason is not None:
+                return [f"remove-linear of node '{node}' is ineligible: {reason}"]
+            return []
+        if not _removable_node_ids(parent):
+            return ["no eligible remove-linear exists for this parent"]
+        return []
+
+    @staticmethod
+    def _insert_decision_failures(
+        parent: Mapping[str, object], params: OpParams
+    ) -> list[str]:
+        """Return insert-decision-specific precondition failures."""
+        choice = params.get("choice")
+        variant = params.get("variant")
+        if choice is not None or variant is not None:
+            if not (isinstance(choice, str) and isinstance(variant, str)):
+                return [_M4_INSERT_DECISION_PARAMS_MSG]
+            target = params.get("target")
+            recon_target = target if isinstance(target, str) else None
+            _plan, reason = _evaluate_insert_decision(
+                parent, choice, variant, recon_target
+            )
+            if reason is not None:
+                return [f"insert-decision on choice '{choice}' is ineligible: {reason}"]
+            return []
+        if not _insert_decision_candidates(parent):
+            return ["no eligible insert-decision exists for this parent"]
+        return []
+
+    @staticmethod
+    def _apply_insert_linear_op(
+        parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> MutationResult:
+        """Apply an insert-linear and return the resynced candidate."""
+        plan = _select_insert_linear(parent, params, rng)
+        candidate = resync_metadata(_apply_insert_linear(parent, plan))
+        note = (
+            f"M4 insert-linear: split choice '{plan.choice_id}' on '{plan.node_id}' "
+            f"with passage '{plan.new_node_id}' to '{plan.old_target}'"
+        )
+        return MutationResult(
+            candidate=candidate, reguide=_insert_linear_reguide(plan), notes=(note,)
+        )
+
+    @staticmethod
+    def _apply_remove_linear_op(
+        parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> MutationResult:
+        """Apply a remove-linear and return the resynced candidate."""
+        plan = _select_remove_linear(parent, params, rng)
+        candidate = resync_metadata(_apply_remove_linear(parent, plan))
+        note = (
+            f"M4 remove-linear: spliced passage '{plan.node_id}', retargeted "
+            f"{len(plan.retargeted_choice_ids)} in-edge(s) to '{plan.successor}'"
+        )
+        return MutationResult(
+            candidate=candidate,
+            reguide=_remove_linear_reguide(parent, plan),
+            notes=(note,),
+        )
+
+    @staticmethod
+    def _apply_insert_decision_op(
+        parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> MutationResult:
+        """Apply an insert-decision and return the resynced candidate."""
+        plan = _select_insert_decision(parent, params, rng)
+        candidate = resync_metadata(_apply_insert_decision(parent, plan))
+        extra = (
+            f"reconverging to '{plan.recon_target}'"
+            if plan.variant == _M4_VARIANT_RECONVERGENCE
+            else f"micro-stub ending '{plan.stub_node_id}'"
+        )
+        note = (
+            f"M4 insert-decision ({plan.variant}): split choice '{plan.choice_id}' "
+            f"on '{plan.node_id}' with decision '{plan.new_node_id}', {extra}"
+        )
+        return MutationResult(
+            candidate=candidate, reguide=_insert_decision_reguide(plan), notes=(note,)
+        )
+
+
+def _select_insert_linear(
+    parent: Mapping[str, object], params: OpParams, rng: random.Random
+) -> _InsertLinearPlan:
+    """Resolve an insert-linear from an explicit ``choice`` or the seeded rng."""
+    choice = params.get("choice")
+    if choice is not None:
+        if not isinstance(choice, str):
+            raise ValidationError(
+                _M4_INSERT_LINEAR_PARAMS_MSG, field="choice", value=choice
+            )
+        plan, reason = _evaluate_insert_linear(parent, choice)
+        if plan is None:
+            msg = f"M4 insert-linear on '{choice}' is ineligible: {reason}"
+            raise ValidationError(msg, field="choice", value=choice)
+        return plan
+    candidates = _insert_linear_candidates(parent)
+    rng.shuffle(candidates)
+    for choice_id in candidates:
+        plan, _reason = _evaluate_insert_linear(parent, choice_id)
+        if plan is not None:
+            return plan
+    msg = "M4 found no eligible insert-linear for this parent"
+    raise ValidationError(msg, field="parent", value=None)
+
+
+def _select_remove_linear(
+    parent: Mapping[str, object], params: OpParams, rng: random.Random
+) -> _RemoveLinearPlan:
+    """Resolve a remove-linear from an explicit ``node`` or the seeded rng."""
+    node = params.get("node")
+    if node is not None:
+        if not isinstance(node, str):
+            raise ValidationError(
+                _M4_REMOVE_LINEAR_PARAMS_MSG, field="node", value=node
+            )
+        plan, reason = _evaluate_remove_linear(parent, node)
+        if plan is None:
+            msg = f"M4 remove-linear of '{node}' is ineligible: {reason}"
+            raise ValidationError(msg, field="node", value=node)
+        return plan
+    candidates = _removable_node_ids(parent)
+    rng.shuffle(candidates)
+    for node_id in candidates:
+        plan, _reason = _evaluate_remove_linear(parent, node_id)
+        if plan is not None:
+            return plan
+    msg = "M4 found no eligible remove-linear for this parent"
+    raise ValidationError(msg, field="parent", value=None)
+
+
+def _select_insert_decision(
+    parent: Mapping[str, object], params: OpParams, rng: random.Random
+) -> _InsertDecisionPlan:
+    """Resolve an insert-decision from explicit params or the seeded rng."""
+    choice = params.get("choice")
+    variant = params.get("variant")
+    if choice is not None or variant is not None:
+        if not (isinstance(choice, str) and isinstance(variant, str)):
+            raise ValidationError(
+                _M4_INSERT_DECISION_PARAMS_MSG, field="choice", value=choice
+            )
+        target = params.get("target")
+        recon_target = target if isinstance(target, str) else None
+        plan, reason = _evaluate_insert_decision(parent, choice, variant, recon_target)
+        if plan is None:
+            msg = f"M4 insert-decision on '{choice}' is ineligible: {reason}"
+            raise ValidationError(msg, field="choice", value=choice)
+        return plan
+    candidates = _insert_decision_candidates(parent)
+    rng.shuffle(candidates)
+    for choice_id in candidates:
+        plan, _reason = _evaluate_insert_decision(
+            parent, choice_id, _M4_VARIANT_MICRO_STUB, None
+        )
+        if plan is not None:
+            return plan
+    msg = "M4 found no eligible insert-decision for this parent"
+    raise ValidationError(msg, field="parent", value=None)
+
+
+# Register the singleton M4 operator in the default catalog registry alongside
+# M1, M2, and M3.
+M4 = REGISTRY.register(M4VaryDecisions())
