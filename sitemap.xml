@@ -401,6 +401,10 @@
          <lastmod>2026-07-20</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-021-service-account-rls-and-worker-deployment/</loc>
+         <lastmod>2026-07-20</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/safety/adversarial-safety-evaluation/</loc>
          <lastmod>2026-07-20</lastmod>
     </url>
