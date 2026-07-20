@@ -202,10 +202,16 @@ is captured here.
   re-map within a valence class (seed 3). A structural graft paired with an outcome
   re-map, the design's stated highest-value pairing.
 - **Result:** a 100-node mutant. `structural_distance(parent, mutant) = 0.3362`, at or
-  above `TAU_STRUCT = 0.328761` (clears the parent anti-clone clause); minimum distance
-  to any in-cell sibling `= 0.1318`, at or above `TAU_CELL = 0.091226` (clears the
-  in-cell clone clause). The graft imports the donor's referenced slots under renamed
-  `M<k>_` ids into a fresh mutant contract that passes stage-4 acceptance.
+  above `TAU_STRUCT = 0.332507` (clears the parent anti-clone clause); minimum distance
+  to any in-cell sibling `= 0.1318`, at or above `TAU_CELL = 0.01` (clears the in-cell
+  clone clause). `TAU_CELL` is the documented clamp floor: the current catalog has two
+  near-identical in-cell siblings whose observed distance (0.000947) would otherwise
+  drive the threshold toward a clone-admitting zero, so the calibrator clamps it up to
+  the safe minimum (thresholds live in the committed
+  `docs/planning/ws5_floor_baseline.json`, re-derivable by
+  `scripts/calibrate_mutation_floors.py`). The graft imports the donor's referenced
+  slots under renamed `M<k>_` ids into a fresh mutant contract that passes stage-4
+  acceptance.
 - **Re-guidance:** the chain emitted 9 re-guidance items (the graft-seam choice label,
   the graft-root entry beats, and the M2-affected ending titles, leaf beats, and
   advisory upstream approaches). With author-supplied resolutions for all 9, the mutant
