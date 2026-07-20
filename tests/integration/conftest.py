@@ -47,6 +47,7 @@ if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
 
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+    from sqlalchemy.sql.dml import Insert
 
 _LANTERN = (
     Path(__file__).resolve().parents[1]
@@ -79,6 +80,13 @@ class Seed:
     other_child_profile_id: uuid.UUID
     storybook_id: str
     version: int
+
+
+def _seed_catalog_family_stmt() -> Insert:
+    """Build the catalog-family insert shared by the session and per-test setup."""
+    return insert(Family.__table__).values(
+        id=CATALOG_FAMILY_ID, name=CATALOG_FAMILY_NAME
+    )
 
 
 @pytest.fixture(scope="session")
@@ -125,11 +133,7 @@ def _pg_url() -> Iterator[str]:
                 # with no baseline data, so catalog-origin request tests
                 # would otherwise fail their family_id FK insert. Reseeded
                 # per-test there (after each TRUNCATE), not just here.
-                conn.execute(
-                    insert(Family.__table__).values(
-                        id=CATALOG_FAMILY_ID, name=CATALOG_FAMILY_NAME
-                    )
-                )
+                conn.execute(_seed_catalog_family_stmt())
         finally:
             sync_engine.dispose()
         yield container.get_connection_url()
@@ -185,11 +189,7 @@ async def engine(_pg_url: str) -> AsyncIterator[AsyncEngine]:
             # supabase/migrations; nothing else provides baseline data, so
             # catalog-origin request tests would otherwise fail their
             # family_id FK insert.
-            await conn.execute(
-                insert(Family.__table__).values(
-                    id=CATALOG_FAMILY_ID, name=CATALOG_FAMILY_NAME
-                )
-            )
+            await conn.execute(_seed_catalog_family_stmt())
         yield eng
     finally:
         await eng.dispose()

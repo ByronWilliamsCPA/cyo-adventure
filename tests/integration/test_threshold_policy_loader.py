@@ -146,6 +146,12 @@ async def test_malformed_min_verdict_row_is_skipped_with_warning(
     """A row that bypasses the CHECK (constraint dropped, e.g. pre-constraint
     backfill) is skipped by the loader, logged, and falls back to the default.
     """
+    # #EDGE: data-integrity: `engine` shares one schema for every test in this
+    # xdist worker (tests/integration/conftest.py TRUNCATEs data between tests
+    # but does not rebuild DDL), so a dropped constraint here would otherwise
+    # leak into later tests, e.g. test_bad_min_verdict_insert_rejected_by_check.
+    # #VERIFY: restore the constraint in `finally`, matching the CHECK clause
+    # in db/models.py::ModerationThreshold / supabase/migrations/20260710000000_baseline.sql.
     async with engine.begin() as conn:
         await conn.execute(
             text(
@@ -153,19 +159,36 @@ async def test_malformed_min_verdict_row_is_skipped_with_warning(
                 "DROP CONSTRAINT ck_moderation_threshold_min_verdict"
             )
         )
-    async with AsyncSession(engine) as session:
-        session.add(
-            ModerationThreshold(
-                age_band="3-5",
-                category="violence",
-                min_verdict="bogus",
-                min_score=None,
-            )
-        )
-        await session.commit()
-    with caplog.at_level("WARNING"):
+    try:
         async with AsyncSession(engine) as session:
-            policy = await load_threshold_policy(session)
-    assert policy.resolve("3-5", "violence") == DEFAULT_THRESHOLD
-    assert "moderation_threshold_row_malformed" in caplog.text
-    assert "violence" in caplog.text
+            session.add(
+                ModerationThreshold(
+                    age_band="3-5",
+                    category="violence",
+                    min_verdict="bogus",
+                    min_score=None,
+                )
+            )
+            await session.commit()
+        with caplog.at_level("WARNING"):
+            async with AsyncSession(engine) as session:
+                policy = await load_threshold_policy(session)
+        assert policy.resolve("3-5", "violence") == DEFAULT_THRESHOLD
+        assert "moderation_threshold_row_malformed" in caplog.text
+        assert "violence" in caplog.text
+    finally:
+        # The malformed row itself would violate the CHECK being restored, so
+        # it must be cleared first (the row's own id is irrelevant; delete by
+        # the malformed value to avoid depending on prior statements above).
+        async with engine.begin() as conn:
+            await conn.execute(
+                text("DELETE FROM moderation_threshold WHERE min_verdict = 'bogus'")
+            )
+            await conn.execute(
+                text(
+                    "ALTER TABLE moderation_threshold "
+                    "ADD CONSTRAINT ck_moderation_threshold_min_verdict "
+                    "CHECK (min_verdict IN "
+                    "('advisory', 'flag', 'block'))"
+                )
+            )

@@ -20,6 +20,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   seed_dev_data.py` call sites that bind sessions directly to `engine` need
   no changes. Verified locally: all 827 integration tests pass unchanged.
 
+### Fixed
+
+- Testing: `test_malformed_min_verdict_row_is_skipped_with_warning`
+  (`tests/integration/test_threshold_policy_loader.py`) drops the
+  `ck_moderation_threshold_min_verdict` CHECK constraint to exercise the
+  loader's malformed-row handling, but never restored it. That was safe
+  under the old per-test schema rebuild; under the new session-scoped
+  schema (see above), the dropped constraint leaked into any later test in
+  the same xdist worker, intermittently failing
+  `test_bad_min_verdict_insert_rejected_by_check` depending on test order.
+  The test now restores the constraint in a `finally` block. Also
+  deduplicated the catalog-family seed insert (`_pg_url` and `engine`
+  fixtures) into a shared `_seed_catalog_family_stmt()` helper.
+
 ## [0.18.0] - 2026-07-19
 
 ### Security
