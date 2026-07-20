@@ -212,8 +212,14 @@ class Settings(BaseSettings):
     database_disable_prepared_cache: bool = False
     # Development default for local Redis; safe to leave unset in non-production
     # environments where no queue is configured. Production must override via
-    # CYO_ADVENTURE_REDIS_URL.
-    redis_url: str = "redis://localhost:6379/0"
+    # CYO_ADVENTURE_REDIS_URL. Accepts BOTH names, mirroring database_url above:
+    # CYO_ADVENTURE_REDIS_URL is the established contract and wins if both are
+    # set; REDIS_URL is the standard name docker-compose*.yml injects, previously
+    # ignored because the field had no alias (ADR-021 Phase 1).
+    redis_url: str = Field(
+        default="redis://localhost:6379/0",
+        validation_alias=AliasChoices("CYO_ADVENTURE_REDIS_URL", "REDIS_URL"),
+    )
     # Comma-separated Host-header allowlist for TrustedHostMiddleware
     # (defense-in-depth against Host/X-Forwarded-Host spoofing). Empty (the
     # default) leaves the middleware off, matching prior behavior; deployed

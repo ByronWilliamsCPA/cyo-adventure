@@ -404,9 +404,9 @@ class TestModalGenerationSettings:
 
 
 class TestUnprefixedOperatorAliases:
-    """log_level, json_logs, and database_url read the unprefixed names that
-    docker-compose and docs/guides/configuration.md actually set, while
-    database_url keeps its prefixed CYO_ADVENTURE_DATABASE_URL contract."""
+    """log_level, json_logs, database_url, and redis_url read the unprefixed
+    names that docker-compose and docs/guides/configuration.md actually set,
+    while each also keeps its prefixed CYO_ADVENTURE_ contract working."""
 
     @pytest.mark.unit
     def test_log_level_reads_unprefixed_env(
@@ -463,6 +463,39 @@ class TestUnprefixedOperatorAliases:
         monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://unprefixed/db")
         monkeypatch.setenv("CYO_ADVENTURE_DATABASE_URL", _PROD_DB_URL)
         assert Settings().database_url == _PROD_DB_URL
+
+    @pytest.mark.unit
+    def test_redis_url_reads_unprefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """redis_url is read from the unprefixed REDIS_URL var (compose, ADR-021)."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_REDIS_URL", raising=False)
+        monkeypatch.setenv("REDIS_URL", "redis://redis:6379/0")
+        assert Settings().redis_url == "redis://redis:6379/0"
+
+    @pytest.mark.unit
+    def test_redis_url_still_reads_prefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The established CYO_ADVENTURE_REDIS_URL contract keeps working."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("REDIS_URL", raising=False)
+        monkeypatch.setenv("CYO_ADVENTURE_REDIS_URL", "redis://prefixed:6379/0")
+        assert Settings().redis_url == "redis://prefixed:6379/0"
+
+    @pytest.mark.unit
+    def test_redis_url_prefixed_wins_when_both_set(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """When both names are set, the explicit CYO_ADVENTURE_ prefix wins."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("REDIS_URL", "redis://unprefixed:6379/0")
+        monkeypatch.setenv("CYO_ADVENTURE_REDIS_URL", "redis://prefixed:6379/0")
+        assert Settings().redis_url == "redis://prefixed:6379/0"
 
     @pytest.mark.unit
     def test_log_level_still_reads_prefixed_env(
