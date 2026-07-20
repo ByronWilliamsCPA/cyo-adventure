@@ -917,6 +917,13 @@ class StoryRequest(Base):
         moderation_flags: Redacted screening findings (category/verdict/message
             plus a blocked flag), or ``None`` before screening. Never raw
             classifier score/source.
+        interpretation: The serialized WS-7 ``RequestInterpretation`` (K19): the
+            kid/guardian reflection of what was built in versus set aside and
+            why, or ``None`` before the general layer runs. Phase-3 personal
+            data (deletion rides this row; export must include it; the
+            declined/blocked 30-day purge nulls each element's premise-derived
+            ``element`` phrase, keeping dispositions/reasons/template texts).
+            Blocked rows never carry premise-derived element text (CR-1).
         reviewed_by: The guardian/admin who approved or declined, or ``None``.
         reviewed_at: When the decision was recorded, or ``None``.
         approved_at: When the request entered ``approved`` specifically, or
@@ -1038,6 +1045,22 @@ class StoryRequest(Base):
     # #VERIFY: story_requests/screening.py builds this via the GuardianFinding
     # projection; test_story_requests covers the redaction shape.
     moderation_flags: Mapped[dict[str, object] | None] = mapped_column(
+        JSONB, default=None
+    )
+    # #CRITICAL: security: one serialized RequestInterpretation (WS-7 K19), the
+    # kid/guardian reflection of what was built in vs set aside and why. This is
+    # Phase-3 PERSONAL DATA tied to the child's request: deletion rides this
+    # parent story_request row (the Phase 3a purge/cascade must enumerate this
+    # table); the future guardian export (Phase 3c) MUST include it; and the
+    # declined/blocked 30-day retention purge nulls each element's `element`
+    # phrase while keeping dispositions/reasons/template texts (catalog prose,
+    # not premise content), matching the redacted-retention posture. Blocked
+    # rows NEVER carry premise-derived element text to begin with (CR-1). Old
+    # rows stay NULL (the migration does not backfill).
+    # #VERIFY: supabase/migrations/20260720000000_add_story_request_interpretation.sql
+    # adds the column and the purge job; story_requests/interpretation.py's echo
+    # floor keeps `element` phrases echo-safe before they are persisted here.
+    interpretation: Mapped[dict[str, object] | None] = mapped_column(
         JSONB, default=None
     )
     reviewed_by: Mapped[uuid.UUID | None] = mapped_column(

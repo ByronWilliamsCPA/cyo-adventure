@@ -23,6 +23,7 @@ from cyo_adventure.diversity.query import DifferentiationLevel, similarity_conte
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.allowlist import is_enabled_allowlist_pair
 from cyo_adventure.generation.authoring_metadata import (
+    SKELETON_ALTERNATIVES_KEY,
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
 )
@@ -503,10 +504,19 @@ async def build_authoring_plan(
 
     if method == "skeleton_fill":
         status = "awaiting_manual_fill" if mechanism == "skill" else "queued"
+        # WS-7 D7 (design section 6.2): persist the in-cell alternatives for the
+        # worker's bounded re-route, but ONLY on the auto-pick path. An admin
+        # override (plan.skeleton_slug set) is a deliberate pick and must never
+        # be silently re-routed, so it persists [] regardless of what in-cell
+        # candidates _resolve_skeleton_fill happened to enumerate.
+        persisted_alternatives = (
+            [] if plan.skeleton_slug is not None else skeleton_alternatives
+        )
         authoring_metadata = {
             **(authoring_metadata or {}),
             SKELETON_SLUG_KEY: skeleton_slug,
             SKELETON_BAND_KEY: skeleton_band,
+            SKELETON_ALTERNATIVES_KEY: persisted_alternatives,
             "theme_brief": concept.brief,
             "review_stage1_model": plan.review_stage1_model,
             "review_stage2_model": plan.review_stage2_model,
