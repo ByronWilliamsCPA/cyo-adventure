@@ -581,13 +581,15 @@ async def _persist_and_classify(
 
     Commits the session on success. On a gate block, rolls back via the
     caller's ``async with`` (no ORM writes were flushed, so nothing to
-    undo). On any other error, this is the batch's per-entry boundary: it
-    catches every ``ProjectBaseError`` (a moderation-pipeline failure, etc.)
-    and every ``SQLAlchemyError`` (notably ``IntegrityError``, e.g. a
-    PK-violation from a concurrent duplicate run racing this entry's insert;
-    see ``_import_one``'s own ``#ASSUME`` note), rolls the session back
-    explicitly, and classifies the entry as "error" rather than letting the
-    exception propagate and abort the whole batch.
+    undo). On any other error, this is the per-entry boundary for the
+    ``import_filled_story`` call itself (``_import_one`` wraps its own
+    session-acquire and pre-insert existence check in a sibling boundary of
+    the same shape): it catches every ``ProjectBaseError`` (a
+    moderation-pipeline failure, etc.) and every ``SQLAlchemyError`` (notably
+    ``IntegrityError``, e.g. a PK-violation from a concurrent duplicate run
+    racing this entry's insert; see ``_import_one``'s own ``#ASSUME`` note),
+    rolls the session back explicitly, and classifies the entry as "error"
+    rather than letting the exception propagate and abort the whole batch.
 
     Args:
         session: Open async session for this entry's isolated transaction.
@@ -662,25 +664,41 @@ async def _import_one(
         return prepared
     story_id, blob = prepared
 
-    async with session_factory() as session:
-        # #ASSUME: concurrency: this existence check and the subsequent
-        # import happen in the same session but are not itself a hard lock;
-        # a concurrent second run of this batch script against the same
-        # database could theoretically both pass this check and then race on
-        # the Storybook PK insert. That race surfaces as an "error" outcome
-        # via the PK-violation IntegrityError caught in
-        # _persist_and_classify's broadened exception boundary, not a crashed
-        # batch or a silent double-import. The importer is intended to be run
-        # by one operator at a time, so this window is accepted rather than
-        # adding explicit row locking.
-        # #VERIFY: see test_import_catalog_imports_a_small_entry_and_is_idempotent
-        # for two sequential full runs staying idempotent, and
-        # test_import_catalog_survives_an_integrity_error_and_continues for a
-        # forced PK-violation IntegrityError not aborting the batch.
-        existing = await session.get(Storybook, story_id)
-        if existing is not None:
-            return ImportOutcome(entry, story_id, "skipped_existing")
-        return await _persist_and_classify(session, entry, blob, config)
+    # #CRITICAL: external-resources: the session acquire (session_factory())
+    # and the pre-insert existence check (session.get) below are now INSIDE
+    # this try boundary, alongside _persist_and_classify's own broadened
+    # catch. Before this fix, a transient OperationalError from either one
+    # (a dropped connection, a pool exhaustion blip) escaped _import_one
+    # uncaught, propagated out of import_catalog()'s per-entry loop, and
+    # aborted the entire 25-story batch, contradicting this module's own
+    # disclosed judgment (see _persist_and_classify's docstring/#CRITICAL
+    # note) that a transient failure should cost one entry, not the batch.
+    # #VERIFY: see tests/unit/test_import_catalog.py, class
+    # TestImportOneTransientErrorHandling: it forces an OperationalError at
+    # each of these two points and asserts only that one entry is classified
+    # "error" while a following entry still imports.
+    try:
+        async with session_factory() as session:
+            # #ASSUME: concurrency: this existence check and the subsequent
+            # import happen in the same session but are not itself a hard
+            # lock; a concurrent second run of this batch script against the
+            # same database could theoretically both pass this check and
+            # then race on the Storybook PK insert. That race surfaces as an
+            # "error" outcome via the PK-violation IntegrityError caught by
+            # this same try boundary, not a crashed batch or a silent
+            # double-import. The importer is intended to be run by one
+            # operator at a time, so this window is accepted rather than
+            # adding explicit row locking.
+            # #VERIFY: see test_import_catalog_imports_a_small_entry_and_is_idempotent
+            # for two sequential full runs staying idempotent, and
+            # test_import_catalog_survives_an_integrity_error_and_continues for a
+            # forced PK-violation IntegrityError not aborting the batch.
+            existing = await session.get(Storybook, story_id)
+            if existing is not None:
+                return ImportOutcome(entry, story_id, "skipped_existing")
+            return await _persist_and_classify(session, entry, blob, config)
+    except (ProjectBaseError, SQLAlchemyError) as exc:
+        return ImportOutcome(entry, story_id, "error", str(exc))
 
 
 async def import_catalog(

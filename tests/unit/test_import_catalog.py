@@ -11,13 +11,18 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import AsyncMock
 
 import pytest
+from sqlalchemy.exc import OperationalError, SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from cyo_adventure.core.exceptions import ValidationError
+import cyo_adventure.generation.import_catalog as import_catalog_module
+from cyo_adventure.core.exceptions import BusinessLogicError, ValidationError
 from cyo_adventure.generation.import_catalog import (
     CATALOG_ENTRIES,
     CatalogEntry,
+    ImportConfig,
     ImportOutcome,
     _index_skeleton_nodes_by_id,
     _load_blob,
@@ -26,6 +31,7 @@ from cyo_adventure.generation.import_catalog import (
     _normalize_legacy_endings,
     _normalize_legacy_fill,
     _normalize_legacy_metadata,
+    _persist_and_classify,
     _prepare_blob,
     _print_summary,
     build_arg_parser,
@@ -548,3 +554,213 @@ class TestBuildArgParser:
         )
         assert args.model == "custom-model"
         assert args.prompt_version == "v2"
+
+
+def _persist_entry() -> CatalogEntry:
+    """A minimal CatalogEntry for _persist_and_classify tests (path unused)."""
+    return CatalogEntry("Title", "out/does-not-matter.json", "8-11", "slug")
+
+
+def _persist_blob() -> dict[str, object]:
+    """A minimal blob carrying only the ``id`` _persist_and_classify reads."""
+    return {"id": "sk_unit_persist_test"}
+
+
+@pytest.mark.unit
+class TestPersistAndClassify:
+    """Unit coverage for _persist_and_classify's outcome classification.
+
+    Patches ``import_filled_story`` on the ``import_catalog`` module (the
+    same monkeypatch target the integration suite's own flaky-import test
+    uses) against a bare ``AsyncMock`` session, so every classification
+    branch (gate_blocked, error via ProjectBaseError, error via a bare
+    SQLAlchemyError, and the "status=unknown" re-read miss) is exercised
+    without a real Postgres connection. DB-backed, end-to-end coverage of
+    the same function (through ``import_catalog()``) lives in
+    tests/integration/test_import_catalog.py.
+    """
+
+    @pytest.mark.asyncio
+    async def test_gate_blocked_on_validation_error(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A ValidationError from import_filled_story classifies as gate_blocked."""
+
+        async def _raise_validation(session: object, request: object) -> str:
+            _ = (session, request)
+            msg = "topology violates the band's node budget"
+            raise ValidationError(msg, field="nodes", value="n1")
+
+        monkeypatch.setattr(
+            import_catalog_module, "import_filled_story", _raise_validation
+        )
+        session = AsyncMock(spec=AsyncSession)
+
+        outcome = await _persist_and_classify(
+            session, _persist_entry(), _persist_blob(), ImportConfig()
+        )
+
+        assert outcome.outcome == "gate_blocked"
+        assert "topology violates the band's node budget" in outcome.detail
+        session.commit.assert_not_awaited()
+        session.rollback.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_error_on_project_base_error_rolls_back(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A ProjectBaseError from import_filled_story classifies as error and rolls back."""
+
+        async def _raise_domain_error(session: object, request: object) -> str:
+            _ = (session, request)
+            msg = "moderation pipeline failed"
+            raise BusinessLogicError(msg, rule="moderation_pipeline_failure")
+
+        monkeypatch.setattr(
+            import_catalog_module, "import_filled_story", _raise_domain_error
+        )
+        session = AsyncMock(spec=AsyncSession)
+
+        outcome = await _persist_and_classify(
+            session, _persist_entry(), _persist_blob(), ImportConfig()
+        )
+
+        assert outcome.outcome == "error"
+        assert "moderation pipeline failed" in outcome.detail
+        session.rollback.assert_awaited_once()
+        session.commit.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_error_on_bare_sqlalchemy_error_rolls_back(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A bare SQLAlchemyError (not a ProjectBaseError) also classifies as error.
+
+        Regression for the broadened exception boundary (#CRITICAL note on
+        _persist_and_classify): must NOT be narrowed to ProjectBaseError
+        only, since a DB-layer failure like this one is not a domain error.
+        """
+
+        async def _raise_db_error(session: object, request: object) -> str:
+            _ = (session, request)
+            msg = "connection reset by peer"
+            raise SQLAlchemyError(msg)
+
+        monkeypatch.setattr(
+            import_catalog_module, "import_filled_story", _raise_db_error
+        )
+        session = AsyncMock(spec=AsyncSession)
+
+        outcome = await _persist_and_classify(
+            session, _persist_entry(), _persist_blob(), ImportConfig()
+        )
+
+        assert outcome.outcome == "error"
+        assert "connection reset by peer" in outcome.detail
+        session.rollback.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_imported_with_unknown_status_when_row_not_found(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """If the freshly-imported Storybook row can't be re-read, status='unknown'."""
+
+        async def _succeed(session: object, request: object) -> str:
+            _ = (session, request)
+            return "sk_unit_persist_test"
+
+        monkeypatch.setattr(import_catalog_module, "import_filled_story", _succeed)
+        session = AsyncMock(spec=AsyncSession)
+        session.get = AsyncMock(return_value=None)
+
+        outcome = await _persist_and_classify(
+            session, _persist_entry(), _persist_blob(), ImportConfig()
+        )
+
+        assert outcome.outcome == "imported"
+        assert outcome.detail == "status=unknown"
+        session.commit.assert_awaited_once()
+
+
+@pytest.mark.unit
+class TestImportOneTransientErrorHandling:
+    """Regression for Fix 3: the try-boundary move in ``_import_one``.
+
+    Before the fix, the session acquire (``session_factory()``) and the
+    pre-insert existence check (``session.get``) sat OUTSIDE the per-entry
+    try/except, so a transient ``OperationalError`` at either point escaped
+    ``_import_one`` uncaught and aborted the whole 25-story batch. Both are
+    now inside the same ``except (ProjectBaseError, SQLAlchemyError))``
+    boundary that already protects ``_persist_and_classify``'s own call to
+    ``import_filled_story``. This class forces an ``OperationalError`` at
+    each of the two newly-covered points and asserts only that one entry is
+    classified "error", never a propagated exception.
+    """
+
+    class _FailingAcquireSessionCM:
+        """An async context manager whose __aenter__ simulates a connect failure."""
+
+        async def __aenter__(self) -> AsyncSession:
+            msg = "connection refused"
+            raise OperationalError("SELECT 1", {}, Exception(msg))
+
+        async def __aexit__(self, *exc_info: object) -> bool:
+            return False
+
+    class _SessionCM:
+        """An async context manager that just yields a pre-built session double."""
+
+        def __init__(self, session: AsyncSession) -> None:
+            self._session = session
+
+        async def __aenter__(self) -> AsyncSession:
+            return self._session
+
+        async def __aexit__(self, *exc_info: object) -> bool:
+            return False
+
+    @pytest.mark.asyncio
+    async def test_survives_a_transient_error_on_session_acquire(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        entry = _persist_entry()
+        monkeypatch.setattr(
+            import_catalog_module,
+            "_prepare_blob",
+            lambda _root, _entry: ("sk_unit_test", _persist_blob()),
+        )
+
+        outcome = await import_catalog_module._import_one(
+            self._FailingAcquireSessionCM,  # type: ignore[arg-type]
+            entry,
+            ImportConfig(),
+        )
+
+        assert outcome.outcome == "error"
+        assert outcome.story_id == "sk_unit_test"
+        assert "connection refused" in outcome.detail
+
+    @pytest.mark.asyncio
+    async def test_survives_a_transient_error_on_existence_check(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        entry = _persist_entry()
+        monkeypatch.setattr(
+            import_catalog_module,
+            "_prepare_blob",
+            lambda _root, _entry: ("sk_unit_test", _persist_blob()),
+        )
+        session = AsyncMock(spec=AsyncSession)
+        session.get = AsyncMock(
+            side_effect=OperationalError("SELECT 1", {}, Exception("pool exhausted"))
+        )
+
+        outcome = await import_catalog_module._import_one(
+            lambda: self._SessionCM(session),  # type: ignore[arg-type]
+            entry,
+            ImportConfig(),
+        )
+
+        assert outcome.outcome == "error"
+        assert outcome.story_id == "sk_unit_test"
+        assert "pool exhausted" in outcome.detail
