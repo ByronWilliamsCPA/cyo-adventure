@@ -24,13 +24,23 @@ GRANT USAGE ON SCHEMA public TO cyo_api, cyo_worker;
 
 -- Identical DML grant set for both roles initially (ADR-021 decision 1;
 -- per-role tightening is explicitly deferred). Table list is verbatim the 19
--- tables from 20260711200745_enable_rls_all_tables.sql.
+-- tables from 20260711200745_enable_rls_all_tables.sql, plus three tables
+-- that later migrations independently enabled RLS on with the same
+-- deny-by-default posture: device_grant (20260713180000_add_device_grants.sql),
+-- family_connection (20260716120000_admin_user_management.sql), and
+-- kid_flag (20260717120000_add_kid_flag.sql). Without these grants the
+-- non-owner cyo_api/cyo_worker roles get permission-denied on all three at
+-- the WU-10 cutover, breaking device-authorized kid login and family/flag
+-- access.
 GRANT SELECT, INSERT, UPDATE, DELETE ON
   public.child_profile,
   public.completion,
   public.concept,
+  public.device_grant,
   public.family,
+  public.family_connection,
   public.generation_job,
+  public.kid_flag,
   public.moderation_setting,
   public.moderation_threshold,
   public.moderation_threshold_audit,

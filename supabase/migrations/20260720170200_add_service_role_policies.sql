@@ -10,6 +10,12 @@
 -- no down-migration (ADR-012 forward-only). Must run after
 -- ..._create_service_roles.sql (CREATE POLICY ... TO <role> errors on a
 -- missing role); the timestamps enforce that ordering.
+--
+-- Table list matches the GRANT block in ..._create_service_roles.sql: the
+-- 19 tables from 20260711200745_enable_rls_all_tables.sql plus device_grant,
+-- family_connection, and kid_flag, which later migrations independently
+-- enabled RLS on with the same deny-by-default posture (see that file's
+-- comments for the introducing migration of each).
 
 DROP POLICY IF EXISTS service_rw ON public.child_profile;
 CREATE POLICY service_rw ON public.child_profile
@@ -23,12 +29,24 @@ DROP POLICY IF EXISTS service_rw ON public.concept;
 CREATE POLICY service_rw ON public.concept
   FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS service_rw ON public.device_grant;
+CREATE POLICY service_rw ON public.device_grant
+  FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK (true);
+
 DROP POLICY IF EXISTS service_rw ON public.family;
 CREATE POLICY service_rw ON public.family
   FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS service_rw ON public.family_connection;
+CREATE POLICY service_rw ON public.family_connection
+  FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK (true);
+
 DROP POLICY IF EXISTS service_rw ON public.generation_job;
 CREATE POLICY service_rw ON public.generation_job
+  FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS service_rw ON public.kid_flag;
+CREATE POLICY service_rw ON public.kid_flag
   FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS service_rw ON public.moderation_setting;
