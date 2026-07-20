@@ -325,3 +325,8 @@ docs/qa/naive-ux-reports/*.md
 # Diversity eval live-fill and judge-calibration outputs (run_diversity_eval.py
 # --with-judge writes its cache here); never committed by accident.
 out/diversity/
+
+# WS-5 mutation promotion bundles (scripts/mutate_skeleton.py --out-dir
+# out/mutations/). Scratch: a mutant reaches the catalog only through a reviewed
+# skeletons/ PR (ADR-020, design CR-1), never by committing a raw bundle.
+out/mutations/

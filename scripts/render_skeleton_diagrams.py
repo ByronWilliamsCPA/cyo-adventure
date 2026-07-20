@@ -18,7 +18,7 @@ import urllib.request
 from pathlib import Path
 
 from cyo_adventure.generation.diagram import skeleton_to_plantuml
-from cyo_adventure.generation.skeleton import load_skeleton
+from cyo_adventure.generation.skeleton import is_sidecar, load_skeleton
 from cyo_adventure.generation.skeleton_catalog import (
     build_catalog_region,
     splice_region,
@@ -57,11 +57,12 @@ def generate_puml(skeletons_dir: Path, out_root: Path) -> dict[Path, str]:
     """
     mapping: dict[Path, str] = {}
     for json_path in sorted(skeletons_dir.rglob("*.json")):
-        # Skip WS-2 theme-contract sidecars: they share the .json suffix and
-        # this rglob, but they are not skeletons (they carry no id/nodes/etc),
-        # so load_skeleton would reject them. Excluded the same way as in
-        # generation/skeleton_match.py and the skeleton test discovery globs.
-        if json_path.name.endswith(".contract.json"):
+        # Skip sidecars (WS-2 theme contracts and WS-5 lineage records): they
+        # share the .json suffix and this rglob, but they are not skeletons (they
+        # carry no id/nodes/etc), so load_skeleton would reject them. Excluded via
+        # the shared is_sidecar predicate, the same way generation/skeleton_match.py
+        # and the skeleton test discovery globs do.
+        if is_sidecar(json_path):
             continue
         data = load_skeleton(json_path)
         slug = slug_for(json_path)
@@ -201,8 +202,9 @@ def regenerate_catalog(skeletons_dir: Path, catalog_path: Path) -> str:
     skeletons: list[dict[str, object]] = []
     slugs: list[str] = []
     for json_path in sorted(skeletons_dir.rglob("*.json")):
-        # Skip WS-2 theme-contract sidecars (see generate_puml): not skeletons.
-        if json_path.name.endswith(".contract.json"):
+        # Skip sidecars (contracts and lineage records; see generate_puml): not
+        # skeletons.
+        if is_sidecar(json_path):
             continue
         skeletons.append(load_skeleton(json_path))
         slugs.append(slug_for(json_path))

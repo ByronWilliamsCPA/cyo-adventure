@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Catalog-time skeleton mutation (WS-5, D1-D8): a pure, offline authoring
+  accelerator that grows distinct trees per cell by mutating already
+  gate-verified skeleton shells, in `src/cyo_adventure/mutation/`. Five operator
+  families re-proven by the byte-identical full gate plus a stricter WS-5
+  acceptance harness: M1 sibling-subtree swap, M2 ending re-map within a valence
+  class, M3 prune/graft within the cell envelope (same-band donors, contract
+  merge/drop), M4 vary decisions-per-path (insert-linear/remove-linear/
+  insert-decision), and M5 Tier-2 state variation (variable retune, gated-route
+  rewire) with a single-walk ending-coverage and clock re-proof. Promotion-only
+  anti-clone floors (`TAU_STRUCT`/`TAU_CELL`/`TAU_STATE`, calibrated by
+  `scripts/calibrate_mutation_floors.py` into a committed baseline) and stage-4
+  contract acceptance keep a mutant from cloning an existing tree or weakening a
+  band floor. D8 adds the promotion bundle: a versioned `lineage.json` sidecar
+  and writer with a hard parent-hash `--verify-bundle` check (`mutation/bundle.py`),
+  the author re-guidance resolution flow (`mutation/reguide.py`), the stage-5
+  deterministic mock sample fill (`mutation/sample_fill.py`), bounded operator
+  chains (`mutation/compose.py`, `<= 3` ops per OQ-7), and the
+  `scripts/mutate_skeleton.py` CLI (single-op, `--chain`, `--resolve`,
+  `--verify-bundle`). No mutant reaches `skeletons/` or a child except through a
+  reviewed human PR; the bundle lives in gitignored `out/mutations/`. Draft
+  ADR-020 ("Mutation-derived skeletons and catalog growth", Status Proposed)
+  records the decision set with a composed-chain bundle as its evidence exhibit.
+- The catalog scanners' `*.contract.json` sidecar skip is generalized to a shared
+  `is_sidecar` predicate that also skips the new `*.lineage.json` sidecar
+  (`generation/skeleton.py`, ADR-020 decision 2 / OQ-1), so a lineage record in a
+  band directory is never mistaken for a selectable skeleton.
+
 ## [0.20.0] - 2026-07-20
 
 ### Added

@@ -19,6 +19,7 @@ from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.storybook.models import StoryMetadata
 from cyo_adventure.utils.logging import get_logger
 
@@ -123,16 +124,17 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
         return []
     candidates: list[tuple[str, StoryMetadata]] = []
     for path in sorted(band_dir.glob("*.json")):
-        # #ASSUME: data-integrity: a WS-2 theme-contract sidecar
-        # (`<slug>.contract.json`) lives next to its skeleton and also matches
-        # this `*.json` glob; without this skip it would be treated as a
-        # skeleton with a missing metadata block, logging one spurious
-        # `skeleton.missing_metadata_block` warning per contract on every
-        # scan. Sidecars are authoring-time data, never a selectable
-        # skeleton.
-        # #VERIFY: test_skeleton_match.py asserts a `*.contract.json` file
-        # produces no candidate and no warning log.
-        if path.name.endswith(".contract.json"):
+        # #ASSUME: data-integrity: a sidecar (a WS-2 theme contract
+        # `<slug>.contract.json` or a WS-5 lineage record `<slug>.lineage.json`,
+        # ADR-020 decision 2) lives next to its skeleton and also matches this
+        # `*.json` glob; without this skip it would be treated as a skeleton with
+        # a missing metadata block, logging one spurious
+        # `skeleton.missing_metadata_block` warning per sidecar on every scan.
+        # Sidecars are authoring-time data, never a selectable skeleton. The
+        # shared `is_sidecar` predicate keeps the suffix set in one place.
+        # #VERIFY: test_skeleton_match.py asserts a `*.contract.json` and a
+        # `*.lineage.json` file each produce no candidate and no warning log.
+        if is_sidecar(path):
             continue
         metadata = _load_metadata(path)
         if metadata is None or not metadata.production_eligible:

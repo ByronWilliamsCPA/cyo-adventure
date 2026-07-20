@@ -1,0 +1,616 @@
+"""Tests for the WS-5 D2 acceptance harness (mutation/acceptance.py).
+
+Covers the section 6 stage table subset: stage-0 precondition discard, stage-1
+gate discard (including the load-bearing safety property that a blocked gate can
+never be promotable), stage-2 cell-drift discard, and the held-for-re-guidance
+outcome. Also pins the structured discard log and the serialization used by the
+CLI.
+"""
+
+from __future__ import annotations
+
+import copy
+import json
+import random
+from pathlib import Path
+from typing import TYPE_CHECKING, cast
+
+import pytest
+
+from cyo_adventure.mutation.acceptance import (
+    Stage,
+    _cell_matches,  # pyright: ignore[reportPrivateUsage]
+    acceptance_to_dict,
+    run_acceptance,
+)
+from cyo_adventure.mutation.operators import M1
+from cyo_adventure.mutation.ops import (
+    MutationResult,
+    OpParams,
+    PreconditionReport,
+    ReguideItem,
+    ReguideTarget,
+)
+from cyo_adventure.mutation.state_ops import M5
+from cyo_adventure.validator.gate import GateResult, run_gate
+from cyo_adventure.validator.report import (
+    Severity,
+    ValidationFinding,
+    ValidationReport,
+)
+from cyo_adventure.validator.walk import WalkResult, walk_configurations
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from structlog.stdlib import BoundLogger
+
+    from cyo_adventure.storybook.models import Storybook
+
+_SKELETONS_ROOT = Path(__file__).resolve().parents[2] / "skeletons"
+
+
+def _floor_always_passes(_parent: object, _candidate: object, _in_cell: object) -> None:
+    """A typed structural-floor stub that accepts every candidate (test isolation)."""
+    return
+
+
+def _load(slug_path: str) -> dict[str, object]:
+    """Load one catalog skeleton by its ``band/slug.json`` path."""
+    return cast(
+        "dict[str, object]",
+        json.loads((_SKELETONS_ROOT / slug_path).read_text(encoding="utf-8")),
+    )
+
+
+def _first_eligible_tier1() -> tuple[str, dict[str, object]]:
+    """Return the first production Tier-1 standalone skeleton M1 accepts."""
+    for path in sorted(_SKELETONS_ROOT.glob("*/*.json")):
+        if path.name.endswith(".contract.json"):
+            continue
+        story = cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
+        if M1.preconditions(story, OpParams.of()).satisfied:
+            return path.stem, story
+    pytest.skip("no eligible Tier-1 parent in the catalog")
+
+
+class _RecordingLogger:
+    """A minimal structlog-shaped logger that records ``info`` calls."""
+
+    def __init__(self) -> None:
+        self.events: list[tuple[str, dict[str, object]]] = []
+
+    def info(self, event: str, **kwargs: object) -> None:
+        """Record one structured event."""
+        self.events.append((event, kwargs))
+
+
+class _ConstOp:
+    """An operator stub whose apply returns a fixed candidate (for stage tests)."""
+
+    def __init__(
+        self,
+        op_id: str,
+        candidate: dict[str, object],
+        reguide: tuple[ReguideItem, ...] = (),
+        *,
+        satisfied: bool = True,
+    ) -> None:
+        self.op_id = op_id
+        self._candidate = candidate
+        self._reguide = reguide
+        self._satisfied = satisfied
+
+    def preconditions(
+        self, parent: Mapping[str, object], params: OpParams
+    ) -> PreconditionReport:
+        """Return the configured precondition outcome."""
+        _ = (parent, params)
+        return (
+            PreconditionReport.passed()
+            if self._satisfied
+            else PreconditionReport.failed("stub precondition refused")
+        )
+
+    def apply(
+        self, parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> MutationResult:
+        """Return the fixed candidate, unconditionally."""
+        _ = (parent, params, rng)
+        return MutationResult(
+            candidate=copy.deepcopy(self._candidate), reguide=self._reguide
+        )
+
+
+def _blocking_gate(_data: Mapping[str, object], scale: str = "standard") -> GateResult:
+    """Return a gate result that always blocks (a forced-failure double)."""
+    _ = scale
+    report = ValidationReport()
+    report.add(
+        ValidationFinding(
+            rule_id="L1-3",
+            severity=Severity.ERROR,
+            story_id="forced",
+            message="forced block for the safety property test",
+        )
+    )
+    return GateResult(report=report, blocked=True, safety_flagged=False)
+
+
+@pytest.mark.unit
+def test_accepted_m1_candidate_is_held_not_promotable() -> None:
+    """An accepted M1 mutant clears stages 0-2 but is held on unresolved reguide."""
+    _slug, story = _first_eligible_tier1()
+    result = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
+    assert result.discarded_at_stage is None
+    assert [outcome.passed for outcome in result.stages] == [True, True, True]
+    assert result.reguide_outstanding == 4
+    assert result.promotable is False
+    assert result.held is True
+    assert result.gate_summary["blocked"] is False
+
+
+@pytest.mark.unit
+def test_resolving_all_reguide_items_makes_the_candidate_promotable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Marking every reguide target resolved flips a held candidate to promotable.
+
+    D7 change: the default M1 swap on the first eligible parent is near-isomorphic
+    (structural distance ~0.036, far below the calibrated TAU_STRUCT ~0.329), so
+    with re-guidance resolved it would now be discarded by the stage-3 structural
+    anti-clone floor (see the companion test). To keep pinning the ORIGINAL,
+    still-valid mechanic in isolation -- that resolving every re-guidance item is
+    what flips a held candidate to promotable -- the structural floor is stubbed to
+    pass here. The floor's own clone-rejection behaviour is covered by
+    test_structural_floor_discards_a_near_isomorphic_swap and test_mutation_floors.
+    """
+    monkeypatch.setattr(
+        "cyo_adventure.mutation.acceptance.structural_floor_reason",
+        _floor_always_passes,
+    )
+    _slug, story = _first_eligible_tier1()
+    dry = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
+    resolved = frozenset(item.target_id for item in dry.reguide)
+    result = run_acceptance(
+        M1,
+        story,
+        OpParams.of(),
+        seed=0,
+        parent_slug=_slug,
+        resolved_reguide_ids=resolved,
+    )
+    assert result.reguide_outstanding == 0
+    assert result.promotable is True
+    assert result.held is False
+
+
+@pytest.mark.unit
+def test_structural_floor_discards_a_near_isomorphic_swap() -> None:
+    """A resolved-reguide near-isomorphic M1 swap is discarded by the D7 floor.
+
+    The default M1 swap re-pairs two siblings without moving the numeric feature
+    vector far, so its structural distance to the parent is below TAU_STRUCT. With
+    every re-guidance item resolved (the otherwise-promotable path), the stage-3
+    structural anti-clone floor discards it: a near-clone is not a genuine new tree
+    (design 4.6). Reject-only: the candidate is discarded, never promoted.
+    """
+    _slug, story = _first_eligible_tier1()
+    dry = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
+    resolved = frozenset(item.target_id for item in dry.reguide)
+    result = run_acceptance(
+        M1,
+        story,
+        OpParams.of(),
+        seed=0,
+        parent_slug=_slug,
+        resolved_reguide_ids=resolved,
+    )
+    assert result.discarded_at_stage is Stage.STRUCTURE
+    assert result.promotable is False
+    assert "TAU_STRUCT" in result.discard_reason
+
+
+@pytest.mark.unit
+@pytest.mark.security
+def test_harness_cannot_promote_a_blocked_gate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The safety invariant: a blocked gate is never promotable (design CR-2)."""
+    monkeypatch.setattr("cyo_adventure.mutation.acceptance.run_gate", _blocking_gate)
+    _slug, story = _first_eligible_tier1()
+    result = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
+    assert result.discarded_at_stage is Stage.GATE
+    assert result.promotable is False
+    assert result.held is False
+    assert result.gate_summary["blocked"] is True
+    gate_stage = next(o for o in result.stages if o.stage is Stage.GATE)
+    assert "L1-3" in gate_stage.rule_ids
+
+
+@pytest.mark.unit
+@pytest.mark.security
+def test_blocked_gate_is_never_promotable_with_all_d7_stages_present(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CR-2 with D7: a blocked gate discards at stage 1, before any floor/contract.
+
+    Even with a mutated contract supplied (so stage 4 is wired) and re-guidance
+    resolved (so the promotable path is reached), a blocked gate discards the
+    candidate at the gate stage; the structural floor and contract stages never
+    run and can never override the block (design section 6, CR-2).
+    """
+    from cyo_adventure.generation.binding import load_contract_for
+
+    monkeypatch.setattr("cyo_adventure.mutation.acceptance.run_gate", _blocking_gate)
+    cave_path = _SKELETONS_ROOT / "8-11" / "the-cave-of-echoes.json"
+    cave = _load("8-11/the-cave-of-echoes.json")
+    contract = load_contract_for(cave_path, cave)
+    dry_resolved = frozenset({"any"})
+    result = run_acceptance(
+        M1,
+        cave,
+        OpParams.of(),
+        seed=0,
+        parent_slug="the-cave-of-echoes",
+        resolved_reguide_ids=dry_resolved,
+        mutated_contract=contract,
+    )
+    assert result.discarded_at_stage is Stage.GATE
+    assert result.promotable is False
+    seen = {outcome.stage for outcome in result.stages}
+    assert Stage.STRUCTURE not in seen
+    assert Stage.CONTRACT not in seen
+
+
+@pytest.mark.unit
+def test_precondition_failure_discards_at_stage_zero() -> None:
+    """A stub whose preconditions refuse is discarded at stage 0 with no candidate."""
+    _slug, story = _first_eligible_tier1()
+    op = _ConstOp("stub-refuse", story, satisfied=False)
+    result = run_acceptance(op, story, OpParams.of(), seed=0, parent_slug=_slug)
+    assert result.discarded_at_stage is Stage.PRECONDITIONS
+    assert result.candidate is None
+    assert result.promotable is False
+
+
+@pytest.mark.unit
+def test_cell_drift_discards_at_stage_two() -> None:
+    """A gate-passing candidate that declares a different cell is discarded at stage 2."""
+    parent = _load("8-11/the-cave-of-echoes.json")
+    donor = _load("3-5/the-big-red-balloon.json")  # different band/cell, gate-valid
+    op = _ConstOp("stub-cell", donor)
+    result = run_acceptance(op, parent, OpParams.of(), seed=0, parent_slug="cave")
+    assert result.discarded_at_stage is Stage.CELL
+    assert result.gate_summary["blocked"] is False
+    assert result.promotable is False
+
+
+@pytest.mark.unit
+def test_discard_emits_structured_mutation_discarded_log() -> None:
+    """A discard emits one ``mutation.discarded`` event with the required fields."""
+    _slug, story = _first_eligible_tier1()
+    op = _ConstOp("stub-refuse", story, satisfied=False)
+    logger = _RecordingLogger()
+    run_acceptance(
+        op,
+        story,
+        OpParams.of(foo="bar"),
+        seed=3,
+        parent_slug="parent-x",
+        logger=cast("BoundLogger", logger),
+    )
+    assert len(logger.events) == 1
+    event, fields = logger.events[0]
+    assert event == "mutation.discarded"
+    assert fields["parent_slug"] == "parent-x"
+    assert fields["op_id"] == "stub-refuse"
+    assert fields["seed"] == 3
+    assert fields["failing_stage"] == str(Stage.PRECONDITIONS)
+    assert "parent_sha256" in fields
+    assert fields["params"] == {"foo": "bar"}
+
+
+@pytest.mark.unit
+def test_cell_matches_direct() -> None:
+    """The cell comparison flags the first differing key and accepts equal cells."""
+    parent = _load("8-11/the-cave-of-echoes.json")
+    same = copy.deepcopy(parent)
+    ok, _detail = _cell_matches(parent, same)
+    assert ok is True
+    drifted = copy.deepcopy(parent)
+    cast("dict[str, object]", drifted["metadata"])["length"] = "long"
+    bad, detail = _cell_matches(parent, drifted)
+    assert bad is False
+    assert "length" in detail
+
+
+@pytest.mark.unit
+def test_cell_stage_ignores_topology_but_catches_band_length_style_tier_drift() -> None:
+    """Component-4: topology is mutable within the cell; the other keys are not.
+
+    Design 4.8/OQ-4: a mutant may re-declare a band-legal topology (an M1 swap, an
+    M4 reconvergence), so a topology-only difference is NOT cell drift. Every other
+    cell key -- age_band, length, narrative_style, tier -- must still match exactly.
+    """
+    parent = _load("8-11/the-cave-of-echoes.json")
+    retopo = copy.deepcopy(parent)
+    # A different topology value alone must NOT read as cell drift.
+    cast("dict[str, object]", retopo["metadata"])["topology"] = "branch_and_bottleneck"
+    ok, _detail = _cell_matches(parent, retopo)
+    assert ok is True
+    # Each real cell key still trips the assertion.
+    for key, value in (
+        ("age_band", "10-13"),
+        ("length", "long"),
+        ("narrative_style", "gamebook"),
+        ("tier", 2),
+    ):
+        drifted = copy.deepcopy(parent)
+        cast("dict[str, object]", drifted["metadata"])[key] = value
+        bad, detail = _cell_matches(parent, drifted)
+        assert bad is False, f"expected drift on {key}"
+        assert key in detail
+
+
+@pytest.mark.unit
+def test_acceptance_to_dict_is_json_serializable_and_complete() -> None:
+    """The CLI serialization round-trips and records the D2 stage transcript."""
+    _slug, story = _first_eligible_tier1()
+    result = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
+    payload = acceptance_to_dict(result)
+    # Round-trips through JSON without error.
+    reloaded = cast("dict[str, object]", json.loads(json.dumps(payload)))
+    assert reloaded["promotable"] is False
+    assert reloaded["held"] is True
+    assert len(cast("list[object]", reloaded["stages"])) == 3
+    assert len(cast("list[object]", reloaded["reguide"])) == 4
+    assert reloaded["discarded_at_stage"] is None
+    assert "bundle_note" in reloaded
+
+
+@pytest.mark.unit
+def test_reguide_items_reference_the_swapped_surfaces() -> None:
+    """The held candidate's reguide list is two choices then two nodes."""
+    _slug, story = _first_eligible_tier1()
+    result = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
+    kinds = [item.target for item in result.reguide]
+    assert kinds.count(ReguideTarget.CHOICE) == 2
+    assert kinds.count(ReguideTarget.NODE) == 2
+
+
+# --- CLI: scripts/mutate_skeleton.py ---
+
+
+def _eligible_parent_path() -> Path:
+    """Return the filesystem path of an eligible Tier-1 parent for the CLI."""
+    for path in sorted(_SKELETONS_ROOT.glob("*/*.json")):
+        if path.name.endswith(".contract.json"):
+            continue
+        story = cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
+        if M1.preconditions(story, OpParams.of()).satisfied:
+            return path
+    pytest.skip("no eligible Tier-1 parent in the catalog")
+
+
+@pytest.mark.unit
+@pytest.mark.security
+def test_cli_refuses_out_dir_under_skeletons(tmp_path: Path) -> None:
+    """The CLI refuses to write under skeletons/ and creates nothing there."""
+    from scripts import mutate_skeleton as ms
+
+    parent = _eligible_parent_path()
+    forbidden = _SKELETONS_ROOT / "mutation-should-not-appear-here"
+    exit_code = ms.main(
+        [str(parent), "--op", "M1", "--seed", "0", "--out-dir", str(forbidden)]
+    )
+    assert exit_code == 1
+    assert not forbidden.exists()
+
+
+@pytest.mark.unit
+def test_cli_success_writes_a_minimal_bundle(tmp_path: Path) -> None:
+    """A successful run writes the candidate shell and acceptance.json, exit 0."""
+    from scripts import mutate_skeleton as ms
+
+    parent = _eligible_parent_path()
+    exit_code = ms.main(
+        [str(parent), "--op", "M1", "--seed", "0", "--out-dir", str(tmp_path)]
+    )
+    assert exit_code == 0
+    slug = f"{parent.stem}-m1-s0"
+    bundle = tmp_path / slug
+    assert (bundle / f"{slug}.json").is_file()
+    acceptance = cast(
+        "dict[str, object]",
+        json.loads((bundle / "acceptance.json").read_text(encoding="utf-8")),
+    )
+    # Held, not promotable (reguide outstanding), and never gate-blocked.
+    assert acceptance["promotable"] is False
+    assert acceptance["held"] is True
+    assert acceptance["discarded_at_stage"] is None
+
+
+@pytest.mark.unit
+def test_cli_precondition_failure_exits_nonzero_and_writes_nothing(
+    tmp_path: Path,
+) -> None:
+    """An ineligible swap (same choice twice) discards and writes no bundle."""
+    from scripts import mutate_skeleton as ms
+
+    parent = _eligible_parent_path()
+    story = cast("dict[str, object]", json.loads(parent.read_text(encoding="utf-8")))
+    # Pick any real choice id and pass it as both, forcing a stage-0 discard.
+    choice_id = _any_choice_id(story)
+    exit_code = ms.main(
+        [
+            str(parent),
+            "--op",
+            "M1",
+            "--params",
+            f"choice1={choice_id}",
+            f"choice2={choice_id}",
+            "--out-dir",
+            str(tmp_path),
+        ]
+    )
+    assert exit_code == 1
+    assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.unit
+def test_cli_unknown_operator_exits_nonzero(tmp_path: Path) -> None:
+    """An unregistered operator id exits non-zero and writes nothing."""
+    from scripts import mutate_skeleton as ms
+
+    parent = _eligible_parent_path()
+    exit_code = ms.main(
+        [str(parent), "--op", "does-not-exist", "--out-dir", str(tmp_path)]
+    )
+    assert exit_code == 1
+    assert list(tmp_path.iterdir()) == []
+
+
+def _any_choice_id(story: dict[str, object]) -> str:
+    """Return the first choice id found in a story."""
+    for node in cast("list[object]", story["nodes"]):
+        if not isinstance(node, dict):
+            continue
+        choices = cast("dict[str, object]", node).get("choices")
+        if isinstance(choices, list):
+            for choice in cast("list[object]", choices):
+                if isinstance(choice, dict):
+                    choice_id = cast("dict[str, object]", choice).get("id")
+                    if isinstance(choice_id, str):
+                        return choice_id
+    pytest.skip("no choices in the chosen parent")
+
+
+# --- D6 additions: the Tier-2 stricter stage (design 5.3/5.4) ---
+
+_FLOODED_QUARTER = _SKELETONS_ROOT / "10-13" / "the-flooded-quarter.json"
+
+
+def _flooded_quarter() -> dict[str, object]:
+    """Return the-flooded-quarter Tier-2 skeleton as a raw document."""
+    return cast(
+        "dict[str, object]",
+        json.loads(_FLOODED_QUARTER.read_text(encoding="utf-8")),
+    )
+
+
+def _widen_oil() -> OpParams:
+    """Return an M5 retune that always clears every stage on the-flooded-quarter."""
+    return OpParams.of(mode="retune", variable="oil", max=4, description="Roomier oil.")
+
+
+@pytest.mark.unit
+def test_tier1_candidate_skips_the_tier2_stage() -> None:
+    """A Tier-1 (M1) candidate never runs the D6 Tier-2 stage, preserving D2 behavior."""
+    _slug, story = _first_eligible_tier1()
+    result = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
+    stages = [outcome.stage for outcome in result.stages]
+    assert Stage.TIER2_STATE not in stages
+    assert stages == [Stage.PRECONDITIONS, Stage.GATE, Stage.CELL]
+
+
+@pytest.mark.unit
+def test_tier2_capped_walk_is_an_acceptance_failure() -> None:
+    """A capped configuration walk discards a Tier-2 mutant (unproven state space)."""
+    parent = _flooded_quarter()
+    result = run_acceptance(
+        M5, parent, _widen_oil(), seed=0, parent_slug="fq", walk_cap=5
+    )
+    assert result.discarded_at_stage is Stage.TIER2_STATE
+    assert "hit the cap" in result.discard_reason
+    assert result.promotable is False
+
+
+@pytest.mark.unit
+def test_tier2_ending_coverage_gap_discards_when_the_gate_l2_passed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The coverage check catches a stranded ending the gate's L2 verdict passed."""
+    parent = _flooded_quarter()
+    candidate = M5.apply(parent, _widen_oil(), random.Random(0)).candidate
+    # The real gate (and its own L2 walk) accepts this candidate.
+    assert run_gate(candidate).blocked is False
+
+    real_walk = walk_configurations
+
+    def _drop_one_ending(story: Storybook, *, cap: int = 100_000) -> WalkResult:
+        result = real_walk(story, cap=cap)
+        ending_ids = {node.id for node in story.nodes if node.is_ending}
+        victim = next(key[0] for key in result.configs if key[0] in ending_ids)
+        configs = {k: v for k, v in result.configs.items() if k[0] != victim}
+        edges = {k: v for k, v in result.edges.items() if k[0] != victim}
+        return WalkResult(configs=configs, edges=edges, capped=False)
+
+    monkeypatch.setattr(
+        "cyo_adventure.mutation.acceptance.walk_configurations", _drop_one_ending
+    )
+    result = run_acceptance(M5, parent, _widen_oil(), seed=0, parent_slug="fq")
+    assert result.discarded_at_stage is Stage.TIER2_STATE
+    assert "ending coverage gap" in result.discard_reason
+
+
+@pytest.mark.unit
+def test_tier2_clock_reproof_discards_a_short_walk_finish(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A walk-derived fastest finish below the cell floor is discarded by the clock."""
+    parent = _flooded_quarter()
+    real_walk = walk_configurations
+
+    def _short_finish(story: Storybook, *, cap: int = 100_000) -> WalkResult:
+        result = real_walk(story, cap=cap)
+        satisfying = {
+            node.id
+            for node in story.nodes
+            if node.is_ending
+            and node.ending is not None
+            and node.ending.kind.value in {"success", "completion"}
+        }
+        initial_key = next(iter(result.configs))
+        target = next(key for key in result.configs if key[0] in satisfying)
+        edges = dict(result.edges)
+        edges[initial_key] = [target]  # a two-node config path to a satisfying finish
+        return WalkResult(configs=result.configs, edges=edges, capped=False)
+
+    monkeypatch.setattr(
+        "cyo_adventure.mutation.acceptance.walk_configurations", _short_finish
+    )
+    result = run_acceptance(M5, parent, _widen_oil(), seed=0, parent_slug="fq")
+    assert result.discarded_at_stage is Stage.TIER2_STATE
+    assert "clock re-proof" in result.discard_reason
+
+
+@pytest.mark.unit
+@pytest.mark.security
+def test_tier2_state_floor_discards_an_alpha_rename() -> None:
+    """The state-signature floor rejects a signature-neutral alpha-rename (reject-only)."""
+    parent = _flooded_quarter()
+    result = run_acceptance(
+        M5,
+        parent,
+        OpParams.of(mode="rename", variable="oil", new_name="fuel"),
+        seed=0,
+        parent_slug="fq",
+    )
+    assert result.discarded_at_stage is Stage.TIER2_STATE
+    assert result.promotable is False
+    assert "state-signature distance" in result.discard_reason
+
+
+@pytest.mark.unit
+@pytest.mark.security
+def test_tier2_blocked_gate_is_never_promotable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CR-2 for Tier-2: a blocked gate discards before the Tier-2 stage runs."""
+    monkeypatch.setattr("cyo_adventure.mutation.acceptance.run_gate", _blocking_gate)
+    parent = _flooded_quarter()
+    result = run_acceptance(M5, parent, _widen_oil(), seed=0, parent_slug="fq")
+    assert result.discarded_at_stage is Stage.GATE
+    assert result.promotable is False
+    assert Stage.TIER2_STATE not in [outcome.stage for outcome in result.stages]
