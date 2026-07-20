@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-07-20
+
 ### Added
 
 - Request interpretation and expectation-setting (WS-7 D1-D3, K19): a pure
@@ -2188,7 +2190,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.19.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.20.0...HEAD
+[0.20.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.4...v0.19.0
 [0.18.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.3...v0.18.4
 [0.18.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.2...v0.18.3
