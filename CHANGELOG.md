@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (bumped v1.6 -> v1.7), and surfaced previously untracked work (two child-safety
   gaps, the K19/content-diversity workstream, and several orphaned design docs).
 
+### Fixed
+
+- Production database migration deploy aborted mid-apply: `add_erasure_cascades`
+  used bare `DROP CONSTRAINT` statements, one of which targeted an FK absent in
+  production (`fk_story_request_anchor_storybook_id_storybook`), so the push
+  failed with SQLSTATE 42704 and left the 0719/0720 migration batches unapplied.
+  All 42 drops are now `DROP CONSTRAINT IF EXISTS` (idempotent and
+  convergence-safe), and the migration is renumbered from `20260719190000` to
+  `20260720170000` so it sorts after the merged 0720 batch and staging and
+  production apply it in the same order (ADR-021, ADR-012).
+
 ## [0.22.0] - 2026-07-20
 
 ## [0.21.0] - 2026-07-20
