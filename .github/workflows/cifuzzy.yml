@@ -84,7 +84,7 @@ jobs:
         # file is absent and an unconditional upload fails on the missing path.
         # (Matches the dna/cifuzzy.yml reference pattern.)
         if: always() && steps.check-fuzz.outputs.has-targets == 'true' && hashFiles('results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4.37.0
+        uses: github/codeql-action/upload-sarif@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1
         with:
           sarif_file: results.sarif
           category: fuzzing-${{  matrix.sanitizer  }}
