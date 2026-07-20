@@ -3,7 +3,7 @@
 # UV uses standard PEP 621 pyproject.toml format with uv.lock for reproducible builds.
 [project]
 name = "cyo-adventure"
-version = "0.18.4"
+version = "0.19.0"
 description = "A choose-your-own-adventure reading app for kids"
 authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
@@ -16,7 +16,10 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 
 # Core production dependencies

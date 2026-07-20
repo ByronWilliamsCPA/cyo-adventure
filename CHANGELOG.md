@@ -77,8 +77,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and a processor DPA execution checklist with every link live-verified
   (`processor-dpa-checklist.md`, Phase 5).
 
+## [0.19.0] - 2026-07-20
+
 ### Changed
 
+- The primary Python runtime moved from 3.12 to 3.14 (#295): the production
+  image now runs the hardened `dhi-python:3.14-debian13` base (whose
+  interpreter lives at `/usr/bin/python3.14`, not the 3.12 image's
+  `/opt/python/bin`), the required CI gate and the compatibility matrix now
+  cover 3.14, and Renovate is restricted to digest-only updates for the two
+  Dockerfile base images so the builder and runtime stages can never
+  version-drift independently again. `requires-python` stays `>=3.11`;
+  3.11-3.13 remain supported and tested.
 - CI: release-automation PRs (`release.yml`'s `propose` job opens
   `chore(release): vX.Y.Z` against a `release/v*` branch, touching only
   `pyproject.toml`/`uv.lock`/`CHANGELOG.md`) now skip the full test/build
@@ -2241,7 +2251,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.4...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.19.0...HEAD
+[0.19.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.4...v0.19.0
 [0.18.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.3...v0.18.4
 [0.18.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.2...v0.18.3
 [0.18.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.1...v0.18.2

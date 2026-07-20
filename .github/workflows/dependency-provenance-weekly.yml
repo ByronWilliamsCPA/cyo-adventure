@@ -35,5 +35,5 @@ jobs:
       contents: read
       issues: write
     with:
-      python-version: '3.12'
+      python-version: '3.14'
       open-issue: true

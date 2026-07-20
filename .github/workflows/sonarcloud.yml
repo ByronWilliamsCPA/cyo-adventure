@@ -52,11 +52,13 @@ jobs:
     with:
       sonar-organization: 'byronwilliamscpa'
       sonar-project-key: 'ByronWilliamsCPA_cyo-adventure'
-      # 3.14, not the 3.12 local target: under CPython 3.12 coverage.py
-      # silently drops the async handler bodies in api/profiles.py (tests
-      # pass, lines execute, zero hits recorded; reproduced with both the
-      # sysmon and ctrace cores and with coverage 7.6/7.14). 3.14 records
-      # them correctly, so it is the truthful measurement interpreter.
+      # 3.14 matches the primary runtime/CI target since the #295 upgrade.
+      # It was chosen here even before that flip: under CPython 3.12
+      # coverage.py silently drops the async handler bodies in
+      # api/profiles.py (tests pass, lines execute, zero hits recorded;
+      # reproduced with both the sysmon and ctrace cores and with coverage
+      # 7.6/7.14). 3.14 records them correctly, so it is the truthful
+      # measurement interpreter.
       python-version: '3.14'
       source-directory: 'src'
       coverage-paths: 'coverage.xml'

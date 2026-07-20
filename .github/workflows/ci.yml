@@ -100,7 +100,7 @@ jobs:
   # the unit-test suite does not need (and which fail when those secrets are
   # absent on a fork or a repo without them configured).
   ci:
-    name: CI (Python 3.12)
+    name: CI (Python 3.14)
     needs: detect-release-pr
     if: needs.detect-release-pr.outputs.release_pr != 'true'
     permissions:
@@ -109,7 +109,7 @@ jobs:
       checks: write
     uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@c4ba2d18e4de831cbdbffcafd8e033473c0a0059 # #270: parallel buckets pass --cov-fail-under=0, coverage-combine gates
     with:
-      python-version: "3.12"
+      python-version: "3.14"
       coverage-threshold: 80
       # Run the integration and security buckets as separate pytest passes so
       # they produce coverage-integration.xml / coverage-security.xml (and the
@@ -376,7 +376,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install UV
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
@@ -686,7 +686,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install UV
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
