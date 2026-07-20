@@ -317,6 +317,10 @@
          <lastmod>2026-07-20</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/ws5-structure-state-variation-design/</loc>
+         <lastmod>2026-07-20</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/ws7-request-interpretation-design/</loc>
          <lastmod>2026-07-20</lastmod>
     </url>
@@ -398,6 +402,10 @@
     </url>
     <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-019-parameterized-skeletons-theme-contracts/</loc>
+         <lastmod>2026-07-20</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-020-mutation-derived-skeletons-and-catalog-growth/</loc>
          <lastmod>2026-07-20</lastmod>
     </url>
     <url>

@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/capability-register/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-020-mutation-derived-skeletons-and-catalog-growth/">
       
       
       
@@ -20,19 +20,19 @@
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Capability Register (Top-Down Expectation Map) - CYO Adventure</title>
+        <title>ADR-020: Mutation-derived skeletons and catalog growth - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#capability-register" class="md-skip">
+        <a href="#adr-020-mutation-derived-skeletons-and-catalog-growth" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Capability Register (Top-Down Expectation Map)
+              ADR-020: Mutation-derived skeletons and catalog growth
             
           </span>
         </div>
@@ -235,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -256,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../operations/runbook/" class="md-tabs__link">
+        <a href="../../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -322,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../architecture/" class="md-tabs__link">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -344,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -366,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -388,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../" class="md-tabs__link">
+        <a href="../../" class="md-tabs__link">
           
   
   
@@ -410,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -432,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -468,7 +468,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -498,7 +498,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -596,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -631,7 +631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -666,7 +666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -701,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -801,7 +801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -903,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/runbook/" class="md-nav__link">
+      <a href="../../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -938,7 +938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -1017,7 +1017,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../architecture/" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -1068,7 +1068,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1103,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1138,7 +1138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1173,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1208,7 +1208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1243,7 +1243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1318,7 +1318,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../api/" class="md-nav__link ">
+            <a href="../../../api/" class="md-nav__link ">
               
   
   
@@ -1367,7 +1367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1402,7 +1402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1439,7 +1439,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1474,7 +1474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1578,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1613,7 +1613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1648,7 +1648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1725,7 +1725,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -1776,7 +1776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project-vision/" class="md-nav__link">
+      <a href="../../project-vision/" class="md-nav__link">
         
   
   
@@ -1811,7 +1811,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tech-spec/" class="md-nav__link">
+      <a href="../../tech-spec/" class="md-nav__link">
         
   
   
@@ -1846,7 +1846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1881,7 +1881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../roadmap/" class="md-nav__link">
         
   
   
@@ -1963,7 +1963,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../adr/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -2014,7 +2014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2049,7 +2049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2084,7 +2084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2119,7 +2119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2154,7 +2154,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2189,7 +2189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2224,7 +2224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2259,7 +2259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2294,7 +2294,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2329,7 +2329,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2364,7 +2364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2478,7 +2478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2513,7 +2513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2548,7 +2548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2583,7 +2583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2652,7 +2652,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2703,7 +2703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2765,10 +2765,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#purpose-and-method" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Purpose and method
+        TL;DR
       
     </span>
   </a>
@@ -2776,98 +2776,204 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ratified-decisions-2026-07-16" class="md-nav__link">
+  <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Ratified decisions (2026-07-16)
+        Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-the-catalog-stands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where the catalog stands
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#k-kid-capabilities" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#what-ws-5-d1-d7-built" class="md-nav__link">
     <span class="md-ellipsis">
       
-        K: Kid capabilities
+        What WS-5 D1-D7 built
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#g-guardian-capabilities" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#what-adr-019-does-not-cover-and-ws-5-needs-ratified" class="md-nav__link">
     <span class="md-ellipsis">
       
-        G: Guardian capabilities
+        What ADR-019 does not cover, and WS-5 needs ratified
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#a-admin-capabilities" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#the-constraint-the-model-must-not-violate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        A: Admin capabilities
+        The constraint the model must not violate
       
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#s-system-capabilities-cross-cutting" class="md-nav__link">
+  <a href="#decision" class="md-nav__link">
     <span class="md-ellipsis">
       
-        S: System capabilities (cross-cutting)
+        Decision
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-mutants-are-first-class-catalog-citizens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Mutants are first-class catalog citizens
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#known-doc-debt-this-register-supersedes-or-exposes" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#2-provenance-is-recorded-out-of-the-story-document" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Known doc debt this register supersedes or exposes
+        2. Provenance is recorded, out of the story document
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#unregistered-scope-rulings" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#3-the-gate-is-identical-plus-promotion-only-additions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Unregistered scope: rulings
+        3. The gate is identical, plus promotion-only additions
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#maintenance-rules" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#4-human-structure-approval-is-the-skeletons-pr-review" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Maintenance rules
+        4. Human structure approval is the skeletons/ PR review
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#related-documents" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#5-cell-inheritance" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Related documents
+        5. Cell inheritance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-contract-parity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Contract parity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Positive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative-accepted-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Negative / accepted costs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidence-exhibit-one-end-to-end-composed-chain-promotion-bundle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence exhibit: one end-to-end composed-chain promotion bundle
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternatives-considered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternatives considered
       
     </span>
   </a>
@@ -2894,588 +3000,207 @@
   
 
 
-<h1 id="capability-register">Capability Register<a class="headerlink" href="#capability-register" title="Permanent link">&para;</a></h1>
+<h1 id="adr-020-mutation-derived-skeletons-and-catalog-growth">ADR-020: Mutation-derived skeletons and catalog growth<a class="headerlink" href="#adr-020-mutation-derived-skeletons-and-catalog-growth" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.6 | <strong>Created</strong>: 2026-07-16 | <strong>Updated</strong>: 2026-07-16
-(v1.4: note corrections and ruling queue from the full traceability review, see
-<a href="../traceability-review-2026-07-16/">traceability-review-2026-07-16.md</a>;
-v1.5: owner rulings applied: K18 and A16 minted, back button ratified, ADR-007
-admin-first sequencing, repair re-gate and band fail-closed fixes ordered, G2 build
-confirmed; v1.6: A12 note extended to name the admin child-PIN set/reset authority
-explicitly, with an ADR-014 cross-reference, per the 2026-07-16 review condition)</p>
-<p><strong>Delivery update (2026-07-17, M4b-d execution on branch
-claude/app-capabilities-review-wm6gt3)</strong>: the following capabilities moved to DELIVERED
-(code, tests, and E2E where noted; commits 5fd1de7 through 6f729d5): K5 (Go Back pinned),
-K6 (tracker UI), K7 (read-aloud), K12 (complete incl. generation status), K15 (flag end
-to end: kid button, admin queue, guardian alert), K17 (shelf chips), G2 (controls UI and
-brief wiring), G3 (envelope backend, write path, and form UI), G5 (structure summaries),
-G6 (prose editor with gate and moderation re-run; admin surface, guardian UI awaits a
-guardian review surface), G7 (complete: consent debits quota on ALL spend paths incl.
-the legacy intake gate), G9 (Reading page), G10/S9 (notification feed and bell), G13
-(interim balance), G17/A15 (dual-guardian consent flow with the ENFORCED ring-2 guard,
-superseding the holds-by-omission note below), and the S8 flow now includes the budget
-stage. PR #267 (A12/A13, connection substrate) merged to main; PR #268 (A8 UI) in
-flight. Remaining for M4-full: G15 device/storage view (needs a design decision), G8
-offline revocation (Phase 5), and the owner-side items (secrets, redeploy, live
-checklist).</p>
-<p><strong>Delivery-state review (2026-07-16, open PRs and working docs)</strong>: the Docs column below
-measures <em>foundational-doc</em> coverage, but a review of
-<a href="../story-lifecycle-redesign/">story-lifecycle-redesign.md</a> (owner-ratified 2026-07-06,
-workstreams A-G merged 2026-07-10) and open PRs #267/#268 found several items further
-along in working docs and code than foundational coverage suggested. Affected rows carry
-delivery notes; treat the Notes column as the current truth.</p>
+<p><strong>Status</strong>: Proposed (2026-07-20; drafted at WS-5 D8 with the composed-chain
+promotion bundle below as the evidence exhibit, awaiting supervisor sign-off
+before mutation-derived trees are promoted at scale)
+<strong>Date</strong>: 2026-07-20
+<strong>Relates to</strong>: <a href="../adr-019-parameterized-skeletons-theme-contracts/">ADR-019</a>
+(parameterization varies content on a fixed structure; ADR-020 governs changing
+the structure itself and growing the catalog from non-hand-authored sources, the
+question ADR-019 only gestured at), <a href="../adr-011-story-scale-framework/">ADR-011</a>
+(the constraint grammar is the frozen safety object; every operator perturbs only
+grammar clauses it declares and the gate re-proves every result),
+<a href="../adr-005-mandatory-human-approval/">ADR-005</a> (human story approval still gates
+every published story; ADR-020's human structure approval is a distinct, earlier
+step over the skeleton, not the story), <a href="../adr-001-story-format-json-storybook/">ADR-001</a>
+(the Storybook schema is unchanged; lineage lives outside the story document).
+Design spec: <code>docs/planning/ws5-structure-state-variation-design.md</code> (section 8
+is this ADR's decision source; sections 4-6 the operators, harness, and bundle).</p>
 </blockquote>
-<h2 id="purpose-and-method">Purpose and method<a class="headerlink" href="#purpose-and-method" title="Permanent link">&para;</a></h2>
-<p>This register was produced by a deliberate fresh-look exercise: start from the top-line goal only
-(an online and offline app where kids read choose-your-own-adventure books and use AI to generate
-new stories based on their interests), derive what a child, guardian, and application admin would
-expect the app to do, and only then compare against the foundational documents (project vision,
-tech spec, ADRs 001-014, privacy model, authorization matrix). It deliberately ignores code,
-sprints, and milestones.</p>
-<p>Each capability has a stable ID: <strong>K</strong> (kid), <strong>G</strong> (guardian), <strong>A</strong> (admin), <strong>S</strong> (system,
-cross-cutting). IDs are permanent; never renumber. New capabilities append at the end of their
-section. This register is the checkoff sheet for scope and the basis for acceptance testing:
-every item should eventually map to one or more tests, and every spec or feature should trace
-back to at least one ID.</p>
-<p>The <strong>Docs</strong> column records coverage in the foundational documents as of 2026-07-16:</p>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>WS-5 grows the skeleton catalog by mutating already gate-verified trees with cheap,
+deterministic operators (M1-M5), offline and catalog-time only. A mutant is not a
+special object: once promoted it is an ordinary catalog skeleton with a new slug,
+its own theme contract, and ordinary selection weight, and it earns catalog
+membership exactly the way a hand-authored skeleton does, through the byte-identical
+<code>validator/</code> gate plus a stricter WS-5 acceptance harness. Nothing is inherited from
+the parent except the cell. Provenance (parent slug and content hash, the operator
+chain with parameters and seeds, the acceptance digest) is recorded in a
+<code>skeletons/&lt;band&gt;/&lt;slug&gt;.lineage.json</code> sidecar, and the catalog scanner's existing
+<code>*.contract.json</code> skip is generalized so lineage is never mistaken for a selectable
+skeleton. The gate is identical in both directions (no novelty exception): the WS-5
+additions (an anti-clone structural distance floor, a state-signature floor, and
+ending-coverage / clock re-proof for Tier-2) are promotion criteria that can only
+reject, never admit. A human structure-approval step, the <code>skeletons/</code> PR review, is
+named explicitly and kept distinct from ADR-005 story approval; there is no
+auto-merge for skeleton promotion. A mutant inherits its parent's <code>(band, length,
+style)</code> cell in v1, and mutants of parameterized parents ship contracts while mutants
+of contract-less parents land contract-less at parity until the WS-2 Tier-2 wave.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<h3 id="where-the-catalog-stands">Where the catalog stands<a class="headerlink" href="#where-the-catalog-stands" title="Permanent link">&para;</a></h3>
+<p><code>skeletons/</code> holds 59 gate-verified trees (56 production, 3 MVP seeds) across six
+bands, 45 with WS-2 theme-contract sidecars (ADR-019). Every skeleton is re-gated at
+load, so the mutation substrate is by construction a set of trees the gate has already
+accepted. The cost of a new verified tree today is the cost of authoring 10 to 155
+nodes of beats guidance plus structure plus review; that cost is why cells hold 5 to 12
+skeletons and why WS-4's <code>CATALOG</code> saturation escalation currently terminates in a log
+line with nothing to consume it. Meanwhile the catalog embodies sunk, human-reviewed
+value. Mutation converts that sunk value into new trees at a fraction of authoring
+cost, with the gate re-proving safety mechanically.</p>
+<h3 id="what-ws-5-d1-d7-built">What WS-5 D1-D7 built<a class="headerlink" href="#what-ws-5-d1-d7-built" title="Permanent link">&para;</a></h3>
+<p>The pure operator framework (<code>ops</code>, <code>subtree</code>, <code>identity</code>), the five operator families
+(M1 sibling-subtree swap, M2 ending re-map within a valence class, M3 prune/graft
+within the envelope, M4 vary decisions-per-path, M5 Tier-2 state variation), the
+acceptance harness (<code>acceptance.py</code>) that re-runs the unchanged gate and adds the
+Tier-2 single-walk coverage/clock re-proof and the contract-acceptance stage, and the
+calibrated anti-clone floors (<code>floors.py</code>, <code>TAU_STRUCT</code>/<code>TAU_CELL</code>/<code>TAU_STATE</code> in a
+committed baseline). D7 confirmed the expected shape: a single operator usually leaves
+a mutant below <code>TAU_STRUCT</code> (M1 preserves every aggregate shape feature, M2 is
+composition-only), so the highest-value mutants pair a structural op with an outcome
+re-map or a second structural move, which motivates bounded operator chains (OQ-7).</p>
+<h3 id="what-adr-019-does-not-cover-and-ws-5-needs-ratified">What ADR-019 does not cover, and WS-5 needs ratified<a class="headerlink" href="#what-adr-019-does-not-cover-and-ws-5-needs-ratified" title="Permanent link">&para;</a></h3>
+<p>ADR-019 governs how content varies on a fixed structure. WS-5 changes the structure
+itself and grows the catalog from non-hand-authored sources, which ADR-019 only
+gestures at ("the catalog flywheel can promote new trees through the same
+neutralize-and-contract machinery"). The decisions below have no ratified home; without
+this ADR they live only in the WS-5 workstream design, which is exactly the
+unrecorded-model failure ADR-011's context section warns against.</p>
+<h3 id="the-constraint-the-model-must-not-violate">The constraint the model must not violate<a class="headerlink" href="#the-constraint-the-model-must-not-violate" title="Permanent link">&para;</a></h3>
+<p>No mutant may reach a child, or even the catalog, except through the byte-identical
+gate plus a reviewed human PR. The frozen safety object is the ADR-011 constraint
+grammar, not the 59 graphs: WS-5 varies trees strictly inside the grammar, the gate
+verifies every result, and a gate failure discards the mutant, never weakens the gate.
+The WS-5 additions are strictly one-directional (reject-only).</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<h3 id="1-mutants-are-first-class-catalog-citizens">1. Mutants are first-class catalog citizens<a class="headerlink" href="#1-mutants-are-first-class-catalog-citizens" title="Permanent link">&para;</a></h3>
+<p>A promoted mutant is a new skeleton: new slug, own contract, ordinary selection weight,
+no runtime linkage to its parent. Trust is earned per tree through the identical gate
+plus the stricter WS-5 acceptance; nothing is inherited. Selection, generation, and
+publish see only promoted skeletons and cannot tell a mutant from a hand-authored tree.</p>
+<h3 id="2-provenance-is-recorded-out-of-the-story-document">2. Provenance is recorded, out of the story document<a class="headerlink" href="#2-provenance-is-recorded-out-of-the-story-document" title="Permanent link">&para;</a></h3>
+<p><code>StoryMetadata</code> is <code>extra="forbid"</code> and reader-facing, so lineage lives in a
+<code>skeletons/&lt;band&gt;/&lt;slug&gt;.lineage.json</code> sidecar: parent slug and content hash, donor
+slugs, the operator chain with parameters and seeds, the tool version, and the
+acceptance digest. The catalog scanner's sidecar skip is generalized from
+<code>*.contract.json</code> to a shared <code>is_sidecar</code> predicate (a suffix set) so lineage is never
+treated as a selectable skeleton and a future sidecar type is a single edit. This
+mirrors ADR-019 Decision 2's sidecar reasoning: lineage must version and review
+atomically with the tree it explains (OQ-1).</p>
+<h3 id="3-the-gate-is-identical-plus-promotion-only-additions">3. The gate is identical, plus promotion-only additions<a class="headerlink" href="#3-the-gate-is-identical-plus-promotion-only-additions" title="Permanent link">&para;</a></h3>
+<p>No novelty exception in either direction. Mutants pass the byte-identical gate that a
+hand-authored skeleton and its contract face; the WS-5 additions (the anti-clone
+structural distance floor <code>TAU_STRUCT</code>/<code>TAU_CELL</code>, the state-signature floor
+<code>TAU_STATE</code>, and the Tier-2 ending-coverage and clock re-proof) are promotion criteria
+that can only reject a candidate, never admit one the gate blocked. Composed (future)
+and fresh-generated (WS-6) trees inherit the same bar.</p>
+<h3 id="4-human-structure-approval-is-the-skeletons-pr-review">4. Human structure approval is the skeletons/ PR review<a class="headerlink" href="#4-human-structure-approval-is-the-skeletons-pr-review" title="Permanent link">&para;</a></h3>
+<p>Promotion is a reviewed <code>skeletons/</code> PR, performed by the owner or a delegated admin on
+the promotion bundle's evidence (diagram, acceptance transcript, sample fill, lineage).
+It is deliberately distinct from ADR-005 story approval (which continues to gate every
+published story) and from ADR-019's no-new-theme-review posture (themes still need no
+human step; structures always did need one, and this names it). No auto-merge for
+skeleton promotion PRs (OQ-5). WS-8 automation, when built, prepares PRs; humans merge
+them.</p>
+<h3 id="5-cell-inheritance">5. Cell inheritance<a class="headerlink" href="#5-cell-inheritance" title="Permanent link">&para;</a></h3>
+<p>A mutant declares its parent's <code>(band, length, style)</code> cell verbatim in v1.
+Cross-cell derivation (for example a prune/graft moving the node count across a length
+envelope boundary) changes the clocks, floors, and teen-band style semantics at once
+and is a future ADR-020 amendment with evidence, not an operator option (OQ-4).</p>
+<h3 id="6-contract-parity">6. Contract parity<a class="headerlink" href="#6-contract-parity" title="Permanent link">&para;</a></h3>
+<p>Mutants of parameterized parents ship a mutated <code>.contract.json</code> (surviving slots kept,
+pruned-only slots dropped, grafted slots imported under renamed <code>M&lt;k&gt;_&lt;SLOT&gt;</code> ids,
+<code>default_binding</code> complete, <code>contract_version</code> reset to 1) that passes the WS-2
+acceptance runner, including the band-mandatory denylist floor unioned in regardless of
+contract content. Mutants of the contract-less Tier-2 parents land contract-less at
+parity with their parent until the WS-2 Tier-2 migration wave, when they migrate in the
+same wave as ordinary skeletons (OQ-2).</p>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ul>
-<li>✅ covered (the docs spec this, often more deeply than the expectation)</li>
-<li>🟡 partial (mechanism or fragment exists; the user-facing capability is not fully specced)</li>
-<li>❌ missing (absent from the foundational docs)</li>
+<li>The WS-4 <code>cell_theme_saturated</code> signal gains a mechanism to consume: saturated cells
+  can be grown from sunk, human-reviewed catalog value at a fraction of authoring cost.</li>
+<li>Every promotion carries a machine-readable, replayable provenance record, so any
+  promoted mutant re-derives byte-for-byte and a bundle built from a since-changed
+  parent hard-fails the <code>--verify-bundle</code> check before a PR is opened.</li>
+<li>Safety is unchanged: the gate is byte-identical, the floors are reject-only, and a
+  promoted mutant still runs the full fill -&gt; gate -&gt; moderation -&gt; ADR-005 chain for
+  every story generated from it.</li>
+<li>The model generalizes: WS-6 fresh-generated and a future composed grammar tree
+  inherit the same promotion bar and the same lineage sidecar.</li>
 </ul>
-<h2 id="ratified-decisions-2026-07-16">Ratified decisions (2026-07-16)<a class="headerlink" href="#ratified-decisions-2026-07-16" title="Permanent link">&para;</a></h2>
-<p>These rulings from the project owner resolve the open tensions the fresh-look surfaced. They are
-binding on the register below. Decisions 1-3 are recorded in
-<a href="../adr/adr-015-story-request-initiation-and-gating/">ADR-015</a>; all five are folded into the
-vision doc (v1.2):</p>
-<ol>
-<li><strong>Initiation is universal.</strong> A child, a guardian, or an admin may initiate a story request
-   (K11, G4, A10). The original guardian-only intake was scope inherited from the one-family era.</li>
-<li><strong>The guardian is the cost gate.</strong> A story request consumes generation budget only with
-   guardian consent; guardians control spend (G7, G13).</li>
-<li><strong>The admin is the AI gate.</strong> The admin remains the party who gates the AI output before it
-   can reach a child (A6), consistent with ADR-005 as amended 2026-06-30.</li>
-<li><strong>The kid feedback loop exists.</strong> Children get a simple flag/reaction signal that a grown-up
-   actually sees (K15, feeding G10 and A1).</li>
-<li><strong>Guardian visibility and notifications exist.</strong> Engagement visibility (G9) and a
-   digest-plus-alerts notification surface (G10, S9) are in scope.</li>
-<li><strong>The social boundary is three rings, not a flat exclusion</strong> (ruled 2026-07-16, recorded
-   in <a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a>): recommendations
-   flow within a family (ring 1) and between guardian-approved connected families, the
-   cousins case (ring 2, structured data only, dual-guardian consent, no
-   receive-from-everyone option); globally only the system recommends, from anonymized
-   aggregate scores (ring 3, future); never kid to kid beyond ring 2, and no messaging,
-   discovery, or contact outside active parental approval (K17, G17, A15, S11, S12).</li>
-</ol>
-<p>The resulting canonical request flow (S8):</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>initiate (K11 | G4 | A10)
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>   -&gt; guardian cost gate (G7; may be pre-authorized per child via G3)
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>   -&gt; staged generation (existing pipeline)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   -&gt; deterministic validation + independent moderation (S4, S7)
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   -&gt; admin safety gate: approve and publish (A6)
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>   -&gt; child&#39;s shelf (K9), with honest status shown to the requester throughout (K12, G10)
-</span></code></pre></div>
-<h2 id="k-kid-capabilities">K: Kid capabilities<a class="headerlink" href="#k-kid-capabilities" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>K1</td>
-<td>Read with age-appropriate presentation: legible type, UI complexity, and reading level matched to the child's band</td>
-<td>🟡</td>
-<td>Bands and reading levels are deeply specced (ADR-011); per-band presentation/UX is not</td>
-</tr>
-<tr>
-<td>K2</td>
-<td>Choices are obvious, tappable, impossible to get mechanically wrong; locked (state-gated) choices are hidden, never shown-and-disabled</td>
-<td>✅</td>
-<td>Tech spec runtime semantics</td>
-</tr>
-<tr>
-<td>K3</td>
-<td>Choices are consequential: paths genuinely differ, endings vary, the story remembers state (items, flags, counters)</td>
-<td>✅</td>
-<td>Storybook format, Tier 2 state, ADR-011 clocks; WS-5 (delivered 2026-07-20) adds the catalog-time mechanism to grow structural + state variation, the M1-M5 mutation operators re-proven by the unchanged gate plus the WS-5 acceptance floors, promoted via bundle + human PR (ADR-020)</td>
-</tr>
-<tr>
-<td>K4</td>
-<td>Resume exactly where they left off, on any device, with no understanding of sync required</td>
-<td>✅</td>
-<td>Revision-based sync, version pinning</td>
-</tr>
-<tr>
-<td>K5</td>
-<td>Restart and re-read freely; replay is first-class, including a single-step "Go back" undo</td>
-<td>✅</td>
-<td>RULED 2026-07-16: the back button stays; tech spec Runtime Semantics amended (replay-based undo, no backward state mutation); shipped in the Reader</td>
-</tr>
-<tr>
-<td>K6</td>
-<td>Endings tracker as a replay motivator ("found 3 of 7 endings")</td>
-<td>✅</td>
-<td><code>completion</code> rows shipped (write path); NO tracker UI exists yet, delivery pending Phase 4b</td>
-</tr>
-<tr>
-<td>K7</td>
-<td>Read-aloud / narration for pre-readers and emerging readers</td>
-<td>🟡</td>
-<td>Scoped (Web Speech API, per-profile <code>tts_enabled</code>) but deferred to Phase 4b while the vision's own persona needs it</td>
-</tr>
-<tr>
-<td>K8</td>
-<td>Picture support at lower bands: covers at minimum; per-passage illustrations as an explicit decision</td>
-<td>🟡</td>
-<td>Cover art ratified and recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a> (shipped: Gemini generation, R2 storage, kid-visible with fallback tile); per-passage art stays out of scope; pre-reader picture support beyond covers still open</td>
-</tr>
-<tr>
-<td>K9</td>
-<td>Visual library shelf with covers: what's new, in progress, finished</td>
-<td>🟡</td>
-<td>Library API exists; shelf presentation not specced</td>
-</tr>
-<tr>
-<td>K10</td>
-<td>Offline is invisible: identical experience offline; never a connectivity error; at most "this book isn't downloaded yet"</td>
-<td>🟡</td>
-<td>Offline reading fully specced; kid-facing connectivity UX not</td>
-</tr>
-<tr>
-<td>K11</td>
-<td>Express interests and initiate a story request in kid terms (picking interests, typing a wish)</td>
-<td>🟡</td>
-<td>Shipped end to end: <code>POST /story-requests</code> plus a kid-terms request UI (idea box, series continuation, own-status list in kid language); ADR-015 is the foundational record</td>
-</tr>
-<tr>
-<td>K12</td>
-<td>Kid-friendly waiting and error states: "your story is being written", sync conflicts, and failures presented in kid terms</td>
-<td>❌</td>
-<td>Substantially built despite the ❌ doc status: kid-language request statuses, plain-language conflict dialog, mascot error/empty states, honest save-retry banner; remaining gap is generation progress inside the kid surface</td>
-</tr>
-<tr>
-<td>K13</td>
-<td>Age-band content guarantee: themes, scariness, and ending intensity land within the band (e.g. no death endings in young bands)</td>
-<td>✅</td>
-<td>ADR-011 per-band allowances, content flags, moderation by band</td>
-</tr>
-<tr>
-<td>K14</td>
-<td>Safe room: no ads, no purchases, no external links, no contact with strangers, no dark patterns in the kid context</td>
-<td>✅</td>
-<td>Permanent exclusions in vision; parental gate in ADR-008</td>
-</tr>
-<tr>
-<td>K15</td>
-<td>Feedback signal: "I didn't like this / this scared me", routed to a grown-up who actually sees it</td>
-<td>❌</td>
-<td>Ratified 2026-07-16 (decision 4); feeds G10 alerts and A1 queue</td>
-</tr>
-<tr>
-<td>K16</td>
-<td>Pick "me" from a picker: name and avatar, no password or email; sibling shelves and progress never collide</td>
-<td>✅</td>
-<td>Profile picker, per-profile PIN, ADR-014 device grants, IDOR suite</td>
-</tr>
-<tr>
-<td>K17</td>
-<td>Give and receive structured book recommendations within the family and across guardian-connected families (cousins); a recommendation is a book pointer plus rating, never a message</td>
-<td>🟡</td>
-<td>ADR-016 records the policy; only the connection substrate exists (PR #267); no recommendation surfaces yet; K18 ratings are the payload substrate</td>
-</tr>
-<tr>
-<td>K18</td>
-<td>Rate a finished book (1-5 stars): the enjoyment signal that feeds S12 aggregate scoring and K17 recommendation payloads</td>
-<td>✅</td>
-<td>RULED 2026-07-16: owner's variant of thumbs up/down for aggregate ratings; shipped (kid widget, <code>Rating</code> table, <code>api/ratings.py</code>); debt item U6 (cannot clear a rating) folds here; distinct from K15, which remains the safety-flag signal</td>
-</tr>
-<tr>
-<td>K19</td>
-<td>Request interpretation and expectation-setting: when a child submits a free-form story idea, the app reflects it back in kid terms before generation, what it understood and will build into the story versus what it set aside and why (outside the age band, not safe, or not part of this kind of story), so the child knows what to expect from their wish</td>
-<td>✅</td>
-<td>DELIVERED 2026-07-20 (WS-7 D1-D8): the interpretation core (<code>story_requests/interpretation.py</code>), the persisted <code>story_request.interpretation</code> column, the submission-time general layer, the contract-grounded refined layer (interpret-and-bind + worker wiring), the CANNOT_CARRY rejection surface, and the D8 API contract (<code>RequestInterpretationView</code> on the story-request view) are built, tested, and merged. Added 2026-07-18 (owner directive). Design record: <a href="../story-flexibility-plan/">story-flexibility-plan.md</a> WS-7 and <a href="../ws7-request-interpretation-design/">ws7-request-interpretation-design.md</a>. Gated by K13 (never echo unsafe input back); complements K11 (express a request) and K12 (kid-friendly states). The guardian-console view is the G-side companion surface</td>
-</tr>
-</tbody>
-</table>
-<h2 id="g-guardian-capabilities">G: Guardian capabilities<a class="headerlink" href="#g-guardian-capabilities" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>G1</td>
-<td>One account, multiple child profiles; each profile's age band and reading level actually changes what the child sees</td>
-<td>✅</td>
-<td><code>child_profile</code> caps enforced in library filtering</td>
-</tr>
-<tr>
-<td>G2</td>
-<td>Per-child content controls: allowed and banned themes, content flags, family-specific exclusions (phobias, no-magic, no-weapons)</td>
-<td>✅</td>
-<td>Schema-deep only: <code>allowed_content_flags</code> and <code>content_nogo</code> exist in the data model, but the intake UI hardcodes empty lists and the profile form has no theme controls. RULED 2026-07-16: build confirmed, scheduling open</td>
-</tr>
-<tr>
-<td>G3</td>
-<td>Per-child permissions and limits: whether the child may initiate story requests (including pre-authorized auto-allow), screen-time norms if any</td>
-<td>🟡</td>
-<td>ADR-015 defines the pre-authorization envelope semantics; screen-time norms still unspecced</td>
-</tr>
-<tr>
-<td>G4</td>
-<td>Initiate story requests themselves, including personalized stories ("one about our camping trip for Maya")</td>
-<td>✅</td>
-<td>Concept-brief intake; PII rules keep real names out of prompts</td>
-</tr>
-<tr>
-<td>G5</td>
-<td>Fast review of a generated story without reading every path: summary, themes, flagged passages, branch structure</td>
-<td>🟡</td>
-<td>Review surface named; skim aids (summary, branch view) not specced; approval itself moved to admin</td>
-</tr>
-<tr>
-<td>G6</td>
-<td>Edit or reject a generated story (prose tweaks, veto) with re-review on edit</td>
-<td>🟡</td>
-<td><code>PATCH .../nodes/{id}</code> + re-review specced for Phase 4b; <code>needs_revision</code> exists</td>
-</tr>
-<tr>
-<td>G7</td>
-<td>Cost gate: a story request spends generation budget only with guardian consent; per-child auto-allow is a guardian setting</td>
-<td>🟡</td>
-<td>Consent step shipped (guardian request approval precedes any concept/GenerationJob, WS-B); budget/credit debiting at consent and pre-auth envelopes (G3) remain per ADR-015</td>
-</tr>
-<tr>
-<td>G8</td>
-<td>Kill switch: pull any published book off a child's shelf immediately, including offline copies at next connection</td>
-<td>✅</td>
-<td><code>archived</code> state exists; offline-copy revocation delivered 2026-07-17 (client-side reconcile-on-fetch/reconnect against the authoritative <code>/v1/library</code> response, no backend change needed; <code>frontend/src/offline/revocation.ts</code>)</td>
-</tr>
-<tr>
-<td>G9</td>
-<td>Engagement visibility: what each child is reading, how much, endings found, re-reads; literacy signals, not surveillance</td>
-<td>❌</td>
-<td>Ratified 2026-07-16 (decision 5); raw data (<code>reading_state</code>, <code>completion</code>) exists with no reporting capability</td>
-</tr>
-<tr>
-<td>G10</td>
-<td>Notifications that matter: child flagged content, a story awaiting action, a story ready; digest by default, alert on safety</td>
-<td>❌</td>
-<td>Ratified 2026-07-16 (decision 5); no notification surface anywhere</td>
-</tr>
-<tr>
-<td>G11</td>
-<td>Plain-language trust surface: what data is collected, where the AI text came from, who reviewed it, no training on child inputs, COPPA/GDPR-K posture</td>
-<td>🟡</td>
-<td>Privacy model and ADR-008 compliance are strong internally; no user-facing articulation specced</td>
-</tr>
-<tr>
-<td>G12</td>
-<td>Data export and full account/family deletion</td>
-<td>🟡</td>
-<td>Deletion-readiness and Apple revocation specced; user-facing export absent</td>
-</tr>
-<tr>
-<td>G13</td>
-<td>Predictable cost model: quotas, "3 stories left this month", no surprise bills a child can trigger</td>
-<td>🟡</td>
-<td>ADR-008 credits/quotas for the public tier; no in-app balance surface specced</td>
-</tr>
-<tr>
-<td>G14</td>
-<td>Standard adult auth; multi-guardian households (two parents, a grandparent)</td>
-<td>🟡</td>
-<td>Supabase OIDC solid; multi-guardian implied by the data model, never specced</td>
-</tr>
-<tr>
-<td>G15</td>
-<td>Device management: authorize and revoke devices, see which books are downloaded where, storage use</td>
-<td>🟡</td>
-<td>ADR-014 grants list/revoke ✅; download/storage visibility ❌</td>
-</tr>
-<tr>
-<td>G16</td>
-<td>Browse the curated catalog and assign books to their own children</td>
-<td>✅</td>
-<td>WS-E catalog visibility + assignment gate</td>
-</tr>
-<tr>
-<td>G17</td>
-<td>Approve, decline, and revoke family connections for their own family, in each direction (share out and receive in); connections activate nothing without this consent</td>
-<td>🟡</td>
-<td>ADR-016 requires dual-guardian consent; PR #267 is admin-managed only, and the constraint currently holds BY OMISSION (nothing reads the table yet); the first consumer of <code>family_connection</code> must add an enforced consent guard, not rely on this note</td>
-</tr>
-</tbody>
-</table>
-<h2 id="a-admin-capabilities">A: Admin capabilities<a class="headerlink" href="#a-admin-capabilities" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>A1</td>
-<td>Moderation queue: flagged, uncertain, and reader/guardian-reported items, each showing why; decisions feed back into automated rules</td>
-<td>🟡</td>
-<td><code>needs_review</code> routing and global queue ✅; feedback-into-rules shipped as the WS-F propose-and-ratify suggestion dashboard over <code>pipeline_event</code>; kid/guardian reports (K15) still ❌</td>
-</tr>
-<tr>
-<td>A2</td>
-<td>Sample audits: random re-review of anything published without direct human review (becomes real if any auto-publish tier ever exists)</td>
-<td>❌</td>
-<td>Moot while A6 gates everything; register it so it survives any future gating change</td>
-</tr>
-<tr>
-<td>A3</td>
-<td>Global policy levers: age-band definitions, theme taxonomy, classifier thresholds, banned-content lists</td>
-<td>🟡</td>
-<td>Per-band moderation thresholds are DB-backed, admin-editable with an audit trail (WS-A); band definitions and taxonomy remain code-level</td>
-</tr>
-<tr>
-<td>A4</td>
-<td>Policy re-evaluation: re-screen the already-published catalog when policy or thresholds change</td>
-<td>🟡</td>
-<td>First cut delivered 2026-07-17 (Phase 5/M5): admin-only <code>POST /api/v1/admin/rescreen</code> (<code>moderation/rescreen.py</code>, <code>api/rescreen.py</code>) re-runs the deterministic policy/band gate plus Stage-0 classifiers over already-published family-tier books, scoped by an optional id list, and writes a <code>moderation_completed</code> pipeline event per book; a flagged book is never auto-unpublished (ADR-005), only surfaced for an admin to archive by hand. Full public-catalog re-screen (Phase 9) and an admin UI hook still ❌</td>
-</tr>
-<tr>
-<td>A5</td>
-<td>Incident path: trace how content reached a child (prompt, model, gate version), pull it everywhere including offline, notify affected guardians</td>
-<td>🟡</td>
-<td>Provenance supports trace ✅; pull-everywhere (offline copies) delivered 2026-07-17, same client-side revocation reconcile as G8 (<code>frontend/src/offline/revocation.ts</code>); guardian notification still ❌</td>
-</tr>
-<tr>
-<td>A6</td>
-<td>AI safety gate: the admin's recorded approval is the only path from generated content to a child (approve-and-publish)</td>
-<td>✅</td>
-<td>ADR-005 as amended; state machine with no bypass; ratified 2026-07-16 (decision 3)</td>
-</tr>
-<tr>
-<td>A7</td>
-<td>Pipeline observability: success/failure rates, queue depth and latency, rejection reasons by stage, cost per story, per-provider quality</td>
-<td>🟡</td>
-<td><code>pipeline_event</code> captures every transition and the WS-F dashboard aggregates moderation outcomes; cost/latency/yield operational views still ❌</td>
-</tr>
-<tr>
-<td>A8</td>
-<td>Pipeline levers: switch or disable providers, tune prompts/templates, set rate limits and cost caps, kill a runaway job</td>
-<td>🟡</td>
-<td>Config-pinned swap + fallback cascade ✅; per-request provider/model against a server-side allowlist shipped (WS-C), with allowlist + authoring-queue admin UI in PR #268; kill-job and caps surfaces still ❌</td>
-</tr>
-<tr>
-<td>A9</td>
-<td>Curated/seed catalog management so a new child never sees an empty shelf</td>
-<td>🟡</td>
-<td>Catalog visibility + "curated starter library" (ADR-008); management surface thin</td>
-</tr>
-<tr>
-<td>A10</td>
-<td>Admin-initiated story generation (seeding the catalog, testing the pipeline)</td>
-<td>✅</td>
-<td>Shipped (WS-B): <code>POST /story-requests/authored</code>, admin catalog-targeted with no family; ADR-015 names it foundationally</td>
-</tr>
-<tr>
-<td>A11</td>
-<td>Structural quality tools across the corpus: broken graphs, reading-level drift, repetitive or template-y output</td>
-<td>🟡</td>
-<td>Per-story validator is world-class; corpus-level drift/repetition tooling ❌</td>
-</tr>
-<tr>
-<td>A12</td>
-<td>Account support ops: lockouts, deletion requests, abuse handling (an adult misusing generation)</td>
-<td>🟡</td>
-<td>PR #267 (open) delivers user/family lifecycle management: invites, edit, deactivate with auth-boundary enforcement and self-lockout guard; deletion-request and abuse workflows still ❌. Per the 2026-07-16 review condition: PR #267 also grants the admin console authority to set and reset a child profile's picker PIN (<code>PATCH /admin/profiles/{profile_id}</code>, <code>api/admin_profiles.py</code>), named here explicitly as an A12 admin-support capability rather than left implicit in the CRUD description; cross-reference <a href="../adr/adr-014-device-authorized-kid-access/">ADR-014</a>, which defines the picker PIN as a convenience lock behind an already-authenticated guardian/admin bearer, not a security boundary in its own right</td>
-</tr>
-<tr>
-<td>A13</td>
-<td>Admin action audit trail: admins touching child-related data leave a trail</td>
-<td>🟡</td>
-<td>Approver stamps and <code>acting_role</code> audit stamps ✅; no audit view/report</td>
-</tr>
-<tr>
-<td>A14</td>
-<td>Compliance and platform ops: retention enforcement, compliance reporting, backups and tested restore</td>
-<td>🟡</td>
-<td>ADR-007 retention, backups live, restore drill planned; compliance reporting ❌</td>
-</tr>
-<tr>
-<td>A15</td>
-<td>Administer family connections: broker, list, and remove connection records on request; admin action never substitutes for guardian consent</td>
-<td>🟡</td>
-<td>Console shipped in PR #267 (open); ADR-016 subordinates it to G17 consent</td>
-</tr>
-<tr>
-<td>A16</td>
-<td>Generate and manage AI cover art per storybook version, reviewed on the approval surface before it reaches a child</td>
-<td>✅</td>
-<td>RULED 2026-07-16, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>; shipped (covers/ module, admin trigger, R2 storage, best-effort with fallback)</td>
-</tr>
-</tbody>
-</table>
-<h2 id="s-system-capabilities-cross-cutting">S: System capabilities (cross-cutting)<a class="headerlink" href="#s-system-capabilities-cross-cutting" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Capability</th>
-<th>Docs</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>S1</td>
-<td>Offline as a first-class mode: reading, choices, progress, and flags all work offline and reconcile later</td>
-<td>✅</td>
-<td>ADR-002, sync rules, offline queue with idempotent replay</td>
-</tr>
-<tr>
-<td>S2</td>
-<td>Multi-device conflict resolution that never silently loses a child's progress</td>
-<td>✅</td>
-<td>Revision-based 409 model; kid-facing presentation tracked as K12</td>
-</tr>
-<tr>
-<td>S3</td>
-<td>Story representation that supports the format: branching graph, state, conditions, multiple ending types</td>
-<td>✅</td>
-<td>ADR-001, ADR-006, ADR-011; deeper than the expectation</td>
-</tr>
-<tr>
-<td>S4</td>
-<td>Deterministic pre-publication validation that a story is playable (no dead ends, orphans, traps, unsatisfiable paths)</td>
-<td>✅</td>
-<td>Two-layer gate incl. state-space walk; RULED 2026-07-16: repair output must re-run the gate and the band policy must fail closed on an unconfigured band (fixes implemented on this branch)</td>
-</tr>
-<tr>
-<td>S5</td>
-<td>Age-banding as the system-wide spine: reading level, theme intensity, safety thresholds keyed off one per-child band</td>
-<td>✅</td>
-<td>ADR-011</td>
-</tr>
-<tr>
-<td>S6</td>
-<td>Human-legible provenance per story: who or what created it, checks passed, approver, when</td>
-<td>✅</td>
-<td>Per-version model/provider/prompt/approver stamps</td>
-</tr>
-<tr>
-<td>S7</td>
-<td>Independent safety pipeline: moderation independent of the generator; no path to a child bypasses the automated gates plus the human gate</td>
-<td>✅</td>
-<td>ADR-005, ADR-010, prompt-injection defenses</td>
-</tr>
-<tr>
-<td>S8</td>
-<td>End-to-end request flow: initiate (K/G/A) -&gt; guardian cost gate -&gt; generation -&gt; validation/moderation -&gt; admin gate -&gt; shelf, with honest async status</td>
-<td>🟡</td>
-<td>Flow shipped end to end (WS-A..G: request -&gt; guardian approve -&gt; admin authoring plan -&gt; pipeline -&gt; admin release) except budget accounting at consent and kid-facing status; ADR-015 is the foundational record</td>
-</tr>
-<tr>
-<td>S9</td>
-<td>Notification/event delivery infrastructure underlying K12, G10, and admin alerts</td>
-<td>❌</td>
-<td>Append-only pipeline event log exists in code; no delivery capability in foundational docs</td>
-</tr>
-<tr>
-<td>S10</td>
-<td>Privacy architecture: no child PII to providers, data minimization, deletion-readiness, no third-party trackers in the kid context</td>
-<td>✅</td>
-<td>Privacy model, PII guard, ADR-007/008/009</td>
-</tr>
-<tr>
-<td>S11</td>
-<td>Social boundary enforcement: no messaging or free text between users, no user/family discovery, no kid contact outside active parental approval; cross-family flows exist only through ring-2 connections</td>
-<td>✅</td>
-<td>ADR-016 + vision v1.3; enforcement is structural (no such surfaces exist) plus the ADR-016 validation criteria</td>
-</tr>
-<tr>
-<td>S12</td>
-<td>System recommendations from anonymized aggregate book scores (ring 3): no identity in or inferable from a global recommendation; minimum-population threshold before aggregates surface</td>
-<td>🟡</td>
-<td>Named as permitted future scope in ADR-016; no design</td>
-</tr>
-</tbody>
-</table>
-<h2 id="known-doc-debt-this-register-supersedes-or-exposes">Known doc debt this register supersedes or exposes<a class="headerlink" href="#known-doc-debt-this-register-supersedes-or-exposes" title="Permanent link">&para;</a></h2>
-<p>All three items below were resolved in the 2026-07-16 alignment pass; kept for the record:</p>
+<h3 id="negative-accepted-costs">Negative / accepted costs<a class="headerlink" href="#negative-accepted-costs" title="Permanent link">&para;</a></h3>
 <ul>
-<li><del>The vision doc still says "no story reaches a child until a parent approves it"</del>:
-  resolved in vision v1.2 (TL;DR, success metrics, and MVP capability 5 now name the global
-  safety admin per ADR-005 as amended); the guardian's residual controls are G5/G6/G7/G8,
-  not approval.</li>
-<li><del>The vision doc's one-family target-user framing predates the public pivot</del>: resolved in
-  vision v1.2 (scope note generalizes to the three roles; the founding family is kept as
-  reference personas).</li>
-<li><del>The "children cannot request stories" narrowing was never a recorded decision</del>: resolved
-  by <a href="../adr/adr-015-story-request-initiation-and-gating/">ADR-015</a>, which reverses it
-  explicitly and refines ADR-008's "children never trigger generation" phrasing to the
-  enforceable invariant (no spend or provider egress without adult consent).</li>
+<li>Catalog bloat: many promoted mutants per cell flatten selection weights and grow the
+  contract-maintenance surface. Governed by promoting on demand (the WS-4 saturation
+  signal) rather than on supply.</li>
+<li>Reviewer load: each promotion is a human PR review. Distinct from and additive to
+  ADR-005 story review; the bundle's diagram and sample-fill exist to make it cheap.</li>
+<li>Floor gaming: <code>structural_distance</code> is a feature-vector metric a chain could learn to
+  move without moving perceived structure. Mitigated by the human seeing the diagram and
+  revisitable when WS-0's judge-model phase can score tree-pair distinctness.</li>
+<li>A new sidecar file class (<code>*.lineage.json</code>) in <code>skeletons/</code>, accepted as the atomic-
+  versioning cost already paid for contracts.</li>
 </ul>
-<h2 id="unregistered-scope-rulings">Unregistered scope: rulings<a class="headerlink" href="#unregistered-scope-rulings" title="Permanent link">&para;</a></h2>
-<p>Per maintenance rule 3, work serving no register ID gets a conscious call. Found in the
-2026-07-16 open-PR review; both now ruled:</p>
+<h3 id="evidence-exhibit-one-end-to-end-composed-chain-promotion-bundle">Evidence exhibit: one end-to-end composed-chain promotion bundle<a class="headerlink" href="#evidence-exhibit-one-end-to-end-composed-chain-promotion-bundle" title="Permanent link">&para;</a></h3>
+<p>Produced at D8 with <code>scripts/mutate_skeleton.py</code> and verified; the raw bundle lives in
+gitignored <code>out/mutations/</code> (promotion into <code>skeletons/</code> is a human PR), so the evidence
+is captured here.</p>
 <ul>
-<li><strong>Cross-family recommendation connections</strong> (PR #267): RULED 2026-07-16 (decision 6).
-  Registered as K17/G17/A15/S11/S12 and recorded in
-  <a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a>. The PR's substrate
-  stands; the binding constraint is that no connection activates child-facing visibility
-  until the dual-guardian consent flow (G17) exists.</li>
-<li><strong>Provider allowlist admin UI</strong> (PR #268): serves A8 and is cited there; no separate
-  ruling needed.</li>
+<li><strong>Parent:</strong> <code>the-cave-of-echoes</code> (band 8-11, short, prose, Tier-1, 64 nodes, 16
+  endings, <code>time_cave</code>), a parameterized parent with a 72-slot theme contract.</li>
+<li><strong>Chain (2 ops, OQ-7 bounded):</strong> M3 graft (donor <code>the-robot-fair-sabotage</code>, subtree
+  <code>n_lockup</code>, 36 nodes, onto host decision <code>la_crystal_take</code>, seed 0), then M2 ending
+  re-map within a valence class (seed 3). A structural graft paired with an outcome
+  re-map, the design's stated highest-value pairing.</li>
+<li><strong>Result:</strong> a 100-node mutant. <code>structural_distance(parent, mutant) = 0.3362</code>, at or
+  above <code>TAU_STRUCT = 0.332507</code> (clears the parent anti-clone clause); minimum distance
+  to any in-cell sibling <code>= 0.1318</code>, at or above <code>TAU_CELL = 0.01</code> (clears the in-cell
+  clone clause). <code>TAU_CELL</code> is the documented clamp floor: the current catalog has two
+  near-identical in-cell siblings whose observed distance (0.000947) would otherwise
+  drive the threshold toward a clone-admitting zero, so the calibrator clamps it up to
+  the safe minimum (thresholds live in the committed
+  <code>docs/planning/ws5_floor_baseline.json</code>, re-derivable by
+  <code>scripts/calibrate_mutation_floors.py</code>). The graft imports the donor's referenced
+  slots under renamed <code>M&lt;k&gt;_</code> ids into a fresh mutant contract that passes stage-4
+  acceptance.</li>
+<li><strong>Re-guidance:</strong> the chain emitted 9 re-guidance items (the graft-seam choice label,
+  the graft-root entry beats, and the M2-affected ending titles, leaf beats, and
+  advisory upstream approaches). With author-supplied resolutions for all 9, the mutant
+  is fully resolved and would-be-promotable, then clears the anti-clone floor.</li>
+<li><strong>Acceptance:</strong> every stage passed, in order: 0 preconditions, 1 gate (the unchanged
+  full gate), 2 cell assertion, 3 structural anti-clone floor, 4 contract acceptance.
+  The stage-5 sample fill (deterministic mock provider, default binding) passed its own
+  gate cleanly, structurally unblocked.</li>
+<li><strong>Bundle:</strong> the writer emitted the mutant shell, the mutated contract, the
+  <code>lineage.json</code> sidecar (op chain <code>[M3 seed 0, M2 seed 3]</code>, donor
+  <code>the-robot-fair-sabotage</code>, lineage version 1), the acceptance transcript, the
+  re-guidance resolutions, the sample-fill evidence, and the structure diagram
+  (<code>diagram.puml</code>; <code>.svg</code> when a SHA-verified PlantUML jar is available). <code>--verify-bundle</code>
+  recomputed the parent content hash and matched the lineage record, confirming the
+  bundle describes the live catalog parent.</li>
 </ul>
-<p>Added by the full traceability review (2026-07-16, see
-<a href="../traceability-review-2026-07-16/">traceability-review-2026-07-16.md</a> section 2);
-RULED by the owner later the same day:</p>
+<h2 id="alternatives-considered">Alternatives considered<a class="headerlink" href="#alternatives-considered" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Star ratings</strong>: RULED, registered as <strong>K18</strong> (the owner's variant of thumbs up/down,
-  feeding aggregate ratings/S12). Debt item U6 folds under K18.</li>
-<li><strong>AI cover-art subsystem</strong>: RULED, wanted as a register item; K8 updated, <strong>A16</strong>
-  minted, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>.</li>
-<li><strong>Reader "Go back" button</strong>: RULED, the app should have one; tech spec Runtime
-  Semantics amended, K5 updated.</li>
-<li><strong>ADR-007 raw output</strong>: RULED, admin reviews first, then the parent (a dual-role adult
-  is covered by the admin capability); the job-detail endpoint is tightened to
-  admin-only <code>report</code> access and ADR-007 amended. The parent may ultimately receive
-  unedited LLM output when the admin approves without changes; accepted, since it has
-  passed the automated gates and admin review by then.</li>
-<li><strong>Repair re-gate and band fail-closed</strong>: RULED, both fixes ordered and implemented on
-  this branch (S4 note updated).</li>
-<li><strong>G2 content controls</strong>: RULED, will be built; scheduling open.</li>
-<li><strong>Admin child-PIN set/reset</strong> (PR #267): still open, recommend naming in A12 with an
-  ADR-014 cross-reference at PR review time.</li>
-<li><strong>Planned items lacking a design element</strong> (not schedulable until one exists): Android
-  release, web direct-billing channel, education/teacher persona, i18n catalog. Still
-  open as a batch.</li>
-</ul>
-<h2 id="maintenance-rules">Maintenance rules<a class="headerlink" href="#maintenance-rules" title="Permanent link">&para;</a></h2>
-<ol>
-<li>IDs are stable forever. Append, never renumber; mark dead items "Retired" with a reason.</li>
-<li>When a capability lands, flip Docs status and link the spec/ADR and the tests that cover it.</li>
-<li>Any new feature proposal must cite the ID(s) it serves; a proposal serving no ID is either
-   scope creep or a missing register entry, and that call gets made consciously.</li>
-</ol>
-<h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../project-vision/">Project Vision</a> (update pending per doc debt above)</li>
-<li><a href="../tech-spec/">Tech Spec</a></li>
-<li><a href="../adr/">ADR index</a></li>
-<li><a href="../authorization-matrix/">Authorization Matrix</a></li>
-<li><a href="../privacy-model/">Privacy Model</a></li>
+<li><strong>Lineage inside the story document.</strong> Rejected: <code>StoryMetadata</code> is reader-facing and
+  <code>extra="forbid"</code>; provenance is authoring metadata that must not travel to a child and
+  must version atomically with the tree, which the sidecar gives (Decision 2).</li>
+<li><strong>Bundle/PR-only lineage with no new file class.</strong> Rejected: lineage must survive the
+  bundle's <code>out/</code> lifetime and be reviewable next to the promoted tree; the scanner
+  change is one suffix check plus one test (OQ-1).</li>
+<li><strong>Advisory-first anti-clone floors.</strong> Rejected: an advisory floor on a metric whose
+  whole purpose is to keep the distinct-trees headline metric honest would let the count
+  inflate silently. Floors are reject-only, so blocking-at-promotion carries no safety
+  risk (OQ-3).</li>
+<li><strong>Single-operator mutants only.</strong> Rejected: D7 showed single ops usually fall below
+  <code>TAU_STRUCT</code>, and the highest-value mutants pair a structural op with an outcome
+  re-map. Bounded chains (<code>&lt;= 3</code> ops, recorded in the lineage <code>op_chain</code>) are the
+  minimum that reaches genuinely distinct trees; acceptance runs on the final candidate
+  regardless of chain length (OQ-7).</li>
+<li><strong>An in-app admin promotion surface instead of a PR.</strong> Deferred to WS-8 if promotion
+  volume ever warrants it; the catalog is already git-versioned and PR-reviewed, so PR
+  review is the lowest-cost structure-approval step for WS-5 (OQ-5).</li>
 </ul>
 
 
@@ -3509,7 +3234,7 @@ RULED by the owner later the same day:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 19:07:42 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:05:28 UTC">July 20, 2026</span>
   </span>
 
     
@@ -3586,10 +3311,10 @@ RULED by the owner later the same day:</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

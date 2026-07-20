@@ -1,0 +1,33 @@
+{
+  "baseline_version": 1,
+  "clamps": [
+    "TAU_CELL calibrated to 0.000947 (<= 0.01), which would admit a near-identical in-cell clone; clamped up to the documented minimum"
+  ],
+  "derivation": {
+    "tau_cell": "observed same-cell minimum structural_distance (design 4.6, OQ-3), clamped to <= TAU_STRUCT",
+    "tau_state": "anti-no-op floor min(0.5, min_cross_tier2_state_distance/2), clamped to >= 0.25 (design 5.4)",
+    "tau_struct": "25th percentile of same-cell hand-authored structural_distance pairs (design 4.6, OQ-3)"
+  },
+  "generated_by": "scripts/calibrate_mutation_floors.py",
+  "stats": {
+    "cross_tier2_state": {
+      "max": 230.993602,
+      "median": 85.268962,
+      "min": 35.904505,
+      "n_pairs": 78,
+      "p05": 48.211541,
+      "p25": 63.908436
+    },
+    "same_cell_structural": {
+      "max": 0.57661,
+      "median": 0.395598,
+      "min": 0.000947,
+      "n_pairs": 67,
+      "p05": 0.2306,
+      "p25": 0.332507
+    }
+  },
+  "tau_cell": 0.01,
+  "tau_state": 0.5,
+  "tau_struct": 0.332507
+}
