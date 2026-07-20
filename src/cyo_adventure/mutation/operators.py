@@ -23,6 +23,15 @@ from typing import TYPE_CHECKING, cast
 import networkx as nx
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.mutation._raw import (
+    choices_of as _choices_of,
+)
+from cyo_adventure.mutation._raw import (
+    nodes_of as _nodes_of,
+)
+from cyo_adventure.mutation._raw import (
+    str_field as _str_field,
+)
 from cyo_adventure.mutation.identity import (
     host_id_namespace,
     recompute_tier,
@@ -117,36 +126,6 @@ _M2_PARAMS_MSG = (
     "M2 requires both 'valence' (a valence class) and 'order' (a comma-separated "
     "ending-id permutation of that class)"
 )
-
-
-def _nodes_of(story: Mapping[str, object]) -> list[Mapping[str, object]]:
-    """Return the story's node dicts, skipping any malformed entries."""
-    raw = story.get("nodes")
-    if not isinstance(raw, list):
-        return []
-    return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
-        if isinstance(item, dict)
-    ]
-
-
-def _choices_of(node: Mapping[str, object]) -> list[Mapping[str, object]]:
-    """Return a node's choice dicts, skipping any malformed entries."""
-    raw = node.get("choices")
-    if not isinstance(raw, list):
-        return []
-    return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
-        if isinstance(item, dict)
-    ]
-
-
-def _str_field(container: Mapping[str, object], key: str) -> str | None:
-    """Return a string-valued field of a mapping, or None when not a string."""
-    value = container.get(key)
-    return value if isinstance(value, str) else None
 
 
 def _metadata_of(story: Mapping[str, object]) -> Mapping[str, object]:
@@ -2931,10 +2910,13 @@ def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], 
 
     Enumerates simple paths from ``start_node`` to any ending node via a
     deterministic (sorted) depth-first search, counting the decision nodes on
-    each. For an acyclic parent the simple-path set is finite and the result is
-    EXACT; for a cyclic parent the search samples up to
-    :data:`_WALK_PATH_SAMPLE_CAP` paths and returns ``truncated=True`` (design
-    4.5: exact over the acyclic path set, bounded sample for cyclic graphs).
+    each. For an acyclic parent the simple-path set is finite: every
+    root-to-ending path is enumerated, the result is EXACT, and ``truncated`` is
+    always ``False`` (the design guarantees the acyclic count is exact, so the
+    :data:`_WALK_PATH_SAMPLE_CAP` limit is never applied). For a cyclic parent
+    the search samples up to :data:`_WALK_PATH_SAMPLE_CAP` paths and sets
+    ``truncated=True`` when it hits that cap (design 4.5: exact over the acyclic
+    path set, bounded sample for cyclic graphs).
 
     Args:
         story: The raw story document.
@@ -2949,6 +2931,11 @@ def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], 
         return (), False
     endings = _ending_node_ids(story)
     decisions = _decision_node_ids(story)
+    # Detect acyclicity once, reusing the same networkx helper the other graph
+    # checks in this module use. The cap bounds the search only for cyclic
+    # parents; an acyclic parent has a finite simple-path set and is enumerated
+    # in full, so it always returns truncated=False.
+    acyclic = nx.is_directed_acyclic_graph(_parent_graph(story))
     counts: list[int] = []
     truncated = False
     seed_count = 1 if start in decisions else 0
@@ -2959,7 +2946,7 @@ def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], 
         node, visited, dcount = stack.pop()
         if node in endings:
             counts.append(dcount)
-            if len(counts) >= _WALK_PATH_SAMPLE_CAP:
+            if not acyclic and len(counts) >= _WALK_PATH_SAMPLE_CAP:
                 truncated = True
                 break
             continue

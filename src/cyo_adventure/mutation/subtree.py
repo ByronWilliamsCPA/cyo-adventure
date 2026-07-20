@@ -23,9 +23,15 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.mutation._raw import (
+    choices_of as _choices_of,
+)
+from cyo_adventure.mutation._raw import (
+    nodes_of as _nodes_of,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping
@@ -62,41 +68,10 @@ class Subtree:
     out_edges: tuple[Edge, ...]
 
 
-def _nodes_of(story: Mapping[str, object]) -> list[Mapping[str, object]]:
-    """Return the story's node dicts, skipping any malformed entries.
-
-    Args:
-        story: The raw story document.
-
-    Returns:
-        list[Mapping[str, object]]: Every well-formed node dict, in file order.
-    """
-    raw = story.get("nodes")
-    if not isinstance(raw, list):
-        return []
-    return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
-        if isinstance(item, dict)
-    ]
-
-
 def _node_id_of(node: Mapping[str, object]) -> str | None:
     """Return a node's id, or None when it is missing or not a string."""
     node_id = node.get("id")
     return node_id if isinstance(node_id, str) else None
-
-
-def _choices_of(node: Mapping[str, object]) -> list[Mapping[str, object]]:
-    """Return a node's choice dicts, skipping any malformed entries."""
-    raw = node.get("choices")
-    if not isinstance(raw, list):
-        return []
-    return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
-        if isinstance(item, dict)
-    ]
 
 
 def _choice_target_of(choice: Mapping[str, object]) -> str | None:

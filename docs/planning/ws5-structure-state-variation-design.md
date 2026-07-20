@@ -868,7 +868,7 @@ structure-approval step." Concretely, with today's tooling:
 
 ### 9.2 The bundle (the hand-off artifact, machine-readable for WS-8)
 
-```
+```text
 out/mutations/<mutant-slug>/
   <mutant-slug>.json               # the shell, FILL intact, gate-passing
   <mutant-slug>.contract.json      # parameterized parents only

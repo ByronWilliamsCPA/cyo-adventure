@@ -460,6 +460,23 @@ def test_m4_path_decision_counter_is_exact_on_a_decision_chain() -> None:
 
 
 @pytest.mark.unit
+def test_m4_path_decision_counter_never_truncates_an_acyclic_parent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An acyclic parent is enumerated in full, so it never sets truncated.
+
+    The sample cap bounds only the cyclic search; the acyclic path set is
+    finite and exact by design. Pinning the cap below the fixture's path count
+    proves the acyclic branch ignores it: every root-to-ending path is still
+    returned and ``truncated`` stays False.
+    """
+    monkeypatch.setattr(m4_ops, "_WALK_PATH_SAMPLE_CAP", 1)
+    counts, truncated = path_decision_counts(_diamond_fixture())
+    assert truncated is False
+    assert sorted(counts) == [1, 2, 2]
+
+
+@pytest.mark.unit
 def test_m4_insert_decision_pushing_a_path_to_nine_is_discarded() -> None:
     """An insert-decision that pushes the deepest path to 9 decisions is discarded.
 

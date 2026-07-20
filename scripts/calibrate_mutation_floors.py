@@ -48,6 +48,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.diversity.structure import structural_distance
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.mutation.state_ops import state_distance, state_signature
 from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator.walk import walk_configurations
@@ -117,9 +118,9 @@ def _percentile(values: Sequence[float], percentile: float) -> float:
 def _load_catalog() -> list[tuple[str, str, dict[str, object]]]:
     """Return ``(slug, band, document)`` for every production catalog skeleton.
 
-    MVP seeds (``production_eligible`` false) and ``*.contract.json`` sidecars
-    are excluded, matching the acceptance harness's in-cell catalog rule (design
-    4.6).
+    MVP seeds (``production_eligible`` false) and sidecars (``*.contract.json``
+    and ``*.lineage.json``, per :func:`is_sidecar`) are excluded, matching the
+    acceptance harness's in-cell catalog rule (design 4.6).
 
     Returns:
         list[tuple[str, str, dict[str, object]]]: The eligible catalog trees.
@@ -127,7 +128,7 @@ def _load_catalog() -> list[tuple[str, str, dict[str, object]]]:
     catalog: list[tuple[str, str, dict[str, object]]] = []
     for band_dir in sorted(p for p in _SKELETON_ROOT.iterdir() if p.is_dir()):
         for path in sorted(band_dir.glob("*.json")):
-            if path.name.endswith(".contract.json"):
+            if is_sidecar(path):
                 continue
             document = cast(
                 "dict[str, object]",

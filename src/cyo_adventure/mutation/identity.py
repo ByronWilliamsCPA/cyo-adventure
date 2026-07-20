@@ -28,6 +28,15 @@ from typing import TYPE_CHECKING, cast
 import networkx as nx
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.mutation._raw import (
+    choices_of as _choices_of,
+)
+from cyo_adventure.mutation._raw import (
+    nodes_of as _nodes_of,
+)
+from cyo_adventure.mutation._raw import (
+    str_field as _str_field,
+)
 from cyo_adventure.mutation.subtree import adjacency, node_ids
 from cyo_adventure.storybook.models import Topology
 from cyo_adventure.validator.topology import admissible_topologies
@@ -129,40 +138,10 @@ _BAND_TOPOLOGIES: dict[str, frozenset[Topology]] = {
 _TOPOLOGY_PREFERENCE: tuple[Topology, ...] = tuple(Topology)
 
 
-def _nodes_of(story: Mapping[str, object]) -> list[Mapping[str, object]]:
-    """Return the story's node dicts, skipping any malformed entries."""
-    raw = story.get("nodes")
-    if not isinstance(raw, list):
-        return []
-    return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
-        if isinstance(item, dict)
-    ]
-
-
-def _choices_of(node: Mapping[str, object]) -> list[Mapping[str, object]]:
-    """Return a node's choice dicts, skipping any malformed entries."""
-    raw = node.get("choices")
-    if not isinstance(raw, list):
-        return []
-    return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
-        if isinstance(item, dict)
-    ]
-
-
 def _ending_of(node: Mapping[str, object]) -> Mapping[str, object] | None:
     """Return a node's ending block, or None when absent or malformed."""
     ending = node.get("ending")
     return cast("Mapping[str, object]", ending) if isinstance(ending, dict) else None
-
-
-def _str_field(container: Mapping[str, object], key: str) -> str | None:
-    """Return a string-valued field of a mapping, or None when not a string."""
-    value = container.get(key)
-    return value if isinstance(value, str) else None
 
 
 def _metadata_of(story: Mapping[str, object]) -> Mapping[str, object]:

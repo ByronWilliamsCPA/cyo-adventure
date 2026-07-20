@@ -443,8 +443,8 @@ def test_m3_prune_leaves_the_surviving_region_byte_identical() -> None:
     before = _nodes_by_id(host)
     after = _nodes_by_id(candidate)
     removed = set(before) - set(after)
-    # Only the closed subtree was removed.
-    assert removed == {"la_crystal_take", "la_crystal_take_end"} or len(removed) == 2
+    # Only the closed subtree was removed (its root and its single ending node).
+    assert removed == {"la_crystal_take", "la_crystal_out"}
     for node_id, node in after.items():
         if node_id == "la_grotto":
             continue  # the parent legitimately lost the pruned choice
