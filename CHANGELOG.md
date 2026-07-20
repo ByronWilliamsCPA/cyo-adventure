@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Testing: `DeviceAuthorizedRoute.test.tsx`'s "parks the adult gate after the
+  async IndexedDB-mirror path authorizes too" test asserted
+  `isAdultGateWarm('u1')` immediately after `findByText('Kid picker')`
+  resolved. `DeviceAuthorizedRoute.tsx` parks the gate in a second passive
+  effect keyed on `status`, separate from the effect that resolves
+  hydration; `findByText`'s `MutationObserver`-driven resolution could race
+  ahead of that second effect's flush, intermittently failing the assertion
+  even though the gate was genuinely parked moments later. The assertion
+  now runs inside `waitFor`, matching the standard Testing Library idiom
+  for effect-driven side effects after an async state transition, instead
+  of asserting at one indeterminate point in the microtask queue. Verified
+  locally: 20 consecutive runs of the file, all passing, plus the full
+  frontend suite (113 files, 1385 tests).
+
 ## [0.18.2] - 2026-07-20
 
 ## [0.18.1] - 2026-07-20
