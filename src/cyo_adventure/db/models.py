@@ -377,6 +377,13 @@ class ChildProfile(Base):
             "monthly_request_envelope IS NULL OR monthly_request_envelope >= 0",
             name="ck_child_profile_monthly_request_envelope_non_negative",
         ),
+        # Phase 4c: backs purge_stale_deactivated_profile_activity's WHERE
+        # clause (supabase/migrations/20260720150000_add_retention_purge_jobs.sql).
+        Index(
+            "ix_child_profile_deactivated_at",
+            "deactivated_at",
+            postgresql_where=sa_text("deactivated_at IS NOT NULL"),
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
@@ -997,6 +1004,9 @@ class StoryRequest(Base):
         # back the status-scoped ones.
         Index("ix_story_request_family_approved_at", "family_id", "approved_at"),
         Index("ix_story_request_profile_approved_at", "profile_id", "approved_at"),
+        # Phase 4c: backs purge_blocked_declined_story_request_text's WHERE
+        # clause (supabase/migrations/20260720150000_add_retention_purge_jobs.sql).
+        Index("ix_story_request_status_reviewed_at", "status", "reviewed_at"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)

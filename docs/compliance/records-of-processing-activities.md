@@ -125,8 +125,10 @@ both DONE (built, not just decided); G-10/Phase 8b (ADR-016 consent UI) was alre
 (Section 3 activity 7 reflects this). Phase 5's DPA execution remains the one item still
 genuinely open below.
 
-- Article 6 legal basis: recorded per-activity in Section 3 above (was previously
-  unrecorded, G-01).
+- Article 6 legal basis: a plausible basis is recorded per-activity in Section 3 above
+  (was previously unrecorded, G-01); two activities (3: story generation, 4: content
+  moderation) remain explicitly marked open pending counsel input on the
+  moderation-pipeline leg specifically (Pressure Point P-3), not yet formally decided.
 - Verifiable parental consent mechanism: **DONE.** Signature-capture (typed full-legal-name
   attestation) layered on the OAuth login (ADR-018 D1), enforced at `POST /api/v1/profiles`
   via `User.consent_accepted_at` (G-02).

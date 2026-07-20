@@ -505,11 +505,9 @@ constitutes Article 8(2) "reasonable efforts."
 ### G-03. No Records of Processing Activities document (Article 30) (Critical once GDPR applies / low engineering cost)
 
 **Status: DONE.** See `docs/compliance/records-of-processing-activities.md` (remediation plan
-Phase 7a).
-
-**Evidence**: no such document exists in `docs/`; raw material scattered across the COPPA
-audit, `privacy-model.md`, and ADR-018. **Recommendation**: synthesize one document from
-existing sources (Section 5.6); assign an owner alongside ADR-018's D4.
+Phase 7a), synthesized from the COPPA audit, `privacy-model.md`, and ADR-018 per Section 5.6.
+**Residual**: keep it current as new processing activities are added; no owner has been formally
+assigned alongside ADR-018's D4.
 
 ### G-04. No Data Protection Impact Assessment (Article 35) (Critical once GDPR applies)
 
@@ -550,10 +548,9 @@ whether GDPR already applies to the current private tier's user base (Pressure P
 
 **Status: DONE.** See `docs/compliance/breach-notification-runbook.md` (remediation plan Phase 6c).
 
-**GDPR**: Articles 33-34. Shares the "D4 incident-response plan" placeholder with ADR-018 but
-confirmed still unbuilt. **Recommendation**: draft an internal breach-classification and
-72-hour-notification runbook, distinct from `SECURITY.md`'s external vulnerability-reporting
-policy.
+**GDPR**: Articles 33-34. An internal breach-classification and 72-hour-notification runbook,
+distinct from `SECURITY.md`'s external vulnerability-reporting policy, closing the "D4
+incident-response plan" placeholder ADR-018 shared with this finding.
 
 ### G-10. Cross-family sharing lacks a documented lawful basis for the *disclosure* itself (Medium)
 
@@ -562,13 +559,9 @@ guardian page; `FamilyConnection.consented_by_viewer_user_id`/`_at` and
 `consented_by_sharer_user_id`/`_at` (paired and CHECK-enforced) record who consented and when,
 per side; nothing is disclosed until both are set; every consent/revoke action is additionally
 logged as a `family_connection_changed` `pipeline_event`. This finding was based on a stale
-"not yet built" read of ADR-016's status; the recommendation below is satisfied as of this
-correction, not as new work.
-
-**Evidence**: Section 4.3; ADR-016's consent-column/no-consent-UI gap already flagged in the
-auth/session research. **Recommendation**: complete ADR-016's planned guardian-facing consent
-UI before treating Ring-2 sharing as GDPR-ready; record Article 6(1)(a) consent as the basis
-once that UI exists.
+"not yet built" read of ADR-016's status, corrected 2026-07-20 against the shipped code rather
+than re-scheduled as new work. Article 6(1)(a) consent is the recorded basis for the
+disclosure itself.
 
 ### G-11. No DPO designation analysis performed (Medium)
 
@@ -580,13 +573,9 @@ required and why) in ADR-018 or a successor document.
 
 **Status: DONE.** See `coppa-gdpr-remediation-plan.md`'s "4d artifact" section for the documented
 balancing test (17(3)(b)/(e), proportionality against the PII-scrubbed-by-contract payload
-design, admin-only access).
-
-**Evidence**: confirmed no TTL/purge on `pipeline_event` (data-inventory research for this
-review); COPPA's H-01 flags the same table's indefinite retention from a COPPA 312.10 angle.
-**Recommendation**: when the retention policy required by both audits is drafted, include an
-explicit documented justification for why the audit log is exempted from erasure requests
-under Article 17(3), rather than leaving the exemption implicit.
+design, admin-only access) that makes the exemption explicit rather than implicit. COPPA's H-01
+flags the same table's indefinite retention from a COPPA 312.10 angle; the same artifact
+resolves both.
 
 ### G-13. Special-category-data risk in free-text story requests (Medium, no COPPA counterpart)
 

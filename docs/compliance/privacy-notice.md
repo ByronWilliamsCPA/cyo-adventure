@@ -67,6 +67,13 @@ the mechanism flagged in ADR-018 D1 as needing review — please confirm this sa
 
 We use the following outside companies (**processors**) to run the app. None of them may use
 your or your child's information for their own purposes; each acts on our instructions only.
+[COUNSEL: this processor-only claim is asserted for every vendor below, but
+`processor-dpa-checklist.md` shows several DPAs not yet executed and open questions on specific
+vendors (OpenRouter's account-wide Zero Data Retention setting and whether it covers every
+downstream model provider it routes to; which Anthropic terms tier this account is on; whether
+Google Perspective specifically is covered by the Cloud DPA). Please confirm whether this
+statement can stand as written, needs to be qualified per vendor, or should be held until the
+checklist closes before this notice is published.]
 
 | Company | What they receive | Why |
 |---|---|---|

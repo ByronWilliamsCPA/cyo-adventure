@@ -232,7 +232,7 @@ async def _assemble_family_export(
     )
 
 
-@router.get("/me/export")
+@router.get("/me/export", responses=error_responses(403))
 async def export_my_family(ctx: Context) -> FamilyExportView:
     """Export every record tied to the caller's family and its child profiles.
 
@@ -262,7 +262,7 @@ async def export_my_family(ctx: Context) -> FamilyExportView:
     return await _assemble_family_export(ctx, ctx.principal.family_id)
 
 
-@router.delete("/me/family", status_code=204, responses=error_responses(403))
+@router.delete("/me/family", status_code=204, responses=error_responses(400, 403))
 async def delete_my_family(ctx: Context) -> None:
     """Permanently erase the caller's entire family account.
 

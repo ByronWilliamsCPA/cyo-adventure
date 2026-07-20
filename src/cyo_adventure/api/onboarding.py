@@ -36,6 +36,7 @@ from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Response
 from sqlalchemy import select
+from sqlalchemy import update as sa_update
 from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api.deps import DbSession, OnboardingIdentity, OnboardingIdentityDep
@@ -107,11 +108,41 @@ async def _record_consent(
         raise ValidationError(msg, field="consent")
     if user.consent_accepted_at is not None:
         return
-    user.consent_accepted_at = datetime.now(UTC)
-    user.consent_policy_version = consent.policy_version
-    user.consent_signer_name = consent.signer_name
-    user.consent_ip = client_ip
-    await session.flush()
+    # #CRITICAL: concurrency: the in-memory check above is a TOCTOU race --
+    # two concurrent onboarding calls for this same user could both observe
+    # consent_accepted_at IS NULL before either writes. An unconditional
+    # UPDATE would let the second call silently overwrite the first call's
+    # policy_version/signer_name/consent_ip, contradicting the "never
+    # overwritten" guarantee above. Guarding the UPDATE itself on
+    # consent_accepted_at IS NULL (mirroring _provision_guardian's own
+    # race-safe insert-then-recover pattern) makes only the first writer's
+    # values stick; a loser's WHERE clause matches zero rows and it refreshes
+    # to read back the winner's values instead of trusting its stale copy.
+    # #VERIFY: tests/unit/test_onboarding_handler.py::
+    # test_record_consent_race_keeps_first_writer_values.
+    result = await session.execute(
+        sa_update(User)
+        .where(User.id == user.id, User.consent_accepted_at.is_(None))
+        .values(
+            consent_accepted_at=datetime.now(UTC),
+            consent_policy_version=consent.policy_version,
+            consent_signer_name=consent.signer_name,
+            consent_ip=client_ip,
+        )
+        .execution_options(synchronize_session="evaluate")
+        .returning(User.id)
+    )
+    if result.scalar_one_or_none() is None:
+        await session.refresh(
+            user,
+            [
+                "consent_accepted_at",
+                "consent_policy_version",
+                "consent_signer_name",
+                "consent_ip",
+            ],
+        )
+        return
     logger.info("onboarding.consent_recorded", user_id=str(user.id))
 
 

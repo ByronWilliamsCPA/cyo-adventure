@@ -5835,6 +5835,10 @@ export type ExportMyFamilyApiV1MeExportGetErrors = {
      */
     401: ErrorResponse;
     /**
+     * Authenticated, but not permitted to act on this resource.
+     */
+    403: ErrorResponse;
+    /**
      * Validation Error
      */
     422: HttpValidationError;
@@ -5859,6 +5863,10 @@ export type DeleteMyFamilyApiV1MeFamilyDeleteData = {
 };
 
 export type DeleteMyFamilyApiV1MeFamilyDeleteErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
     /**
      * Missing, malformed, expired, or unknown bearer token.
      */

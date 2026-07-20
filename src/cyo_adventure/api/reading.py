@@ -21,7 +21,6 @@ from cyo_adventure.api.deps import (
     Context,
     authorize_family,
     authorize_profile,
-    parse_uuid,
 )
 from cyo_adventure.api.schemas import (
     CompletionBody,
@@ -476,13 +475,7 @@ async def record_completion(body: CompletionBody, ctx: Context) -> CompletionVie
         # clock at request time.
         await ctx.session.flush()
         await ctx.session.refresh(row, ["found_at"])
-    return CompletionView(
-        child_profile_id=str(row.child_profile_id),
-        storybook_id=row.storybook_id,
-        version=row.version,
-        ending_id=row.ending_id,
-        found_at=row.found_at,
-    )
+    return _completion_view(row)
 
 
 def _new_completion(
@@ -533,7 +526,7 @@ async def list_completions(profile_id: str, ctx: Context) -> CompletionListView:
     # #CRITICAL: security: a caller may only read completions for a profile it
     # owns, mirroring ratings.py::list_ratings.
     # #VERIFY: authorize_profile raises AuthorizationError -> 403.
-    parsed = parse_uuid(profile_id, "profile_id")
+    parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     # Stable order: most-recently-found first, storybook_id/ending_id as
     # tie-breakers so the response is deterministic across calls (mirrors
