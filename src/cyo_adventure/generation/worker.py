@@ -27,7 +27,8 @@ import asyncio
 import dataclasses
 import hashlib
 import uuid
-from typing import TYPE_CHECKING
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, cast
 
 from sqlalchemy import select
 
@@ -38,15 +39,17 @@ from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
     GenerationJob,
+    StoryRequest,
 )
+from cyo_adventure.diversity.normalize import theme_signature
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.authoring_metadata import (
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
 )
 from cyo_adventure.generation.binding import (
-    bind_theme_to_contract,
     contract_path_for,
+    interpret_and_bind,
     load_contract_for,
     render_bound_skeleton,
 )
@@ -66,17 +69,28 @@ from cyo_adventure.middleware.correlation import (
     set_correlation_id,
 )
 from cyo_adventure.moderation import run_moderation_pipeline
+from cyo_adventure.story_requests.interpretation import (
+    ElementDecision,
+    ElementDisposition,
+    RawElement,
+    ReasonCode,
+    derive_dispositions,
+    render_interpretation,
+)
+from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Mapping
     from contextlib import AbstractAsyncContextManager
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.generation.orchestrator import GenerationOutcome
     from cyo_adventure.generation.provider import GenerationProvider
+    from cyo_adventure.story_requests.interpretation import RequestInterpretation
+    from cyo_adventure.storybook.theme_contract import ThemeContract
 
 __all__ = [
     "run_generation_job",
@@ -261,6 +275,139 @@ class _SkeletonFillContext:
     prep_model: str | None = None
 
 
+def _refined_interpretation_from_bind(
+    *,
+    raw_elements: list[RawElement],
+    bindings: Mapping[str, str],
+    contract: ThemeContract,
+    ctx: _SkeletonFillContext,
+    created_at: datetime,
+) -> RequestInterpretation:
+    """Build the refined WS-7 interpretation for a parameterized (bound) fill.
+
+    Composes the binder's element decomposition (from
+    :func:`~cyo_adventure.generation.binding.interpret_and_bind`) through the
+    pure :func:`~cyo_adventure.story_requests.interpretation.derive_dispositions`
+    and :func:`~cyo_adventure.story_requests.interpretation.render_interpretation`
+    (WS-7 D5, design section 5.3). The band, the validated bindings, and the
+    contract slug/version all come from the just-run bind so the reflection
+    describes the binding that actually rendered.
+
+    # #EDGE: security: v1 passes ``self_names = child_names = ctx.pii.child_names``
+    # for both the self-naming and the PII floor. Route A forbids ANY family
+    # child's real name as protagonist, and the worker context does not carry the
+    # requesting child's own display name separately from the family set, so a
+    # requested family-child name lands IDENTITY_PROTECTION (self-naming rule 2,
+    # checked first) while email/phone/address and any non-family PII land
+    # PERSONAL_DETAILS. The precise sibling-vs-self distinction (a sibling's name
+    # should coarsen to PERSONAL_DETAILS, not IDENTITY_PROTECTION) is a documented
+    # v1 approximation pending threading the requesting child's display name into
+    # the worker context; both outcomes withhold (element=None), so this only
+    # coarsens the reason code, never leaks a name.
+    # #VERIFY: test_run_skeleton_fill_refined_layer_classifies_self_name_and_pii.
+
+    Args:
+        raw_elements: The binder's sanitized element decomposition.
+        bindings: The validated ``{slot_id: value}`` map that rendered.
+        contract: The theme contract that was bound (supplies band, slug,
+            version).
+        ctx: The skeleton-fill context (supplies the brief's ``content_nogo``
+            and the PII child names).
+        created_at: The worker's creation timestamp for the object.
+
+    Returns:
+        The refined :class:`RequestInterpretation`.
+    """
+    band = contract.age_band
+    child_names = ctx.pii.child_names
+    decisions = derive_dispositions(
+        raw_elements,
+        band=band,
+        bindings=bindings,
+        content_nogo=ctx.brief.content_nogo,
+        child_names=child_names,
+        self_names=child_names,
+        # ADAPTED trigger is a D4 follow-up: interpret_and_bind does not yet
+        # expose which slots were corrected on the bind retry, so no element is
+        # marked ADAPTED in v1 (every placed element is BUILT_IN).
+        adapted_slot_ids=frozenset(),
+    )
+    return render_interpretation(
+        decisions,
+        band=band,
+        layer="refined",
+        skeleton_slug=contract.skeleton_slug,
+        contract_version=contract.contract_version,
+        created_at=created_at,
+    )
+
+
+def _degraded_interpretation(
+    *,
+    theme_brief: Mapping[str, object],
+    band: AgeBand,
+    skeleton_slug: str | None,
+    ctx: _SkeletonFillContext,
+    created_at: datetime,
+) -> RequestInterpretation:
+    """Build the degraded refined interpretation for a contract-less skeleton.
+
+    WS-7 design section 5.4: an unmigrated (no-contract) skeleton runs no bind
+    step, so no binder element decomposition exists. Instead the premise is
+    decomposed into WS-0 ``theme_signature`` tags (each tag is catalog
+    vocabulary and echo-safe by construction), run through the SAME derivation
+    with empty bindings (so the bound-to-slot rule 3 never fires). A
+    ``NOT_THIS_STORY_KIND`` reason is not claimable without a contract, so those
+    elements are dropped; the band-expectation element is always appended. The
+    object records ``contract_version=None`` so a caption can honestly present
+    it as a general interpretation.
+
+    Args:
+        theme_brief: The job's theme brief dict; only ``premise`` is read by
+            :func:`~cyo_adventure.diversity.normalize.theme_signature`.
+        band: The reading age band the (contract-less) skeleton targets.
+        skeleton_slug: The skeleton slug for the guardian caption, or ``None``.
+        ctx: The skeleton-fill context (the brief's ``content_nogo`` + PII
+            child names).
+        created_at: The worker's creation timestamp for the object.
+
+    Returns:
+        The degraded refined :class:`RequestInterpretation` (contract_version
+        ``None``).
+    """
+    child_names = ctx.pii.child_names
+    # Sorted for determinism: theme_signature returns a frozenset.
+    raw_elements = [
+        RawElement(phrase=tag, slot_id=None)
+        for tag in sorted(theme_signature(theme_brief))
+    ]
+    decisions: list[ElementDecision] = [
+        decision
+        for decision in derive_dispositions(
+            raw_elements,
+            band=band,
+            bindings={},
+            content_nogo=ctx.brief.content_nogo,
+            child_names=child_names,
+            self_names=child_names,
+        )
+        # NOT_THIS_STORY_KIND is not claimable without a contract (section 5.4).
+        if decision.reason is not ReasonCode.NOT_THIS_STORY_KIND
+    ]
+    # Always append the band-expectation element (the band promise).
+    decisions.append(
+        ElementDecision(None, ElementDisposition.BUILT_IN, ReasonCode.STORY_FIT)
+    )
+    return render_interpretation(
+        decisions,
+        band=band,
+        layer="refined",
+        skeleton_slug=skeleton_slug,
+        contract_version=None,
+        created_at=created_at,
+    )
+
+
 async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Stage B') for one job.
 
@@ -349,7 +496,13 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         # #VERIFY: test_fill_skeleton_stage1_exhaustion_downgrades_with_key and
         # test_fill_skeleton_stage1_fail_once_then_pass_returns_passed in
         # tests/unit/test_orchestrator.py.
-        return await fill_skeleton(
+        #
+        # The fill_skeleton call below stays BYTE-IDENTICAL to the pre-WS-7
+        # legacy path (regression pin: the no-sidecar fill prompt is unchanged);
+        # WS-7 only attaches a degraded refined interpretation (design section
+        # 5.4) to the returned report afterward, never touching the fill call or
+        # its prompt.
+        outcome = await fill_skeleton(
             skeleton,
             theme_brief_dict,
             ctx.effective_provider,
@@ -357,6 +510,20 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             settings=_default_settings,
             review_stage1_model=review_stage1_model,
             prep_model=ctx.prep_model,
+        )
+        degraded = _degraded_interpretation(
+            theme_brief=theme_brief_dict,
+            band=AgeBand(fill_band),
+            skeleton_slug=skeleton_slug,
+            ctx=ctx,
+            created_at=datetime.now(UTC),
+        )
+        return dataclasses.replace(
+            outcome,
+            report={
+                **outcome.report,
+                "request_interpretation": degraded.model_dump(mode="json"),
+            },
         )
 
     # #CRITICAL: security: bind_theme_to_contract's return value is derived
@@ -374,7 +541,14 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     # #VERIFY: the bind-failure worker test asserts the fill provider's call
     # log stays empty (no fill/repair call made) and the job fails with the
     # violations recorded.
-    bindings = await bind_theme_to_contract(
+    #
+    # WS-7 D5: interpret_and_bind returns the SAME validated bindings as
+    # bind_theme_to_contract (the render/fill below are byte-for-byte unchanged)
+    # plus the binder's advisory element decomposition, which feeds the refined
+    # interpretation. The elements half is advisory and cannot rescue nor break
+    # the bind (CR-2); a ValidationError on bind exhaustion propagates exactly as
+    # before, so no partial interpretation is ever persisted for a failed bind.
+    bindings, raw_elements = await interpret_and_bind(
         contract, theme_brief_dict, ctx.effective_provider, ctx.pii
     )
     bound = render_bound_skeleton(skeleton, bindings)
@@ -405,9 +579,24 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         "denylist_version": DENYLIST_VERSION,
         "slot_bindings": bindings,
     }
+    # WS-7 D5/D6: the refined interpretation rides the report as a SIBLING of the
+    # theme_contract audit block, so StorybookVersion.validation_report and
+    # job.report both carry the audit copy; run_generation_job then projects it
+    # onto the originating request row (section 5.5).
+    interpretation = _refined_interpretation_from_bind(
+        raw_elements=raw_elements,
+        bindings=bindings,
+        contract=contract,
+        ctx=ctx,
+        created_at=datetime.now(UTC),
+    )
     return dataclasses.replace(
         outcome,
-        report={**outcome.report, "theme_contract": theme_contract_report},
+        report={
+            **outcome.report,
+            "theme_contract": theme_contract_report,
+            "request_interpretation": interpretation.model_dump(mode="json"),
+        },
     )
 
 
@@ -883,6 +1072,51 @@ async def _persist_passed_outcome(
     await _persist_and_moderate(session, ctx, outcome)
 
 
+async def _update_request_interpretation(
+    session: AsyncSession, job_row: GenerationJob, outcome: GenerationOutcome
+) -> None:
+    """Project a refined interpretation from the report onto its request row.
+
+    WS-7 D6 (design section 5.5): when ``outcome.report`` carries a
+    ``request_interpretation`` block (a parameterized or degraded skeleton
+    fill), resolve the originating request through the job's concept
+    (``GenerationJob.concept_id`` -> ``StoryRequest.concept_id``) on the
+    worker's OWN session and stamp the block onto ``StoryRequest.interpretation``.
+    This does NOT commit: the caller's single terminal ``session.commit()``
+    records it in the same transaction/session posture the worker already uses
+    for the job row.
+
+    A fresh (non-skeleton) generation carries no ``request_interpretation`` and
+    is a silent no-op; so is an authored/catalog job (or any job whose concept
+    has no originating request row).
+
+    # #ASSUME: external-resources: this issues one additional UPDATE on the
+    # worker's already-open session (no new session, no cross-transaction
+    # contamination); it rides the existing terminal commit.
+    # #VERIFY: test_update_request_interpretation_sets_row_when_found.
+    # #EDGE: data-integrity: the concept -> request resolution may find no row
+    # (an authored/catalog job, or a job with no originating request); this is a
+    # silent no-op, the report copy still exists on the job/version rows.
+    # #VERIFY: test_update_request_interpretation_no_request_row_is_noop.
+
+    Args:
+        session: The worker's owned session (caller commits on the happy path).
+        job_row: The job whose ``concept_id`` resolves the request row.
+        outcome: The pipeline outcome; only its ``report`` is read.
+    """
+    interpretation = outcome.report.get("request_interpretation")
+    if interpretation is None:
+        return
+
+    result = await session.execute(
+        select(StoryRequest).where(StoryRequest.concept_id == job_row.concept_id)
+    )
+    request_row = result.scalar_one_or_none()
+    if request_row is None:
+        return
+    request_row.interpretation = cast("dict[str, object]", interpretation)
+
+
 async def run_generation_job(
     job_id: uuid.UUID,
     *,
@@ -1103,6 +1337,11 @@ async def run_generation_job(
                 ),
                 outcome,
             )
+
+            # WS-7 D6: project the refined interpretation (if any) onto the
+            # originating request row, in the worker's own transaction. A
+            # no-request job (fresh generation, authored/catalog) no-ops.
+            await _update_request_interpretation(session, job_row, outcome)
 
             await session.commit()
             # #CRITICAL: concurrency: this is the ONLY place completed is set

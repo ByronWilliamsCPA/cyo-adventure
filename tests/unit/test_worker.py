@@ -58,6 +58,9 @@ from cyo_adventure.validator.slots import DENYLIST_VERSION
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+    from cyo_adventure.db.models import GenerationJob
     from cyo_adventure.generation.concept import ConceptBrief
     from cyo_adventure.generation.provider import GenerationProvider
 
@@ -580,7 +583,8 @@ async def test_run_skeleton_fill_threads_stage1_params_into_fill_skeleton(
     monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
 
     brief = cast(
-        "ConceptBrief", SimpleNamespace(age_band=SimpleNamespace(value="8-11"))
+        "ConceptBrief",
+        SimpleNamespace(age_band=SimpleNamespace(value="8-11"), content_nogo=[]),
     )
     provider = cast("GenerationProvider", object())
     pii = PiiContext(child_names=frozenset())
@@ -1110,7 +1114,13 @@ async def test_load_and_start_job_skips_terminal_row() -> None:
 
 
 def _dispatch_brief() -> ConceptBrief:
-    return cast("ConceptBrief", SimpleNamespace(age_band=SimpleNamespace(value="8-11")))
+    # WS-7 D5: the refined/degraded interpretation reads brief.content_nogo (the
+    # guardian banned-theme strings) as the derivation's content_nogo input, so
+    # the dispatch fake carries an (empty) list for it alongside age_band.
+    return cast(
+        "ConceptBrief",
+        SimpleNamespace(age_band=SimpleNamespace(value="8-11"), content_nogo=[]),
+    )
 
 
 def _dispatch_pii() -> PiiContext:
@@ -1214,6 +1224,31 @@ _BOUND_DISPATCH_BINDINGS = {
     "A1_OFFER": "a glinting tide pool",
     "PRIZE": "Glass Starfish",
 }
+
+
+def _interpret_bind_response(
+    bindings: dict[str, str],
+    elements: list[dict[str, object]] | None = None,
+) -> str:
+    """Build a WS-7 interpret-and-bind provider response.
+
+    Since the worker's parameterized path now calls ``interpret_and_bind``
+    (D5), a scripted bound-path provider response is the combined shape
+    ``{"bindings": {...}, "elements": [...]}`` (design section 5.2), NOT the
+    flat slot map ``bind_theme_to_contract`` used to expect. ``elements`` is
+    advisory: omitted here it defaults to ``[]``.
+
+    Args:
+        bindings: The flat ``{slot_id: value}`` map (load-bearing half).
+        elements: Optional advisory element decomposition; ``None`` -> ``[]``.
+
+    Returns:
+        The JSON-encoded combined response.
+    """
+    payload: dict[str, object] = {"bindings": bindings}
+    if elements is not None:
+        payload["elements"] = elements
+    return json.dumps(payload)
 
 
 def _bound_dispatch_contract() -> ThemeContract:
@@ -1375,9 +1410,11 @@ async def test_run_skeleton_fill_sidecar_present_binds_renders_then_fills(
     original_skeleton = _bound_dispatch_skeleton()
     monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
 
-    # A single valid bind response so bind_theme_to_contract's ONE real
-    # provider call returns the exact bindings this test asserts on.
-    provider = MockProvider(responses=[json.dumps(_BOUND_DISPATCH_BINDINGS)])
+    # A single valid interpret-and-bind response so the ONE real provider call
+    # returns the exact bindings this test asserts on (elements advisory).
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
 
     captured: dict[str, object] = {}
 
@@ -1463,9 +1500,10 @@ async def test_run_skeleton_fill_bind_failure_fails_closed_no_fill_call(
 
     # HERO has no declared `forbid`, but the 3-5 band-mandatory union
     # (validator/slots.py) forbids `weapon` on every slot regardless; "a
-    # sword-wielder" trips it on every attempt, so bind_theme_to_contract
-    # exhausts its retries and raises.
-    violating_response = json.dumps(
+    # sword-wielder" trips it on every attempt. The bindings half parses
+    # cleanly (so it is a genuine slot-gate violation, not a parse failure),
+    # so interpret_and_bind exhausts its retries and raises.
+    violating_response = _interpret_bind_response(
         {
             "HERO": "a sword-wielder",
             "A1_GATE": "the jammed hatch",
@@ -1562,7 +1600,7 @@ async def test_run_generation_job_bind_failure_records_violations_on_job_report(
     monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
     monkeypatch.setattr(worker_module, "fill_skeleton", _fail_if_fill_called)
 
-    violating_response = json.dumps(
+    violating_response = _interpret_bind_response(
         {
             "HERO": "a sword-wielder",
             "A1_GATE": "the jammed hatch",
@@ -1605,3 +1643,313 @@ async def test_run_generation_job_bind_failure_records_violations_on_job_report(
     assert job.report is not None
     violations = cast("list[dict[str, object]]", job.report["slot_binding_violations"])
     assert any(v["rule"] == "forbid:weapon" for v in violations)
+    # WS-7 D6: a bind failure raises out of _run_skeleton_fill BEFORE the
+    # request-row update runs, so no partial interpretation is ever persisted.
+    assert "request_interpretation" not in job.report
+
+
+# ---------------------------------------------------------------------------
+# WS-7 D5/D6: refined and degraded interpretation on the worker report, and
+# the request-row projection (design sections 5.3, 5.4, 5.5).
+# ---------------------------------------------------------------------------
+
+
+async def _passed_fill_stub(
+    skeleton: dict[str, object],
+    theme_brief: dict[str, object],
+    provider_arg: object,
+    pii: object,
+    **_kwargs: object,
+) -> GenerationOutcome:
+    """A ``fill_skeleton`` stub returning a clean ``passed`` outcome (empty report)."""
+    return GenerationOutcome(
+        status="passed",
+        storybook={"id": "s_x"},
+        report={},
+        attempts=0,
+        stage_log=[],
+    )
+
+
+def _write_bound_fixture(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Write the parameterized fixture skeleton + contract and patch resolution."""
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(_bound_dispatch_contract().model_dump_json().encode())
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    monkeypatch.setattr(
+        worker_module, "load_skeleton", lambda _path: _bound_dispatch_skeleton()
+    )
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_persists_refined_interpretation_on_success(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A bound fill attaches a refined interpretation SIBLING to theme_contract.
+
+    Pins WS-7 D5: interpret_and_bind's advisory elements flow through
+    derive_dispositions/render_interpretation into ``request_interpretation`` on
+    the report, carrying the contract slug/version and per-element dispositions,
+    while the theme_contract audit block still rides alongside it.
+    """
+    _write_bound_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(worker_module, "fill_skeleton", _passed_fill_stub)
+
+    provider = MockProvider(
+        responses=[
+            _interpret_bind_response(
+                _BOUND_DISPATCH_BINDINGS,
+                elements=[
+                    {"phrase": "a brave hero", "slot_id": "HERO"},
+                    {"phrase": "a sword fight", "slot_id": None},
+                ],
+            )
+        ]
+    )
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    # theme_contract and request_interpretation are siblings on one report.
+    assert "theme_contract" in outcome.report
+    interp = cast("dict[str, object]", outcome.report["request_interpretation"])
+    assert interp["layer"] == "refined"
+    assert interp["contract_version"] == 1
+    assert interp["skeleton_slug"] == "s_test_worker_bind_dispatch"
+    assert isinstance(interp["kid_summary"], str)
+    assert isinstance(interp["guardian_summary"], str)
+
+    elements = cast("list[dict[str, object]]", interp["elements"])
+    assert len(elements) == 2
+    hero = elements[0]
+    assert hero["slot_id"] == "HERO"
+    assert hero["disposition"] == "built_in"
+    assert hero["reason"] == "bound_to_slot"
+    assert hero["element"] == "a brave hero"
+    assert hero["kid_text"]
+    assert hero["guardian_text"]
+    # "a sword fight" trips the 3-5 band weapon floor: set aside, phrase withheld.
+    sword = elements[1]
+    assert sword["disposition"] == "set_aside"
+    assert sword["reason"] == "band_policy"
+    assert sword["element"] is None
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_refined_layer_classifies_self_name_and_pii(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A self-naming element lands IDENTITY_PROTECTION; a PII element lands
+    PERSONAL_DETAILS, both with the phrase withheld (WS-7 D5 rules 1-2).
+
+    The interpret-and-bind PROMPT (the fenced brief) is PII-clean, so the
+    provider call succeeds; the classification happens deterministically in
+    derive_dispositions over the returned element phrases.
+    """
+    _write_bound_fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(worker_module, "fill_skeleton", _passed_fill_stub)
+
+    provider = MockProvider(
+        responses=[
+            _interpret_bind_response(
+                _BOUND_DISPATCH_BINDINGS,
+                elements=[
+                    {"phrase": "make me the hero", "slot_id": None},
+                    {"phrase": "email me at foo@bar.com", "slot_id": None},
+                ],
+            )
+        ]
+    )
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    interp = cast("dict[str, object]", outcome.report["request_interpretation"])
+    elements = cast("list[dict[str, object]]", interp["elements"])
+    reasons = {cast("str", e["reason"]): e for e in elements}
+    assert "identity_protection" in reasons
+    assert reasons["identity_protection"]["element"] is None
+    assert "personal_details" in reasons
+    assert reasons["personal_details"]["element"] is None
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_no_contract_persists_degraded_interpretation(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A contract-less skeleton attaches a DEGRADED refined layer, and the
+    legacy fill call stays byte-identical (WS-7 D5 section 5.4).
+
+    contract_version is None; no NOT_THIS_STORY_KIND element survives; the
+    band-expectation element is present. The fill_skeleton call receives no
+    ``slot_bindings`` kwarg and the loaded (unfilled) skeleton, exactly as the
+    pre-WS-7 legacy path did, and no theme_contract audit block appears.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "legacy-slug.json"  # no .contract.json sidecar
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    fake_skeleton: dict[str, object] = {"id": "s_x", "nodes": []}
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
+
+    captured: dict[str, object] = {}
+
+    async def _fake_fill(
+        skeleton: dict[str, object],
+        theme_brief: dict[str, object],
+        provider_arg: object,
+        pii: object,
+        **kwargs: object,
+    ) -> GenerationOutcome:
+        captured["skeleton"] = skeleton
+        captured["theme_brief"] = theme_brief
+        captured["kwargs"] = kwargs
+        return GenerationOutcome(
+            status="passed",
+            storybook={"id": "s_x"},
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill)
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "legacy-slug",
+                "theme_brief": {"premise": "a dragon and a castle"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=cast("GenerationProvider", object()),
+            pii=_dispatch_pii(),
+        )
+    )
+
+    # Legacy fill call byte-identical: same skeleton, same brief, no bindings.
+    assert captured["skeleton"] is fake_skeleton
+    assert captured["theme_brief"] == {"premise": "a dragon and a castle"}
+    assert "slot_bindings" not in cast("dict[str, object]", captured["kwargs"])
+    assert "theme_contract" not in outcome.report
+
+    interp = cast("dict[str, object]", outcome.report["request_interpretation"])
+    assert interp["layer"] == "refined"
+    assert interp["contract_version"] is None
+    assert interp["skeleton_slug"] == "legacy-slug"
+    elements = cast("list[dict[str, object]]", interp["elements"])
+    assert all(e["reason"] != "not_this_story_kind" for e in elements)
+    assert any(
+        e["disposition"] == "built_in" and e["reason"] == "story_fit" for e in elements
+    )
+
+
+class _UpdateResult:
+    """A ``session.execute`` result whose scalar_one_or_none is preset."""
+
+    def __init__(self, row: object) -> None:
+        self._row = row
+
+    def scalar_one_or_none(self) -> object:
+        return self._row
+
+
+class _UpdateSession:
+    """A minimal session double recording execute() calls for the D6 helper."""
+
+    def __init__(self, row: object) -> None:
+        self._row = row
+        self.executed: list[object] = []
+
+    async def execute(self, statement: object) -> _UpdateResult:
+        self.executed.append(statement)
+        return _UpdateResult(self._row)
+
+
+def _interp_outcome(report: dict[str, object]) -> GenerationOutcome:
+    return GenerationOutcome(
+        status="passed", storybook=None, report=report, attempts=0, stage_log=[]
+    )
+
+
+@pytest.mark.asyncio
+async def test_update_request_interpretation_sets_row_when_found() -> None:
+    """The refined block is projected onto the resolved request row (WS-7 D6)."""
+    import uuid
+
+    block = {"layer": "refined", "elements": []}
+    request_row = SimpleNamespace(interpretation=None)
+    session = _UpdateSession(request_row)
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+
+    await worker_module._update_request_interpretation(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", session),
+        job,
+        _interp_outcome({"request_interpretation": block}),
+    )
+
+    assert request_row.interpretation == block
+    assert len(session.executed) == 1
+
+
+@pytest.mark.asyncio
+async def test_update_request_interpretation_no_request_row_is_noop() -> None:
+    """A concept with no originating request row is a silent no-op (WS-7 D6)."""
+    import uuid
+
+    session = _UpdateSession(None)  # scalar_one_or_none -> None
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+
+    # Must not raise even though no row resolves.
+    await worker_module._update_request_interpretation(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", session),
+        job,
+        _interp_outcome({"request_interpretation": {"layer": "refined"}}),
+    )
+    assert len(session.executed) == 1
+
+
+@pytest.mark.asyncio
+async def test_update_request_interpretation_no_block_skips_query() -> None:
+    """No request_interpretation on the report means no DB query at all (D6).
+
+    A fresh (non-skeleton) generation carries no interpretation block; the
+    helper returns before issuing any UPDATE. The session's execute() raises so
+    any query would fail the test loudly.
+    """
+    import uuid
+
+    class _RaisingSession:
+        async def execute(self, _statement: object) -> object:
+            pytest.fail("execute must not run when there is no interpretation block")
+
+    job = cast("GenerationJob", SimpleNamespace(concept_id=uuid.uuid4()))
+    await worker_module._update_request_interpretation(  # pyright: ignore[reportPrivateUsage]
+        cast("AsyncSession", _RaisingSession()),
+        job,
+        _interp_outcome({"other": "data"}),
+    )

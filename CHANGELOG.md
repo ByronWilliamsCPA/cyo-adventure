@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   JSONB column (no backfill) with a daily pg_cron retention purge that nulls
   each element's premise-derived phrase on declined or blocked rows 30 days
   after decision, keeping the dispositions, reasons, and template texts.
+- The refined interpretation layer (WS-7 D4-D6): a combined interpret-and-bind
+  step returns the binder's element decomposition alongside the validated
+  slot bindings, and the generation worker derives per-element dispositions
+  from it (a degraded, keyword-decomposed variant for contract-less
+  skeletons), attaches the result to the job/version report block as a sibling
+  of the theme-contract audit block, and projects it onto the originating
+  story request row.
 
 ## [0.18.0] - 2026-07-19
 
