@@ -48,15 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-- The PII egress guard (`assert_prompt_pii_safe`) now also screens every
-  prompt for email-, phone-, and street-address-shaped content, independent
-  of the registered-child-name allowlist, closing the gap where a free-typed
-  story premise could carry a sibling's contact details or a home address
-  past the exact-match-only guard. Two previously unguarded egress paths are
-  now covered by the same guard: the cover-art prompt sent to Google Gemini,
-  and the Stage-0 safety-classifier calls (OpenAI Moderation, Google
-  Perspective) in both the generation-time moderation pipeline and the
-  node-edit review path (#304).
 - Cover images are now served exclusively via short-lived (1-hour) presigned
   R2 URLs, generated fresh on every read from the deterministic
   `{storybook_id}/{version}.webp` object key, instead of the permanent
@@ -72,9 +63,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- Added a GDPR-specific compliance review and a phased COPPA/GDPR/GDPR-K
-  remediation plan under `docs/compliance/`, companion documents to the
-  existing COPPA compliance audit (#304).
 - Added four more `docs/compliance/` artifacts, closing remaining low-dependency
   items in the remediation plan: an Article 17(3) balancing-test justification
   for indefinite `pipeline_event` retention (Phase 4d, inline in the
@@ -83,6 +71,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   runbook (`breach-notification-runbook.md`, Phase 6c), and a Records of
   Processing Activities document (`records-of-processing-activities.md`,
   Phase 7a).
+- Drafted three more counsel-review artifacts against the shipped Phase 2
+  consent design: a Data Protection Impact Assessment (`dpia.md`, Phase
+  7b), a guardian-facing Privacy Notice (`privacy-notice.md`, Phase 2c),
+  and a processor DPA execution checklist with every link live-verified
+  (`processor-dpa-checklist.md`, Phase 5).
+
+## [0.18.1] - 2026-07-20
+
+### Changed
+
+- Testing: `tests/integration/conftest.py` creates the Postgres schema once
+  per test session (via a throwaway sync `psycopg` engine, avoiding any
+  asyncio event-loop entanglement) instead of once per test. Each test now
+  resets its data with a single multi-table `TRUNCATE ... RESTART IDENTITY
+  CASCADE` instead of a `drop_all`/`create_all` DDL cycle, which is
+  materially cheaper since it never touches table/constraint/index
+  definitions. The `engine` fixture is otherwise unchanged (still a real
+  per-test `AsyncEngine` with `NullPool`), so the tests and `scripts/
+  seed_dev_data.py` call sites that bind sessions directly to `engine` need
+  no changes. Verified locally: all 827 integration tests pass unchanged.
+
+### Fixed
+
+- Testing: `test_malformed_min_verdict_row_is_skipped_with_warning`
+  (`tests/integration/test_threshold_policy_loader.py`) drops the
+  `ck_moderation_threshold_min_verdict` CHECK constraint to exercise the
+  loader's malformed-row handling, but never restored it. That was safe
+  under the old per-test schema rebuild; under the new session-scoped
+  schema (see above), the dropped constraint leaked into any later test in
+  the same xdist worker, intermittently failing
+  `test_bad_min_verdict_insert_rejected_by_check` depending on test order.
+  The test now restores the constraint in a `finally` block. Also
+  deduplicated the catalog-family seed insert (`_pg_url` and `engine`
+  fixtures) into a shared `_seed_catalog_family_stmt()` helper.
+
+## [0.18.0] - 2026-07-19
 
 ## [0.17.0] - 2026-07-19
 
@@ -2066,7 +2090,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.17.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.1...HEAD
+[0.18.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.0...v0.18.1
+[0.18.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.14.0...v0.15.0
