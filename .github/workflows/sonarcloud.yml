@@ -15,12 +15,24 @@ on:
     branches:
       - main
       - develop
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - main
-      - develop
-  merge_group:
+  # No pull_request, no merge_group. A prior version of this workflow tried
+  # `no-build: true` on pull_request to skip the coverage-generating pytest
+  # run and get fast static-only Sonar feedback; that failed every PR run
+  # with `error: Distribution cyo-adventure==... @ editable+. can't be
+  # installed because it is marked as --no-build but has no binary
+  # distribution` (uv exit code 2) -- `--no-build` means "only install
+  # pre-built wheels," which this local editable-only package (no published
+  # wheel) can never satisfy. There is no known lighter-weight input on the
+  # reusable workflow (ByronWilliamsCPA/.github/python-sonarcloud.yml, not
+  # read from this repo) that installs deps without running the full test
+  # suite, so a fast, correct pull_request path isn't available without
+  # reading that workflow's source first. `fail-on-quality-gate` below is
+  # already forced off outside `push`, so a PR-time run was always advisory
+  # with no way to act on the result; push-to-main keeps full, gate-enforced,
+  # coverage-backed analysis on every merge.
+  # #VERIFY: if per-PR Sonar feedback is wanted again, add the org's
+  # `.github` repo to a session and check python-sonarcloud.yml for a
+  # skip-tests-but-still-install input before trying `no-build` again.
   workflow_dispatch:
 
 permissions:
@@ -40,18 +52,19 @@ jobs:
     with:
       sonar-organization: 'byronwilliamscpa'
       sonar-project-key: 'ByronWilliamsCPA_cyo-adventure'
-      # 3.14, not the 3.12 local target: under CPython 3.12 coverage.py
-      # silently drops the async handler bodies in api/profiles.py (tests
-      # pass, lines execute, zero hits recorded; reproduced with both the
-      # sysmon and ctrace cores and with coverage 7.6/7.14). 3.14 records
-      # them correctly, so it is the truthful measurement interpreter.
+      # 3.14 matches the primary runtime/CI target since the #295 upgrade.
+      # It was chosen here even before that flip: under CPython 3.12
+      # coverage.py silently drops the async handler bodies in
+      # api/profiles.py (tests pass, lines execute, zero hits recorded;
+      # reproduced with both the sysmon and ctrace cores and with coverage
+      # 7.6/7.14). 3.14 records them correctly, so it is the truthful
+      # measurement interpreter.
       python-version: '3.14'
       source-directory: 'src'
       coverage-paths: 'coverage.xml'
-      # Enforce the quality gate only on push to a protected branch. On
-      # pull_request it is advisory; on merge_group it must stay advisory too,
-      # otherwise Sonar fails every queue build (the event is not 'pull_request')
-      # and floods the merge queue with red, non-required check noise.
+      # Advisory except on push to a protected branch (see the `on:` comment
+      # above for why pull_request/merge_group are excluded entirely rather
+      # than run advisory-and-slow).
       fail-on-quality-gate: ${{ github.event_name == 'push' }}
       skip-if-no-token: true
       no-build: false  # generated project ships as an installable package; upstream default of true would block 'uv sync' from installing the editable project for coverage

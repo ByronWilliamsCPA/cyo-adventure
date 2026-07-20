@@ -12,13 +12,13 @@ on:
       - 'tests/**/*.py'
       - 'pyproject.toml'
       - 'uv.lock'
-  pull_request:
-    branches: [main, master, develop]
-    paths:
-      - 'src/**/*.py'
-      - 'tests/**/*.py'
-      - 'pyproject.toml'
-      - 'uv.lock'
+  # No pull_request trigger: this matrix's 3.12 leg duplicates ci.yml's
+  # required py3.12 test run 1:1 on every PR that touches src/tests/pyproject
+  # (a 30-min-per-version job on top of ci.yml's own suite). Cross-version
+  # compatibility (3.11/3.13) regresses far less often than PR-to-PR content
+  # changes; the weekly schedule below plus this push-to-main trigger already
+  # catch it within a day of any breakage, which is an acceptable tradeoff
+  # for not adding ~30 min to every PR.
   schedule:
     # Weekly compatibility check on Sundays at 6 AM UTC
     - cron: '0 6 * * 0'
@@ -40,13 +40,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.11', '3.12', '3.13']
+        python-version: ['3.11', '3.12', '3.13', '3.14']
         os: [ubuntu-latest]
         include:
           - os: macos-latest
-            python-version: '3.12'
+            python-version: '3.14'
           - os: windows-latest
-            python-version: '3.12'
+            python-version: '3.14'
 
     permissions:
       contents: read

@@ -11,14 +11,14 @@ Container images are pinned by tag; `latest` is never used in production.
 
 | Component | Pin | Notes |
 |-----------|-----|-------|
-| Python (target) | 3.12 (`target-version = "py312"`) | Supported range `>=3.10,<3.15`. CI runs 3.12. |
+| Python (target) | 3.14 (ruff `target-version = "py311"` floor) | Supported range `>=3.11`. CI runs 3.14. |
 | Node | 22 (`node:22-alpine`) | Frontend build and dev. |
 | uv | project-managed | `uv.lock` is the reproducible source of truth. |
 | pnpm / npm | npm (template default) | Frontend package manager. |
 
-> Local note: developer virtualenvs may resolve to Python 3.14 because the
-> `requires-python` range permits it. CI pins 3.12. See template feedback item on
-> narrowing the local interpreter, tracked in `docs/template_feedback.md`.
+> Local note: 3.14 is now the primary interpreter everywhere (local, CI, and
+> the production runtime image), so developer virtualenvs resolving to 3.14
+> match CI instead of drifting from it.
 
 ## Backend (resolved from `uv.lock`)
 
@@ -75,7 +75,7 @@ lands in Phase 1).
 
 | Image | Tag | Status |
 |-------|-----|--------|
-| python | `3.12-slim` | Pinned (Dockerfile) |
+| python | `3.14-slim-bookworm` (builder) / `dhi-python:3.14-debian13` (runtime) | Pinned (Dockerfile) |
 | node | `22-alpine` | Pinned (frontend Dockerfile) |
 | nginx | `alpine` | Frontend production serve; pin to a digest/tag before release |
 | postgres | `16-alpine` | Pinned (compose) |

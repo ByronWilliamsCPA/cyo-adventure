@@ -89,6 +89,14 @@
       "matchDepTypes": ["python"],
       "enabled": false,
       "labels": ["dependencies", "python-version", "breaking-change"]
+    },
+    {
+      "description": "Builder and runtime stage Python images move in lockstep, by hand: Renovate may only propose digest updates for them, never version bumps, so the two Dockerfile FROM lines cannot drift apart (issue #295; the #288 breakage)",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["python", "ghcr.io/byronwilliamscpa/dhi-python"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "enabled": false,
+      "labels": ["dependencies", "python-version", "breaking-change"]
     }
   ],
   "lockFileMaintenance": {

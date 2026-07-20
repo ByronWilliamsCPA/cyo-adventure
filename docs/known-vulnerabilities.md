@@ -232,6 +232,145 @@ set, so no project-side upgrade path exists until Debian ships a fix.
 - Discovered by the Container Security workflow (Trivy) on
   [PR #256](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/256)
 
+---
+
+## CVE-2025-59375, CVE-2026-25210, CVE-2026-45186, CVE-2026-56131, CVE-2026-56407, CVE-2026-56408 | libexpat1, libexpat1-dev | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2025-59375, CVE-2026-25210, CVE-2026-45186, CVE-2026-56131, CVE-2026-56407, CVE-2026-56408 |
+| **Package** | libexpat1, libexpat1-dev (Debian binary packages from the `expat` source package) |
+| **Affected Version** | 2.7.1-2+dhi5 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | No fix available |
+| **Severity** | High (all six, per Trivy/Aqua feed) |
+| **CVSS Score** | Not individually catalogued here; see per-CVE Aqua/NVD links below |
+| **Discovered** | 2026-07-19 |
+| **Reassessment Due** | 2026-09-17 |
+| **Blocking Release** | No |
+
+### Description
+
+Six memory-safety and information-disclosure defects in the Expat XML parsing
+library: excessive dynamic-memory allocation on crafted input
+(CVE-2025-59375), an integer-overflow information disclosure
+(CVE-2026-25210), a denial of service via crafted XML (CVE-2026-45186), a
+missing handler call-depth limit (CVE-2026-56131), and two further integer
+overflows in `doProlog`/`copyString` (CVE-2026-56407, CVE-2026-56408). All six
+require processing attacker-controlled XML input through Expat.
+
+### Impact on This Project
+
+`libexpat1`/`libexpat1-dev` ship in the production runtime base image
+(`ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13`). The application does not
+call into Expat directly (no `xml.parsers.expat` usage in this codebase) and
+does not parse untrusted XML on any request path. Exposure through the
+application surface is negligible.
+
+### Remediation Plan
+
+- [ ] Monitor the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/expat)
+  for a fixed `expat` package that flows into the next DHI mirror rebuild
+- [ ] Once a fixed digest is published, remove these six `.trivyignore`
+  entries and re-run the Container Security scan to confirm
+- [ ] Reassess by 2026-09-17 whether a fixed Debian package or NVD analysis is
+  available
+
+### Why Not Fixed Yet
+
+Debian has not released a patched `expat` build for the DHI mirror's Debian 13
+snapshot (Trivy reports an empty Fixed Version with status `affected` for all
+six CVEs against `2.7.1-2+dhi5`). The package is provided by the hardened base
+image, not managed by this project's dependency set, so no project-side
+upgrade path exists: the DHI runtime image ships no shell and no package
+manager, so it cannot run `apt-get` itself (confirmed directly against this
+project's Dockerfile runtime stage). The identical CVE set was independently
+found on `dhi-python:3.12-debian13`'s Renovate-proposed digest refresh while
+reviewing PR #296, confirming this is a mirror-wide regression across the
+`debian13` tag family rather than something specific to the Python 3.14
+upgrade in PR #299.
+
+### References
+
+- [Aqua AVD CVE-2025-59375](https://avd.aquasec.com/nvd/cve-2025-59375)
+- [Aqua AVD CVE-2026-25210](https://avd.aquasec.com/nvd/cve-2026-25210)
+- [Aqua AVD CVE-2026-45186](https://avd.aquasec.com/nvd/cve-2026-45186)
+- [Aqua AVD CVE-2026-56131](https://avd.aquasec.com/nvd/cve-2026-56131)
+- [Aqua AVD CVE-2026-56407](https://avd.aquasec.com/nvd/cve-2026-56407)
+- [Aqua AVD CVE-2026-56408](https://avd.aquasec.com/nvd/cve-2026-56408)
+- [Debian security tracker: expat](https://security-tracker.debian.org/tracker/source-package/expat)
+- Discovered by the Container Security workflow (Trivy) on
+  [PR #299](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/299)
+
+---
+
+## CVE-2026-43185 and 33 further kernel-header CVEs | linux-libc-dev | Critical/High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-43185 (Critical); CVE-2013-7445, CVE-2019-19449, CVE-2019-19814, CVE-2021-3847, CVE-2021-3864, CVE-2024-21803, CVE-2024-58015, CVE-2025-22104, CVE-2025-38137, CVE-2025-38187, CVE-2025-38204, CVE-2025-38206, CVE-2025-38421, CVE-2025-38636, CVE-2025-39859, CVE-2025-39862, CVE-2025-39958, CVE-2026-23102, CVE-2026-23208, CVE-2026-23327, CVE-2026-31493, CVE-2026-31536, CVE-2026-31568, CVE-2026-43198, CVE-2026-43263, CVE-2026-46130, CVE-2026-46181, CVE-2026-46279, CVE-2026-52991, CVE-2026-53000, CVE-2026-53010, CVE-2026-53091, CVE-2026-53277 (High, 33 CVEs) |
+| **Package** | linux-libc-dev (Debian binary package from the `linux` kernel source package) |
+| **Affected Version** | 6.12.95-1+dhi0 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | No fix available |
+| **Severity** | Critical (CVE-2026-43185); High (remaining 33) |
+| **CVSS Score** | Not individually catalogued here; see per-CVE Aqua/NVD links below |
+| **Discovered** | 2026-07-19 |
+| **Reassessment Due** | 2026-09-17 |
+| **Blocking Release** | No |
+
+### Description
+
+34 kernel defects reported against `linux-libc-dev`'s tracked kernel source
+version, spanning unrelated subsystems: SMB/CIFS server `ksmbd` (including the
+Critical signedness bug in `smb_direct_prepare_negotiation()`,
+CVE-2026-43185, and a separate use-after-free, CVE-2026-53010), filesystems
+(f2fs, exFAT, JFS), Bluetooth, GPU drivers (GEM, nouveau), wifi (ath12k,
+mt76), RDMA (including efa and mlx4), ARM64 KVM, s390, netfilter, TCP, ALSA
+usb-audio, dm-verity-fec, and several more. This breadth of unrelated
+subsystems in a single package's finding set is itself the signal for this
+package's known false-positive class (see Why Not Fixed Yet).
+
+### Impact on This Project
+
+`linux-libc-dev` ships kernel UAPI headers used at compile time by userspace
+programs; it contains no kernel binary and executes no kernel code at
+runtime. None of the 34 vulnerable code paths (ksmbd, f2fs, Bluetooth,
+GPU/wifi drivers, RDMA, netfilter, and so on) run inside this container,
+which serves a FastAPI web application under whatever kernel the Docker host
+provides, not the kernel version recorded in this package's own metadata.
+Exposure through the application surface, and through the container
+generally, is negligible.
+
+### Remediation Plan
+
+- [ ] Monitor the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/linux)
+  for the DHI mirror to rebuild against a newer kernel-headers snapshot
+- [ ] Once a fixed digest is published, remove these 34 `.trivyignore`
+  entries and re-run the Container Security scan to confirm
+- [ ] Reassess by 2026-09-17
+
+### Why Not Fixed Yet
+
+Debian has not released a patched `linux-libc-dev` build for the DHI mirror's
+snapshot (Trivy reports an empty Fixed Version with status `affected` for all
+34 CVEs). The package is provided by the hardened base image, not managed by
+this project's dependency set, so no project-side upgrade path exists: the
+DHI runtime image ships no shell and no package manager (confirmed directly
+against this project's Dockerfile runtime stage), so it cannot run
+`apt-get` itself even if a fix existed upstream. This is the same
+mirror-wide Debian 13 base-layer regression documented in the libexpat entry
+above, independently corroborated via PR #296's unrelated review of the
+`dhi-python:3.12-debian13` digest; it traces to the
+`ByronWilliamsCPA/container-images` mirror pipeline, where every
+`debian13`-tagged image has Trivy-failed on this same package family since
+around 2026-06-28 with no fix currently in flight there.
+
+### References
+
+- [Debian security tracker: linux](https://security-tracker.debian.org/tracker/source-package/linux)
+- [Aqua AVD CVE-2026-43185](https://avd.aquasec.com/nvd/cve-2026-43185) (Critical; the remaining 33 CVEs follow the same `avd.aquasec.com/nvd/<cve-id>` URL pattern)
+- Discovered by the Container Security workflow (Trivy) on
+  [PR #299](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/299)
+
 ## Resolved Entries
 
 | CVE | Package | Resolved Date | Resolution |
@@ -244,3 +383,5 @@ set, so no project-side upgrade path exists until Debian ships a fix.
 | 2026-MM-DD  | Byron Williams | Initial creation.                                                     |
 | 2026-07-08  | Byron Williams | Added CVE-2026-53615 (libuuid1, runtime base image; no upstream fix). |
 | 2026-07-14  | Byron Williams | Added gawk CVE-2026-40467/40468/40469/40553 (runtime base image; no upstream fix). |
+| 2026-07-19  | Byron Williams | Added libexpat1/libexpat1-dev CVE-2025-59375/2026-25210/45186/56131/56407/56408 (runtime base image; no upstream fix; same mirror regression independently found via PR #296). |
+| 2026-07-19  | Byron Williams | Added linux-libc-dev CVE-2026-43185 (Critical) plus 33 further kernel CVEs (runtime base image; kernel UAPI headers only, no running kernel code; no upstream fix). |

@@ -50,6 +50,10 @@ jobs:
     name: Dead Code Check
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Advisory-only (see validate-dependencies below, which never fails on
+    # this result) and file-content-only, not merged-state-sensitive; skip on
+    # merge_group, same rationale as changelog's existing pull_request-only if.
+    if: github.event_name != 'merge_group'
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
@@ -63,7 +67,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
-          python-version: "3.12"
+          python-version: '3.14'
 
       - name: Install UV
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
@@ -140,6 +144,8 @@ jobs:
     name: Documentation Links
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Advisory-only and not merged-state-sensitive; see dead-code above.
+    if: github.event_name != 'merge_group'
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
