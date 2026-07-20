@@ -18,10 +18,12 @@ from __future__ import annotations
 
 from typing import TypedDict
 
-# The two skeleton-provenance keys. Shared by the writer (authoring_plan) and
-# the readers (worker.py, import_story.py) so a rename cannot silently desync.
+# The skeleton-provenance keys. Shared by the writer (authoring_plan) and the
+# readers (worker.py, import_story.py) so a rename cannot silently desync.
 SKELETON_SLUG_KEY = "skeleton_slug"
 SKELETON_BAND_KEY = "skeleton_band"
+# WS-7 D7: the in-cell alternatives the worker's bounded re-route iterates.
+SKELETON_ALTERNATIVES_KEY = "skeleton_alternatives"
 
 
 class SkeletonAuthoringMetadata(TypedDict, total=False):
@@ -40,6 +42,12 @@ class SkeletonAuthoringMetadata(TypedDict, total=False):
     Attributes:
         skeleton_slug: The matched or overridden skeleton's filename stem.
         skeleton_band: The chosen skeleton's real age band (an AgeBand string).
+        skeleton_alternatives: WS-7 D7 (design section 6.2). The in-cell
+            production-eligible skeleton slugs the AUTO-PICK planner considered
+            (already sorted), for the worker's bounded alternate-skeleton
+            re-route on a bind failure. An ADMIN OVERRIDE persists ``[]``: an
+            override is a deliberate pick and must never be silently re-routed.
+            Absent/``[]`` for a fresh_generation job.
         provider: The automated GenerationProvider backend id, when applicable.
         model: The provider model id, when applicable.
         review_stage1_model: The Stage 1 review model choice, if any.
@@ -55,6 +63,7 @@ class SkeletonAuthoringMetadata(TypedDict, total=False):
 
     skeleton_slug: str
     skeleton_band: str
+    skeleton_alternatives: list[str]
     provider: str
     model: str
     review_stage1_model: str

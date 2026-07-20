@@ -79,7 +79,7 @@ jobs:
           enable-cache: true
 
       - name: Set up Python
-        run: uv python install 3.12
+        run: uv python install 3.14
 
       - name: Run FIPS compatibility check
         id: fips-check
@@ -228,7 +228,7 @@ jobs:
   # line the production image is built from, with the stdlib OpenSSL floor
   # raised to 3.5 (the ML-KEM-capable line, per ADR-013 and the crypto
   # inventory). The hardened dhi runtime image itself ships no shell, so CI
-  # steps cannot execute inside it; python:3.12-slim-trixie shares its
+  # steps cannot execute inside it; python:3.14-slim-trixie shares its
   # Debian 13 userland and distro OpenSSL. step-security/harden-runner is
   # omitted here because it does not support container jobs.
   fips-runtime-parity:
@@ -236,7 +236,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     container:
-      image: python:3.12-slim-trixie
+      image: python:3.14-slim-trixie
 
     permissions:
       contents: read
@@ -276,8 +276,10 @@ jobs:
   # Image floor: assert the pinned production base image itself links an
   # ML-KEM-capable OpenSSL (>= 3.5). The image has no shell, so the check is
   # a single exec-form python -c via docker run; the interpreter lives at
-  # /opt/python/bin in dhi images (see the Dockerfile's builder-stage
-  # comment). Pulling the ghcr.io mirror needs packages: read.
+  # /usr/bin/python3.14 in the dhi-python:3.14-debian13 image (the 3.12
+  # image used /opt/python/bin; the path is per-release, see the
+  # Dockerfile's builder-stage comment). Pulling the ghcr.io mirror needs
+  # packages: read.
   fips-image-floor:
     name: FIPS Image OpenSSL Floor
     runs-on: ubuntu-latest
@@ -306,7 +308,7 @@ jobs:
             exit 1
           fi
           echo "Asserting OpenSSL floor in $IMAGE"
-          docker run --rm --entrypoint /opt/python/bin/python3.12 "$IMAGE" -c "import ssl; v = ssl.OPENSSL_VERSION_INFO[:2]; assert v >= (3, 5), f'runtime image links {ssl.OPENSSL_VERSION}, below the 3.5 ML-KEM floor'; print('runtime image links', ssl.OPENSSL_VERSION)"
+          docker run --rm --entrypoint /usr/bin/python3.14 "$IMAGE" -c "import ssl; v = ssl.OPENSSL_VERSION_INFO[:2]; assert v >= (3, 5), f'runtime image links {ssl.OPENSSL_VERSION}, below the 3.5 ML-KEM floor'; print('runtime image links', ssl.OPENSSL_VERSION)"
 
   # Optional: Test on actual FIPS-enabled environment
   fips-runtime-test:
@@ -333,7 +335,7 @@ jobs:
           enable-cache: true
 
       - name: Set up Python
-        run: uv python install 3.12
+        run: uv python install 3.14
 
       - name: Install dependencies
         run: uv sync --all-extras

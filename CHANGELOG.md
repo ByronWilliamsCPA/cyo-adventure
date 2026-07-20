@@ -35,6 +35,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `is_sidecar` predicate that also skips the new `*.lineage.json` sidecar
   (`generation/skeleton.py`, ADR-020 decision 2 / OQ-1), so a lineage record in a
   band directory is never mistaken for a selectable skeleton.
+- Request interpretation and expectation-setting (WS-7 D1-D3, K19): a pure
+  interpretation core (echo-safety floor, disposition derivation, and a fixed
+  kid/guardian template catalog) plus a submission-time general layer that is
+  persisted on each story request, reflecting the band promise, guardian
+  banned-theme matches, and advisory safety findings without ever echoing
+  premise-derived content for a blocked request (CR-1).
+- Persistence for the interpretation: a nullable `story_request.interpretation`
+  JSONB column (no backfill) with a daily pg_cron retention purge that nulls
+  each element's premise-derived phrase on declined or blocked rows 30 days
+  after decision, keeping the dispositions, reasons, and template texts.
+- The refined interpretation layer (WS-7 D4-D6): a combined interpret-and-bind
+  step returns the binder's element decomposition alongside the validated
+  slot bindings, and the generation worker derives per-element dispositions
+  from it (a degraded, keyword-decomposed variant for contract-less
+  skeletons), attaches the result to the job/version report block as a sibling
+  of the theme-contract audit block, and projects it onto the originating
+  story request row.
+- The rejection path and bounded re-route (WS-7 D7): on a theme a skeleton
+  cannot bind, the worker retries the bind on up to two in-cell alternate
+  skeletons (auto-pick only, contract-gated, recorded as `rerouted_from`)
+  before failing closed; a failed bound-path fill now stamps an honest
+  cannot-carry interpretation on both the failed job report and the request
+  row. A PII egress block and a theme incompatibility are kept distinct by
+  exception provenance (personal-details vs no-conforming-binding), and a PII
+  block never triggers a re-route.
+- The interpretation API surface (WS-7 D8, K19 exposed): the story-request view
+  now carries the K19 interpretation as `RequestInterpretationView`
+  (with `InterpretedElementView`), projected from the stored
+  `story_request.interpretation` column by `_to_view` for every caller. It is
+  a straight projection of the already-echo-safe stored object, so a blocked
+  row surfaces the generic interpretation (every element phrase null) alongside
+  the existing `request_text=None` redaction (CR-1), and a pre-WS-7 row (null
+  column) projects to `null`.
+
+## [0.19.0] - 2026-07-20
+
+### Changed
+
+- The primary Python runtime moved from 3.12 to 3.14 (#295): the production
+  image now runs the hardened `dhi-python:3.14-debian13` base (whose
+  interpreter lives at `/usr/bin/python3.14`, not the 3.12 image's
+  `/opt/python/bin`), the required CI gate and the compatibility matrix now
+  cover 3.14, and Renovate is restricted to digest-only updates for the two
+  Dockerfile base images so the builder and runtime stages can never
+  version-drift independently again. `requires-python` stays `>=3.11`;
+  3.11-3.13 remain supported and tested.
+- CI: release-automation PRs (`release.yml`'s `propose` job opens
+  `chore(release): vX.Y.Z` against a `release/v*` branch, touching only
+  `pyproject.toml`/`uv.lock`/`CHANGELOG.md`) now skip the full test/build
+  matrix entirely instead of re-running it up to three times (`pull_request`,
+  `merge_group`, and the post-merge `push`) over a diff whose underlying code
+  was already fully tested by the feature PR that triggered the release.
+  Added a `detect-release-pr` job to `ci.yml` (gates `ci`, `frontend`,
+  `design-system`, `contract`, `detect-api-collection`/`api-tests`, and
+  `coverage-upload` transitively via `ci`'s result; `ci-gate` treats a
+  release PR's all-skipped state as a pass) and to `sbom.yml` and
+  `container-security.yml` (both path-filter on `pyproject.toml`/`uv.lock`,
+  which every release PR touches, and `container-security.yml`'s job builds
+  a real Docker image to scan). On `pull_request`/`push` the detection reads
+  the branch name/commit message directly; on `merge_group` the event's own
+  `head_ref` is the synthetic queue ref, not the source branch, so the job
+  extracts the PR number from it and looks up the real head branch via the
+  GitHub API. Trade-off: a `uv lock` re-resolve on the release PR could in
+  principle pick up a newly-published transitive dependency version untested
+  by the original feature PR; accepted, since the weekly scheduled scans and
+  the next feature PR's own full run remain the backstop.
+
+## [0.18.4] - 2026-07-20
 
 ### Fixed
 
@@ -2146,7 +2214,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.3...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.19.0...HEAD
+[0.19.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.4...v0.19.0
+[0.18.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.3...v0.18.4
 [0.18.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.2...v0.18.3
 [0.18.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.1...v0.18.2
 [0.18.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.0...v0.18.1

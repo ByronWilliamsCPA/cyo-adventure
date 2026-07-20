@@ -6,9 +6,9 @@
 # =============================================================================
 # Tier A standard image for the build stage: has apt-get, /bin/sh, and
 # build-essential. The DHI hardened image lacks a shell and cannot run RUN
-# blocks, so we use python:3.12-slim-bookworm here and copy only the built
+# blocks, so we use python:3.14-slim-bookworm here and copy only the built
 # artifacts into the hardened runtime stage below.
-FROM python:3.12-slim-bookworm AS builder
+FROM python:3.14-slim-bookworm AS builder
 
 # Set working directory
 WORKDIR /app
@@ -27,22 +27,29 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # glibc 2.36, so copying from dhi-uv into this Debian 12 builder causes a symbol
 # version error at runtime. astral-sh/uv ships a musl-statically-linked binary
 # with no glibc dependency. Switch to dhi-uv once the builder moves to
-# dhi-python:3.12-debian13-dev (Debian 13, tracked in container-images catalog PR).
+# dhi-python:3.14-debian13-dev (Debian 13, tracked in container-images catalog PR).
 # Renovate manages digest bumps via the ghcr.io/astral-sh/uv repository.
 COPY --from=ghcr.io/astral-sh/uv:0.8.17@sha256:db99140470350437166de1fc646323ecb59e4d99d7857d0baf429a7b4a9523f3 /uv /usr/local/bin/uv
 
 # #CRITICAL: external resources: the DHI runtime stage keeps its interpreter at
-# /opt/python/bin and ships NO /usr/local/bin, so a venv created against this
-# builder's /usr/local/bin/python3.12 arrives with a dangling python symlink
+# a path that does NOT exist in this builder, so a venv created against the
+# builder's /usr/local/bin/python3.14 arrives with a dangling python symlink
 # and a stale pyvenv.cfg home; every console script (uvicorn, rq)
 # then exec-fails at runtime with a misleading "no such file or directory"
 # (first observed as the cyo-adventure-worker crash-loop on docker-host).
 # Mirror the builder's interpreter at the runtime path and pin uv to it so the
 # venv's symlink chain and pyvenv.cfg resolve identically in BOTH stages.
+# The runtime path is NOT stable across dhi-python releases: the 3.12 image
+# shipped /opt/python/bin/python3.12 (a symlink into /opt/python-3.12.13),
+# but 3.14-debian13 ships the interpreter at /usr/bin/python3.14 with no
+# /opt/python at all (verified by listing the image layers, 2026-07-18).
+# On any base-image bump, re-verify the interpreter path in the new image
+# and keep this symlink, UV_PYTHON, and the fips-image-floor probe in
+# .github/workflows/fips-compatibility.yml in sync with it.
 # #VERIFY: `docker run --rm <image> rq --version` (plus uvicorn
 # --version) must succeed on the built image before publishing.
-RUN mkdir -p /opt/python/bin && ln -s /usr/local/bin/python3.12 /opt/python/bin/python3.12
-ENV UV_PYTHON=/opt/python/bin/python3.12
+RUN ln -s /usr/local/bin/python3.14 /usr/bin/python3.14
+ENV UV_PYTHON=/usr/bin/python3.14
 
 # Copy dependency files
 # README.md is referenced by pyproject.toml via [project] readme; uv reads project
@@ -69,9 +76,9 @@ RUN uv sync --frozen --no-dev --extra api
 # =============================================================================
 # Stage 2: Runtime - Minimal hardened production image
 # =============================================================================
-# DHI hardened Python image: ~95% CVE reduction vs python:3.12-slim, ships 150
-# CA certs, no shell. Mirror syncs weekly from dhi.io/python:3.12-debian13.
-FROM ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13@sha256:cf5aa76aaaa1466c57ca3ec494b83f8aefa1ddb1fcd6bf04b24a0bf34a270c70
+# DHI hardened Python image: ~95% CVE reduction vs python:3.14-slim, ships 150
+# CA certs, no shell. Mirror syncs weekly from dhi.io/python:3.14-debian13.
+FROM ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13@sha256:5716c72aa4a4ac7c332e05aa88728c0374da931f5c183f6fa0914031e9914b5f
 
 # Metadata labels (OCI standard)
 LABEL org.opencontainers.image.title="CYO Adventure"

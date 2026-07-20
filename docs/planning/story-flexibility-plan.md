@@ -370,6 +370,13 @@ in WS-0 must detect and fail it.
 - **Delivers:** [K19](capability-register.md) (design record). **Also serves:**
   [K11](capability-register.md), [K12](capability-register.md); gated by
   [K13](capability-register.md).
+- **Status: Delivered (D1-D8).** The interpretation core, persistence, the
+  submission-time general layer, the interpret-and-bind refined layer, the
+  worker wiring and audit block, the CANNOT_CARRY rejection surface, and the
+  D8 API contract (`RequestInterpretationView` on the story-request view) are
+  built, tested, and merged; see
+  [ws7-request-interpretation-design.md](ws7-request-interpretation-design.md)
+  section 10 for the deliverable map.
 
 ## 6. Sequencing
 

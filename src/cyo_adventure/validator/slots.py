@@ -24,9 +24,15 @@ from typing import TYPE_CHECKING
 from cyo_adventure.storybook.models import AgeBand
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Iterable, Mapping
 
     from cyo_adventure.storybook.theme_contract import SlotSpec, ThemeContract
+
+# Synthetic slot id used by the public echo-safety wrapper
+# (:func:`structural_value_violations`) so a value validated outside a real
+# contract (e.g. WS-7's interpretation echo floor) reuses the identical
+# structural-injection block without inventing a per-call slot id.
+_ECHO_SLOT_ID = "<echo>"
 
 # Denylist bundles: versioned, lowercase word/phrase stems matched on word
 # boundaries against a normalized (NFC, casefolded, whitespace-collapsed)
@@ -273,6 +279,57 @@ def _contains_stem(normalized_value: str, stem: str) -> bool:
     return re.search(pattern, normalized_value) is not None
 
 
+def denylisted_bundles(value: str, bundle_ids: Iterable[str]) -> frozenset[str]:
+    """Return the subset of ``bundle_ids`` whose denylist terms hit ``value``.
+
+    Public reuse surface for callers (e.g. WS-7's interpretation echo floor)
+    that must apply the SAME word-boundary denylist matching the slot gate
+    uses, without copying the normalization or stem logic. Delegates to the
+    private single source of truth: :func:`_normalize` then
+    :func:`_contains_stem` against each bundle's terms in :data:`_BUNDLES`.
+    An unknown bundle id contributes no terms and so never appears in the
+    result (mirroring :func:`_forbid_violations`).
+
+    Args:
+        value: The raw candidate string (normalized internally).
+        bundle_ids: The bundle ids to test (e.g. the output of
+            :func:`band_mandatory_bundles`, optionally unioned with an
+            echo-minimum bundle).
+
+    Returns:
+        The frozen set of bundle ids in ``bundle_ids`` that ``value`` trips.
+    """
+    normalized_value = _normalize(value)
+    return frozenset(
+        bundle_id
+        for bundle_id in bundle_ids
+        if any(
+            _contains_stem(normalized_value, term)
+            for term in _BUNDLES.get(bundle_id, frozenset())
+        )
+    )
+
+
+def normalized_contains_any(value: str, stems: Iterable[str]) -> bool:
+    """Return whether ``value`` contains any of ``stems`` on word boundaries.
+
+    Public reuse surface for callers that match their OWN versioned lexicons
+    (e.g. WS-7's ending/fate and self-reference frozensets) with the identical
+    normalization and word-boundary posture the slot gate uses, without
+    copying :func:`_normalize` / :func:`_contains_stem`. Both remain the
+    single source of truth; this helper only delegates.
+
+    Args:
+        value: The raw candidate string (normalized internally once).
+        stems: Lowercase word/phrase stems to test.
+
+    Returns:
+        ``True`` if any stem appears in ``value`` on word boundaries.
+    """
+    normalized_value = _normalize(value)
+    return any(_contains_stem(normalized_value, stem) for stem in stems)
+
+
 def _jaccard(tokens_a: set[str], tokens_b: set[str]) -> float:
     """Return the Jaccard overlap of two token sets.
 
@@ -434,6 +491,27 @@ def _structural_slot_violations(slot_id: str, value: str) -> list[SlotViolation]
         )
 
     return violations
+
+
+def structural_value_violations(value: str) -> list[SlotViolation]:
+    """Return the RAW-value structural violations for an arbitrary value.
+
+    Public thin wrapper over :func:`_structural_slot_violations` (the single
+    source of truth) using the fixed synthetic slot id :data:`_ECHO_SLOT_ID`.
+    Lets a caller outside the slot gate (e.g. WS-7's interpretation echo
+    floor) reuse the identical structural-injection block, non-emptiness,
+    single-line/control-character, charset/length, and fence-marker guard
+    checks by import rather than by copy, so an echoed phrase can never forge
+    a template token, a FILL directive, or a prompt fence.
+
+    Args:
+        value: The raw candidate value to check.
+
+    Returns:
+        Zero or more structural violations (each with ``slot_id``
+        :data:`_ECHO_SLOT_ID`).
+    """
+    return _structural_slot_violations(_ECHO_SLOT_ID, value)
 
 
 def _forbid_violations(

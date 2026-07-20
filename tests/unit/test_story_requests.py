@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 import uuid
+from dataclasses import dataclass
 from datetime import UTC, datetime
 
 import httpx
 import pytest
 
 from cyo_adventure.api.deps import Principal
+from cyo_adventure.api.schemas import (
+    InterpretedElementView,
+    RequestInterpretationView,
+)
 from cyo_adventure.api.story_requests import _to_view
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
@@ -29,9 +34,29 @@ from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.brief import brief_from_request
+from cyo_adventure.story_requests.interpretation import build_general_interpretation
 from cyo_adventure.story_requests.screening import screen_request_text
 from cyo_adventure.story_requests.service import ApprovalConfirmation
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
+
+
+@dataclass(frozen=True, slots=True)
+class _FakeFlag:
+    """Minimal screening-flag stand-in (only ``.category`` is read)."""
+
+    category: str
+
+
+@dataclass(frozen=True, slots=True)
+class _FakeScreening:
+    """Minimal ScreeningResult stand-in for build_general_interpretation.
+
+    Only ``.blocked`` and ``.flags`` are read by the general layer (the flags
+    sequence is empty here, so no advisory elements are produced).
+    """
+
+    blocked: bool
+    flags: tuple[_FakeFlag, ...] = ()
 
 
 def test_story_request_defaults_to_pending() -> None:
@@ -860,6 +885,123 @@ def test_to_view_skips_flag_entry_missing_required_string_fields() -> None:
 
     assert len(view.moderation_flags) == 1
     assert view.moderation_flags[0].message == "borderline"
+
+
+# ---------------------------------------------------------------------------
+# WS-7 D8: the K19 interpretation projection on the story-request view.
+# ---------------------------------------------------------------------------
+
+
+def test_to_view_projects_general_layer_interpretation() -> None:
+    """A pending row's stored general-layer interpretation is projected verbatim.
+
+    _to_view validates the stored JSONB into a RequestInterpretationView: a
+    straight projection with the same layer, version, summaries, and one
+    InterpretedElementView per stored element (here the single band-promise
+    element, disposition BUILT_IN / STORY_FIT with element=None).
+    """
+    interpretation = build_general_interpretation(
+        screening=_FakeScreening(blocked=False),
+        band=AgeBand.BAND_10_13,
+        banned_themes=(),
+        premise="a story about a brave fox",
+        created_at=datetime(2026, 7, 20, tzinfo=UTC),
+    )
+    request = StoryRequest(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        initiator_role="child",
+        age_band="10-13",
+        narrative_style="prose",
+        moderation_flags={"blocked": False, "flags": []},
+        interpretation=interpretation.model_dump(mode="json"),
+        created_at=datetime(2026, 7, 20, tzinfo=UTC),
+    )
+
+    view = _to_view(request, policy=ThresholdPolicy(rows={}), surface_all=False)
+
+    assert isinstance(view.interpretation, RequestInterpretationView)
+    assert view.interpretation.layer == "general"
+    assert view.interpretation.interpretation_version == 1
+    assert view.interpretation.kid_summary
+    assert view.interpretation.guardian_summary
+    assert len(view.interpretation.elements) == 1
+    element = view.interpretation.elements[0]
+    assert isinstance(element, InterpretedElementView)
+    assert element.disposition == "built_in"
+    assert element.reason == "story_fit"
+    assert element.element is None
+    assert element.kid_text
+    assert element.guardian_text
+
+
+def test_to_view_null_interpretation_projects_none() -> None:
+    """A pre-WS-7 row (null interpretation column) projects to None, not a raise."""
+    request = StoryRequest(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        initiator_role="child",
+        age_band="10-13",
+        narrative_style="prose",
+        moderation_flags={"blocked": False, "flags": []},
+        interpretation=None,
+        created_at=datetime(2026, 7, 20, tzinfo=UTC),
+    )
+
+    view = _to_view(request, policy=ThresholdPolicy(rows={}), surface_all=False)
+
+    assert view.interpretation is None
+
+
+def test_to_view_blocked_row_carries_generic_interpretation_and_no_text() -> None:
+    """A blocked row surfaces request_text=None AND the generic interpretation.
+
+    CR-1: the stored blocked-row interpretation is the generic
+    CANNOT_CARRY/SAFETY_POLICY object with NO premise-derived content (every
+    element carries element=None), so it is safe to expose alongside the
+    redacted request_text. This asserts both the redaction and that the raw
+    premise never round-trips into the projected interpretation.
+    """
+    premise = "topsecretpremisephrase"
+    interpretation = build_general_interpretation(
+        screening=_FakeScreening(blocked=True),
+        band=AgeBand.BAND_10_13,
+        banned_themes=(),
+        premise=premise,
+        created_at=datetime(2026, 7, 20, tzinfo=UTC),
+    )
+    request = StoryRequest(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text=premise,
+        status="blocked",
+        initiator_role="child",
+        age_band="10-13",
+        narrative_style="prose",
+        moderation_flags={"blocked": True, "flags": []},
+        interpretation=interpretation.model_dump(mode="json"),
+        created_at=datetime(2026, 7, 20, tzinfo=UTC),
+    )
+
+    view = _to_view(request, policy=ThresholdPolicy(rows={}), surface_all=False)
+
+    # Blocked-row redaction (existing rule) still holds.
+    assert view.request_text is None
+    # ... AND the generic interpretation is carried alongside it (CR-1).
+    assert isinstance(view.interpretation, RequestInterpretationView)
+    assert view.interpretation.elements
+    assert all(e.element is None for e in view.interpretation.elements)
+    assert view.interpretation.elements[0].disposition == "cannot_carry"
+    assert view.interpretation.elements[0].reason == "safety_policy"
+    # CR-1: no premise-derived content round-trips into the interpretation.
+    assert premise not in view.interpretation.model_dump_json()
 
 
 # ---------------------------------------------------------------------------

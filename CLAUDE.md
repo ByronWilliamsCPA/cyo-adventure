@@ -58,12 +58,13 @@ in the same repository.
 
 **Backend** (`src/cyo_adventure/`):
 
-- **Python**: 3.11+ (`requires-python = ">=3.11"`); 3.12 is the primary local
-  target. No GitHub Actions workflow invokes `nox`: `ci.yml` runs the full
-  quality gate on Python 3.12 only, and `python-compatibility.yml` covers
-  3.11-3.13 on Ubuntu plus 3.12 on macOS/Windows. `nox -s test` runs the
-  3.10-3.14 matrix locally for parity checks before pushing, but CI itself
-  does not call it.
+- **Python**: 3.11+ (`requires-python = ">=3.11"`); 3.14 is the primary local
+  and runtime target (issue #295 upgrade; the production image runs
+  `dhi-python:3.14-debian13`). No GitHub Actions workflow invokes `nox`:
+  `ci.yml` runs the full quality gate on Python 3.14 only, and
+  `python-compatibility.yml` covers 3.11-3.14 on Ubuntu plus 3.14 on
+  macOS/Windows. `nox -s test` runs the 3.11-3.14 matrix locally for parity
+  checks before pushing, but CI itself does not call it.
 - **Package Manager**: UV
 - **Web Framework**: FastAPI (async), Pydantic v2 / Pydantic Settings
 - **Database**: async SQLAlchemy 2.x over PostgreSQL (`core/database.py`),
@@ -1103,5 +1104,5 @@ does not currently); the table above is the operative guidance for now.
 
 ---
 
-**Last Updated**: 2026-07-10
+**Last Updated**: 2026-07-18
 **Template Version**: 0.1.0
