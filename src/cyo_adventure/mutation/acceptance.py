@@ -14,15 +14,24 @@ implements the Tier-1 subset of that table:
 
 Beyond the stages, re-guidance is tracked: a candidate that clears stages 0-2
 but still carries unresolved re-guidance items is *held*, exists and is marked
-unpromotable, never promoted. Stages 3 (floors), 4 (contract acceptance), and 5
-(sample fill) of the design table are out of scope for D2 and land in D6-D8; the
-stage list is ordered and each stage returns a typed outcome, so those extend
-cleanly at the marked points.
+unpromotable, never promoted.
+
+D6 adds one stricter, reject-only stage for Tier-2 (stateful) candidates only,
+between the cell assertion and promotability (design section 5.3/5.4): a single
+configuration walk (the same result the gate's Layer 2 consumed, run once here)
+drives an ending-coverage check, a clock re-proof over configurations, and, for a
+state-only (graph-shape-unchanged) mutant, the state-signature floor. A capped
+walk is itself an acceptance failure for a Tier-2 mutant (an unexplored state
+space is unproven). Tier-1 candidates skip the stage entirely, so their D2
+behavior is byte-identical. Stages 4 (contract acceptance) and 5 (sample fill) of
+the design table land in D7-D8 at the marked point.
 
 The safety invariant (design section 6, CR-2): the harness is structurally
 incapable of marking a ``blocked=True`` gate result promotable. Promotability is
-computed only after the gate stage has passed, and every discard path returns a
-non-promotable result.
+computed only after the gate stage has passed, every discard path (including the
+Tier-2 stage's) returns a non-promotable result through the one discard builder,
+and the Tier-2 floors/checks are reject-only (they can lower promotability, never
+raise it).
 """
 
 from __future__ import annotations
@@ -34,9 +43,21 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import TYPE_CHECKING, cast
 
+from pydantic import ValidationError as PydanticValidationError
+
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.mutation.identity import recompute_tier
+from cyo_adventure.mutation.state_ops import (
+    clock_floor_for,
+    ending_coverage_gap,
+    state_signature_floor_reason,
+    walk_fastest_satisfying_finish,
+)
+from cyo_adventure.mutation.subtree import adjacency, node_ids
+from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.walk import walk_configurations
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -44,6 +65,13 @@ if TYPE_CHECKING:
     from structlog.stdlib import BoundLogger
 
     from cyo_adventure.mutation.ops import MutationOp, OpParams, ReguideItem
+    from cyo_adventure.validator.walk import WalkResult
+
+# The default configuration-walk cap, matching ``validator.walk`` and so the cap
+# the gate's Layer 2 used. The Tier-2 acceptance stage runs its single walk at
+# this cap so it computes coverage and the clock re-proof from the SAME result the
+# gate's L2 verdict was derived from (design 5.3, single-WalkResult rule).
+_DEFAULT_WALK_CAP = 100_000
 
 # The metadata keys that together identify a story's inherited cell (design
 # section 6, stage 2; OQ-4 fixes the cell in v1). A mutant must declare exactly
@@ -62,11 +90,14 @@ _NO_RESOLVED_REGUIDE: frozenset[str] = frozenset()
 
 
 class Stage(StrEnum):
-    """The ordered acceptance stages implemented in D2 (design section 6)."""
+    """The ordered acceptance stages implemented so far (design section 6)."""
 
     PRECONDITIONS = "0-preconditions"
     GATE = "1-gate"
     CELL = "2-cell"
+    # D6: the Tier-2-only stricter checks (ending coverage, clock re-proof over a
+    # single walk, and the M5-only state-signature floor). Skipped for Tier-1.
+    TIER2_STATE = "3-tier2-state"
 
 
 @dataclass(frozen=True, slots=True)
@@ -263,6 +294,151 @@ def _discard(  # noqa: PLR0913 -- one cohesive discard-record builder, mostly ke
     )
 
 
+def _graph_shape_unchanged(
+    parent: Mapping[str, object], candidate: Mapping[str, object]
+) -> bool:
+    """Return whether the candidate leaves the node set and choice edges unchanged.
+
+    A True result means the mutation is state-only (M5a, gate-choice, or
+    relocate-effect): no node was added or removed and no choice target changed, so
+    the anti-clone floor for it is the state-signature floor (design 5.4), not the
+    structural floor (which lands in D7).
+
+    Args:
+        parent: The raw parent story document.
+        candidate: The mutated candidate document.
+
+    Returns:
+        bool: True when the graph shape is identical to the parent's.
+    """
+    return node_ids(parent) == node_ids(candidate) and adjacency(parent) == adjacency(
+        candidate
+    )
+
+
+def _tier2_state_stage(  # noqa: PLR0911 -- one cohesive reject-only precondition ladder, one reason each
+    context: _RunContext,
+    parent: Mapping[str, object],
+    candidate: dict[str, object],
+    *,
+    walk_cap: int,
+) -> str | None:
+    """Run the D6 Tier-2 stricter checks over a single walk, or return a discard reason.
+
+    Skipped (returns None, appends nothing) for a Tier-1 candidate, so Tier-1
+    behavior is byte-identical to D2. For a Tier-2 candidate it runs exactly one
+    ``walk_configurations`` at ``walk_cap`` (the same cap the gate's Layer 2 used)
+    and drives every design 5.3/5.4 check from that single result. Reject-only:
+    every path either returns a discard reason or (on success) appends one passed
+    stage outcome and returns None.
+
+    Args:
+        context: The run accumulator (a passed outcome is appended on success).
+        parent: The raw parent story document.
+        candidate: The gate-passing candidate document.
+        walk_cap: The configuration-walk cap.
+
+    Returns:
+        str | None: A discard reason, or None when the candidate passes (or is
+            Tier-1 and the stage does not apply).
+    """
+    if recompute_tier(candidate) != 2:
+        return None
+    try:
+        story = Storybook.model_validate(dict(candidate))
+    except PydanticValidationError as exc:
+        return f"Tier-2 candidate failed to parse for the state walk: {exc}"
+
+    # #CRITICAL: data-integrity: coverage and the clock re-proof are computed from
+    # the SAME single WalkResult (design 5.3, single-WalkResult rule); a second
+    # walk with a different cap or engine could reach an ending the gate's walk
+    # never did. This one walk at the gate's default cap also confirms consistency
+    # with the gate's L2 verdict: a capped walk here means the state space is
+    # unproven, an acceptance failure for a Tier-2 mutant even though the gate
+    # reports the cap as its own L2-12 finding.
+    # #VERIFY: test_mutation_acceptance.py forces a tiny walk_cap and asserts a
+    # capped-walk discard at the Tier-2 stage on a gate-passing candidate.
+    walk = walk_configurations(story, cap=walk_cap)
+    if walk.capped:
+        return (
+            f"Tier-2 configuration walk hit the cap of {walk_cap}; an unexplored "
+            f"state space is an unproven mutant (design 5.3)"
+        )
+
+    gap = ending_coverage_gap(story, walk)
+    if gap:
+        return (
+            f"ending coverage gap: {sorted(gap)} never occur in any reachable "
+            f"configuration (design 5.3 ending coverage)"
+        )
+
+    clock_reason = _clock_reproof_reason(story, walk)
+    if clock_reason is not None:
+        return clock_reason
+
+    if _graph_shape_unchanged(parent, candidate):
+        floor_reason = _state_floor_reason(parent, story, walk)
+        if floor_reason is not None:
+            return floor_reason
+
+    context.stages.append(
+        StageOutcome(
+            stage=Stage.TIER2_STATE,
+            passed=True,
+            detail=_tier2_detail(story, walk),
+        )
+    )
+    return None
+
+
+def _clock_reproof_reason(story: Storybook, walk: WalkResult) -> str | None:
+    """Return why the walk-derived fastest finish fails the clock re-proof, or None.
+
+    Design 5.3 check 2: the fastest satisfying finish must be finite and at or
+    above the cell's ``min_complete_floor``. A much slower real fastest finish is
+    advisory (reported in the stage detail), not blocked.
+    """
+    floor = clock_floor_for(story)
+    if floor is None:
+        return None
+    finish = walk_fastest_satisfying_finish(story, walk)
+    if finish is None:
+        return (
+            "clock re-proof: no success/completion ending is reachable in any "
+            "configuration (fastest satisfying finish is infinite)"
+        )
+    if finish < floor:
+        return (
+            f"clock re-proof: walk-derived fastest satisfying finish {finish} is "
+            f"below the cell min_complete_floor {floor}"
+        )
+    return None
+
+
+def _state_floor_reason(
+    parent: Mapping[str, object], story: Storybook, walk: WalkResult
+) -> str | None:
+    """Return the state-signature floor reason for a state-only mutant, or None."""
+    try:
+        parent_story = Storybook.model_validate(dict(parent))
+    except PydanticValidationError:
+        # The parent is a gate-passed catalog skeleton, so this is unreachable in
+        # practice; if it ever occurs, skip the floor rather than discard a
+        # candidate that is not itself at fault.
+        return None
+    return state_signature_floor_reason(parent_story, story, walk)
+
+
+def _tier2_detail(story: Storybook, walk: WalkResult) -> str:
+    """Return the play-feel delta summary recorded on a passed Tier-2 stage."""
+    finish = walk_fastest_satisfying_finish(story, walk)
+    floor = clock_floor_for(story)
+    return (
+        f"Tier-2 checks passed: {len(walk.configs)} configs, fastest satisfying "
+        f"finish {finish} (floor {floor}), full ending coverage"
+    )
+
+
 def run_acceptance(  # noqa: PLR0913 -- one cohesive harness entry point, mostly keyword-only
     op: MutationOp,
     parent: Mapping[str, object],
@@ -271,6 +447,7 @@ def run_acceptance(  # noqa: PLR0913 -- one cohesive harness entry point, mostly
     seed: int = 0,
     parent_slug: str = "<unknown>",
     resolved_reguide_ids: frozenset[str] = _NO_RESOLVED_REGUIDE,
+    walk_cap: int = _DEFAULT_WALK_CAP,
     logger: BoundLogger | None = None,
 ) -> AcceptanceResult:
     """Run the D2 acceptance stage table for one mutation attempt.
@@ -289,8 +466,9 @@ def run_acceptance(  # noqa: PLR0913 -- one cohesive harness entry point, mostly
         seed: The rng seed, recorded for replay (design section 3, principle 5).
         parent_slug: The parent's catalog slug, for the discard log.
         resolved_reguide_ids: Re-guidance ``target_id`` values already resolved.
-            D2 never resolves any (the reguide.json flow is D8); this is the
-            documented extension point.
+            The reguide.json resolution flow is D8; this is the extension point.
+        walk_cap: The configuration-walk cap for the Tier-2 stage (default the
+            gate's own cap). Tests lower it to force a capped-walk discard.
         logger: The structlog logger to emit discards on; defaults to this
             module's logger.
 
@@ -397,6 +575,21 @@ def run_acceptance(  # noqa: PLR0913 -- one cohesive harness entry point, mostly
         StageOutcome(stage=Stage.CELL, passed=True, detail=cell_detail)
     )
 
+    # --- Stage 3 (Tier-2 only): stricter state checks (design 5.3/5.4) ---
+    # Reject-only and gated to Tier-2 candidates; a Tier-1 candidate skips it, so
+    # its outcome is byte-identical to D2. Any failure routes through the one
+    # discard builder, keeping the CR-2 invariant intact.
+    tier2_reason = _tier2_state_stage(context, parent, candidate, walk_cap=walk_cap)
+    if tier2_reason is not None:
+        _emit_discard(Stage.TIER2_STATE, tier2_reason, ())
+        return _discard(
+            context,
+            Stage.TIER2_STATE,
+            tier2_reason,
+            gate_summary=gate_summary,
+            candidate=candidate,
+        )
+
     # --- Re-guidance tracking ---
     outstanding = tuple(
         item for item in result.reguide if item.target_id not in resolved_reguide_ids
@@ -413,7 +606,10 @@ def run_acceptance(  # noqa: PLR0913 -- one cohesive harness entry point, mostly
     # and asserts the result is never promotable.
     promotable = (not gate.blocked) and cell_ok and len(outstanding) == 0
 
-    # TODO(ws5-d7): insert stage 3 (anti-clone / state-signature floors) here;
+    # The D6 Tier-2 state stage ran above (reject-only); reaching here means it
+    # passed or the candidate is Tier-1.
+    # TODO(ws5-d7): insert the structural anti-clone floors (TAU_STRUCT/TAU_CELL)
+    # for graph-changing mutants here, and calibrate the state-signature TAU_STATE;
     # reject-only, never admitting.
     # TODO(ws5-d8): insert stage 4 (contract acceptance) and stage 5 (sample
     # fill) here for parameterized parents.

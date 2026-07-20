@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import copy
 import json
+import random
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
@@ -30,18 +31,21 @@ from cyo_adventure.mutation.ops import (
     ReguideItem,
     ReguideTarget,
 )
-from cyo_adventure.validator.gate import GateResult
+from cyo_adventure.mutation.state_ops import M5
+from cyo_adventure.validator.gate import GateResult, run_gate
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
     ValidationReport,
 )
+from cyo_adventure.validator.walk import WalkResult, walk_configurations
 
 if TYPE_CHECKING:
-    import random
     from collections.abc import Mapping
 
     from structlog.stdlib import BoundLogger
+
+    from cyo_adventure.storybook.models import Storybook
 
 _SKELETONS_ROOT = Path(__file__).resolve().parents[2] / "skeletons"
 
@@ -370,3 +374,133 @@ def _any_choice_id(story: dict[str, object]) -> str:
                     if isinstance(choice_id, str):
                         return choice_id
     pytest.skip("no choices in the chosen parent")
+
+
+# --- D6 additions: the Tier-2 stricter stage (design 5.3/5.4) ---
+
+_FLOODED_QUARTER = _SKELETONS_ROOT / "10-13" / "the-flooded-quarter.json"
+
+
+def _flooded_quarter() -> dict[str, object]:
+    """Return the-flooded-quarter Tier-2 skeleton as a raw document."""
+    return cast(
+        "dict[str, object]",
+        json.loads(_FLOODED_QUARTER.read_text(encoding="utf-8")),
+    )
+
+
+def _widen_oil() -> OpParams:
+    """Return an M5 retune that always clears every stage on the-flooded-quarter."""
+    return OpParams.of(mode="retune", variable="oil", max=4, description="Roomier oil.")
+
+
+@pytest.mark.unit
+def test_tier1_candidate_skips_the_tier2_stage() -> None:
+    """A Tier-1 (M1) candidate never runs the D6 Tier-2 stage, preserving D2 behavior."""
+    _slug, story = _first_eligible_tier1()
+    result = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
+    stages = [outcome.stage for outcome in result.stages]
+    assert Stage.TIER2_STATE not in stages
+    assert stages == [Stage.PRECONDITIONS, Stage.GATE, Stage.CELL]
+
+
+@pytest.mark.unit
+def test_tier2_capped_walk_is_an_acceptance_failure() -> None:
+    """A capped configuration walk discards a Tier-2 mutant (unproven state space)."""
+    parent = _flooded_quarter()
+    result = run_acceptance(
+        M5, parent, _widen_oil(), seed=0, parent_slug="fq", walk_cap=5
+    )
+    assert result.discarded_at_stage is Stage.TIER2_STATE
+    assert "hit the cap" in result.discard_reason
+    assert result.promotable is False
+
+
+@pytest.mark.unit
+def test_tier2_ending_coverage_gap_discards_when_the_gate_l2_passed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The coverage check catches a stranded ending the gate's L2 verdict passed."""
+    parent = _flooded_quarter()
+    candidate = M5.apply(parent, _widen_oil(), random.Random(0)).candidate
+    # The real gate (and its own L2 walk) accepts this candidate.
+    assert run_gate(candidate).blocked is False
+
+    real_walk = walk_configurations
+
+    def _drop_one_ending(story: Storybook, *, cap: int = 100_000) -> WalkResult:
+        result = real_walk(story, cap=cap)
+        ending_ids = {node.id for node in story.nodes if node.is_ending}
+        victim = next(key[0] for key in result.configs if key[0] in ending_ids)
+        configs = {k: v for k, v in result.configs.items() if k[0] != victim}
+        edges = {k: v for k, v in result.edges.items() if k[0] != victim}
+        return WalkResult(configs=configs, edges=edges, capped=False)
+
+    monkeypatch.setattr(
+        "cyo_adventure.mutation.acceptance.walk_configurations", _drop_one_ending
+    )
+    result = run_acceptance(M5, parent, _widen_oil(), seed=0, parent_slug="fq")
+    assert result.discarded_at_stage is Stage.TIER2_STATE
+    assert "ending coverage gap" in result.discard_reason
+
+
+@pytest.mark.unit
+def test_tier2_clock_reproof_discards_a_short_walk_finish(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A walk-derived fastest finish below the cell floor is discarded by the clock."""
+    parent = _flooded_quarter()
+    real_walk = walk_configurations
+
+    def _short_finish(story: Storybook, *, cap: int = 100_000) -> WalkResult:
+        result = real_walk(story, cap=cap)
+        satisfying = {
+            node.id
+            for node in story.nodes
+            if node.is_ending
+            and node.ending is not None
+            and node.ending.kind.value in {"success", "completion"}
+        }
+        initial_key = next(iter(result.configs))
+        target = next(key for key in result.configs if key[0] in satisfying)
+        edges = dict(result.edges)
+        edges[initial_key] = [target]  # a two-node config path to a satisfying finish
+        return WalkResult(configs=result.configs, edges=edges, capped=False)
+
+    monkeypatch.setattr(
+        "cyo_adventure.mutation.acceptance.walk_configurations", _short_finish
+    )
+    result = run_acceptance(M5, parent, _widen_oil(), seed=0, parent_slug="fq")
+    assert result.discarded_at_stage is Stage.TIER2_STATE
+    assert "clock re-proof" in result.discard_reason
+
+
+@pytest.mark.unit
+@pytest.mark.security
+def test_tier2_state_floor_discards_an_alpha_rename() -> None:
+    """The state-signature floor rejects a signature-neutral alpha-rename (reject-only)."""
+    parent = _flooded_quarter()
+    result = run_acceptance(
+        M5,
+        parent,
+        OpParams.of(mode="rename", variable="oil", new_name="fuel"),
+        seed=0,
+        parent_slug="fq",
+    )
+    assert result.discarded_at_stage is Stage.TIER2_STATE
+    assert result.promotable is False
+    assert "state-signature distance" in result.discard_reason
+
+
+@pytest.mark.unit
+@pytest.mark.security
+def test_tier2_blocked_gate_is_never_promotable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CR-2 for Tier-2: a blocked gate discards before the Tier-2 stage runs."""
+    monkeypatch.setattr("cyo_adventure.mutation.acceptance.run_gate", _blocking_gate)
+    parent = _flooded_quarter()
+    result = run_acceptance(M5, parent, _widen_oil(), seed=0, parent_slug="fq")
+    assert result.discarded_at_stage is Stage.GATE
+    assert result.promotable is False
+    assert Stage.TIER2_STATE not in [outcome.stage for outcome in result.stages]
