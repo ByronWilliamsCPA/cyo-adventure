@@ -1,4 +1,15 @@
-# Information Security Program
+---
+title: "Information Security Program"
+schema_type: planning
+status: published
+owner: core-maintainer
+purpose: "Internal information-security program artifact required by COPPA 312.8 and GDPR Article 32(1)(d), covering the FastAPI backend, frontend, and supporting infrastructure."
+tags:
+  - compliance
+  - security
+component: Development-Tools
+source: "Compliance program artifact tracked in coppa-gdpr-remediation-plan.md Phase 6b; last reviewed 2026-07-20."
+---
 
 Status: living document. Owner: Byron Williams (byronawilliams@gmail.com). Last reviewed:
 2026-07-20.

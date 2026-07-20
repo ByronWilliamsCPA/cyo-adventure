@@ -1,4 +1,16 @@
-# Breach Notification Runbook
+---
+title: "Breach Notification Runbook"
+schema_type: planning
+status: published
+owner: core-maintainer
+purpose: "Internal incident-response procedure for personal-data breaches required by GDPR Articles 33-34, referenced by information-security-program.md Section 5."
+tags:
+  - compliance
+  - security
+  - privacy
+component: Development-Tools
+source: "Internal procedure cross-referenced from information-security-program.md Section 5 and gdpr-compliance-review.md finding G-09; last reviewed 2026-07-20."
+---
 
 Status: living document. Owner: Byron Williams (byronawilliams@gmail.com). Last reviewed:
 2026-07-20.

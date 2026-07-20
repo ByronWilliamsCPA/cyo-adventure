@@ -1,4 +1,17 @@
-# Data Protection Impact Assessment (Draft for Counsel Review)
+---
+title: "Data Protection Impact Assessment (Draft for Counsel Review)"
+schema_type: planning
+status: draft
+owner: core-maintainer
+purpose: "Data Protection Impact Assessment of the shipped consent-capture and data-handling design under GDPR Article 35, drafted for counsel review as coppa-gdpr-remediation-plan.md Phase 7b."
+tags:
+  - compliance
+  - security
+  - privacy
+  - legal
+component: Development-Tools
+source: "Deliverable for coppa-gdpr-remediation-plan.md Phase 7b, assessing the shipped design after Phase 2's consent-capture build; draft date 2026-07-20."
+---
 
 **Status: DRAFT.** Written for counsel to review and redline, not a completed, signed-off
 DPIA. This is the deliverable for `coppa-gdpr-remediation-plan.md` Phase 7b, drafted *after*

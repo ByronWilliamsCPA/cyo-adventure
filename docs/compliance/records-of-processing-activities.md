@@ -1,4 +1,16 @@
-# Records of Processing Activities (GDPR Article 30)
+---
+title: "Records of Processing Activities (GDPR Article 30)"
+schema_type: planning
+status: published
+owner: core-maintainer
+purpose: "Article 30(1)/(2) Records of Processing Activities synthesizing existing compliance material into the single record required of a controller."
+tags:
+  - compliance
+  - privacy
+  - legal
+component: Development-Tools
+source: "Synthesis of coppa-compliance-audit.md, gdpr-compliance-review.md, docs/planning/privacy-model.md, docs/planning/capability-register.md, and ADR-018; last reviewed 2026-07-20."
+---
 
 Status: living document. Owner: Byron Williams (byronawilliams@gmail.com). Last reviewed:
 2026-07-20.
