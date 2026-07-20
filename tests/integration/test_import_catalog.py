@@ -18,7 +18,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
+import cyo_adventure.generation.import_catalog as import_catalog_module
 from cyo_adventure.db.models import CATALOG_FAMILY_ID, Storybook, StorybookVersion
 from cyo_adventure.generation.import_catalog import (
     CATALOG_ENTRIES,
@@ -26,6 +28,8 @@ from cyo_adventure.generation.import_catalog import (
     ImportConfig,
     import_catalog,
 )
+from cyo_adventure.generation.import_story import ImportRequest
+from cyo_adventure.generation.import_story import import_filled_story as _real_import
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -119,6 +123,57 @@ async def test_import_catalog_isolates_a_bad_entry_from_the_rest(
     assert outcomes[1].outcome == "imported"
 
     async with sessions() as session:
+        book = await session.get(Storybook, outcomes[1].story_id)
+        assert book is not None
+
+
+async def test_import_catalog_survives_an_integrity_error_and_continues(
+    sessions: async_sessionmaker[AsyncSession], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A PK-violation IntegrityError on one entry is reported, not fatal.
+
+    Regression for the #CRITICAL/#ASSUME notes on _persist_and_classify and
+    _import_one: a concurrent second run of this batch script could pass the
+    pre-check ``session.get(Storybook, story_id)`` None check and then race
+    on the Storybook PK insert, raising sqlalchemy.exc.IntegrityError (not a
+    ProjectBaseError). Before the fix, that exception was uncaught and
+    propagated out of import_catalog(), aborting the whole batch before
+    _print_summary ever ran. A genuine concurrent race is not deterministic
+    to reproduce, so this forces the same failure mode directly: patches
+    import_filled_story (as import_catalog.py imports it) to raise
+    IntegrityError for exactly one entry, delegating to the real
+    implementation for every other call, and asserts the batch still
+    completes and classifies the failed entry as "error" while the
+    following entry still imports normally.
+    """
+    raised = {"count": 0}
+
+    async def _flaky_import(session: AsyncSession, request: ImportRequest) -> str:
+        raised["count"] += 1
+        if raised["count"] == 1:
+            raise IntegrityError(
+                "INSERT INTO storybook (id, family_id, status) VALUES (...)",
+                {},
+                Exception(
+                    'duplicate key value violates unique constraint "storybook_pkey"'
+                ),
+            )
+        return await _real_import(session, request)
+
+    monkeypatch.setattr(import_catalog_module, "import_filled_story", _flaky_import)
+
+    config = ImportConfig(repo_root=_REPO_ROOT)
+    outcomes = await import_catalog(sessions, config, entries=(_CLOVER, _LOST_MITTEN))
+
+    assert len(outcomes) == 2
+    assert outcomes[0].outcome == "error"
+    assert "duplicate key" in outcomes[0].detail
+    assert outcomes[1].outcome == "imported"
+
+    async with sessions() as session:
+        # The failed entry must not have left a partial row behind.
+        assert outcomes[0].story_id is not None
+        assert await session.get(Storybook, outcomes[0].story_id) is None
         book = await session.get(Storybook, outcomes[1].story_id)
         assert book is not None
 

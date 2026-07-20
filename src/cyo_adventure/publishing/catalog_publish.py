@@ -111,7 +111,8 @@ async def _load_admin_principal(
         ResourceNotFoundError: If no User with this id exists.
         AuthorizationError: If the User exists but does not hold the admin
             capability (mirrors ``api/approval.py::_load_admin_story``'s
-            own check).
+            own check), or if its stored ``role`` is outside the closed
+            :class:`Role` set.
     """
     # #CRITICAL: security: this is the ONLY authorization check in this CLI
     # path (there is no HTTP request, so api/deps.py's admin gate never
@@ -129,10 +130,26 @@ async def _load_admin_principal(
         raise ResourceNotFoundError(
             msg, resource_type="User", resource_id=str(approved_by)
         )
+    # #CRITICAL: security: unlike api/deps.py::require_principal (which lets
+    # an unmodeled ``role`` raise a bare ValueError, relying on FastAPI's
+    # ASGI-level exception handling to turn it into a 500), this command runs
+    # outside any request cycle: main()'s only handler is
+    # ``except ProjectBaseError``, so an unguarded Role(...) coercion failure
+    # here would print a raw traceback instead of a clean "promotion failed"
+    # message. Guarding it and raising AuthorizationError keeps this CLI's
+    # error surface consistent for every rejection path.
+    # #VERIFY: see test_load_admin_principal_rejects_a_row_with_an_unmodeled_role,
+    # which asserts AuthorizationError (never a bare ValueError) for a role
+    # outside the closed Role set.
+    try:
+        role = Role(user.role)
+    except ValueError as exc:
+        msg = f"user '{approved_by}' has an unrecognized role: {user.role!r}"
+        raise AuthorizationError(msg, required_permission="admin") from exc
     principal = Principal(
         subject=str(user.id),
         user_id=user.id,
-        role=Role(user.role),
+        role=role,
         family_id=user.family_id,
         profile_ids=frozenset(),
         is_admin=user.is_admin,

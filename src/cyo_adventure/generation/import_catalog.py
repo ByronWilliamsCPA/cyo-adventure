@@ -29,6 +29,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, cast
 
+from sqlalchemy.exc import SQLAlchemyError
+
 from cyo_adventure.core.database import get_session
 from cyo_adventure.core.exceptions import ProjectBaseError, ValidationError
 from cyo_adventure.db.models import CATALOG_FAMILY_ID, Storybook
@@ -577,9 +579,15 @@ async def _persist_and_classify(
 ) -> ImportOutcome:
     """Run ``import_filled_story`` and classify its outcome.
 
-    Commits the session on success; leaves it uncommitted (the caller's
-    ``async with`` closes and rolls it back) on either failure branch, so a
-    gate block or moderation-pipeline error never leaves a partial write.
+    Commits the session on success. On a gate block, rolls back via the
+    caller's ``async with`` (no ORM writes were flushed, so nothing to
+    undo). On any other error, this is the batch's per-entry boundary: it
+    catches every ``ProjectBaseError`` (a moderation-pipeline failure, etc.)
+    and every ``SQLAlchemyError`` (notably ``IntegrityError``, e.g. a
+    PK-violation from a concurrent duplicate run racing this entry's insert;
+    see ``_import_one``'s own ``#ASSUME`` note), rolls the session back
+    explicitly, and classifies the entry as "error" rather than letting the
+    exception propagate and abort the whole batch.
 
     Args:
         session: Open async session for this entry's isolated transaction.
@@ -605,7 +613,19 @@ async def _persist_and_classify(
         imported_id = await import_filled_story(session, request)
     except ValidationError as exc:
         return ImportOutcome(entry, story_id, "gate_blocked", str(exc))
-    except ProjectBaseError as exc:
+    # #CRITICAL: data-integrity: this is the batch's per-entry error
+    # boundary. ProjectBaseError covers every domain failure the moderation
+    # pipeline and importer raise; SQLAlchemyError (IntegrityError is a
+    # subclass) covers a PK-violation or other DB-layer failure that is not
+    # a ProjectBaseError, most notably the concurrent-run race documented on
+    # _import_one. Catching both here (rather than only ProjectBaseError, or
+    # a blind ``except Exception``) keeps one bad entry from aborting
+    # _print_summary for the other 24.
+    # #VERIFY: test_import_catalog_survives_an_integrity_error_and_continues in
+    # tests/integration/test_import_catalog.py forces an IntegrityError on one
+    # entry and asserts the batch completes rather than crashing.
+    except (ProjectBaseError, SQLAlchemyError) as exc:
+        await session.rollback()
         return ImportOutcome(entry, story_id, "error", str(exc))
 
     book = await session.get(Storybook, imported_id)
@@ -647,12 +667,16 @@ async def _import_one(
         # import happen in the same session but are not itself a hard lock;
         # a concurrent second run of this batch script against the same
         # database could theoretically both pass this check and then race on
-        # the Storybook PK insert (the second would surface as an "error"
-        # outcome via the PK-violation IntegrityError below, not silently
-        # double-import). The importer is intended to be run by one operator
-        # at a time, so this window is accepted rather than adding explicit
-        # row locking.
-        # #VERIFY: test_import_catalog_is_idempotent_across_two_runs.
+        # the Storybook PK insert. That race surfaces as an "error" outcome
+        # via the PK-violation IntegrityError caught in
+        # _persist_and_classify's broadened exception boundary, not a crashed
+        # batch or a silent double-import. The importer is intended to be run
+        # by one operator at a time, so this window is accepted rather than
+        # adding explicit row locking.
+        # #VERIFY: see test_import_catalog_imports_a_small_entry_and_is_idempotent
+        # for two sequential full runs staying idempotent, and
+        # test_import_catalog_survives_an_integrity_error_and_continues for a
+        # forced PK-violation IntegrityError not aborting the batch.
         existing = await session.get(Storybook, story_id)
         if existing is not None:
             return ImportOutcome(entry, story_id, "skipped_existing")
