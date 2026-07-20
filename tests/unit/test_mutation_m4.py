@@ -33,7 +33,7 @@ from hypothesis import strategies as st
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.mutation import operators as m4_ops
-from cyo_adventure.mutation.acceptance import run_acceptance
+from cyo_adventure.mutation.acceptance import Stage, run_acceptance
 from cyo_adventure.mutation.operators import (
     M4,
     M4_OP_ID,
@@ -694,11 +694,47 @@ def test_m4_remove_linear_rejects_the_start_node() -> None:
 
 
 @pytest.mark.unit
+def test_m4_reconvergence_changing_topology_passes_the_cell_stage() -> None:
+    """A time_cave -> branch_and_bottleneck reconvergence now clears the cell stage.
+
+    Component-4 (design 4.8, OQ-4): topology is no longer a cell key. An
+    insert-decision reconvergence on the-cave-of-echoes (8-11, time_cave) adds an
+    in-edge, so the mutant graph is no longer time_cave; ``resync_metadata`` re-
+    declares the admissible, band-legal ``branch_and_bottleneck`` (in the 8-11
+    row), which PL-18 re-proves at the gate. Before the fix this mutant was
+    discarded at stage 2 as spurious "cell drift" and was therefore only promotable
+    on an already-reconverging (branch_and_bottleneck) parent; now it reaches the
+    cell stage and is held on its re-guidance. No safety assertion is weakened: the
+    gate (PL-18) and the band-row check in ``redeclare_topology`` still enforce
+    topology honesty.
+    """
+    cave = _cave()
+    params = OpParams.of(
+        mode="insert-decision",
+        choice="c_left",
+        variant="reconvergence",
+        target="la_fork",
+    )
+    candidate = M4.apply(cave, params, random.Random(0)).candidate
+    assert cave["metadata"]["topology"] == "time_cave"  # pyright: ignore[reportIndexIssue]
+    assert candidate["metadata"]["topology"] == "branch_and_bottleneck"  # pyright: ignore[reportIndexIssue]
+    result = run_acceptance(M4, cave, params, seed=0, parent_slug="the-cave-of-echoes")
+    # Reaches the cell stage (not cell-drift discarded) and is held on re-guidance.
+    assert result.discarded_at_stage is None
+    assert result.held is True
+    cell_stage = next(o for o in result.stages if o.stage is Stage.CELL)
+    assert cell_stage.passed is True
+
+
+@pytest.mark.unit
 def test_m4_insert_decision_reconvergence_raises_in_degree_and_passes_gate() -> None:
     """A reconvergence lifts the target's in-degree and clears the gate.
 
     Runs on a branch_and_bottleneck host so the added reconvergence preserves the
-    declared topology; ``e_chaos`` gains an in-edge from the new decision.
+    declared topology; ``e_chaos`` gains an in-edge from the new decision. (A
+    reconvergence that CHANGES topology within the band row is also accepted since
+    the component-4 topology-cell fix; see
+    test_m4_reconvergence_changing_topology_passes_the_cell_stage.)
     """
     robot = _robot()
     params = OpParams.of(

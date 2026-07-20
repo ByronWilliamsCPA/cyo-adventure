@@ -46,6 +46,8 @@ from typing import TYPE_CHECKING, cast
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.mutation.contract_gate import contract_acceptance_reason
+from cyo_adventure.mutation.floors import load_in_cell_catalog, structural_floor_reason
 from cyo_adventure.mutation.identity import recompute_tier
 from cyo_adventure.mutation.state_ops import (
     clock_floor_for,
@@ -65,6 +67,7 @@ if TYPE_CHECKING:
     from structlog.stdlib import BoundLogger
 
     from cyo_adventure.mutation.ops import MutationOp, OpParams, ReguideItem
+    from cyo_adventure.storybook.theme_contract import ThemeContract
     from cyo_adventure.validator.walk import WalkResult
 
 # The default configuration-walk cap, matching ``validator.walk`` and so the cap
@@ -76,11 +79,25 @@ _DEFAULT_WALK_CAP = 100_000
 # The metadata keys that together identify a story's inherited cell (design
 # section 6, stage 2; OQ-4 fixes the cell in v1). A mutant must declare exactly
 # its parent's cell.
+#
+# #ASSUME: data-integrity: ``topology`` is intentionally NOT a cell key (design
+# 4.8, OQ-4). Topology is MUTABLE within the band's ADR-011 section-7 row: a
+# structural operator (an M1 swap, an M4 insert-decision-reconvergence) can
+# change the graph shape, and ``identity.redeclare_topology`` (run inside
+# ``resync_metadata``) re-declares an admissible, band-legal topology, which PL-18
+# re-proves at the gate. Pinning topology into the cell key would over-reject
+# those topology-changing mutants as spurious "cell drift". The fixed cell is
+# ``(age_band, length, narrative_style)`` plus ``tier`` (a mutant must not change
+# tier); topology honesty is enforced by redeclare_topology's band-row check and
+# PL-18, not by this assertion.
+# #VERIFY: tests/unit/test_mutation_acceptance.py asserts a band-legal topology
+# re-declaration is NOT discarded at stage 2 while tier/band/length/style drift
+# IS, and that a topology outside the band row is rejected (redeclare raises /
+# the gate blocks).
 _CELL_KEYS: tuple[str, ...] = (
     "age_band",
     "length",
     "narrative_style",
-    "topology",
     "tier",
 )
 
@@ -98,6 +115,12 @@ class Stage(StrEnum):
     # D6: the Tier-2-only stricter checks (ending coverage, clock re-proof over a
     # single walk, and the M5-only state-signature floor). Skipped for Tier-1.
     TIER2_STATE = "3-tier2-state"
+    # D7: the structural anti-clone floor for graph-shape-CHANGED candidates
+    # (design 4.6). Reject-only; runs only at the promotable decision point.
+    STRUCTURE = "3-structure"
+    # D7: contract acceptance for a mutant of a parameterized parent (design 4.7,
+    # section 6 stage 4). Reject-only.
+    CONTRACT = "4-contract"
 
 
 @dataclass(frozen=True, slots=True)
@@ -439,7 +462,80 @@ def _tier2_detail(story: Storybook, walk: WalkResult) -> str:
     )
 
 
-def run_acceptance(  # noqa: PLR0913 -- one cohesive harness entry point, mostly keyword-only
+def _structural_floor_stage(
+    context: _RunContext,
+    parent: Mapping[str, object],
+    candidate: dict[str, object],
+    parent_slug: str,
+) -> str | None:
+    """Run the D7 structural anti-clone floor, or return a discard reason.
+
+    Applies only to a graph-shape-CHANGED candidate (the caller routes; a
+    shape-unchanged candidate used the state-signature floor in the Tier-2 stage).
+    Loads the in-cell sibling catalog and applies the three design-4.6 clauses.
+    Reject-only: on success it appends one passed stage outcome and returns None;
+    on a clone it returns the discard reason without appending.
+
+    Args:
+        context: The run accumulator (a passed outcome is appended on success).
+        parent: The raw parent story document.
+        candidate: The gate-passing, shape-changed candidate document.
+        parent_slug: The parent's catalog slug, excluded from the in-cell cohort.
+
+    Returns:
+        str | None: A discard reason, or None when the candidate clears the floor.
+    """
+    in_cell = load_in_cell_catalog(candidate, parent_slug)
+    reason = structural_floor_reason(parent, candidate, in_cell)
+    if reason is not None:
+        return reason
+    context.stages.append(
+        StageOutcome(
+            stage=Stage.STRUCTURE,
+            passed=True,
+            detail=(
+                f"structural anti-clone floor cleared against {len(in_cell)} in-cell "
+                f"tree(s)"
+            ),
+        )
+    )
+    return None
+
+
+def _contract_stage(
+    context: _RunContext,
+    candidate: dict[str, object],
+    mutated_contract: ThemeContract,
+) -> str | None:
+    """Run the D7 stage-4 contract acceptance, or return a discard reason.
+
+    Reject-only (design 4.7, CR-2/CR-4): runs the mutated contract through the
+    same deterministic checks ``check_theme_contract.py`` makes, in memory. On
+    success it appends one passed stage outcome and returns None; on failure it
+    returns the discard reason.
+
+    Args:
+        context: The run accumulator (a passed outcome is appended on success).
+        candidate: The gate-passing candidate document.
+        mutated_contract: The mutant's theme contract (a parameterized parent).
+
+    Returns:
+        str | None: A discard reason, or None when the contract is accepted.
+    """
+    reason = contract_acceptance_reason(candidate, mutated_contract)
+    if reason is not None:
+        return reason
+    context.stages.append(
+        StageOutcome(
+            stage=Stage.CONTRACT,
+            passed=True,
+            detail="mutated contract passed acceptance (incl. the band-mandatory floor)",
+        )
+    )
+    return None
+
+
+def run_acceptance(  # noqa: PLR0913, C901, PLR0911 -- one cohesive stage ladder, one discard return per stage
     op: MutationOp,
     parent: Mapping[str, object],
     params: OpParams,
@@ -448,6 +544,7 @@ def run_acceptance(  # noqa: PLR0913 -- one cohesive harness entry point, mostly
     parent_slug: str = "<unknown>",
     resolved_reguide_ids: frozenset[str] = _NO_RESOLVED_REGUIDE,
     walk_cap: int = _DEFAULT_WALK_CAP,
+    mutated_contract: ThemeContract | None = None,
     logger: BoundLogger | None = None,
 ) -> AcceptanceResult:
     """Run the D2 acceptance stage table for one mutation attempt.
@@ -469,6 +566,11 @@ def run_acceptance(  # noqa: PLR0913 -- one cohesive harness entry point, mostly
             The reguide.json resolution flow is D8; this is the extension point.
         walk_cap: The configuration-walk cap for the Tier-2 stage (default the
             gate's own cap). Tests lower it to force a capped-walk discard.
+        mutated_contract: The mutant's theme contract, for a parameterized
+            parent. When supplied, stage 4 (contract acceptance, design 4.7)
+            runs; when None, the mutant lands contract-less at parity with its
+            parent (design 4.7, OQ-2). The caller supplies it (the CLI computes
+            it for parameterized parents in D8).
         logger: The structlog logger to emit discards on; defaults to this
             module's logger.
 
@@ -600,22 +702,54 @@ def run_acceptance(  # noqa: PLR0913 -- one cohesive harness entry point, mostly
     # gate stage has already passed (a blocked result returned above), and it
     # re-asserts ``not gate.blocked`` so no future refactor that reorders the
     # returns can make a blocked candidate promotable (design section 6, CR-2).
-    # Floors (stage 3) and contracts (stage 4) are reject-only and land in D7;
-    # they can only lower this flag, never raise it.
+    # Floors (stage 3) and contracts (stage 4) below are reject-only: they can
+    # only lower this flag (by discarding), never raise it.
     # #VERIFY: test_mutation_acceptance.py monkeypatches run_gate to always block
     # and asserts the result is never promotable.
-    promotable = (not gate.blocked) and cell_ok and len(outstanding) == 0
+    would_be_promotable = (not gate.blocked) and cell_ok and len(outstanding) == 0
 
-    # The D6 Tier-2 state stage ran above (reject-only); reaching here means it
-    # passed or the candidate is Tier-1.
-    # TODO(ws5-d7): insert the structural anti-clone floors (TAU_STRUCT/TAU_CELL)
-    # for graph-changing mutants here, and calibrate the state-signature TAU_STATE;
-    # reject-only, never admitting.
-    # TODO(ws5-d8): insert stage 4 (contract acceptance) and stage 5 (sample
-    # fill) here for parameterized parents.
+    # --- Stage 3 (structural anti-clone floor): shape-changed candidates only ---
+    # #CRITICAL: data-integrity: the structural floor is reject-only and gates
+    # ONLY the promotable decision (design 4.6). A candidate already held for
+    # re-guidance stays held (it is not promotable regardless), and a
+    # shape-UNCHANGED (M5-only) candidate used the state-signature floor in the
+    # Tier-2 stage above; running both would double-count. So the floor runs only
+    # for a would-be-promotable, graph-shape-CHANGED candidate, and it can only
+    # turn that promotion into a discard, never admit anything (CR-2).
+    # #VERIFY: test_mutation_acceptance.py asserts a resolved-reguide M1 swap that
+    # genuinely re-shapes the tree stays promotable, and test_mutation_floors.py
+    # pins the clone-rejection clauses on the floor function directly.
+    if would_be_promotable and not _graph_shape_unchanged(parent, candidate):
+        struct_reason = _structural_floor_stage(context, parent, candidate, parent_slug)
+        if struct_reason is not None:
+            _emit_discard(Stage.STRUCTURE, struct_reason, ())
+            return _discard(
+                context,
+                Stage.STRUCTURE,
+                struct_reason,
+                gate_summary=gate_summary,
+                candidate=candidate,
+            )
+
+    # --- Stage 4 (contract acceptance): parameterized parents only ---
+    # Reject-only; runs whenever the caller supplied the mutant's contract (a
+    # parameterized parent). A contract-less parent's mutant lands contract-less
+    # at parity (design 4.7, OQ-2). CR-4: the band-mandatory floor is unioned
+    # inside the contract check regardless of contract content.
+    if mutated_contract is not None:
+        contract_reason = _contract_stage(context, candidate, mutated_contract)
+        if contract_reason is not None:
+            _emit_discard(Stage.CONTRACT, contract_reason, ())
+            return _discard(
+                context,
+                Stage.CONTRACT,
+                contract_reason,
+                gate_summary=gate_summary,
+                candidate=candidate,
+            )
 
     return AcceptanceResult(
-        promotable=promotable,
+        promotable=would_be_promotable,
         discarded_at_stage=None,
         reguide_outstanding=len(outstanding),
         gate_summary=gate_summary,

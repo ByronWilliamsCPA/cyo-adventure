@@ -50,6 +50,11 @@ if TYPE_CHECKING:
 _SKELETONS_ROOT = Path(__file__).resolve().parents[2] / "skeletons"
 
 
+def _floor_always_passes(_parent: object, _candidate: object, _in_cell: object) -> None:
+    """A typed structural-floor stub that accepts every candidate (test isolation)."""
+    return
+
+
 def _load(slug_path: str) -> dict[str, object]:
     """Load one catalog skeleton by its ``band/slug.json`` path."""
     return cast(
@@ -146,8 +151,24 @@ def test_accepted_m1_candidate_is_held_not_promotable() -> None:
 
 
 @pytest.mark.unit
-def test_resolving_all_reguide_items_makes_the_candidate_promotable() -> None:
-    """Marking every reguide target resolved flips a held candidate to promotable."""
+def test_resolving_all_reguide_items_makes_the_candidate_promotable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Marking every reguide target resolved flips a held candidate to promotable.
+
+    D7 change: the default M1 swap on the first eligible parent is near-isomorphic
+    (structural distance ~0.036, far below the calibrated TAU_STRUCT ~0.329), so
+    with re-guidance resolved it would now be discarded by the stage-3 structural
+    anti-clone floor (see the companion test). To keep pinning the ORIGINAL,
+    still-valid mechanic in isolation -- that resolving every re-guidance item is
+    what flips a held candidate to promotable -- the structural floor is stubbed to
+    pass here. The floor's own clone-rejection behaviour is covered by
+    test_structural_floor_discards_a_near_isomorphic_swap and test_mutation_floors.
+    """
+    monkeypatch.setattr(
+        "cyo_adventure.mutation.acceptance.structural_floor_reason",
+        _floor_always_passes,
+    )
     _slug, story = _first_eligible_tier1()
     dry = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
     resolved = frozenset(item.target_id for item in dry.reguide)
@@ -165,6 +186,32 @@ def test_resolving_all_reguide_items_makes_the_candidate_promotable() -> None:
 
 
 @pytest.mark.unit
+def test_structural_floor_discards_a_near_isomorphic_swap() -> None:
+    """A resolved-reguide near-isomorphic M1 swap is discarded by the D7 floor.
+
+    The default M1 swap re-pairs two siblings without moving the numeric feature
+    vector far, so its structural distance to the parent is below TAU_STRUCT. With
+    every re-guidance item resolved (the otherwise-promotable path), the stage-3
+    structural anti-clone floor discards it: a near-clone is not a genuine new tree
+    (design 4.6). Reject-only: the candidate is discarded, never promoted.
+    """
+    _slug, story = _first_eligible_tier1()
+    dry = run_acceptance(M1, story, OpParams.of(), seed=0, parent_slug=_slug)
+    resolved = frozenset(item.target_id for item in dry.reguide)
+    result = run_acceptance(
+        M1,
+        story,
+        OpParams.of(),
+        seed=0,
+        parent_slug=_slug,
+        resolved_reguide_ids=resolved,
+    )
+    assert result.discarded_at_stage is Stage.STRUCTURE
+    assert result.promotable is False
+    assert "TAU_STRUCT" in result.discard_reason
+
+
+@pytest.mark.unit
 @pytest.mark.security
 def test_harness_cannot_promote_a_blocked_gate(
     monkeypatch: pytest.MonkeyPatch,
@@ -179,6 +226,41 @@ def test_harness_cannot_promote_a_blocked_gate(
     assert result.gate_summary["blocked"] is True
     gate_stage = next(o for o in result.stages if o.stage is Stage.GATE)
     assert "L1-3" in gate_stage.rule_ids
+
+
+@pytest.mark.unit
+@pytest.mark.security
+def test_blocked_gate_is_never_promotable_with_all_d7_stages_present(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CR-2 with D7: a blocked gate discards at stage 1, before any floor/contract.
+
+    Even with a mutated contract supplied (so stage 4 is wired) and re-guidance
+    resolved (so the promotable path is reached), a blocked gate discards the
+    candidate at the gate stage; the structural floor and contract stages never
+    run and can never override the block (design section 6, CR-2).
+    """
+    from cyo_adventure.generation.binding import load_contract_for
+
+    monkeypatch.setattr("cyo_adventure.mutation.acceptance.run_gate", _blocking_gate)
+    cave_path = _SKELETONS_ROOT / "8-11" / "the-cave-of-echoes.json"
+    cave = _load("8-11/the-cave-of-echoes.json")
+    contract = load_contract_for(cave_path, cave)
+    dry_resolved = frozenset({"any"})
+    result = run_acceptance(
+        M1,
+        cave,
+        OpParams.of(),
+        seed=0,
+        parent_slug="the-cave-of-echoes",
+        resolved_reguide_ids=dry_resolved,
+        mutated_contract=contract,
+    )
+    assert result.discarded_at_stage is Stage.GATE
+    assert result.promotable is False
+    seen = {outcome.stage for outcome in result.stages}
+    assert Stage.STRUCTURE not in seen
+    assert Stage.CONTRACT not in seen
 
 
 @pytest.mark.unit
@@ -241,6 +323,34 @@ def test_cell_matches_direct() -> None:
     bad, detail = _cell_matches(parent, drifted)
     assert bad is False
     assert "length" in detail
+
+
+@pytest.mark.unit
+def test_cell_stage_ignores_topology_but_catches_band_length_style_tier_drift() -> None:
+    """Component-4: topology is mutable within the cell; the other keys are not.
+
+    Design 4.8/OQ-4: a mutant may re-declare a band-legal topology (an M1 swap, an
+    M4 reconvergence), so a topology-only difference is NOT cell drift. Every other
+    cell key -- age_band, length, narrative_style, tier -- must still match exactly.
+    """
+    parent = _load("8-11/the-cave-of-echoes.json")
+    retopo = copy.deepcopy(parent)
+    # A different topology value alone must NOT read as cell drift.
+    cast("dict[str, object]", retopo["metadata"])["topology"] = "branch_and_bottleneck"
+    ok, _detail = _cell_matches(parent, retopo)
+    assert ok is True
+    # Each real cell key still trips the assertion.
+    for key, value in (
+        ("age_band", "10-13"),
+        ("length", "long"),
+        ("narrative_style", "gamebook"),
+        ("tier", 2),
+    ):
+        drifted = copy.deepcopy(parent)
+        cast("dict[str, object]", drifted["metadata"])[key] = value
+        bad, detail = _cell_matches(parent, drifted)
+        assert bad is False, f"expected drift on {key}"
+        assert key in detail
 
 
 @pytest.mark.unit

@@ -61,6 +61,11 @@ _HOST_DECISION = "la_grotto"
 _PRUNE_CHOICE = "c_take"
 
 
+def _floor_always_passes(_parent: object, _candidate: object, _in_cell: object) -> None:
+    """A typed structural-floor stub that accepts every candidate (test isolation)."""
+    return
+
+
 def _load(path: Path) -> dict[str, object]:
     """Return a decoded skeleton document."""
     return cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
@@ -506,8 +511,24 @@ def test_m3_prune_is_deterministic_per_choice_and_per_seed() -> None:
 
 
 @pytest.mark.unit
-def test_m3_prune_is_promotable_through_the_harness() -> None:
-    """An accepted prune has no re-guidance, so the unchanged harness promotes it."""
+def test_m3_prune_is_promotable_through_the_harness(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An accepted prune has no re-guidance, so the unchanged harness promotes it.
+
+    D7 change: the prune on this small synthetic ``_host()`` fixture is near-
+    isomorphic to its parent (its feature-vector distance is below the calibrated
+    TAU_STRUCT), so with no re-guidance outstanding it would now be discarded by
+    the stage-3 structural anti-clone floor. This test pins the ORIGINAL mechanic
+    -- a prune emits no re-guidance, so the promotable path is reached without a
+    hold -- so the anti-clone floor is stubbed to pass, isolating the re-guidance
+    behaviour from the diversity floor (covered by test_mutation_floors.py). No
+    safety assertion is weakened: the gate and cell stages run unchanged.
+    """
+    monkeypatch.setattr(
+        "cyo_adventure.mutation.acceptance.structural_floor_reason",
+        _floor_always_passes,
+    )
     host = _host()
     result = run_acceptance(
         M3,

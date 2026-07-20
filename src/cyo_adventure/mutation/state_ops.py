@@ -51,6 +51,7 @@ from typing import TYPE_CHECKING, cast
 import networkx as nx
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.mutation.floors import TAU_STATE
 from cyo_adventure.mutation.identity import recompute_tier, resync_metadata
 from cyo_adventure.mutation.ops import (
     REGISTRY,
@@ -126,25 +127,27 @@ _STATE_PERMITTED_BANDS: frozenset[str] = frozenset({"8-11", "10-13", "13-16", "1
 
 # #ASSUME: data-integrity: the anti-no-op floor for an M5-only mutant is a
 # state-signature distance (design 5.4), because a state-only change leaves the
-# graph shape (and so structural_distance) at ~0. _TAU_STATE is a PROVISIONAL
-# placeholder: D7 calibrates it from cross-Tier-2-catalog signature pairs and
-# replaces this number with the committed baseline. It is wired reject-only, so a
-# provisional value can only over- or under-reject a non-safety diversity floor,
-# never admit an unsafe mutant. 0.5 is chosen so any single bound/initial change,
-# any added condition, or any relocated effect clears it while a cosmetic no-op
-# (oil 3 -> 3), a description-only edit, and a pure alpha-rename (all distance 0)
-# fail it.
+# graph shape (and so structural_distance) at ~0. _TAU_STATE is now the D7
+# CALIBRATED value, loaded from the single committed baseline
+# (docs/planning/ws5_floor_baseline.json via mutation/floors.py); it is tunable
+# only by a reviewed PR. The calibrator derives it from the cross-Tier-2-catalog
+# state-signature distribution (design 5.4): the observed minimum cross-pair
+# distance is ~36, so the anti-no-op floor sits at 0.5, comfortably above a true
+# no-op (a cosmetic retune, a description-only edit, and a pure alpha-rename all
+# have distance 0) and far below any distinct-tree pair. It is wired reject-only,
+# so the value can only over- or under-reject a non-safety diversity floor, never
+# admit an unsafe mutant (design CR-2).
 # #VERIFY: tests/unit/test_mutation_m5.py pins that a no-op retune, a
 # description-only edit, and an alpha-rename all fall below _TAU_STATE, and that a
-# real retune / gate-choice / relocate clear it. D7 replaces the value.
-_TAU_STATE: float = 0.5
-_TAU_STATE_IS_PROVISIONAL = True  # flipped to False by D7 once calibrated.
+# real retune / gate-choice / relocate clear it; test_mutation_floors.py pins the
+# value equals the committed baseline.
+_TAU_STATE: float = TAU_STATE
+_TAU_STATE_IS_PROVISIONAL = False  # calibrated in D7 from the committed baseline.
 
 # Static precondition and error messages, kept as single-line module constants so
 # a long fixed string never needs a plain-string line wrap.
 _M5_TIER2_ONLY_MSG = (
-    "M5 is restricted to Tier-2 (stateful) parents; a Tier-1 tree has no state to "
-    "vary"
+    "M5 is restricted to Tier-2 (stateful) parents; a Tier-1 tree has no state to vary"
 )
 _M5_BAND_MSG = (
     "M5 requires a band whose ADR-011 section 7 row permits stateful loops (8-11 "
@@ -158,7 +161,9 @@ _M5_MODE_MSG = (
     "M5 requires a 'mode' parameter of 'retune', 'rename', 'gate-choice', "
     "'add-route', or 'relocate-effect'"
 )
-_M5_RETUNE_VAR_MSG = "M5 retune requires a 'variable' parameter naming a declared variable"
+_M5_RETUNE_VAR_MSG = (
+    "M5 retune requires a 'variable' parameter naming a declared variable"
+)
 _M5_RETUNE_EMPTY_MSG = (
     "M5 retune requires at least one of 'initial', 'min', 'max', or 'description'"
 )
@@ -237,9 +242,7 @@ def _variables_of(story: Mapping[str, object]) -> list[Mapping[str, object]]:
 
 def _variable_names(story: Mapping[str, object]) -> set[str]:
     """Return the set of declared variable names."""
-    return {
-        name for var in _variables_of(story) if (name := _str_field(var, "name"))
-    }
+    return {name for var in _variables_of(story) if (name := _str_field(var, "name"))}
 
 
 def _node_by_id(
@@ -605,9 +608,7 @@ def _names_var(operand: object, var_name: str) -> bool:
     )
 
 
-def _rename_var_everywhere(
-    candidate: dict[str, object], old: str, new: str
-) -> None:
+def _rename_var_everywhere(candidate: dict[str, object], old: str, new: str) -> None:
     """Rename a variable in its declaration and every effect/condition reference."""
     for raw_var in cast("list[object]", candidate.get("variables", [])):
         if isinstance(raw_var, dict):
@@ -771,9 +772,7 @@ def state_signature(story: Storybook, walk: WalkResult) -> StateSignature:
     )
 
 
-def _collect_conditions(
-    story: Storybook, token_map: Mapping[str, str]
-) -> list[str]:
+def _collect_conditions(story: Storybook, token_map: Mapping[str, str]) -> list[str]:
     """Return the name-free canonical condition strings over every choice condition."""
     return [
         _canonical_condition(choice.condition, token_map)
@@ -890,9 +889,7 @@ def _multiset_symdiff(a: tuple[object, ...], b: tuple[object, ...]) -> int:
     """Return the size of the symmetric difference of two multisets."""
     counter_a: Counter[object] = Counter(a)
     counter_b: Counter[object] = Counter(b)
-    return sum((counter_a - counter_b).values()) + sum(
-        (counter_b - counter_a).values()
-    )
+    return sum((counter_a - counter_b).values()) + sum((counter_b - counter_a).values())
 
 
 def _walk_stat_delta(a: StateSignature, b: StateSignature) -> float:
@@ -903,9 +900,7 @@ def _walk_stat_delta(a: StateSignature, b: StateSignature) -> float:
     ending_map_a = dict(a.ending_config_counts)
     ending_map_b = dict(b.ending_config_counts)
     keys = set(ending_map_a) | set(ending_map_b)
-    ending_l1 = sum(
-        abs(ending_map_a.get(k, 0) - ending_map_b.get(k, 0)) for k in keys
-    )
+    ending_l1 = sum(abs(ending_map_a.get(k, 0) - ending_map_b.get(k, 0)) for k in keys)
     ending_denom = max(1, sum(ending_map_a.values()), sum(ending_map_b.values()))
     ending_term = ending_l1 / ending_denom
     return config_term + ratio_term + ending_term
@@ -943,7 +938,9 @@ def state_signature_floor_reason(
     candidate_sig = state_signature(candidate, candidate_walk)
     distance = state_distance(parent_sig, candidate_sig)
     if distance < _TAU_STATE:
-        provisional = " (PROVISIONAL; D7 calibrates)" if _TAU_STATE_IS_PROVISIONAL else ""
+        provisional = (
+            " (PROVISIONAL; D7 calibrates)" if _TAU_STATE_IS_PROVISIONAL else ""
+        )
         return (
             f"state-signature distance {distance:.4f} is below the floor "
             f"_TAU_STATE {_TAU_STATE}{provisional}: an M5-only mutant this close to "
@@ -996,7 +993,9 @@ def walk_fastest_satisfying_finish(story: Storybook, walk: WalkResult) -> int | 
     satisfying_nodes = {
         node.id
         for node in story.nodes
-        if node.is_ending and node.ending is not None and node.ending.kind in _SATISFYING_KINDS
+        if node.is_ending
+        and node.ending is not None
+        and node.ending.kind in _SATISFYING_KINDS
     }
     if not walk.configs:
         return None
@@ -1344,9 +1343,7 @@ def _set_choice_condition(
     raise ValidationError(msg, field="choice", value=choice_id)
 
 
-def _apply_add_route(
-    parent: Mapping[str, object], params: OpParams
-) -> MutationResult:
+def _apply_add_route(parent: Mapping[str, object], params: OpParams) -> MutationResult:
     """Apply an M5b add-route and return the resynced candidate plus re-guidance."""
     host = cast("str", params.get("host"))
     target = cast("str", params.get("target"))
@@ -1432,9 +1429,7 @@ def _append_choice(  # noqa: PLR0913 -- the fields one new gated choice needs
     raise ValidationError(msg, field="host", value=host)
 
 
-def _apply_relocate(
-    parent: Mapping[str, object], params: OpParams
-) -> MutationResult:
+def _apply_relocate(parent: Mapping[str, object], params: OpParams) -> MutationResult:
     """Apply an M5b relocate-effect and return the resynced candidate plus re-guidance."""
     from_node = cast("str", params.get("from_node"))
     to_node = cast("str", params.get("to_node"))
