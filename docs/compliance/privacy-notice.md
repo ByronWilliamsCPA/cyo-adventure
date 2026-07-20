@@ -1,4 +1,16 @@
-# Privacy Notice (Draft for Counsel Review)
+---
+title: "Privacy Notice (Draft for Counsel Review)"
+schema_type: planning
+status: draft
+owner: core-maintainer
+purpose: "Guardian-facing privacy notice drafted for counsel review, synthesized from the shipped consent/data-handling implementation and the Records of Processing Activities."
+tags:
+  - compliance
+  - privacy
+  - legal
+component: Development-Tools
+source: "Deliverable for coppa-gdpr-remediation-plan.md Phase 2c, synthesized from records-of-processing-activities.md; draft version 2026-07-20."
+---
 
 **Status: DRAFT.** Written for counsel to review and redline, not yet published. This is
 the deliverable for `coppa-gdpr-remediation-plan.md` Phase 2c, synthesized from the actual
