@@ -51,6 +51,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`generation/skeleton.py`, ADR-020 decision 2 / OQ-1), so a lineage record in a
   band directory is never mistaken for a selectable skeleton.
 
+### Changed
+
+- Ratified ADR-020 (mutation-derived skeletons and catalog growth): status
+  Proposed to Accepted; its six decisions now govern WS-6 (fresh-generation
+  feed) and WS-8 (catalog flywheel).
+- Raised the `src/cyo_adventure/mutation/` package branch coverage to 98%
+  (tests only, one justified `# pragma: no cover`) to clear the codecov patch
+  target for the WS-5 code.
+
 ## [0.20.0] - 2026-07-20
 
 ### Added

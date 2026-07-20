@@ -1,7 +1,7 @@
 ---
 title: "ADR-020: Mutation-derived skeletons and catalog growth"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Ratify the WS-5 catalog-growth model before mutation-derived trees are
   promoted at scale: a promoted mutant is a first-class catalog skeleton with its
@@ -23,9 +23,11 @@ tags:
 
 # ADR-020: Mutation-derived skeletons and catalog growth
 
-> **Status**: Proposed (2026-07-20; drafted at WS-5 D8 with the composed-chain
-> promotion bundle below as the evidence exhibit, awaiting supervisor sign-off
-> before mutation-derived trees are promoted at scale)
+> **Status**: Accepted (2026-07-20; drafted at WS-5 D8 with the composed-chain
+> promotion bundle below as the evidence exhibit, ratified by the owner after WS-5
+> merged. The decision set governs how mutation-derived trees are promoted at scale;
+> the six decisions below are now binding on WS-6 (fresh-generation feed) and WS-8
+> (catalog flywheel).)
 > **Date**: 2026-07-20
 > **Relates to**: [ADR-019](./adr-019-parameterized-skeletons-theme-contracts.md)
 > (parameterization varies content on a fixed structure; ADR-020 governs changing
