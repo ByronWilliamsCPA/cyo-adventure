@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Reconciled `docs/planning/roadmap.md` and `docs/planning/PROJECT-PLAN.md` with
+  actually delivered code: a 12-agent audit found both master planning documents
+  had gone unupdated across roughly 20 releases, still marking Phases 4b, 4c, 4d,
+  and most of Phase 6 as "Not started" despite substantial delivery in PR #270.
+  Corrected phase-status tables, extended the ADR index from ADR-011 through
+  ADR-019, fixed stale per-row status symbols in `capability-register.md`
+  (bumped v1.6 -> v1.7), and surfaced previously untracked work (two child-safety
+  gaps, the K19/content-diversity workstream, and several orphaned design docs).
+
 ## [0.22.0] - 2026-07-20
 
 ## [0.21.0] - 2026-07-20

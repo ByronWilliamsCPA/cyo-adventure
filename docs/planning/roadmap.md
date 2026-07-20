@@ -13,8 +13,10 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Development Roadmap: CYO Adventure
 
-> **Status**: Active | **Updated**: 2026-07-16 (register-driven replan; see the
-> "2026-07-16 replan" section)
+> **Status**: Active | **Updated**: 2026-07-20 (comprehensive plan audit: verified every
+> phase-status claim below against actual code and closed the gap between this document
+> and roughly 20 releases merged since the 2026-07-16 replan; see the "2026-07-20 plan
+> audit" section)
 > **Codename**: Ariadne
 
 ## TL;DR
@@ -57,10 +59,10 @@ full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).
 | 2b Live providers + yield | ✅ Delivered | OpenRouter + Ollama adapters; 70% live yield recorded |
 | 3 Safety + Review | ✅ Delivered (backend) | moderation pipeline (#36), publish state machine + approval/send-back + core invariant (#34), review-surface API + save-state integrity (#45); guardian console UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (R1 feature-complete) | app shell/auth #56, profiles #60, library #68, guardian console #76, intake #69, assign #75 (all merged 2026-07-03) |
-| 4b Editor + Engagement | ⏸️ Not started | post-release; scope expanded 2026-07-16 (register-driven) |
-| 4c Family Loops (NEW 2026-07-16) | ⏸️ Not started | notifications, visibility, budget consent (S9/G10/G9/G7) |
-| 4d Connections (NEW 2026-07-16) | ⏸️ Not started | ADR-016 delivery: consent flow + recommendation surfaces |
-| 5 Hardening | ⏸️ Not started | scope expanded 2026-07-16; rate limiter, backups, restore drill, purge job, revocation |
+| 4b Editor + Engagement | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: node editor (`PATCH .../nodes/{id}`), endings tracker UI, read-aloud/TTS, guardian content-controls UI (banned themes), per-child permission envelopes, kid feedback flag. Real gaps remaining: bookmarks (not built at all), guardian device/storage view (revoke exists, download visibility doesn't) |
+| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: notification feed (`GET /notifications` + `NotificationBell.tsx`), guardian engagement visibility (`GET /families/me/reading-summary` + `ReadingPage.tsx`), kid-facing generation status, budget consent (envelopes + `GET /families/me/budget`). Gap: delivery is poll-based only, no push channel or server-scheduled digest job (S9/G10 "digest by default" is not yet a real distinct tier) |
+| 4d Connections (NEW 2026-07-16) | ✅ Substantially delivered (2026-07-20 audit) | Shipped 2026-07-17 in PR #270: dual-guardian consent flow with an enforced guard at the recommendations read path (`api/recommendations.py::_is_dual_consented()`), kid-facing recommendation chips. Privacy-model erasure coverage for connections not independently re-verified in this audit pass |
+| 5 Hardening | 🟡 Partially delivered | Redis-backed rate limiter, ADR-007 purge job, offline-copy revocation, operator runbook, and a re-screen first cut are merged (see checklist below); performance pass, Sentry backups/restore drill, admin audit view, and the nightly/staging test ladder remain open |
 
 ## Story-Lifecycle Redesign (2026-07-06 to 2026-07-10, post-R1)
 
@@ -96,18 +98,26 @@ expanded in place below.
 
 ### Now queue (days, before Phase 4b starts)
 
-1. Review and merge **PR #268** (testing infrastructure, allowlist/authoring-queue admin
-   UI; A8) and **PR #267** (user management; A12/A13) with the two review conditions from
-   the traceability review: name the admin child-PIN authority in A12 with an ADR-014
-   cross-reference, and add the new admin endpoints to the authorization matrix.
-2. Set the three `staging` environment secrets so the daily staging E2E actually runs
-   (test matrix action 1).
-3. Add on-failure alerting (pinned `e2e-alert` issue) to scheduled E2E workflows and
-   create the scheduled `e2e-prod.yml` (matrix actions 2-3).
-4. Doc chores: PL-22 entry in `validator-rules.md`; authorization-matrix rows for the
-   already-shipped admin surfaces (traceability review 3.8).
-5. Start the ADR-018 counsel engagement (D1 consent mechanism, D2 audience, D3
-   geography); long lead time, blocks Phase 7, not Phase 4b.
+**2026-07-20 audit status: 3 of 5 done, 1 done modulo unverifiable infra secrets, 1 not
+done.**
+
+1. ✅ **Done.** Both PRs merged (#267, #268, folded into #270). Both review conditions
+   satisfied: `capability-register.md`'s A12 entry names the admin child-PIN authority
+   with an explicit ADR-014 cross-reference, and `authorization-matrix.md` carries rows
+   for the new admin endpoints (admin users CRUD, admin child-profile CRUD incl. PIN,
+   family-connection CRUD).
+2. 🟡 **Workflow done, secrets unverifiable from the repo.** `.github/workflows/e2e-staging.yml`
+   exists, scheduled daily, and references the three `staging` environment secrets; whether
+   they are actually populated in GitHub cannot be checked from this repo.
+3. ✅ **Done.** `e2e-prod.yml` exists (scheduled daily, 30 min after staging) with a
+   dedicated "alert on failure" step that opens/comments on an issue labeled `e2e-alert`.
+   Requires a `production` GitHub Environment with its own secrets before the first
+   scheduled run can succeed (same infra-secrets caveat as item 2).
+4. ✅ **Done.** `validator-rules.md` has a PL-22 entry (band profile fail-closed);
+   `authorization-matrix.md` carries rows for the already-shipped admin surfaces.
+5. ❌ **Not done.** `adr-018-childrens-privacy-compliance.md` is still `status: proposed`
+   with D1/D2/D3 each showing only a working recommendation and no counsel sign-off or
+   progress note since 2026-07-16.
 
 ### Where every open register item lands
 
@@ -122,6 +132,70 @@ expanded in place below.
 | A9 curation surface, A7 ops dashboards, A8 runtime levers, A4 full catalog re-screen | 9 |
 | S12 ring-3 recommendations, A11 corpus quality tooling | Post-launch backlog |
 | Android, web direct billing, education persona, i18n | Parked: each needs its design element first (no ADR/register ID) |
+
+## 2026-07-20 Plan Audit: verification and previously untracked work
+
+A 12-agent fan-out verified every phase-status claim in this document and
+[PROJECT-PLAN.md](./PROJECT-PLAN.md) against actual code, since roughly 20 releases (v0.7.0
+through v0.20.0) had merged since the 2026-07-16 replan without either master document being
+updated. Headline result: **Phases 4b, 4c, and 4d, and much of Phase 6, were substantially
+delivered on 2026-07-17 in PR #270** ("capability register, ADRs 015-018, safety fixes, and
+the M4b-d family-tier wave"), the same PR that created the capability register itself; the
+register's own delivery banner (`capability-register.md` line 26) already said so, but the
+per-row status symbols further down the same document were never synced to match, so this
+audit also corrected `capability-register.md` directly (v1.6 -> v1.7). The phase table above
+and the Phase 4b/4c/4d/5 deliverable checklists below now reflect verified reality; see
+[PROJECT-PLAN.md's Phase 6 section](./PROJECT-PLAN.md) for the equivalent Phase 6 correction.
+
+**Genuinely open work this audit found with no home in either master document** (full detail
+in PROJECT-PLAN.md section 1's audit note):
+
+- Two safety-relevant gaps from `security-hardening-plan-2026-07.md` never closed and never
+  tracked here: H1 (no age-band ceiling check when a guardian assigns a book across
+  children) and H2 (AI cover images reach a child's shelf with no moderation gate). Both
+  added to the Phase 5 checklist above.
+- A live-code-but-unregistered feature: K19 (kid request-interpretation, WS-7, delivered
+  2026-07-20) has no line item in either master document. Design records:
+  [story-flexibility-plan.md](./story-flexibility-plan.md) and
+  [ws7-request-interpretation-design.md](./ws7-request-interpretation-design.md).
+- The entire "story-flexibility" content-diversity workstream (WS-0 metrics/harness, WS-1
+  leaf diversity, WS-2 parameterized catalog/theme contracts per
+  [ADR-019](./adr/adr-019-parameterized-skeletons-theme-contracts.md), WS-4 selection, WS-7
+  above) has merged substantial code (PRs #300, #303, #314, #321) with zero
+  mentions in either master document. ADR-017 (AI cover art, already shipped) and ADR-019 are
+  both missing from PROJECT-PLAN.md's ADR table; ADR-020 and ADR-021 (merged the same day,
+  after this audit was written) are missing too and are not yet reconciled here at all.
+- The Content workstream note in PROJECT-PLAN.md section 1 ("main still has zero
+  production-eligible skeletons") is stale: 61 skeletons (58 production-eligible) and 23
+  filled stories are committed to `main` (PRs #289, #292, #297); none are yet imported to
+  Postgres or published, so "zero in the catalog" is still accurate, "zero in the repo" is not.
+- Design docs describing real, still-open, unscheduled work with no reference anywhere in
+  either master document: [catalog-first-inventory-gap.md](./catalog-first-inventory-gap.md)
+  (family-scoped import blocks an admin-authored base catalog),
+  [admin-guardian-dual-roles-plan.md](./admin-guardian-dual-roles-plan.md) (dual-role adult
+  redesign, identifies real scoping-fork security risk),
+  [skeleton-corpus-story-generation-test-plan.md](./skeleton-corpus-story-generation-test-plan.md)
+  (0/21 skeletons proven end-to-end).
+- Issues #125 (Supabase RLS not enabled on 13 public tables) and #214 (R2 cover-art backfill),
+  both cited in `handoff-r2-readiness-2026-07-11.md`, appear in neither master document by
+  number or description.
+- **Update, same day**: #321 (WS-5 structure/state variation, ADR-020), #323 (ADR-021, service
+  accounts/RLS/worker deployment), and #311 (a second, larger COPPA/GDPR remediation pass:
+  data rights, verifiable parental consent, self-signup approval, audit logging, plus new
+  `docs/compliance/` artifacts - breach-notification runbook, DPIA, infosec program,
+  privacy notice, processor DPA checklist, records of processing) were all still open when
+  this audit was written and **merged to `main` within hours of it**, pulled into this
+  branch by a catch-up merge. Their content is real and substantial (#311 alone touches over
+  20 files including new Supabase migrations for consent/retention), but it has not been
+  reconciled against the Phase 5/6/7 corrections above - that reconciliation is a needed
+  follow-up pass, not done in this one.
+- An external-dependency ask in `handoff-homelab-infra-dev-environment-2026-07-16.md` (a `dev`
+  frontend subdomain plus `staging` GitHub Environment secrets from the homelab-infra owner) is
+  tracked here only as a generic unchecked test-matrix line, not by its specific asks.
+
+Not re-litigated in this pass: the ~25 open GitHub issues already itemized in
+`docs/planning/r1-deferred-debt-register.md` and elsewhere remain accurately tracked there;
+this audit did not find them newly stale.
 
 ## Timeline Overview
 
@@ -149,12 +223,12 @@ The old wording stands in historical sections above; this table governs.
 | M0-M3 | Foundations through enforced approval gate | done | ✅ Delivered |
 | M4 = **R1-alpha** | Core loop live internally, web only (Phases 0-3 + 4a; historic "R1") | done | ✅ Feature-complete 2026-07-03, live 2026-07-05 |
 | M4.1: R1-alpha sign-off | Funded provider keys; merged PRs + safety fixes redeployed; live E2E checklist executed once with a sign-off row; Now-queue items 1-4 | ~1 wk | ⏸️ Next up |
-| M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ⏸️ After M4.1 |
-| M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ⏸️ Needs M4b's K15 |
-| M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ⏸️ Needs PR #267 merged |
-| M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | ⏸️ After M4b-M4d |
-| **M5 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | ⏸️ The line this register review was about |
-| M6 = R2: TestFlight iOS | Phase 6 (public auth/multi-tenancy) + Phase 8 (Capacitor shell, IAP); R2-gate debt items closed (G1 child-session scoping is already substantially closed by ADR-014; verify and mark) | 6-9 wks | ⏸️ After R1 (full) |
+| M4b: Editor + engagement | G6, K6, K7, G5, G2 usable by a real guardian, G3, K15, G15 view, K5/K8 test pins | 3-4 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: bookmarks (not built), G15 device/storage view, K5/K8 test pins |
+| M4c: Family loops | S9, G10, G9, K12 complete, G7 real budget consent + G13 balance | 2-3 wks | ✅ Substantially delivered 2026-07-17 (PR #270); open: push channel/server-scheduled digest (S9/G10 are poll-based only) |
+| M4d: Connections | G17 consent, K17 surfaces, A15 enforcement guard (ADR-016 ring 2) | 2-3 wks, overlaps 4c | ✅ Delivered 2026-07-17 (PR #270); privacy-model erasure coverage for connections not independently re-verified |
+| M5: Hardened family tier | Phase 5 expanded scope: purge, offline revocation, audit view, re-screen, restore drill, nightly/staging/prod test ladder green with alerting | 2-3 wks | 🟡 M4b-4d dependency satisfied as of 2026-07-17 (see the 2026-07-20 audit note above); remaining Phase 5 gaps are audit view, restore drill, remaining test ladder, plus the newly surfaced H1/H2 |
+| **M5 = R1 (full): "the web app functions properly"** | Every family-tier register row at delivered status; the five golden journeys green on the full test ladder | **~9-13 wks cumulative from start** | 🟡 Closer than scheduled: the register's K/G/A/S rows are now mostly ✅/🟡 with few ❌ remaining (see capability-register.md v1.7); the live E2E sign-off (`r1-live-e2e-checklist.md`) is still an empty, unexecuted table |
+| M6 = R2: TestFlight iOS | Phase 6 (public auth/multi-tenancy) + Phase 8 (Capacitor shell, IAP); R2-gate debt items closed (G1 child-session scoping is already substantially closed by ADR-014; verify and mark) | 6-9 wks | 🟡 Phase 6's guardian-side substance (JIT onboarding, child-session tokens, profile picker + PIN, parental gate) is already built and tested per the 2026-07-20 audit (see PROJECT-PLAN.md Phase 6); the native iOS/Capacitor path (P6-05 remainder) and all of Phase 8 remain fully unstarted |
 | M7 = R3: Public launch | Phase 7 (ADR-018 D1-D4 executed and Accepted, G11/G12/A12/A14) + Phase 9 (catalog ops, hosted infra, A7/A8 ops levers, submission) | 5-8 wks, partial overlap with M6 | ⏸️ Counsel engagement should start now (long lead) |
 | Completion | Register fully delivered except the post-launch backlog (S12 ring-3, A11 corpus tooling) and parked no-design-element items | - | - |
 
@@ -413,12 +487,14 @@ Make the kids-facing guarantee real.
 
 ## Phase 4: Library, profiles, editor, and engagement (3-5 weeks)
 
-**Status**: ✅ 4a delivered (R1 feature-complete 2026-07-03); 4b not started. The
+**Status**: ✅ 4a delivered (R1 feature-complete 2026-07-03); 4b substantially delivered
+2026-07-17 (PR #270, confirmed by the 2026-07-20 plan audit). The
 `library` and `ratings` APIs are merged (the library filters to `published`,
 profile-scoped books), and the guardian-facing frontend is now built end to end: app shell
 and Supabase auth (#56), profile management (#60), library UI (#68), guardian
-review-and-approve console (#76), concept intake (#69), and assign-to-profile (#75). 4b
-(editor, TTS, ending tracker) is untouched.
+review-and-approve console (#76), concept intake (#69), and assign-to-profile (#75). 4b's
+node editor, TTS, and ending tracker are built and merged; only bookmarks and the
+device/storage view remain open (see the Deliverables checklist below).
 
 ### Objective
 
@@ -432,24 +508,36 @@ Make authoring and reading pleasant. Split by the release cut: 4a ships in R1, 4
 
 ### Deliverables (4b, after R1; scope expanded 2026-07-16, register IDs cited)
 
-- [ ] Lightweight node editor: read as playthrough and node list, edit a passage, re-roll
-      a branch, re-run validation, re-review on edit (G6).
-- [ ] Ending tracker "3 of 7 endings found" (K6, UI over the shipped completion rows),
-      bookmarks (K5), and read-aloud/TTS for the youngest bands (K7, per-profile
-      `tts_enabled` already modeled).
-- [ ] Guardian review skim aids: content summary and branch-structure view (G5).
-- [ ] Per-child content controls UI: banned themes / phobia exclusions on the profile
-      form, and wire `content_nogo`/`themes_allowed` through intake instead of the
-      hardcoded empty lists (G2).
-- [ ] Per-child permissions: story-request on/off and the ADR-015 pre-authorization
-      envelope settings (G3; screen-time norms stay deferred).
-- [ ] Kid feedback flag: "I didn't like this / this scared me", routed into the admin
-      queue and stored for the Phase 4c alert surface (K15, feeds A1/G10).
+**2026-07-20 audit: all shipped 2026-07-17 in PR #270 except bookmarks and the device/storage
+view, which remain genuinely open. Note K5 ("Go back") and "bookmarks" are two different
+register capabilities that a prior draft of this list conflated; K5 is delivered (replay-based
+undo), bookmarks (a distinct save-slot feature) is not built at all.**
+
+- [x] Lightweight node editor: read as playthrough and node list, edit a passage, re-run
+      validation, re-review on edit (G6). `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}`
+      (`api/node_edit.py`) re-runs the gate and moderation on edit. Branch re-roll and a
+      dedicated guardian-facing (as opposed to admin) review surface still remain open.
+- [x] Ending tracker "3 of 7 endings found" (K6, UI over the shipped completion rows) and
+      read-aloud/TTS for the youngest bands (K7). `EndingsProgress.tsx` and `useReadAloud.ts`
+      wired into `Reader.tsx`, `tts_enabled` toggle in `ProfileFormDialog.tsx`.
+- [ ] Bookmarks (a distinct save-slot feature, not K5's "Go back" undo): not built.
+- [x] Guardian review skim aids: content summary and branch-structure view (G5).
+- [x] Per-child content controls UI: banned themes on the profile form, wired through
+      intake (`content_nogo = profile.banned_themes` in `story_requests/brief.py`) instead
+      of the hardcoded empty lists (G2).
+- [x] Per-child permissions: the ADR-015 pre-authorization envelope settings
+      (`request_auto_approve`, `monthly_request_envelope`) (G3; screen-time norms stay
+      deferred and unspecced, not in scope).
+- [x] Kid feedback flag: "I didn't like this / this scared me", routed into the admin
+      queue and the Phase 4c alert surface (K15, feeds A1/G10). `KidFlag` model,
+      `POST /flags`, admin list/resolve in `api/flags.py`.
 - [ ] Guardian device/storage view: which books are downloaded on which device (G15
-      remainder).
+      remainder). ADR-014 device authorize/revoke exists; per-device storage/download
+      visibility does not.
 - [ ] Test pins for the two shipped-but-unasserted surfaces: Go Back returns to the prior
       node with intact state (K5), cover render plus letter-tile fallback and the admin
-      generate flow (K8/A16); test matrix action 7.
+      generate flow (K8/A16); test matrix action 7 (not independently re-verified in this
+      audit pass, status unchanged pending a dedicated test-coverage check).
 
 ### Success Criteria
 
@@ -475,18 +563,25 @@ This is the highest-leverage gap the capability review found after initiation it
 
 ### Deliverables
 
-- [ ] Notification delivery infrastructure over the existing `pipeline_event` log:
-      in-app surface first, digest scheduling; the transport that K12/G10/A-alerts all
-      consume (S9).
-- [ ] Guardian notifications: story awaiting consent, story ready, kid flagged content
-      (safety alerts immediate, the rest digest; G10).
-- [ ] Guardian engagement visibility: per-child reading time, books finished, endings
+**Status (2026-07-20 audit): all shipped 2026-07-17 in PR #270. The one genuine remaining
+gap is transport: delivery is poll-based (client re-polls with `since`), with no push
+channel or server-scheduled digest job, so "digest by default, alert on safety" is not yet
+a real distinct delivery tier.**
+
+- [x] Notification delivery infrastructure over the existing `pipeline_event` log: an
+      in-app, poll-based surface (`notifications/service.py`); the transport that
+      K12/G10/A-alerts consume (S9). Server-scheduled digest and a push channel remain open.
+- [x] Guardian notifications: story awaiting consent, story ready, kid flagged content
+      (G10). `GET /notifications` (`api/notifications.py`), `NotificationBell.tsx`.
+- [x] Guardian engagement visibility: per-child reading time, books finished, endings
       found, re-reads, over the existing `reading_state`/`completion` data (G9).
-- [ ] Kid-facing generation status: "your story is being written" inside the kid surface,
+      `GET /families/me/reading-summary`, `guardian/ReadingPage.tsx`.
+- [x] Kid-facing generation status: "your story is being written" inside the kid surface,
       completing K12.
-- [ ] Budget consent (ADR-015 delta): guardian approve debits a family quota, per-child
+- [x] Budget consent (ADR-015 delta): guardian approve debits a family quota, per-child
       pre-auth envelopes enforce their budget, and the guardian sees a remaining-balance
       figure (G7 complete, G13 interim; full credits/IAP stays Phase 8).
+      `GET /families/me/budget`, `budgetApi.ts`.
 
 ### Success Criteria
 
@@ -513,15 +608,20 @@ makes this feasible on the family tier (admin-created cousin families), before T
 
 ### Deliverables
 
-- [ ] Dual-guardian consent flow: each side approves share-out and receive-in per
-      direction; revocation immediate (G17).
-- [ ] Enforced consent guard at the read path, so a connection without both consents
-      activates nothing; this replaces the current holds-by-omission state (A15/ADR-016
-      constraint).
-- [ ] Recommendation surfaces: kid sees "made for you by / cousin X loved this"
+**Status (2026-07-20 audit): the first three items shipped 2026-07-17 in PR #270. Erasure
+coverage was not independently re-verified in this audit pass and stays open pending a
+dedicated privacy-model review.**
+
+- [x] Dual-guardian consent flow: each side approves share-out and receive-in per
+      direction; revocation immediate (G17). `POST`/`DELETE /family-connections/{id}/consent`.
+- [x] Enforced consent guard at the read path, so a connection without both consents
+      activates nothing; this replaces the prior holds-by-omission state (A15/ADR-016
+      constraint). `api/recommendations.py::_is_dual_consented()` requires both consent
+      columns before treating a connection as active.
+- [x] Recommendation surfaces: kid sees "made for you by / cousin X loved this"
       (structured payload only: book, name, rating; K17, riding K18 ratings).
 - [ ] Privacy-model erasure coverage: connections and recommendations in family deletion
-      (per ADR-016).
+      (per ADR-016). Not independently re-verified in the 2026-07-20 audit; status unchanged.
 
 ### Success Criteria
 
@@ -565,11 +665,22 @@ runs on Supabase-managed infrastructure instead of the homelab; see
 - [x] Policy re-screen tooling: re-run moderation/policy over published family-tier books
       after a threshold or band-policy change (A4 first cut, delivered 2026-07-17; full
       public-catalog re-screen lands with Phase 9).
-- [ ] Test hardening per the test matrix: nightly `e2e-real` CI job (Postgres service +
-      seed), the real-backend S2 conflict-race spec from the handoff doc, and staging
-      golden-journey coverage for GJ2/GJ3/GJ5 (matrix actions 4-6).
+- [x] Real-backend S2 conflict-race spec (`frontend/e2e-real/offline-conflict-real.spec.ts`):
+      fabricates a two-device `state_revision` race against a live 409, both resolution
+      paths covered. Confirmed present by the 2026-07-20 audit.
+- [ ] Remaining test hardening per the test matrix: nightly `e2e-real` CI job (Postgres
+      service + seed) and staging golden-journey coverage for GJ2/GJ3/GJ5 (matrix actions
+      4, 6).
 - [ ] The live-model adversarial safety run carried as Phase 3 debt (safety evaluation
       doc's model-dependent classes).
+- [ ] **Newly surfaced by the 2026-07-20 audit, from `security-hardening-plan-2026-07.md`,
+      neither previously tracked here nor closed**: H1, `assign_storybook` performs no
+      band-ceiling comparison against the target profile, so a guardian can assign an
+      off-band book across children (K13's assignment-time enforcement gap).
+- [ ] **Newly surfaced by the 2026-07-20 audit**: H2, `generate_cover` flips
+      `cover_status` straight `generating -> ready` with no moderation/approval gate, so
+      an AI cover image can reach a child's shelf without the human review A16 promises
+      (the story-text safety guarantee, A6, is unaffected).
 
 ### Success Criteria
 

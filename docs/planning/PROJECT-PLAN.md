@@ -26,9 +26,14 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 2.7 | **Updated**: 2026-07-10
+> **Status**: Active | **Version**: 2.8 | **Updated**: 2026-07-20
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
+> **2026-07-20 note**: this version closes a 10-day gap during which ~20 releases merged
+> without this document being updated. A 12-agent audit verified every phase-status claim
+> below against actual code; see the "2026-07-20 plan audit" callout in Section 1 for the
+> full methodology and findings, and [roadmap.md's equivalent section](./roadmap.md) for
+> the family-tier (Phase 0-5) side of the same audit.
 
 ---
 
@@ -91,10 +96,21 @@ output.
 **Content workstream (parallel)**: [ADR-011](./adr/adr-011-story-scale-framework.md)
 (story-scale: band x length x style) merged to `main` on 2026-07-03 (PR #70), establishing
 the corrected skeleton baseline (18-cell coverage grid, per-cell node budgets, PL-17..21
-policy teeth). `main` still has zero production-eligible skeletons; a parallel workstream
-(`feat/skeleton-library-expansion`) now authors production-eligible skeletons against that
-frozen contract. It feeds generation quality across all three rungs and gates none of them.
-Follow-on enabler refinements are tracked in issues #77, #78, and #79.
+policy teeth). **Updated 2026-07-20**: the "zero production-eligible skeletons" statement is
+stale. `main` now carries 61 skeleton JSONs (58 flagged `production_eligible: true`) and 23
+filled stories, committed via PR #289 (14-story inventory run), #292 (Wave 4 gamebook
+fills), and #297 (a two-book series stress test); see
+[story-inventory-initial-run.md](./story-inventory-initial-run.md). None of these 23 are yet
+imported to Postgres or published (ADR-005 human-approval and a running DB/`--family` are
+required for that step), so "zero in the catalog" is still true, "zero in the repo" is not.
+A second, larger content-diversity workstream also merged in the same window and has no
+line item anywhere in this document: WS-0 (diversity metrics/harness), WS-1 (leaf
+diversity), WS-2 (parameterized catalog with theme contracts, recorded in
+[ADR-019](./adr/adr-019-parameterized-skeletons-theme-contracts.md)), and WS-4 (selection)
+shipped in PRs #300 and #303; WS-7 (kid request-interpretation, register ID K19) shipped in
+PR #314. Follow-on enabler refinements from the original ADR-011 work are tracked in issues
+#77, #78, and #79, all still open as of 2026-07-20 and unrelated to the diversity workstream
+above.
 
 **Timeline**:
 
@@ -120,14 +136,14 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 | 3 Safety + Review | ✅ Delivered, backend (moderation #36, approval spine #34, review surface + save-state #45); guardian UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); **R1 feature-complete** (#73 auth redirect closed 2026-07-06; remaining doc sync #52 is Track 2 hygiene, not an R1 gap) |
 | Story-lifecycle redesign (WS-A..G, post-R1) | ✅ Delivered (merged 2026-07-06 to 2026-07-10: moderation thresholds #141/#161/#162, request lifecycle #163/#164/#165/#167, provider selection + skeleton matching #170/#175, pipeline event log #168, catalog sharing #180, suggestion dashboard #176, series chaining #184/#192); see [story-lifecycle-redesign.md](./story-lifecycle-redesign.md) |
-| 4b Editor + Engagement | ⏸️ Not started (post-R1; scope expanded by the 2026-07-16 register-driven replan: adds G5 skim aids, G2 controls UI, G3 permissions, K15 kid flag, G15 device view, K5/K8 test pins; see roadmap.md) |
-| 4c Family Loops (NEW 2026-07-16) | ⏸️ Not started (S9 notification infra, G10 alerts/digest, G9 visibility, K12 kid status, G7/G13 budget consent; see roadmap.md) |
-| 4d Connections (NEW 2026-07-16) | ⏸️ Not started (ADR-016 delivery: G17 dual-guardian consent, K17 recommendation surfaces, A15 enforcement guard; needs PR #267 merged) |
-| 5 Hardening | ⏸️ Not started (post-R1; public-tier ops fold into Phase 9; 2026-07-16 replan adds ADR-007 purge, G8/A5 offline revocation, A13 audit view, A4 re-screen first cut, nightly e2e-real + staging golden journeys + S2 real conflict spec, adversarial live-model run) |
-| 6 Public auth + multi-tenancy | ⏸️ Not started (R2; planned 2026-07-02) |
-| 7 Kids compliance + account lifecycle | ⏸️ Not started (R3) |
-| 8 iOS shell + subscriptions | ⏸️ Not started (R2) |
-| 9 Public catalog + hosted infra + launch | ⏸️ Not started (R3) |
+| 4b Editor + Engagement | ✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20; see the audit note below). G6 node editor, K6 tracker, K7 read-aloud, G2 controls UI, G3 permissions, K15 kid flag all shipped. Still open: bookmarks (not built at all), G15 device/storage view, K5/K8 test pins |
+| 4c Family Loops (NEW 2026-07-16) | ✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20). S9 notification infra, G10 alerts, G9 visibility, K12 kid status, G7/G13 budget consent all shipped. Still open: delivery is poll-based only, no push channel or server-scheduled digest |
+| 4d Connections (NEW 2026-07-16) | ✅ Delivered 2026-07-17, PR #270 (verified 2026-07-20). G17 dual-guardian consent with an enforced guard at the read path, K17 recommendation surfaces both shipped. Privacy-model erasure coverage for connections not independently re-verified |
+| 5 Hardening | 🟡 Partially delivered (post-R1; public-tier ops fold into Phase 9; 2026-07-16 replan items landed: ADR-007 purge, G8/A5 offline revocation, A13 audit-trail stamps, A4 re-screen first cut, the real-backend S2 conflict spec. Still open: performance pass, Sentry backups/restore drill, admin audit *view*, nightly e2e-real + staging golden journeys, adversarial live-model run, plus two newly surfaced safety gaps H1/G-band-bypass and H2/unmoderated-covers - see roadmap.md) |
+| 6 Public auth + multi-tenancy | 🟡 Substantially delivered ahead of schedule (verified 2026-07-20): P6-01/02/03/04/07/08/09 all built and tested (JWT validation, JIT onboarding, child-session tokens, profile picker+PIN, parental gate, negative-test suite). P6-05 partial (web OAuth done, native Apple/Capacitor path not). P6-06 partial (401-retry done, localStorage->Keychain-ready storage abstraction and CSP `connect-src` update not). P6-10's broader stranger-family IDOR suite not independently re-verified. See the Phase 6 section below for the full item-by-item correction |
+| 7 Kids compliance + account lifecycle | 🟡 Partially delivered (R3). PII-egress hardening (P7-10) shipped 2026-07-19 in PR #304; SECURITY.md correction half of P7-13 also shipped. P7-09's purge mechanism predates this (Phase 5/#270); its policy-doc and reading_state-expiry components remain open, as does all of P7-12 and the infosec-program half of P7-13. See the Phase 7 section below |
+| 8 iOS shell + subscriptions | ⏸️ Not started (R2; confirmed 2026-07-20: zero Capacitor/entitlement code anywhere in the repo) |
+| 9 Public catalog + hosted infra + launch | ⏸️ Not started (R3; confirmed 2026-07-20: no `catalog_published` state anywhere in the repo) |
 
 With **Phases 0 through 3 and Phase 4a all merged, the internal web release (R1) is
 feature-complete as of 2026-07-03**: the approval, moderation, and review APIs are
@@ -153,6 +169,55 @@ abuse workflow, A14 compliance reporting), 8 (G13 full credits/IAP), and 9 (A9 c
 surface, A7 ops dashboards, A8 runtime levers such as kill-job and cost caps, A4 full
 catalog re-screen). Where this note and the phase sections below disagree on Track 2
 task lists, this replan governs until the sections are rewritten.
+
+**2026-07-20 plan audit**: this document and [roadmap.md](./roadmap.md) were last
+substantively updated 2026-07-10 and 2026-07-16 respectively; roughly 20 releases (v0.7.0
+through v0.20.0) merged in the following ten days without either being refreshed, so the
+"current status" table above had drifted materially from actual code. A 12-agent fan-out
+(family-tier delivery, the 2026-07-17 remediation pass, GDPR/COPPA hardening, Phase 6 auth
+claims, Phase 8/9 confirmation, the capability register itself, story-content/diversity
+workstreams, orphaned-work markers, and live GitHub PR/issue state) verified every phase and
+register claim against the actual repository. Headline findings, each cited with file-level
+evidence in the phase sections below and in [capability-register.md](./capability-register.md)
+(bumped v1.6 -> v1.7 to fix its own stale per-row status symbols):
+
+1. **Phases 4b, 4c, 4d, and most of Phase 6 were substantially delivered on 2026-07-17** in
+   PR #270 ("capability register, ADRs 015-018, safety fixes, and the M4b-d family-tier
+   wave") - the same PR that created the capability register, whose own delivery banner
+   already said so but whose per-row ❌ marks were never synced to match. This document had
+   not been touched since before that PR merged and still called all of it "Not started."
+2. **Two child-safety gaps have no home in either master document**: H1 (a guardian can
+   assign an off-band book across children; no ceiling check in `assign_storybook`) and H2
+   (an AI cover image can reach a child's shelf with no moderation gate; `generate_cover`
+   flips straight `generating -> ready`). Both are now tracked under Phase 5 in roadmap.md.
+3. **A live-code, delivered feature has no register-table line item anywhere**: K19 (kid
+   request-interpretation, WS-7, delivered 2026-07-20) and the broader content-diversity
+   workstream it belongs to (WS-0/1/2/4, ADR-019) are absent from this document and
+   roadmap.md entirely, despite substantial merged code (PRs #300, #303, #314, #321).
+4. **The "zero production-eligible skeletons" claim is stale** (see Section 1's Content
+   workstream note above): 61 skeletons and 23 filled stories are committed to `main`.
+5. **This document's ADR table (Section 3) stops at ADR-011**; ADR-012 through ADR-019 all
+   exist, are mostly Accepted, and describe shipped behavior with no entry here (corrected
+   below). ADR-020 and ADR-021 merged the same day as this audit and are not yet reconciled
+   at all (see item 7).
+6. Several open design docs describe real, unscheduled work referenced nowhere in this
+   document: [catalog-first-inventory-gap.md](./catalog-first-inventory-gap.md),
+   [admin-guardian-dual-roles-plan.md](./admin-guardian-dual-roles-plan.md),
+   [skeleton-corpus-story-generation-test-plan.md](./skeleton-corpus-story-generation-test-plan.md).
+   Issues #125 (Supabase RLS not enabled on 13 public tables) and #214 (R2 cover-art backfill)
+   are likewise untracked here by number or description.
+7. **Update, same day**: #321 (WS-5 structure/state variation, ADR-020), #323 (ADR-021,
+   service accounts/RLS/worker deployment), and #311 (a second, larger COPPA/GDPR
+   remediation: data rights, verifiable parental consent, self-signup approval, audit
+   logging, plus new `docs/compliance/` artifacts - breach-notification runbook, DPIA,
+   infosec program, privacy notice, processor DPA checklist, records of processing) were
+   all still open when this audit began and **merged to `main` within hours of it**. #311
+   alone plausibly closes or advances several Phase 7 items (P7-02, P7-09, P7-13) noted as
+   open below, but that reconciliation has not been done in this pass - it needs its own
+   dedicated follow-up, not a same-day bolt-on.
+
+Full item-by-item corrections are inline in the Phase 4b/4c/4d/6/7 sections below, the ADR
+table (Section 3), and the Technology Stack table (Section 4, Python version).
 
 ---
 
@@ -230,17 +295,26 @@ Key architectural decisions, each recorded in an ADR:
 | [ADR-007](./adr/adr-007-raw-output-retention.md) | Raw LLM output retention policy for `GenerationJob.report` | Admin-only, short-lived raw outputs; audit without hoarding |
 | [ADR-008](./adr/adr-008-public-app-store-launch.md) | Public App Store launch: Capacitor shell, guardian-only IdP identities, tiered IAP subscription, hosted public tier | Reuses the existing client, auth seam, and approval pipeline; strongest child-privacy posture (no child IdP identities); amends ADR-002 and ADR-004 for the public tier; auth/hosting amended by ADR-009 |
 | [ADR-009](./adr/adr-009-supabase-platform.md) | Supabase platform for the public tier: Auth (native Apple/Google), Postgres, Storage, queue evaluation; FastAPI + worker on one container host | Guardian-only MAU makes auth cost negligible everywhere, so leverage decides; consolidates ~5 vendors to 2; retires the self-run-IdP risk; plain Postgres/S3/GoTrue keep the ejection path cheap |
+| [ADR-012](./adr/adr-012-supabase-cli-migrations.md) | Supabase CLI SQL migrations replace Alembic | Keeps schema management on the same CLI as the Supabase platform decision (ADR-009); one migration tool, not two |
+| [ADR-013](./adr/adr-013-hybrid-pqc-readiness.md) | Hybrid post-quantum-cryptography readiness posture | Positions the app to adopt FIPS 203/204/205 primitives as they become mainstream without a disruptive later migration |
+| [ADR-014](./adr/adr-014-device-authorized-kid-access.md) | Device-authorized kid access: distinct child-scoped session tokens, guardian/admin/device-grant minted only | Closes the "kid surface runs under the guardian's bearer" gap (R1 accepted debt G1); child sessions are cryptographically and semantically separate from guardian auth |
+| [ADR-015](./adr/adr-015-story-request-initiation-and-gating.md) | Story-request initiation and gating: children may initiate a request; adult consent gates any generation spend | Reverses the vision doc's stale "children cannot request stories" framing; the enforceable invariant is no spend/provider egress without adult consent, not "child never initiates" |
+| [ADR-016](./adr/adr-016-recommendation-sharing-social-boundary.md) | Recommendation sharing and the three-ring social boundary | Structured, no-free-text cross-family recommendations under dual-guardian consent (ring 2); a system-wide anonymized-aggregate tier (ring 3, S12) is named but not built |
+| [ADR-017](./adr/adr-017-ai-cover-art.md) | AI-generated cover art per storybook version | Ratified 2026-07-16; Gemini generation, R2 storage, kid-visible with a letter-tile fallback; reviewed on the approval surface (see the H2 gap noted in Phase 5/roadmap.md) |
+| [ADR-018](./adr/adr-018-childrens-privacy-compliance.md) | Children's-privacy compliance (COPPA/GDPR-K): verifiable parental consent mechanism, audience classification, launch geography | Still Proposed; D1-D3 await counsel engagement (Now-queue item 5, not started as of 2026-07-20) |
+| [ADR-019](./adr/adr-019-parameterized-skeletons-theme-contracts.md) | Parameterized skeletons with theme contracts (WS-2 content-diversity workstream) | Generalizes fixed skeletons into parameterized templates with theme contracts, widening generation diversity without a per-cell authoring multiplier |
 
-**ADR status** (as of 2026-07-03):
+**ADR status** (updated 2026-07-20; previously stated "as of 2026-07-03" and missed
+ADR-012 through ADR-019 entirely):
 
 - **Accepted**: ADR-001, ADR-002, ADR-003, ADR-004, ADR-005, ADR-006, ADR-009,
-  [ADR-011](./adr/adr-011-story-scale-framework.md).
-- **Proposed**: ADR-007, ADR-008,
-  [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md).
+  ADR-011, ADR-012, ADR-013, ADR-014, ADR-015, ADR-016, ADR-017, ADR-019.
+- **Proposed**: ADR-007, ADR-008, ADR-010, ADR-018.
 
-ADR-010 and ADR-011 are not in the index table above (which predates them); ADR-011 is
-the story-scale framework (band x length x style) and ADR-010 is the Modal review and
-gated-generation leg. Both are listed in Section 12 (Related Documents).
+ADR-010 and ADR-011 predate the table above; ADR-011 is the story-scale framework
+(band x length x style) and ADR-010 is the Modal review and gated-generation leg. All are
+listed in Section 12 (Related Documents), which is likewise updated with ADR-012 through
+ADR-019 below.
 
 ### Publish state machine
 
@@ -272,7 +346,7 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 
 | Layer | Choice | Notes |
 |-------|--------|-------|
-| Backend language | Python 3.12 | uv, Ruff, BasedPyright |
+| Backend language | Python 3.14 (upgraded 2026-07-19, PR #299, issue #295; CI's quality gate runs on 3.14, `python-compatibility.yml` covers 3.11-3.14) | uv, Ruff, BasedPyright. **Correction 2026-07-20**: this row said "3.12" through v2.7; `pyproject.toml`'s `target-version = "py311"` for Ruff has not been bumped to match and is a small residual follow-up |
 | Backend framework | FastAPI + Pydantic v2 | Modular monolith |
 | Background worker | RQ (Redis Queue) | Simpler than Celery at this scale |
 | Frontend language | TypeScript | pnpm |
@@ -716,28 +790,41 @@ Phase 4b and Phase 5 follow.
 
 **Branch**: `feat/phase-4b-editor-ux`
 **Milestone**: (post-release; no milestone number assigned)
-**Status**: Planned (post-release)
+**Status**: ✅ Substantially delivered 2026-07-17 (PR #270), verified by the 2026-07-20 plan
+audit. Node editor, ending tracker, and read-aloud all shipped; only bookmarks and the
+device/storage view remain genuinely open (this section previously said "Planned" through
+v2.7, unchanged for 10 days after the PR merged).
 
 **Objective**: Make authoring and reading pleasant beyond the minimum viable release. See
 [ADR-002](./adr/adr-002-client-pwa.md) (TTS via Web Speech API).
 
 **Deliverables** (traced to [Roadmap Phase 4b](./roadmap.md)):
 
-- **Lightweight node editor**: guardian can read a story as a playthrough and as a node list;
-  edit a passage; re-roll a single branch (triggers repair pass); re-run validation.
-  API: `PATCH /api/v1/storybooks/{id}/versions/{v}/nodes/{node_id}`.
-- **Ending tracker**: "3 of 7 endings found" display using the `completion` table; endings
-  identified by stable `ending.id` so it survives prose edits.
-- **Bookmarks**: save-slot UI.
-- **Read-aloud (TTS)**: Web Speech API (`SpeechSynthesis`), browser-native, targeted at the
-  8-11 band (Briella).
+- [x] **Lightweight node editor**: guardian can read a story as a playthrough and as a node
+  list; edit a passage; re-run validation and moderation on edit.
+  API: `PATCH /api/v1/storybooks/{id}/versions/{v}/nodes/{node_id}`
+  (`src/cyo_adventure/api/node_edit.py`). Single-branch re-roll (triggering a repair pass)
+  and a dedicated guardian-facing (as opposed to admin) review/edit surface are not
+  independently confirmed and may remain open.
+- [x] **Ending tracker**: "N of M endings found" display using the `completion` table;
+  `frontend/src/reader/EndingsProgress.tsx`, wired into `Reader.tsx`.
+- [ ] **Bookmarks**: save-slot UI. Confirmed NOT built as of 2026-07-20 (distinct from K5's
+  "Go back" undo, which is shipped).
+- [x] **Read-aloud (TTS)**: Web Speech API (`SpeechSynthesis`) via
+  `frontend/src/reader/useReadAloud.ts`, per-profile `tts_enabled` toggle wired into
+  `Reader.tsx` and `ProfileFormDialog.tsx`.
+- [ ] **Guardian device/storage view** (G15 remainder, not originally listed in this table
+  but tracked in roadmap.md's Phase 4b): ADR-014 device authorize/revoke exists; per-device
+  download/storage visibility does not.
 
 **Acceptance criteria** (from [Roadmap Phase 4b](./roadmap.md)):
 
-- Concept to published through the UI alone including a small edit.
-- Read-aloud works for the youngest band.
+- Concept to published through the UI alone including a small edit. Node editor confirmed;
+  full "small edit" E2E flow not independently re-verified.
+- Read-aloud works for the youngest band. Confirmed shipped.
 
-**Quality gates**:
+**Quality gates** (not independently re-measured in the 2026-07-20 audit; verify before
+relying on these):
 
 - [ ] 80% line / 70% branch coverage; 90% on node-edit and validation re-trigger paths
 - [ ] Playwright E2E: full edit-and-revalidate flow; TTS starts and reads passage
@@ -754,7 +841,16 @@ block Phase 5.
 
 **Branch**: `chore/phase-5-hardening`
 **Milestone**: M5 - Hardened, deployed, restore-tested v1
-**Status**: Planned (post-release)
+**Status**: 🟡 Partially delivered (post-release). This section predates the 2026-07-16
+register-driven scope expansion; **[roadmap.md's Phase 5 section](./roadmap.md) is the
+current, item-level source of truth** (its deliverable checklist is kept in sync with code,
+this one is not). As of the 2026-07-20 audit: Redis-backed rate limiting, the ADR-007
+retention purge job, offline-copy revocation, the operator runbook, a policy re-screen first
+cut, and the real-backend S2 conflict-race spec are all merged. Performance pass, Sentry
+backups/restore drill, the admin audit *view* (as opposed to the audit stamps that already
+exist), the remaining nightly/staging test ladder, and the live-model adversarial run remain
+open, plus two newly surfaced gaps (H1 age-band assignment bypass, H2 unmoderated cover
+images) - see roadmap.md for detail.
 
 **Objective**: Production readiness on the homelab (or Azure Container Apps as the cloud
 alternative). See [ADR-004](./adr/adr-004-homelab-first-deployment.md).
@@ -817,7 +913,7 @@ in the phase named):
 | Code | Disposition | Phase |
 |------|-------------|-------|
 | Dev auth stub (`_extract_subject` + import-time guard in `api/deps.py`) | ✅ Done (2026-07-02, pulled forward into C4a-1). Retired from all non-local paths; stub survives only under `environment == "local"` for tests and local dev | 6 (P6-01) |
-| `localStorage` bearer token in `frontend/src/hooks/useApi.ts` | Not yet done; token is still written to `localStorage` by `AuthContext` (reusing the existing interceptor). Replacement by a supabase-js session storage abstraction remains scoped to P6-06 | 6 (P6-06) |
+| `localStorage` bearer token in `frontend/src/hooks/useApi.ts` | Confirmed still not done as of 2026-07-20: `useApi.ts` still calls `localStorage.setItem/getItem/removeItem` directly. A 401-retry-with-refresh path was since added (P6-06 partial), but the storage-abstraction replacement itself, and the CSP `connect-src` update, remain open | 6 (P6-06) |
 | Homelab Ollama leg as a production generation fallback (`ollama_base_url`, `ollama_auth`, `ollama_ca_bundle` in prod config) | Demoted to dev/family-tier only; public tier is OpenRouter-only | 9 (P9-11) |
 | `redis_url`, `generation/queue.py` (RQ), and the commented Redis service in `docker-compose.yml` | Removed if the pgmq evaluation passes; retained unchanged if the Upstash fallback is taken | 9 (P9-03) |
 | `utils/financial.py` (unused template scaffolding; no imports anywhere) | Remove in a standalone chore before Phase 8 so the entitlements/credits work (integer credits, Apple handles money) is not built near dead Decimal helpers; log template feedback per the repo requirement | pre-8 chore |
@@ -829,10 +925,15 @@ in the phase named):
 
 **Branch**: `feat/phase-6-public-auth`
 **Milestone**: M6 - A stranger family can onboard in staging (public auth live behind a flag)
-**Status**: Planned; P6-01, P6-02, and P6-09 were pulled forward into Phase 4a's C4a-1 app
-shell (2026-07-02, per user direction to build against the live Supabase project rather than
-defer verification) and are done ahead of schedule. P6-06 is partially done (session
-management + `/me` fetch only). See per-item notes below.
+**Status**: 🟡 Substantially delivered ahead of schedule, corrected 2026-07-20 (this section
+had said "Planned" through v2.7, which understated reality by five items). P6-01, P6-02,
+and P6-09 were pulled forward into Phase 4a's C4a-1 app shell (2026-07-02). **The 2026-07-20
+plan audit additionally confirmed P6-03, P6-04, P6-07, and P6-08 are fully built and tested**
+- largely via ADR-014 (device-authorized kid access, 2026-07-13) and the 2026-07-17 M4b-d
+wave (PR #270) - despite this table still calling them not started. P6-05 is partial (web
+OAuth done, native Capacitor path not) and P6-06 is partial (401-retry done, storage
+abstraction/CSP not). P6-10's broader stranger-family IDOR extension was not independently
+re-verified in this pass. See per-item notes below.
 
 **Objective**: Retire the dev auth stub and make the backend genuinely multi-tenant.
 Supabase Auth becomes the single token issuer with Sign in with Apple and Google as
@@ -847,14 +948,14 @@ model, authorization matrix, and IDOR test suite are reused; what changes is how
 |-----------|-------------|-------|
 | P6-01 | Real JWT validation replacing `_extract_subject` in `src/cyo_adventure/api/deps.py` | ✅ Done (2026-07-02). PyJWT + cached JWKS against the Supabase issuer; verifies signature (RS256/ES256 allowlist, defeats `alg=none`), issuer, audience, expiry. **Deviation**: the spec called for deleting the import-time environment guard; instead it was kept but made conditional on OIDC config being present, for a startup-time fail-fast rather than a first-request failure. Dev stub still selectable only when `environment == "local"`. |
 | P6-02 | Auth settings in `src/cyo_adventure/core/config.py`: `oidc_issuer`, `oidc_audience`, `oidc_jwks_url` | ✅ Done (2026-07-02). Provider-agnostic names, values point at the Supabase project (deliberate ejection path); `_require_oidc_config_outside_local` fail-fast model validator added, mirroring `_reject_dev_database_url_outside_local` as specified. |
-| P6-03 | JIT guardian provisioning: `POST /api/v1/onboarding` | First login creates `Family` + guardian `User` keyed on the Supabase `sub`; idempotent on retry; includes the consent-capture seam Phase 7 fills (P7-02); adds a nullable `email` contact column to `User` + Alembic migration (the model has none today; needed for receipts/consent records; populated from the Supabase user, may be an Apple relay address, NEVER used as a key) |
-| P6-04 | Child-session tokens | Guardian-minted, backend-signed, short-lived JWT scoped to role=child and a single `profile_id`; lifetime long enough for an offline reading session (config); second branch in `require_principal` producing the same `Principal` shape; Supabase anonymous users are NOT used |
-| P6-05 | Supabase Auth providers: Sign in with Apple + Google | Native iOS flow via `signInWithIdToken` (no client secret in the native path); web OAuth path needs the Apple Services ID client secret (6-month validity, reduced rotation runbook); first-login name/email capture verified (Apple sends them exactly once) |
-| P6-06 | Frontend auth: supabase-js session management | **Partially done** (2026-07-02): `AuthContext` wraps `supabase.auth.getSession()`/`onAuthStateChange()`, calls `GET /api/v1/me` to resolve a `Principal`, and syncs the access token into the existing `useApi.ts` `localStorage` interceptor (reused as-is, not yet replaced). **Not yet built**: the storage-abstraction replacement of `localStorage` (Keychain lands in P8-02), Capacitor deep-link callbacks, native Apple `signInWithIdToken`, `useApi.ts` 401-retry-with-refresh, `offline/sync.ts` expired-token-before-401 handling, and the CSP `connect-src` update. |
-| P6-07 | Child profile picker + optional per-profile PIN | Kid experience stays login-free; picker appears after guardian device sign-in |
-| P6-08 | Parental gate (frontend) | Guardian re-auth wrapper around dashboard, approval, settings, and (later) purchase routes; the gate pattern Apple expects in Kids Category apps |
-| P6-09 | Auth negative-test suite | ✅ Done for the JWT-verification cases (2026-07-02, `tests/unit/test_oidc_verification.py`): expired token, wrong issuer, wrong audience, algorithm confusion (`alg=none`), tampered signature, wrong signing key, missing subject claim, JWKS fetch failure. **Not yet covered**: child token on guardian endpoints (depends on P6-04, not yet built). |
-| P6-10 | Cross-tenant IDOR extension | Existing IDOR suite extended with a third, stranger family: no read or write crosses family boundaries anywhere |
+| P6-03 | JIT guardian provisioning: `POST /api/v1/onboarding` | ✅ **Done, confirmed 2026-07-20** (this table previously said not started). `src/cyo_adventure/api/onboarding.py` implements the endpoint (mounted `app.py`): creates `Family` + guardian `User` on first login (201) and idempotently returns existing identity (200), including a pending-invite bind path; gated by `require_onboarding_identity` in `deps.py`, which explicitly rejects child-session tokens. Covered by `tests/integration/test_onboarding_api.py`. |
+| P6-04 | Child-session tokens | ✅ **Done, confirmed 2026-07-20** (this table previously said not started; delivered via ADR-014, 2026-07-13). `core/child_session.py` implements `mint_child_session_token`/`verify_child_session_token` with a distinct `ChildSessionClaims` type; `POST /child-sessions` (`api/child_sessions.py`) is gated to guardian/admin/DEVICE principals only, with cross-family and PIN checks. Frontend: `frontend/src/auth/childSession.ts`, `frontend/src/kid/childSessionApi.ts`. |
+| P6-05 | Supabase Auth providers: Sign in with Apple + Google | 🟡 **Partial, confirmed 2026-07-20**: web OAuth (`signInWithOAuth('google'\|'apple')` via `AuthContext.tsx`) is built and tested. The native iOS flow (`signInWithIdToken`, Capacitor deep-links) has zero code anywhere in the repo - grep for `Capacitor`/`signInWithIdToken` returns nothing - so the native path described in this row remains fully unstarted. |
+| P6-06 | Frontend auth: supabase-js session management | 🟡 **Still partial, confirmed 2026-07-20, with one correction**: `hooks/useApi.ts` still writes the bearer to `localStorage` directly - the storage-abstraction replacement has NOT been built, nor has the CSP `connect-src` update. **Correction**: a 401-retry-with-refresh path now exists in `useApi.ts`, contradicting this row's earlier "not yet built" for that item. Capacitor deep-link callbacks and native `signInWithIdToken` remain not built (see P6-05). |
+| P6-07 | Child profile picker + optional per-profile PIN | ✅ **Done, confirmed 2026-07-20** (this table previously said not started). `frontend/src/kid/ProfilePickerPage.tsx` implements a full PIN-prompt flow with mismatch handling and a retry-attempt counter that escalates to an "ask a grown-up" prompt; backend verification in `api/child_sessions.py`. |
+| P6-08 | Parental gate (frontend) | ✅ **Done, confirmed 2026-07-20** (this table previously said not started). `frontend/src/auth/AdultGate.tsx` (432 lines) implements a full re-auth gate (locked/unlocked/oauth-bypass phases, classified password-retry errors), tested in `AdultGate.test.tsx`. |
+| P6-09 | Auth negative-test suite | ✅ **Now fully done, confirmed 2026-07-20**: the previously-missing case (child token on a guardian endpoint) is covered - `tests/integration/test_child_sessions.py::test_child_token_rejected_on_guardian_endpoint` and `test_onboarding_api.py::test_child_session_token_cannot_onboard` both exist, since P6-04 (their blocking dependency) is now built. |
+| P6-10 | Cross-tenant IDOR extension | Not independently re-verified in the 2026-07-20 audit beyond a child-token case in `test_authz_matrix.py`; status vs. the original "not started" claim for the broader third-stranger-family suite remains unconfirmed either way |
 
 **Salvaged design notes** (from the withdrawn first-release trust-boundary exploration; folded
 here as guidance, not as a competing ADR):
@@ -901,9 +1002,23 @@ Supabase project (dev/staging) created at phase start. Blocks Phases 8 and 9.
 
 **Branch**: `feat/phase-7-kids-compliance`
 **Milestone**: M7 - Compliance checklist signed off; deletion drill passes
-**Status**: Planned. Scope expanded 2026-07-10 with items P7-09..P7-13 from the COPPA compliance
-audit ([docs/compliance/coppa-compliance-audit.md](../compliance/coppa-compliance-audit.md));
-per-item audit notes appear in the table below.
+**Status**: 🟡 Partially delivered, corrected 2026-07-20. Scope expanded 2026-07-10 with items
+P7-09..P7-13 from the COPPA compliance audit
+([docs/compliance/coppa-compliance-audit.md](../compliance/coppa-compliance-audit.md));
+per-item audit notes appear in the table below. **PR #304 ("GDPR/COPPA review, remediation
+plan, and Phase 1 PII-egress hardening", merged 2026-07-19) closed P7-10 in full** and half of
+P7-13 (the SECURITY.md correction); P7-09's purge mechanism predates it (shipped in PR #270,
+already reflected in Phase 5); P7-09's policy-doc/expiry components, all of P7-12, and P7-13's
+infosec-program artifact remain open. **Update, same day**: a second, larger COPPA/GDPR
+remediation pass (#311, "data rights, VPC consent, self-signup approval, audit logging" -
+new `docs/compliance/breach-notification-runbook.md`, `dpia.md`,
+`information-security-program.md`, `privacy-notice.md`, `processor-dpa-checklist.md`,
+`records-of-processing-activities.md`, plus code changes across `api/me.py`,
+`api/onboarding.py`, `api/profiles.py`, new consent/retention migrations) was still open
+when this section was written and merged to `main` within hours of it. It plausibly closes
+or substantially advances P7-02 (consent), P7-09 (retention policy/expiry), and P7-13
+(infosec-program artifact) above, but that has not been independently verified - the
+statuses above predate #311 and need a dedicated follow-up check, not a same-day guess.
 
 **Objective**: Meet the obligations that make a child-directed public app lawful and
 App-Store-reviewable: COPPA/GDPR-K consent, privacy disclosures, account deletion, and the
@@ -916,18 +1031,18 @@ label, the deletion contract, and the consent disclosure.
 | Plan item | Deliverable | Notes |
 |-----------|-------------|-------|
 | P7-01 | Apple Developer Program enrollment + EU DSA trader status | Prerequisite for P6-05, TestFlight, and submission; publish trader contact details |
-| P7-02 | Verifiable parental consent at onboarding | COPPA-acceptable method; persist a consent record (method, timestamp, policy version) on the family; re-consent flow on material policy change; **audit 2026-07-10**: no onboarding endpoint exists yet (P6-03 unbuilt) and `POST /profiles` is currently ungated, so consent has no host and child-profile creation must be blocked behind it (audit C-01) |
+| P7-02 | Verifiable parental consent at onboarding | COPPA-acceptable method; persist a consent record (method, timestamp, policy version) on the family; re-consent flow on material policy change; **audit 2026-07-10**: no onboarding endpoint exists yet (P6-03 unbuilt) and `POST /profiles` is currently ungated, so consent has no host and child-profile creation must be blocked behind it (audit C-01). **Update 2026-07-20**: the onboarding endpoint itself now exists (P6-03 shipped 2026-07-17), so the "no host" blocker is resolved architecturally; whether consent capture/persistence is actually wired into it was not independently re-verified in this pass; PR #311 ("VPC consent") merged to `main` the same day as this audit and likely closes this item, but that has not been independently confirmed - see the Phase 7 status note above |
 | P7-03 | Privacy policy published + linked in-app | Drafted from `privacy-model.md`; hosted at a stable URL (App Store Connect requires one) |
 | P7-04 | In-app account deletion (Guideline 5.1.1(v)) | Full-family erasure driven by the child-linked data classification; removes the guardian identity via the Supabase Auth admin API; calls Apple's Sign in with Apple token-revocation endpoint (our code); async deletion job with audit record; drill test proves zero residual child-linked rows; **audit 2026-07-10**: no FK `ondelete` cascade exists on any child-linked table today (contradicts `privacy-model.md` line 133), so the job must add cascades or enumerate every child table plus the `pipeline_event` `BOOK_ASSIGNED` rows (audit C-03) |
 | P7-05 | Guardian data export | All family data in a portable format (GDPR access right) |
 | P7-06 | Kid-context SDK and telemetry audit | No third-party ads or trackers; any analytics are first-party and anonymized; documented result feeds the privacy nutrition labels; **audit 2026-07-10**: confirmed no Sentry, analytics, ad, or tracker SDK is wired anywhere; include the public cover bucket (P7-11) and the classifier egress (P7-10) in the label inventory (audit H-02/H-03/M-02) |
 | P7-07 | Age-rating questionnaire prep + AI disclosure + reviewer notes | `docs/planning/app-store-review-notes.md`: how the pre-moderated pipeline works, why children cannot reach generation, moderation and approval evidence |
 | P7-08 | Compliance checklist | `docs/planning/compliance-checklist.md` covering Guidelines 1.3, 4.8, 5.1.1(v), 5.1.4, COPPA, GDPR-K; includes verifying the Supabase DPA and data-region selection (Supabase is a processor of guardian and child-linked data per ADR-009); owner sign-off required; **gates Phase 9 submission** |
-| P7-09 | Data-retention policy and enforced purge | Written, published retention policy stating purpose and window per child-data category (`child_profile`, `reading_state`, `completion`, `rating`, `story_request`, `generation_job.report`, `pipeline_event`); implement the ADR-007 `generation_job.report` pg_cron purge (still unbuilt, carried from Phase 5) and add expiry for stale `reading_state` and for the raw text of blocked/declined `story_request` rows (retained at rest today, redacted only at the view layer); satisfies 16 CFR 312.10 (2025 amendment: no indefinite retention). Audit H-01, M-03 |
-| P7-10 | PII-egress hardening across every provider leg | Route the cover-generation prompt through `assert_prompt_pii_safe` before the image model (`covers/` is unguarded today; audit H-02); apply the same screening to the Stage-0 classifier inputs in `moderation/pipeline.py` (bypassed today while the sibling LLM review stages are guarded; audit H-03); extend the guard beyond the registered-name allowlist with pattern detectors (email, phone, address) so free-form child PII is caught, and retire the dead birthdate branch (audit M-01, L-03) |
-| P7-11 | Private cover-image storage | Move covers off the public Cloudflare R2 bucket (migrated from Supabase Storage) with guessable keys (`{storybook_id}/{version}.webp`) to a private bucket with signed, expiring URLs, or gate retrieval behind the family-scoped API. Audit M-02 |
-| P7-12 | Confirm third-party processor terms (public tier) | Obtain written data-handling terms covering retention, sub-processing, and no independent use (per audit H-04) for every cloud egress destination (OpenRouter and downstream models, Anthropic-direct, Google Gemini image, OpenAI Moderation, Perspective) and record them in `privacy-model.md`, closing its Open Blocker 1; prefer zero-data-retention routes. The Supabase DPA and data-region check remain in P7-08. Audit H-04 |
-| P7-13 | Information-security program + security-doc correction | Produce the 16 CFR 312.8 (2025) safeguards artifact (designated coordinator, documented risk assessment, vendor-oversight process); correct `SECURITY.md`, which today asserts a "no persistent PII without explicit parental consent" mitigation that does not exist and still describes the retired Authentik / dev-stub auth. Audit M-04 |
+| P7-09 | Data-retention policy and enforced purge | 🟡 **Partial, confirmed 2026-07-20**: the ADR-007 `generation_job.report` pg_cron purge is now built (`supabase/migrations/20260718000000_add_report_retention_purge.sql`, shipped in PR #270, already reflected as done in Phase 5) - this row's "still unbuilt" is stale. Still open: a written, published per-category retention policy doc, `reading_state` expiry, and redaction of raw text on blocked/declined `story_request` rows. Audit H-01, M-03 |
+| P7-10 | PII-egress hardening across every provider leg | ✅ **Done, confirmed 2026-07-20** (this row previously said "unguarded"/"bypassed"). PR #304 (merged 2026-07-19) closed all four sub-items: `covers/service.py` now calls `assert_prompt_pii_safe` before the image model (closes H-02); `moderation/pipeline.py` screens node bodies before Stage-0 classifier calls (closes H-03, plus a parallel gap fixed in `api/node_edit.py`); `generation/pii.py` adds pattern-based email/phone/address detectors beyond the name allowlist (closes M-01); the dead birthdate branch was removed (closes L-03) |
+| P7-11 | Private cover-image storage | Not independently re-verified in the 2026-07-20 audit; status unchanged pending a dedicated check of the R2 bucket configuration |
+| P7-12 | Confirm third-party processor terms (public tier) | Confirmed still untouched as of 2026-07-20: no commit references processor DPAs/terms; this is a legal/paperwork task, not code, and remains fully open |
+| P7-13 | Information-security program + security-doc correction | 🟡 **Half-closed, confirmed 2026-07-20**: PR #304's SECURITY.md-correction half shipped (the stale "no persistent PII without explicit parental consent" claim and the retired-Authentik description were both fixed). The 16 CFR 312.8 safeguards artifact (designated coordinator, risk assessment, vendor-oversight process) and a breach-notification runbook remain unstarted, per the PR's own follow-up commit message |
 
 **Acceptance criteria**:
 
@@ -1296,12 +1411,35 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 | ADR-008: Public App Store launch | Distribution, auth, monetization, hosting, and compliance pivots for the public rungs (R2/R3) | [docs/planning/adr/adr-008-public-app-store-launch.md](./adr/adr-008-public-app-store-launch.md) |
 | ADR-009: Supabase platform | Auth, database, storage, and queue topology for the public tier (amends ADR-008) | [docs/planning/adr/adr-009-supabase-platform.md](./adr/adr-009-supabase-platform.md) |
 | ADR-010: Modal review + gated generation leg | Moderation reviewer on Modal; evidence-gated path for Modal generation (amends ADR-003) | [docs/planning/adr/adr-010-modal-review-and-gated-generation.md](./adr/adr-010-modal-review-and-gated-generation.md) |
+| ADR-011: Story-scale framework | Band x length x style skeleton baseline | [docs/planning/adr/adr-011-story-scale-framework.md](./adr/adr-011-story-scale-framework.md) |
+| ADR-012: Supabase CLI migrations | Migration tooling for the Supabase platform (retires Alembic) | [docs/planning/adr/adr-012-supabase-cli-migrations.md](./adr/adr-012-supabase-cli-migrations.md) |
+| ADR-013: Hybrid PQC readiness | Post-quantum-cryptography adoption posture | [docs/planning/adr/adr-013-hybrid-pqc-readiness.md](./adr/adr-013-hybrid-pqc-readiness.md) |
+| ADR-014: Device-authorized kid access | Child-scoped session tokens, closing the R1 accepted debt G1 | [docs/planning/adr/adr-014-device-authorized-kid-access.md](./adr/adr-014-device-authorized-kid-access.md) |
+| ADR-015: Story-request initiation and gating | Children may initiate; adult consent gates spend | [docs/planning/adr/adr-015-story-request-initiation-and-gating.md](./adr/adr-015-story-request-initiation-and-gating.md) |
+| ADR-016: Recommendation sharing and the three-ring social boundary | Cross-family recommendations under dual-guardian consent | [docs/planning/adr/adr-016-recommendation-sharing-social-boundary.md](./adr/adr-016-recommendation-sharing-social-boundary.md) |
+| ADR-017: AI cover art | Generated cover-art subsystem and review posture | [docs/planning/adr/adr-017-ai-cover-art.md](./adr/adr-017-ai-cover-art.md) |
+| ADR-018: Children's-privacy compliance | COPPA/GDPR-K consent mechanism, audience, geography (Proposed, counsel pending) | [docs/planning/adr/adr-018-childrens-privacy-compliance.md](./adr/adr-018-childrens-privacy-compliance.md) |
+| ADR-019: Parameterized skeletons with theme contracts | WS-2 content-diversity workstream | [docs/planning/adr/adr-019-parameterized-skeletons-theme-contracts.md](./adr/adr-019-parameterized-skeletons-theme-contracts.md) |
 | Privacy and provider data-handling model | Data classification behind the consent, label, and deletion work in Phase 7 | [docs/planning/privacy-model.md](./privacy-model.md) |
 | COPPA compliance audit | Engineering audit against 16 CFR Part 312; findings mapped to Phase 7 items P7-02..P7-13 | [docs/compliance/coppa-compliance-audit.md](../compliance/coppa-compliance-audit.md) |
+| Capability Register | Top-down K/G/A/S capability map with delivery status; the scope checkoff sheet (v1.7 as of 2026-07-20) | [docs/planning/capability-register.md](./capability-register.md) |
+| R1 Deferred-Debt Register | Consolidated register of consciously accepted debt and open GitHub issues | [docs/planning/r1-deferred-debt-register.md](./r1-deferred-debt-register.md) |
+| Story-flexibility plan (WS-0/1/2/4/7) | Content-diversity workstream: metrics/harness, leaf diversity, parameterized catalog (ADR-019), selection, request interpretation (K19) | [docs/planning/story-flexibility-plan.md](./story-flexibility-plan.md) |
+| Catalog-first inventory gap | Open design gap: family-scoped import blocks an admin-authored base catalog; unscheduled | [docs/planning/catalog-first-inventory-gap.md](./catalog-first-inventory-gap.md) |
+| Admin/guardian dual-roles plan | Open design proposal for one adult holding both roles; identifies a real scoping-fork security risk; unscheduled | [docs/planning/admin-guardian-dual-roles-plan.md](./admin-guardian-dual-roles-plan.md) |
 
 ---
 
-**Last Updated**: 2026-07-10 (v2.7: added the post-R1 story-lifecycle redesign (WS-A
+**Last Updated**: 2026-07-20 (v2.8: comprehensive plan audit closing a 10-day, ~20-release
+gap since v2.7 - see the "2026-07-20 plan audit" note in Section 1 for full methodology.
+Corrected: Phases 4b/4c/4d marked delivered instead of not-started; Phase 5 marked partially
+delivered with two newly surfaced safety gaps (H1/H2); Phase 6 corrected item-by-item
+(P6-03/04/07/08/09 were actually done, not started); Phase 7 corrected (P7-10 done via #304,
+P7-09/13 partial, P7-12 confirmed untouched); ADR table extended from ADR-011 to ADR-019
+(all were missing); tech-stack Python version corrected 3.12 -> 3.14; Content workstream's
+"zero production-eligible skeletons" claim corrected (61 skeletons, 23 filled stories now
+committed); Related Documents extended with the capability register, debt register, and
+three previously unreferenced design docs. v2.7: added the post-R1 story-lifecycle redesign (WS-A
 through WS-G, PRs #141-#192, all merged 2026-07-06 to 2026-07-10) as delivered scope in
 Section 1's status table and narrative, cross-referenced against
 `docs/planning/story-lifecycle-redesign.md`; v2.6: integrated the COPPA compliance audit
