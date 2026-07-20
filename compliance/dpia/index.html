@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-018-childrens-privacy-compliance/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/compliance/dpia/">
       
       
       
@@ -20,19 +20,19 @@
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>ADR-018: Children's-privacy compliance architecture (COPPA, GDPR-K, AADC) - CYO Adventure</title>
+        <title>Data Protection Impact Assessment (Draft for Counsel Review) - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-018-childrens-privacy-compliance-architecture-coppa-gdpr-k-aadc" class="md-skip">
+        <a href="#data-protection-impact-assessment-draft-for-counsel-review" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-018: Children's-privacy compliance architecture (COPPA, GDPR-K, AADC)
+              Data Protection Impact Assessment (Draft for Counsel Review)
             
           </span>
         </div>
@@ -235,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -256,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../guides/overview/" class="md-tabs__link">
+        <a href="../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../api-reference/" class="md-tabs__link">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../operations/runbook/" class="md-tabs__link">
+        <a href="../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -322,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -344,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -366,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -388,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../" class="md-tabs__link">
+        <a href="../../planning/" class="md-tabs__link">
           
   
   
@@ -410,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -432,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -468,7 +468,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -498,7 +498,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -596,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/overview/" class="md-nav__link">
+      <a href="../../guides/overview/" class="md-nav__link">
         
   
   
@@ -631,7 +631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/configuration/" class="md-nav__link">
+      <a href="../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -666,7 +666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/usage/" class="md-nav__link">
+      <a href="../../guides/usage/" class="md-nav__link">
         
   
   
@@ -701,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -801,7 +801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api-reference/" class="md-nav__link">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -903,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/runbook/" class="md-nav__link">
+      <a href="../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -938,7 +938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -1017,7 +1017,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../architecture/" class="md-nav__link ">
+            <a href="../../architecture/" class="md-nav__link ">
               
   
   
@@ -1068,7 +1068,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1103,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1138,7 +1138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1173,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1208,7 +1208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/data-model/" class="md-nav__link">
+      <a href="../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1243,7 +1243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/deployment/" class="md-nav__link">
+      <a href="../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1318,7 +1318,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../api/" class="md-nav__link ">
+            <a href="../../api/" class="md-nav__link ">
               
   
   
@@ -1367,7 +1367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1402,7 +1402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1439,7 +1439,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1474,7 +1474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1578,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1613,7 +1613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1648,7 +1648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -1725,7 +1725,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../../planning/" class="md-nav__link ">
               
   
   
@@ -1776,7 +1776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project-vision/" class="md-nav__link">
+      <a href="../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -1811,7 +1811,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tech-spec/" class="md-nav__link">
+      <a href="../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -1846,7 +1846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1881,7 +1881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/" class="md-nav__link">
+      <a href="../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -1963,7 +1963,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -2014,7 +2014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2049,7 +2049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2084,7 +2084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2119,7 +2119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2154,7 +2154,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2189,7 +2189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2224,7 +2224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2259,7 +2259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2294,7 +2294,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2329,7 +2329,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2364,7 +2364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2478,7 +2478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2513,7 +2513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2548,7 +2548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2583,7 +2583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../template_feedback/" class="md-nav__link">
+      <a href="../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2652,7 +2652,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2703,7 +2703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2765,55 +2765,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#1-description-of-the-processing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        1. Description of the processing
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Context
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#already-decided-consolidated-sources-binding" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Already decided (consolidated; sources binding)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#open-decisions-the-reason-this-adr-exists-close-with-counsel-before-accepted" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Open decisions (the reason this ADR exists; close with counsel before Accepted)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Open decisions (the reason this ADR exists; close with counsel before Accepted)">
+    <nav class="md-nav" aria-label="1. Description of the processing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#d1-verifiable-parental-consent-vpc-mechanism" class="md-nav__link">
+  <a href="#11-nature-scope-context-and-purposes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        D1: Verifiable parental consent (VPC) mechanism
+        1.1 Nature, scope, context, and purposes
       
     </span>
   </a>
@@ -2821,32 +2788,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#d2-audience-classification" class="md-nav__link">
+  <a href="#12-necessity-and-proportionality" class="md-nav__link">
     <span class="md-ellipsis">
       
-        D2: Audience classification
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#d3-launch-geography-and-gdpr-kaadc-applicability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        D3: Launch geography and GDPR-K/AADC applicability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#d4-public-artifacts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        D4: Public artifacts
+        1.2 Necessity and proportionality
       
     </span>
   </a>
@@ -2859,10 +2804,104 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
+  <a href="#2-risk-assessment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Consequences
+        2. Risk assessment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Risk assessment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-third-party-disclosure-of-a-childs-free-text-story-ideas-medium-mitigated-from-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Third-party disclosure of a child's free-text story ideas (Medium, mitigated from High)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-verifiable-parental-consent-method-is-novel-not-ftc-enumerated-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Verifiable parental consent method is novel, not FTC-enumerated (Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-cross-family-disclosure-without-adequate-control-low-resolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Cross-family disclosure without adequate control (Low, resolved)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-admin-over-access-to-child-linked-data-across-families-low-mitigated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Admin over-access to child-linked data across families (Low, mitigated)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-indefinite-retention-of-the-accountability-log-low-documented-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Indefinite retention of the accountability log (Low, documented exception)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-self-signup-account-creation-without-vetting-low-newly-mitigated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Self-signup account creation without vetting (Low, newly mitigated)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-retention-windows-enforced-late-or-inconsistently-low-mitigated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Retention windows enforced late or inconsistently (Low, mitigated)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-consultation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Consultation
       
     </span>
   </a>
@@ -2870,10 +2909,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
+  <a href="#4-overall-conclusion-draft" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Validation
+        4. Overall conclusion (draft)
       
     </span>
   </a>
@@ -2881,10 +2920,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
+  <a href="#5-relationship-to-other-compliance-documents" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Related
+        5. Relationship to other compliance documents
       
     </span>
   </a>
@@ -2911,146 +2950,181 @@
   
 
 
-<h1 id="adr-018-childrens-privacy-compliance-architecture-coppa-gdpr-k-aadc">ADR-018: Children's-privacy compliance architecture (COPPA, GDPR-K, AADC)<a class="headerlink" href="#adr-018-childrens-privacy-compliance-architecture-coppa-gdpr-k-aadc" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Status</strong>: Proposed (2026-07-16). Becomes Accepted only after the open decisions below
-are closed with legal counsel; this matches the privacy model's standing note that these
-documents are design references, not legal advice.
-<strong>Date</strong>: 2026-07-16
-<strong>Relates to</strong>: <a href="../adr-008-public-app-store-launch/">ADR-008</a> (Kids Category posture,
-part 5), <a href="../adr-009-supabase-platform/">ADR-009</a> (processor, DPA), <a href="../adr-016-recommendation-sharing-social-boundary/">ADR-016</a>
-(contact boundary), <a href="../adr-017-ai-cover-art/">ADR-017</a> (image-leg counterparties),
-<a href="../../privacy-model/">Privacy model</a></p>
-</blockquote>
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>One record for the compliance architecture of a child-directed app: what is already
-decided (guardian-only identities, no kid-context SDKs, parental gate, deletion with
-Apple revocation, data classification and retention, named processor list), and the three
-choices still open that carry the legal risk: the verifiable-parental-consent mechanism,
-the audience classification, and the launch geography (US-only first vs EU/UK in scope,
-which decides whether GDPR-K and the UK AADC bind at launch).</p>
-<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<p>COPPA (US), GDPR Article 8 with member-state ages 13-16 ("GDPR-K"), and the UK Age
-Appropriate Design Code become externally enforceable the moment the public tier ships
-(ADR-008). Today the posture is real but scattered: ADR-008 part 5 lists Kids Category
-obligations, ADR-009 defers DPA verification to P7-08, the privacy model holds the data
-classification and provider-counterparty list, and Phase 7 holds the tasks. Nothing
-records the <em>choices</em> compliance forces, so they cannot be checked off or contested. The
-register maps this territory to S10 (privacy architecture), G11 (plain-language trust
-surface), G12 (export and deletion), K14 (safe room), and A14 (compliance ops).</p>
-<h2 id="already-decided-consolidated-sources-binding">Already decided (consolidated; sources binding)<a class="headerlink" href="#already-decided-consolidated-sources-binding" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Children never hold third-party identities.</strong> Guardians are the only IdP accounts;
-   child sessions are backend-minted and profile-scoped (ADR-008 decision 2, ADR-014).</li>
-<li><strong>No ads ever, no third-party ad/analytics SDKs in the kid context</strong> (vision permanent
-   exclusion; ADR-008 part 5).</li>
-<li><strong>Parental gate</strong> in front of settings, purchases, generation, and external links
-   (ADR-008); the kid-to-adult boundary crossing is ADR-014's step-up.</li>
-<li><strong>Deletion</strong>: in-app account deletion erases the family and revokes Apple tokens
-   (ADR-008; Supabase admin API per ADR-009). Recommendation payloads and connections are
-   in the erasure set (ADR-016).</li>
-<li><strong>Data minimization spine</strong>: child-linked data classification, no real child PII in
-   prompts, raw-output retention with purge (ADR-007 as amended), admin-first raw-output
-   access, deletion-readiness rules (privacy model).</li>
-<li><strong>Named processor/counterparty list</strong> (privacy model): Supabase (Postgres, auth),
-   OpenRouter and downstream model providers (generation), OpenAI Moderation and Google
-   Perspective (Stage-0 classifiers over all generated prose and child-typed wishes),
-   Google Gemini and Cloudflare R2 (cover art, ADR-017), Sentry (exceptions, no child
-   reading content). Every entry needs verified terms at P7-08; the OpenRouter ZDR
-   question is the standing Blocker 1.</li>
-<li><strong>Contact boundary</strong>: no messaging, no discovery, cross-family flows only through
-   dual-guardian-consented connections (ADR-016).</li>
-</ol>
-<h2 id="open-decisions-the-reason-this-adr-exists-close-with-counsel-before-accepted">Open decisions (the reason this ADR exists; close with counsel before Accepted)<a class="headerlink" href="#open-decisions-the-reason-this-adr-exists-close-with-counsel-before-accepted" title="Permanent link">&para;</a></h2>
-<h3 id="d1-verifiable-parental-consent-vpc-mechanism">D1: Verifiable parental consent (VPC) mechanism<a class="headerlink" href="#d1-verifiable-parental-consent-vpc-mechanism" title="Permanent link">&para;</a></h3>
-<p>COPPA requires consent verification stronger than a tap-through; the App Store parental
-gate does not satisfy VPC on its own. FTC-recognized methods include a payment-card
-transaction, signed consent form, government-ID match, knowledge-based authentication,
-and face-match-to-ID.</p>
-<p><strong>Decision recorded 2026-07-20 (owner choice; pending counsel confirmation, not yet
-"closed" per this ADR's own Validation checklist below).</strong> The account owner ruled out a
-payment-card transaction (avoids introducing PCI scope) and a third-party ID-verification
-service (avoids a new processor and its own DPA/SCC/vendor-oversight burden). Chosen
-mechanism instead: a signature-capture step layered on the existing Supabase/Google OAuth
-login already used for guardian sign-in. Concretely, the guardian provides a
-signature-equivalent (a canvas-drawn signature or a typed full-legal-name attestation)
-plus an explicit checkbox affirming specific consent language; the app logs IP address,
-timestamp, and the OAuth-authenticated account id server-side alongside it. This is meant
-to satisfy the "sign and submit electronically" method already on the FTC's enumerated
-list (312.5(b)(2)(i)), with the OAuth login supplying the identity binding rather than a
-separate verification step. This applies uniformly regardless of tier; the prior working
-recommendation's paid-tier/free-tier split (Apple IAP as the VPC event) is superseded,
-since the app is not currently monetized and the owner does not want VPC design coupled to
-a future payment decision.</p>
-<p><strong>Flagged for counsel</strong>: whether a typed-name or canvas signature captured this way
-satisfies 312.5(b)(2)(i)'s "signed" requirement is the single highest-risk open question in
-this decision and should be the first thing reviewed in the drafted consent-flow copy
-(<code>docs/compliance/</code> DPIA and Privacy Notice drafts, in progress).</p>
-<p><strong>Implemented 2026-07-20.</strong> <code>POST /v1/onboarding</code>'s <code>consent</code> payload
-(<code>accepted</code>/<code>policy_version</code>/<code>signer_name</code>) persists onto
-<code>User.consent_accepted_at</code>/<code>consent_policy_version</code>/<code>consent_signer_name</code>/<code>consent_ip</code>
-(paired, CHECK-enforced); <code>api/profiles.py::_require_consent</code> gates
-<code>POST /api/v1/profiles</code> on it. Frontend: <code>GuardianConsentPage.tsx</code>, reached automatically via
-a new <code>AuthStatus = 'needs-consent'</code>. This is the engineering half of D1; the flagged
-counsel-review question above is unchanged by implementation and still needs an answer
-before this ADR can flip to Accepted.</p>
-<p><strong>Related, newly decided the same day, not itself part of D1</strong>: a guardian self-signup
-admin-approval gate. An uninvited guardian's own first-login JIT provisioning now starts
-<code>User.status='awaiting_approval'</code> instead of <code>active</code>; <code>api/deps.py::require_principal</code>
-already rejects every endpoint for a non-<code>active</code> status, so this alone is the enforcement
-mechanism. An admin approves (<code>-&gt; active</code>) or denies (<code>-&gt; deactivated</code>) via the existing
-<code>PATCH /admin/users/{id}</code>. This is a parallel, non-overlapping track to the admin-invite
-<code>pending</code> status already in this ADR's "already decided" list; an admin-invited guardian is
-still trusted immediately on bind, unaffected by this gate. Frontend:
-<code>GuardianAwaitingApprovalPage.tsx</code>, reached via a new <code>AuthStatus = 'awaiting-approval'</code>.</p>
-<h3 id="d2-audience-classification">D2: Audience classification<a class="headerlink" href="#d2-audience-classification" title="Permanent link">&para;</a></h3>
-<p>Kids Category listing (ADR-008) effectively declares the app child-directed, which takes
-the strictest COPPA lane and removes the "actual knowledge" defenses of mixed-audience
-apps. Decision needed: confirm child-directed as the declared posture (recommended,
-matches product reality) and record that mixed-audience arguments are unavailable.</p>
-<h3 id="d3-launch-geography-and-gdpr-kaadc-applicability">D3: Launch geography and GDPR-K/AADC applicability<a class="headerlink" href="#d3-launch-geography-and-gdpr-kaadc-applicability" title="Permanent link">&para;</a></h3>
-<p>If launch is US-only (App Store storefront restriction), GDPR-K and the UK AADC do not
-bind at launch and become expansion gates instead; if EU/UK storefronts are in scope, a
-DPIA, per-state consent ages (13-16), and AADC conformance (default-high privacy,
-best-interests assessment) join Phase 7. <strong>Working recommendation</strong>: launch US storefront
-only, record EU/UK as an explicit later expansion with its own compliance gate. Decision
-needed: confirm.</p>
-<p><strong>Decision confirmed 2026-07-20 (owner choice; pending counsel confirmation).</strong> No UK or
-EEA users exist today, and none are planned. US-only is confirmed as the working
-recommendation above, not merely proposed. <code>coppa-gdpr-remediation-plan.md</code> Phase 9
-(GDPR-K/AADC conformance) is shelved, not worked, pending a change in this fact; if UK/EEA
-users are ever expected, revisit this decision and Phase 9 together before that expansion
-ships, not after.</p>
-<h3 id="d4-public-artifacts">D4: Public artifacts<a class="headerlink" href="#d4-public-artifacts" title="Permanent link">&para;</a></h3>
-<p>A published privacy notice, App Store privacy nutrition labels derived from the
-data classification, a data-retention schedule, and a breach/incident-response plan
-(feeds register A5/A14). Decision needed: owner sign-off that these are Phase 7
-deliverables with P7-08 as the checkpoint, and who drafts the notice.</p>
-<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h1 id="data-protection-impact-assessment-draft-for-counsel-review">Data Protection Impact Assessment (Draft for Counsel Review)<a class="headerlink" href="#data-protection-impact-assessment-draft-for-counsel-review" title="Permanent link">&para;</a></h1>
+<p><strong>Status: DRAFT.</strong> Written for counsel to review and redline, not a completed, signed-off
+DPIA. This is the deliverable for <code>coppa-gdpr-remediation-plan.md</code> Phase 7b, drafted <em>after</em>
+Phase 2's consent-capture design was finalized and built (per Pressure Point P-2 in
+<code>gdpr-compliance-review.md</code>: a DPIA should inform the consent-mechanism design, and since the
+mechanism is now built, this DPIA assesses the real, shipped design rather than a proposal).
+Article 35(3)(b) does not clearly mandate a DPIA here (no confirmed "large scale" systematic
+monitoring at current scale — see <code>information-security-program.md</code>'s scale note), but the
+data category (children's information) and the novel-method question flagged in ADR-018 D1
+both weigh toward doing one anyway, consistent with this project's "compliant from the start"
+posture.</p>
+<p><strong>Draft date: 2026-07-20.</strong></p>
+<hr />
+<h2 id="1-description-of-the-processing">1. Description of the processing<a class="headerlink" href="#1-description-of-the-processing" title="Permanent link">&para;</a></h2>
+<h3 id="11-nature-scope-context-and-purposes">1.1 Nature, scope, context, and purposes<a class="headerlink" href="#11-nature-scope-context-and-purposes" title="Permanent link">&para;</a></h3>
+<p>CYO Adventure is a choose-your-own-adventure reading app for children. A guardian creates an
+account, sets up one or more child profiles, and either requests stories directly or lets
+their child submit story ideas for guardian approval. Approved requests are turned into
+personalized, illustrated stories by an LLM generation pipeline, screened by a deterministic
+safety gate and human review before any child sees them. See
+<code>records-of-processing-activities.md</code> Section 3 for the full itemized list of processing
+activities (11 activities); this DPIA does not re-enumerate them, only assesses the risk they
+carry collectively.</p>
+<p><strong>Scale</strong>: small, homelab-first deployment as of this writing (<code>information-security-program.md</code>
+Section 3). A Track 2 public App Store launch is planned but not yet scheduled.</p>
+<p><strong>Data subjects</strong>: guardians (adults), children (via their guardian, never directly), and
+admins/system actors incidentally (Section 2 of the RoPA).</p>
+<h3 id="12-necessity-and-proportionality">1.2 Necessity and proportionality<a class="headerlink" href="#12-necessity-and-proportionality" title="Permanent link">&para;</a></h3>
 <ul>
-<li>✅ Compliance stops being folklore spread over four documents; Phase 7 becomes the
-  implementation of this ADR and P7-08 its checklist.</li>
-<li>✅ The already-decided list above is now contestable and testable (deletion E2E,
-  egress-guard tests, SDK audit map to it).</li>
-<li>⚠️ Until D1-D3 are closed, Phase 7 cannot be scoped precisely; this ADR staying
-  Proposed is itself the tracking signal.</li>
-<li>⚠️ Counsel review is a real dependency and cost; the recommendations above are
-  design positions, not legal conclusions.</li>
+<li><strong>Data minimization is the core design choice, not an afterthought.</strong> A child is
+  represented by a display name (a nickname, not a legal name), a coarse age band (one of six
+  bands, not a birthdate or exact age), a reading-level cap, and a closed-vocabulary avatar
+  (a fixed illustration set, never a photo). No email, phone, birthdate, exact age, photo, or
+  geolocation is ever collected from a child. This is the single strongest mitigating factor
+  in this assessment: most of the risk categories below are structurally narrowed before any
+  technical control is even applied.</li>
+<li><strong>No advertising or behavioral-analytics SDKs</strong> exist anywhere in the child-facing surface,
+  by permanent design decision (not a configuration that could silently be turned on).</li>
+<li><strong>Purpose limitation is enforced by the pipeline shape, not just policy.</strong> A story request's
+  text is used only to generate that child's story; it is not aggregated, profiled, or reused
+  for any other purpose. Cross-family sharing (recommendations) carries only book
+  titles/ratings/first names, never reading content or a child's identifying data, and only
+  after explicit dual-guardian consent (Section 2.3 below).</li>
+<li><strong>Real tenancy auth</strong> (guardian-scoped, family-scoped, profile-scoped authorization checks
+  on every endpoint) means one family's data is never reachable from another family's session,
+  narrowing the blast radius of any single account compromise to one family, not the whole
+  user base.</li>
 </ul>
-<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
-<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> D1-D4 closed with counsel; status flipped to Accepted with the choices recorded.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> P7-08 checklist maps one-to-one to the "already decided" list and the closed
-      decisions.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Deletion E2E (family erasure incl. Apple revocation) and the kid-context SDK audit
-      pass before submission.</li>
-</ul>
-<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../../capability-register/">Capability register</a>: S10, G11, G12, K14, A14.</li>
-<li><a href="../../privacy-model/">Privacy model</a>: classification, counterparties, Blocker 1.</li>
-<li><a href="../../PROJECT-PLAN/">PROJECT-PLAN.md</a>: Phase 7.</li>
-</ul>
+<h2 id="2-risk-assessment">2. Risk assessment<a class="headerlink" href="#2-risk-assessment" title="Permanent link">&para;</a></h2>
+<p>Each risk is rated Low/Medium/High reflecting residual risk <em>after</em> the mitigations already
+built, not the theoretical risk of the activity in the abstract; this DPIA is assessing the
+shipped system, not a blank-slate proposal.</p>
+<h3 id="21-third-party-disclosure-of-a-childs-free-text-story-ideas-medium-mitigated-from-high">2.1 Third-party disclosure of a child's free-text story ideas (Medium, mitigated from High)<a class="headerlink" href="#21-third-party-disclosure-of-a-childs-free-text-story-ideas-medium-mitigated-from-high" title="Permanent link">&para;</a></h3>
+<p><strong>Risk</strong>: a child's own typed story wish, or a guardian's request text, is sent to external
+LLM and moderation providers (OpenRouter/downstream models, Anthropic, OpenAI Moderation,
+Google Perspective) as part of generating and safety-screening the story. Free text is the
+one place a child could type something identifying (their own name, a friend's name, a home
+detail) that structured fields (display name, age band) never expose.</p>
+<p><strong>Mitigation</strong>: <code>assert_prompt_pii_safe</code> (the PII egress guard) screens every prompt for
+email-, phone-, and street-address-shaped content and for registered child names before it
+reaches any external provider, covering both the generation leg and, as of #304, the
+cover-art and Stage-0 classifier legs that were previously unguarded. A blocked hit routes to
+a <code>blocked</code> status with no external call.</p>
+<p><strong>Residual risk</strong>: the guard is pattern-based, not semantic. It reliably catches
+"look-like-PII" shapes (an email address, a phone number, an exact registered name) but
+cannot catch a child describing something identifying in prose that doesn't match those
+patterns (e.g., "my mom drives a red Honda and picks me up at Lincoln Elementary"). This gap
+is already recorded as <code>gdpr-compliance-review.md</code> finding G-13 (special-category-data risk
+in free text) and is not resolved by this DPIA; it is a known, accepted residual risk at
+current scale, revisit before Track 2 launch.</p>
+<h3 id="22-verifiable-parental-consent-method-is-novel-not-ftc-enumerated-medium">2.2 Verifiable parental consent method is novel, not FTC-enumerated (Medium)<a class="headerlink" href="#22-verifiable-parental-consent-method-is-novel-not-ftc-enumerated-medium" title="Permanent link">&para;</a></h3>
+<p><strong>Risk</strong>: the VPC mechanism (a typed full-legal-name attestation layered on the guardian's
+OAuth login) is not literally one of COPPA's enumerated safe-harbor methods
+(312.5(b)(2)); it is designed to satisfy the "sign and submit electronically" method
+((b)(2)(i)) but that reading has not been confirmed by counsel. If the reading is wrong, every
+consent recorded under it is defective, which could mean every child profile created since
+launch was created without valid VPC.</p>
+<p><strong>Mitigation</strong>: this is exactly the item ADR-018 D1 flags for counsel review, and the
+<code>privacy-notice.md</code> draft carries the same flag. The consent record captures enough evidence
+(typed name, timestamp, IP, policy version, tied to the already-authenticated OAuth identity)
+that if counsel requires a stronger method, the change is additive (a stronger method can be
+layered in) rather than requiring a redesign of the surrounding system.</p>
+<p><strong>Residual risk</strong>: High until counsel confirms or the method is strengthened. This is the
+single highest-priority open item this DPIA surfaces.</p>
+<h3 id="23-cross-family-disclosure-without-adequate-control-low-resolved">2.3 Cross-family disclosure without adequate control (Low, resolved)<a class="headerlink" href="#23-cross-family-disclosure-without-adequate-control-low-resolved" title="Permanent link">&para;</a></h3>
+<p><strong>Risk</strong>: a guardian's family's reading/rating data could be disclosed to another family
+without a proper legal basis or adequate consent.</p>
+<p><strong>Mitigation</strong>: dual-guardian, explicit, revocable consent per connection
+(<code>FamilyConnection.consented_by_viewer_user_id</code>/<code>_at</code> and <code>consented_by_sharer_user_id</code>/<code>_at</code>,
+paired and DB-enforced), surfaced through a real guardian-facing UI
+(<code>ConnectionsPage.tsx</code>). Nothing crosses until both sides click "Allow." This was previously
+misdocumented as unbuilt (<code>gdpr-compliance-review.md</code> G-10, corrected 2026-07-20) — it is, in
+fact, one of the stronger controls in the system.</p>
+<p><strong>Residual risk</strong>: Low. The default state is opt-in (no data flows on connection creation
+alone), satisfying Article 25's default-privacy expectation for this specific activity.</p>
+<h3 id="24-admin-over-access-to-child-linked-data-across-families-low-mitigated">2.4 Admin over-access to child-linked data across families (Low, mitigated)<a class="headerlink" href="#24-admin-over-access-to-child-linked-data-across-families-low-mitigated" title="Permanent link">&para;</a></h3>
+<p><strong>Risk</strong>: an admin can view any family's child profiles for moderation/support purposes,
+creating a potential over-access surface.</p>
+<p><strong>Mitigation</strong>: admin-only gate on every cross-family read; as of Phase 8a, every such read
+(<code>GET /api/v1/admin/profiles</code>) is itself logged as a <code>profile_viewed</code> audit event (one per
+call, not one per row, so the log cannot become a second copy of the data it audits),
+queryable via <code>GET /api/v1/admin/audit</code>.</p>
+<p><strong>Residual risk</strong>: Low. Access is necessary for the product's safety-review model (a human
+must review generated content before a child sees it) and is now fully auditable.</p>
+<h3 id="25-indefinite-retention-of-the-accountability-log-low-documented-exception">2.5 Indefinite retention of the accountability log (Low, documented exception)<a class="headerlink" href="#25-indefinite-retention-of-the-accountability-log-low-documented-exception" title="Permanent link">&para;</a></h3>
+<p><strong>Risk</strong>: <code>pipeline_event</code> rows survive a guardian's erasure request, which could look like an
+Article 17 violation absent justification.</p>
+<p><strong>Mitigation</strong>: the Article 17(3)(b)/(e) balancing test in
+<code>coppa-gdpr-remediation-plan.md</code>'s "4d artifact" section, combined with the payload being
+PII-scrubbed by contract (<code>events/writer.py</code>'s allowlist), not by policy promise.</p>
+<p><strong>Residual risk</strong>: Low, provided the documented justification holds up to counsel review (not
+yet independently confirmed by counsel, same caveat as elsewhere in this document).</p>
+<h3 id="26-self-signup-account-creation-without-vetting-low-newly-mitigated">2.6 Self-signup account creation without vetting (Low, newly mitigated)<a class="headerlink" href="#26-self-signup-account-creation-without-vetting-low-newly-mitigated" title="Permanent link">&para;</a></h3>
+<p><strong>Risk</strong>: a guardian self-signup flow (as opposed to admin-invited) that immediately
+activates the account has no human check on who is creating child profiles.</p>
+<p><strong>Mitigation</strong>: added mid-session (2026-07-20), a self-signup guardian's account starts
+<code>awaiting_approval</code>, not <code>active</code>; every endpoint (including <code>GET /v1/me</code>) is rejected until
+an admin approves. This is an access-control measure, not itself a GDPR/COPPA requirement, but
+it materially reduces the risk of an unvetted account creating child profiles at all.</p>
+<p><strong>Residual risk</strong>: Low. The approval step is currently manual with no defined SLA; if signup
+volume grows, an unstaffed approval queue could become a usability problem (not a privacy
+risk) worth revisiting operationally.</p>
+<h3 id="27-retention-windows-enforced-late-or-inconsistently-low-mitigated">2.7 Retention windows enforced late or inconsistently (Low, mitigated)<a class="headerlink" href="#27-retention-windows-enforced-late-or-inconsistently-low-mitigated" title="Permanent link">&para;</a></h3>
+<p><strong>Risk</strong>: data retained past its stated window (raw declined story text, stale reading
+activity) if no enforcement mechanism exists.</p>
+<p><strong>Mitigation</strong>: Phase 4c's two pg_cron purge jobs (blocked/declined <code>request_text</code>, and
+stale-deactivated-profile <code>reading_state</code>/<code>completion</code>/<code>rating</code>) enforce the accepted
+retention table server-side, not just as a stated policy.</p>
+<p><strong>Residual risk</strong>: Low. <code>generation_job.report</code>'s purge (ADR-007) predates this DPIA; both new
+jobs mirror its idempotent, pg_cron-optional design.</p>
+<h2 id="3-consultation">3. Consultation<a class="headerlink" href="#3-consultation" title="Permanent link">&para;</a></h2>
+<p>No formal consultation with data subjects (guardians) has been performed for this DPIA draft;
+at this deployment scale, the controller and the primary user base substantially overlap
+(homelab-first, small user count). [COUNSEL: advise whether a formal consultation step is
+expected before this DPIA can be considered complete, given the scale caveat above.]</p>
+<h2 id="4-overall-conclusion-draft">4. Overall conclusion (draft)<a class="headerlink" href="#4-overall-conclusion-draft" title="Permanent link">&para;</a></h2>
+<p>The processing is proportionate to its stated purpose, with data minimization doing most of
+the structural risk-reduction work. Two items carry genuine residual risk and should be
+resolved before Track 2 public launch increases scale: <strong>2.1</strong> (semantic PII gap in free
+text, G-13) and <strong>2.2</strong> (counsel confirmation of the VPC method). Everything else assessed
+here is Low residual risk given the mitigations already shipped.</p>
+<p>[COUNSEL: this conclusion is a draft synthesis, not a sign-off. Please review each section,
+resolve the bracketed items, and record your own conclusion before this DPIA is treated as
+complete for Article 35 purposes.]</p>
+<h2 id="5-relationship-to-other-compliance-documents">5. Relationship to other compliance documents<a class="headerlink" href="#5-relationship-to-other-compliance-documents" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Relationship</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>records-of-processing-activities.md</code></td>
+<td>Source for Section 1.1's activity inventory.</td>
+</tr>
+<tr>
+<td><code>information-security-program.md</code></td>
+<td>Source for Section 1.1's scale statement and the general security-measures inventory this DPIA's mitigations draw from.</td>
+</tr>
+<tr>
+<td><code>coppa-gdpr-remediation-plan.md</code></td>
+<td>Phase 7b, whose completion this document is; Section 2's items map to specific remediation-plan phases/findings as cited inline.</td>
+</tr>
+<tr>
+<td><code>privacy-notice.md</code></td>
+<td>The guardian-facing document describing the same processing this DPIA assesses internally; both carry the same <code>[COUNSEL: ...]</code> flag on the VPC method question (2.2).</td>
+</tr>
+<tr>
+<td>ADR-018</td>
+<td>D1's VPC decision is the direct subject of Section 2.2.</td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -3083,7 +3157,7 @@ deliverables with P7-08 as the checkpoint, and who drafts the notice.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 19:07:42 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:27:41 UTC">July 20, 2026</span>
   </span>
 
     
@@ -3160,10 +3234,10 @@ deliverables with P7-08 as the checkpoint, and who drafts the notice.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

@@ -2880,10 +2880,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-2-consent-and-notice-needs-the-vpc-method-decision-drafting-can-start-once-its-chosen" class="md-nav__link">
+  <a href="#phase-2-consent-and-notice-2a-done-2e-done-newly-scoped-2b-2d-remain" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 2: Consent and notice (needs the VPC-method decision; drafting can start once it's chosen)
+        Phase 2: Consent and notice (2a DONE, 2e DONE (newly scoped); 2b-2d remain)
       
     </span>
   </a>
@@ -2902,10 +2902,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-4-retention-and-storage-governance-4a4d-startable-now-4b4c-need-the-retention-windows-decision" class="md-nav__link">
+  <a href="#phase-4-retention-and-storage-governance-4a-infra-execution-outstanding-4c4d-done-4b-unblocked-not-yet-published" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 4: Retention and storage governance (4a/4d startable now; 4b/4c need the retention-windows decision)
+        Phase 4: Retention and storage governance (4a: infra execution outstanding; 4c/4d DONE; 4b unblocked, not yet published)
       
     </span>
   </a>
@@ -2913,10 +2913,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-5-processor-paperwork-needs-the-zdr-terms-decision-for-the-llm-vendors-the-rest-can-start-now" class="md-nav__link">
+  <a href="#phase-5-processor-paperwork-checklist-drafted-2026-07-20-execution-not-yet-done" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 5: Processor paperwork (needs the ZDR-terms decision for the LLM vendors; the rest can start now)
+        Phase 5: Processor paperwork (checklist drafted 2026-07-20; execution not yet done)
       
     </span>
   </a>
@@ -2935,10 +2935,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-7-formal-compliance-documentation-needs-the-artifact-owner-and-counsel-timing-decisions" class="md-nav__link">
+  <a href="#phase-7-formal-compliance-documentation-artifact-owner-and-counsel-timing-decided-2026-07-20-7a7c7d-done-7b-in-progress" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 7: Formal compliance documentation (needs the artifact-owner and counsel-timing decisions)
+        Phase 7: Formal compliance documentation (artifact-owner and counsel-timing decided 2026-07-20; 7a/7c/7d DONE, 7b in progress)
       
     </span>
   </a>
@@ -3136,11 +3136,12 @@ child's registered name (the same scenario the generation path catches), the cov
 Google is not screened for it, because it is a completely separate code path from the guarded
 generation pipeline. This is the single largest gap in the "stories/app-info only" design
 intent as currently implemented, and it is an easy, contained fix (wrap <code>covers/service.py</code>'s
-prompt assembly in the same guard <code>generation/guarded.py</code> already provides). The R2 bucket
-being public with a guessable key is a second, independent issue (anyone who guesses or is
-handed a URL can view a specific child's cover art without authentication); it doesn't leak
-identifying data on its own since keys aren't derived from anything identifying, but it is
-still worth closing as part of the same work item since it is the same subsystem.</p>
+prompt assembly in the same guard <code>generation/guarded.py</code> already provides; <strong>done, Phase 1b</strong>).
+The R2 bucket being public with a guessable key was a second, independent issue (anyone who
+guesses or is handed a URL could view a specific child's cover art without authentication); it
+didn't leak identifying data on its own since keys aren't derived from anything identifying, but
+closing it (<strong>done, Phase 1d</strong>: covers are now served via short-lived presigned URLs, never a
+permanent public one) removes the standing exposure regardless.</p>
 <h3 id="im-not-sure-how-sentry-is-used">"I'm not sure how Sentry is used."<a class="headerlink" href="#im-not-sure-how-sentry-is-used" title="Permanent link">&para;</a></h3>
 <p><strong>This one is good news, and better than the existing COPPA audit's stale note.</strong> The COPPA
 audit (reviewed at commit <code>c9dbfa9</code>, 2026-07-10) found no Sentry integration at all; Sentry was
@@ -3188,13 +3189,16 @@ US-only fact as license to defer.</p>
 should actually build. Recommended defaults are given where there is a reasonably clear best
 answer for a project at this stage; the rest are genuinely yours to make. Full context for each
 is in Section 5.</p>
+<p><strong>Status as of 2026-07-20: every item below is resolved.</strong> Full records are in Section 5 and, for
+the four ADR-018 items, in ADR-018 itself; each resolution is marked "pending counsel
+confirmation" where that ADR's own Validation checklist requires counsel sign-off before the
+decision is final, per the "we draft, counsel reviews" model adopted this round.</p>
 <ul>
-<li><strong>VPC method.</strong> <em>Open.</em> No paid tier exists. Per <code>PROJECT-PLAN.md</code>, there is currently no
-  onboarding/signup endpoint at all and <code>POST /profiles</code> is ungated (no consent precondition),
-  so guardian registration is not today an existing child-data gate; it is the <em>intended</em>
-  attachment point for one. Phase 2 must make profile creation and any child-data collection
-  blocked until a consent record exists, not assume registration already provides that gate. See
-  the expanded options in Section 5 ("VPC method").</li>
+<li><strong>VPC method.</strong> <em>Resolved: signature-capture layered on the existing Supabase/Google OAuth
+  login</em> (canvas or typed-name signature-equivalent + checkbox, logged server-side), ruling out
+  both card-verification and a third-party ID vendor. See Section 5 ("VPC method") and ADR-018
+  D1 for the full record; the "does a typed/canvas signature count as signed" question is
+  flagged for counsel.</li>
 <li><strong>Supabase project region.</strong> <em>Resolved: stay US.</em> You've confirmed Supabase stays in the US,
   with a possible future move from <code>us-east-1</code> to a US-west region. See Section 5 ("Supabase
   region") for why this is compliance-neutral and needs no further analysis.</li>
@@ -3202,20 +3206,19 @@ is in Section 5.</p>
   <em>Resolved: no, self-naming is disallowed by design.</em> See Section 5 ("Self-naming") for the
   requested impact analysis of both routes, kept for reference in case this is revisited later.</li>
 <li><strong>Who signs off on and owns the compliance artifacts</strong> (privacy notice, DPIA, DPAs)?
-  <em>Open, no answer yet.</em> Needed before Phase 7 can start in earnest. See Section 5 ("Artifact
-  owner").</li>
-<li><strong>When does privacy counsel get engaged?</strong> <em>Open, no answer yet.</em> Needed before Phase 2's
-  consent/notice language and Phase 7's DPIA can be finalized; the engineering work in Phases 1,
-  3, 4, and 6 does not depend on this and can proceed regardless. See Section 5 ("Counsel
-  timing").</li>
-<li><strong>Retention windows per data category.</strong> <em>Open, no answer yet.</em> A proposed starting table is
-  in Section 5 ("Retention windows"), for you to react to rather than starting from a blank page.</li>
-<li><strong>DPO designation.</strong> <em>Open, no answer yet.</em> Needs your projected user scale; can be assessed
-  in parallel with everything else and doesn't block any engineering work. See Section 5 ("DPO
-  designation").</li>
+  <em>Resolved: the account owner, with this assistant drafting and counsel reviewing rather than
+  drafting from scratch.</em> See Section 5 ("Artifact owner").</li>
+<li><strong>When does privacy counsel get engaged?</strong> <em>Resolved: now,</em> reviewing drafts rather than
+  originating them, in parallel with the engineering work in Phases &#8531;/4/6 (already complete).
+  See Section 5 ("Counsel timing").</li>
+<li><strong>Retention windows per data category.</strong> <em>Resolved: the proposed table in Section 5
+  ("Retention windows") is accepted as the actual policy.</em></li>
+<li><strong>DPO designation.</strong> <em>Resolved: not required at current/near-term scale;</em> reassess before
+  Track 2 public launch. See Section 5 ("DPO designation").</li>
 <li><strong>Zero-data-retention (ZDR) terms with OpenRouter and the other LLM/classifier vendors.</strong>
-  <em>Open.</em> ADR-018 already calls this "standing Blocker 1"; needed before Phase 5 can close. See
-  Section 5 ("ZDR terms").</li>
+  <em>Resolved: the account owner executes Phase 5 directly.</em> See Section 5 ("ZDR terms").</li>
+<li><strong>UK/EEA user status</strong> (gates Phase 9 and ADR-018 D3). <em>Resolved: none currently, none
+  planned; Phase 9 is shelved on this basis.</em></li>
 </ul>
 <hr />
 <h2 id="3-phased-implementation-plan">3. Phased implementation plan<a class="headerlink" href="#3-phased-implementation-plan" title="Permanent link">&para;</a></h2>
@@ -3227,8 +3230,8 @@ retention-windows decision. Phase 2 needs the VPC method decision. Phase 5 needs
 decision. Phase 7 needs the artifact-owner and counsel-timing decisions, and drafting time from
 whoever is assigned.</p>
 <h3 id="phase-1-close-the-pii-egress-gaps-engineering-no-dependencies-start-now">Phase 1: Close the PII-egress gaps (engineering, no dependencies, start now)<a class="headerlink" href="#phase-1-close-the-pii-egress-gaps-engineering-no-dependencies-start-now" title="Permanent link">&para;</a></h3>
-<p>Directly addresses the gaps found in Section 1. <strong>Status as of 2026-07-19: 1a, 1b, 1c, 1e shipped
-(commit on <code>claude/gdpr-compliance-review-qzyvc2</code>); 1d deferred, see its entry below.</strong></p>
+<p>Directly addresses the gaps found in Section 1. <strong>Status as of 2026-07-19: 1a, 1b, 1c, 1d, 1e
+all shipped (commit on <code>claude/gdpr-compliance-review-qzyvc2</code>).</strong></p>
 <ul>
 <li><strong>1a. DONE.</strong> Pattern-based content screening (email, phone, street address) added to
   <code>generation/pii.py::assert_prompt_pii_safe</code>, the same chokepoint every provider call already
@@ -3246,90 +3249,224 @@ whoever is assigned.</p>
   second, identical gap found while fixing 1c, same pattern: an admin/guardian's edited node
   text reached the classifier call unguarded) now screen node text before the Stage-0 classifier
   calls.</li>
-<li><strong>1d. Deferred, not done.</strong> Closing this properly needs either a breaking return-contract
-  change (presigned URLs, which ripples into <code>api/covers.py</code>, <code>api/library.py</code>, and
-  <code>api/recommendations.py</code>, all three of which read <code>cover_image_url</code> today) or a
-  key-derivation change that would break retrieval of every already-published cover without a
-  live-R2 migration script to move existing objects to new keys. Both need integration/E2E
-  testing this sandbox cannot do (no Docker, no live R2 credentials). Recommend scheduling this
-  as its own change with a migration plan, rather than shipping either approach unverified.</li>
+<li><strong>1d. DONE, via the presigned-URL route, with no R2 migration needed.</strong> Every cover has always
+  been written to the same deterministic key (<code>{storybook_id}/{version}.webp</code>, both on fresh
+  upload and via <code>scripts/backfill_covers_r2.py</code>'s historical migration), so the object itself
+  never needed to move. <code>covers/storage.py::generate_presigned_cover_url</code>/
+  <code>generate_presigned_cover_urls</code> compute a fresh, short-lived (1-hour) signed GET URL from that
+  key on every read; <code>api/covers.py</code>, <code>api/library.py</code>, and <code>api/recommendations.py</code> all switched
+  from returning the stored <code>cover_image_url</code> column to calling these functions instead. The
+  stored column is kept, unchanged, purely as an upload-time audit value and for the backfill
+  script's own URL-classification logic; it is never served to a client again. Both functions
+  degrade to <code>None</code>/<code>{}</code> (logged, not raised) if R2 is unconfigured or a presign call fails, so a
+  storage hiccup shows a missing cover image rather than 500ing the whole library or
+  recommendations listing. <strong>Operator action still required, outside this codebase</strong>: the R2
+  bucket's public custom domain (or <code>r2.dev</code> public access) must be disabled in the Cloudflare
+  dashboard; presigned URLs only add security value once the bucket itself is not also publicly
+  readable by the old, permanent URL shape. Verified with unit tests (mocked boto3) and one
+  integration test exercising the full HTTP round-trip with a mocked R2 client; the migration
+  itself needed no live R2 credentials or Docker since no object ever moves.</li>
 <li><strong>1e. DONE.</strong> The birthdate-matching code path is removed outright (not just left unused):
   <code>ChildProfile</code> has no birthdate column and the product only ever collects a coarse age band by
   design, so every call site could only ever pass an empty set. Kept as a documented, deliberate
   design note in the module docstring rather than dead code implying coverage that never existed.</li>
 </ul>
-<h3 id="phase-2-consent-and-notice-needs-the-vpc-method-decision-drafting-can-start-once-its-chosen">Phase 2: Consent and notice (needs the VPC-method decision; drafting can start once it's chosen)<a class="headerlink" href="#phase-2-consent-and-notice-needs-the-vpc-method-decision-drafting-can-start-once-its-chosen" title="Permanent link">&para;</a></h3>
+<h3 id="phase-2-consent-and-notice-2a-done-2e-done-newly-scoped-2b-2d-remain">Phase 2: Consent and notice (2a DONE, 2e DONE (newly scoped); 2b-2d remain)<a class="headerlink" href="#phase-2-consent-and-notice-2a-done-2e-done-newly-scoped-2b-2d-remain" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>2a. Build the consent-capture flow.</strong> Replace <code>onboarding.py</code>'s <code>_record_consent()</code> no-op
-  stub with a real implementation: present the privacy notice, capture consent by the chosen
-  VPC method, persist a consent record (method, timestamp, policy version, and which processing
-  purposes were consented to) on the family. Gate all child-profile creation and child-data
-  collection behind this record existing.</li>
-<li><strong>2b. Add a re-consent flow</strong> triggered on material privacy-notice changes.</li>
-<li><strong>2c. Draft and publish the privacy notice</strong>, written once against the union of COPPA
-  312.4's content list and GDPR Articles 13-14's broader content list (controller identity,
-  purpose-by-purpose lawful basis, the full processor list from Section 4.2 of the GDPR
-  review, retention periods per category, the complete data-subject-rights list including the
-  right to complain to a supervisory authority, and the international-transfer mechanism relied
-  on). Link it from the landing page, guardian console, and onboarding flow.</li>
+<li><strong>2a. DONE.</strong> Replaced <code>onboarding.py</code>'s <code>_record_consent()</code> no-op stub with a real
+  implementation: <code>User.consent_accepted_at</code>/<code>consent_policy_version</code>/<code>consent_signer_name</code>/
+  <code>consent_ip</code> (paired, CHECK-enforced), written once by <code>POST /v1/onboarding</code> when the
+  guardian submits <code>{accepted: true, policy_version, signer_name}</code>, never overwritten
+  afterward. <code>api/profiles.py::_require_consent</code> gates <code>POST /api/v1/profiles</code> (400) on this
+  record existing, satisfying "gate all child-profile creation ... behind this record
+  existing." Frontend: <code>GuardianConsentPage.tsx</code>, a typed full-legal-name attestation +
+  checkbox (the FTC's "sign and submit electronically" method, 312.5(b)(2)(i); see ADR-018
+  D1), reached automatically via a new <code>AuthStatus = 'needs-consent'</code> that <code>ProtectedRoute</code>
+  routes to before any other guardian page. Also fixed a real, independent gap found while
+  wiring this in: the frontend never called <code>POST /v1/onboarding</code> at all before this change,
+  so a brand-new guardian's first <code>GET /v1/me</code> would have 401'd on "unknown subject" -- this
+  is now called first, every sign-in, ahead of <code>/me</code>.</li>
+<li><strong>2b. Add a re-consent flow</strong> triggered on material privacy-notice changes. Not started;
+  <code>CONSENT_POLICY_VERSION</code> (frontend/src/auth/onboardingApi.ts) is the version stamp a future
+  re-consent flow would compare against, but nothing currently prompts re-consent on a bump.</li>
+<li><strong>2c. DRAFTED, not yet published.</strong> <a href="../privacy-notice/"><code>privacy-notice.md</code></a>, written
+  against the union of COPPA 312.4's content list and GDPR Articles 13-14's broader content
+  list, synthesized from the actual shipped design (Phase 2a's consent mechanism, Phase 4's
+  accepted retention table, the RoPA's processor list) rather than written in the abstract.
+  Every open legal question is a flagged <code>[COUNSEL: ...]</code> bracket in the document itself.
+  Remaining: counsel review, then publish as a real guardian-facing route and link it from the
+  landing page, guardian console, and <code>GuardianConsentPage.tsx</code>'s consent screen.</li>
 <li><strong>2d. Direct notice to the parent</strong> at onboarding (email, once the <code>user</code> table gains an
   email/contact column per the existing plan item P6-03).</li>
+<li><strong>2e. DONE, newly scoped mid-session (2026-07-20).</strong> A guardian self-signup approval gate,
+  parallel to (and never sharing state with) the existing admin-invite <code>'pending'</code> track:
+  <code>onboarding.py::_provision_guardian</code> now starts an uninvited guardian's own first-login row
+  at <code>User.status='awaiting_approval'</code>, not <code>'active'</code>; <code>require_principal</code> already rejects
+  every endpoint for a non-<code>'active'</code> status (401 "unknown subject"), including <code>GET /v1/me</code>,
+  so this alone was the enforcement mechanism -- no new authorization code needed. An admin
+  approves (<code>awaiting_approval</code> -&gt; <code>active</code>) or denies (<code>awaiting_approval</code> -&gt; <code>deactivated</code>)
+  via the existing <code>PATCH /admin/users/{id}</code> status transition (extended to allow this pair,
+  still rejecting any direct transition INTO <code>awaiting_approval</code>). Frontend:
+  <code>GuardianAwaitingApprovalPage.tsx</code>, reached via a new <code>AuthStatus = 'awaiting-approval'</code>.
+  An admin-created invite (<code>POST /admin/users</code>) is unaffected: that guardian is already vetted
+  by the admin who invited them, so their first login binds straight to <code>'active'</code> as before.</li>
 </ul>
 <h3 id="phase-3-data-subject-rights-engineering-no-dependencies-start-now">Phase 3: Data-subject rights (engineering, no dependencies, start now)<a class="headerlink" href="#phase-3-data-subject-rights-engineering-no-dependencies-start-now" title="Permanent link">&para;</a></h3>
+<p><strong>Status as of 2026-07-19: 3a-3e all shipped (commit on <code>claude/gdpr-compliance-review-qzyvc2</code>),
+with one verification caveat that applies to all five sub-items: this sandbox has no Docker, so
+none of the changes below have run against a live Postgres. <code>tests/integration/test_schema_parity.py</code>
+and the new <code>tests/integration/test_deletion_drill.py</code> are both written and exercise the exact
+behavior described, but need a CI run (or a local run with Docker available) before this phase is
+considered verified rather than just implemented.</strong></p>
 <ul>
-<li><strong>3a. Add FK cascades</strong> (<code>ON DELETE CASCADE</code> via migration, or an explicit application-level
-  purge routine enumerating every child-linked and guardian-linked table, including the
-  <code>pipeline_event</code> rows that reference a profile) so a delete request can actually be executed
-  without orphaning rows or hitting a <code>NO ACTION</code> FK error.</li>
-<li><strong>3b. Build an authenticated deletion endpoint</strong> for a child profile and for the whole family
-  account, including guardian self-deletion (Article 17 applies to the guardian as a data
-  subject in their own right, not only as the parent exercising the child's rights).</li>
-<li><strong>3c. Build a guardian-facing data export</strong> assembling every record tied to the family and
-  each child profile (profile, reading state, completions, ratings, story requests, generation
-  reports where accessible) in a portable format, satisfying both COPPA 312.6(a) access and
-  GDPR Article 20 portability in one endpoint.</li>
-<li><strong>3d. Add the missing <code>completion</code> read endpoint</strong> (currently the one child-linked table with
-  no read path at all).</li>
-<li><strong>3e. Run a deletion drill</strong> once 3a-3b ship: create a test family, populate every table,
-  delete it, and verify nothing referencing that family/profile survives outside what a
-  documented retention exception (Phase 4) explicitly allows.</li>
+<li><strong>3a. DONE.</strong> Added <code>ondelete=</code> (<code>CASCADE</code> or <code>SET NULL</code>) to every FK in <code>db/models.py</code> that
+  sits on the family/child-profile ownership closure, mirrored in a new Supabase migration
+  (<code>supabase/migrations/20260719190000_add_erasure_cascades.sql</code>). Three edges needed
+  non-default handling, each documented with a <code>#CRITICAL</code> comment at its column:
+  <code>pipeline_event.actor_id</code>'s FK is dropped entirely (the table's append-only trigger blocks
+  the <code>UPDATE</code> a <code>SET NULL</code> cascade would issue, so it would otherwise block deleting any user
+  who has ever authored an event); <code>storybook.series_id</code>/<code>story_request.series_id</code> and
+  <code>kid_flag.resolved_by</code> are left off a bare <code>SET NULL</code> because each is paired with a sibling
+  column by a CHECK constraint that a same-transaction cascade could violate before the owning
+  row's own cascade removes it; the <code>kid_flag.resolved_by</code> case is the one that's actually
+  reachable in practice (a resolving admin need not belong to the flagged family), so it's
+  handled by an explicit application-level <code>UPDATE</code> in the family-deletion endpoint instead
+  (see 3b). <code>moderation_threshold_audit.changed_by</code> and <code>provider_model_allowlist_audit.changed_by</code>
+  were additionally relaxed from <code>NOT NULL</code> to nullable, since either would otherwise block a
+  guardian/admin's own self-deletion if they had ever touched a global admin-config surface.</li>
+<li><strong>3b. DONE.</strong> <code>DELETE /api/v1/profiles/{profile_id}</code> (guardian-only, own family, works even on
+  an already-deactivated profile) deletes a single child profile; <code>DELETE /api/v1/me/family</code>
+  (guardian-only) deletes the caller's entire family account, satisfying Article 17 for the
+  guardian as a data subject in their own right per ADR-018's already-decided framing ("account
+  deletion erases the family") rather than adding a separate narrower mechanism. The family
+  endpoint runs the <code>kid_flag.resolved_by</code> reopen step from 3a before the cascade delete.</li>
+<li><strong>3c. DONE.</strong> <code>GET /api/v1/me/export</code> (guardian-only) returns the family, every
+  guardian/admin/child login row, every child profile with nested reading state, completions,
+  ratings, and assignments, and every family story request, as one JSON document. Deliberately
+  excludes <code>generation_job.report</code> (raw multi-stage LLM output): that field is admin-only
+  everywhere else in this API, and the export must not become a side channel around that
+  restriction. A blocked story request's raw text is redacted, mirroring the guardian-facing
+  API's own redaction of that field.</li>
+<li><strong>3d. DONE.</strong> <code>GET /api/v1/completions/{profile_id}</code> (mirrors <code>GET /ratings/{profile_id}</code>)
+  lists a profile's completions; <code>completion</code> was the one child-linked table with no read path
+  at all before this.</li>
+<li><strong>3e. DONE</strong>, with the verification caveat above. <code>tests/integration/test_deletion_drill.py</code>
+  covers: profile deletion cascading reading state/completions/ratings/assignments/the child's
+  own login row while de-linking (not deleting) their story requests; family deletion cascading
+  everything family- and child-owned; the <code>kid_flag</code> cross-family reopen case from 3a; guardian-only
+  authorization on both delete endpoints and the export endpoint; and the export's blocked-request
+  redaction.</li>
 </ul>
-<h3 id="phase-4-retention-and-storage-governance-4a4d-startable-now-4b4c-need-the-retention-windows-decision">Phase 4: Retention and storage governance (4a/4d startable now; 4b/4c need the retention-windows decision)<a class="headerlink" href="#phase-4-retention-and-storage-governance-4a4d-startable-now-4b4c-need-the-retention-windows-decision" title="Permanent link">&para;</a></h3>
+<h3 id="phase-4-retention-and-storage-governance-4a-infra-execution-outstanding-4c4d-done-4b-unblocked-not-yet-published">Phase 4: Retention and storage governance (4a: infra execution outstanding; 4c/4d DONE; 4b unblocked, not yet published)<a class="headerlink" href="#phase-4-retention-and-storage-governance-4a-infra-execution-outstanding-4c4d-done-4b-unblocked-not-yet-published" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>4a. Execute the Supabase region decision</strong> (already resolved, Section 2) while data volume is
   still small, since migrating a live project's region later is materially harder than choosing
   correctly now. No decision gate: startable immediately.</li>
 <li><strong>4b. Write and publish a retention policy</strong> stating purpose and retention window per data
   category (reading state, completions, ratings, story requests including blocked/declined
-  ones, generation reports, audit/event log), per the retention-windows decision. Gated: needs
-  that decision confirmed or adjusted first.</li>
-<li><strong>4c. Build the retention-purge jobs</strong>: the already-designed <code>generation_job.report</code> pg_cron
-  purge (ADR-007), plus a new purge/redaction path for blocked or declined <code>story_request</code> rows
-  (currently retained at rest indefinitely even when blocked; only the API view layer redacts
-  them), plus expiry for stale <code>reading_state</code>. Gated: needs 4b's published windows to build
-  against.</li>
-<li><strong>4d. Document an explicit Article 17(3) balancing justification</strong> for why the
-  <code>pipeline_event</code> audit log is exempted from erasure requests, rather than leaving that
-  exemption implicit; this makes 3a-3b's deletion drill (3e) something you can point to during
-  a review rather than something you have to re-derive on demand. No decision gate: startable
-  immediately.</li>
+  ones, generation reports, audit/event log). Unblocked (the retention table in Section 5 was
+  accepted 2026-07-20); still needs to actually be published as its own artifact rather than
+  living only inside this plan.</li>
+<li><strong>4c. DONE.</strong> Two new pg_cron jobs, mirroring the existing <code>generation_job.report</code> purge
+  (ADR-007): <code>purge_blocked_declined_story_request_text</code> overwrites <code>story_request.request_text</code>
+  with a fixed placeholder 30 days after <code>COALESCE(reviewed_at, created_at)</code> for <code>blocked</code>/
+  <code>declined</code> rows (the API view layer's redaction was already in place; this is the underlying
+  data catching up to it); <code>purge_stale_deactivated_profile_activity</code> (plus two sibling jobs for
+  <code>completion</code> and <code>rating</code>) delete <code>reading_state</code>/<code>completion</code>/<code>rating</code> rows for any
+  <code>child_profile</code> deactivated more than 90 days ago, per the accepted retention table's
+  "life of the active profile, plus 30-90 days after deactivation" window (the profile row
+  itself is untouched; a guardian who wants it gone entirely already has
+  <code>DELETE /api/v1/profiles/{id}</code>). Same idempotent, pg_cron-optional migration pattern as the
+  existing purge job, so it is a no-op on any Postgres without the extension (local/test/CI).</li>
+<li><strong>4d. DONE.</strong> Documented below: an explicit Article 17(3) balancing justification for why the
+  <code>pipeline_event</code> audit log is exempted from erasure requests, resolving gdpr-compliance-review.md's
+  G-12/P-4.</li>
 </ul>
-<h3 id="phase-5-processor-paperwork-needs-the-zdr-terms-decision-for-the-llm-vendors-the-rest-can-start-now">Phase 5: Processor paperwork (needs the ZDR-terms decision for the LLM vendors; the rest can start now)<a class="headerlink" href="#phase-5-processor-paperwork-needs-the-zdr-terms-decision-for-the-llm-vendors-the-rest-can-start-now" title="Permanent link">&para;</a></h3>
+<h4 id="4d-artifact-article-173-balancing-test-for-pipeline_event-retention">4d artifact: Article 17(3) balancing test for <code>pipeline_event</code> retention<a class="headerlink" href="#4d-artifact-article-173-balancing-test-for-pipeline_event-retention" title="Permanent link">&para;</a></h4>
+<p>This is the documented balancing test P-4/G-12 found missing: a controller relying on an Article
+17(3) exception is expected to be able to produce one on request, not merely assert the exception
+applies. It covers every row in <code>pipeline_event</code> (the append-only audit log written by
+<code>events/writer.py::record_event</code>; see <code>db/models.py::PipelineEvent</code>), including rows naming a
+child profile, a family, or a guardian/admin account that has since been erased via Phase 3's
+<code>DELETE /api/v1/profiles/{id}</code> or <code>DELETE /api/v1/me/family</code>.</p>
+<p><strong>1. What is retained, and why an erasure request does not remove it.</strong> When a profile or family
+is deleted, every <em>operational</em> table cascades away with it (Phase 3a's <code>ondelete=</code> FKs): reading
+state, completions, ratings, story requests, login rows, the lot. <code>pipeline_event</code> rows naming
+that profile/family/user as <code>entity_id</code>, or naming a now-deleted user as <code>actor_id</code>, are the one
+deliberate exception (Phase 3a's <code>#CRITICAL</code> comments on <code>PipelineEvent.actor_id</code> and the
+<code>ondelete=</code>-free edges already flag this; this section is the justification those comments point
+to). The row is neither cascaded away nor retroactively scrubbed; it survives the erasure request
+that removed the data it describes.</p>
+<p><strong>2. Legal basis for the exception (Article 17(3)).</strong> Two of the six Article 17(3) grounds apply:</p>
+<ul>
+<li><strong>17(3)(b), compliance with a legal obligation.</strong> COPPA 312.10 and GDPR Article 5(2)'s
+  accountability principle both require a controller to be able to demonstrate what it did with
+  a child's data and who authorized it (this is also the substance of COPPA finding H-01 and
+  GDPR finding G-12 that this justification resolves). An audit trail that could itself be erased
+  on request cannot serve that demonstrative function; the record would be exactly as reliable as
+  self-reporting.</li>
+<li><strong>17(3)(e), establishment, exercise, or defense of legal claims.</strong> If a guardian or regulator
+  later disputes what data an admin accessed, when a story was approved, or who resolved a safety
+  flag on a child's account, the pipeline_event log is the only record capable of answering that
+  question authoritatively. Erasing it on the same request that triggers the dispute would remove
+  the evidence needed to resolve the dispute, for either party.</li>
+</ul>
+<p><strong>3. Proportionality: why retention here does not defeat Article 17's purpose.</strong> Article 17(3)'s
+exceptions are not a blanket retention license; they justify retaining only what is necessary for
+the stated purpose, no more. Three properties keep this retention proportionate rather than a
+backdoor around erasure:</p>
+<ul>
+<li><strong>The payload is already PII-scrubbed by contract, not by policy promise.</strong> <code>events/writer.py</code>'s
+  <code>_PAYLOAD_ALLOWLIST</code> and <code>_validate_payload_value</code> reject any payload key or value outside a
+  fixed per-event-type allowlist of ids, enum values, scores, and counts before a row can even be
+  written (spec decision D3; see the COPPA audit's Section 3.5). A retained row never contains a
+  child's name, story prose, or other free text, only ids, event kind, and closed-vocabulary
+  facts. This is what makes the retention-risk profile in the Section 5 retention table
+  materially lower than any other retained category.</li>
+<li><strong>What survives erasure has no further bearing on a live account.</strong> Since the referenced
+  profile/family/user row itself is gone, a surviving <code>pipeline_event</code> row cannot be used to
+  re-derive, re-contact, or re-profile the erased data subject; it is historical fact about a
+  past action ("this admin viewed this family's profiles on this date"), not a live copy of the
+  erased personal data.</li>
+<li><strong>Access is restricted, not published.</strong> <code>GET /api/v1/admin/audit</code> (the only read surface over
+  this table) is admin-only (<code>_require_admin</code>, enforced before any query runs); the erasure of an
+  account does not create a new exposure, since the log was never guardian- or child-visible in
+  the first place.</li>
+</ul>
+<p><strong>4. Retention window.</strong> No fixed TTL/purge exists today (Section 5's retention table already
+records this); the justification above supports indefinite retention under 17(3)(b)/(e) for as
+long as the accountability/legal-claims purpose remains live, which for an audit log is
+effectively the life of the product. If a future purge policy is adopted for this table (e.g. to
+bound storage growth), it should be sized to the applicable claims-limitation period, not to the
+data subject's own retention preference; that would be a storage-governance decision (Phase 4b),
+not a change to this exception's validity.</p>
+<p><strong>5. Conclusion.</strong> <code>pipeline_event</code> retention after an erasure request is justified under Article
+17(3)(b) and (e), proportionate given the payload's PII-scrubbed-by-contract design and
+admin-only access, and does not require guardian notice beyond what the privacy notice (Phase 2)
+already discloses about audit logging. No code change follows from this section; it documents the
+justification for a design decision (Phase 3a's FK-cascade exceptions) already shipped.</p>
+<h3 id="phase-5-processor-paperwork-checklist-drafted-2026-07-20-execution-not-yet-done">Phase 5: Processor paperwork (checklist drafted 2026-07-20; execution not yet done)<a class="headerlink" href="#phase-5-processor-paperwork-checklist-drafted-2026-07-20-execution-not-yet-done" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>5a. Confirm and execute a DPA (and SCCs, given every processor listed is US-hosted) with
   each processor</strong>: Supabase, OpenRouter and downstream model providers, Anthropic-direct,
   OpenAI Moderation, Google Perspective, Google Gemini, Cloudflare R2, and Sentry. For Sentry
   specifically, given Section 1's finding that it already receives no PII by hardcoded design,
   this is close to a formality, but "compliant from the start" means closing it rather than
-  assuming it's unnecessary because the data itself is already clean.</li>
+  assuming it's unnecessary because the data itself is already clean.
+  <strong>Checklist drafted</strong>: <a href="../processor-dpa-checklist/"><code>processor-dpa-checklist.md</code></a>, with
+  every DPA link live-verified (not reused from training-data memory) on 2026-07-20; execution
+  itself is still the account owner's to-do.</li>
 <li><strong>5b. Prioritize zero-data-retention (ZDR) terms with OpenRouter</strong> specifically, since
   ADR-018 already flags this as the standing blocker; resolve it explicitly rather than letting
-  it stay open indefinitely.</li>
+  it stay open indefinitely. The checklist's OpenRouter row is flagged as needing an actual
+  conversation (confirm account-wide ZDR is enabled and covers every downstream
+  model/provider), not just a click-through DPA.</li>
 <li><strong>5c. Record every outcome</strong> in <code>docs/planning/privacy-model.md</code>'s processor list, so Phase 7's
-  Records of Processing document (below) has a single source of truth to pull from.</li>
+  Records of Processing document (below) has a single source of truth to pull from. Not yet
+  done for any row (the checklist is the to-do list, not the durable record).</li>
 </ul>
 <h3 id="phase-6-security-hardening-engineering-no-dependencies-start-now">Phase 6: Security hardening (engineering, no dependencies, start now)<a class="headerlink" href="#phase-6-security-hardening-engineering-no-dependencies-start-now" title="Permanent link">&para;</a></h3>
-<p><strong>Status as of 2026-07-19: 6a and 6d shipped; 6b and 6c not started.</strong></p>
+<p><strong>Status as of 2026-07-20: 6a, 6b, 6c, and 6d shipped.</strong></p>
 <ul>
 <li><strong>6a. DONE.</strong> <code>TrustedHostMiddleware</code> wiring was already correctly implemented and tested
   (verified, no change needed: <code>allowed_hosts</code> is env-configurable and conditionally wires the
@@ -3340,15 +3477,18 @@ whoever is assigned.</p>
   from the TLS-terminating reverse proxy (a separate, already-fixed trust boundary); without
   that fix in place first, enabling this could have redirect-looped real HTTPS traffic instead
   of closing a gap.</li>
-<li><strong>6b. Not started.</strong> Write a short internal information-security program document: designated
-  security contact, a documented risk-assessment cadence, and a vendor-oversight process,
-  satisfying both COPPA 312.8's 2025-amendment expectation and GDPR Article 32(1)(d)'s
-  "regularly testing, assessing and evaluating" requirement in one artifact.</li>
-<li><strong>6c. Not started.</strong> Draft a breach-notification runbook, distinct from <code>SECURITY.md</code>'s
-  external vulnerability-reporting policy: an internal incident-classification rubric, an
-  escalation path, and the two clocks that start on discovery (GDPR Article 33's 72-hour
-  notification-to-authority duty, and Article 34's separate "high risk to individuals"
-  notification duty).</li>
+<li><strong>6b. DONE.</strong> <a href="../information-security-program/"><code>docs/compliance/information-security-program.md</code></a>:
+  designated security contact, a documented risk-assessment cadence (annual, pre-major-feature,
+  pre-processor-onboarding, per-CI-finding, and post-incident triggers), and a vendor-oversight
+  process with a per-processor table, satisfying both COPPA 312.8's 2025-amendment expectation
+  and GDPR Article 32(1)(d)'s "regularly testing, assessing and evaluating" requirement in one
+  artifact.</li>
+<li><strong>6c. DONE.</strong> <a href="../breach-notification-runbook/"><code>docs/compliance/breach-notification-runbook.md</code></a>,
+  distinct from <code>SECURITY.md</code>'s external vulnerability-reporting policy: an internal
+  incident-classification rubric (severity driven primarily by whether child-linked data is
+  implicated), an escalation path, the two GDPR clocks (Article 33's 72-hour
+  notification-to-authority duty and Article 34's separate "high risk to individuals" duty), and
+  a flagged-open COPPA/state-law breach-notice gap rather than a silent omission.</li>
 <li><strong>6d. DONE.</strong> <code>SECURITY.md</code> corrected: the auth section no longer describes an unresolved
   dev-only stub needing future Authentik JWT validation (real Supabase-issued JWT verification
   is already implemented and enforced for every non-local environment); the child-safety bullet
@@ -3357,37 +3497,63 @@ whoever is assigned.</p>
   guard) and what isn't yet (verifiable parental consent, a retention policy), pointing to the
   compliance docs rather than asserting compliance inline.</li>
 </ul>
-<h3 id="phase-7-formal-compliance-documentation-needs-the-artifact-owner-and-counsel-timing-decisions">Phase 7: Formal compliance documentation (needs the artifact-owner and counsel-timing decisions)<a class="headerlink" href="#phase-7-formal-compliance-documentation-needs-the-artifact-owner-and-counsel-timing-decisions" title="Permanent link">&para;</a></h3>
+<h3 id="phase-7-formal-compliance-documentation-artifact-owner-and-counsel-timing-decided-2026-07-20-7a7c7d-done-7b-in-progress">Phase 7: Formal compliance documentation (artifact-owner and counsel-timing decided 2026-07-20; 7a/7c/7d DONE, 7b in progress)<a class="headerlink" href="#phase-7-formal-compliance-documentation-artifact-owner-and-counsel-timing-decided-2026-07-20-7a7c7d-done-7b-in-progress" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>7a. Assemble a Records of Processing Activities document (GDPR Article 30)</strong> from material
-  that already exists across the COPPA audit, the GDPR review, and <code>privacy-model.md</code>; this is
-  synthesis, not new research, and is one of the lowest-cost, highest-value items in this whole
-  plan.</li>
-<li><strong>7b. Commission a Data Protection Impact Assessment (GDPR Article 35(3)(b))</strong> before, not
-  after, Phase 2's consent-flow build finalizes its design, per the earlier GDPR review's
-  Pressure Point P-2; use the Article-25-by-design strengths already documented (data
-  minimization, no ads/analytics SDKs, closed-vocabulary avatars, real tenancy auth) as the
-  DPIA's starting risk-mitigation inventory.</li>
-<li><strong>7c. Assess the DPO question (Article 37)</strong> against your projected scale once Track 2
-  planning has real numbers; record the outcome either way.</li>
-<li><strong>7d. Confirm the audience-classification and launch-geography decisions in ADR-018 (D2, D3)</strong>
-  now reflect this plan's "compliant from the start" direction rather than the deferred-GDPR-K
-  posture D3 currently recommends, and flip ADR-018 from Proposed to Accepted once D1-D4 close.</li>
+<li><strong>7a. DONE.</strong> <a href="../records-of-processing-activities/"><code>docs/compliance/records-of-processing-activities.md</code></a>:
+  eleven processing activities synthesized from the COPPA audit, the GDPR review, and
+  <code>privacy-model.md</code>, plus a consolidated recipient/transfer-mechanism table and a data-subject-rights
+  status table. Originally surfaced (without resolving) a newly-found gap, Articles 18/21
+  having no implementation; that gap is now closed (see the Article 18/21 entry under Phase
+  8's sequencing).</li>
+<li><strong>7b. DONE (drafted, not yet counsel-reviewed).</strong> <a href="../dpia/"><code>dpia.md</code></a>, drafted <em>after</em>
+  Phase 2's consent-flow build finalized (per Pressure Point P-2: assess the real, shipped
+  design), using the Article-25-by-design strengths already documented (data minimization, no
+  ads/analytics SDKs, closed-vocabulary avatars, real tenancy auth) as the risk-mitigation
+  inventory. Every risk section is rated with residual risk after existing mitigations; the
+  two flagged as still genuinely open (the semantic-PII gap in free text, G-13; and counsel
+  confirmation of the VPC method, ADR-018 D1) are the priority items before Track 2 launch.</li>
+<li><strong>7c. DONE (recorded, not a full DPO analysis).</strong> Current/near-term scale (small,
+  homelab-first, no near-term mass-growth plan) does not trigger Article 37's "large scale,
+  regular and systematic monitoring" threshold. Recorded outcome: DPO not required now;
+  concrete reassessment trigger set to "before Track 2 public launch" rather than left as an
+  open-ended future maybe.</li>
+<li><strong>7d. DONE (decisions recorded in ADR-018 2026-07-20; pending counsel confirmation per that
+  ADR's own Validation checklist, not yet flipped to Accepted).</strong> D1 (VPC mechanism), D2
+  (audience classification, confirmed child-directed per the ADR's existing recommendation),
+  and D3 (launch geography, confirmed US-only given no UK/EEA users) all now carry a recorded
+  owner decision rather than an open question. ADR-018's status stays Proposed until counsel
+  reviews the drafted consent flow, Privacy Notice, and DPIA (Phase 2/7b) and signs off; this
+  bullet's engineering-adjacent scope (recording the decisions themselves) is complete.</li>
 </ul>
 <h3 id="phase-8-ongoing-compliance-operations-start-once-phases-1-7-are-substantially-done">Phase 8: Ongoing compliance operations (start once Phases 1-7 are substantially done)<a class="headerlink" href="#phase-8-ongoing-compliance-operations-start-once-phases-1-7-are-substantially-done" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>8a. Log admin views of child-linked data</strong>, not just admin mutations (currently
-  <code>admin_profiles.py</code>'s GET paths write no audit event, so an admin browsing a specific child's
-  profile leaves no trace, unlike write actions elsewhere).</li>
-<li><strong>8b. Complete ADR-016's guardian-facing consent UI</strong> for cross-family recommendation
-  sharing, so the consent columns already in the schema have an actual guardian-operated
-  control in front of them.</li>
+<li><strong>8a. DONE.</strong> <code>GET /api/v1/admin/profiles</code> (<code>admin_profiles.py::list_admin_profiles</code>) now
+  writes one <code>profile_viewed</code> <code>pipeline_event</code> per call (not one per row returned), carrying the
+  <code>family_id</code> filter used (or <code>None</code>/<code>"all"</code> for an unfiltered cross-family listing) and the
+  count of profiles returned. This is the only cross-tenant read anywhere in the admin console
+  (every other admin GET is same-family or non-child data), and the only READ this audit log
+  covers at all: every other <code>EventType</code> member logs a mutation. Queryable via the existing
+  <code>GET /api/v1/admin/audit?kind=profile_viewed</code>; no new read surface was needed.</li>
+<li><strong>8b. DONE, and was already done before this plan flagged it as open.</strong> This bullet (and
+  <code>gdpr-compliance-review.md</code> finding G-10) described the guardian-facing consent UI as
+  not-yet-built based on a stale reading of ADR-016's status; on inspection (2026-07-20),
+  <code>frontend/src/guardian/ConnectionsPage.tsx</code> is a live, routed guardian page at
+  <code>/guardian/connections</code>, and <code>recommendations.py</code> gates every read on both
+  <code>FamilyConnection.consented_by_viewer_user_id</code> and <code>consented_by_sharer_user_id</code> being set
+  (paired with a <code>_at</code> timestamp each, CHECK-enforced), not on the admin-managed connection row
+  alone. Nothing about either family's reading/rating data crosses to the other family until
+  both guardians have explicitly clicked "Allow." See <code>gdpr-compliance-review.md</code> Section 4.3
+  and G-10 for the corrected write-up.</li>
 <li><strong>8c. Set an annual (or pre-major-feature) compliance review cadence</strong>, re-running this plan's
   Phase 1-6 checks against whatever has shipped since.</li>
 </ul>
 <h3 id="phase-9-gdpr-k-uk-aadc-specific-conformance">Phase 9: GDPR-K / UK AADC-specific conformance<a class="headerlink" href="#phase-9-gdpr-k-uk-aadc-specific-conformance" title="Permanent link">&para;</a></h3>
-<p>Documentation-heavy; needs the launch-geography decision confirmed, and most items build on
-Phases &#8532;/7 artifacts existing first.</p>
+<p><strong>Shelved 2026-07-20, not worked.</strong> The launch-geography decision this phase needed is now
+confirmed (ADR-018 D3): no UK or EEA users exist or are planned. Every item below stays
+unscheduled until that changes; if UK/EEA users are ever expected, revisit this phase and
+ADR-018 D3 together before that expansion ships. Left in place, not deleted, so the plan is
+ready to resume rather than re-derived from scratch if the fact changes. Documentation-heavy;
+most items would build on Phases &#8532;/7 artifacts existing first.</p>
 <p>"GDPR-K" is not a separate statute; it is GDPR's ordinary rules as applied to children (Article
 8's consent age, Article 25's design-by-default duty, Article 35's risk-based DPIA), plus, for
 UK users specifically, the ICO's Age Appropriate Design Code (AADC, "Children's Code", DPA 2018
@@ -3451,8 +3617,8 @@ statutory basis specifically rather than GDPR generally).</p>
 </tr>
 <tr>
 <td>6. Default settings ("high privacy" unless justified)</td>
-<td>Needs an explicit default-settings audit; cross-family recommendation sharing (G-10, Phase 8b) is the concrete item most likely to need a default flipped to off/opt-in</td>
-<td>New: audit item, feeds Phase 8b</td>
+<td>Satisfied for cross-family recommendation sharing specifically: connections are opt-in (dual-consent, off by default) not opt-out (G-10/8b, DONE). A broader default-settings audit across the rest of the app is still worth doing on its own merits</td>
+<td>New: audit item, no longer gated on Phase 8b</td>
 </tr>
 <tr>
 <td>7. Data minimization</td>
@@ -3461,8 +3627,8 @@ statutory basis specifically rather than GDPR generally).</p>
 </tr>
 <tr>
 <td>8. Data sharing</td>
-<td>Same underlying gap as G-10 (no documented Article 6 basis for cross-family disclosure)</td>
-<td>Tracked at G-10 / Phase 8b already</td>
+<td>Satisfied: Article 6(1)(a) consent is now the recorded basis for cross-family disclosure (G-10/8b, DONE)</td>
+<td>No further work</td>
 </tr>
 <tr>
 <td>9. Geolocation</td>
@@ -3583,7 +3749,14 @@ plan tracks as discrete items.</p>
 marked <strong>(no default)</strong> genuinely need your input.</p>
 <p><strong>Gates Phase 2 (consent):</strong></p>
 <ul>
-<li><strong>VPC method.</strong> <em>Open, but now well-scoped: no paid tier exists, and the product's stated
+<li><strong>VPC method.</strong> <em>Resolved 2026-07-20 (owner decision; see ADR-018 D1 for the full record).</em>
+  A fifth option not listed below was chosen instead of the four originally drafted here: a
+  signature-capture step (canvas or typed-name signature-equivalent + checkbox, logged with
+  IP/timestamp/account-id) layered on the existing Supabase/Google OAuth login, explicitly
+  ruling out both the card-verification and third-party-vendor options below to avoid PCI
+  scope and a new processor respectively. The options originally drafted here are kept for
+  reference, not because any of them was chosen:</li>
+<li><em>Originally open, but now well-scoped: no paid tier exists, and the product's stated
   design is that a guardian registers before any child can use the app.</em> That said, per
   <code>PROJECT-PLAN.md</code> there is currently no onboarding/signup endpoint at all, and <code>POST /profiles</code>
   is ungated today (no consent precondition). So guardian registration is not yet an existing
@@ -3613,10 +3786,8 @@ marked <strong>(no default)</strong> genuinely need your input.</p>
      before you'd want to depend on it.</li>
 <li><strong>A signed consent form</strong> (upload or e-sign at registration): lowest engineering cost, no
      vendor dependency, but the highest guardian friction of the four.
-   Recommendation, non-binding: the $0 card-verification step is the best cost/rigor tradeoff for
-   where the product is today (no paid tier, small team), with a third-party VPC vendor as the
-   upgrade path if you want the COPPA+GDPR-K+AADC multi-jurisdiction coverage bundled rather than
-   assembled by hand. <strong>(no default without your input on which tradeoff you'd rather make)</strong></li>
+   None of the four above was chosen; see the resolution note at the top of this item and
+   ADR-018 D1 for what was picked instead and why. <strong>(resolved 2026-07-20)</strong></li>
 </ul>
 <p><strong>Gates Phase 4 (retention/storage):</strong></p>
 <ul>
@@ -3627,9 +3798,9 @@ marked <strong>(no default)</strong> genuinely need your input.</p>
   One practical note for whenever that move happens: it's a natural point to also land any
   schema-level retention/deletion changes from Phase &frac34; in the same maintenance window, since
   you'll already be touching the data at rest.</li>
-<li><strong>Retention windows per data category.</strong> <em>Open; here's a starting point since you don't have
-  one yet, rather than leaving this blank.</em> A draft table to react to and adjust, not a final
-  answer:</li>
+<li><strong>Retention windows per data category.</strong> <em>Resolved 2026-07-20: accepted as drafted.</em> Kept
+  below as the actual policy, not a proposal, and now what Phase 4b publishes and Phase 4c's
+  purge jobs build against:</li>
 </ul>
 <table>
 <thead>
@@ -3682,7 +3853,7 @@ marked <strong>(no default)</strong> genuinely need your input.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>(needs your reaction to this table, not a from-scratch answer)</strong></p>
+<p><strong>(resolved 2026-07-20; accepted as-is)</strong></p>
 <p><strong>Resolved, kept for reference:</strong></p>
 <ul>
 <li><strong>Self-naming.</strong> <strong>Will children ever appear as themselves (by their real name) as the
@@ -3721,63 +3892,100 @@ marked <strong>(no default)</strong> genuinely need your input.</p>
 <p><strong>Gates Phase 5 (processor paperwork):</strong></p>
 <ul>
 <li><strong>ZDR terms.</strong> <strong>Zero-data-retention terms with OpenRouter and the other LLM/classifier
-  vendors.</strong> Who pursues this, and on what timeline? ADR-018 already calls it the standing
-  blocker; it just needs an owner and a deadline. <strong>(no default; needs an owner assigned)</strong></li>
+  vendors.</strong> <em>Resolved 2026-07-20.</em> The account owner executes Phase 5 directly (not counsel,
+  not a hired vendor manager); most processors' DPAs are vendor-supplied click-through
+  agreements, OpenRouter's ZDR terms are the one item needing actual negotiation. <strong>(owner
+  assigned: account owner)</strong></li>
 </ul>
 <p><strong>Gates Phase 9 (GDPR-K / AADC conformance):</strong></p>
 <ul>
 <li><strong>UK-user confirmation.</strong> Same underlying fact question as Pressure Point P-1 (does an
   EU/UK-resident guardian or child use the app today, in the current private tier), asked here
   specifically because the AADC's "likely to be accessed by children" test is a lower bar than
-  GDPR's general Article 3(2) targeting test; if the answer to P-1 is "yes, UK," Phase 9 is not
-  a future expansion gate, it is current-state work. <strong>(no default; same fact-finding as P-1,
-  not a new question, but it independently gates Phase 9's start rather than only Pressure Point
-  P-1's GDPR conclusion)</strong></li>
+  GDPR's general Article 3(2) targeting test. <em>Resolved 2026-07-20: no, US-only now and for the
+  foreseeable future.</em> Phase 9 is shelved on this basis (see that phase's status note); if this
+  answer changes, both Pressure Point P-1's GDPR conclusion and Phase 9's shelved status need
+  revisiting together, not separately.</li>
 </ul>
 <p><strong>Gates Phase 7 (formal documentation), and the retention-windows decision above:</strong></p>
 <ul>
 <li><strong>Artifact owner.</strong> <strong>Who owns and signs off on the compliance artifacts</strong> (privacy notice,
-  DPIA, DPA/SCC execution, retention policy)? <strong>(no default; needs a named owner, likely you or
-  whoever you designate)</strong></li>
-<li><strong>Counsel timing.</strong> <strong>When does privacy counsel get engaged?</strong> Given the "compliant from the
-  start" goal, the working recommendation is: now, in parallel with Phase &#8531;/4/6 engineering
-  work, so counsel's review of the consent mechanism and notice language (Phase 2) and the DPIA
-  (Phase 7) doesn't become the critical-path bottleneck once the engineering is otherwise ready.
-  <strong>(recommend engaging now; timing is your call)</strong></li>
-<li><strong>DPO designation.</strong> Needs your projected user scale at whatever launch tier you're
-  planning toward; can be assessed in parallel with everything else. <strong>(no default; needs
-  scale projections)</strong></li>
+  DPIA, DPA/SCC execution, retention policy)? <em>Resolved 2026-07-20, by the working model this
+  whole decision round adopted:</em> the account owner and this assistant draft every artifact;
+  counsel reviews and signs off rather than drafting from scratch. Named owner: account owner.</li>
+<li><strong>Counsel timing.</strong> <strong>When does privacy counsel get engaged?</strong> <em>Resolved 2026-07-20,
+  consistent with the working recommendation already here:</em> now, in parallel with the
+  engineering work already complete (Phases &#8531;/4/6). The DPIA and Privacy Notice are being
+  drafted next (Phase 7b / Phase 2) specifically so counsel's first look is a review pass, not
+  a blank page.</li>
+<li><strong>DPO designation.</strong> <em>Resolved 2026-07-20; see Phase 7c above.</em> Current/near-term scale
+  (small, homelab-first) does not trigger Article 37; recorded as not required now, with
+  reassessment tied to "before Track 2 public launch."</li>
 </ul>
 <hr />
 <h2 id="6-suggested-sequencing">6. Suggested sequencing<a class="headerlink" href="#6-suggested-sequencing" title="Permanent link">&para;</a></h2>
+<p><strong>Decisions made 2026-07-20</strong> (superseding the "decision-gathering still open" line this
+section used to carry):</p>
+<ul>
+<li><strong>VPC method</strong>: signature-capture layered on the existing Supabase/Google OAuth login
+  (canvas or typed-name signature-equivalent + checkbox, logged with IP/timestamp/account-id
+  server-side). No new vendor, no PCI scope. The one flagged legal question (does a
+  typed/canvas signature satisfy 312.5(b)(2)(i)'s "signed") is the top item for counsel's
+  review of the drafted consent flow and Privacy Notice.</li>
+<li><strong>Retention windows</strong>: the draft table in Section 5 is accepted as-is; Phase 4b can now
+  publish it as the retention policy.</li>
+<li><strong>ZDR/processor-paperwork owner</strong>: the account owner (not counsel, not a hired vendor
+  manager) will execute Phase 5's DPAs directly; most are vendor-supplied click-through
+  agreements, OpenRouter's ZDR terms are the one needing actual back-and-forth.</li>
+<li><strong>UK/EEA users</strong>: none currently, none expected. Phase 9 (GDPR-K/AADC) is shelved, not
+  worked, until that changes; Phase 7d's ADR-018 D3 closes on the US-only framing already in
+  the ADR.</li>
+<li><strong>DPO (Article 37)</strong>: current/near-term scale does not trigger a "large scale, regular and
+  systematic monitoring" DPO requirement. Phase 7c is recorded as "not required now," with a
+  concrete reassessment trigger of "before Track 2 public launch," not a full DPO analysis
+  commissioned today.</li>
+<li><strong>Articles 18/21 (restriction, objection)</strong>: build a minimal "restrict processing" flag
+  (newly scoped, not previously in this plan) rather than leaving the gap the RoPA surfaced
+  undocumented and unaddressed.</li>
+</ul>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Now, in parallel, no dependencies (Supabase region and self-naming already resolved):
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  Phase 1 (PII-egress hardening, field-targeted per Section 1&#39;s parameterization note)
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  Phase 3 (deletion cascades, export, access endpoints)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  Phase 4a and 4d (Supabase region execution; audit-log retention justification)
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  Phase 6 (security hardening)
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  Decision-gathering still open: VPC method, retention-table reaction, ZDR owner,
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    artifact owner, counsel timing, DPO
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>Once the VPC-method decision lands:
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  Phase 2 (consent + notice build; Phase 2&#39;s 2a is what makes guardian registration an actual
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  gate on child-data collection, not just the intended attachment point it is today)
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>Once the retention-table decision is confirmed or adjusted:
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  Phase 4b-4c (retention policy + purge jobs)
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>Once the ZDR-owner decision lands, in parallel with the above:
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>  Phase 5 (processor DPAs/SCCs)
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>Once the artifact-owner and counsel-timing decisions land and Phases 1-6 are substantially built:
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>  Phase 7 (DPIA, Records of Processing, DPO assessment, ADR-018 D1-D4 closeout)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  Phase 1 (PII-egress hardening, field-targeted per Section 1&#39;s parameterization note) - DONE
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  Phase 3 (deletion cascades, export, access endpoints) - DONE, pending a Docker-available
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    CI run to actually verify test_schema_parity.py and test_deletion_drill.py (see Phase 3&#39;s
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    status note)
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  Phase 4a (Supabase region execution); 4c DONE; 4d DONE (audit-log retention justification)
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  Phase 6 (security hardening) - DONE (6a, 6b, 6c, 6d)
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  Phase 8a DONE; 8b DONE (was already built; the finding describing it as missing was stale,
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    corrected 2026-07-20 -- see G-10)
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  Phase 2a DONE (consent-capture flow, backend + frontend); 2e DONE (newly scoped self-signup
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    admin-approval gate)
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>  Articles 18/21 minimal &quot;restrict processing&quot; flag - DONE (newly scoped)
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>Unblocked now that the VPC method is decided and 2a is built:
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>  Phase 2b-2d (re-consent-on-policy-change flow; draft the Privacy Notice for counsel review
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  and link it from 2a&#39;s consent screen; direct email notice at onboarding)
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>Unblocked now that the retention table is accepted:
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>  Phase 4b (publish the retention policy from the accepted table; 4c&#39;s purge jobs are already
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>  built against it)
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>Ongoing, once the above is stable:
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>  Phase 8 (admin-audit logging, ADR-016 consent UI, annual review cadence)
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>Once UK-user status is confirmed (independently of, but using the same fact-finding as,
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>Pressure Point P-1), and Phases 2/3/7 have produced their artifacts:
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>  Phase 9 (GDPR-K / AADC conformance: Article 8 bypass write-up, 15-standard self-assessment,
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>  ICO registration check, child-facing notice layer, best-interests DPIA addendum)
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>Checklist drafted, execution remains:
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>  Phase 5 (processor DPAs/SCCs -- processor-dpa-checklist.md drafted with live-verified links;
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>  the account owner still has to actually execute each one)
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>Drafted for counsel review, per the &quot;we draft, counsel reviews&quot; model:
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>  Phase 7b DONE (dpia.md drafted, informed by Phase 2&#39;s shipped consent-flow design); 7c DONE
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>  (recorded as not-required, reassess before Track 2 launch); 7d DONE (ADR-018 D3 closes on
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>  US-only; 7a already DONE)
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>  Phase 2c DONE (privacy-notice.md drafted, informed by the shipped consent/retention/processor
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>  design); 2b/2d remain unbuilt
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>Remaining small item:
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>  Phase 8c (schedule the annual review cadence -- e.g. a yearly reminder/Routine)
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>Shelved, not worked, until UK/EEA user status changes:
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>  Phase 9 (GDPR-K / AADC conformance: Article 8 bypass write-up, 15-standard self-assessment,
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>  ICO registration check, child-facing notice layer, best-interests DPIA addendum)
 </span></code></pre></div>
 <hr />
 <h2 id="7-references">7. References<a class="headerlink" href="#7-references" title="Permanent link">&para;</a></h2>
@@ -3819,7 +4027,7 @@ advice or a certification of compliance.</em></p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 19, 2026 18:25:02 UTC">July 19, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:27:41 UTC">July 20, 2026</span>
   </span>
 
     
