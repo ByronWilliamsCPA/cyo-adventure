@@ -890,6 +890,11 @@ chain containing a crypto namespace (`Crypto`, `cryptography`, `Cipher`,
 - **Priority**: High
 - **Category**: Configuration
 - **Discovered**: 2026-07-17
+- **Status**: Resolved in this repo (PR #273, merged 2026-07-19): `pyproject.toml`'s
+  `[tool.mutmut]` rewritten to the 3.x dialect (`source_paths`, `only_mutate`), and
+  `mutation-testing.yml` replaced with a self-contained job. A real local run since executed
+  successfully (5,593 mutants, 65.7% partial score). Kept open here because the upstream
+  cookiecutter template itself still ships the broken 2.x config.
 
 **Issue**: The template's `pyproject.toml` writes a `[tool.mutmut]` section in mutmut 2.x
 dialect (`paths_to_mutate` as a string, `tests_dir` as a string, `runner`, `backup`,
@@ -940,6 +945,12 @@ succeeded is invisible.
 - **Category**: CI/CD
 - **Discovered**: 2026-07-17
 
+- **Status**: Resolved in this repo (PR #273, merged 2026-07-19): the no-op scaffold was
+  replaced with real harnesses (`fuzz/fuzz_condition_evaluator.py`,
+  `fuzz/fuzz_storybook_validation.py`) exercising actual project code, which in the same
+  pass caught a real PII-egress unicode-folding bypass. Kept open here because the upstream
+  cookiecutter template itself still ships the no-op scaffold described below.
+
 **Issue**: The template's `fuzz/fuzz_input_validation.py` is an unfilled scaffold: its
 `test_one_input` consumes bytes via `FuzzedDataProvider.ConsumeUnicodeNoSurrogates(1024)`
 inside `contextlib.suppress(ValueError, TypeError)` and never imports or calls any project
@@ -974,6 +985,11 @@ parser/validator entry point.
 - **Priority**: High
 - **Category**: CI/CD
 - **Discovered**: 2026-07-17
+- **Status**: Resolved in this repo (PR #274, merged 2026-07-19): `set -o pipefail` now
+  wraps the checker/tee pipeline, `tests/**/*.py` was added to the trigger paths, and a
+  `--fail-level`/acknowledged-findings baseline was added on top (see the "FIPS checker has
+  no disposition mechanism" entry below). Kept open here because the upstream cookiecutter
+  template itself still ships the broken gate described below.
 
 **Issue**: Two compounding defects in `.github/workflows/fips-compatibility.yml` make the FIPS
 gate inform-only in every mode, including `--strict` dispatch. First, the run step captures

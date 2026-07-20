@@ -40,9 +40,9 @@ Legend: [x] done · [~] partial (rest blocked/deferred, see notes) · [ ] not st
 | P3 | Renovate coverage for image digests + dead rules | ARCH-H4, part ARCH-L-TEST (A3) | S | none | [x] |
 | P4 | Kid-route credential binding | SEC-F1, SEC-F2 (A7) | M | none | [x] |
 | P5 | Offline library shelf | UX-K1 (A4) | M | P4 | [x] |
-| P6 | Reader text-size control + wire `tts_enabled` | UX-K2 (A5) | M | none | [~] text-size control shipped; `tts_enabled` left as its documented deliberate deferral (no read-aloud yet) |
+| P6 | Reader text-size control + wire `tts_enabled` | UX-K2 (A5) | M | none | [x] **Corrected 2026-07-20**: this row's own "no read-aloud yet" was already wrong at merge time - `Reader.tsx` wires a real Web Speech API `useReadAloud` hook (added in this same PR #270/#277 work) behind `tts_enabled`, and `ProfileFormDialog.tsx` has a live toggle bound to the field |
 | P7 | Guardian pipeline visibility + auto-assign on publish | UX-G1, UX-G2 (A6) | M | none | [ ] blocked: auto-assign needs a schema migration threading requested_by_profile_id request->concept->storybook (no such link exists) |
-| P8 | PIN lockout + Redis principal-keyed rate limiting | SEC-B1, SEC-B2 (A8) | L | none | [ ] |
+| P8 | PIN lockout + Redis principal-keyed rate limiting | SEC-B1, SEC-B2 (A8) | L | none | [~] **Corrected 2026-07-20**: a Redis-sorted-set rate limiter already existed pre-dating this plan, but is IP-keyed, not principal-keyed as SEC-B2 asks. PIN lockout itself was deliberately never built: `api/child_sessions.py` carries an explicit comment that the PIN is no longer a security boundary now that P4 requires an authenticated guardian/admin bearer first - a documented decision, not an oversight, but the `[ ]` above undersold both halves |
 | P9 | Frontend auth hygiene (PKCE, sourcemaps, cache purge) | SEC-F3, SEC-F4, SEC-F5 (A9) | M | none | [~] sourcemaps + cache purge done; PKCE (SEC-F3) deferred (reworks hash-based recovery detection, needs a live Supabase project to verify) |
 | P10 | Cover staleness escape + queue retry policy | ARCH-M1, ARCH-M2 (A10) | M | P1 | [ ] blocked: StorybookVersion has no updated_at/cover_started_at; a reliable staleness check needs a schema migration |
 | P11 | Backlog re-triage + doc corrections | A11 | S | none | [x] |
