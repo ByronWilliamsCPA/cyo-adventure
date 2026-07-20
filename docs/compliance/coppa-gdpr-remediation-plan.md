@@ -292,12 +292,13 @@ all shipped (commit on `claude/gdpr-compliance-review-qzyvc2`).**
 - **2b. Add a re-consent flow** triggered on material privacy-notice changes. Not started;
   `CONSENT_POLICY_VERSION` (frontend/src/auth/onboardingApi.ts) is the version stamp a future
   re-consent flow would compare against, but nothing currently prompts re-consent on a bump.
-- **2c. Draft and publish the privacy notice**, written once against the union of COPPA
-  312.4's content list and GDPR Articles 13-14's broader content list (controller identity,
-  purpose-by-purpose lawful basis, the full processor list from Section 4.2 of the GDPR
-  review, retention periods per category, the complete data-subject-rights list including the
-  right to complain to a supervisory authority, and the international-transfer mechanism relied
-  on). Link it from the landing page, guardian console, and onboarding flow.
+- **2c. DRAFTED, not yet published.** [`privacy-notice.md`](privacy-notice.md), written
+  against the union of COPPA 312.4's content list and GDPR Articles 13-14's broader content
+  list, synthesized from the actual shipped design (Phase 2a's consent mechanism, Phase 4's
+  accepted retention table, the RoPA's processor list) rather than written in the abstract.
+  Every open legal question is a flagged `[COUNSEL: ...]` bracket in the document itself.
+  Remaining: counsel review, then publish as a real guardian-facing route and link it from the
+  landing page, guardian console, and `GuardianConsentPage.tsx`'s consent screen.
 - **2d. Direct notice to the parent** at onboarding (email, once the `user` table gains an
   email/contact column per the existing plan item P6-03).
 - **2e. DONE, newly scoped mid-session (2026-07-20).** A guardian self-signup approval gate,
@@ -453,7 +454,7 @@ admin-only access, and does not require guardian notice beyond what the privacy 
 already discloses about audit logging. No code change follows from this section; it documents the
 justification for a design decision (Phase 3a's FK-cascade exceptions) already shipped.
 
-### Phase 5: Processor paperwork (owner decided 2026-07-20: account owner executes directly; not yet executed)
+### Phase 5: Processor paperwork (checklist drafted 2026-07-20; execution not yet done)
 
 - **5a. Confirm and execute a DPA (and SCCs, given every processor listed is US-hosted) with
   each processor**: Supabase, OpenRouter and downstream model providers, Anthropic-direct,
@@ -461,11 +462,17 @@ justification for a design decision (Phase 3a's FK-cascade exceptions) already s
   specifically, given Section 1's finding that it already receives no PII by hardcoded design,
   this is close to a formality, but "compliant from the start" means closing it rather than
   assuming it's unnecessary because the data itself is already clean.
+  **Checklist drafted**: [`processor-dpa-checklist.md`](processor-dpa-checklist.md), with
+  every DPA link live-verified (not reused from training-data memory) on 2026-07-20; execution
+  itself is still the account owner's to-do.
 - **5b. Prioritize zero-data-retention (ZDR) terms with OpenRouter** specifically, since
   ADR-018 already flags this as the standing blocker; resolve it explicitly rather than letting
-  it stay open indefinitely.
+  it stay open indefinitely. The checklist's OpenRouter row is flagged as needing an actual
+  conversation (confirm account-wide ZDR is enabled and covers every downstream
+  model/provider), not just a click-through DPA.
 - **5c. Record every outcome** in `docs/planning/privacy-model.md`'s processor list, so Phase 7's
-  Records of Processing document (below) has a single source of truth to pull from.
+  Records of Processing document (below) has a single source of truth to pull from. Not yet
+  done for any row (the checklist is the to-do list, not the durable record).
 
 ### Phase 6: Security hardening (engineering, no dependencies, start now)
 
@@ -505,13 +512,16 @@ justification for a design decision (Phase 3a's FK-cascade exceptions) already s
 - **7a. DONE.** [`docs/compliance/records-of-processing-activities.md`](records-of-processing-activities.md):
   eleven processing activities synthesized from the COPPA audit, the GDPR review, and
   `privacy-model.md`, plus a consolidated recipient/transfer-mechanism table and a data-subject-rights
-  status table. Surfaces (without resolving) two gaps not previously tracked as numbered
-  findings: Articles 18/21 (restriction, objection) have no implementation.
-- **7b. Commission a Data Protection Impact Assessment (GDPR Article 35(3)(b))** before, not
-  after, Phase 2's consent-flow build finalizes its design, per the earlier GDPR review's
-  Pressure Point P-2; use the Article-25-by-design strengths already documented (data
-  minimization, no ads/analytics SDKs, closed-vocabulary avatars, real tenancy auth) as the
-  DPIA's starting risk-mitigation inventory.
+  status table. Originally surfaced (without resolving) a newly-found gap, Articles 18/21
+  having no implementation; that gap is now closed (see the Article 18/21 entry under Phase
+  8's sequencing).
+- **7b. DONE (drafted, not yet counsel-reviewed).** [`dpia.md`](dpia.md), drafted *after*
+  Phase 2's consent-flow build finalized (per Pressure Point P-2: assess the real, shipped
+  design), using the Article-25-by-design strengths already documented (data minimization, no
+  ads/analytics SDKs, closed-vocabulary avatars, real tenancy auth) as the risk-mitigation
+  inventory. Every risk section is rated with residual risk after existing mitigations; the
+  two flagged as still genuinely open (the semantic-PII gap in free text, G-13; and counsel
+  confirmation of the VPC method, ADR-018 D1) are the priority items before Track 2 launch.
 - **7c. DONE (recorded, not a full DPO analysis).** Current/near-term scale (small,
   homelab-first, no near-term mass-growth plan) does not trigger Article 37's "large scale,
   regular and systematic monitoring" threshold. Recorded outcome: DPO not required now;
@@ -831,14 +841,16 @@ Unblocked now that the retention table is accepted:
   Phase 4b (publish the retention policy from the accepted table; 4c's purge jobs are already
   built against it)
 
-Unblocked now that the paperwork owner is decided:
-  Phase 5 (processor DPAs/SCCs -- prep a checklist of each processor's DPA/terms URL plus
-  OpenRouter's ZDR options)
+Checklist drafted, execution remains:
+  Phase 5 (processor DPAs/SCCs -- processor-dpa-checklist.md drafted with live-verified links;
+  the account owner still has to actually execute each one)
 
-Unblocked now that DPIA ownership/timing follows the "we draft, counsel reviews" model:
-  Phase 7b (draft the DPIA now, informed by Phase 2's consent-flow design so it isn't drafted
-  twice); 7c DONE (recorded as not-required, reassess before Track 2 launch); 7d DONE
-  (ADR-018 D3 closes on US-only; 7a already DONE)
+Drafted for counsel review, per the "we draft, counsel reviews" model:
+  Phase 7b DONE (dpia.md drafted, informed by Phase 2's shipped consent-flow design); 7c DONE
+  (recorded as not-required, reassess before Track 2 launch); 7d DONE (ADR-018 D3 closes on
+  US-only; 7a already DONE)
+  Phase 2c DONE (privacy-notice.md drafted, informed by the shipped consent/retention/processor
+  design); 2b/2d remain unbuilt
 
 Remaining small item:
   Phase 8c (schedule the annual review cadence -- e.g. a yearly reminder/Routine)
