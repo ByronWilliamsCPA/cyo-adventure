@@ -29,6 +29,8 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 __all__ = [
+    "DEFAULT_STALE_AFTER",
+    "RUNNING_STALE_MARGIN",
     "enqueue_generation",
     "get_queue",
     "requeue_stranded_jobs",
@@ -46,7 +48,23 @@ _REDIS_TIMEOUT_SECONDS = 2.0
 # Default staleness window for the reclaim sweep: comfortably longer than any
 # legitimate queue depth for this app's job volume, short enough to recover
 # quickly from a genuine Redis/worker outage.
-_DEFAULT_STALE_AFTER = timedelta(minutes=30)
+# #ASSUME: timing dependencies: 30 minutes is calibrated against this app's
+# job volume (a solo/small-family deployment), not a high-throughput queue.
+# #VERIFY: promoted to a public name (ADR-021) so api/health.py's
+# check_generation_queue can import the exact same threshold rather than
+# duplicating the magic number; the two must never disagree.
+DEFAULT_STALE_AFTER = timedelta(minutes=30)
+# Backward-compatible alias: kept for any existing internal reference to the
+# old private name.
+_DEFAULT_STALE_AFTER = DEFAULT_STALE_AFTER
+
+# Margin added on top of the configured job timeout for the running-row
+# staleness threshold (see requeue_stranded_jobs's running_stale_after
+# default below). Promoted to a public name alongside DEFAULT_STALE_AFTER
+# for the same reason: api/health.py's check_generation_queue must compute
+# the identical running-stale cutoff, not a duplicated 5-minute literal that
+# could silently drift from the real sweep logic.
+RUNNING_STALE_MARGIN = timedelta(minutes=5)
 
 
 def get_queue(settings: Settings) -> Queue:
@@ -142,7 +160,7 @@ def enqueue_generation(
 
 async def requeue_stranded_jobs(
     session: AsyncSession,
-    stale_after: timedelta = _DEFAULT_STALE_AFTER,
+    stale_after: timedelta = DEFAULT_STALE_AFTER,
     running_stale_after: timedelta | None = None,
 ) -> int:
     """Reclaim jobs stranded by an enqueue outage or a hard worker death.
@@ -215,9 +233,10 @@ async def requeue_stranded_jobs(
 
     # --- Sweep 2: force-fail rows orphaned by a hard worker death. ----------
     if running_stale_after is None:
-        running_stale_after = timedelta(
-            seconds=_default_settings.generation_job_timeout_seconds
-        ) + timedelta(minutes=5)
+        running_stale_after = (
+            timedelta(seconds=_default_settings.generation_job_timeout_seconds)
+            + RUNNING_STALE_MARGIN
+        )
     running_cutoff = now - running_stale_after
     running_result = await session.execute(
         select(GenerationJob).where(

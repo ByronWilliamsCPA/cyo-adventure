@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ADR-021 Phase 1 worker observability: a non-gating generation-queue check on
+  the readiness endpoint that reports queue depth plus stale and recently-failed
+  jobs, an unprefixed `REDIS_URL` alias alongside `CYO_ADVENTURE_REDIS_URL`, and
+  in-repo Redis and worker services in `docker-compose` for dev/CI parity, with a
+  password-protected production Redis overlay, healthcheck auth, and resource
+  limits.
+
+### Security
+
+- Bumped the transitive dev dependency `brace-expansion` from 2.1.1 to 2.1.2 in
+  `frontend/package-lock.json` to clear GHSA-3jxr-9vmj-r5cp (CVE-2026-13149),
+  flagged by OSV-Scanner. The advisory was published after this branch opened;
+  no runtime dependency is affected (the vulnerable copy is pulled by `filelist`
+  under the build toolchain).
+
 ## [0.22.1] - 2026-07-20
 
 ### Changed

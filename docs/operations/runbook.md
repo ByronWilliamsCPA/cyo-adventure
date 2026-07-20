@@ -42,17 +42,17 @@ over the internet through Supabase's session pooler. This repo's `docker-compose
 the live stack; it does not carry live production traffic.
 
 **Redis**: the broker for the RQ job queue and, in every deployed tier, the rate-limiter backend.
-**Not started by this repo's `docker-compose.yml`**: the `redis` service is present in the file
-but commented out. An operator running this compose file locally must add a Redis container or
-point `CYO_ADVENTURE_REDIS_URL` at one, or generation jobs will enqueue and never run (Section
-2.2, Section 5.1).
+As of ADR-021 Phase 1, `redis` is a real service in this repo's `docker-compose.yml`
+(`ghcr.io/byronwilliamscpa/dhi-redis:7-debian13`); `docker compose up -d` starts it alongside `app`
+and `worker`. `core/config.py`'s `redis_url` accepts either `CYO_ADVENTURE_REDIS_URL` or the
+unprefixed `REDIS_URL` (the name the compose file's `${REDIS_URL:-...}` interpolation reads).
 
 **RQ generation worker**: `python -m cyo_adventure.generation.worker_main`, a long-running process
-pulling from the single `"generation"` RQ queue. Not defined in this repo's `docker-compose.yml`
-at all (no `worker` service). Must be run as a bare process, or as its own container built from
-this repo's `Dockerfile` with the worker command substituted for uvicorn's. The live R1 deployment
-runs it as `cyo-worker` in the separate `ByronWilliamsCPA/homelab-infra` repo's compose stack,
-which this repo does not define.
+pulling from the single `"generation"` RQ queue. As of ADR-021 Phase 1, `worker` is a real service
+in this repo's `docker-compose.yml`, built from the same image as `app`; `docker compose up -d`
+starts it too. The live R1 deployment still runs its own copy as `cyo-worker` in the separate
+`ByronWilliamsCPA/homelab-infra` repo's compose stack; that stack is not derived from this file and
+is not updated by this change.
 
 **Cover-art worker**: `covers.worker.run_cover_job_sync`, entered via the **same** `"generation"`
 RQ queue as story-generation jobs (`generation/queue.py::get_queue` always names the queue
@@ -72,11 +72,12 @@ compose files.
 **Live-deployment caveat**: the actual R1 internal-web deployment's container definitions
 (`cyo-backend`, `cyo-worker`, `cyo-redis`, `cyo-ollama`, the rollback-only `cyo-postgres`, and
 nginx ingress) live in `services/cyo-adventure/` in the separate `ByronWilliamsCPA/homelab-infra`
-repository, not in this repository. This repo's `docker-compose.yml` and `docker-compose.prod.yml`
-are useful for local development and as a template for that external stack, but by themselves they
-do **not** stand up a working generation pipeline (no Redis, no worker service). Treat the tables
-and commands below as what this repo actually provides; cross-check the homelab-infra repo for the
-live stack's exact compose file when operating production.
+repository, not in this repository. As of ADR-021 Phase 1, this repo's `docker-compose.yml` and
+`docker-compose.prod.yml` do stand up a working generation pipeline locally (`app`, `worker`,
+`redis`, `db`), but the live R1 stack still runs its own separately-defined `cyo-worker`/`cyo-redis`
+in homelab-infra rather than pulling this repo's service definitions directly. Treat the tables and
+commands below as what this repo actually provides; cross-check the homelab-infra repo for the live
+stack's exact compose file when operating production.
 
 The default LLM provider cascade for story generation (`generation/providers/fallback.py`, per
 [ADR-003](../planning/adr/adr-003-frontier-llm-generation.md) as amended) is: OpenRouter Haiku
@@ -89,8 +90,9 @@ additional per-job-selectable legs gated by the admin provider allowlist (Sectio
 ### 2.1 Full local stack (docker-compose)
 
 ```bash
-# Start the API, frontend, and local Postgres (Redis and the worker are NOT
-# included; add them yourself, see 2.2, before testing story generation).
+# Start the full pipeline: API, frontend, local Postgres, Redis, and the
+# generation worker (all five services are defined in docker-compose.yml as
+# of ADR-021 Phase 1; see Section 2.2 for details on the worker/Redis pair).
 docker-compose up -d
 
 # Rebuild after a dependency change
@@ -98,6 +100,7 @@ docker-compose up -d --build
 
 # Tail logs
 docker-compose logs -f app
+docker-compose logs -f worker
 
 # Open a shell in the backend container
 docker-compose exec app bash
@@ -119,25 +122,35 @@ Restarting a single container after a config change:
 docker-compose restart app
 ```
 
-### 2.2 Redis and the generation worker (not in the compose file)
+### 2.2 Redis and the generation worker (in the compose file)
+
+As of ADR-021 Phase 1, `redis` and `worker` are real services in `docker-compose.yml`; `docker
+compose up -d` (Section 2.1) starts both, and no manual `docker run` step is needed for local
+development. To operate them individually:
 
 ```bash
-# Redis, if you don't already have one:
-docker run -d --name cyo-redis -p 6379:6379 redis:7-alpine
+# Redis alone (e.g. to restart it without touching app/worker):
+docker-compose up -d redis
+docker-compose restart redis
 
-# Point the backend and worker at it (matches docker-compose.yml's default
-# network, or use localhost if running the worker bare):
-export CYO_ADVENTURE_REDIS_URL=redis://localhost:6379/0
-
-# The RQ worker (runs the stranded-job reclaim sweep once at startup, then
+# The worker alone (runs the stranded-job reclaim sweep once at startup, then
 # blocks pulling from the "generation" queue -- see generation/worker_main.py):
+docker-compose up -d worker
+docker-compose restart worker
+
+# Bare-process worker against the compose Redis (useful when iterating on
+# worker code without a rebuild; the app container still needs its own
+# CYO_ADVENTURE_REDIS_URL export pointed at the same instance):
+export CYO_ADVENTURE_REDIS_URL=redis://localhost:6379/0
 uv run python -m cyo_adventure.generation.worker_main
 ```
 
-The worker also needs `ENVIRONMENT`, `DATABASE_URL` (or the Supabase-pointing equivalent), and
-whichever provider credentials are configured (Section 8) in its own process environment; it does
-not inherit the API container's environment unless you run it as a sibling container on the same
-compose network with the same `environment:` block.
+The `worker` service in `docker-compose.yml` gets the same `ENVIRONMENT`, `DATABASE_URL`,
+`CHILD_SESSION_SECRET`, `DEVICE_GRANT_SECRET`, and `CYO_ADVENTURE_REDIS_URL` env block as `app`
+(the local-dev defaults are the same repository-known values); it does not carry provider
+credentials (Section 8) by default, so add those to its `environment:` block or an `.env` file
+before testing a live provider leg. A bare, non-compose worker process needs the same variables set
+in its own shell environment; it does not inherit the API container's environment automatically.
 
 ### 2.3 Bare-process variants (no Docker)
 
@@ -201,6 +214,28 @@ queue-depth and worker-log checks in Section 5.1, rather than relying on the top
 alone. `check_external_service()` remains an unwired placeholder: LLM/story-generation providers
 are optional and provider-specific, so there is no single external dependency to ping generically.
 
+**`check_generation_queue()` (ADR-021 Phase 1)** is wired into `/health/ready` as
+`checks.generation_queue` and is the worker-down/worker-failing alarm: a stopped or crash-looping
+worker, or a worker whose jobs are failing outright (e.g. the schema-drift incident that motivated
+this check), is visible here well before anyone notices a specific story stuck. It reports
+`"degraded"` (`status: false`) when any of three counts against `generation_job` is nonzero:
+
+- **stale queued**: rows at `status="queued"` older than `DEFAULT_STALE_AFTER` (30 minutes,
+  `generation/queue.py`), the same threshold `requeue_stranded_jobs` uses, so this check and the
+  actual reclaim sweep can never disagree about what counts as stuck.
+- **stale running**: rows at `status="running"` older than `generation_job_timeout_seconds` plus a
+  margin (`RUNNING_STALE_MARGIN`), not a flat constant, so a legitimately long-running job is never
+  flagged early.
+- **recently failed**: rows at `status="failed"` updated within the last 24 hours. This is the
+  signal that catches a *running* worker whose jobs are all failing (the schema-drift case); the
+  first two counts alone only catch a *stopped* worker.
+
+Like cache, **`generation_queue` never flips `/health/ready`'s HTTP code**: a stuck or failing
+generation pipeline must not pull API pods out of the load-balancer rotation for endpoints that
+never touch generation at all. Treat a nonzero `checks.generation_queue` count as a page-worthy
+signal on its own dashboard/alert, not as a 503; see Section 5.1 for the diagnosis and remediation
+steps this check is meant to trigger.
+
 ## 4. Logs and correlation IDs
 
 All application logging goes through `structlog` (`utils/logging.py`); set `JSON_LOGS=true` in
@@ -242,6 +277,10 @@ configured for a given environment, logs remain the only observability surface t
 
 ### 5.1 A generation job is stuck in "queued"
 
+0. Check `GET /health/ready`'s `checks.generation_queue` first (Section 3): a nonzero
+   `stale_queued`/`stale_running` count confirms a stopped or stalled worker, and a nonzero
+   `recent_failed` count means the worker is running but every job is failing outright (check
+   worker logs for the actual error before assuming this is a queue problem at all).
 1. Confirm Redis is actually reachable from both the API and the worker process: `redis-cli -u
    "$CYO_ADVENTURE_REDIS_URL" ping`. If this fails, every enqueue since the outage started is
    either lost or stranded (see below); nothing is processing.
@@ -253,7 +292,7 @@ configured for a given environment, logs remain the only observability surface t
 3. If Redis was down or restarted without persistence, or a worker crashed mid-job, a row can sit
    at `status="queued"` forever because RQ lost the underlying job (`generation/queue.py`'s
    docstring on `requeue_stranded_jobs`). The reclaim sweep in `worker_main.py` re-enqueues any row
-   stuck at `"queued"` for more than 30 minutes (`_DEFAULT_STALE_AFTER`) automatically **the next
+   stuck at `"queued"` for more than 30 minutes (`DEFAULT_STALE_AFTER`) automatically **the next
    time a worker process starts**: restarting the worker is therefore a legitimate first
    remediation step for a job that has been stuck for a while, not just a diagnostic no-op.
 4. If the job is genuinely running but slow: `generation_job_timeout_seconds` defaults to 1800s
