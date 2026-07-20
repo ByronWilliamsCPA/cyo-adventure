@@ -17,10 +17,24 @@ D1 ships only the framework and safety-bearing utilities:
 - :mod:`cyo_adventure.mutation.identity`: deterministic id renaming for
   grafted or duplicated regions, and metadata resync (ending count, estimated
   minutes, tier, and topology re-declaration).
+
+D2 adds the first operator and the acceptance harness:
+
+- :mod:`cyo_adventure.mutation.operators`: the M1 sibling-subtree swap, registered
+  in the default :data:`~cyo_adventure.mutation.ops.REGISTRY`.
+- :mod:`cyo_adventure.mutation.acceptance`: the section 6 stage table (D2 subset:
+  preconditions, gate, cell assertion, plus re-guidance tracking).
 """
 
 from __future__ import annotations
 
+from cyo_adventure.mutation.acceptance import (
+    AcceptanceResult,
+    Stage,
+    StageOutcome,
+    acceptance_to_dict,
+    run_acceptance,
+)
 from cyo_adventure.mutation.identity import (
     host_id_namespace,
     recompute_ending_count,
@@ -30,11 +44,18 @@ from cyo_adventure.mutation.identity import (
     rename_region,
     resync_metadata,
 )
+from cyo_adventure.mutation.operators import (
+    M1,
+    M1_OP_ID,
+    M1SiblingSubtreeSwap,
+)
 from cyo_adventure.mutation.ops import (
+    REGISTRY,
     MutationOp,
     MutationResult,
     OpParams,
     OpRegistry,
+    ParamValue,
     PreconditionReport,
     ReguideItem,
     ReguideTarget,
@@ -51,15 +72,24 @@ from cyo_adventure.mutation.subtree import (
 )
 
 __all__ = [
+    "M1",
+    "M1_OP_ID",
+    "REGISTRY",
+    "AcceptanceResult",
     "Edge",
+    "M1SiblingSubtreeSwap",
     "MutationOp",
     "MutationResult",
     "OpParams",
     "OpRegistry",
+    "ParamValue",
     "PreconditionReport",
     "ReguideItem",
     "ReguideTarget",
+    "Stage",
+    "StageOutcome",
     "Subtree",
+    "acceptance_to_dict",
     "adjacency",
     "all_edges",
     "descendants",
@@ -73,4 +103,5 @@ __all__ = [
     "redeclare_topology",
     "rename_region",
     "resync_metadata",
+    "run_acceptance",
 ]
