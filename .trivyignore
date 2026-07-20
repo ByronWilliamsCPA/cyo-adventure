@@ -47,3 +47,61 @@ CVE-2026-40468
 CVE-2026-40469
 CVE-2026-40467
 CVE-2026-40553
+
+# --- libexpat1, libexpat1-dev (2.7.1-2+dhi5); no Debian fix yet ---
+# Confirmed via the PR #299 (Python 3.14 runtime upgrade) Container Security
+# run against ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13: all six report
+# an empty Fixed Version with status "affected". The identical CVE set was
+# independently found on dhi-python:3.12-debian13's Renovate-proposed digest
+# refresh while investigating PR #296, confirming a mirror-wide Debian 13
+# base-layer regression, not specific to either Python version. Documented in
+# docs/known-vulnerabilities.md; reassess 2026-09-17.
+CVE-2025-59375
+CVE-2026-25210
+CVE-2026-45186
+CVE-2026-56131
+CVE-2026-56407
+CVE-2026-56408
+
+# --- linux-libc-dev (6.12.95-1+dhi0); kernel UAPI headers only, no running
+# kernel code in this image; no Debian fix yet ---
+# Confirmed via the same PR #299 run: all 34 report an empty Fixed Version
+# with status "affected". The 34 span unrelated kernel subsystems (GEM, f2fs,
+# Bluetooth, ksmbd, wifi drivers, RDMA, ARM64 KVM, netfilter, TCP, ALSA...),
+# consistent with linux-libc-dev's known false-positive pattern: it carries
+# kernel UAPI headers used at compile time, not a running kernel binary.
+# Documented in docs/known-vulnerabilities.md; reassess 2026-09-17.
+CVE-2026-43185
+CVE-2013-7445
+CVE-2019-19449
+CVE-2019-19814
+CVE-2021-3847
+CVE-2021-3864
+CVE-2024-21803
+CVE-2024-58015
+CVE-2025-22104
+CVE-2025-38137
+CVE-2025-38187
+CVE-2025-38204
+CVE-2025-38206
+CVE-2025-38421
+CVE-2025-38636
+CVE-2025-39859
+CVE-2025-39862
+CVE-2025-39958
+CVE-2026-23102
+CVE-2026-23208
+CVE-2026-23327
+CVE-2026-31493
+CVE-2026-31536
+CVE-2026-31568
+CVE-2026-43198
+CVE-2026-43263
+CVE-2026-46130
+CVE-2026-46181
+CVE-2026-46279
+CVE-2026-52991
+CVE-2026-53000
+CVE-2026-53010
+CVE-2026-53091
+CVE-2026-53277

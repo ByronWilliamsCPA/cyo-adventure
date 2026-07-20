@@ -47,7 +47,7 @@ nox.options.reuse_existing_virtualenvs = True
 nox.options.default_venv_backend = "uv"
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def frontmatter(session: nox.Session) -> None:
     """Validate and autofix front matter in documentation.
 
@@ -58,7 +58,7 @@ def frontmatter(session: nox.Session) -> None:
     session.run("python", "tools/validate_front_matter.py", "docs", "--fix")
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def docs(session: nox.Session) -> None:
     """Build documentation with MkDocs.
 
@@ -69,7 +69,7 @@ def docs(session: nox.Session) -> None:
     session.run("mkdocs", "build", "--strict")
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def serve(session: nox.Session) -> None:
     """Serve documentation locally for development.
 
@@ -80,7 +80,7 @@ def serve(session: nox.Session) -> None:
     session.run("mkdocs", "serve")
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def docstrings(session: nox.Session) -> None:
     """Check docstring coverage with interrogate and pydocstyle.
 
@@ -92,7 +92,7 @@ def docstrings(session: nox.Session) -> None:
     session.run("interrogate", "-c", "pyproject.toml", "src/")
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def validate(session: nox.Session) -> None:
     """Run all validation checks for documentation.
 
@@ -114,7 +114,7 @@ def validate(session: nox.Session) -> None:
     session.run("mkdocs", "build", "--strict")
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def reuse(session: nox.Session) -> None:
     """Check REUSE compliance.
 
@@ -134,7 +134,7 @@ def reuse(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def reuse_spdx(session: nox.Session) -> None:
     """Generate REUSE SPDX document.
 
@@ -157,7 +157,7 @@ def reuse_spdx(session: nox.Session) -> None:
     session.log("SPDX document generated: reuse-spdx.json")
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def sbom(session: nox.Session) -> None:
     """Generate CycloneDX SBOM using UV.
 
@@ -218,7 +218,7 @@ def sbom(session: nox.Session) -> None:
     pathlib.Path("requirements-all.txt").unlink(missing_ok=True)
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def scan(session: nox.Session) -> None:
     """Scan SBOM for vulnerabilities.
 
@@ -250,7 +250,7 @@ def scan(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def compliance(session: nox.Session) -> None:
     """Run all compliance checks.
 
@@ -269,7 +269,7 @@ def compliance(session: nox.Session) -> None:
     session.log("All compliance checks completed successfully!")
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def assuredoss(session: nox.Session) -> None:
     """Validate Google Assured OSS credentials and configuration.
 
@@ -313,7 +313,7 @@ def test(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def unit(session: nox.Session) -> None:
     """Run unit tests only (fast development cycle).
 
@@ -335,7 +335,7 @@ def unit(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def integration(session: nox.Session) -> None:
     """Run integration tests (with real services).
 
@@ -357,7 +357,7 @@ def integration(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def fast(session: nox.Session) -> None:
     """Fast development loop - exclude slow tests.
 
@@ -379,7 +379,7 @@ def fast(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def security_tests(session: nox.Session) -> None:
     """Run security assertion tests.
 
@@ -399,14 +399,14 @@ def security_tests(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def diversity_eval(session: nox.Session) -> None:
     """Run the offline diversity regression gate over the committed panel."""
     session.install("-e", ".")
     session.run("python", "scripts/run_diversity_eval.py", "--check")
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def mutate(session: nox.Session) -> None:
     """Run mutation testing to verify test quality.
 
