@@ -4,7 +4,7 @@
 own test drives the real ``asyncio.run`` call with ``_run`` patched out; a
 running event loop (as pytest-asyncio provides) would make a nested
 ``asyncio.run`` call raise. ``_run`` is exercised directly as an async test
-with its lazily-imported collaborators (``get_session``, ``settings``,
+with its lazily-imported collaborators (``get_worker_session``, ``settings``,
 ``generate_cover``) patched at their source modules, since those names are
 imported fresh inside the function body on every call.
 """
@@ -17,7 +17,7 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.core.config import Settings
-from cyo_adventure.core.database import get_session as real_get_session
+from cyo_adventure.core.database import get_worker_session as real_get_worker_session
 from cyo_adventure.covers import service as service_module
 from cyo_adventure.covers import worker as worker_module
 from cyo_adventure.covers.worker import _run, run_cover_job_sync
@@ -64,9 +64,9 @@ def test_run_cover_job_sync_without_correlation_id_skips_binding() -> None:
 @pytest.mark.asyncio
 async def test_run_opens_own_session_and_delegates_to_generate_cover() -> None:
     """_run opens its own DB session and forwards to generate_cover."""
-    # Arrange: get_session() returns an async-context-manager whose __aenter__
-    # yields a session sentinel; spec against AsyncSession since that is the
-    # real return type of get_session().
+    # Arrange: get_worker_session() returns an async-context-manager whose
+    # __aenter__ yields a session sentinel; spec against AsyncSession since
+    # that is the real return type of get_worker_session().
     session_sentinel = object()
     session_ctx = MagicMock(spec=AsyncSession)
     session_ctx.__aenter__ = AsyncMock(return_value=session_sentinel)
@@ -78,8 +78,8 @@ async def test_run_opens_own_session_and_delegates_to_generate_cover() -> None:
     # Act
     with (
         patch(
-            "cyo_adventure.core.database.get_session",
-            MagicMock(spec=real_get_session, return_value=session_ctx),
+            "cyo_adventure.core.database.get_worker_session",
+            MagicMock(spec=real_get_worker_session, return_value=session_ctx),
         ),
         patch("cyo_adventure.core.config.settings", real_settings),
         patch("cyo_adventure.covers.service.generate_cover", generate_cover_mock),
@@ -115,9 +115,10 @@ async def test_run_session_open_failure_propagates_error() -> None:
     """A failure opening the worker's own DB session propagates out of _run."""
     with (
         patch(
-            "cyo_adventure.core.database.get_session",
+            "cyo_adventure.core.database.get_worker_session",
             MagicMock(
-                spec=real_get_session, side_effect=ConnectionError("db unreachable")
+                spec=real_get_worker_session,
+                side_effect=ConnectionError("db unreachable"),
             ),
         ),
         pytest.raises(ConnectionError, match="db unreachable"),
@@ -137,8 +138,8 @@ async def test_run_generate_cover_failure_closes_session_and_propagates() -> Non
     )
     with (
         patch(
-            "cyo_adventure.core.database.get_session",
-            MagicMock(spec=real_get_session, return_value=session_ctx),
+            "cyo_adventure.core.database.get_worker_session",
+            MagicMock(spec=real_get_worker_session, return_value=session_ctx),
         ),
         patch("cyo_adventure.covers.service.generate_cover", generate_cover_mock),
         pytest.raises(RuntimeError, match="unexpected"),
