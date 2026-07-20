@@ -1016,10 +1016,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#22-redis-and-the-generation-worker-not-in-the-compose-file" class="md-nav__link">
+  <a href="#22-redis-and-the-generation-worker-in-the-compose-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.2 Redis and the generation worker (not in the compose file)
+        2.2 Redis and the generation worker (in the compose file)
       
     </span>
   </a>
@@ -3077,10 +3077,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#22-redis-and-the-generation-worker-not-in-the-compose-file" class="md-nav__link">
+  <a href="#22-redis-and-the-generation-worker-in-the-compose-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.2 Redis and the generation worker (not in the compose file)
+        2.2 Redis and the generation worker (in the compose file)
       
     </span>
   </a>
@@ -3308,16 +3308,16 @@ over the internet through Supabase's session pooler. This repo's <code>docker-co
 <a href="../../architecture/deployment/#container-stack">Deployment</a>, a one-redeploy rollback fallback in
 the live stack; it does not carry live production traffic.</p>
 <p><strong>Redis</strong>: the broker for the RQ job queue and, in every deployed tier, the rate-limiter backend.
-<strong>Not started by this repo's <code>docker-compose.yml</code></strong>: the <code>redis</code> service is present in the file
-but commented out. An operator running this compose file locally must add a Redis container or
-point <code>CYO_ADVENTURE_REDIS_URL</code> at one, or generation jobs will enqueue and never run (Section
-2.2, Section 5.1).</p>
+As of ADR-021 Phase 1, <code>redis</code> is a real service in this repo's <code>docker-compose.yml</code>
+(<code>ghcr.io/byronwilliamscpa/dhi-redis:7-debian13</code>); <code>docker compose up -d</code> starts it alongside <code>app</code>
+and <code>worker</code>. <code>core/config.py</code>'s <code>redis_url</code> accepts either <code>CYO_ADVENTURE_REDIS_URL</code> or the
+unprefixed <code>REDIS_URL</code> (the name the compose file's <code>${REDIS_URL:-...}</code> interpolation reads).</p>
 <p><strong>RQ generation worker</strong>: <code>python -m cyo_adventure.generation.worker_main</code>, a long-running process
-pulling from the single <code>"generation"</code> RQ queue. Not defined in this repo's <code>docker-compose.yml</code>
-at all (no <code>worker</code> service). Must be run as a bare process, or as its own container built from
-this repo's <code>Dockerfile</code> with the worker command substituted for uvicorn's. The live R1 deployment
-runs it as <code>cyo-worker</code> in the separate <code>ByronWilliamsCPA/homelab-infra</code> repo's compose stack,
-which this repo does not define.</p>
+pulling from the single <code>"generation"</code> RQ queue. As of ADR-021 Phase 1, <code>worker</code> is a real service
+in this repo's <code>docker-compose.yml</code>, built from the same image as <code>app</code>; <code>docker compose up -d</code>
+starts it too. The live R1 deployment still runs its own copy as <code>cyo-worker</code> in the separate
+<code>ByronWilliamsCPA/homelab-infra</code> repo's compose stack; that stack is not derived from this file and
+is not updated by this change.</p>
 <p><strong>Cover-art worker</strong>: <code>covers.worker.run_cover_job_sync</code>, entered via the <strong>same</strong> <code>"generation"</code>
 RQ queue as story-generation jobs (<code>generation/queue.py::get_queue</code> always names the queue
 <code>"generation"</code>, regardless of caller). Runs inside the same RQ worker process above; there is no
@@ -3333,11 +3333,12 @@ compose files.</p>
 <p><strong>Live-deployment caveat</strong>: the actual R1 internal-web deployment's container definitions
 (<code>cyo-backend</code>, <code>cyo-worker</code>, <code>cyo-redis</code>, <code>cyo-ollama</code>, the rollback-only <code>cyo-postgres</code>, and
 nginx ingress) live in <code>services/cyo-adventure/</code> in the separate <code>ByronWilliamsCPA/homelab-infra</code>
-repository, not in this repository. This repo's <code>docker-compose.yml</code> and <code>docker-compose.prod.yml</code>
-are useful for local development and as a template for that external stack, but by themselves they
-do <strong>not</strong> stand up a working generation pipeline (no Redis, no worker service). Treat the tables
-and commands below as what this repo actually provides; cross-check the homelab-infra repo for the
-live stack's exact compose file when operating production.</p>
+repository, not in this repository. As of ADR-021 Phase 1, this repo's <code>docker-compose.yml</code> and
+<code>docker-compose.prod.yml</code> do stand up a working generation pipeline locally (<code>app</code>, <code>worker</code>,
+<code>redis</code>, <code>db</code>), but the live R1 stack still runs its own separately-defined <code>cyo-worker</code>/<code>cyo-redis</code>
+in homelab-infra rather than pulling this repo's service definitions directly. Treat the tables and
+commands below as what this repo actually provides; cross-check the homelab-infra repo for the live
+stack's exact compose file when operating production.</p>
 <p>The default LLM provider cascade for story generation (<code>generation/providers/fallback.py</code>, per
 <a href="../../planning/adr/adr-003-frontier-llm-generation/">ADR-003</a> as amended) is: OpenRouter Haiku
 (primary) → OpenRouter Sonnet (fallback) → Ollama (local fallback). Anthropic and Modal are
@@ -3345,48 +3346,59 @@ additional per-job-selectable legs gated by the admin provider allowlist (Sectio
 8).</p>
 <h2 id="2-start-stop-restart">2. Start, stop, restart<a class="headerlink" href="#2-start-stop-restart" title="Permanent link">&para;</a></h2>
 <h3 id="21-full-local-stack-docker-compose">2.1 Full local stack (docker-compose)<a class="headerlink" href="#21-full-local-stack-docker-compose" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Start the API, frontend, and local Postgres (Redis and the worker are NOT</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># included; add them yourself, see 2.2, before testing story generation).</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>docker-compose<span class="w"> </span>up<span class="w"> </span>-d
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Rebuild after a dependency change</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># Tail logs</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>docker-compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>app
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># Open a shell in the backend container</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>app<span class="w"> </span>bash
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># Stop everything, keep volumes</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>docker-compose<span class="w"> </span>down
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># Stop and delete volumes (destroys the local Postgres data)</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>docker-compose<span class="w"> </span>down<span class="w"> </span>-v
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="c1"># Production overrides (immutable image tag required; pins resource limits,</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="c1"># replica counts, and postgres tuning flags)</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="nv">VERSION</span><span class="o">=</span>v1.2.0<span class="w"> </span>docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose.yml<span class="w"> </span>-f<span class="w"> </span>docker-compose.prod.yml<span class="w"> </span>up<span class="w"> </span>-d
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Start the full pipeline: API, frontend, local Postgres, Redis, and the</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># generation worker (all five services are defined in docker-compose.yml as</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># of ADR-021 Phase 1; see Section 2.2 for details on the worker/Redis pair).</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>docker-compose<span class="w"> </span>up<span class="w"> </span>-d
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Rebuild after a dependency change</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># Tail logs</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>docker-compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>app
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>docker-compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>worker
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># Open a shell in the backend container</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>app<span class="w"> </span>bash
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># Stop everything, keep volumes</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>docker-compose<span class="w"> </span>down
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="c1"># Stop and delete volumes (destroys the local Postgres data)</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>docker-compose<span class="w"> </span>down<span class="w"> </span>-v
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="c1"># Production overrides (immutable image tag required; pins resource limits,</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="c1"># replica counts, and postgres tuning flags)</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="nv">VERSION</span><span class="o">=</span>v1.2.0<span class="w"> </span>docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose.yml<span class="w"> </span>-f<span class="w"> </span>docker-compose.prod.yml<span class="w"> </span>up<span class="w"> </span>-d
 </span></code></pre></div>
 <p>Restarting a single container after a config change:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker-compose<span class="w"> </span>restart<span class="w"> </span>app
 </span></code></pre></div>
-<h3 id="22-redis-and-the-generation-worker-not-in-the-compose-file">2.2 Redis and the generation worker (not in the compose file)<a class="headerlink" href="#22-redis-and-the-generation-worker-not-in-the-compose-file" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Redis, if you don&#39;t already have one:</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>cyo-redis<span class="w"> </span>-p<span class="w"> </span><span class="m">6379</span>:6379<span class="w"> </span>redis:7-alpine
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Point the backend and worker at it (matches docker-compose.yml&#39;s default</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># network, or use localhost if running the worker bare):</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CYO_ADVENTURE_REDIS_URL</span><span class="o">=</span>redis://localhost:6379/0
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c1"># The RQ worker (runs the stranded-job reclaim sweep once at startup, then</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># blocks pulling from the &quot;generation&quot; queue -- see generation/worker_main.py):</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>cyo_adventure.generation.worker_main
+<h3 id="22-redis-and-the-generation-worker-in-the-compose-file">2.2 Redis and the generation worker (in the compose file)<a class="headerlink" href="#22-redis-and-the-generation-worker-in-the-compose-file" title="Permanent link">&para;</a></h3>
+<p>As of ADR-021 Phase 1, <code>redis</code> and <code>worker</code> are real services in <code>docker-compose.yml</code>; <code>docker
+compose up -d</code> (Section 2.1) starts both, and no manual <code>docker run</code> step is needed for local
+development. To operate them individually:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Redis alone (e.g. to restart it without touching app/worker):</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>redis
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>docker-compose<span class="w"> </span>restart<span class="w"> </span>redis
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># The worker alone (runs the stranded-job reclaim sweep once at startup, then</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># blocks pulling from the &quot;generation&quot; queue -- see generation/worker_main.py):</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>worker
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>docker-compose<span class="w"> </span>restart<span class="w"> </span>worker
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1"># Bare-process worker against the compose Redis (useful when iterating on</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c1"># worker code without a rebuild; the app container still needs its own</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1"># CYO_ADVENTURE_REDIS_URL export pointed at the same instance):</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CYO_ADVENTURE_REDIS_URL</span><span class="o">=</span>redis://localhost:6379/0
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>cyo_adventure.generation.worker_main
 </span></code></pre></div>
-<p>The worker also needs <code>ENVIRONMENT</code>, <code>DATABASE_URL</code> (or the Supabase-pointing equivalent), and
-whichever provider credentials are configured (Section 8) in its own process environment; it does
-not inherit the API container's environment unless you run it as a sibling container on the same
-compose network with the same <code>environment:</code> block.</p>
+<p>The <code>worker</code> service in <code>docker-compose.yml</code> gets the same <code>ENVIRONMENT</code>, <code>DATABASE_URL</code>,
+<code>CHILD_SESSION_SECRET</code>, <code>DEVICE_GRANT_SECRET</code>, and <code>CYO_ADVENTURE_REDIS_URL</code> env block as <code>app</code>
+(the local-dev defaults are the same repository-known values); it does not carry provider
+credentials (Section 8) by default, so add those to its <code>environment:</code> block or an <code>.env</code> file
+before testing a live provider leg. A bare, non-compose worker process needs the same variables set
+in its own shell environment; it does not inherit the API container's environment automatically.</p>
 <h3 id="23-bare-process-variants-no-docker">2.3 Bare-process variants (no Docker)<a class="headerlink" href="#23-bare-process-variants-no-docker" title="Permanent link">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Backend API</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>uv<span class="w"> </span>sync<span class="w"> </span>--all-extras
@@ -3433,6 +3445,27 @@ still be paired with <code>checks.cache.status: false</code> when Redis is down;
 queue-depth and worker-log checks in Section 5.1, rather than relying on the top-level status
 alone. <code>check_external_service()</code> remains an unwired placeholder: LLM/story-generation providers
 are optional and provider-specific, so there is no single external dependency to ping generically.</p>
+<p><strong><code>check_generation_queue()</code> (ADR-021 Phase 1)</strong> is wired into <code>/health/ready</code> as
+<code>checks.generation_queue</code> and is the worker-down/worker-failing alarm: a stopped or crash-looping
+worker, or a worker whose jobs are failing outright (e.g. the schema-drift incident that motivated
+this check), is visible here well before anyone notices a specific story stuck. It reports
+<code>"degraded"</code> (<code>status: false</code>) when any of three counts against <code>generation_job</code> is nonzero:</p>
+<ul>
+<li><strong>stale queued</strong>: rows at <code>status="queued"</code> older than <code>DEFAULT_STALE_AFTER</code> (30 minutes,
+  <code>generation/queue.py</code>), the same threshold <code>requeue_stranded_jobs</code> uses, so this check and the
+  actual reclaim sweep can never disagree about what counts as stuck.</li>
+<li><strong>stale running</strong>: rows at <code>status="running"</code> older than <code>generation_job_timeout_seconds</code> plus a
+  margin (<code>RUNNING_STALE_MARGIN</code>), not a flat constant, so a legitimately long-running job is never
+  flagged early.</li>
+<li><strong>recently failed</strong>: rows at <code>status="failed"</code> updated within the last 24 hours. This is the
+  signal that catches a <em>running</em> worker whose jobs are all failing (the schema-drift case); the
+  first two counts alone only catch a <em>stopped</em> worker.</li>
+</ul>
+<p>Like cache, <strong><code>generation_queue</code> never flips <code>/health/ready</code>'s HTTP code</strong>: a stuck or failing
+generation pipeline must not pull API pods out of the load-balancer rotation for endpoints that
+never touch generation at all. Treat a nonzero <code>checks.generation_queue</code> count as a page-worthy
+signal on its own dashboard/alert, not as a 503; see Section 5.1 for the diagnosis and remediation
+steps this check is meant to trigger.</p>
 <h2 id="4-logs-and-correlation-ids">4. Logs and correlation IDs<a class="headerlink" href="#4-logs-and-correlation-ids" title="Permanent link">&para;</a></h2>
 <p>All application logging goes through <code>structlog</code> (<code>utils/logging.py</code>); set <code>JSON_LOGS=true</code> in
 any deployed environment (the <code>docker-compose.prod.yml</code> override does this) to get structured
@@ -3487,6 +3520,10 @@ configured for a given environment, logs remain the only observability surface t
 <h2 id="5-common-incidents">5. Common incidents<a class="headerlink" href="#5-common-incidents" title="Permanent link">&para;</a></h2>
 <h3 id="51-a-generation-job-is-stuck-in-queued">5.1 A generation job is stuck in "queued"<a class="headerlink" href="#51-a-generation-job-is-stuck-in-queued" title="Permanent link">&para;</a></h3>
 <ol>
+<li>Check <code>GET /health/ready</code>'s <code>checks.generation_queue</code> first (Section 3): a nonzero
+   <code>stale_queued</code>/<code>stale_running</code> count confirms a stopped or stalled worker, and a nonzero
+   <code>recent_failed</code> count means the worker is running but every job is failing outright (check
+   worker logs for the actual error before assuming this is a queue problem at all).</li>
 <li>Confirm Redis is actually reachable from both the API and the worker process: <code>redis-cli -u
    "$CYO_ADVENTURE_REDIS_URL" ping</code>. If this fails, every enqueue since the outage started is
    either lost or stranded (see below); nothing is processing.</li>
@@ -3498,7 +3535,7 @@ configured for a given environment, logs remain the only observability surface t
 <li>If Redis was down or restarted without persistence, or a worker crashed mid-job, a row can sit
    at <code>status="queued"</code> forever because RQ lost the underlying job (<code>generation/queue.py</code>'s
    docstring on <code>requeue_stranded_jobs</code>). The reclaim sweep in <code>worker_main.py</code> re-enqueues any row
-   stuck at <code>"queued"</code> for more than 30 minutes (<code>_DEFAULT_STALE_AFTER</code>) automatically <strong>the next
+   stuck at <code>"queued"</code> for more than 30 minutes (<code>DEFAULT_STALE_AFTER</code>) automatically <strong>the next
    time a worker process starts</strong>: restarting the worker is therefore a legitimate first
    remediation step for a job that has been stuck for a while, not just a diagnostic no-op.</li>
 <li>If the job is genuinely running but slow: <code>generation_job_timeout_seconds</code> defaults to 1800s
@@ -3786,7 +3823,7 @@ same caveat as the authoring-plan step noted in the authoring guide.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 19:07:42 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 23:40:10 UTC">July 20, 2026</span>
   </span>
 
     
