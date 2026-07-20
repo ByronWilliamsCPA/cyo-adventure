@@ -56,6 +56,19 @@ _CRITICAL_READINESS_CHECKS = frozenset({"database"})
 # #VERIFY: tests/unit/test_health.py::TestCheckGenerationQueue.
 _RECENT_FAILED_WINDOW = timedelta(hours=24)
 
+# #ASSUME: external resources: a single job force-failed by
+# requeue_stranded_jobs (e.g. one worker OOM) must not flip this signal to
+# "degraded" for a full 24h and cause alarm fatigue on the exact check meant
+# to catch a sustained incident (schema drift failing every job). Requiring
+# more than one recent failure before flipping state keeps the check quiet
+# for an isolated, already-recovered job while still catching a real
+# failure streak well within the operator's work day. 3 is a starting
+# calibration, not a measured value; revisit if it proves too noisy or too
+# quiet in production.
+# #VERIFY: tests/unit/test_health.py::TestCheckGenerationQueue covers the
+# threshold boundary (at the threshold vs. one above it).
+RECENT_FAILED_DEGRADED_THRESHOLD = 3
+
 
 class HealthStatus(BaseModel):
     """Health check response model."""
@@ -246,7 +259,19 @@ async def check_generation_queue() -> ReadinessCheck:
        that would have caught the real incident: a stopped worker shows up
        as stale_queued/stale_running, but a *running* worker whose jobs are
        failing outright (e.g. a schema-drift error on every write) shows up
-       here instead.
+       here instead. The raw count is always reported, but it only flips
+       the check to "degraded" once it exceeds
+       :data:`RECENT_FAILED_DEGRADED_THRESHOLD`: a single job force-failed
+       by ``requeue_stranded_jobs`` (e.g. one worker OOM) must not produce
+       24h of false-degraded alarm fatigue on the exact signal meant to
+       catch a sustained incident. ``stale_queued`` and ``stale_running``
+       are not thresholded: any stranded row is worth reporting immediately
+       since ``requeue_stranded_jobs`` would already have swept it if it
+       weren't genuinely stuck.
+
+    All three counts are fetched in a single query using
+    ``COUNT(*) FILTER (WHERE ...)`` aggregates (one database round trip)
+    rather than three sequential ``SELECT COUNT(*)`` statements.
 
     Deliberately non-gating (see readiness()'s docstring and
     ``_CRITICAL_READINESS_CHECKS``): a stuck or failing generation pipeline
@@ -260,8 +285,9 @@ async def check_generation_queue() -> ReadinessCheck:
     lands), not a separate worker connection; a database outage here is
     already covered by the gating ``database`` check.
     #VERIFY: tests/unit/test_health.py::TestCheckGenerationQueue covers ok,
-    each of the three degraded signals, and the DB-error path;
-    TestReadinessQueueDoesNotGate proves this check never flips readiness.
+    each of the three degraded signals, the recent_failed threshold
+    boundary, and the DB-error path; TestReadinessQueueDoesNotGate proves
+    this check never flips readiness.
 
     Returns:
         ReadinessCheck: generation-queue status, latency, and fine-grained
@@ -288,37 +314,37 @@ async def check_generation_queue() -> ReadinessCheck:
         failed_cutoff = now - _RECENT_FAILED_WINDOW
 
         async with get_session() as session:
-            stale_queued = await session.scalar(
-                select(func.count())
-                .select_from(GenerationJob)
-                .where(
-                    GenerationJob.status == "queued",
-                    GenerationJob.updated_at < queued_cutoff,
-                )
+            result = await session.execute(
+                select(
+                    func.count()
+                    .filter(
+                        GenerationJob.status == "queued",
+                        GenerationJob.updated_at < queued_cutoff,
+                    )
+                    .label("stale_queued"),
+                    func.count()
+                    .filter(
+                        GenerationJob.status == "running",
+                        GenerationJob.updated_at < running_cutoff,
+                    )
+                    .label("stale_running"),
+                    func.count()
+                    .filter(
+                        GenerationJob.status == "failed",
+                        GenerationJob.updated_at >= failed_cutoff,
+                    )
+                    .label("recent_failed"),
+                ).select_from(GenerationJob)
             )
-            stale_running = await session.scalar(
-                select(func.count())
-                .select_from(GenerationJob)
-                .where(
-                    GenerationJob.status == "running",
-                    GenerationJob.updated_at < running_cutoff,
-                )
-            )
-            recent_failed = await session.scalar(
-                select(func.count())
-                .select_from(GenerationJob)
-                .where(
-                    GenerationJob.status == "failed",
-                    GenerationJob.updated_at >= failed_cutoff,
-                )
-            )
+            row = result.one()
 
-        stale_queued_count = int(stale_queued or 0)
-        stale_running_count = int(stale_running or 0)
-        recent_failed_count = int(recent_failed or 0)
+        stale_queued_count = int(row.stale_queued or 0)
+        stale_running_count = int(row.stale_running or 0)
+        recent_failed_count = int(row.recent_failed or 0)
         latency_ms = round((time.time() - start) * 1000, 2)
 
-        if stale_queued_count or stale_running_count or recent_failed_count:
+        recent_failed_degraded = recent_failed_count > RECENT_FAILED_DEGRADED_THRESHOLD
+        if stale_queued_count or stale_running_count or recent_failed_degraded:
             return ReadinessCheck(
                 name="generation_queue",
                 status=False,

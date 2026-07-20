@@ -11,8 +11,10 @@ from __future__ import annotations
 
 import time as _time_stdlib
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING
-from unittest.mock import AsyncMock, patch
+from datetime import UTC, datetime, timedelta
+from types import SimpleNamespace
+from typing import TYPE_CHECKING, Any
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from fastapi import FastAPI
@@ -360,18 +362,66 @@ class TestCheckCache:
 # ---------------------------------------------------------------------------
 
 
-def _fake_session_with_scalars(
-    values: list[int],
+def _make_queue_result(
+    stale_queued: int, stale_running: int, recent_failed: int
+) -> Mock:
+    """Build a fake SQLAlchemy Result whose ``.one()`` returns a queue-count row.
+
+    check_generation_queue (ADR-021 review fix) collapsed its three
+    sequential ``SELECT COUNT(*)`` round trips into a single
+    ``COUNT(*) FILTER (WHERE ...)`` query, so tests now mock
+    ``session.execute()`` returning a single Result rather than three
+    ``session.scalar()`` calls.
+    """
+    row = SimpleNamespace(
+        stale_queued=stale_queued,
+        stale_running=stale_running,
+        recent_failed=recent_failed,
+    )
+    result = Mock()
+    result.one = Mock(return_value=row)
+    return result
+
+
+def _extract_updated_at_cutoff(stmt: Any, label: str) -> datetime:
+    """Pull the bound ``updated_at`` cutoff literal out of one FILTER clause.
+
+    Walks the actual SQLAlchemy expression tree check_generation_queue built
+    for the aggregate column labeled ``label`` (e.g. "stale_queued") and
+    returns the bound datetime value compared against ``updated_at``. Used
+    to prove the health check computes its cutoff live from the queue
+    module's constant rather than a hardcoded duplicate that happens to
+    produce the same ok/degraded verdict when every count is zero.
+
+    Typed ``Any`` deliberately: this walks SQLAlchemy's internal expression
+    tree (``Select.selected_columns``, ``FunctionFilter.criterion``), which
+    has no stable, precisely-typed public surface to assert against.
+    """
+    for col in stmt.selected_columns:
+        if col.name != label:
+            continue
+        for clause in col.element.criterion.get_children():
+            left, right = clause.get_children()
+            if getattr(left, "name", None) == "updated_at":
+                return right.value
+    reason = f"no updated_at cutoff found for label {label!r}"
+    raise AssertionError(reason)
+
+
+def _fake_session_with_queue_counts(
+    stale_queued: int, stale_running: int, recent_failed: int
 ) -> tuple[AsyncMock, Callable[[], AsyncGenerator[AsyncMock, None]]]:
-    """Build a mock AsyncSession whose scalar() calls return values in order.
+    """Build a mock AsyncSession whose execute() resolves the queue-count row.
 
     Mirrors the check_database mocking pattern (an async-context-managed
-    session), extended with a ``scalar`` side_effect list so each of
-    check_generation_queue's three COUNT queries (stale-queued,
-    stale-running, recent-failed) returns a distinct, ordered result.
+    session), with ``execute()`` returning the single Result row
+    check_generation_queue's one aggregate query now produces (stale-queued,
+    stale-running, recent-failed, in one round trip).
     """
     mock_session = AsyncMock(spec=AsyncSession)
-    mock_session.scalar = AsyncMock(side_effect=values)
+    mock_session.execute = AsyncMock(
+        return_value=_make_queue_result(stale_queued, stale_running, recent_failed)
+    )
 
     @asynccontextmanager
     async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -388,7 +438,11 @@ class TestCheckGenerationQueue:
     stranded at "queued" past DEFAULT_STALE_AFTER, rows stranded at
     "running" past the job-timeout-derived threshold (mirroring
     requeue_stranded_jobs exactly so the alarm and the actual sweep never
-    disagree), and rows that recently failed (the schema-drift catcher).
+    disagree), and rows that recently failed (the schema-drift catcher,
+    gated by RECENT_FAILED_DEGRADED_THRESHOLD so one force-failed job does
+    not cause 24h of alarm fatigue). All three counts come from a single
+    ``COUNT(*) FILTER (WHERE ...)`` query (one round trip); see
+    ``_fake_session_with_queue_counts``.
     """
 
     @pytest.mark.unit
@@ -397,7 +451,7 @@ class TestCheckGenerationQueue:
         """status=True, state='ok' when no stale/failed rows exist."""
         from cyo_adventure.api.health import check_generation_queue
 
-        _, fake_get_session = _fake_session_with_scalars([0, 0, 0])
+        _, fake_get_session = _fake_session_with_queue_counts(0, 0, 0)
 
         with patch(
             "cyo_adventure.core.database.get_session",
@@ -414,10 +468,15 @@ class TestCheckGenerationQueue:
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_check_generation_queue_degraded_on_stale_queued(self) -> None:
-        """status=False, state='degraded' when stale-queued rows exist."""
+        """status=False, state='degraded' when stale-queued rows exist.
+
+        stale_queued is not threshold-gated: even a single stranded row is
+        reported immediately, since requeue_stranded_jobs would already
+        have swept it if it weren't genuinely stuck.
+        """
         from cyo_adventure.api.health import check_generation_queue
 
-        _, fake_get_session = _fake_session_with_scalars([3, 0, 0])
+        _, fake_get_session = _fake_session_with_queue_counts(3, 0, 0)
 
         with patch(
             "cyo_adventure.core.database.get_session",
@@ -436,7 +495,7 @@ class TestCheckGenerationQueue:
         """status=False, state='degraded' when stale-running rows exist."""
         from cyo_adventure.api.health import check_generation_queue
 
-        _, fake_get_session = _fake_session_with_scalars([0, 2, 0])
+        _, fake_get_session = _fake_session_with_queue_counts(0, 2, 0)
 
         with patch(
             "cyo_adventure.core.database.get_session",
@@ -452,14 +511,20 @@ class TestCheckGenerationQueue:
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_check_generation_queue_degraded_on_recent_failed(self) -> None:
-        """status=False, state='degraded' when jobs recently failed.
+        """status=False, state='degraded' when recent failures exceed the threshold.
 
         This is the signal that would have caught the real schema-drift
-        incident: jobs failing outright, not merely piling up queued.
+        incident: jobs failing outright, not merely piling up queued. 5
+        exceeds RECENT_FAILED_DEGRADED_THRESHOLD (3).
         """
-        from cyo_adventure.api.health import check_generation_queue
+        from cyo_adventure.api.health import (
+            RECENT_FAILED_DEGRADED_THRESHOLD,
+            check_generation_queue,
+        )
 
-        _, fake_get_session = _fake_session_with_scalars([0, 0, 5])
+        assert RECENT_FAILED_DEGRADED_THRESHOLD < 5
+
+        _, fake_get_session = _fake_session_with_queue_counts(0, 0, 5)
 
         with patch(
             "cyo_adventure.core.database.get_session",
@@ -471,6 +536,68 @@ class TestCheckGenerationQueue:
         assert result.state == "degraded"
         assert result.error is not None
         assert "5" in result.error
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_generation_queue_recent_failed_at_threshold_stays_ok(
+        self,
+    ) -> None:
+        """A recent_failed count AT the threshold does not flip to degraded.
+
+        Fix for the alarm-fatigue gap: a handful of jobs force-failed by
+        requeue_stranded_jobs (e.g. a single worker OOM) must not read as
+        'degraded' for 24h. Only a count that *exceeds*
+        RECENT_FAILED_DEGRADED_THRESHOLD should. This is the boundary case
+        one below the "above threshold" test.
+        """
+        from cyo_adventure.api.health import (
+            RECENT_FAILED_DEGRADED_THRESHOLD,
+            check_generation_queue,
+        )
+
+        _, fake_get_session = _fake_session_with_queue_counts(
+            0, 0, RECENT_FAILED_DEGRADED_THRESHOLD
+        )
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_generation_queue()
+
+        assert result.status is True
+        assert result.state == "ok"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_generation_queue_recent_failed_above_threshold_is_degraded(
+        self,
+    ) -> None:
+        """A recent_failed count one ABOVE the threshold flips to degraded.
+
+        Paired boundary case with the "at threshold" test above: the raw
+        count is always reported, but classification only flips once the
+        threshold is exceeded, not merely reached.
+        """
+        from cyo_adventure.api.health import (
+            RECENT_FAILED_DEGRADED_THRESHOLD,
+            check_generation_queue,
+        )
+
+        _, fake_get_session = _fake_session_with_queue_counts(
+            0, 0, RECENT_FAILED_DEGRADED_THRESHOLD + 1
+        )
+
+        with patch(
+            "cyo_adventure.core.database.get_session",
+            side_effect=fake_get_session,
+        ):
+            result = await check_generation_queue()
+
+        assert result.status is False
+        assert result.state == "degraded"
+        assert result.error is not None
+        assert str(RECENT_FAILED_DEGRADED_THRESHOLD + 1) in result.error
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -499,34 +626,62 @@ class TestCheckGenerationQueue:
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_check_generation_queue_uses_queue_module_stale_after(self) -> None:
-        """The stale-queued cutoff is derived from queue.DEFAULT_STALE_AFTER.
+        """The stale-queued cutoff is derived live from queue.DEFAULT_STALE_AFTER.
 
         Regression guard for the ADR-021 invariant: the health check must
         import the same constant requeue_stranded_jobs defaults to, not a
         hardcoded duplicate, so the alarm and the actual sweep never drift
         apart.
-        """
-        from datetime import timedelta
 
+        The predecessor of this test patched the constant but fed all-zero
+        counts through a fully mocked ``scalar()``, so the cutoff never
+        affected the outcome and a hardcoded ``timedelta(minutes=30)``
+        duplicate in health.py would have passed it just as well. This
+        version captures the actual statement passed to ``session.execute``
+        and reads the bound ``updated_at`` cutoff literal off the
+        stale_queued FILTER clause: the assertion window is derived from
+        the *patched* 5-minute constant, so a hardcoded 30-minute duplicate
+        would miss it by ~25 minutes and fail.
+        """
         from cyo_adventure.api.health import check_generation_queue
 
-        _, fake_get_session = _fake_session_with_scalars([0, 0, 0])
+        captured_stmt: dict[str, Any] = {}
 
+        async def _capture_execute(stmt: Any) -> Mock:
+            captured_stmt["stmt"] = stmt
+            return _make_queue_result(0, 0, 0)
+
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_session.execute = AsyncMock(side_effect=_capture_execute)
+
+        @asynccontextmanager
+        async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
+            yield mock_session
+
+        patched_stale_after = timedelta(minutes=5)
+        before = datetime.now(UTC)
         with (
             patch(
                 "cyo_adventure.core.database.get_session",
-                side_effect=fake_get_session,
+                side_effect=_fake_get_session,
             ),
             patch(
                 "cyo_adventure.generation.queue.DEFAULT_STALE_AFTER",
-                timedelta(minutes=5),
-            ) as patched_stale_after,
+                patched_stale_after,
+            ),
         ):
             result = await check_generation_queue()
+        after = datetime.now(UTC)
 
         assert result.state == "ok"
-        # Sanity: the patched constant is what the test believes it patched.
-        assert patched_stale_after == timedelta(minutes=5)
+        cutoff = _extract_updated_at_cutoff(captured_stmt["stmt"], "stale_queued")
+        # `now` inside check_generation_queue was sampled between `before`
+        # and `after`, so the cutoff it derived (`now - patched_stale_after`)
+        # must fall in this exact window. A hardcoded 30-minute duplicate
+        # would land ~25 minutes below `expected_low` and fail here.
+        expected_low = before - patched_stale_after
+        expected_high = after - patched_stale_after
+        assert expected_low <= cutoff <= expected_high
 
 
 # ---------------------------------------------------------------------------
@@ -580,11 +735,12 @@ class TestReadiness:
     def test_readiness_returns_200_when_database_healthy(self) -> None:
         """GET /health/ready returns 200 when database check passes."""
         mock_session = AsyncMock(spec=AsyncSession)
-        mock_session.execute = AsyncMock()
         # check_generation_queue shares get_session; explicit zero counts
         # keep this test's intent (a fully healthy readiness probe) clear
         # rather than relying on MagicMock's implicit int() coercion.
-        mock_session.scalar = AsyncMock(return_value=0)
+        # check_database's own execute(text("SELECT 1")) ignores this
+        # return value, so a single row satisfies both callers.
+        mock_session.execute = AsyncMock(return_value=_make_queue_result(0, 0, 0))
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -677,8 +833,7 @@ class TestReadinessCacheDoesNotGate:
     ) -> None:
         """A down Redis is reported in checks but still returns HTTP 200."""
         mock_session = AsyncMock(spec=AsyncSession)
-        mock_session.execute = AsyncMock()
-        mock_session.scalar = AsyncMock(return_value=0)
+        mock_session.execute = AsyncMock(return_value=_make_queue_result(0, 0, 0))
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -716,8 +871,7 @@ class TestReadinessCacheDoesNotGate:
     def test_readiness_returns_200_when_cache_unconfigured(self) -> None:
         """An unconfigured (memory-backend) cache is reported but returns HTTP 200."""
         mock_session = AsyncMock(spec=AsyncSession)
-        mock_session.execute = AsyncMock()
-        mock_session.scalar = AsyncMock(return_value=0)
+        mock_session.execute = AsyncMock(return_value=_make_queue_result(0, 0, 0))
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
@@ -762,9 +916,8 @@ class TestReadinessQueueDoesNotGate:
     ) -> None:
         """A degraded generation_queue is reported but still returns HTTP 200."""
         mock_session = AsyncMock(spec=AsyncSession)
-        mock_session.execute = AsyncMock()
         # stale_queued=4, stale_running=0, recent_failed=0
-        mock_session.scalar = AsyncMock(side_effect=[4, 0, 0])
+        mock_session.execute = AsyncMock(return_value=_make_queue_result(4, 0, 0))
 
         @asynccontextmanager
         async def _fake_get_session() -> AsyncGenerator[AsyncMock, None]:
