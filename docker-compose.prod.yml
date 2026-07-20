@@ -171,9 +171,9 @@ services:
 # Production Usage
 # =============================================================================
 # 1. Set environment variables in .env file or export them:
-#    export DB_PASSWORD=secure-production-password
-#    export REDIS_PASSWORD=another-secure-production-password
-#    export SENTRY_DSN=your-sentry-dsn
+#    export DB_PASSWORD='<your-strong-db-password>'
+#    export REDIS_PASSWORD='<your-strong-redis-password>'
+#    export SENTRY_DSN='<your-sentry-dsn>'
 #    export VERSION=v1.0.0
 #
 # 2. Start services:
