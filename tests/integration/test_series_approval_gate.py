@@ -131,7 +131,13 @@ async def _seed_book(
 
 
 def _principal(user_id: uuid.UUID, family_id: uuid.UUID) -> object:
-    """Build a guardian Principal for service tests."""
+    """Build an admin approver Principal for series-gate service tests.
+
+    approve() is admin-only in production (api/approval.py gates every handler
+    through ``_load_admin_story`` on ``principal.is_admin``, and approve()
+    re-checks it at the service boundary), so the approver principal carries
+    the admin capability (a valid ``role=guardian, is_admin=True`` adult).
+    """
     from cyo_adventure.api.deps import Principal
 
     return Principal(
@@ -140,6 +146,7 @@ def _principal(user_id: uuid.UUID, family_id: uuid.UUID) -> object:
         role="guardian",
         family_id=family_id,
         profile_ids=frozenset(),
+        is_admin=True,
     )
 
 

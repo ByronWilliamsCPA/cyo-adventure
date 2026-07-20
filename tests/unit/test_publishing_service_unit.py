@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.core.exceptions import (
+    AuthorizationError,
     BusinessLogicError,
     ResourceNotFoundError,
     StateTransitionError,
@@ -169,6 +170,28 @@ async def test_approve_without_moderation_report_raises() -> None:
         await service.approve(session, _principal("admin"), story, 1)
 
     assert story.status == "in_review"
+    session.flush.assert_not_awaited()
+
+
+@pytest.mark.unit
+async def test_approve_rejects_a_non_admin_principal() -> None:
+    """approve() itself refuses a non-admin principal, before any DB access.
+
+    Defense-in-depth regression: approve() now has two privileged callers
+    (api/approval.py::approve_storybook and
+    publishing/catalog_publish.py::promote_catalog_story), both of which
+    already gate on is_admin before reaching here. This asserts the
+    service-level re-check rejects a non-admin principal directly, so the
+    invariant holds even if a caller's own gate is ever skipped or buggy.
+    """
+    story = _story("in_review")
+    session = AsyncMock(spec=AsyncSession)
+
+    with pytest.raises(AuthorizationError, match="admin role required"):
+        await service.approve(session, _principal("guardian"), story, 1)
+
+    assert story.status == "in_review"
+    session.get.assert_not_awaited()
     session.flush.assert_not_awaited()
 
 

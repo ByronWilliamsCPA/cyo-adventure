@@ -18,7 +18,11 @@ from typing import TYPE_CHECKING
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import func, select, update
 
-from cyo_adventure.core.exceptions import BusinessLogicError, ResourceNotFoundError
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    BusinessLogicError,
+    ResourceNotFoundError,
+)
 from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
 from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.publishing.state_machine import (
@@ -218,6 +222,10 @@ async def approve(
         StorybookVersion: The stamped version row.
 
     Raises:
+        AuthorizationError: If ``principal`` does not hold the admin
+            capability. Both current callers already gate on this before
+            reaching here (see the #CRITICAL note below); this is a
+            defense-in-depth re-check at the service boundary itself.
         StateTransitionError: If the story is not in ``in_review``.
         ResourceNotFoundError: If the version row does not exist.
         BusinessLogicError: With ``rule="approve_without_moderation"`` when
@@ -231,6 +239,22 @@ async def approve(
     # and it stamps approved_by in the same operation, so no story is published
     # without a recorded approver (the slice-1 invariant).
     # #VERIFY: test_no_publish_without_approver drives every endpoint path.
+    # #CRITICAL: security: approve() now has two privileged callers --
+    # api/approval.py::approve_storybook (HTTP, gated by
+    # ctx.principal.is_admin in _load_admin_story) and
+    # publishing/catalog_publish.py::promote_catalog_story (a standalone CLI
+    # that mirrors the same admin check in its own _load_admin_principal).
+    # Both callers already verify admin status before reaching here, but
+    # relying solely on caller discipline means a future caller (or a bug in
+    # an existing one) could skip that gate silently. This re-check enforces
+    # the authorization invariant at the service boundary itself, so
+    # "non-admin cannot publish" holds structurally regardless of how many
+    # callers this function grows.
+    # #VERIFY: test_approve_rejects_a_non_admin_principal in
+    # tests/unit/test_publishing_service_unit.py.
+    if not principal.is_admin:
+        msg = "admin role required to approve a storybook"
+        raise AuthorizationError(msg, required_permission="admin")
     # #CRITICAL: concurrency: `storybook` arrives already locked (SELECT ... FOR
     # UPDATE, same transaction) for every caller of this module's transitions:
     # api/approval.py::_load_admin_story for the admin path, and
@@ -286,7 +310,10 @@ async def approve(
     # publish path, so the release transition and the sharing decision are
     # atomic (WS-E decision E2). A catalog value widens who can assign this
     # book (E5); it must never be settable outside an admin-gated approve.
-    # #VERIFY: api/approval.py is the only caller and is admin-only.
+    # #VERIFY: both callers are admin-gated (api/approval.py::approve_storybook
+    # via ctx.principal.is_admin, and catalog_publish.py::promote_catalog_story
+    # via its own _load_admin_principal), and the is_admin re-check near the
+    # top of this function is now the third, service-level enforcement point.
     storybook.visibility = visibility.value
     version_row.approved_by = principal.user_id
     version_row.published_at = datetime.now(UTC)
