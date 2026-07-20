@@ -439,7 +439,10 @@ def _assemble_condition(  # noqa: PLR0911 -- one cohesive whitelist ladder, one 
     condition: dict[str, object] = {gate_op: [{"var": gate_var}, gate_value]}
     try:
         validate_condition(cast("dict[str, JsonValue]", condition))
-    except ValueError as exc:
+    # pragma: no cover -- unreachable defensive backstop: the whitelist ladder
+    # above already guarantees a declared (non-empty) var, a comparison operator,
+    # and an in-range int/bool literal, so validate_condition never rejects here.
+    except ValueError as exc:  # pragma: no cover
         return None, f"assembled condition is invalid: {exc}"
     return condition, None
 
