@@ -366,9 +366,7 @@ def test_m5_add_route_past_the_choice_cap_is_refused_at_preconditions() -> None:
 def test_m5_relocate_effect_is_held() -> None:
     """Moving an on_enter effect to a different node is accepted and held."""
     parent = _flooded_quarter()
-    params = OpParams.of(
-        mode="relocate-effect", from_node="bk_done", to_node="n_hub"
-    )
+    params = OpParams.of(mode="relocate-effect", from_node="bk_done", to_node="n_hub")
     result = run_acceptance(M5, parent, params, seed=0, parent_slug="fq")
     assert result.discarded_at_stage is None
     assert result.held is True
