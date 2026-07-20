@@ -47,12 +47,14 @@ by narrative role.
 | The Skyrail Heist | 10-13 | 11 | 1 | sorting_hat | 246 | 29/6/5 | [svg](diagrams/skeletons/10-13/the-skyrail-heist.svg) |
 | The Winter of the Wolf Queen | 10-13 | 12 | 2 | open_map | 250 | 19/14/7 | [svg](diagrams/skeletons/10-13/the-winter-of-the-wolf-queen.svg) |
 | The Conservatory Wars | 13-16 | 11 | 1 | sorting_hat | 160 | 20/4/2 | [svg](diagrams/skeletons/13-16/the-conservatory-wars.svg) |
+| The Harrowstone Keep | 13-16 | 30 | 2 | branch_and_bottleneck | 550 | 4/3/145 | [svg](diagrams/skeletons/13-16/the-harrowstone-keep.svg) |
 | The Hollow Sea | 13-16 | 24 | 2 | open_map | 197 | 21/12/7 | [svg](diagrams/skeletons/13-16/the-hollow-sea.svg) |
 | The Iron Spire Trial | 13-16 | 30 | 2 | gauntlet | 277 | 2/1/76 | [svg](diagrams/skeletons/13-16/the-iron-spire-trial.svg) |
 | The Labyrinth of Glass | 13-16 | 35 | 1 | gauntlet | 383 | 2/1/113 | [svg](diagrams/skeletons/13-16/the-labyrinth-of-glass.svg) |
 | The Serpent Vaults | 13-16 | 35 | 2 | gauntlet | 530 | 4/33/135 | [svg](diagrams/skeletons/13-16/the-serpent-vaults.svg) |
 | The Signal in the Static | 13-16 | 11 | 1 | branch_and_bottleneck | 123 | 11/0/21 | [svg](diagrams/skeletons/13-16/the-signal-in-the-static.svg) |
 | The Smuggler's Cut | 13-16 | 16 | 1 | branch_and_bottleneck | 277 | 2/1/77 | [svg](diagrams/skeletons/13-16/the-smugglers-cut.svg) |
+| The Sunken Temple | 13-16 | 30 | 2 | branch_and_bottleneck | 550 | 4/3/145 | [svg](diagrams/skeletons/13-16/the-sunken-temple.svg) |
 | The Sunspire Ascent | 13-16 | 15 | 1 | branch_and_bottleneck | 252 | 2/5/67 | [svg](diagrams/skeletons/13-16/the-sunspire-ascent.svg) |
 | The Thornwood Trial | 13-16 | 24 | 1 | branch_and_bottleneck | 375 | 4/0/111 | [svg](diagrams/skeletons/13-16/the-thornwood-trial.svg) |
 | The Undertow Season | 13-16 | 11 | 2 | open_map | 128 | 12/10/6 | [svg](diagrams/skeletons/13-16/the-undertow-season.svg) |
