@@ -13,6 +13,16 @@ name: Security Analysis
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  # merge_group restored (#306 initially dropped it as file-content-only,
+  # not merged-state-sensitive, already covered by the PR run). In practice
+  # the org ruleset requires "Security Gate Validation" as a status check
+  # regardless of event context, so removing the trigger left the merge
+  # queue waiting forever for a check that could never report -- confirmed
+  # live: PR #306 itself was kicked from the queue with CI_TIMEOUT after
+  # this exact change landed. Re-added rather than filed as a ruleset
+  # follow-up: this scan is fast (bandit + OSV-Scanner, no pytest/build
+  # cost), so keeping it on merge_group is cheap and needs no org-level
+  # access to fix.
   merge_group:
   schedule:
     # Run security scans weekly on Monday at 9 AM UTC

@@ -77,10 +77,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and a processor DPA execution checklist with every link live-verified
   (`processor-dpa-checklist.md`, Phase 5).
 
-## [0.18.1] - 2026-07-20
+### Changed
+
+- CI: release-automation PRs (`release.yml`'s `propose` job opens
+  `chore(release): vX.Y.Z` against a `release/v*` branch, touching only
+  `pyproject.toml`/`uv.lock`/`CHANGELOG.md`) now skip the full test/build
+  matrix entirely instead of re-running it up to three times (`pull_request`,
+  `merge_group`, and the post-merge `push`) over a diff whose underlying code
+  was already fully tested by the feature PR that triggered the release.
+  Added a `detect-release-pr` job to `ci.yml` (gates `ci`, `frontend`,
+  `design-system`, `contract`, `detect-api-collection`/`api-tests`, and
+  `coverage-upload` transitively via `ci`'s result; `ci-gate` treats a
+  release PR's all-skipped state as a pass) and to `sbom.yml` and
+  `container-security.yml` (both path-filter on `pyproject.toml`/`uv.lock`,
+  which every release PR touches, and `container-security.yml`'s job builds
+  a real Docker image to scan). On `pull_request`/`push` the detection reads
+  the branch name/commit message directly; on `merge_group` the event's own
+  `head_ref` is the synthetic queue ref, not the source branch, so the job
+  extracts the PR number from it and looks up the real head branch via the
+  GitHub API. Trade-off: a `uv lock` re-resolve on the release PR could in
+  principle pick up a newly-published transitive dependency version untested
+  by the original feature PR; accepted, since the weekly scheduled scans and
+  the next feature PR's own full run remain the backstop.
+
+## [0.18.4] - 2026-07-20
+
+### Fixed
+
+- Testing: `DeviceAuthorizedRoute.test.tsx`'s "parks the adult gate after the
+  async IndexedDB-mirror path authorizes too" test asserted
+  `isAdultGateWarm('u1')` immediately after `findByText('Kid picker')`
+  resolved. `DeviceAuthorizedRoute.tsx` parks the gate in a second passive
+  effect keyed on `status`, separate from the effect that resolves
+  hydration; `findByText`'s `MutationObserver`-driven resolution could race
+  ahead of that second effect's flush, intermittently failing the assertion
+  even though the gate was genuinely parked moments later. The assertion
+  now runs inside `waitFor`, matching the standard Testing Library idiom
+  for effect-driven side effects after an async state transition, instead
+  of asserting at one indeterminate point in the microtask queue. Verified
+  locally: 20 consecutive runs of the file, all passing, plus the full
+  frontend suite (113 files, 1385 tests).
+
+## [0.18.3] - 2026-07-20
+
+### Fixed
+
+- Docs: added the missing YAML front matter to
+  `docs/reviews/comprehensive-review-2026-07-17.md` and
+  `docs/testing/{README,coverage-matrix}.md`, and added the `privacy` tag to
+  `docs/_data/tags.yml`'s allow-list (used by
+  `docs/compliance/gdpr-compliance-review.md` and
+  `docs/compliance/coppa-gdpr-remediation-plan.md` but never added when
+  those files were introduced). The local `validate-front-matter`
+  pre-commit hook scans the whole `docs/` tree on every commit, so these
+  gaps were silently blocking every local commit to the repo since the
+  originating PRs merged.
+
+## [0.18.2] - 2026-07-20
 
 ### Changed
 
+- CI: stopped re-running the frontend, design-system, OpenAPI contract-drift,
+  coverage-upload, and API-tests jobs in `ci.yml` on `merge_group` events,
+  since they validate file content already checked on the PR run rather than
+  merged-state validity; `ci-gate` now treats their intentional `skipped`
+  result as passing. Dropped `merge_group` entirely from
+  `security-analysis.yml`, `sonarcloud.yml`, and `reuse.yml` (all
+  file-content-only scans that already ran on the PR and are re-confirmed by
+  the existing push-to-main trigger). Removed `dead-code` and `link-check`
+  from running on `merge_group` in `pr-validation.yml` (both already
+  advisory-only in `validate-dependencies`). Removed the `pull_request`
+  trigger from `python-compatibility.yml`, which duplicated `ci.yml`'s
+  required Python 3.12 test run on every PR; its weekly schedule and
+  push-to-main trigger still cover 3.11/3.13 compatibility drift. Together
+  these remove the largest source of duplicate work between a PR's own CI run
+  and the merge-queue's re-run of the same commit.
+- CI: `sonarcloud.yml` no longer runs on `pull_request` at all (only `push`
+  to `main`/`develop` and `workflow_dispatch`). Job-level timing data from
+  recent PRs showed the job costing ~12 min per PR, ~11 of which was a
+  duplicate full pytest run (on Python 3.14, for coverage.xml) rather than
+  the sonar-scanner analysis itself (well under 90s); `fail-on-quality-gate`
+  was already forced off outside `push`, so the PR-time run was always
+  advisory with no way to act on the result. A `no-build: true` variant was
+  tried to keep fast static-only PR feedback without the pytest run, but
+  `--no-build` requires a pre-built wheel and this project has none (local
+  editable install only), so `uv sync` hard-fails; reverted rather than
+  pursued further without reading the reusable workflow's source first.
+  `push` to `main`/`develop` keeps the full coverage-generating,
+  gate-enforced run so the SonarCloud dashboard's coverage% stays accurate.
+- Testing: added `-n=auto` (pytest-xdist) to `[tool.pytest.ini_options]`
+  addopts. CI's Integration Tests job runs 827 tests serially in ~9.5 min;
+  `tests/integration/conftest.py`'s Postgres container fixture is
+  session-scoped, so each xdist worker gets its own independent
+  `testcontainers` instance rather than sharing one, with no cross-worker
+  isolation work needed. Verified locally with real Docker: 139 integration
+  tests, 104.33s serial vs 42.18s at `-n 4`, all passing, coverage combining
+  correctly across workers. `nox -s mutate` (mutmut) is unaffected, since
+  `[tool.mutmut]` already resets addopts to empty before building its own
+  pytest invocation.
 - Testing: `tests/integration/conftest.py` creates the Postgres schema once
   per test session (via a throwaway sync `psycopg` engine, avoiding any
   asyncio event-loop entanglement) instead of once per test. Each test now
@@ -105,6 +199,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The test now restores the constraint in a `finally` block. Also
   deduplicated the catalog-family seed insert (`_pg_url` and `engine`
   fixtures) into a shared `_seed_catalog_family_stmt()` helper.
+- CI: restored the `merge_group` trigger on `security-analysis.yml` and
+  `reuse.yml`, dropped earlier in `[Unreleased]` above as file-content-only
+  and not merged-state-sensitive. In practice the org ruleset requires
+  "Security Gate Validation" and "REUSE Compliance" as status checks
+  regardless of event context, so the merge queue waited forever for a
+  check that could never report on a `merge_group` entry; confirmed live
+  when the PR carrying this exact change was kicked from the queue with
+  `CI_TIMEOUT`. Both scans are fast (bandit/OSV-Scanner and a license-header
+  check, no pytest/build cost), so restoring them on `merge_group` is cheap
+  and needs no org-level ruleset access to fix.
 
 ## [0.18.0] - 2026-07-19
 
@@ -2108,7 +2212,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.1...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.4...HEAD
+[0.18.4]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.3...v0.18.4
+[0.18.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.2...v0.18.3
+[0.18.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.1...v0.18.2
 [0.18.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.0...v0.18.1
 [0.18.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.16.0...v0.17.0

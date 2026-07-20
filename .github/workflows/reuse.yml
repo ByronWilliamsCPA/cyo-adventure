@@ -12,6 +12,16 @@ on:
       - "REUSE.toml"
       - "LICENSES/**"
       - ".github/workflows/reuse.yml"
+  # merge_group restored (#306 initially dropped it as already checked on
+  # every PR, and per-file compliance can't regress on a merge of two
+  # compliant PRs). In practice the org ruleset requires "REUSE Compliance"
+  # as a status check regardless of event context, so removing the trigger
+  # left the merge queue waiting forever for a check that could never
+  # report -- confirmed live: PR #306 itself was kicked from the queue with
+  # CI_TIMEOUT after this exact change landed. Re-added rather than filed
+  # as a ruleset follow-up: this check is fast (a license-header scan, no
+  # pytest/build cost), so keeping it on merge_group is cheap and needs no
+  # org-level access to fix.
   merge_group:
   push:
     branches:

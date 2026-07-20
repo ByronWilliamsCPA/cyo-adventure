@@ -89,6 +89,14 @@
       "matchDepTypes": ["python"],
       "enabled": false,
       "labels": ["dependencies", "python-version", "breaking-change"]
+    },
+    {
+      "description": "Docker builder-stage Python major/minor bumps require manual review: the builder's python:X.Y-slim-bookworm tag (Dockerfile stage 1) must move in lockstep with the DHI runtime image's Python version (Dockerfile stage 2), never independently (see the #CRITICAL comment above the builder FROM line; a mismatch broke PR #288 and is tracked in issue #295)",
+      "matchManagers": ["dockerfile"],
+      "matchPackageNames": ["python"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false,
+      "labels": ["dependencies", "docker", "python-version", "breaking-change"]
     }
   ],
   "lockFileMaintenance": {

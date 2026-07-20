@@ -1,9 +1,14 @@
-<!--
-SPDX-FileCopyrightText: 2026 Byron Williams <byronawilliams@gmail.com>
-SPDX-License-Identifier: MIT
--->
-
-# Comprehensive Review: Security, UX, and Design (2026-07-17)
+---
+title: "Comprehensive Review: Security, UX, and Design (2026-07-17)"
+schema_type: common
+status: published
+owner: core-maintainer
+purpose: "Findings from the whole-repository security, UX, and design review conducted 2026-07-17."
+tags:
+  - security
+  - quality_assurance
+  - analysis
+---
 
 **Reviewed at:** HEAD `7ae93fc` (v0.7.0)
 **Scope:** whole repository, backend (`src/cyo_adventure/`), frontend

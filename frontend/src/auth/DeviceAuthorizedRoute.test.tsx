@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto'
 
 import { IDBFactory } from 'fake-indexeddb'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -144,7 +144,17 @@ describe('DeviceAuthorizedRoute', () => {
     renderGate()
 
     expect(await screen.findByText('Kid picker')).toBeInTheDocument()
-    expect(isAdultGateWarm('u1')).toBe(false)
+    // #EDGE: timing dependency: parkAdultGate() runs in a second passive
+    // effect keyed on `status`, separate from the one that resolves
+    // hydration. findByText resolves as soon as the DOM commit is visible to
+    // its MutationObserver, which can race ahead of that second effect's
+    // flush; assert via waitFor (not a single immediate check) so the test
+    // isn't racing React's own effect scheduling.
+    // #VERIFY: this was observed flaking (state not yet parked when checked)
+    // before this waitFor was added.
+    await waitFor(() => {
+      expect(isAdultGateWarm('u1')).toBe(false)
+    })
   })
 
   it('does not park the adult gate while still unauthorized', async () => {

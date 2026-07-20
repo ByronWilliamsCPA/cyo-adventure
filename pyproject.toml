@@ -3,7 +3,7 @@
 # UV uses standard PEP 621 pyproject.toml format with uv.lock for reproducible builds.
 [project]
 name = "cyo-adventure"
-version = "0.18.1"
+version = "0.18.4"
 description = "A choose-your-own-adventure reading app for kids"
 authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
@@ -664,6 +664,23 @@ addopts = [
     "--strict-markers",
     "--strict-config",
     "--import-mode=importlib",
+    # pytest-xdist was an installed dev dependency but unused: CI's Integration
+    # Tests job measured 827 tests running serially in 571.75s. Each worker
+    # gets its own pytest-asyncio event loop and its own testcontainers
+    # Postgres instance (tests/integration/conftest.py's container fixture is
+    # scope="session", which xdist gives one independent instance of per
+    # worker process, not one shared instance) -- so there is no cross-worker
+    # database collision to guard against. Verified locally (real Docker,
+    # postgres:16-alpine): 139 integration tests, 104.33s serial vs 42.18s at
+    # -n 4, all passing, coverage combining correctly across workers.
+    # mutmut (nox -s mutate) is unaffected: [tool.mutmut] already resets
+    # addopts to empty (`-o addopts=`) before building its own pytest args.
+    # #VERIFY: only verified against a ~140-test subset of the integration
+    # suite and not against unit/security tests; if CI shows flakiness after
+    # this change, check for tests relying on process-global state (shared
+    # files, fixed ports, module-level mutable singletons) that -n only
+    # exposes under real concurrency.
+    "-n=auto",
     "--cov=src/cyo_adventure",
     "--cov-report=html",
     "--cov-report=term-missing:skip-covered",
