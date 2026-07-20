@@ -1,4 +1,4 @@
-import type { BrowserContext, Page } from '@playwright/test'
+import type { BrowserContext, Page, Route } from '@playwright/test'
 
 /**
  * Guardian-surface auth helpers.
@@ -29,6 +29,46 @@ export const DEFAULT_ME: MeBody = {
   is_admin: false,
   family_id: 'fam-1',
   profile_ids: ['p1'],
+}
+
+/**
+ * Default response for POST /api/v1/onboarding: an already-provisioned,
+ * consented guardian. AuthContext.syncPrincipal calls this endpoint
+ * unconditionally, before GET /v1/me, for every non-null session (see the
+ * '#CRITICAL: security: resolve onboarding BEFORE /v1/me' comment in
+ * AuthContext.tsx) -- an unmocked call here 404s/ECONNREFUSEDs against the
+ * proxy target in the mocked E2E tier and strands the app on the
+ * awaiting-approval/needs-consent branches instead of reaching /me. Routed at
+ * the context level (below) so every guardian-session spec is covered without
+ * each one wiring it up individually.
+ */
+const DEFAULT_ONBOARDING_RESPONSE = {
+  family_id: 'fam-1',
+  user_id: 'e2e-user',
+  role: 'guardian',
+  created: false,
+  status: 'active',
+  consent_recorded: true,
+}
+
+function fulfillOnboarding(route: Route): Promise<void> {
+  return route.fulfill({ json: DEFAULT_ONBOARDING_RESPONSE })
+}
+
+/**
+ * Mock POST /api/v1/onboarding for a single page, overriding the default
+ * already-onboarded response seeded by seedGuardianSession/
+ * seedPasswordGuardianSession. Use for specs that specifically exercise the
+ * awaiting-approval or needs-consent branches (e.g. { status: 'pending' } or
+ * { consent_recorded: false }); a page-level route takes precedence over the
+ * context-level default.
+ */
+export async function mockOnboarding(
+  page: Page,
+  overrides: Partial<typeof DEFAULT_ONBOARDING_RESPONSE> = {}
+): Promise<void> {
+  const body = { ...DEFAULT_ONBOARDING_RESPONSE, ...overrides }
+  await page.route('**/api/v1/onboarding', (route) => route.fulfill({ json: body }))
 }
 
 export function makeGuardianSession(accessToken: string) {
@@ -71,6 +111,7 @@ export async function seedGuardianSession(
     },
     [SUPABASE_SESSION_KEY, payload, accessToken] as const
   )
+  await context.route('**/api/v1/onboarding', fulfillOnboarding)
 }
 
 /**
@@ -103,6 +144,7 @@ export async function seedPasswordGuardianSession(
     },
     [SUPABASE_SESSION_KEY, payload, accessToken] as const
   )
+  await context.route('**/api/v1/onboarding', fulfillOnboarding)
 }
 
 export interface DeviceGrantSeed {
