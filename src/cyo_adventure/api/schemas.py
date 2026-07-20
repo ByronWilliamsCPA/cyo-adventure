@@ -681,6 +681,51 @@ class StoryRequestFlag(BaseModel):
     message: str
 
 
+class InterpretedElementView(BaseModel):
+    """One requested element's disposition, reason, and rendered reflection (K19).
+
+    A straight, serialisable projection of
+    ``story_requests.interpretation.InterpretedElement``: ``element`` is the
+    only untrusted-derived free text and is nullable (``None`` when the
+    echo-safety floor withheld it); ``kid_text`` / ``guardian_text`` are always
+    template output. ``disposition`` and ``reason`` are the string values of the
+    stored ``ElementDisposition`` / ``ReasonCode`` enums, carried as plain
+    strings because the column is JSON (no re-derivation at the boundary).
+    """
+
+    element: str | None
+    disposition: str
+    reason: str
+    slot_id: str | None = None
+    rule: str | None = None
+    kid_text: str
+    guardian_text: str
+
+
+class RequestInterpretationView(BaseModel):
+    """The per-request K19 reflection object, as returned on the request view.
+
+    A straight projection of
+    ``story_requests.interpretation.RequestInterpretation`` (the persisted
+    ``story_request.interpretation`` JSONB column). It is a read model only: the
+    stored object was rendered from a fixed template catalog and is already
+    echo-safe (CR-3), so this view copies it field-for-field and adds no derived
+    content. For a blocked row the stored object is the generic
+    CANNOT_CARRY/SAFETY_POLICY interpretation with no premise-derived content
+    (every element carries ``element=None``), so it is surfaced alongside
+    ``request_text=None`` without further redaction (CR-1).
+    """
+
+    interpretation_version: int
+    layer: Literal["general", "refined"]
+    elements: list[InterpretedElementView]
+    kid_summary: str
+    guardian_summary: str
+    skeleton_slug: str | None = None
+    contract_version: int | None = None
+    created_at: datetime
+
+
 class StoryRequestView(BaseModel):
     """One story request as seen by a guardian, admin, or (via guardian token) child.
 
@@ -700,6 +745,13 @@ class StoryRequestView(BaseModel):
     constructing a view directly need not supply them; ``_to_view``
     (api/story_requests.py) populates all three from the row for every
     caller (WS-B PR 3).
+
+    ``interpretation`` is the WS-7 K19 reflection (built in / set aside / cannot
+    carry, in kid and guardian registers), projected from the
+    ``story_request.interpretation`` JSONB column; it is ``None`` for a row
+    created before WS-7 shipped (no stored interpretation). For a blocked row it
+    is the generic, premise-free interpretation, safe to surface alongside
+    ``request_text=None`` (CR-1); ``_to_view`` does not redact it separately.
     """
 
     id: str
@@ -715,6 +767,7 @@ class StoryRequestView(BaseModel):
     series_id: str | None = None
     proposed_series_title: str | None = None
     anchor_storybook_id: str | None = None
+    interpretation: RequestInterpretationView | None = None
 
 
 class StoryRequestListView(BaseModel):

@@ -160,6 +160,8 @@ async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:
     assert result.job.authoring_metadata == {
         "skeleton_slug": result.skeleton_slug,
         "skeleton_band": "8-11",
+        # WS-7 D7: auto-pick persists the in-cell alternatives for the re-route.
+        "skeleton_alternatives": _CELL_8_11_SHORT_PROSE,
         "theme_brief": concept.brief,
         "review_stage1_model": None,
         "review_stage2_model": None,
@@ -203,6 +205,8 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
         "model": "claude-sonnet-4-6",
         "skeleton_slug": result.skeleton_slug,
         "skeleton_band": "8-11",
+        # WS-7 D7: auto-pick persists the in-cell alternatives for the re-route.
+        "skeleton_alternatives": _CELL_8_11_SHORT_PROSE,
         "theme_brief": concept.brief,
         "review_stage1_model": None,
         "review_stage2_model": None,
@@ -345,6 +349,48 @@ async def test_skeleton_fill_populates_alternatives() -> None:
     # the full sorted cell and the pick is one of them.
     assert result.skeleton_alternatives == _CELL_8_11_SHORT_PROSE
     assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_auto_pick_persists_alternatives_in_metadata() -> None:
+    """WS-7 D7: an auto-pick job persists the in-cell alternatives for re-route."""
+    session = _FakeSession()
+    concept = _concept("8-11")
+    result = await build_authoring_plan(
+        session,
+        _request(),
+        concept,
+        AuthoringPlanRequest(
+            method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+        ),
+        actor=_admin_actor(),
+    )
+    assert result.job.authoring_metadata is not None
+    assert (
+        result.job.authoring_metadata["skeleton_alternatives"] == _CELL_8_11_SHORT_PROSE
+    )
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_override_persists_empty_alternatives() -> None:
+    """WS-7 D7: an admin override persists [] (a deliberate pick, never re-routed).
+
+    Even though the request's own cell has in-cell candidates, an override is
+    never silently re-routed, so the worker must see an empty alternatives list.
+    """
+    session = _FakeSession()
+    concept = _concept("8-11")
+    plan = AuthoringPlanRequest(
+        method="skeleton_fill",
+        mechanism="skill",
+        prep_model="sonnet",
+        skeleton_slug="the-sunspire-ascent",  # a real 13-16/medium/gamebook skeleton
+    )
+    result = await build_authoring_plan(
+        session, _request(), concept, plan, actor=_admin_actor()
+    )
+    assert result.job.authoring_metadata is not None
+    assert result.job.authoring_metadata["skeleton_alternatives"] == []
 
 
 @pytest.mark.asyncio
