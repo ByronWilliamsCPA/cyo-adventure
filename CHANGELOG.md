@@ -47,6 +47,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   correctly across workers. `nox -s mutate` (mutmut) is unaffected, since
   `[tool.mutmut]` already resets addopts to empty before building its own
   pytest invocation.
+- Testing: `tests/integration/conftest.py` creates the Postgres schema once
+  per test session (via a throwaway sync `psycopg` engine, avoiding any
+  asyncio event-loop entanglement) instead of once per test. Each test now
+  resets its data with a single multi-table `TRUNCATE ... RESTART IDENTITY
+  CASCADE` instead of a `drop_all`/`create_all` DDL cycle, which is
+  materially cheaper since it never touches table/constraint/index
+  definitions. The `engine` fixture is otherwise unchanged (still a real
+  per-test `AsyncEngine` with `NullPool`), so the tests and `scripts/
+  seed_dev_data.py` call sites that bind sessions directly to `engine` need
+  no changes. Verified locally: all 827 integration tests pass unchanged.
+
+### Fixed
+
+- Testing: `test_malformed_min_verdict_row_is_skipped_with_warning`
+  (`tests/integration/test_threshold_policy_loader.py`) drops the
+  `ck_moderation_threshold_min_verdict` CHECK constraint to exercise the
+  loader's malformed-row handling, but never restored it. That was safe
+  under the old per-test schema rebuild; under the new session-scoped
+  schema (see above), the dropped constraint leaked into any later test in
+  the same xdist worker, intermittently failing
+  `test_bad_min_verdict_insert_rejected_by_check` depending on test order.
+  The test now restores the constraint in a `finally` block. Also
+  deduplicated the catalog-family seed insert (`_pg_url` and `engine`
+  fixtures) into a shared `_seed_catalog_family_stmt()` helper.
 
 ## [0.18.0] - 2026-07-19
 
