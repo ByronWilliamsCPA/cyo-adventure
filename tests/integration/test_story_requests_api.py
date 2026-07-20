@@ -140,6 +140,74 @@ async def test_guardian_lists_family_requests(client: AsyncClient, seed: Seed) -
     assert len(res.json()["requests"]) == 1
 
 
+async def test_list_exposes_general_layer_interpretation(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """WS-7 D8: a pending row on the list view carries its K19 interpretation.
+
+    The general layer is built and persisted at creation (D3), so the
+    story-request view projects it: a general-layer object with the
+    band-promise element and non-empty kid/guardian summaries.
+    """
+    await _create_pending_request(client, seed, request_text="a brave fox")
+    res = await client.get(
+        f"{_CREATE}?status=pending&profile_id={seed.child_profile_id}",
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 200, res.text
+    requests = res.json()["requests"]
+    assert len(requests) == 1
+    interpretation = requests[0]["interpretation"]
+    assert interpretation is not None
+    assert interpretation["layer"] == "general"
+    assert interpretation["kid_summary"]
+    assert interpretation["guardian_summary"]
+    assert interpretation["elements"]
+    assert any(
+        e["disposition"] == "built_in" and e["reason"] == "story_fit"
+        for e in interpretation["elements"]
+    )
+
+
+async def test_list_blocked_row_hides_text_but_carries_interpretation(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """WS-7 D8 / CR-1: a blocked row shows request_text=None AND the generic
+    interpretation together.
+
+    The stored blocked-row interpretation is the generic
+    CANNOT_CARRY/SAFETY_POLICY object with no premise-derived content (every
+    element carries element=None), so it is surfaced alongside the redacted
+    request_text without further redaction.
+    """
+    create = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "request_text": "a story about Reader A",
+        },
+        headers=auth(seed.guardian_token),
+    )
+    assert create.status_code == 201
+    assert create.json()["status"] == "blocked"
+
+    res = await client.get(
+        f"{_CREATE}?status=blocked&profile_id={seed.child_profile_id}",
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 200, res.text
+    requests = res.json()["requests"]
+    assert len(requests) == 1
+    row = requests[0]
+    # Blocked-row redaction holds ...
+    assert row["request_text"] is None
+    # ... and the generic interpretation is carried alongside it (CR-1).
+    interpretation = row["interpretation"]
+    assert interpretation is not None
+    assert interpretation["elements"]
+    assert all(e["element"] is None for e in interpretation["elements"])
+
+
 async def test_list_is_family_scoped_for_every_caller(
     client: AsyncClient, seed: Seed
 ) -> None:

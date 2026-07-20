@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   row. A PII egress block and a theme incompatibility are kept distinct by
   exception provenance (personal-details vs no-conforming-binding), and a PII
   block never triggers a re-route.
+- The interpretation API surface (WS-7 D8, K19 exposed): the story-request view
+  now carries the K19 interpretation as `RequestInterpretationView`
+  (with `InterpretedElementView`), projected from the stored
+  `story_request.interpretation` column by `_to_view` for every caller. It is
+  a straight projection of the already-echo-safe stored object, so a blocked
+  row surfaces the generic interpretation (every element phrase null) alongside
+  the existing `request_text=None` redaction (CR-1), and a pre-WS-7 row (null
+  column) projects to `null`.
 
 ## [0.18.0] - 2026-07-19
 

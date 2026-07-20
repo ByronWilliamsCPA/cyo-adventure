@@ -34,6 +34,7 @@ from cyo_adventure.api.schemas import (
     ChildEnvelopeUsageView,
     FamilyBudgetView,
     JobStatusLiteral,
+    RequestInterpretationView,
     StoryRequestApproveBody,
     StoryRequestApprovedView,
     StoryRequestAuthoredCreateBody,
@@ -263,6 +264,19 @@ def _to_view(
             None if request.status == "blocked" else request.proposed_series_title
         ),
         anchor_storybook_id=request.anchor_storybook_id,
+        # #CRITICAL: security: the WS-7 K19 interpretation (JSONB) is a straight
+        # projection of the stored, already-echo-safe RequestInterpretation; it
+        # is NOT redacted for a blocked row because the stored blocked-row object
+        # is the generic CANNOT_CARRY/SAFETY_POLICY interpretation with no
+        # premise-derived content (element=None throughout), built by D3 (CR-1).
+        # A pre-WS-7 row (null column) projects to None.
+        # #VERIFY: tests/unit/test_story_requests.py::test_to_view_* interpretation
+        # cases (general-layer present, blocked-row generic, null absent).
+        interpretation=(
+            RequestInterpretationView.model_validate(request.interpretation)
+            if request.interpretation is not None
+            else None
+        ),
     )
 
 
