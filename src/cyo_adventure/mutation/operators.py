@@ -57,6 +57,39 @@ _PRODUCTION_ONLY_MSG = (
 )
 _CHOICE_PARAMS_MSG = "M1 requires both 'choice1' and 'choice2' parameters as choice ids"
 
+# The M2 operator id, recorded in every lineage manifest and used as the registry
+# key. Kept as a module constant so the CLI and tests never spell the string
+# literal.
+M2_OP_ID = "M2"
+
+# The valence classes in a fixed canonical order, so any seeded selection over
+# them is reproducible. Matches ``storybook.models.Valence`` declaration order.
+_VALENCE_ORDER: tuple[str, ...] = ("positive", "neutral", "negative")
+
+# The bounded number of seeded permutation attempts M2's rng path makes per
+# valence class before moving on. Exhaustive enumeration is intractable on a
+# large-valence-class parent (a 28-ending Tier-2 skeleton has 28! permutations
+# of one class), so M2 samples seeded shuffles instead, staying fully
+# reproducible per seed while bounded in cost; a deterministic transposition
+# fallback (``_first_transposition_plan``) guarantees apply succeeds whenever the
+# preconditions passed.
+_M2_RNG_ATTEMPTS = 128
+
+# Static M2 precondition and error messages, kept as single-line module
+# constants so a long fixed string never needs a plain-string line wrap.
+_M2_SERIES_MSG = "M2 requires metadata.series to be None; series books are out of scope"
+_M2_PRODUCTION_ONLY_MSG = (
+    "M2 requires a production-eligible parent; MVP seeds are out of scope"
+)
+_M2_NO_REMAP_MSG = (
+    "no valence class admits a meaningful ending re-map (a class needs >= 2 "
+    "distinct ending kinds and a permutation that holds the PL-20 arc floor)"
+)
+_M2_PARAMS_MSG = (
+    "M2 requires both 'valence' (a valence class) and 'order' (a comma-separated "
+    "ending-id permutation of that class)"
+)
+
 
 def _nodes_of(story: Mapping[str, object]) -> list[Mapping[str, object]]:
     """Return the story's node dicts, skipping any malformed entries."""
@@ -785,3 +818,641 @@ class M1SiblingSubtreeSwap:
 # Register the singleton M1 operator in the default catalog registry. Import of
 # this module is the registration side effect the CLI relies on.
 M1 = REGISTRY.register(M1SiblingSubtreeSwap())
+
+
+# --- M2: ending re-map within a valence class (design section 4.3) ---
+#
+# Ending-id interpretation (design section 4.3, "ending ids stay with their
+# payloads"): M2 permutes whole ending payloads. The payload it relocates is the
+# entire ``ending`` block ``(id, valence, kind, title)`` moved as one unit over
+# the ending-node positions of a single valence class, so the ending id travels
+# WITH its ``(kind, title)`` payload rather than staying pinned to a node
+# position (payload-follows-id). This is chosen precisely because a permutation
+# of whole blocks is a bijection over the parent's existing ending ids, so id
+# uniqueness is preserved by construction (no ``m<k>_`` renaming is needed and
+# the schema's ``_check_unique_ids`` never fires). ``valence`` moves as part of
+# the block, but because M2 only ever permutes WITHIN one valence class every
+# block in the permuted set carries the same valence, so "valence stays with the
+# leaf position" holds automatically: only ``kind`` and ``title`` (a title
+# template's ``{SLOT}`` included) actually change at any position.
+
+
+@dataclass(frozen=True, slots=True)
+class _EndingLeaf:
+    """An ending node and the payload M2 may relocate.
+
+    Attributes:
+        node_id: The ending node's id (fixed to its graph position).
+        ending_id: The ending block's id (travels with the payload).
+        kind: The ending kind (part of the moved payload).
+        valence: The ending valence (invariant within a permuted class).
+        title: The ending title or title template (part of the moved payload).
+        ending: The full ending block, relocated as a unit so the ending id
+            stays with its ``(kind, title)`` payload (design section 4.3).
+    """
+
+    node_id: str
+    ending_id: str
+    kind: str
+    valence: str
+    title: str
+    ending: Mapping[str, object]
+
+
+@dataclass(frozen=True, slots=True)
+class _RemapPlan:
+    """A validated within-valence permutation of ending payloads.
+
+    Attributes:
+        valence: The valence class being permuted.
+        assignment: ``(node_id, source_ending_id)`` pairs in node-id order; the
+            ending block whose id is ``source_ending_id`` lands on ``node_id``.
+    """
+
+    valence: str
+    assignment: tuple[tuple[str, str], ...]
+
+
+def _ending_leaves(story: Mapping[str, object]) -> list[_EndingLeaf]:
+    """Return every well-formed ending leaf in the story, in file order.
+
+    Args:
+        story: The raw story document.
+
+    Returns:
+        list[_EndingLeaf]: One entry per ending node whose block carries an id,
+            kind, valence, and title; malformed entries are skipped.
+    """
+    leaves: list[_EndingLeaf] = []
+    for node in _nodes_of(story):
+        if node.get("is_ending") is not True:
+            continue
+        node_id = _str_field(node, "id")
+        ending = node.get("ending")
+        if node_id is None or not isinstance(ending, dict):
+            continue
+        ending_map = cast("Mapping[str, object]", ending)
+        ending_id = _str_field(ending_map, "id")
+        kind = _str_field(ending_map, "kind")
+        valence = _str_field(ending_map, "valence")
+        title = _str_field(ending_map, "title")
+        if ending_id is None or kind is None or valence is None or title is None:
+            continue
+        leaves.append(
+            _EndingLeaf(
+                node_id=node_id,
+                ending_id=ending_id,
+                kind=kind,
+                valence=valence,
+                title=title,
+                ending=ending_map,
+            )
+        )
+    return leaves
+
+
+def _valence_classes(story: Mapping[str, object]) -> dict[str, list[_EndingLeaf]]:
+    """Return the ending leaves grouped by valence, each sorted by node id.
+
+    Args:
+        story: The raw story document.
+
+    Returns:
+        dict[str, list[_EndingLeaf]]: Each valence value mapped to its ending
+            leaves, in canonical (node-id) order so a permutation is a pure
+            function of the class contents.
+    """
+    classes: dict[str, list[_EndingLeaf]] = {}
+    for leaf in _ending_leaves(story):
+        classes.setdefault(leaf.valence, []).append(leaf)
+    for leaves in classes.values():
+        leaves.sort(key=lambda leaf: leaf.node_id)
+    return classes
+
+
+def _eligible_valences(story: Mapping[str, object]) -> list[str]:
+    """Return the valence classes that admit a meaningful permutation, canonically.
+
+    A class is eligible only when it has at least two endings and at least two
+    distinct ending kinds; otherwise the only permutation leaves every kind in
+    place (an identity / no-op re-map).
+
+    Args:
+        story: The raw story document.
+
+    Returns:
+        list[str]: The eligible valence values, in :data:`_VALENCE_ORDER`.
+    """
+    classes = _valence_classes(story)
+    eligible: list[str] = []
+    for valence in _VALENCE_ORDER:
+        leaves = classes.get(valence)
+        if leaves is None or len(leaves) < 2:
+            continue
+        if len({leaf.kind for leaf in leaves}) >= 2:
+            eligible.append(valence)
+    return eligible
+
+
+def _build_plan(
+    class_leaves: list[_EndingLeaf], order_ids: list[str]
+) -> _RemapPlan | str:
+    """Build a re-map plan assigning each class node a source ending block.
+
+    Args:
+        class_leaves: The valence class's leaves, in node-id order.
+        order_ids: The source ending id for each node position, in the same
+            order; must be a permutation of the class's own ending ids.
+
+    Returns:
+        _RemapPlan | str: The plan, or a reason the ``order`` is not a valid
+            permutation of the class.
+    """
+    class_ids = [leaf.ending_id for leaf in class_leaves]
+    if len(order_ids) != len(class_ids) or sorted(order_ids) != sorted(class_ids):
+        return (
+            "order must be a permutation of exactly the valence class's ending "
+            f"ids {sorted(class_ids)}"
+        )
+    assignment = tuple(
+        (leaf.node_id, source)
+        for leaf, source in zip(class_leaves, order_ids, strict=True)
+    )
+    return _RemapPlan(valence=class_leaves[0].valence, assignment=assignment)
+
+
+def _is_meaningful(class_leaves: list[_EndingLeaf], plan: _RemapPlan) -> bool:
+    """Return whether the plan changes at least one leaf's ending kind.
+
+    Moving a payload whose kind equals the kind already at a position is not a
+    diversity change (design section 4.3: the payoff is decoupling which route
+    carries which mechanical outcome), so a permutation that relocates only
+    same-kind blocks is treated as an identity / no-op re-map and rejected.
+
+    Args:
+        class_leaves: The valence class's leaves, in node-id order.
+        plan: The candidate permutation.
+
+    Returns:
+        bool: True when some node's post-remap kind differs from its original.
+    """
+    kind_by_ending = {leaf.ending_id: leaf.kind for leaf in class_leaves}
+    original_kind_at_node = {leaf.node_id: leaf.kind for leaf in class_leaves}
+    return any(
+        kind_by_ending[source] != original_kind_at_node[node_id]
+        for node_id, source in plan.assignment
+    )
+
+
+def _post_remap_satisfying_ids(
+    story: Mapping[str, object], plan: _RemapPlan
+) -> set[str]:
+    """Return the ending node ids that hold a satisfying kind AFTER the re-map.
+
+    The graph is untouched by M2; only which node carries a success/completion
+    kind can change, so the PL-20 target set is recomputed from the plan.
+
+    Args:
+        story: The raw parent story document.
+        plan: The candidate permutation.
+
+    Returns:
+        set[str]: Node ids whose post-remap ending kind is success/completion.
+    """
+    kind_by_ending = {leaf.ending_id: leaf.kind for leaf in _ending_leaves(story)}
+    new_kind_at_node = {
+        node_id: kind_by_ending[source] for node_id, source in plan.assignment
+    }
+    targets: set[str] = set()
+    for leaf in _ending_leaves(story):
+        kind = new_kind_at_node.get(leaf.node_id, leaf.kind)
+        if kind in _SATISFYING_KINDS:
+            targets.add(leaf.node_id)
+    return targets
+
+
+def _pl20_remap_reason(story: Mapping[str, object], plan: _RemapPlan) -> str | None:
+    """Return the post-remap PL-20 failure reason, or None when the floor holds.
+
+    Args:
+        story: The raw parent story document.
+        plan: The candidate permutation.
+
+    Returns:
+        str | None: A reason when the re-map would put a satisfying ending below
+            the cell's arc floor, else None.
+    """
+    # #CRITICAL: security: PL-20 is the fastest-finish arc floor, the one clock a
+    # pure ending permutation can break. Moving a success/completion kind onto a
+    # shallower leaf is the only way M2 can shorten the structural path to a
+    # satisfying ending, so the check recomputes the satisfying target set from
+    # the plan and compares the shortest start-to-target node count against the
+    # inherited floor, discarding PRE-GATE when it drops below (direction:
+    # shortest < floor is the failure). The unchanged gate re-proves PL-20 at
+    # stage 1 regardless; this pre-check only avoids a wasted gate run.
+    # #VERIFY: tests/unit/test_mutation_m2.py pins a crafted parent where moving a
+    # success ending onto a shallow leaf is rejected at preconditions with a
+    # PL-20 reason, and the multiset-invariance property proves the gate never
+    # blocks an accepted M2 output.
+    floor = _pl20_floor(story)
+    if floor is None:
+        return None
+    start = _str_field(story, "start_node")
+    graph = _parent_graph(story)
+    targets = _post_remap_satisfying_ids(story, plan)
+    shortest = _shortest_satisfying_nodes(graph, start, targets)
+    if shortest is not None and shortest < floor:
+        return (
+            f"post-remap shortest satisfying path is {shortest} node(s), below the "
+            f"PL-20 floor {floor}"
+        )
+    return None
+
+
+def _evaluate_remap(
+    story: Mapping[str, object], valence: str, order_ids: list[str]
+) -> tuple[_RemapPlan | None, str | None]:
+    """Validate a candidate re-map of one valence class (design section 4.3).
+
+    Runs the precondition set: the class exists and has >= 2 leaves, the order is
+    a valid permutation of the class, the permutation is meaningful (changes some
+    kind), and the post-remap PL-20 arc floor holds.
+
+    Args:
+        story: The raw parent story document.
+        valence: The valence class to permute.
+        order_ids: The source ending id for each class node position.
+
+    Returns:
+        tuple[_RemapPlan | None, str | None]: ``(plan, None)`` when eligible,
+            else ``(None, reason)``.
+    """
+    classes = _valence_classes(story)
+    class_leaves = classes.get(valence)
+    if class_leaves is None or len(class_leaves) < 2:
+        return None, f"valence class '{valence}' has fewer than 2 endings to permute"
+    plan_or_reason = _build_plan(class_leaves, order_ids)
+    if isinstance(plan_or_reason, str):
+        return None, plan_or_reason
+    plan = plan_or_reason
+    if not _is_meaningful(class_leaves, plan):
+        return (
+            None,
+            "the permutation changes no ending kind (an identity / no-op re-map)",
+        )
+    reason = _pl20_remap_reason(story, plan)
+    if reason is not None:
+        return None, reason
+    return plan, None
+
+
+def _first_transposition_plan(story: Mapping[str, object]) -> _RemapPlan | None:
+    """Return the first eligible two-leaf swap, or None when none exists.
+
+    Enumerates, in canonical order, the differing-kind leaf pairs of each
+    eligible valence class and returns the first whose transposition passes full
+    evaluation. Used both to prove eligibility cheaply in ``preconditions`` and
+    as the deterministic fallback that guarantees ``apply`` succeeds whenever the
+    preconditions passed.
+
+    Args:
+        story: The raw parent story document.
+
+    Returns:
+        _RemapPlan | None: The first eligible transposition, or None.
+    """
+    classes = _valence_classes(story)
+    for valence in _eligible_valences(story):
+        leaves = classes[valence]
+        base_ids = [leaf.ending_id for leaf in leaves]
+        for i, leaf_i in enumerate(leaves):
+            for j in range(i + 1, len(leaves)):
+                if leaf_i.kind == leaves[j].kind:
+                    continue
+                order_ids = list(base_ids)
+                order_ids[i], order_ids[j] = order_ids[j], order_ids[i]
+                plan, _reason = _evaluate_remap(story, valence, order_ids)
+                if plan is not None:
+                    return plan
+    return None
+
+
+def _rng_plan_for_class(
+    story: Mapping[str, object], class_leaves: list[_EndingLeaf], rng: random.Random
+) -> _RemapPlan | None:
+    """Return a seeded, eligible permutation of one valence class, or None.
+
+    Samples up to :data:`_M2_RNG_ATTEMPTS` seeded shuffles of the class's ending
+    ids and returns the first that passes full evaluation. Deterministic for a
+    given rng state.
+
+    Args:
+        story: The raw parent story document.
+        class_leaves: The valence class's leaves, in node-id order.
+        rng: The injected random source.
+
+    Returns:
+        _RemapPlan | None: An eligible permutation, or None after the attempt cap.
+    """
+    base_ids = [leaf.ending_id for leaf in class_leaves]
+    valence = class_leaves[0].valence
+    for _attempt in range(_M2_RNG_ATTEMPTS):
+        order_ids = list(base_ids)
+        rng.shuffle(order_ids)
+        plan, _reason = _evaluate_remap(story, valence, order_ids)
+        if plan is not None:
+            return plan
+    return None
+
+
+def _parse_order(order: str) -> list[str]:
+    """Parse a comma-separated ``order`` parameter into ending ids."""
+    return [token.strip() for token in order.split(",") if token.strip()]
+
+
+def _predecessors(story: Mapping[str, object]) -> dict[str, list[str]]:
+    """Return each node id mapped to the node ids that offer a choice into it."""
+    reverse: dict[str, list[str]] = {}
+    for source, targets in adjacency(story).items():
+        for target in targets:
+            reverse.setdefault(target, []).append(source)
+    return reverse
+
+
+def _remap_reguide_items(
+    parent: Mapping[str, object], plan: _RemapPlan
+) -> tuple[ReguideItem, ...]:
+    """Return the re-guidance items a re-map invalidates (design section 4.3).
+
+    For every leaf whose payload changed: the ending's title (or template) and
+    the leaf's own entry beats now describe a different outcome. The approach
+    nodes immediately upstream are emitted as advisory re-guidance items (their
+    lead-in beats may telegraph the old outcome), matching M1's single re-guidance
+    channel while marking the advisory ones in their reason text.
+
+    Args:
+        parent: The raw parent story document.
+        plan: The validated permutation.
+
+    Returns:
+        tuple[ReguideItem, ...]: The ending-title and leaf-beat items for each
+            affected leaf, then the advisory upstream-approach items.
+    """
+    classes = _valence_classes(parent)
+    class_leaves = classes[plan.valence]
+    original_id_at_node = {leaf.node_id: leaf.ending_id for leaf in class_leaves}
+    source_by_id = {leaf.ending_id: leaf for leaf in _ending_leaves(parent)}
+    ending_reason = (
+        "ending re-mapped onto a different route; re-check its title (or template) "
+        "for the new approach"
+    )
+    beat_reason = (
+        "leaf beats were authored for the old outcome; re-check the entry beat for "
+        "the re-mapped ending"
+    )
+    upstream_reason = (
+        "advisory: this approach node leads into a re-mapped outcome; re-check the "
+        "lead-in beats"
+    )
+    items: list[ReguideItem] = []
+    affected_nodes: list[str] = []
+    for node_id, source in plan.assignment:
+        if source == original_id_at_node[node_id]:
+            continue
+        affected_nodes.append(node_id)
+        moved = source_by_id[source]
+        items.append(
+            ReguideItem(
+                target=ReguideTarget.ENDING,
+                target_id=moved.ending_id,
+                reason=ending_reason,
+                current_text=moved.title,
+            )
+        )
+        items.append(
+            ReguideItem(
+                target=ReguideTarget.NODE,
+                target_id=node_id,
+                reason=beat_reason,
+                current_text=_node_body(parent, node_id),
+            )
+        )
+    predecessors = _predecessors(parent)
+    seen_upstream: set[str] = set()
+    for node_id in affected_nodes:
+        for pred in sorted(predecessors.get(node_id, ())):
+            if pred in seen_upstream:
+                continue
+            seen_upstream.add(pred)
+            items.append(
+                ReguideItem(
+                    target=ReguideTarget.NODE,
+                    target_id=pred,
+                    reason=upstream_reason,
+                    current_text=_node_body(parent, pred),
+                )
+            )
+    return tuple(items)
+
+
+def _moved_count(parent: Mapping[str, object], plan: _RemapPlan) -> int:
+    """Return how many class leaves receive a different ending block than before."""
+    original_id_at_node = {
+        leaf.node_id: leaf.ending_id for leaf in _valence_classes(parent)[plan.valence]
+    }
+    return sum(
+        1
+        for node_id, source in plan.assignment
+        if source != original_id_at_node[node_id]
+    )
+
+
+def _apply_remap(parent: Mapping[str, object], plan: _RemapPlan) -> dict[str, object]:
+    """Return a deep copy of ``parent`` with one valence class's endings permuted.
+
+    Args:
+        parent: The raw parent story document (never mutated).
+        plan: The validated permutation.
+
+    Returns:
+        dict[str, object]: The candidate graph, pre-metadata-resync.
+
+    Raises:
+        ValidationError: If the parent has no node list.
+    """
+    # #CRITICAL: data-integrity: M2 is a permutation of ending payloads, so the
+    # (kind, valence) ending multiset is invariant by construction, which is the
+    # safety property that keeps PL-15 (forbidden kinds), PL-16, and PL-17
+    # unaffected: no kind or valence that was not already in the parent's ending
+    # set can appear in the candidate. Whole blocks are relocated within one
+    # valence class, so ending ids stay unique (a bijection over existing ids) and
+    # every leaf keeps its valence. The unchanged gate re-proves PL-15/16/17 at
+    # stage 1 regardless.
+    # #VERIFY: tests/unit/test_mutation_m2.py proves, over the catalog, that the
+    # (kind, valence) multiset is invariant, that no candidate introduces a kind
+    # absent from the parent, and that run_gate never blocks an accepted output.
+    candidate = copy.deepcopy(dict(parent))
+    nodes = candidate.get("nodes")
+    if not isinstance(nodes, list):
+        msg = "parent story has no nodes list to re-map"
+        raise ValidationError(msg, field="nodes", value=None)
+    source_blocks = {leaf.ending_id: leaf.ending for leaf in _ending_leaves(parent)}
+    new_block_for_node = {
+        node_id: copy.deepcopy(dict(source_blocks[source]))
+        for node_id, source in plan.assignment
+    }
+    for raw_node in cast("list[object]", nodes):
+        if not isinstance(raw_node, dict):
+            continue
+        node = cast("dict[str, object]", raw_node)
+        node_id = node.get("id")
+        if isinstance(node_id, str) and node_id in new_block_for_node:
+            node["ending"] = new_block_for_node[node_id]
+    return candidate
+
+
+class M2EndingReMap:
+    """M2: permute ending payloads within one valence class (design section 4.3).
+
+    A permutation of ending payloads ``(kind, title or title template)`` over the
+    terminal nodes of ONE valence class: positive endings permute among
+    positives, negative among negatives, neutral among neutrals. The valence
+    field stays with the leaf position and the ``(kind, valence)`` ending multiset
+    is invariant by construction, so the fail-state policy surface (PL-15/16/17)
+    is untouched; only the PL-20 arc floor can move, and the operator pre-checks
+    it. The whole ending block is relocated, so the ending id stays with its
+    payload and id uniqueness is preserved (see the module note above).
+
+    Composition-only (design section 4.3, "Composition note"): because
+    ``diversity.structure.structure_fingerprint`` strips ending titles and
+    ``structural_distance``'s ending histograms are aggregate/position-blind, an
+    M2-only mutant leaves every structural feature identical to its parent, so
+    ``structural_distance(parent, mutant)`` is ~0 and the D7 anti-clone floor will
+    (correctly) reject a standalone M2 mutant. M2's payoff is as a COMPOSITION
+    operator riding with M1/M3/M4: applied to another operator's candidate it
+    decouples "which route" from "which outcome". The D7 floor does not exist yet,
+    so M2 adds no floor now; a length-2 chain is just applying M2 to M1's
+    ``result.candidate`` (the ``op_chain`` lineage schema is D8).
+
+    The permutation is selected either from explicit ``valence``/``order``
+    parameters or, when those are absent, reproducibly from the seeded rng over a
+    valence class chosen canonically; the same seed/params yield a byte-identical
+    candidate.
+    """
+
+    op_id: str = M2_OP_ID
+
+    def preconditions(
+        self, parent: Mapping[str, object], params: OpParams
+    ) -> PreconditionReport:
+        """Return whether M2 may attempt a re-map on ``parent`` (design section 4.3).
+
+        Args:
+            parent: The raw parent story document.
+            params: The operator parameters (optional ``valence``/``order``).
+
+        Returns:
+            PreconditionReport: Satisfied when a re-map is eligible, else a report
+                carrying every failing reason.
+        """
+        failures: list[str] = []
+        meta = _metadata_of(parent)
+        if meta.get("series") is not None:
+            failures.append(_M2_SERIES_MSG)
+        if meta.get("production_eligible") is False:
+            failures.append(_M2_PRODUCTION_ONLY_MSG)
+
+        valence = params.get("valence")
+        order = params.get("order")
+        if valence is not None or order is not None:
+            if not (isinstance(valence, str) and isinstance(order, str)):
+                failures.append(_M2_PARAMS_MSG)
+            else:
+                _plan, reason = _evaluate_remap(parent, valence, _parse_order(order))
+                if reason is not None:
+                    failures.append(
+                        f"re-map (valence={valence}) is ineligible: {reason}"
+                    )
+        elif _first_transposition_plan(parent) is None:
+            failures.append(_M2_NO_REMAP_MSG)
+
+        if failures:
+            return PreconditionReport.failed(*failures)
+        return PreconditionReport.passed()
+
+    def apply(
+        self, parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> MutationResult:
+        """Apply the re-map and return the resynced candidate plus its re-guidance.
+
+        Args:
+            parent: The raw parent story document (never mutated).
+            params: The operator parameters (optional ``valence``/``order``).
+            rng: The injected random source; a recorded seed reproduces the exact
+                candidate when the permutation is rng-selected.
+
+        Returns:
+            MutationResult: The candidate (metadata resynced) and its re-guidance
+                items.
+
+        Raises:
+            ValidationError: If no eligible re-map exists or the explicit
+                parameters are ineligible.
+        """
+        plan = self._select_plan(parent, params, rng)
+        candidate = resync_metadata(_apply_remap(parent, plan))
+        reguide = _remap_reguide_items(parent, plan)
+        moved = _moved_count(parent, plan)
+        note = (
+            f"M2 ending re-map on the '{plan.valence}' valence class: {moved} "
+            f"leaf outcome(s) permuted within the class"
+        )
+        return MutationResult(candidate=candidate, reguide=reguide, notes=(note,))
+
+    def _select_plan(
+        self, parent: Mapping[str, object], params: OpParams, rng: random.Random
+    ) -> _RemapPlan:
+        """Resolve the re-map from explicit parameters or the seeded rng.
+
+        Args:
+            parent: The raw parent story document.
+            params: The operator parameters.
+            rng: The injected random source.
+
+        Returns:
+            _RemapPlan: The validated permutation.
+
+        Raises:
+            ValidationError: If the explicit parameters are ineligible or no
+                eligible re-map exists.
+        """
+        valence = params.get("valence")
+        order = params.get("order")
+        if valence is not None or order is not None:
+            if not (isinstance(valence, str) and isinstance(order, str)):
+                raise ValidationError(_M2_PARAMS_MSG, field="valence", value=valence)
+            plan, reason = _evaluate_remap(parent, valence, _parse_order(order))
+            if plan is None:
+                msg = f"M2 re-map (valence={valence}) is ineligible: {reason}"
+                raise ValidationError(msg, field="order", value=order)
+            return plan
+        # Reproducible selection: shuffle the eligible valence classes under the
+        # seeded rng, sample seeded permutations of the first that yields one, and
+        # fall back to the deterministic first transposition so apply always
+        # succeeds when the preconditions passed. Same seed => same result.
+        classes = _valence_classes(parent)
+        eligible = _eligible_valences(parent)
+        rng.shuffle(eligible)
+        for valence_choice in eligible:
+            plan = _rng_plan_for_class(parent, classes[valence_choice], rng)
+            if plan is not None:
+                return plan
+        fallback = _first_transposition_plan(parent)
+        if fallback is not None:
+            return fallback
+        msg = "M2 found no eligible ending re-map for this parent"
+        raise ValidationError(msg, field="parent", value=None)
+
+
+# Register the singleton M2 operator in the default catalog registry alongside M1.
+M2 = REGISTRY.register(M2EndingReMap())
