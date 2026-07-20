@@ -70,7 +70,7 @@ a generated, type-safe OpenAPI contract.
 
 ### Prerequisites
 
-- Python 3.11+ (CI matrix covers 3.11, 3.12, and 3.13; 3.12 is the primary local/CI target)
+- Python 3.11+ (CI matrix covers 3.11 through 3.14; 3.14 is the primary local/CI/runtime target)
 - [UV](https://docs.astral.sh/uv/) for dependency management
 - PostgreSQL and Redis (for running the backend and its background jobs; not required to
   run lint/type-check/most unit tests)
