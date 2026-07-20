@@ -3029,7 +3029,7 @@ PR #314. Follow-on enabler refinements from the original ADR-011 work are tracke
 </tr>
 <tr>
 <td>4c Family Loops (NEW 2026-07-16)</td>
-<td>✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20). S9 notification infra, G10 alerts, G9 visibility, K12 kid status, G7/G13 budget consent all shipped. Still open: delivery is poll-based only, no push channel or server-scheduled digest</td>
+<td>✅ Substantially delivered 2026-07-17, PR #270 (verified 2026-07-20). S9 notification infra, G10 alerts, G9 visibility, K12 kid status, G7/G13 budget consent all shipped. Still open: delivery is poll-based only, no push channel or server-scheduled digest. <strong>Apple readiness audit 2026-07-20</strong>: G10's <code>_COMPOSERS</code> registry (<code>notifications/registry.py</code>) alerts a guardian when their child flags a story (<code>KID_FLAGGED</code>), but <code>EventType.FLAG_RESOLVED</code> (emitted by <code>resolve_flag</code> in <code>api/flags.py:257-265</code>) has no composer - a guardian who reports content is never told how it was resolved. This narrows Guideline 1.2's "reporting mechanism" gap from "no notification at all" to "one-way notification, no resolution loop"</td>
 </tr>
 <tr>
 <td>4d Connections (NEW 2026-07-16)</td>
@@ -4166,7 +4166,7 @@ model, authorization matrix, and IDOR test suite are reused; what changes is how
 <tr>
 <td>P6-08</td>
 <td>Parental gate (frontend)</td>
-<td>✅ <strong>Done, confirmed 2026-07-20</strong> (this table previously said not started). <code>frontend/src/auth/AdultGate.tsx</code> (432 lines) implements a full re-auth gate (locked/unlocked/oauth-bypass phases, classified password-retry errors), tested in <code>AdultGate.test.tsx</code>.</td>
+<td>✅ <strong>Done, confirmed 2026-07-20</strong> (this table previously said not started). <code>frontend/src/auth/AdultGate.tsx</code> (432 lines) implements a full re-auth gate (locked/unlocked/oauth-bypass phases, classified password-retry errors), tested in <code>AdultGate.test.tsx</code>. <strong>Apple readiness audit, same day</strong>: the "oauth-bypass" phase is not a neutral state - a guardian who signed in via Google OAuth (no password) passes the gate on a console-only warning with no re-authentication challenge (<code>AdultGate.tsx:128-142, 183-192</code>, self-documented as a known follow-up in the code). This weakens the "an adult is present right now" guarantee Apple's parental-gate expectation assumes and should close before submission, not just before Kids Category review.</td>
 </tr>
 <tr>
 <td>P6-09</td>
@@ -4238,7 +4238,17 @@ new <code>docs/compliance/breach-notification-runbook.md</code>, <code>dpia.md</
 when this section was written and merged to <code>main</code> within hours of it. It plausibly closes
 or substantially advances P7-02 (consent), P7-09 (retention policy/expiry), and P7-13
 (infosec-program artifact) above, but that has not been independently verified - the
-statuses above predate #311 and need a dedicated follow-up check, not a same-day guess.</p>
+statuses above predate #311 and need a dedicated follow-up check, not a same-day guess.
+<strong>Apple readiness follow-up, same day</strong>: that check is now done, confirming the guess
+directionally correct with real nuance - see the per-item audit notes on P7-03, P7-04,
+P7-06, P7-12, and P7-13 below for what #311 actually shipped versus what's still open.
+Also closed by this pass: <a href="../adr/adr-018-childrens-privacy-compliance/">ADR-018</a>'s open
+decisions D1 (verifiable parental consent mechanism) and D3 (launch geography) each now
+have a working decision recorded and implemented in code (signature-capture consent +
+OAuth login for D1; US-only storefront confirmed for D3), though both are explicitly
+marked pending formal counsel confirmation rather than "closed." D2 (audience
+classification) remains fully open with no decision text added. The ADR's own status
+line is still "Proposed" and stays that way until D2 closes and counsel confirms D1/D3.</p>
 <p><strong>Objective</strong>: Meet the obligations that make a child-directed public app lawful and
 App-Store-reviewable: COPPA/GDPR-K consent, privacy disclosures, account deletion, and the
 Kids Category constraints (App Store Guidelines 1.3, 5.1.4, 5.1.1(v)). The existing
@@ -4257,7 +4267,7 @@ label, the deletion contract, and the consent disclosure.</p>
 <tr>
 <td>P7-01</td>
 <td>Apple Developer Program enrollment + EU DSA trader status</td>
-<td>Prerequisite for P6-05, TestFlight, and submission; publish trader contact details</td>
+<td>Prerequisite for P6-05, TestFlight, and submission; publish trader contact details; <strong>audit 2026-07-20</strong>: enrollment type decided as Individual (no separate legal entity for CYO Adventure); the App Store Seller name will show the owner's personal legal name, not a company name. EU DSA trader status is a separate, still-open sub-item of this row: with the storefront confirmed US-only (D3), DSA trader-verification is not yet triggered, but it must be settled before any EU availability. Individual enrollment does not by itself disqualify Small Business Program (15% commission) participation, but SBP admission is separately gated on annual-proceeds and associated-account criteria and stays a separate post-enrollment application, so eligibility is not automatic</td>
 </tr>
 <tr>
 <td>P7-02</td>
@@ -4267,12 +4277,12 @@ label, the deletion contract, and the consent disclosure.</p>
 <tr>
 <td>P7-03</td>
 <td>Privacy policy published + linked in-app</td>
-<td>Drafted from <code>privacy-model.md</code>; hosted at a stable URL (App Store Connect requires one)</td>
+<td>Drafted from <code>privacy-model.md</code>; hosted at a stable URL (App Store Connect requires one); <strong>Apple readiness audit 2026-07-20</strong>: <code>docs/compliance/privacy-notice.md</code> now exists and is substantive (data table, retention schedule, rights, processors, contact), added by PR #311, but it is explicitly labeled "DRAFT" and not published - it is not hosted at any public URL and is not linked from the frontend (only a code comment references it in <code>onboardingApi.ts:21</code>; <code>GuardianConsentPage.tsx</code>'s consent screen references "our Privacy Notice" with no actual link). Publishing this as a real guardian-facing route and linking it from the landing page, guardian console, and consent screen remains open, and is a hard App Store Connect submission requirement (a public privacy policy URL), not optional polish</td>
 </tr>
 <tr>
 <td>P7-04</td>
 <td>In-app account deletion (Guideline 5.1.1(v))</td>
-<td>Full-family erasure driven by the child-linked data classification; removes the guardian identity via the Supabase Auth admin API; calls Apple's Sign in with Apple token-revocation endpoint (our code); async deletion job with audit record; drill test proves zero residual child-linked rows; <strong>audit 2026-07-10</strong>: no FK <code>ondelete</code> cascade exists on any child-linked table today (contradicts <code>privacy-model.md</code> line 133), so the job must add cascades or enumerate every child table plus the <code>pipeline_event</code> <code>BOOK_ASSIGNED</code> rows (audit C-03)</td>
+<td>Full-family erasure driven by the child-linked data classification; removes the guardian identity via the Supabase Auth admin API; calls Apple's Sign in with Apple token-revocation endpoint (our code); async deletion job with audit record; drill test proves zero residual child-linked rows; <strong>audit 2026-07-10</strong>: no FK <code>ondelete</code> cascade exists on any child-linked table today (contradicts <code>privacy-model.md</code> line 133), so the job must add cascades or enumerate every child table plus the <code>pipeline_event</code> <code>BOOK_ASSIGNED</code> rows (audit C-03). <strong>Apple readiness audit 2026-07-20</strong>: this is now built - <code>DELETE /api/v1/me/family</code> (<code>api/me.py:265-337</code>) cascades every family-owned table and is drill-tested (<code>tests/integration/test_deletion_drill.py</code>, including <code>test_delete_my_family_removes_everything</code> and the non-guardian-rejection case), closing the C-03 cascade gap in practice. Still missing: no code anywhere calls an Apple token-revocation endpoint (<code>grep -rn "revoke" -i src/cyo_adventure</code> finds only device-grant and family-connection-consent revocation). Currently moot since native Sign in with Apple hasn't shipped (P6-05), but the revocation call must land in the same change that ships native Apple auth, not be added afterward</td>
 </tr>
 <tr>
 <td>P7-05</td>
@@ -4282,7 +4292,7 @@ label, the deletion contract, and the consent disclosure.</p>
 <tr>
 <td>P7-06</td>
 <td>Kid-context SDK and telemetry audit</td>
-<td>No third-party ads or trackers; any analytics are first-party and anonymized; documented result feeds the privacy nutrition labels; <strong>audit 2026-07-10</strong>: confirmed no Sentry, analytics, ad, or tracker SDK is wired anywhere; include the public cover bucket (P7-11) and the classifier egress (P7-10) in the label inventory (audit H-02/H-03/M-02)</td>
+<td>No third-party ads or trackers; any analytics are first-party and anonymized; documented result feeds the privacy nutrition labels; <strong>audit 2026-07-10</strong>: confirmed no Sentry, analytics, ad, or tracker SDK is wired anywhere; include the public cover bucket (P7-11) and the classifier egress (P7-10) in the label inventory (audit H-02/H-03/M-02). <strong>Apple readiness audit 2026-07-20</strong>: <code>VITE_ANALYTICS_ID</code> is still declared (<code>frontend/.env.example:44-45</code>, <code>frontend/src/vite-env.d.ts:7</code>) with zero usages anywhere in <code>frontend/src</code> - a dead placeholder, not a live tracker, but worth removing before the privacy nutrition label is drafted so nobody has to explain an "analytics ID" that does nothing</td>
 </tr>
 <tr>
 <td>P7-07</td>
@@ -4312,12 +4322,12 @@ label, the deletion contract, and the consent disclosure.</p>
 <tr>
 <td>P7-12</td>
 <td>Confirm third-party processor terms (public tier)</td>
-<td>Confirmed still untouched as of 2026-07-20: no commit references processor DPAs/terms; this is a legal/paperwork task, not code, and remains fully open</td>
+<td>Confirmed still untouched as of 2026-07-20: no commit references processor DPAs/terms; this is a legal/paperwork task, not code, and remains fully open. <strong>Apple readiness audit, same day, correction</strong>: PR #311 (merged after the above check) added <code>docs/compliance/processor-dpa-checklist.md</code>, a substantive per-processor tracking checklist - so the paperwork now has a concrete artifact to close against, not zero groundwork. It explicitly self-labels as "not a compliance record": every processor row still shows "Not yet executed." The open item narrows from "no artifact exists" to "no DPA has actually been signed yet"</td>
 </tr>
 <tr>
 <td>P7-13</td>
 <td>Information-security program + security-doc correction</td>
-<td>🟡 <strong>Half-closed, confirmed 2026-07-20</strong>: PR #304's SECURITY.md-correction half shipped (the stale "no persistent PII without explicit parental consent" claim and the retired-Authentik description were both fixed). The 16 CFR 312.8 safeguards artifact (designated coordinator, risk assessment, vendor-oversight process) and a breach-notification runbook remain unstarted, per the PR's own follow-up commit message</td>
+<td>🟡 <strong>Half-closed, confirmed 2026-07-20</strong>: PR #304's SECURITY.md-correction half shipped (the stale "no persistent PII without explicit parental consent" claim and the retired-Authentik description were both fixed). The 16 CFR 312.8 safeguards artifact (designated coordinator, risk assessment, vendor-oversight process) and a breach-notification runbook remain unstarted, per the PR's own follow-up commit message. <strong>Apple readiness audit, same day, correction</strong>: this "remain unstarted" claim is now stale - PR #311 added both <code>docs/compliance/information-security-program.md</code> (substantive: names a coordinator, scope, and COPPA 312.8/GDPR Art.32 obligations) and <code>docs/compliance/breach-notification-runbook.md</code> (substantive, operational Art.33-34 incident procedure with concrete escalation steps). Both artifacts now exist; what remains open is operationalizing and owner sign-off, not authoring them from scratch</td>
 </tr>
 </tbody>
 </table>
@@ -5361,7 +5371,7 @@ sign-off and pre-submission (P9-10)
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:55:12 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 18:38:10 UTC">July 20, 2026</span>
   </span>
 
     
