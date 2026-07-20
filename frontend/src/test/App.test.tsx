@@ -65,12 +65,28 @@ vi.mock('../api/readerApi', () => ({
 }))
 
 const mockGet = vi.fn()
+const mockPost = vi.fn()
 // A stable object, not a fresh literal per call: see the matching comment in
 // auth/AuthContext.test.tsx for why this matters.
-const fakeApi = { get: mockGet }
+const fakeApi = { get: mockGet, post: mockPost }
 vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
+
+// Every guardian-session test below is an already-approved, already-consented
+// guardian: AuthContext's onboarding check (before /v1/me) must fall through
+// the same way it did before onboarding was in this flow. See the matching
+// RESOLVED_ONBOARDING_RESPONSE in auth/AuthContext.test.tsx.
+const RESOLVED_ONBOARDING_RESPONSE = {
+  data: {
+    family_id: 'fam-1',
+    user_id: 'user-1',
+    role: 'guardian',
+    created: false,
+    status: 'active',
+    consent_recorded: true,
+  },
+}
 
 const mockGetSession = vi.fn()
 const mockOnAuthStateChange = vi.fn()
@@ -138,6 +154,7 @@ beforeEach(() => {
   // test inherits another test's unlock.
   clearAdultGate()
   mockGet.mockReset()
+  mockPost.mockReset().mockResolvedValue(RESOLVED_ONBOARDING_RESPONSE)
   mockGetSession.mockReset().mockResolvedValue({ data: { session: null } })
   mockOnAuthStateChange
     .mockReset()

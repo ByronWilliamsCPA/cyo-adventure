@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
-import { KID_PICKER_PATH } from '../routes'
+import { GUARDIAN_AWAITING_APPROVAL_PATH, GUARDIAN_CONSENT_PATH, KID_PICKER_PATH } from '../routes'
 import type { Principal, Role } from './types'
 import { useAuth } from './useAuth'
 
@@ -51,6 +51,17 @@ export function ProtectedRoute({
         Loading…
       </div>
     )
+  }
+
+  // A real Supabase session exists in both cases below (AdultGate's own,
+  // independent session check already passed) -- send the guardian to the
+  // matching interstitial rather than looping them through login, which
+  // would just re-establish the same session and land back here.
+  if (status === 'awaiting-approval') {
+    return <Navigate to={GUARDIAN_AWAITING_APPROVAL_PATH} replace />
+  }
+  if (status === 'needs-consent') {
+    return <Navigate to={GUARDIAN_CONSENT_PATH} replace />
   }
 
   if (status !== 'signed-in' || principal === null) {

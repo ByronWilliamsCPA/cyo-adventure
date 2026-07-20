@@ -2164,11 +2164,15 @@ export type OnboardingBody = {
 /**
  * OnboardingConsent
  *
- * Consent-capture seam for onboarding (accepted, recorded by P7-02).
+ * Verifiable-parental-consent payload (Phase 2 / ADR-018 D1).
  *
- * This is the extension point P7-02 (consent capture) fills; onboarding
- * accepts it today but records nothing. Keep it minimal: do NOT add consent
- * business logic here.
+ * A signature-capture step layered on the Supabase/Google OAuth login that
+ * already authenticates the guardian: ``signer_name`` is a typed
+ * full-legal-name attestation, standing in for the FTC's "sign and submit
+ * electronically" method (312.5(b)(2)(i)). ``accepted``, ``policy_version``,
+ * and ``signer_name`` must all be present together to actually record
+ * consent; a request that omits or falsifies any of them records nothing
+ * (see ``onboarding._record_consent``), it does not partially persist.
  */
 export type OnboardingConsent = {
     /**
@@ -2179,6 +2183,10 @@ export type OnboardingConsent = {
      * Policy Version
      */
     policy_version?: string | null;
+    /**
+     * Signer Name
+     */
+    signer_name?: string | null;
 };
 
 /**
@@ -2207,6 +2215,14 @@ export type OnboardingView = {
      * Created
      */
     created: boolean;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Consent Recorded
+     */
+    consent_recorded: boolean;
 };
 
 /**
@@ -2311,6 +2327,10 @@ export type ProfileUpdateBody = {
      * Monthly Request Envelope
      */
     monthly_request_envelope?: number | null;
+    /**
+     * Processing Restricted
+     */
+    processing_restricted?: boolean | null;
 };
 
 /**
@@ -2366,6 +2386,10 @@ export type ProfileView = {
      * Monthly Request Envelope
      */
     monthly_request_envelope: number | null;
+    /**
+     * Processing Restricted
+     */
+    processing_restricted: boolean;
     /**
      * Created At
      */
@@ -3569,7 +3593,7 @@ export type UserUpdateBody = {
     /**
      * Status
      */
-    status?: 'pending' | 'active' | 'deactivated' | null;
+    status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | null;
 };
 
 /**
@@ -3605,7 +3629,7 @@ export type UserView = {
     /**
      * Status
      */
-    status: 'pending' | 'active' | 'deactivated';
+    status: 'pending' | 'active' | 'deactivated' | 'awaiting_approval';
     /**
      * Created At
      */
@@ -4375,6 +4399,10 @@ export type CreateProfileApiV1ProfilesPostData = {
 };
 
 export type CreateProfileApiV1ProfilesPostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
     /**
      * Missing, malformed, expired, or unknown bearer token.
      */
@@ -5907,6 +5935,10 @@ export type CreateStoryRequestApiV1StoryRequestsPostData = {
 
 export type CreateStoryRequestApiV1StoryRequestsPostErrors = {
     /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
+    /**
      * Missing, malformed, expired, or unknown bearer token.
      */
     401: ErrorResponse;
@@ -5947,6 +5979,10 @@ export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData = {
 };
 
 export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors = {
+    /**
+     * Domain rule violation (for example, an exhausted quota).
+     */
+    400: ErrorResponse;
     /**
      * Missing, malformed, expired, or unknown bearer token.
      */
@@ -6512,7 +6548,7 @@ export type ListUsersApiV1AdminUsersGetData = {
         /**
          * Status
          */
-        status?: 'pending' | 'active' | 'deactivated' | null;
+        status?: 'pending' | 'active' | 'deactivated' | 'awaiting_approval' | null;
     };
     url: '/api/v1/admin/users';
 };

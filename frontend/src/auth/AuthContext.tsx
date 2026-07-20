@@ -1,5 +1,5 @@
 import type { Session } from '@supabase/supabase-js'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import type { MeResponse } from '../client/types.gen'
@@ -12,6 +12,7 @@ import {
   type AuthStatus,
 } from './authContext'
 import { clearChildSession } from './childSession'
+import { CONSENT_POLICY_VERSION, makeOnboardingApi } from './onboardingApi'
 import { clearAdultGate, warmAdultGate } from './parentalGateState'
 import {
   isPasswordRecovery,
@@ -83,6 +84,7 @@ type MeResponseBody = MeResponse
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const api = useApi()
+  const onboardingApi = useMemo(() => makeOnboardingApi(api), [api])
   const [principal, setPrincipal] = useState<Principal | null>(null)
   const [status, setStatus] = useState<AuthStatus>('loading')
   const [authError, setAuthError] = useState<AuthError | null>(null)
@@ -104,35 +106,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // every handler ignore any result that is not the latest it launched.
   // #VERIFY: test_auth_context.test_out_of_order_me_responses_keep_latest.
   const requestSeq = useRef(0)
+  // Set true on unmount (effect cleanup below); a ref, not an effect-local
+  // closure variable, so recordConsent's manual re-sync (called from outside
+  // the effect, after a guardian submits consent) observes the same
+  // unmounted-provider guard as the effect's own calls.
+  const cancelledRef = useRef(false)
 
-  useEffect(() => {
-    let cancelled = false
-
-    // #ASSUME: timing-dependencies: this re-fetches /me on every
-    // onAuthStateChange event, including a periodic TOKEN_REFRESHED with an
-    // unchanged role/family. That's wasted work, not a correctness bug, and
-    // guardian sessions are low-frequency; revisit only if /me load becomes
-    // measurable.
-    // #VERIFY: test_auth_context.test_refetches_principal_on_token_refresh.
-    //
-    // `event` is Supabase's onAuthStateChange discriminator (undefined for
-    // the initial getSession()-driven call below, which resolves a possibly
-    // PERSISTED session, not a fresh sign-in). It is used for exactly one
-    // thing: warming the adult gate (ADR-014 Phase 5) ONLY on a genuine
-    // 'SIGNED_IN' event (a password submit or an OAuth redirect return), the
-    // moment the guardian has just proven full credentials. Warming on any
-    // other event -- in particular the initial session restore or a silent
-    // 'TOKEN_REFRESHED' -- would let a stale/cached session, or a walked-away
-    // auto-refreshing tab, look identical to a guardian who just typed a
-    // password, defeating the step-up entirely.
-    // #CRITICAL: security: gate the warm call on event === 'SIGNED_IN', never
-    // on session presence alone.
-    // #VERIFY: AuthContext.test.tsx "warms the adult gate on a SIGNED_IN
-    // event, but not on session restore or token refresh".
-    async function syncPrincipal(session: Session | null, event?: string) {
+  // #ASSUME: timing-dependencies: this re-fetches /me on every
+  // onAuthStateChange event, including a periodic TOKEN_REFRESHED with an
+  // unchanged role/family. That's wasted work, not a correctness bug, and
+  // guardian sessions are low-frequency; revisit only if /me load becomes
+  // measurable.
+  // #VERIFY: test_auth_context.test_refetches_principal_on_token_refresh.
+  //
+  // `event` is Supabase's onAuthStateChange discriminator (undefined for the
+  // initial getSession()-driven call in the effect below, which resolves a
+  // possibly PERSISTED session, not a fresh sign-in, and for
+  // recordConsent's manual re-sync). It is used for exactly one thing:
+  // warming the adult gate (ADR-014 Phase 5) ONLY on a genuine 'SIGNED_IN'
+  // event (a password submit or an OAuth redirect return), the moment the
+  // guardian has just proven full credentials. Warming on any other event
+  // -- in particular the initial session restore or a silent
+  // 'TOKEN_REFRESHED' -- would let a stale/cached session, or a walked-away
+  // auto-refreshing tab, look identical to a guardian who just typed a
+  // password, defeating the step-up entirely.
+  // #CRITICAL: security: gate the warm call on event === 'SIGNED_IN', never
+  // on session presence alone.
+  // #VERIFY: AuthContext.test.tsx "warms the adult gate on a SIGNED_IN
+  // event, but not on session restore or token refresh".
+  const syncPrincipal = useCallback(
+    async (session: Session | null, event?: string) => {
       const seq = ++requestSeq.current
       // A later handler already superseded this one, or the provider unmounted.
-      const isStale = () => cancelled || seq !== requestSeq.current
+      const isStale = () => cancelledRef.current || seq !== requestSeq.current
 
       if (session === null) {
         safeRemoveToken()
@@ -149,6 +155,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // fail-closed signed-out path below instead of stranding status on
         // 'loading' (it used to sit outside the try, where a throw was fatal).
         localStorage.setItem(TOKEN_STORAGE_KEY, session.access_token)
+        // #CRITICAL: security: resolve onboarding BEFORE /v1/me. A
+        // self-signed-up guardian awaiting approval, or one who has not yet
+        // completed VPC consent, gets a User row that require_principal
+        // rejects for GET /v1/me (401 "unknown subject" for the former; the
+        // latter is merely ungated at /me but blocked later at profile
+        // creation) -- calling /me first would just dump both cases into the
+        // generic 'principal-unresolved' catch below with no way for the UI
+        // to tell them apart from a real failure.
+        // #VERIFY: AuthContext.test.tsx "awaiting-approval guardian never
+        // calls /me" and "unconsented guardian never calls /me".
+        const onboarded = await onboardingApi.onboard()
+        if (isStale()) return
+        if (onboarded.role === 'guardian' && onboarded.status !== 'active') {
+          setPrincipal(null)
+          setStatus('awaiting-approval')
+          setAuthError(null)
+          return
+        }
+        if (onboarded.role === 'guardian' && !onboarded.consent_recorded) {
+          setPrincipal(null)
+          setStatus('needs-consent')
+          setAuthError(null)
+          return
+        }
         const res = await api.get<MeResponseBody>('/v1/me')
         if (isStale()) return
         // #CRITICAL: security: the role drives ProtectedRoute's allow/deny, so
@@ -192,13 +222,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setAuthError('principal-unresolved')
         }
       }
-    }
+    },
+    [api, onboardingApi]
+  )
+
+  useEffect(() => {
+    cancelledRef.current = false
 
     // Fire-and-forget: this runs inside a useEffect with no async cleanup
-    // seam, and the `cancelled` flag (checked below and inside syncPrincipal)
+    // seam, and the `cancelledRef` flag (checked inside syncPrincipal)
     // already guards against a resolved-after-unmount state update.
     void supabase.auth.getSession().then(({ data }) => {
-      if (!cancelled) void syncPrincipal(data.session)
+      if (!cancelledRef.current) void syncPrincipal(data.session)
     })
 
     const {
@@ -219,10 +254,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     return () => {
-      cancelled = true
+      cancelledRef.current = true
       subscription.unsubscribe()
     }
-  }, [api])
+  }, [syncPrincipal])
 
   // #CRITICAL: concurrency: see RECOVERY_BROADCAST_CHANNEL_NAME's doc comment
   // in supabaseClient.ts. A stale second guardian tab never sees the recovery
@@ -359,8 +394,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) throw error
         setRecovery(false)
       },
+      // #ASSUME: security: no signature-image capture (Route B from
+      // ADR-018 D1's decision record); signerName is a typed full-legal-name
+      // attestation, the FTC 312.5(b)(2)(i) "sign and submit electronically"
+      // method layered on the OAuth login that already authenticated this
+      // session. Rethrows on failure (e.g. the backend's 422 for an empty
+      // name) so GuardianConsentPage can show it; on success, re-runs the
+      // full syncPrincipal flow (fresh getSession(), no event) so the
+      // now-consented guardian proceeds straight to /v1/me and 'signed-in'
+      // instead of needing a second trigger.
+      // #VERIFY: AuthContext.test.tsx recordConsent success/failure cases.
+      recordConsent: async (signerName) => {
+        await onboardingApi.onboard({
+          accepted: true,
+          policy_version: CONSENT_POLICY_VERSION,
+          signer_name: signerName,
+        })
+        const { data } = await supabase.auth.getSession()
+        await syncPrincipal(data.session)
+      },
     }),
-    [status, principal, authError, recovery, recoveryError]
+    [status, principal, authError, recovery, recoveryError, onboardingApi, syncPrincipal]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

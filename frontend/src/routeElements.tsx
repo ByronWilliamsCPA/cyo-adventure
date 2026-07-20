@@ -88,6 +88,14 @@ export const AdultGate = lazyWithReload('AdultGate', () =>
 export const LoginPage = lazyWithReload('LoginPage', () =>
   import('./guardian/LoginPage').then((m) => ({ default: m.LoginPage }))
 )
+export const GuardianAwaitingApprovalPage = lazyWithReload('GuardianAwaitingApprovalPage', () =>
+  import('./auth/GuardianAwaitingApprovalPage').then((m) => ({
+    default: m.GuardianAwaitingApprovalPage,
+  }))
+)
+export const GuardianConsentPage = lazyWithReload('GuardianConsentPage', () =>
+  import('./auth/GuardianConsentPage').then((m) => ({ default: m.GuardianConsentPage }))
+)
 export const ConsolePage = lazyWithReload('ConsolePage', () =>
   import('./guardian/ConsolePage').then((m) => ({ default: m.ConsolePage }))
 )

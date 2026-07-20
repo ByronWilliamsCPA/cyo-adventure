@@ -7,6 +7,21 @@
  */
 export const GUARDIAN_LOGIN_PATH = '/guardian/login'
 
+/**
+ * Self-signup approval interstitial (AuthStatus 'awaiting-approval'):
+ * ProtectedRoute sends a guardian here instead of looping them through
+ * login, since they DO have a valid Supabase session, it just is not yet
+ * approved (api/onboarding.py's self-signup track).
+ */
+export const GUARDIAN_AWAITING_APPROVAL_PATH = '/guardian/awaiting-approval'
+
+/**
+ * VPC consent-capture interstitial (AuthStatus 'needs-consent', Phase 2 /
+ * ADR-018 D1): ProtectedRoute sends an approved-but-unconsented guardian
+ * here before they can reach any other guardian page.
+ */
+export const GUARDIAN_CONSENT_PATH = '/guardian/consent'
+
 /** Kid profile picker, relocated from `/` when the landing page took the root. */
 export const KID_PICKER_PATH = '/kids'
 

@@ -492,6 +492,8 @@ export const listProfilesApiV1ProfilesGet = <ThrowOnError extends boolean = fals
  *
  * Raises:
  * AuthorizationError: If the caller is not a guardian.
+ * BusinessLogicError: If the calling guardian has no recorded VPC
+ * consent (Phase 2 / ADR-018 D1).
  */
 export const createProfileApiV1ProfilesPost = <ThrowOnError extends boolean = false>(options: Options<CreateProfileApiV1ProfilesPostData, ThrowOnError>): RequestResult<CreateProfileApiV1ProfilesPostResponses, CreateProfileApiV1ProfilesPostErrors, ThrowOnError> => (options.client ?? client).post<CreateProfileApiV1ProfilesPostResponses, CreateProfileApiV1ProfilesPostErrors, ThrowOnError>({
     responseType: 'json',
@@ -1508,6 +1510,8 @@ export const listStoryRequestsApiV1StoryRequestsGet = <ThrowOnError extends bool
  * ValidationError: If ``profile_id`` is not a valid UUID; if the anchor
  * storybook is not published or not series-linked; or if the
  * profile's age band does not match the anchor's series (-> 422).
+ * BusinessLogicError: If the profile is currently restricted (Article
+ * 18/21) (-> 400).
  */
 export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends boolean = false>(options: Options<CreateStoryRequestApiV1StoryRequestsPostData, ThrowOnError>): RequestResult<CreateStoryRequestApiV1StoryRequestsPostResponses, CreateStoryRequestApiV1StoryRequestsPostErrors, ThrowOnError> => (options.client ?? client).post<CreateStoryRequestApiV1StoryRequestsPostResponses, CreateStoryRequestApiV1StoryRequestsPostErrors, ThrowOnError>({
     responseType: 'json',
@@ -1893,17 +1897,25 @@ export const revokeDeviceGrantApiV1DeviceGrantsGrantIdDelete = <ThrowOnError ext
  * On first login (no ``User`` for the verified subject) this creates a
  * ``Family`` and a guardian ``User`` atomically and returns 201. On any
  * later call, or for an already-provisioned guardian/admin, it returns the
- * existing row with 200 and creates nothing.
+ * existing row with 200 and creates nothing. A consent payload, if present,
+ * is recorded onto whichever ``User`` row this call resolves to (Phase 2 /
+ * ADR-018 D1), after that row is known -- never before, since there is
+ * nothing to attach a consent record to until then.
  *
  * Args:
- * identity: The verified onboarding identity (subject + optional email).
+ * identity: The verified onboarding identity (subject, optional email,
+ * and observed client address for the consent record).
  * session: The request unit-of-work session.
  * response: The response, whose status code is set to 201 (created) or
  * 200 (idempotent) here.
- * body: The optional request body carrying only the P7-02 consent seam.
+ * body: The optional request body carrying the Phase 2 consent payload.
  *
  * Returns:
  * OnboardingView: The resolved or created family/guardian identity.
+ *
+ * Raises:
+ * ValidationError: If a consent payload has ``accepted=True`` but is
+ * missing ``policy_version`` or ``signer_name`` (422).
  */
 export const onboardApiV1OnboardingPost = <ThrowOnError extends boolean = false>(options?: Options<OnboardApiV1OnboardingPostData, ThrowOnError>): RequestResult<OnboardApiV1OnboardingPostResponses, OnboardApiV1OnboardingPostErrors, ThrowOnError> => (options?.client ?? client).post<OnboardApiV1OnboardingPostResponses, OnboardApiV1OnboardingPostErrors, ThrowOnError>({
     responseType: 'json',
@@ -2120,7 +2132,8 @@ export const createUserApiV1AdminUsersPost = <ThrowOnError extends boolean = fal
  * ResourceNotFoundError: If no guardian/admin row with this id exists
  * (404; a role='child' row 404s here too, see the module docstring).
  * ValidationError: If a ``status`` transition through/from 'pending' is
- * requested, or ``family_id`` is not a valid UUID (422).
+ * requested, or into 'awaiting_approval' directly, or
+ * ``family_id`` is not a valid UUID (422).
  */
 export const updateUserApiV1AdminUsersUserIdPatch = <ThrowOnError extends boolean = false>(options: Options<UpdateUserApiV1AdminUsersUserIdPatchData, ThrowOnError>): RequestResult<UpdateUserApiV1AdminUsersUserIdPatchResponses, UpdateUserApiV1AdminUsersUserIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateUserApiV1AdminUsersUserIdPatchResponses, UpdateUserApiV1AdminUsersUserIdPatchErrors, ThrowOnError>({
     responseType: 'json',

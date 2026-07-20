@@ -11,14 +11,33 @@ import { adultGateRemainingMs, clearAdultGate, warmAdultGate } from './parentalG
 import { useAuth } from './useAuth'
 
 const mockGet = vi.fn()
+const mockPost = vi.fn()
 // A stable object, not a fresh literal per call: useApi() is memoized in
 // production (useMemo(..., [config])), and AuthContext's effect depends on
 // [api]. A fresh object per render here would re-fire the effect on every
 // state update, re-running getSession()/onAuthStateChange spuriously.
-const fakeApi = { get: mockGet }
+const fakeApi = { get: mockGet, post: mockPost }
 vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
+
+/**
+ * The onboarding response every test gets by default (an already-approved,
+ * already-consented guardian), so syncPrincipal's onboarding check always
+ * falls through to /v1/me exactly as it did before onboarding existed in
+ * this flow. Tests that specifically exercise the awaiting-approval or
+ * needs-consent branches override mockPost's resolved value themselves.
+ */
+const RESOLVED_ONBOARDING_RESPONSE = {
+  data: {
+    family_id: 'fam-1',
+    user_id: 'user-1',
+    role: 'guardian',
+    created: false,
+    status: 'active',
+    consent_recorded: true,
+  },
+}
 
 const mockGetSession = vi.fn()
 const mockOnAuthStateChange = vi.fn()
@@ -125,6 +144,26 @@ function ActionsProbe() {
   )
 }
 
+/** Exercises recordConsent and surfaces any rejection it rethrows. */
+function ConsentProbe() {
+  const { status, recordConsent } = useAuth()
+  const [caught, setCaught] = useState('none')
+  return (
+    <div>
+      <span data-testid="status">{status}</span>
+      <span data-testid="caught">{caught}</span>
+      <button
+        type="button"
+        onClick={() =>
+          void recordConsent('Jane A. Guardian').catch((e: Error) => setCaught(e.message))
+        }
+      >
+        agree
+      </button>
+    </div>
+  )
+}
+
 /** Mirrors how real call sites consume the rejections these actions now throw. */
 function CatchingActionsProbe() {
   const { signInWithOAuth, signInWithPassword, signOut } = useAuth()
@@ -161,6 +200,7 @@ beforeEach(() => {
   sessionStorage.clear()
   clearAdultGate()
   mockGet.mockReset()
+  mockPost.mockReset().mockResolvedValue(RESOLVED_ONBOARDING_RESPONSE)
   mockGetSession.mockReset()
   mockOnAuthStateChange
     .mockReset()
@@ -231,6 +271,161 @@ describe('AuthProvider', () => {
     expect(screen.getByTestId('authError')).toHaveTextContent('none')
     expect(mockGet).toHaveBeenCalledWith('/v1/me')
     expect(localStorage.getItem('auth_token')).toBe('tok-1')
+  })
+
+  it('short-circuits to awaiting-approval without ever calling /me', async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: true,
+        status: 'awaiting_approval',
+        consent_recorded: false,
+      },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('status')).toHaveTextContent('awaiting-approval')
+    )
+    expect(screen.getByTestId('role')).toHaveTextContent('none')
+    expect(mockGet).not.toHaveBeenCalled()
+  })
+
+  it('short-circuits to needs-consent without ever calling /me', async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: false,
+        status: 'active',
+        consent_recorded: false,
+      },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('needs-consent'))
+    expect(mockGet).not.toHaveBeenCalled()
+  })
+
+  it('does not gate a non-guardian role on approval or consent', async () => {
+    // An admin-only account never carries awaiting_approval (only the
+    // self-signup guardian track sets it) and has no VPC consent concept;
+    // onboarding.role !== 'guardian' must skip both short-circuits.
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'admin',
+        created: false,
+        status: 'active',
+        consent_recorded: false,
+      },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'admin', family_id: 'fam-1', profile_ids: [] },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(mockGet).toHaveBeenCalledWith('/v1/me')
+  })
+
+  it('recordConsent posts the signature then resolves the principal via /me', async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: false,
+        status: 'active',
+        consent_recorded: false,
+      },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    render(
+      <AuthProvider>
+        <ConsentProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('needs-consent'))
+
+    // The next onboarding call (from recordConsent's own retry, and from
+    // syncPrincipal's re-run after it) reports consent now recorded.
+    mockPost.mockResolvedValue({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: false,
+        status: 'active',
+        consent_recorded: true,
+      },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'agree' }))
+
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(mockPost).toHaveBeenCalledWith('/v1/onboarding', {
+      consent: {
+        accepted: true,
+        policy_version: expect.any(String) as string,
+        signer_name: 'Jane A. Guardian',
+      },
+    })
+    expect(screen.getByTestId('caught')).toHaveTextContent('none')
+  })
+
+  it('recordConsent rethrows on failure and leaves status at needs-consent', async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockPost.mockResolvedValueOnce({
+      data: {
+        family_id: 'fam-1',
+        user_id: 'user-1',
+        role: 'guardian',
+        created: false,
+        status: 'active',
+        consent_recorded: false,
+      },
+    })
+    render(
+      <AuthProvider>
+        <ConsentProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('needs-consent'))
+
+    mockPost.mockRejectedValueOnce(new Error('422 from backend'))
+    fireEvent.click(screen.getByRole('button', { name: 'agree' }))
+
+    await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('422 from backend'))
+    expect(screen.getByTestId('status')).toHaveTextContent('needs-consent')
   })
 
   it('carries the is_admin capability onto the principal for a dual-role adult', async () => {
