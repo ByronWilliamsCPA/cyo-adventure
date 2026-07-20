@@ -11,6 +11,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- CI: stopped re-running the frontend, design-system, OpenAPI contract-drift,
+  coverage-upload, and API-tests jobs in `ci.yml` on `merge_group` events,
+  since they validate file content already checked on the PR run rather than
+  merged-state validity; `ci-gate` now treats their intentional `skipped`
+  result as passing. Dropped `merge_group` entirely from
+  `security-analysis.yml`, `sonarcloud.yml`, and `reuse.yml` (all
+  file-content-only scans that already ran on the PR and are re-confirmed by
+  the existing push-to-main trigger). Removed `dead-code` and `link-check`
+  from running on `merge_group` in `pr-validation.yml` (both already
+  advisory-only in `validate-dependencies`). Removed the `pull_request`
+  trigger from `python-compatibility.yml`, which duplicated `ci.yml`'s
+  required Python 3.12 test run on every PR; its weekly schedule and
+  push-to-main trigger still cover 3.11/3.13 compatibility drift. Together
+  these remove the largest source of duplicate work between a PR's own CI run
+  and the merge-queue's re-run of the same commit.
+- CI: `sonarcloud.yml` no longer runs on `pull_request` at all (only `push`
+  to `main`/`develop` and `workflow_dispatch`). Job-level timing data from
+  recent PRs showed the job costing ~12 min per PR, ~11 of which was a
+  duplicate full pytest run (on Python 3.14, for coverage.xml) rather than
+  the sonar-scanner analysis itself (well under 90s); `fail-on-quality-gate`
+  was already forced off outside `push`, so the PR-time run was always
+  advisory with no way to act on the result. A `no-build: true` variant was
+  tried to keep fast static-only PR feedback without the pytest run, but
+  `--no-build` requires a pre-built wheel and this project has none (local
+  editable install only), so `uv sync` hard-fails; reverted rather than
+  pursued further without reading the reusable workflow's source first.
+  `push` to `main`/`develop` keeps the full coverage-generating,
+  gate-enforced run so the SonarCloud dashboard's coverage% stays accurate.
+- Testing: added `-n=auto` (pytest-xdist) to `[tool.pytest.ini_options]`
+  addopts. CI's Integration Tests job runs 827 tests serially in ~9.5 min;
+  `tests/integration/conftest.py`'s Postgres container fixture is
+  session-scoped, so each xdist worker gets its own independent
+  `testcontainers` instance rather than sharing one, with no cross-worker
+  isolation work needed. Verified locally with real Docker: 139 integration
+  tests, 104.33s serial vs 42.18s at `-n 4`, all passing, coverage combining
+  correctly across workers. `nox -s mutate` (mutmut) is unaffected, since
+  `[tool.mutmut]` already resets addopts to empty before building its own
+  pytest invocation.
 - Testing: `tests/integration/conftest.py` creates the Postgres schema once
   per test session (via a throwaway sync `psycopg` engine, avoiding any
   asyncio event-loop entanglement) instead of once per test. Each test now
@@ -35,6 +73,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The test now restores the constraint in a `finally` block. Also
   deduplicated the catalog-family seed insert (`_pg_url` and `engine`
   fixtures) into a shared `_seed_catalog_family_stmt()` helper.
+- CI: restored the `merge_group` trigger on `security-analysis.yml` and
+  `reuse.yml`, dropped earlier in `[Unreleased]` above as file-content-only
+  and not merged-state-sensitive. In practice the org ruleset requires
+  "Security Gate Validation" and "REUSE Compliance" as status checks
+  regardless of event context, so the merge queue waited forever for a
+  check that could never report on a `merge_group` entry; confirmed live
+  when the PR carrying this exact change was kicked from the queue with
+  `CI_TIMEOUT`. Both scans are fast (bandit/OSV-Scanner and a license-header
+  check, no pytest/build cost), so restoring them on `merge_group` is cheap
+  and needs no org-level ruleset access to fix.
 
 ## [0.18.0] - 2026-07-19
 
