@@ -10,10 +10,8 @@ inspected structure must be identical.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 from typing import Any
 
-import asyncpg
 import pytest
 from sqlalchemy import inspect, text
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -25,10 +23,7 @@ from sqlalchemy.pool import NullPool
 # would still be loud, an empty ORM table set, but explicit is better.)
 import cyo_adventure.db.models  # noqa: F401
 from cyo_adventure.core.database import Base
-
-_MIGRATIONS = sorted(
-    (Path(__file__).resolve().parents[2] / "supabase" / "migrations").glob("*.sql")
-)
+from tests.integration._migration_utils import MIGRATIONS, create_migrated_database
 
 # Tables owned by tooling, not the ORM.
 _IGNORED_TABLES = {"schema_migrations"}
@@ -193,65 +188,31 @@ async def test_migrations_match_orm_models(pg_url: str) -> None:
             alias avoids Ruff's PT019 on a leading-underscore parameter that
             this test needs the value of, not just the side effect of.
     """
-    assert _MIGRATIONS, "no supabase migrations found"
+    assert MIGRATIONS, "no supabase migrations found"
+
+    # #ASSUME: external-resources: the baseline migration is a pg_dump from a
+    # live Supabase project, where every table/function is owned by the
+    # built-in "postgres" role; create_migrated_database (tests/integration/
+    # _migration_utils.py) idempotently creates that role first, since the
+    # testcontainers image's cluster superuser is "test", not "postgres".
+    # Ownership plays no part in the schema-parity comparison below
+    # (Inspector snapshots do not include object owner).
+    mig_url = await create_migrated_database(pg_url, "parity_mig")
+
     admin = create_async_engine(
         pg_url, poolclass=NullPool, isolation_level="AUTOCOMMIT"
     )
     async with admin.connect() as conn:
-        await conn.execute(text("DROP DATABASE IF EXISTS parity_mig"))
         await conn.execute(text("DROP DATABASE IF EXISTS parity_orm"))
-        await conn.execute(text("CREATE DATABASE parity_mig"))
         await conn.execute(text("CREATE DATABASE parity_orm"))
-        # #ASSUME: external-resources: the baseline migration is a pg_dump
-        # from a live Supabase project, where every table/function is owned
-        # by the built-in "postgres" role; that role always exists in a real
-        # Supabase Postgres instance. The testcontainers image used here sets
-        # POSTGRES_USER=test, so its cluster superuser is "test" rather than
-        # "postgres" and the dump's "ALTER ... OWNER TO postgres" statements
-        # would fail with "role postgres does not exist". Creating the role
-        # here mirrors the target environment's prerequisite rather than
-        # editing the baseline SQL; ownership plays no part in the
-        # schema-parity comparison below (Inspector snapshots do not include
-        # object owner).
-        # #EDGE: concurrency: roles are cluster-global, so a check-then-create
-        # from Python would race if two sessions on the same server ran it
-        # concurrently (pytest-xdist workers each start their own
-        # session-scoped container today, but that is a fixture detail this
-        # statement should not depend on). The DO block below is a single
-        # server-side statement that swallows exactly duplicate_object, so a
-        # concurrent creator cannot make it fail, and any OTHER error
-        # (permissions, syntax) still propagates.
-        # #VERIFY: a superuser (the testcontainers "test" role) may reassign
-        # ownership to any existing role without being a member of it, so no
-        # further grants are required for the migration's OWNER TO statements
-        # to succeed; verified by this test applying the full baseline dump.
-        await conn.execute(
-            text(
-                "DO $$ BEGIN "
-                'CREATE ROLE "postgres"; '
-                "EXCEPTION WHEN duplicate_object THEN NULL; "
-                "END $$"
-            )
-        )
     await admin.dispose()
-
-    base = pg_url.replace("postgresql+asyncpg://", "postgresql://")
-    root = base.rsplit("/", 1)[0]
-    raw = await asyncpg.connect(f"{root}/parity_mig")
-    try:
-        for path in _MIGRATIONS:
-            await raw.execute(path.read_text())
-    finally:
-        await raw.close()
 
     orm_url = pg_url.rsplit("/", 1)[0] + "/parity_orm"
     orm_engine = create_async_engine(orm_url, poolclass=NullPool)
     async with orm_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    mig_engine = create_async_engine(
-        pg_url.rsplit("/", 1)[0] + "/parity_mig", poolclass=NullPool
-    )
+    mig_engine = create_async_engine(mig_url, poolclass=NullPool)
     async with mig_engine.connect() as conn:
         mig_snap = await conn.run_sync(_snapshot)
     async with orm_engine.connect() as conn:
