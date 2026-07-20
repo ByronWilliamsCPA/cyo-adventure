@@ -147,7 +147,7 @@ services:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
     # No container healthcheck: the DHI base image ships no shell (see the
     # `app` service's `command:` comment above) and an RQ worker exposes no
     # HTTP endpoint to probe. Liveness is instead observed via

@@ -16,6 +16,10 @@ services:
       ENVIRONMENT: production
       JSON_LOGS: "true"
       LOG_LEVEL: ${LOG_LEVEL:-WARNING}
+      # Redis now requires auth in this overlay (see the `redis:` override
+      # below); rebuild the connection URL with the same required password so
+      # app can still reach it.
+      CYO_ADVENTURE_REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0
       # Task E1 (audit Group A: A1/A2): overridable per-deployment; the base
       # docker-compose.yml `command:` already threads this through uvicorn's
       # --forwarded-allow-ips, so only the value needs overriding here (and
@@ -66,6 +70,10 @@ services:
       ENVIRONMENT: production
       JSON_LOGS: "true"
       LOG_LEVEL: ${LOG_LEVEL:-WARNING}
+      # Redis now requires auth in this overlay (see the `redis:` override
+      # below); rebuild the connection URL with the same required password so
+      # worker can still reach it.
+      CYO_ADVENTURE_REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0
 
     deploy:
       replicas: 1
@@ -135,11 +143,36 @@ services:
           cpus: '1.0'
           memory: 1G
 
+  redis:
+    # ADR-021 (docs/planning/adr/adr-021-service-account-rls-and-worker-deployment.md):
+    # this compose `redis` (and the `worker` service above) exist so the full
+    # generation pipeline can be verified locally or in CI without depending
+    # on the sibling homelab-infra repo; they do not replace homelab-infra as
+    # the deployment orchestrator of record for the live environment. No host
+    # port is published for this service; it is reachable only from other
+    # containers on `cyo_adventure-network`.
+    command: ["redis-server", "--protected-mode", "no", "--requirepass", "${REDIS_PASSWORD:?set REDIS_PASSWORD}"]
+
+    environment:
+      # Lets the inherited `redis-cli ping` healthcheck authenticate without
+      # exposing the password on the process command line.
+      REDISCLI_AUTH: ${REDIS_PASSWORD:?set REDIS_PASSWORD}
+
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
 # =============================================================================
 # Production Usage
 # =============================================================================
 # 1. Set environment variables in .env file or export them:
 #    export DB_PASSWORD=secure-production-password
+#    export REDIS_PASSWORD=another-secure-production-password
 #    export SENTRY_DSN=your-sentry-dsn
 #    export VERSION=v1.0.0
 #
