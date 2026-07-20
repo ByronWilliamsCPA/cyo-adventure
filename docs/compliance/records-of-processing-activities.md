@@ -51,11 +51,11 @@ undecided, rather than asserting a basis has been chosen.
 |---|---|---|---|---|---|---|---|
 | 1 | Guardian account registration and authentication | Let a guardian create and access a family account | Email, Supabase-issued auth identity, role, `is_admin` flag | Guardian, Admin | Contract (providing the service) | Supabase (identity provider, ADR-009) | Life of the account; erased on `DELETE /api/v1/me/family` (Phase 3b) |
 | 2 | Child profile creation and management | Let a guardian set up a reading profile for each child | Display name, age band, reading-level cap, avatar (closed vocabulary, not a photo), content-flag caps, banned themes, TTS preference, PIN (hashed) | Child (via guardian) | Contract, performed by the guardian on the child's behalf (Article 8 framing, Section 9) | None external; internal only | Life of the profile; erased on `DELETE /api/v1/profiles/{id}` (Phase 3b) |
-| 3 | Story request intake and generation | Turn a guardian- or child-initiated story wish into a personalized storybook | Request text (screened for PII before use; blocked rows redact `request_text` at the API layer), age band, length, narrative style, generated story prose | Child (subject of the story), Guardian (requester) | Contract / legitimate interest (open — see `gdpr-compliance-review.md` Pressure Point P-3 on the moderation-pipeline leg specifically) | OpenRouter and downstream model providers, Anthropic (direct), Google Gemini (cover art) — all PII-guarded as of #304 | Generated stories: life of the account; blocked/declined raw request text: no fixed purge yet (remediation plan Phase 4b, open) |
-| 4 | Content moderation and safety review | Screen generated story content for safety before a guardian can approve it for a child | Generated story prose, moderation classifier verdicts and scores | Child (subject of the story) | Legitimate interest / legal obligation (child-safety) — basis not formally recorded (Phase 2) | OpenAI Moderation, Google Perspective (Stage-0 classifiers; PII-guarded as of #304) | Moderation reports: proposed 1-2 years (Phase 4's draft retention table, open) |
+| 3 | Story request intake and generation | Turn a guardian- or child-initiated story wish into a personalized storybook | Request text (screened for PII before use; blocked rows redact `request_text` at the API layer), age band, length, narrative style, generated story prose | Child (subject of the story), Guardian (requester) | Contract / legitimate interest (open — see `gdpr-compliance-review.md` Pressure Point P-3 on the moderation-pipeline leg specifically) | OpenRouter and downstream model providers, Anthropic (direct), Google Gemini (cover art) — all PII-guarded as of #304 | Generated stories: life of the account; blocked/declined raw request text: 30 days from decision (remediation plan Section 5's retention table, accepted 2026-07-20) |
+| 4 | Content moderation and safety review | Screen generated story content for safety before a guardian can approve it for a child | Generated story prose, moderation classifier verdicts and scores | Child (subject of the story) | Legitimate interest / legal obligation (child-safety) — basis not formally recorded (Phase 2) | OpenAI Moderation, Google Perspective (Stage-0 classifiers; PII-guarded as of #304) | Moderation reports: 1-2 years (remediation plan Section 5's retention table, accepted 2026-07-20) |
 | 5 | Reading, completion, and rating tracking | Let a child resume a story and let a guardian see reading progress | Current node, save state, path, completion records, ratings | Child | Contract | None external | Life of the profile; erased with profile deletion (Phase 3a cascade) |
 | 6 | Storybook assignment | Let a guardian assign a published storybook to a specific child profile | Assignment record (profile id, storybook id, timestamp) | Child | Contract | None external | Life of the profile; erased with profile deletion (Phase 3a cascade) |
-| 7 | Cross-family recommendation sharing ("three-ring" social boundary, ADR-016) | Let a guardian share or receive book recommendations with a connected family | Family connection role/status; no child-identifying data crosses the boundary by design | Guardian | Consent (Article 6(1)(a)) — **open**: ADR-016's guardian-facing consent UI is not yet built (`gdpr-compliance-review.md` G-10 / remediation plan Phase 8b), so no consent has actually been captured for any live connection | None external | Life of the connection; erased via family deletion cascade (Phase 3a) |
+| 7 | Cross-family recommendation sharing ("three-ring" social boundary, ADR-016) | Let a guardian share or receive book recommendations with a connected family | Family connection role/status; no child-identifying data crosses the boundary by design | Guardian | Consent (Article 6(1)(a)) — recorded per-side as `FamilyConnection.consented_by_viewer_user_id`/`_at` and `consented_by_sharer_user_id`/`_at`, captured via the live guardian-facing `/guardian/connections` UI; nothing crosses until both are set (`gdpr-compliance-review.md` G-10, corrected 2026-07-20) | None external | Life of the connection; erased via family deletion cascade (Phase 3a) |
 | 8 | Cover art generation | Generate AI cover art for a published storybook | Cover-art prompt (PII-guarded as of #304), generated image | Child (subject of the story) | Contract | Google Gemini ("nano banana") for generation; Cloudflare R2 for storage (private, presigned-URL access only as of Phase 1d) | Life of the storybook version |
 | 9 | Admin platform operations and audit logging | Let an admin manage users/profiles across families, moderate content, and maintain an accountability trail | Every mutation and (as of Phase 8a) the one cross-family read (`profile_viewed`) as a `pipeline_event` row: actor, entity, event type, closed-vocabulary payload only (never free text, per `events/writer.py`'s allowlist, spec D3) | Guardian, Child, Admin (as actors or referenced entities) | Legal obligation / legitimate interest (accountability, COPPA 312.8/312.10, GDPR Article 5(2)) | None external | No fixed purge; retained under the Article 17(3) balancing justification in `coppa-gdpr-remediation-plan.md`'s "4d artifact" section |
 | 10 | Error monitoring and observability | Detect and diagnose application errors | Error telemetry, correlation IDs; hardcoded to exclude child-linked PII by design (`docs/planning/privacy-model.md`) | All (incidentally, if an error occurs during their request) | Legitimate interest (service reliability) | Sentry | Per Sentry's platform retention (not independently confirmed; tracked as a DPA/oversight item in `information-security-program.md` Section 4) |
@@ -114,22 +114,28 @@ record itself:
 | Access (Article 15) / Portability (Article 20) | Implemented | `GET /api/v1/me/export` (Phase 3c) |
 | Erasure (Article 17) | Implemented | `DELETE /api/v1/profiles/{id}`, `DELETE /api/v1/me/family` (Phase 3b); FK cascades (Phase 3a); Article 17(3) exception documented for `pipeline_event` (Phase 4d) |
 | Rectification (Article 16) | Implemented (partial) | Profile fields editable via existing guardian/admin PATCH endpoints; no separate "rectification request" workflow exists beyond direct edit, which the review has not flagged as a gap given the direct-edit affordance already covers it |
-| Restriction of processing (Article 18) | **Not implemented** | No mechanism to flag a record "restricted" short of deletion; not separately tracked in the remediation plan as of this writing — noted here as a gap this RoPA surfaces rather than resolves |
-| Objection (Article 21) | **Not implemented**, same gap as Article 18 | No opt-out-of-processing mechanism short of account deletion |
+| Restriction of processing (Article 18) | **Scheduled, not yet built** | Decided 2026-07-20: build a minimal "restrict processing" flag on profiles/families that pauses non-essential processing without deleting data, rather than leaving the gap this RoPA surfaced undocumented |
+| Objection (Article 21) | **Scheduled, not yet built**, same mechanism as Article 18 | Same flag covers the practical substance of an objection request at this scale |
 | Rights related to automated decision-making (Article 22) | Not applicable | Story generation and moderation inform guardian approval; they do not themselves produce a legal or similarly significant effect on a data subject without guardian review (the mandatory-human-approval ADR is the relevant design decision) |
 
-## 8. Open items this record surfaces (not resolved here)
+## 8. Open items this record surfaces
 
-Carried forward from the source documents rather than restated in full:
+**Status as of 2026-07-20**: the foundational decisions below are resolved (see
+`coppa-gdpr-remediation-plan.md` Sections 2 and 6); the corresponding engineering (Phase 2's
+consent-capture build, Phase 5's DPA execution, the Article 18/21 flag) is decided but not yet
+built. G-10/Phase 8b (ADR-016 consent UI) is fully resolved, not merely decided; it was already
+built (Section 3 activity 7 above reflects this).
 
-- No Article 6 legal basis formally recorded for any activity (G-01, Phase 2).
-- No verifiable parental consent mechanism (G-02, Phase 2).
-- Transfer mechanisms (SCCs/DPF) not confirmed executed for any processor (G-05, Phase 5a).
-- ADR-016 consent UI for cross-family sharing not built, so Section 3 activity 7's "consent"
-  basis is aspirational, not actual, today (G-10, Phase 8b).
-- Articles 18/21 (restriction, objection) have no implementation (newly surfaced by this
-  document; not previously tracked as a numbered finding).
-- DPO designation not assessed (G-11, Phase 7c).
+- Article 6 legal basis: recorded per-activity in Section 3 above (was previously
+  unrecorded, G-01).
+- Verifiable parental consent mechanism: decided (signature-capture on OAuth login, ADR-018
+  D1); Phase 2 build not yet started (G-02).
+- Transfer mechanisms (SCCs/DPF): owner decided (account owner executes Phase 5 directly);
+  not yet executed for any processor (G-05, Phase 5a).
+- Articles 18/21 (restriction, objection): decided (build a minimal "restrict processing"
+  flag); not yet built (newly surfaced by this document, not previously a numbered finding).
+- DPO designation: resolved — not required at current scale, reassess before Track 2 public
+  launch (G-11, Phase 7c).
 
 ## 9. Relationship to other compliance documents
 

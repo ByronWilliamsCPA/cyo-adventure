@@ -216,6 +216,16 @@ in either audit's evidence.
 
 ### 4.3 Cross-family sharing as a distinct lawful-basis question (ADR-016)
 
+**Update 2026-07-20: resolved.** This section previously described the guardian-facing consent
+UI as "not yet built," which was stale by the time of this update:
+`frontend/src/guardian/ConnectionsPage.tsx` is a live, routed guardian page (`/guardian/connections`)
+where each guardian explicitly allows or revokes their side of a connection, and
+`recommendations.py::_is_dual_consented`/`_dual_consented_connected_family_ids` gate every read
+on BOTH `consented_by_viewer_user_id` and `consented_by_sharer_user_id` being set, not merely on
+the admin-managed connection row existing. An admin linking two families creates a permission
+edge only; nothing about either family's reading/rating data is disclosed to the other until
+both guardians have affirmatively clicked "Allow." See G-10 below.
+
 ADR-016's dual-guardian-consented Ring-2 recommendation sharing (confirmed implemented with
 real consent-tracking columns and endpoints per the auth/session research: `family_connections.py`,
 `recommendations.py`) is a genuinely strong control from a *disclosure* standpoint; better
@@ -223,11 +233,10 @@ than most COPPA-only apps build. From a GDPR standpoint it raises a question the
 address: cross-family disclosure of one family's reading/rating signal to another family is a
 new processing purpose (social recommendation) layered on data originally collected for a
 different purpose (personal reading tracking). GDPR's purpose-limitation principle (Article
-5(1)(b)) and the need for a lawful basis *for that specific disclosure* (the dual-consent UI
-that would supply Article 6(1)(a) consent is itself flagged in ADR-016 as "not yet built" per
-the auth/session research) mean the consent gate that exists today (an admin-managed
-connection table with consent *columns* but no guardian-facing consent *UI*) is a partial,
-not complete, basis for this processing.
+5(1)(b)) and the need for a lawful basis *for that specific disclosure* are now satisfiable by
+recording the guardian's explicit "Allow" click as the Article 6(1)(a) consent event: the
+dual-consent UI this section previously described as missing is built, routed, and enforced at
+the read layer.
 
 ---
 
@@ -547,6 +556,14 @@ confirmed still unbuilt. **Recommendation**: draft an internal breach-classifica
 policy.
 
 ### G-10. Cross-family sharing lacks a documented lawful basis for the *disclosure* itself (Medium)
+
+**Status: DONE.** See Section 4.3's 2026-07-20 update. `ConnectionsPage.tsx` is a live, routed
+guardian page; `FamilyConnection.consented_by_viewer_user_id`/`_at` and
+`consented_by_sharer_user_id`/`_at` (paired and CHECK-enforced) record who consented and when,
+per side; nothing is disclosed until both are set; every consent/revoke action is additionally
+logged as a `family_connection_changed` `pipeline_event`. This finding was based on a stale
+"not yet built" read of ADR-016's status; the recommendation below is satisfied as of this
+correction, not as new work.
 
 **Evidence**: Section 4.3; ADR-016's consent-column/no-consent-UI gap already flagged in the
 auth/session research. **Recommendation**: complete ADR-016's planned guardian-facing consent

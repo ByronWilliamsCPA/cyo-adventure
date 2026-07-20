@@ -188,12 +188,16 @@ should actually build. Recommended defaults are given where there is a reasonabl
 answer for a project at this stage; the rest are genuinely yours to make. Full context for each
 is in Section 5.
 
-- **VPC method.** *Open.* No paid tier exists. Per `PROJECT-PLAN.md`, there is currently no
-  onboarding/signup endpoint at all and `POST /profiles` is ungated (no consent precondition),
-  so guardian registration is not today an existing child-data gate; it is the *intended*
-  attachment point for one. Phase 2 must make profile creation and any child-data collection
-  blocked until a consent record exists, not assume registration already provides that gate. See
-  the expanded options in Section 5 ("VPC method").
+**Status as of 2026-07-20: every item below is resolved.** Full records are in Section 5 and, for
+the four ADR-018 items, in ADR-018 itself; each resolution is marked "pending counsel
+confirmation" where that ADR's own Validation checklist requires counsel sign-off before the
+decision is final, per the "we draft, counsel reviews" model adopted this round.
+
+- **VPC method.** *Resolved: signature-capture layered on the existing Supabase/Google OAuth
+  login* (canvas or typed-name signature-equivalent + checkbox, logged server-side), ruling out
+  both card-verification and a third-party ID vendor. See Section 5 ("VPC method") and ADR-018
+  D1 for the full record; the "does a typed/canvas signature count as signed" question is
+  flagged for counsel.
 - **Supabase project region.** *Resolved: stay US.* You've confirmed Supabase stays in the US,
   with a possible future move from `us-east-1` to a US-west region. See Section 5 ("Supabase
   region") for why this is compliance-neutral and needs no further analysis.
@@ -201,20 +205,19 @@ is in Section 5.
   *Resolved: no, self-naming is disallowed by design.* See Section 5 ("Self-naming") for the
   requested impact analysis of both routes, kept for reference in case this is revisited later.
 - **Who signs off on and owns the compliance artifacts** (privacy notice, DPIA, DPAs)?
-  *Open, no answer yet.* Needed before Phase 7 can start in earnest. See Section 5 ("Artifact
-  owner").
-- **When does privacy counsel get engaged?** *Open, no answer yet.* Needed before Phase 2's
-  consent/notice language and Phase 7's DPIA can be finalized; the engineering work in Phases 1,
-  3, 4, and 6 does not depend on this and can proceed regardless. See Section 5 ("Counsel
-  timing").
-- **Retention windows per data category.** *Open, no answer yet.* A proposed starting table is
-  in Section 5 ("Retention windows"), for you to react to rather than starting from a blank page.
-- **DPO designation.** *Open, no answer yet.* Needs your projected user scale; can be assessed
-  in parallel with everything else and doesn't block any engineering work. See Section 5 ("DPO
-  designation").
+  *Resolved: the account owner, with this assistant drafting and counsel reviewing rather than
+  drafting from scratch.* See Section 5 ("Artifact owner").
+- **When does privacy counsel get engaged?** *Resolved: now,* reviewing drafts rather than
+  originating them, in parallel with the engineering work in Phases 1/3/4/6 (already complete).
+  See Section 5 ("Counsel timing").
+- **Retention windows per data category.** *Resolved: the proposed table in Section 5
+  ("Retention windows") is accepted as the actual policy.*
+- **DPO designation.** *Resolved: not required at current/near-term scale;* reassess before
+  Track 2 public launch. See Section 5 ("DPO designation").
 - **Zero-data-retention (ZDR) terms with OpenRouter and the other LLM/classifier vendors.**
-  *Open.* ADR-018 already calls this "standing Blocker 1"; needed before Phase 5 can close. See
-  Section 5 ("ZDR terms").
+  *Resolved: the account owner executes Phase 5 directly.* See Section 5 ("ZDR terms").
+- **UK/EEA user status** (gates Phase 9 and ADR-018 D3). *Resolved: none currently, none
+  planned; Phase 9 is shelved on this basis.*
 
 ---
 
@@ -271,7 +274,7 @@ all shipped (commit on `claude/gdpr-compliance-review-qzyvc2`).**
   design, so every call site could only ever pass an empty set. Kept as a documented, deliberate
   design note in the module docstring rather than dead code implying coverage that never existed.
 
-### Phase 2: Consent and notice (needs the VPC-method decision; drafting can start once it's chosen)
+### Phase 2: Consent and notice (VPC method decided 2026-07-20; unblocked, not yet built)
 
 - **2a. Build the consent-capture flow.** Replace `onboarding.py`'s `_record_consent()` no-op
   stub with a real implementation: present the privacy notice, capture consent by the chosen
@@ -335,7 +338,7 @@ considered verified rather than just implemented.**
   authorization on both delete endpoints and the export endpoint; and the export's blocked-request
   redaction.
 
-### Phase 4: Retention and storage governance (4a/4d startable now; 4b/4c need the retention-windows decision)
+### Phase 4: Retention and storage governance (4a/4d DONE; 4b/4c unblocked as of the 2026-07-20 retention-table decision, not yet built)
 
 - **4a. Execute the Supabase region decision** (already resolved, Section 2) while data volume is
   still small, since migrating a live project's region later is materially harder than choosing
@@ -421,7 +424,7 @@ admin-only access, and does not require guardian notice beyond what the privacy 
 already discloses about audit logging. No code change follows from this section; it documents the
 justification for a design decision (Phase 3a's FK-cascade exceptions) already shipped.
 
-### Phase 5: Processor paperwork (needs the ZDR-terms decision for the LLM vendors; the rest can start now)
+### Phase 5: Processor paperwork (owner decided 2026-07-20: account owner executes directly; not yet executed)
 
 - **5a. Confirm and execute a DPA (and SCCs, given every processor listed is US-hosted) with
   each processor**: Supabase, OpenRouter and downstream model providers, Anthropic-direct,
@@ -468,7 +471,7 @@ justification for a design decision (Phase 3a's FK-cascade exceptions) already s
   guard) and what isn't yet (verifiable parental consent, a retention policy), pointing to the
   compliance docs rather than asserting compliance inline.
 
-### Phase 7: Formal compliance documentation (needs the artifact-owner and counsel-timing decisions)
+### Phase 7: Formal compliance documentation (artifact-owner and counsel-timing decided 2026-07-20; 7a/7c/7d DONE, 7b in progress)
 
 - **7a. DONE.** [`docs/compliance/records-of-processing-activities.md`](records-of-processing-activities.md):
   eleven processing activities synthesized from the COPPA audit, the GDPR review, and
@@ -480,11 +483,18 @@ justification for a design decision (Phase 3a's FK-cascade exceptions) already s
   Pressure Point P-2; use the Article-25-by-design strengths already documented (data
   minimization, no ads/analytics SDKs, closed-vocabulary avatars, real tenancy auth) as the
   DPIA's starting risk-mitigation inventory.
-- **7c. Assess the DPO question (Article 37)** against your projected scale once Track 2
-  planning has real numbers; record the outcome either way.
-- **7d. Confirm the audience-classification and launch-geography decisions in ADR-018 (D2, D3)**
-  now reflect this plan's "compliant from the start" direction rather than the deferred-GDPR-K
-  posture D3 currently recommends, and flip ADR-018 from Proposed to Accepted once D1-D4 close.
+- **7c. DONE (recorded, not a full DPO analysis).** Current/near-term scale (small,
+  homelab-first, no near-term mass-growth plan) does not trigger Article 37's "large scale,
+  regular and systematic monitoring" threshold. Recorded outcome: DPO not required now;
+  concrete reassessment trigger set to "before Track 2 public launch" rather than left as an
+  open-ended future maybe.
+- **7d. DONE (decisions recorded in ADR-018 2026-07-20; pending counsel confirmation per that
+  ADR's own Validation checklist, not yet flipped to Accepted).** D1 (VPC mechanism), D2
+  (audience classification, confirmed child-directed per the ADR's existing recommendation),
+  and D3 (launch geography, confirmed US-only given no UK/EEA users) all now carry a recorded
+  owner decision rather than an open question. ADR-018's status stays Proposed until counsel
+  reviews the drafted consent flow, Privacy Notice, and DPIA (Phase 2/7b) and signs off; this
+  bullet's engineering-adjacent scope (recording the decisions themselves) is complete.
 
 ### Phase 8: Ongoing compliance operations (start once Phases 1-7 are substantially done)
 
@@ -495,16 +505,27 @@ justification for a design decision (Phase 3a's FK-cascade exceptions) already s
   (every other admin GET is same-family or non-child data), and the only READ this audit log
   covers at all: every other `EventType` member logs a mutation. Queryable via the existing
   `GET /api/v1/admin/audit?kind=profile_viewed`; no new read surface was needed.
-- **8b. Complete ADR-016's guardian-facing consent UI** for cross-family recommendation
-  sharing, so the consent columns already in the schema have an actual guardian-operated
-  control in front of them.
+- **8b. DONE, and was already done before this plan flagged it as open.** This bullet (and
+  `gdpr-compliance-review.md` finding G-10) described the guardian-facing consent UI as
+  not-yet-built based on a stale reading of ADR-016's status; on inspection (2026-07-20),
+  `frontend/src/guardian/ConnectionsPage.tsx` is a live, routed guardian page at
+  `/guardian/connections`, and `recommendations.py` gates every read on both
+  `FamilyConnection.consented_by_viewer_user_id` and `consented_by_sharer_user_id` being set
+  (paired with a `_at` timestamp each, CHECK-enforced), not on the admin-managed connection row
+  alone. Nothing about either family's reading/rating data crosses to the other family until
+  both guardians have explicitly clicked "Allow." See `gdpr-compliance-review.md` Section 4.3
+  and G-10 for the corrected write-up.
 - **8c. Set an annual (or pre-major-feature) compliance review cadence**, re-running this plan's
   Phase 1-6 checks against whatever has shipped since.
 
 ### Phase 9: GDPR-K / UK AADC-specific conformance
 
-Documentation-heavy; needs the launch-geography decision confirmed, and most items build on
-Phases 2/3/7 artifacts existing first.
+**Shelved 2026-07-20, not worked.** The launch-geography decision this phase needed is now
+confirmed (ADR-018 D3): no UK or EEA users exist or are planned. Every item below stays
+unscheduled until that changes; if UK/EEA users are ever expected, revisit this phase and
+ADR-018 D3 together before that expansion ships. Left in place, not deleted, so the plan is
+ready to resume rather than re-derived from scratch if the fact changes. Documentation-heavy;
+most items would build on Phases 2/3/7 artifacts existing first.
 
 "GDPR-K" is not a separate statute; it is GDPR's ordinary rules as applied to children (Article
 8's consent age, Article 25's design-by-default duty, Article 35's risk-based DPIA), plus, for
@@ -540,9 +561,9 @@ statutory basis specifically rather than GDPR generally).
   | 3. Transparency | Gap: G-07's privacy notice is a single adult-legal document; AADC wants content pitched to the child's age/development stage too | New: 9e below, extends Phase 2's notice build |
   | 4. Detrimental use of data | Likely satisfied (no ads, no dark-pattern engagement loops); not yet self-certified in writing | New: one-paragraph sign-off once Phase 2/7 notices exist to point to |
   | 5. Policies and community standards | Depends on the published notice/terms existing | Depends on Phase 2 |
-  | 6. Default settings ("high privacy" unless justified) | Needs an explicit default-settings audit; cross-family recommendation sharing (G-10, Phase 8b) is the concrete item most likely to need a default flipped to off/opt-in | New: audit item, feeds Phase 8b |
+  | 6. Default settings ("high privacy" unless justified) | Satisfied for cross-family recommendation sharing specifically: connections are opt-in (dual-consent, off by default) not opt-out (G-10/8b, DONE). A broader default-settings audit across the rest of the app is still worth doing on its own merits | New: audit item, no longer gated on Phase 8b |
   | 7. Data minimization | Satisfied; already the headline strength of both the COPPA audit and GDPR review (Article 25-by-design) | Reference existing findings, no new work |
-  | 8. Data sharing | Same underlying gap as G-10 (no documented Article 6 basis for cross-family disclosure) | Tracked at G-10 / Phase 8b already |
+  | 8. Data sharing | Satisfied: Article 6(1)(a) consent is now the recorded basis for cross-family disclosure (G-10/8b, DONE) | No further work |
   | 9. Geolocation | Satisfied: no geolocation collected anywhere in the data inventory (Section 3) | Confirm explicitly in the RoPA (Phase 7a), no code change |
   | 10. Parental controls | Guardian consoles exist by design; needs child-facing copy explaining what a guardian can see/do | New: small copy addition, pairs with 9e |
   | 11. Profiling | The moderation/recommendation pipeline is profiling-adjacent (already flagged in G-04's DPIA discussion); needs its own compelling-reason-and-safeguards note distinct from the general DPIA entry | New: DPIA subsection, pairs with 9a |
@@ -594,7 +615,14 @@ marked **(no default)** genuinely need your input.
 
 **Gates Phase 2 (consent):**
 
-- **VPC method.** *Open, but now well-scoped: no paid tier exists, and the product's stated
+- **VPC method.** *Resolved 2026-07-20 (owner decision; see ADR-018 D1 for the full record).*
+  A fifth option not listed below was chosen instead of the four originally drafted here: a
+  signature-capture step (canvas or typed-name signature-equivalent + checkbox, logged with
+  IP/timestamp/account-id) layered on the existing Supabase/Google OAuth login, explicitly
+  ruling out both the card-verification and third-party-vendor options below to avoid PCI
+  scope and a new processor respectively. The options originally drafted here are kept for
+  reference, not because any of them was chosen:
+- *Originally open, but now well-scoped: no paid tier exists, and the product's stated
   design is that a guardian registers before any child can use the app.* That said, per
   `PROJECT-PLAN.md` there is currently no onboarding/signup endpoint at all, and `POST /profiles`
   is ungated today (no consent precondition). So guardian registration is not yet an existing
@@ -624,10 +652,8 @@ marked **(no default)** genuinely need your input.
      before you'd want to depend on it.
    - **A signed consent form** (upload or e-sign at registration): lowest engineering cost, no
      vendor dependency, but the highest guardian friction of the four.
-   Recommendation, non-binding: the $0 card-verification step is the best cost/rigor tradeoff for
-   where the product is today (no paid tier, small team), with a third-party VPC vendor as the
-   upgrade path if you want the COPPA+GDPR-K+AADC multi-jurisdiction coverage bundled rather than
-   assembled by hand. **(no default without your input on which tradeoff you'd rather make)**
+   None of the four above was chosen; see the resolution note at the top of this item and
+   ADR-018 D1 for what was picked instead and why. **(resolved 2026-07-20)**
 
 **Gates Phase 4 (retention/storage):**
 
@@ -638,9 +664,9 @@ marked **(no default)** genuinely need your input.
   One practical note for whenever that move happens: it's a natural point to also land any
   schema-level retention/deletion changes from Phase 3/4 in the same maintenance window, since
   you'll already be touching the data at rest.
-- **Retention windows per data category.** *Open; here's a starting point since you don't have
-  one yet, rather than leaving this blank.* A draft table to react to and adjust, not a final
-  answer:
+- **Retention windows per data category.** *Resolved 2026-07-20: accepted as drafted.* Kept
+  below as the actual policy, not a proposal, and now what Phase 4b publishes and Phase 4c's
+  purge jobs build against:
 
   | Data category | Proposed window | Rationale |
   |---|---|---|
@@ -653,7 +679,7 @@ marked **(no default)** genuinely need your input.
   | Erasure request: response to the guardian | Acknowledge and respond within 1 month of the request (GDPR Article 12(3)); may be extended by up to 2 further months for complex/numerous requests, but only if the guardian is notified of the extension and the reason within the initial 1-month window | This is the deadline to communicate *what action was taken*, a distinct obligation from the deletion itself |
   | Erasure request: actual purge | Purge within 30 days of the request, well inside the Article 12(3) response window above | Article 17's "without undue delay" duty; the two deadlines (respond vs. purge) are tracked separately so a fast purge doesn't imply a fast *response* is optional, and vice versa |
 
-  **(needs your reaction to this table, not a from-scratch answer)**
+  **(resolved 2026-07-20; accepted as-is)**
 
 **Resolved, kept for reference:**
 
@@ -696,36 +722,63 @@ marked **(no default)** genuinely need your input.
 **Gates Phase 5 (processor paperwork):**
 
 - **ZDR terms.** **Zero-data-retention terms with OpenRouter and the other LLM/classifier
-  vendors.** Who pursues this, and on what timeline? ADR-018 already calls it the standing
-  blocker; it just needs an owner and a deadline. **(no default; needs an owner assigned)**
+  vendors.** *Resolved 2026-07-20.* The account owner executes Phase 5 directly (not counsel,
+  not a hired vendor manager); most processors' DPAs are vendor-supplied click-through
+  agreements, OpenRouter's ZDR terms are the one item needing actual negotiation. **(owner
+  assigned: account owner)**
 
 **Gates Phase 9 (GDPR-K / AADC conformance):**
 
 - **UK-user confirmation.** Same underlying fact question as Pressure Point P-1 (does an
   EU/UK-resident guardian or child use the app today, in the current private tier), asked here
   specifically because the AADC's "likely to be accessed by children" test is a lower bar than
-  GDPR's general Article 3(2) targeting test; if the answer to P-1 is "yes, UK," Phase 9 is not
-  a future expansion gate, it is current-state work. **(no default; same fact-finding as P-1,
-  not a new question, but it independently gates Phase 9's start rather than only Pressure Point
-  P-1's GDPR conclusion)**
+  GDPR's general Article 3(2) targeting test. *Resolved 2026-07-20: no, US-only now and for the
+  foreseeable future.* Phase 9 is shelved on this basis (see that phase's status note); if this
+  answer changes, both Pressure Point P-1's GDPR conclusion and Phase 9's shelved status need
+  revisiting together, not separately.
 
 **Gates Phase 7 (formal documentation), and the retention-windows decision above:**
 
 - **Artifact owner.** **Who owns and signs off on the compliance artifacts** (privacy notice,
-  DPIA, DPA/SCC execution, retention policy)? **(no default; needs a named owner, likely you or
-  whoever you designate)**
-- **Counsel timing.** **When does privacy counsel get engaged?** Given the "compliant from the
-  start" goal, the working recommendation is: now, in parallel with Phase 1/3/4/6 engineering
-  work, so counsel's review of the consent mechanism and notice language (Phase 2) and the DPIA
-  (Phase 7) doesn't become the critical-path bottleneck once the engineering is otherwise ready.
-  **(recommend engaging now; timing is your call)**
-- **DPO designation.** Needs your projected user scale at whatever launch tier you're
-  planning toward; can be assessed in parallel with everything else. **(no default; needs
-  scale projections)**
+  DPIA, DPA/SCC execution, retention policy)? *Resolved 2026-07-20, by the working model this
+  whole decision round adopted:* the account owner and this assistant draft every artifact;
+  counsel reviews and signs off rather than drafting from scratch. Named owner: account owner.
+- **Counsel timing.** **When does privacy counsel get engaged?** *Resolved 2026-07-20,
+  consistent with the working recommendation already here:* now, in parallel with the
+  engineering work already complete (Phases 1/3/4/6). The DPIA and Privacy Notice are being
+  drafted next (Phase 7b / Phase 2) specifically so counsel's first look is a review pass, not
+  a blank page.
+- **DPO designation.** *Resolved 2026-07-20; see Phase 7c above.* Current/near-term scale
+  (small, homelab-first) does not trigger Article 37; recorded as not required now, with
+  reassessment tied to "before Track 2 public launch."
 
 ---
 
 ## 6. Suggested sequencing
+
+**Decisions made 2026-07-20** (superseding the "decision-gathering still open" line this
+section used to carry):
+
+- **VPC method**: signature-capture layered on the existing Supabase/Google OAuth login
+  (canvas or typed-name signature-equivalent + checkbox, logged with IP/timestamp/account-id
+  server-side). No new vendor, no PCI scope. The one flagged legal question (does a
+  typed/canvas signature satisfy 312.5(b)(2)(i)'s "signed") is the top item for counsel's
+  review of the drafted consent flow and Privacy Notice.
+- **Retention windows**: the draft table in Section 5 is accepted as-is; Phase 4b can now
+  publish it as the retention policy.
+- **ZDR/processor-paperwork owner**: the account owner (not counsel, not a hired vendor
+  manager) will execute Phase 5's DPAs directly; most are vendor-supplied click-through
+  agreements, OpenRouter's ZDR terms are the one needing actual back-and-forth.
+- **UK/EEA users**: none currently, none expected. Phase 9 (GDPR-K/AADC) is shelved, not
+  worked, until that changes; Phase 7d's ADR-018 D3 closes on the US-only framing already in
+  the ADR.
+- **DPO (Article 37)**: current/near-term scale does not trigger a "large scale, regular and
+  systematic monitoring" DPO requirement. Phase 7c is recorded as "not required now," with a
+  concrete reassessment trigger of "before Track 2 public launch," not a full DPO analysis
+  commissioned today.
+- **Articles 18/21 (restriction, objection)**: build a minimal "restrict processing" flag
+  (newly scoped, not previously in this plan) rather than leaving the gap the RoPA surfaced
+  undocumented and unaddressed.
 
 ```text
 Now, in parallel, no dependencies (Supabase region and self-naming already resolved):
@@ -735,27 +788,32 @@ Now, in parallel, no dependencies (Supabase region and self-naming already resol
     status note)
   Phase 4a (Supabase region execution); 4d DONE (audit-log retention justification)
   Phase 6 (security hardening) - DONE (6a, 6b, 6c, 6d)
-  Decision-gathering still open: VPC method, retention-table reaction, ZDR owner,
-    artifact owner, counsel timing, DPO
+  Phase 8a DONE; 8b DONE (was already built; the finding describing it as missing was stale,
+    corrected 2026-07-20 -- see G-10)
 
-Once the VPC-method decision lands:
-  Phase 2 (consent + notice build; Phase 2's 2a is what makes guardian registration an actual
-  gate on child-data collection, not just the intended attachment point it is today)
+Unblocked now that the VPC method is decided:
+  Phase 2 (consent + notice build; draft the signature-capture consent flow and the Privacy
+  Notice for counsel review; Phase 2's 2a is what makes guardian registration an actual gate on
+  child-data collection, not just the intended attachment point it is today)
 
-Once the retention-table decision is confirmed or adjusted:
-  Phase 4b-4c (retention policy + purge jobs)
+Unblocked now that the retention table is accepted:
+  Phase 4b (publish the retention policy from the accepted table); 4c (build the purge jobs
+  against it)
 
-Once the ZDR-owner decision lands, in parallel with the above:
-  Phase 5 (processor DPAs/SCCs)
+Unblocked now that the paperwork owner is decided:
+  Phase 5 (processor DPAs/SCCs -- prep a checklist of each processor's DPA/terms URL plus
+  OpenRouter's ZDR options)
 
-Once the artifact-owner and counsel-timing decisions land and Phases 1-6 are substantially built:
-  Phase 7 (7a DONE; DPIA, DPO assessment, ADR-018 D1-D4 closeout remain)
+Unblocked now that DPIA ownership/timing follows the "we draft, counsel reviews" model:
+  Phase 7b (draft the DPIA now, informed by Phase 2's consent-flow design so it isn't drafted
+  twice); 7c DONE (recorded as not-required, reassess before Track 2 launch); 7d DONE
+  (ADR-018 D3 closes on US-only; 7a already DONE)
 
-Ongoing, once the above is stable:
-  Phase 8 (8a DONE; ADR-016 consent UI, annual review cadence remain)
+Newly scoped, unblocked, small:
+  Articles 18/21 minimal "restrict processing" flag (engineering, no dependencies)
+  Phase 8c (schedule the annual review cadence -- e.g. a yearly reminder/Routine)
 
-Once UK-user status is confirmed (independently of, but using the same fact-finding as,
-Pressure Point P-1), and Phases 2/3/7 have produced their artifacts:
+Shelved, not worked, until UK/EEA user status changes:
   Phase 9 (GDPR-K / AADC conformance: Article 8 bypass write-up, 15-standard self-assessment,
   ICO registration check, child-facing notice layer, best-interests DPIA addendum)
 ```
