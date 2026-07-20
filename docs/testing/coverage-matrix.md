@@ -1,4 +1,13 @@
-# Frontend Test Coverage Matrix
+---
+title: "Frontend Test Coverage Matrix"
+schema_type: common
+status: published
+owner: core-maintainer
+purpose: "Maps each user journey to the tests that cover it, by layer and environment."
+tags:
+  - testing
+  - coverage
+---
 
 Maps each user journey to the tests that cover it, by layer and environment.
 Use this to answer "what covers X" and to spot gaps before they reach staging

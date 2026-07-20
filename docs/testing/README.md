@@ -1,4 +1,13 @@
-# Frontend Testing Strategy
+---
+title: "Frontend Testing Strategy"
+schema_type: common
+status: published
+owner: core-maintainer
+purpose: "Frontend test tiers, the environments they run against, and where each type of coverage lives."
+tags:
+  - testing
+  - documentation
+---
 
 This directory documents the frontend test tiers, the environments they run
 against, and how to find what's covered where. Backend (pytest) testing
