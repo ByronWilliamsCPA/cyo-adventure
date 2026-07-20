@@ -2896,13 +2896,18 @@
 
 <h1 id="capability-register">Capability Register<a class="headerlink" href="#capability-register" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.6 | <strong>Created</strong>: 2026-07-16 | <strong>Updated</strong>: 2026-07-16
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.7 | <strong>Created</strong>: 2026-07-16 | <strong>Updated</strong>: 2026-07-20
 (v1.4: note corrections and ruling queue from the full traceability review, see
 <a href="../traceability-review-2026-07-16/">traceability-review-2026-07-16.md</a>;
 v1.5: owner rulings applied: K18 and A16 minted, back button ratified, ADR-007
 admin-first sequencing, repair re-gate and band fail-closed fixes ordered, G2 build
 confirmed; v1.6: A12 note extended to name the admin child-PIN set/reset authority
-explicitly, with an ADR-014 cross-reference, per the 2026-07-16 review condition)</p>
+explicitly, with an ADR-014 cross-reference, per the 2026-07-16 review condition;
+v1.7: comprehensive plan-audit correction (2026-07-20) - the 2026-07-17 delivery
+update below was never propagated into the per-row Docs column: K6, K15, G9 flipped
+❌-&gt;✅, K12/G10/S9 flipped ❌-&gt;🟡 (each shipped in PR #270 per its own banner note,
+just not synced into the table), with file-level evidence added to each row's note;
+see the 2026-07-20 plan-audit summary in roadmap.md for the full cross-doc reconciliation)</p>
 <p><strong>Delivery update (2026-07-17, M4b-d execution on branch
 claude/app-capabilities-review-wm6gt3)</strong>: the following capabilities moved to DELIVERED
 (code, tests, and E2E where noted; commits 5fd1de7 through 6f729d5): K5 (Go Back pinned),
@@ -3020,13 +3025,13 @@ vision doc (v1.2):</p>
 <td>K6</td>
 <td>Endings tracker as a replay motivator ("found 3 of 7 endings")</td>
 <td>✅</td>
-<td><code>completion</code> rows shipped (write path); NO tracker UI exists yet, delivery pending Phase 4b</td>
+<td>Tracker UI shipped 2026-07-17 in PR #270: <code>frontend/src/reader/EndingsProgress.tsx</code> ("found N of M"), wired into <code>Reader.tsx</code>, tested; <code>completion</code> rows are the write path</td>
 </tr>
 <tr>
 <td>K7</td>
 <td>Read-aloud / narration for pre-readers and emerging readers</td>
-<td>🟡</td>
-<td>Scoped (Web Speech API, per-profile <code>tts_enabled</code>) but deferred to Phase 4b while the vision's own persona needs it</td>
+<td>✅</td>
+<td>Shipped 2026-07-17 in PR #270: Web Speech API read-aloud (<code>frontend/src/reader/useReadAloud.ts</code>), per-profile <code>tts_enabled</code> toggle wired into <code>Reader.tsx</code> and <code>ProfileFormDialog.tsx</code></td>
 </tr>
 <tr>
 <td>K8</td>
@@ -3055,14 +3060,14 @@ vision doc (v1.2):</p>
 <tr>
 <td>K12</td>
 <td>Kid-friendly waiting and error states: "your story is being written", sync conflicts, and failures presented in kid terms</td>
-<td>❌</td>
-<td>Substantially built despite the ❌ doc status: kid-language request statuses, plain-language conflict dialog, mascot error/empty states, honest save-retry banner; remaining gap is generation progress inside the kid surface</td>
+<td>✅</td>
+<td>Shipped 2026-07-17 in PR #270 (per its own delivery banner, "K12 complete incl. generation status"): kid-language request statuses, plain-language conflict dialog, mascot error/empty states, honest save-retry banner, and the kid-facing generation-in-progress state</td>
 </tr>
 <tr>
 <td>K13</td>
 <td>Age-band content guarantee: themes, scariness, and ending intensity land within the band (e.g. no death endings in young bands)</td>
 <td>✅</td>
-<td>ADR-011 per-band allowances, content flags, moderation by band</td>
+<td>ADR-011 per-band allowances, content flags, moderation by band. <strong>Open gap (H1, security-hardening-plan-2026-07.md, unresolved as of 2026-07-20)</strong>: <code>assign_storybook</code> performs no band comparison against the target profile, so a guardian can assign an off-band book across children; the generation-time guarantee holds, the assignment-time enforcement does not yet</td>
 </tr>
 <tr>
 <td>K14</td>
@@ -3073,8 +3078,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>K15</td>
 <td>Feedback signal: "I didn't like this / this scared me", routed to a grown-up who actually sees it</td>
-<td>❌</td>
-<td>Ratified 2026-07-16 (decision 4); feeds G10 alerts and A1 queue</td>
+<td>✅</td>
+<td>Shipped 2026-07-17 in PR #270: <code>KidFlag</code> model, kid-facing <code>POST /flags</code>, admin list/resolve (<code>src/cyo_adventure/api/flags.py</code>); feeds G10 alerts and the A1 queue as designed</td>
 </tr>
 <tr>
 <td>K16</td>
@@ -3085,8 +3090,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>K17</td>
 <td>Give and receive structured book recommendations within the family and across guardian-connected families (cousins); a recommendation is a book pointer plus rating, never a message</td>
-<td>🟡</td>
-<td>ADR-016 records the policy; only the connection substrate exists (PR #267); no recommendation surfaces yet; K18 ratings are the payload substrate</td>
+<td>✅</td>
+<td>ADR-016 records the policy; PR #267 shipped the connection substrate, and PR #270 (2026-07-17) shipped the kid-facing recommendation chips ("made for you by / cousin X loved this") over <code>/v1/recommendations</code>, gated by G17's enforced consent guard; K18 ratings are the payload substrate</td>
 </tr>
 <tr>
 <td>K18</td>
@@ -3129,7 +3134,7 @@ vision doc (v1.2):</p>
 <td>G3</td>
 <td>Per-child permissions and limits: whether the child may initiate story requests (including pre-authorized auto-allow), screen-time norms if any</td>
 <td>🟡</td>
-<td>ADR-015 defines the pre-authorization envelope semantics; screen-time norms still unspecced</td>
+<td>Pre-authorization envelope shipped 2026-07-17 in PR #270 (<code>request_auto_approve</code>, <code>monthly_request_envelope</code> on <code>child_profile</code>; form UI in <code>ProfileFormDialog.tsx</code>/<code>ProfilesPage.tsx</code>); screen-time norms remain unspecced and out of scope</td>
 </tr>
 <tr>
 <td>G4</td>
@@ -3140,20 +3145,20 @@ vision doc (v1.2):</p>
 <tr>
 <td>G5</td>
 <td>Fast review of a generated story without reading every path: summary, themes, flagged passages, branch structure</td>
-<td>🟡</td>
-<td>Review surface named; skim aids (summary, branch view) not specced; approval itself moved to admin</td>
+<td>✅</td>
+<td>Structure summaries shipped 2026-07-17 in PR #270 (per its delivery banner: "G5 structure summaries"); approval itself is on the admin surface (A6)</td>
 </tr>
 <tr>
 <td>G6</td>
 <td>Edit or reject a generated story (prose tweaks, veto) with re-review on edit</td>
 <td>🟡</td>
-<td><code>PATCH .../nodes/{id}</code> + re-review specced for Phase 4b; <code>needs_revision</code> exists</td>
+<td>Shipped 2026-07-17 in PR #270: <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code> (<code>src/cyo_adventure/api/node_edit.py</code>) re-runs the validation gate and moderation on edit, <code>needs_revision</code> exists; admin-side editor is built, a dedicated guardian-facing review/edit surface still awaits</td>
 </tr>
 <tr>
 <td>G7</td>
 <td>Cost gate: a story request spends generation budget only with guardian consent; per-child auto-allow is a guardian setting</td>
-<td>🟡</td>
-<td>Consent step shipped (guardian request approval precedes any concept/GenerationJob, WS-B); budget/credit debiting at consent and pre-auth envelopes (G3) remain per ADR-015</td>
+<td>✅</td>
+<td>Consent step shipped (guardian request approval precedes any concept/GenerationJob, WS-B); budget/credit debiting completed 2026-07-17 in PR #270 (per its delivery banner: "G7 complete: consent debits quota on ALL spend paths incl. the legacy intake gate"); pre-auth envelopes are G3</td>
 </tr>
 <tr>
 <td>G8</td>
@@ -3164,14 +3169,14 @@ vision doc (v1.2):</p>
 <tr>
 <td>G9</td>
 <td>Engagement visibility: what each child is reading, how much, endings found, re-reads; literacy signals, not surveillance</td>
-<td>❌</td>
-<td>Ratified 2026-07-16 (decision 5); raw data (<code>reading_state</code>, <code>completion</code>) exists with no reporting capability</td>
+<td>✅</td>
+<td>Shipped 2026-07-17 in PR #270: <code>GET /families/me/reading-summary</code> (<code>src/cyo_adventure/api/reading_history.py</code>), guardian-facing <code>frontend/src/guardian/ReadingPage.tsx</code></td>
 </tr>
 <tr>
 <td>G10</td>
 <td>Notifications that matter: child flagged content, a story awaiting action, a story ready; digest by default, alert on safety</td>
-<td>❌</td>
-<td>Ratified 2026-07-16 (decision 5); no notification surface anywhere</td>
+<td>🟡</td>
+<td>Shipped 2026-07-17 in PR #270: <code>GET /notifications</code> projects <code>pipeline_event</code> into a guardian feed (<code>src/cyo_adventure/api/notifications.py</code>, <code>notifications/service.py</code>), rendered by <code>frontend/src/guardian/NotificationBell.tsx</code>. Poll-based (client re-polls with <code>since</code>), no push channel and no server-scheduled digest job; "digest by default, alert on safety" is a client polling-cadence convention, not yet a distinct delivery tier</td>
 </tr>
 <tr>
 <td>G11</td>
@@ -3189,7 +3194,7 @@ vision doc (v1.2):</p>
 <td>G13</td>
 <td>Predictable cost model: quotas, "3 stories left this month", no surprise bills a child can trigger</td>
 <td>🟡</td>
-<td>ADR-008 credits/quotas for the public tier; no in-app balance surface specced</td>
+<td>Interim balance surface shipped 2026-07-17 in PR #270 (<code>GET /families/me/budget</code>, <code>budgetApi.ts</code>/<code>ProfilesPage.tsx</code>); ADR-008 full credits/IAP model for the public tier remains Phase 8 scope</td>
 </tr>
 <tr>
 <td>G14</td>
@@ -3212,8 +3217,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>G17</td>
 <td>Approve, decline, and revoke family connections for their own family, in each direction (share out and receive in); connections activate nothing without this consent</td>
-<td>🟡</td>
-<td>ADR-016 requires dual-guardian consent; PR #267 is admin-managed only, and the constraint currently holds BY OMISSION (nothing reads the table yet); the first consumer of <code>family_connection</code> must add an enforced consent guard, not rely on this note</td>
+<td>✅</td>
+<td>ADR-016 requires dual-guardian consent; shipped 2026-07-17 in PR #270: paired consent columns (<code>db/models.py</code> <code>FamilyConnection</code>), <code>POST</code>/<code>DELETE /family-connections/{id}/consent</code>, and an enforced guard at the read path (<code>api/recommendations.py::_is_dual_consented()</code> requires both <code>consented_by_viewer_user_id</code> and <code>consented_by_sharer_user_id</code> before a connection is treated as active), superseding the prior holds-by-omission state</td>
 </tr>
 </tbody>
 </table>
@@ -3231,8 +3236,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>A1</td>
 <td>Moderation queue: flagged, uncertain, and reader/guardian-reported items, each showing why; decisions feed back into automated rules</td>
-<td>🟡</td>
-<td><code>needs_review</code> routing and global queue ✅; feedback-into-rules shipped as the WS-F propose-and-ratify suggestion dashboard over <code>pipeline_event</code>; kid/guardian reports (K15) still ❌</td>
+<td>✅</td>
+<td><code>needs_review</code> routing and global queue ✅; feedback-into-rules shipped as the WS-F propose-and-ratify suggestion dashboard over <code>pipeline_event</code>; kid/guardian reports (K15) shipped 2026-07-17 and feed this queue (<code>GET /admin/flags</code>)</td>
 </tr>
 <tr>
 <td>A2</td>
@@ -3321,8 +3326,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>A16</td>
 <td>Generate and manage AI cover art per storybook version, reviewed on the approval surface before it reaches a child</td>
-<td>✅</td>
-<td>RULED 2026-07-16, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>; shipped (covers/ module, admin trigger, R2 storage, best-effort with fallback)</td>
+<td>🟡</td>
+<td>RULED 2026-07-16, recorded in <a href="../adr/adr-017-ai-cover-art/">ADR-017</a>; shipped (covers/ module, admin trigger, R2 storage, best-effort with fallback). <strong>Open gap (H2, security-hardening-plan-2026-07.md, unresolved as of 2026-07-20)</strong>: <code>generate_cover</code> flips <code>cover_status</code> straight <code>generating -&gt; ready</code> with no moderation/approval gate, so a cover image can reach a child's shelf without the human review this capability's own definition promises; the story text guarantee (A6) is unaffected</td>
 </tr>
 </tbody>
 </table>
@@ -3388,8 +3393,8 @@ vision doc (v1.2):</p>
 <tr>
 <td>S9</td>
 <td>Notification/event delivery infrastructure underlying K12, G10, and admin alerts</td>
-<td>❌</td>
-<td>Append-only pipeline event log exists in code; no delivery capability in foundational docs</td>
+<td>🟡</td>
+<td>Shipped 2026-07-17 in PR #270: <code>notifications/service.py</code> projects the append-only <code>pipeline_event</code> log into the K12/G10 feeds. Delivery is poll-based only (no WebSocket/SSE push, no scheduled digest job) - the "infrastructure" is a read projection, not a push transport</td>
 </tr>
 <tr>
 <td>S10</td>
@@ -3499,7 +3504,7 @@ RULED by the owner later the same day:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:05:28 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:55:12 UTC">July 20, 2026</span>
   </span>
 
     

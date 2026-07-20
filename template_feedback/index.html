@@ -4447,6 +4447,11 @@ chain containing a crypto namespace (<code>Crypto</code>, <code>cryptography</co
 <li><strong>Priority</strong>: High</li>
 <li><strong>Category</strong>: Configuration</li>
 <li><strong>Discovered</strong>: 2026-07-17</li>
+<li><strong>Status</strong>: Resolved in this repo (PR #273, merged 2026-07-19): <code>pyproject.toml</code>'s
+  <code>[tool.mutmut]</code> rewritten to the 3.x dialect (<code>source_paths</code>, <code>only_mutate</code>), and
+  <code>mutation-testing.yml</code> replaced with a self-contained job. A real local run since executed
+  successfully (5,593 mutants, 65.7% partial score). Kept open here because the upstream
+  cookiecutter template itself still ships the broken 2.x config.</li>
 </ul>
 <p><strong>Issue</strong>: The template's <code>pyproject.toml</code> writes a <code>[tool.mutmut]</code> section in mutmut 2.x
 dialect (<code>paths_to_mutate</code> as a string, <code>tests_dir</code> as a string, <code>runner</code>, <code>backup</code>,
@@ -4490,7 +4495,16 @@ succeeded is invisible.</p>
 <ul>
 <li><strong>Priority</strong>: High</li>
 <li><strong>Category</strong>: CI/CD</li>
-<li><strong>Discovered</strong>: 2026-07-17</li>
+<li>
+<p><strong>Discovered</strong>: 2026-07-17</p>
+</li>
+<li>
+<p><strong>Status</strong>: Resolved in this repo (PR #273, merged 2026-07-19): the no-op scaffold was
+  replaced with real harnesses (<code>fuzz/fuzz_condition_evaluator.py</code>,
+  <code>fuzz/fuzz_storybook_validation.py</code>) exercising actual project code, which in the same
+  pass caught a real PII-egress unicode-folding bypass. Kept open here because the upstream
+  cookiecutter template itself still ships the no-op scaffold described below.</p>
+</li>
 </ul>
 <p><strong>Issue</strong>: The template's <code>fuzz/fuzz_input_validation.py</code> is an unfilled scaffold: its
 <code>test_one_input</code> consumes bytes via <code>FuzzedDataProvider.ConsumeUnicodeNoSurrogates(1024)</code>
@@ -4521,6 +4535,11 @@ parser/validator entry point.</p>
 <li><strong>Priority</strong>: High</li>
 <li><strong>Category</strong>: CI/CD</li>
 <li><strong>Discovered</strong>: 2026-07-17</li>
+<li><strong>Status</strong>: Resolved in this repo (PR #274, merged 2026-07-19): <code>set -o pipefail</code> now
+  wraps the checker/tee pipeline, <code>tests/**/*.py</code> was added to the trigger paths, and a
+  <code>--fail-level</code>/acknowledged-findings baseline was added on top (see the "FIPS checker has
+  no disposition mechanism" entry below). Kept open here because the upstream cookiecutter
+  template itself still ships the broken gate described below.</li>
 </ul>
 <p><strong>Issue</strong>: Two compounding defects in <code>.github/workflows/fips-compatibility.yml</code> make the FIPS
 gate inform-only in every mode, including <code>--strict</code> dispatch. First, the run step captures
@@ -4602,7 +4621,7 @@ rather than a paragraph. See <code>load_acknowledgments</code>, <code>apply_ackn
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 19, 2026 00:29:53 UTC">July 19, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:55:12 UTC">July 20, 2026</span>
   </span>
 
     
