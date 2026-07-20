@@ -49,6 +49,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a GDPR-specific compliance review and a phased COPPA/GDPR/GDPR-K
   remediation plan under `docs/compliance/`, companion documents to the
   existing COPPA compliance audit (#304).
+- Added four more `docs/compliance/` artifacts, closing remaining low-dependency
+  items in the remediation plan: an Article 17(3) balancing-test justification
+  for indefinite `pipeline_event` retention (Phase 4d, inline in the
+  remediation plan), an internal information security program document
+  (`information-security-program.md`, Phase 6b), a breach-notification
+  runbook (`breach-notification-runbook.md`, Phase 6c), and a Records of
+  Processing Activities document (`records-of-processing-activities.md`,
+  Phase 7a).
 
 ## [0.17.0] - 2026-07-19
 

@@ -495,6 +495,9 @@ constitutes Article 8(2) "reasonable efforts."
 
 ### G-03. No Records of Processing Activities document (Article 30) (Critical once GDPR applies / low engineering cost)
 
+**Status: DONE.** See `docs/compliance/records-of-processing-activities.md` (remediation plan
+Phase 7a).
+
 **Evidence**: no such document exists in `docs/`; raw material scattered across the COPPA
 audit, `privacy-model.md`, and ADR-018. **Recommendation**: synthesize one document from
 existing sources (Section 5.6); assign an owner alongside ADR-018's D4.
@@ -536,6 +539,8 @@ whether GDPR already applies to the current private tier's user base (Pressure P
 
 ### G-09. No breach-notification runbook (High)
 
+**Status: DONE.** See `docs/compliance/breach-notification-runbook.md` (remediation plan Phase 6c).
+
 **GDPR**: Articles 33-34. Shares the "D4 incident-response plan" placeholder with ADR-018 but
 confirmed still unbuilt. **Recommendation**: draft an internal breach-classification and
 72-hour-notification runbook, distinct from `SECURITY.md`'s external vulnerability-reporting
@@ -555,6 +560,10 @@ Article 37 once Track 2 scale projections exist; record the outcome (DPO require
 required and why) in ADR-018 or a successor document.
 
 ### G-12. Indefinite `pipeline_event` retention has no documented Article 17(3) balancing test (Medium)
+
+**Status: DONE.** See `coppa-gdpr-remediation-plan.md`'s "4d artifact" section for the documented
+balancing test (17(3)(b)/(e), proportionality against the PII-scrubbed-by-contract payload
+design, admin-only access).
 
 **Evidence**: confirmed no TTL/purge on `pipeline_event` (data-inventory research for this
 review); COPPA's H-01 flags the same table's indefinite retention from a COPPA 312.10 angle.

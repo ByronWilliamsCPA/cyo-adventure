@@ -349,11 +349,77 @@ considered verified rather than just implemented.**
   (currently retained at rest indefinitely even when blocked; only the API view layer redacts
   them), plus expiry for stale `reading_state`. Gated: needs 4b's published windows to build
   against.
-- **4d. Document an explicit Article 17(3) balancing justification** for why the
-  `pipeline_event` audit log is exempted from erasure requests, rather than leaving that
-  exemption implicit; this makes 3a-3b's deletion drill (3e) something you can point to during
-  a review rather than something you have to re-derive on demand. No decision gate: startable
-  immediately.
+- **4d. DONE.** Documented below: an explicit Article 17(3) balancing justification for why the
+  `pipeline_event` audit log is exempted from erasure requests, resolving gdpr-compliance-review.md's
+  G-12/P-4.
+
+#### 4d artifact: Article 17(3) balancing test for `pipeline_event` retention
+
+This is the documented balancing test P-4/G-12 found missing: a controller relying on an Article
+17(3) exception is expected to be able to produce one on request, not merely assert the exception
+applies. It covers every row in `pipeline_event` (the append-only audit log written by
+`events/writer.py::record_event`; see `db/models.py::PipelineEvent`), including rows naming a
+child profile, a family, or a guardian/admin account that has since been erased via Phase 3's
+`DELETE /api/v1/profiles/{id}` or `DELETE /api/v1/me/family`.
+
+**1. What is retained, and why an erasure request does not remove it.** When a profile or family
+is deleted, every *operational* table cascades away with it (Phase 3a's `ondelete=` FKs): reading
+state, completions, ratings, story requests, login rows, the lot. `pipeline_event` rows naming
+that profile/family/user as `entity_id`, or naming a now-deleted user as `actor_id`, are the one
+deliberate exception (Phase 3a's `#CRITICAL` comments on `PipelineEvent.actor_id` and the
+`ondelete=`-free edges already flag this; this section is the justification those comments point
+to). The row is neither cascaded away nor retroactively scrubbed; it survives the erasure request
+that removed the data it describes.
+
+**2. Legal basis for the exception (Article 17(3)).** Two of the six Article 17(3) grounds apply:
+
+- **17(3)(b), compliance with a legal obligation.** COPPA 312.10 and GDPR Article 5(2)'s
+  accountability principle both require a controller to be able to demonstrate what it did with
+  a child's data and who authorized it (this is also the substance of COPPA finding H-01 and
+  GDPR finding G-12 that this justification resolves). An audit trail that could itself be erased
+  on request cannot serve that demonstrative function; the record would be exactly as reliable as
+  self-reporting.
+- **17(3)(e), establishment, exercise, or defense of legal claims.** If a guardian or regulator
+  later disputes what data an admin accessed, when a story was approved, or who resolved a safety
+  flag on a child's account, the pipeline_event log is the only record capable of answering that
+  question authoritatively. Erasing it on the same request that triggers the dispute would remove
+  the evidence needed to resolve the dispute, for either party.
+
+**3. Proportionality: why retention here does not defeat Article 17's purpose.** Article 17(3)'s
+exceptions are not a blanket retention license; they justify retaining only what is necessary for
+the stated purpose, no more. Three properties keep this retention proportionate rather than a
+backdoor around erasure:
+
+- **The payload is already PII-scrubbed by contract, not by policy promise.** `events/writer.py`'s
+  `_PAYLOAD_ALLOWLIST` and `_validate_payload_value` reject any payload key or value outside a
+  fixed per-event-type allowlist of ids, enum values, scores, and counts before a row can even be
+  written (spec decision D3; see the COPPA audit's Section 3.5). A retained row never contains a
+  child's name, story prose, or other free text, only ids, event kind, and closed-vocabulary
+  facts. This is what makes the retention-risk profile in the Section 5 retention table
+  materially lower than any other retained category.
+- **What survives erasure has no further bearing on a live account.** Since the referenced
+  profile/family/user row itself is gone, a surviving `pipeline_event` row cannot be used to
+  re-derive, re-contact, or re-profile the erased data subject; it is historical fact about a
+  past action ("this admin viewed this family's profiles on this date"), not a live copy of the
+  erased personal data.
+- **Access is restricted, not published.** `GET /api/v1/admin/audit` (the only read surface over
+  this table) is admin-only (`_require_admin`, enforced before any query runs); the erasure of an
+  account does not create a new exposure, since the log was never guardian- or child-visible in
+  the first place.
+
+**4. Retention window.** No fixed TTL/purge exists today (Section 5's retention table already
+records this); the justification above supports indefinite retention under 17(3)(b)/(e) for as
+long as the accountability/legal-claims purpose remains live, which for an audit log is
+effectively the life of the product. If a future purge policy is adopted for this table (e.g. to
+bound storage growth), it should be sized to the applicable claims-limitation period, not to the
+data subject's own retention preference; that would be a storage-governance decision (Phase 4b),
+not a change to this exception's validity.
+
+**5. Conclusion.** `pipeline_event` retention after an erasure request is justified under Article
+17(3)(b) and (e), proportionate given the payload's PII-scrubbed-by-contract design and
+admin-only access, and does not require guardian notice beyond what the privacy notice (Phase 2)
+already discloses about audit logging. No code change follows from this section; it documents the
+justification for a design decision (Phase 3a's FK-cascade exceptions) already shipped.
 
 ### Phase 5: Processor paperwork (needs the ZDR-terms decision for the LLM vendors; the rest can start now)
 
@@ -371,7 +437,7 @@ considered verified rather than just implemented.**
 
 ### Phase 6: Security hardening (engineering, no dependencies, start now)
 
-**Status as of 2026-07-19: 6a and 6d shipped; 6b and 6c not started.**
+**Status as of 2026-07-20: 6a, 6b, 6c, and 6d shipped.**
 
 - **6a. DONE.** `TrustedHostMiddleware` wiring was already correctly implemented and tested
   (verified, no change needed: `allowed_hosts` is env-configurable and conditionally wires the
@@ -382,15 +448,18 @@ considered verified rather than just implemented.**
   from the TLS-terminating reverse proxy (a separate, already-fixed trust boundary); without
   that fix in place first, enabling this could have redirect-looped real HTTPS traffic instead
   of closing a gap.
-- **6b. Not started.** Write a short internal information-security program document: designated
-  security contact, a documented risk-assessment cadence, and a vendor-oversight process,
-  satisfying both COPPA 312.8's 2025-amendment expectation and GDPR Article 32(1)(d)'s
-  "regularly testing, assessing and evaluating" requirement in one artifact.
-- **6c. Not started.** Draft a breach-notification runbook, distinct from `SECURITY.md`'s
-  external vulnerability-reporting policy: an internal incident-classification rubric, an
-  escalation path, and the two clocks that start on discovery (GDPR Article 33's 72-hour
-  notification-to-authority duty, and Article 34's separate "high risk to individuals"
-  notification duty).
+- **6b. DONE.** [`docs/compliance/information-security-program.md`](information-security-program.md):
+  designated security contact, a documented risk-assessment cadence (annual, pre-major-feature,
+  pre-processor-onboarding, per-CI-finding, and post-incident triggers), and a vendor-oversight
+  process with a per-processor table, satisfying both COPPA 312.8's 2025-amendment expectation
+  and GDPR Article 32(1)(d)'s "regularly testing, assessing and evaluating" requirement in one
+  artifact.
+- **6c. DONE.** [`docs/compliance/breach-notification-runbook.md`](breach-notification-runbook.md),
+  distinct from `SECURITY.md`'s external vulnerability-reporting policy: an internal
+  incident-classification rubric (severity driven primarily by whether child-linked data is
+  implicated), an escalation path, the two GDPR clocks (Article 33's 72-hour
+  notification-to-authority duty and Article 34's separate "high risk to individuals" duty), and
+  a flagged-open COPPA/state-law breach-notice gap rather than a silent omission.
 - **6d. DONE.** `SECURITY.md` corrected: the auth section no longer describes an unresolved
   dev-only stub needing future Authentik JWT validation (real Supabase-issued JWT verification
   is already implemented and enforced for every non-local environment); the child-safety bullet
@@ -401,10 +470,11 @@ considered verified rather than just implemented.**
 
 ### Phase 7: Formal compliance documentation (needs the artifact-owner and counsel-timing decisions)
 
-- **7a. Assemble a Records of Processing Activities document (GDPR Article 30)** from material
-  that already exists across the COPPA audit, the GDPR review, and `privacy-model.md`; this is
-  synthesis, not new research, and is one of the lowest-cost, highest-value items in this whole
-  plan.
+- **7a. DONE.** [`docs/compliance/records-of-processing-activities.md`](records-of-processing-activities.md):
+  eleven processing activities synthesized from the COPPA audit, the GDPR review, and
+  `privacy-model.md`, plus a consolidated recipient/transfer-mechanism table and a data-subject-rights
+  status table. Surfaces (without resolving) two gaps not previously tracked as numbered
+  findings: Articles 18/21 (restriction, objection) have no implementation.
 - **7b. Commission a Data Protection Impact Assessment (GDPR Article 35(3)(b))** before, not
   after, Phase 2's consent-flow build finalizes its design, per the earlier GDPR review's
   Pressure Point P-2; use the Article-25-by-design strengths already documented (data
@@ -663,8 +733,8 @@ Now, in parallel, no dependencies (Supabase region and self-naming already resol
   Phase 3 (deletion cascades, export, access endpoints) - DONE, pending a Docker-available
     CI run to actually verify test_schema_parity.py and test_deletion_drill.py (see Phase 3's
     status note)
-  Phase 4a and 4d (Supabase region execution; audit-log retention justification)
-  Phase 6 (security hardening) - 6a/6d DONE, 6b/6c not started
+  Phase 4a (Supabase region execution); 4d DONE (audit-log retention justification)
+  Phase 6 (security hardening) - DONE (6a, 6b, 6c, 6d)
   Decision-gathering still open: VPC method, retention-table reaction, ZDR owner,
     artifact owner, counsel timing, DPO
 
@@ -679,7 +749,7 @@ Once the ZDR-owner decision lands, in parallel with the above:
   Phase 5 (processor DPAs/SCCs)
 
 Once the artifact-owner and counsel-timing decisions land and Phases 1-6 are substantially built:
-  Phase 7 (DPIA, Records of Processing, DPO assessment, ADR-018 D1-D4 closeout)
+  Phase 7 (7a DONE; DPIA, DPO assessment, ADR-018 D1-D4 closeout remain)
 
 Ongoing, once the above is stable:
   Phase 8 (8a DONE; ADR-016 consent UI, annual review cadence remain)
