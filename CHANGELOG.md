@@ -37,6 +37,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pursued further without reading the reusable workflow's source first.
   `push` to `main`/`develop` keeps the full coverage-generating,
   gate-enforced run so the SonarCloud dashboard's coverage% stays accurate.
+- Testing: added `-n=auto` (pytest-xdist) to `[tool.pytest.ini_options]`
+  addopts. CI's Integration Tests job runs 827 tests serially in ~9.5 min;
+  `tests/integration/conftest.py`'s Postgres container fixture is
+  session-scoped, so each xdist worker gets its own independent
+  `testcontainers` instance rather than sharing one, with no cross-worker
+  isolation work needed. Verified locally with real Docker: 139 integration
+  tests, 104.33s serial vs 42.18s at `-n 4`, all passing, coverage combining
+  correctly across workers. `nox -s mutate` (mutmut) is unaffected, since
+  `[tool.mutmut]` already resets addopts to empty before building its own
+  pytest invocation.
 
 ## [0.18.0] - 2026-07-19
 
