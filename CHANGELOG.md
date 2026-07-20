@@ -23,9 +23,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   locally: 20 consecutive runs of the file, all passing, plus the full
   frontend suite (113 files, 1385 tests).
 
-## [0.18.2] - 2026-07-20
+## [0.18.3] - 2026-07-20
 
-## [0.18.1] - 2026-07-20
+### Fixed
+
+- Docs: added the missing YAML front matter to
+  `docs/reviews/comprehensive-review-2026-07-17.md` and
+  `docs/testing/{README,coverage-matrix}.md`, and added the `privacy` tag to
+  `docs/_data/tags.yml`'s allow-list (used by
+  `docs/compliance/gdpr-compliance-review.md` and
+  `docs/compliance/coppa-gdpr-remediation-plan.md` but never added when
+  those files were introduced). The local `validate-front-matter`
+  pre-commit hook scans the whole `docs/` tree on every commit, so these
+  gaps were silently blocking every local commit to the repo since the
+  originating PRs merged.
+
+## [0.18.2] - 2026-07-20
 
 ### Changed
 
@@ -2104,7 +2117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.2...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.3...HEAD
+[0.18.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.2...v0.18.3
 [0.18.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.1...v0.18.2
 [0.18.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.18.0...v0.18.1
 [0.18.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.17.0...v0.18.0
