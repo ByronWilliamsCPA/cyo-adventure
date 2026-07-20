@@ -274,14 +274,24 @@ all shipped (commit on `claude/gdpr-compliance-review-qzyvc2`).**
   design, so every call site could only ever pass an empty set. Kept as a documented, deliberate
   design note in the module docstring rather than dead code implying coverage that never existed.
 
-### Phase 2: Consent and notice (VPC method decided 2026-07-20; unblocked, not yet built)
+### Phase 2: Consent and notice (2a DONE, 2e DONE (newly scoped); 2b-2d remain)
 
-- **2a. Build the consent-capture flow.** Replace `onboarding.py`'s `_record_consent()` no-op
-  stub with a real implementation: present the privacy notice, capture consent by the chosen
-  VPC method, persist a consent record (method, timestamp, policy version, and which processing
-  purposes were consented to) on the family. Gate all child-profile creation and child-data
-  collection behind this record existing.
-- **2b. Add a re-consent flow** triggered on material privacy-notice changes.
+- **2a. DONE.** Replaced `onboarding.py`'s `_record_consent()` no-op stub with a real
+  implementation: `User.consent_accepted_at`/`consent_policy_version`/`consent_signer_name`/
+  `consent_ip` (paired, CHECK-enforced), written once by `POST /v1/onboarding` when the
+  guardian submits `{accepted: true, policy_version, signer_name}`, never overwritten
+  afterward. `api/profiles.py::_require_consent` gates `POST /api/v1/profiles` (400) on this
+  record existing, satisfying "gate all child-profile creation ... behind this record
+  existing." Frontend: `GuardianConsentPage.tsx`, a typed full-legal-name attestation +
+  checkbox (the FTC's "sign and submit electronically" method, 312.5(b)(2)(i); see ADR-018
+  D1), reached automatically via a new `AuthStatus = 'needs-consent'` that `ProtectedRoute`
+  routes to before any other guardian page. Also fixed a real, independent gap found while
+  wiring this in: the frontend never called `POST /v1/onboarding` at all before this change,
+  so a brand-new guardian's first `GET /v1/me` would have 401'd on "unknown subject" -- this
+  is now called first, every sign-in, ahead of `/me`.
+- **2b. Add a re-consent flow** triggered on material privacy-notice changes. Not started;
+  `CONSENT_POLICY_VERSION` (frontend/src/auth/onboardingApi.ts) is the version stamp a future
+  re-consent flow would compare against, but nothing currently prompts re-consent on a bump.
 - **2c. Draft and publish the privacy notice**, written once against the union of COPPA
   312.4's content list and GDPR Articles 13-14's broader content list (controller identity,
   purpose-by-purpose lawful basis, the full processor list from Section 4.2 of the GDPR
@@ -290,6 +300,18 @@ all shipped (commit on `claude/gdpr-compliance-review-qzyvc2`).**
   on). Link it from the landing page, guardian console, and onboarding flow.
 - **2d. Direct notice to the parent** at onboarding (email, once the `user` table gains an
   email/contact column per the existing plan item P6-03).
+- **2e. DONE, newly scoped mid-session (2026-07-20).** A guardian self-signup approval gate,
+  parallel to (and never sharing state with) the existing admin-invite `'pending'` track:
+  `onboarding.py::_provision_guardian` now starts an uninvited guardian's own first-login row
+  at `User.status='awaiting_approval'`, not `'active'`; `require_principal` already rejects
+  every endpoint for a non-`'active'` status (401 "unknown subject"), including `GET /v1/me`,
+  so this alone was the enforcement mechanism -- no new authorization code needed. An admin
+  approves (`awaiting_approval` -> `active`) or denies (`awaiting_approval` -> `deactivated`)
+  via the existing `PATCH /admin/users/{id}` status transition (extended to allow this pair,
+  still rejecting any direct transition INTO `awaiting_approval`). Frontend:
+  `GuardianAwaitingApprovalPage.tsx`, reached via a new `AuthStatus = 'awaiting-approval'`.
+  An admin-created invite (`POST /admin/users`) is unaffected: that guardian is already vetted
+  by the admin who invited them, so their first login binds straight to `'active'` as before.
 
 ### Phase 3: Data-subject rights (engineering, no dependencies, start now)
 
@@ -338,20 +360,27 @@ considered verified rather than just implemented.**
   authorization on both delete endpoints and the export endpoint; and the export's blocked-request
   redaction.
 
-### Phase 4: Retention and storage governance (4a/4d DONE; 4b/4c unblocked as of the 2026-07-20 retention-table decision, not yet built)
+### Phase 4: Retention and storage governance (4a: infra execution outstanding; 4c/4d DONE; 4b unblocked, not yet published)
 
 - **4a. Execute the Supabase region decision** (already resolved, Section 2) while data volume is
   still small, since migrating a live project's region later is materially harder than choosing
   correctly now. No decision gate: startable immediately.
 - **4b. Write and publish a retention policy** stating purpose and retention window per data
   category (reading state, completions, ratings, story requests including blocked/declined
-  ones, generation reports, audit/event log), per the retention-windows decision. Gated: needs
-  that decision confirmed or adjusted first.
-- **4c. Build the retention-purge jobs**: the already-designed `generation_job.report` pg_cron
-  purge (ADR-007), plus a new purge/redaction path for blocked or declined `story_request` rows
-  (currently retained at rest indefinitely even when blocked; only the API view layer redacts
-  them), plus expiry for stale `reading_state`. Gated: needs 4b's published windows to build
-  against.
+  ones, generation reports, audit/event log). Unblocked (the retention table in Section 5 was
+  accepted 2026-07-20); still needs to actually be published as its own artifact rather than
+  living only inside this plan.
+- **4c. DONE.** Two new pg_cron jobs, mirroring the existing `generation_job.report` purge
+  (ADR-007): `purge_blocked_declined_story_request_text` overwrites `story_request.request_text`
+  with a fixed placeholder 30 days after `COALESCE(reviewed_at, created_at)` for `blocked`/
+  `declined` rows (the API view layer's redaction was already in place; this is the underlying
+  data catching up to it); `purge_stale_deactivated_profile_activity` (plus two sibling jobs for
+  `completion` and `rating`) delete `reading_state`/`completion`/`rating` rows for any
+  `child_profile` deactivated more than 90 days ago, per the accepted retention table's
+  "life of the active profile, plus 30-90 days after deactivation" window (the profile row
+  itself is untouched; a guardian who wants it gone entirely already has
+  `DELETE /api/v1/profiles/{id}`). Same idempotent, pg_cron-optional migration pattern as the
+  existing purge job, so it is a no-op on any Postgres without the extension (local/test/CI).
 - **4d. DONE.** Documented below: an explicit Article 17(3) balancing justification for why the
   `pipeline_event` audit log is exempted from erasure requests, resolving gdpr-compliance-review.md's
   G-12/P-4.
@@ -786,19 +815,21 @@ Now, in parallel, no dependencies (Supabase region and self-naming already resol
   Phase 3 (deletion cascades, export, access endpoints) - DONE, pending a Docker-available
     CI run to actually verify test_schema_parity.py and test_deletion_drill.py (see Phase 3's
     status note)
-  Phase 4a (Supabase region execution); 4d DONE (audit-log retention justification)
+  Phase 4a (Supabase region execution); 4c DONE; 4d DONE (audit-log retention justification)
   Phase 6 (security hardening) - DONE (6a, 6b, 6c, 6d)
   Phase 8a DONE; 8b DONE (was already built; the finding describing it as missing was stale,
     corrected 2026-07-20 -- see G-10)
+  Phase 2a DONE (consent-capture flow, backend + frontend); 2e DONE (newly scoped self-signup
+    admin-approval gate)
+  Articles 18/21 minimal "restrict processing" flag - DONE (newly scoped)
 
-Unblocked now that the VPC method is decided:
-  Phase 2 (consent + notice build; draft the signature-capture consent flow and the Privacy
-  Notice for counsel review; Phase 2's 2a is what makes guardian registration an actual gate on
-  child-data collection, not just the intended attachment point it is today)
+Unblocked now that the VPC method is decided and 2a is built:
+  Phase 2b-2d (re-consent-on-policy-change flow; draft the Privacy Notice for counsel review
+  and link it from 2a's consent screen; direct email notice at onboarding)
 
 Unblocked now that the retention table is accepted:
-  Phase 4b (publish the retention policy from the accepted table); 4c (build the purge jobs
-  against it)
+  Phase 4b (publish the retention policy from the accepted table; 4c's purge jobs are already
+  built against it)
 
 Unblocked now that the paperwork owner is decided:
   Phase 5 (processor DPAs/SCCs -- prep a checklist of each processor's DPA/terms URL plus
@@ -809,8 +840,7 @@ Unblocked now that DPIA ownership/timing follows the "we draft, counsel reviews"
   twice); 7c DONE (recorded as not-required, reassess before Track 2 launch); 7d DONE
   (ADR-018 D3 closes on US-only; 7a already DONE)
 
-Newly scoped, unblocked, small:
-  Articles 18/21 minimal "restrict processing" flag (engineering, no dependencies)
+Remaining small item:
   Phase 8c (schedule the annual review cadence -- e.g. a yearly reminder/Routine)
 
 Shelved, not worked, until UK/EEA user status changes:

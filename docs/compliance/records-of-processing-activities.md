@@ -114,28 +114,34 @@ record itself:
 | Access (Article 15) / Portability (Article 20) | Implemented | `GET /api/v1/me/export` (Phase 3c) |
 | Erasure (Article 17) | Implemented | `DELETE /api/v1/profiles/{id}`, `DELETE /api/v1/me/family` (Phase 3b); FK cascades (Phase 3a); Article 17(3) exception documented for `pipeline_event` (Phase 4d) |
 | Rectification (Article 16) | Implemented (partial) | Profile fields editable via existing guardian/admin PATCH endpoints; no separate "rectification request" workflow exists beyond direct edit, which the review has not flagged as a gap given the direct-edit affordance already covers it |
-| Restriction of processing (Article 18) | **Scheduled, not yet built** | Decided 2026-07-20: build a minimal "restrict processing" flag on profiles/families that pauses non-essential processing without deleting data, rather than leaving the gap this RoPA surfaced undocumented |
-| Objection (Article 21) | **Scheduled, not yet built**, same mechanism as Article 18 | Same flag covers the practical substance of an objection request at this scale |
+| Restriction of processing (Article 18) | **DONE (2026-07-20)** | `ChildProfile.processing_restricted_at` (guardian-set via `PATCH /api/v1/profiles/{id}`) pauses new story-request submission for that profile -- the point new data would reach a third-party LLM/classifier provider -- without deleting any existing data |
+| Objection (Article 21) | **DONE**, same mechanism as Article 18 | Same flag covers the practical substance of an objection request at this scale |
 | Rights related to automated decision-making (Article 22) | Not applicable | Story generation and moderation inform guardian approval; they do not themselves produce a legal or similarly significant effect on a data subject without guardian review (the mandatory-human-approval ADR is the relevant design decision) |
 
 ## 8. Open items this record surfaces
 
-**Status as of 2026-07-20**: the foundational decisions below are resolved (see
-`coppa-gdpr-remediation-plan.md` Sections 2 and 6); the corresponding engineering (Phase 2's
-consent-capture build, Phase 5's DPA execution, the Article 18/21 flag) is decided but not yet
-built. G-10/Phase 8b (ADR-016 consent UI) is fully resolved, not merely decided; it was already
-built (Section 3 activity 7 above reflects this).
+**Status as of 2026-07-20**: Phase 2's consent-capture build and the Article 18/21 flag are now
+both DONE (built, not just decided); G-10/Phase 8b (ADR-016 consent UI) was already resolved
+(Section 3 activity 7 reflects this). Phase 5's DPA execution remains the one item still
+genuinely open below.
 
 - Article 6 legal basis: recorded per-activity in Section 3 above (was previously
   unrecorded, G-01).
-- Verifiable parental consent mechanism: decided (signature-capture on OAuth login, ADR-018
-  D1); Phase 2 build not yet started (G-02).
+- Verifiable parental consent mechanism: **DONE.** Signature-capture (typed full-legal-name
+  attestation) layered on the OAuth login (ADR-018 D1), enforced at `POST /api/v1/profiles`
+  via `User.consent_accepted_at` (G-02).
 - Transfer mechanisms (SCCs/DPF): owner decided (account owner executes Phase 5 directly);
   not yet executed for any processor (G-05, Phase 5a).
-- Articles 18/21 (restriction, objection): decided (build a minimal "restrict processing"
-  flag); not yet built (newly surfaced by this document, not previously a numbered finding).
+- Articles 18/21 (restriction, objection): **DONE.** `ChildProfile.processing_restricted_at`,
+  guardian-set, blocks new story-request submission (newly surfaced by this document, not
+  previously a numbered finding).
 - DPO designation: resolved — not required at current scale, reassess before Track 2 public
   launch (G-11, Phase 7c).
+- Newly surfaced 2026-07-20, not previously tracked anywhere: a guardian self-signup
+  approval gate (`User.status='awaiting_approval'`, admin approve/deny via
+  `PATCH /admin/users/{id}`) -- **DONE**, added mid-session as a parallel access-control track
+  alongside Phase 2's consent work, not itself a GDPR/COPPA requirement but relevant context
+  for Section 2's data-subject-category note on guardians.
 
 ## 9. Relationship to other compliance documents
 

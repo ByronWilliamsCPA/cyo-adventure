@@ -99,6 +99,25 @@ satisfies 312.5(b)(2)(i)'s "signed" requirement is the single highest-risk open 
 this decision and should be the first thing reviewed in the drafted consent-flow copy
 (`docs/compliance/` DPIA and Privacy Notice drafts, in progress).
 
+**Implemented 2026-07-20.** `POST /v1/onboarding`'s `consent` payload
+(`accepted`/`policy_version`/`signer_name`) persists onto
+`User.consent_accepted_at`/`consent_policy_version`/`consent_signer_name`/`consent_ip`
+(paired, CHECK-enforced); `api/profiles.py::_require_consent` gates
+`POST /api/v1/profiles` on it. Frontend: `GuardianConsentPage.tsx`, reached automatically via
+a new `AuthStatus = 'needs-consent'`. This is the engineering half of D1; the flagged
+counsel-review question above is unchanged by implementation and still needs an answer
+before this ADR can flip to Accepted.
+
+**Related, newly decided the same day, not itself part of D1**: a guardian self-signup
+admin-approval gate. An uninvited guardian's own first-login JIT provisioning now starts
+`User.status='awaiting_approval'` instead of `active`; `api/deps.py::require_principal`
+already rejects every endpoint for a non-`active` status, so this alone is the enforcement
+mechanism. An admin approves (`-> active`) or denies (`-> deactivated`) via the existing
+`PATCH /admin/users/{id}`. This is a parallel, non-overlapping track to the admin-invite
+`pending` status already in this ADR's "already decided" list; an admin-invited guardian is
+still trusted immediately on bind, unaffected by this gate. Frontend:
+`GuardianAwaitingApprovalPage.tsx`, reached via a new `AuthStatus = 'awaiting-approval'`.
+
 ### D2: Audience classification
 
 Kids Category listing (ADR-008) effectively declares the app child-directed, which takes

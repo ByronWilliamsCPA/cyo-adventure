@@ -19,6 +19,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the schema now cascades or nulls out on delete (previously all `NO
   ACTION`, so a delete request could not have been executed at all without
   hitting an FK violation).
+- Verifiable parental consent (GDPR Article 8(2), COPPA 312.5): a typed
+  full-legal-name signature attestation layered on the guardian's existing
+  OAuth login (`POST /v1/onboarding` with a `consent` payload), gating
+  `POST /api/v1/profiles` (400 until recorded). Frontend:
+  `GuardianConsentPage`, reached automatically via a new `needs-consent`
+  auth status. Also fixes an unrelated, independently-discovered gap: the
+  frontend previously never called `POST /v1/onboarding` at all, so a
+  brand-new guardian's very first `GET /v1/me` would 401.
+- Guardian self-signup admin-approval gate: an uninvited guardian's own
+  first login now starts `User.status='awaiting_approval'` rather than
+  `active`, blocking every authenticated endpoint (via the existing
+  non-active-status rejection in `require_principal`) until an admin
+  approves via `PATCH /api/v1/admin/users/{id}` (deny sets `deactivated`).
+  Parallel to, and shares no state with, the existing admin-invite
+  `pending` track. Frontend: `GuardianAwaitingApprovalPage`, reached via a
+  new `awaiting-approval` auth status.
+- A per-profile data-processing restriction flag (GDPR Article 18/21):
+  `PATCH /api/v1/profiles/{profile_id}` with `processing_restricted: true`
+  blocks new story-request submission for that profile (the point new data
+  would reach a third-party LLM/classifier provider) without deleting any
+  existing data.
+- Two more scheduled retention-purge jobs (`generation_job.report` already
+  had one, ADR-007): blocked/declined `story_request.request_text` is
+  overwritten with a fixed placeholder 30 days after decision; stale
+  `reading_state`/`completion`/`rating` rows are deleted 90 days after
+  their profile's deactivation.
 
 ### Security
 
