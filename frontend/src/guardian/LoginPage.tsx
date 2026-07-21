@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { hasValidDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import { makeDeviceGrantApi } from '../auth/deviceGrantApi'
 import type { Principal } from '../auth/types'
@@ -414,11 +415,7 @@ export function LoginPage() {
     // through to the normal redirect so the guardian still lands somewhere
     // useful and can authorize the device manually from their console.
     if (authorizeDeviceIntent && deviceAuthState !== 'failed') {
-      return (
-        <div role="status" aria-live="polite">
-          Setting up this device...
-        </div>
-      )
+      return <LoadingStatus>Setting up this device...</LoadingStatus>
     }
     // A failed mint deliberately ignores `from`: in the device flow it points
     // back into the kid surface, which still lacks the grant that just failed

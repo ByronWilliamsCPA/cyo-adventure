@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactElement } from 're
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
 import { EmptyState } from '@ds/components/EmptyState'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { useToast } from '../notifications/useToast'
@@ -308,11 +309,7 @@ export function StoryRequestQueue({
 
   let content: ReactElement
   if (state.kind === 'loading') {
-    content = (
-      <div role="status" aria-live="polite">
-        Loading story requests…
-      </div>
-    )
+    content = <LoadingStatus>Loading story requests…</LoadingStatus>
   } else if (state.kind === 'forbidden') {
     content = (
       <section className="console">

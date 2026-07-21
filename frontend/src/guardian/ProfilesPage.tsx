@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
@@ -98,9 +99,7 @@ export function ProfilesPage() {
 
   if (profiles === null) {
     return (
-      <div role="status" aria-live="polite">
-        Loading profiles…
-      </div>
+      <LoadingStatus>Loading profiles…</LoadingStatus>
     )
   }
 

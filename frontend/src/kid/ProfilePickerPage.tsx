@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { clearChildSession, setChildSession } from '../auth/childSession'
 import { hasGuardianSession } from '../auth/guardianToken'
 import { classifyApiError } from '../hooks/classifyApiError'
@@ -247,9 +248,7 @@ export function ProfilePickerPage() {
 
   if (state.status === 'loading') {
     return (
-      <div role="status" aria-live="polite" className="picker-loading">
-        Loading profiles…
-      </div>
+      <LoadingStatus className="picker-loading">Loading profiles…</LoadingStatus>
     )
   }
 

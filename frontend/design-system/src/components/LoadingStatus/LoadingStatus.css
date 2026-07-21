@@ -1,0 +1,5 @@
+.cyo-loading {
+  color: var(--color-ink-secondary);
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { formatRelativeTime } from '../guardian/intakeApi'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { classifyApiError } from '../hooks/classifyApiError'
@@ -84,9 +85,7 @@ export function AdminLibraryPage() {
     return (
       <section className="admin-library">
         <h1>Story library</h1>
-        <div role="status" aria-live="polite">
-          Loading stories…
-        </div>
+        <LoadingStatus>Loading stories…</LoadingStatus>
       </section>
     )
   }

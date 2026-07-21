@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeProviderAllowlistApi } from './providerAllowlistApi'
@@ -79,9 +80,7 @@ export function ProviderAllowlistPage() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading…
-      </div>
+      <LoadingStatus />
     )
   }
   if (state.kind === 'error') {

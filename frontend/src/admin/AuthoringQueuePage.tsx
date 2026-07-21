@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import type { StoryRequestView } from '../guardian/storyRequestQueueApi'
@@ -60,9 +61,7 @@ export function AuthoringQueuePage() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading…
-      </div>
+      <LoadingStatus />
     )
   }
   if (state.kind === 'error') {

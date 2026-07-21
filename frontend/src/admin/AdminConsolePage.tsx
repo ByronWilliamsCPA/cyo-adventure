@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactElement } from 're
 import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { FlagBadge } from '../guardian/FlagBadge'
 import { formatRelativeTime } from '../guardian/intakeApi'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
@@ -223,11 +224,7 @@ export function AdminConsolePage() {
 
   let content: ReactElement
   if (state.kind === 'loading') {
-    content = (
-      <div role="status" aria-live="polite">
-        Loading review queue…
-      </div>
-    )
+    content = <LoadingStatus>Loading review queue…</LoadingStatus>
   } else if (state.kind === 'forbidden') {
     content = (
       <section className="console">

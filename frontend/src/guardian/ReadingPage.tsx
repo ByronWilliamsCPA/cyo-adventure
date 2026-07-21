@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { formatRelativeTime } from './intakeApi'
@@ -161,9 +162,7 @@ export function ReadingPage() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading reading activity…
-      </div>
+      <LoadingStatus>Loading reading activity…</LoadingStatus>
     )
   }
 

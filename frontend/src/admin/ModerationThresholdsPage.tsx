@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { AGE_BANDS, type AgeBandValue } from '../profiles/profilesApi'
@@ -124,9 +125,7 @@ export function ModerationThresholdsPage() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading…
-      </div>
+      <LoadingStatus />
     )
   }
   if (state.kind === 'error') {

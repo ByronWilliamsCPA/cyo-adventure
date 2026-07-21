@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import type {
   ModerationDashboardView,
   SuggestionListView,
@@ -181,9 +182,7 @@ export function ModerationDashboardPage() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading…
-      </div>
+      <LoadingStatus />
     )
   }
   if (state.kind === 'error') {

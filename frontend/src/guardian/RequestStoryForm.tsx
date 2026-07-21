@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import type {
   AgeBand,
   FamilyView,
@@ -227,9 +228,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
 
   if (loadState.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading request form…
-      </div>
+      <LoadingStatus>Loading request form…</LoadingStatus>
     )
   }
   if (loadState.kind === 'error') {

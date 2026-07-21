@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { useApi } from '../hooks/useApi'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { AssignChildrenDialog } from './AssignChildrenDialog'
@@ -131,9 +132,7 @@ export function BooksPage() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading books…
-      </div>
+      <LoadingStatus>Loading books…</LoadingStatus>
     )
   }
 

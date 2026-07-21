@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { makeFetchStory } from '../api/readerApi'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
@@ -262,9 +263,7 @@ export function AssignChildrenDialog({
       {loadError ? (
         <p role="alert">{loadError}</p>
       ) : profiles === null ? (
-        <div role="status" aria-live="polite">
-          Loading…
-        </div>
+        <LoadingStatus />
       ) : (
         <>
           {saveError ? <p role="alert">{saveError}</p> : null}
