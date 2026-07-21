@@ -745,5 +745,20 @@ def main(
     return 0
 
 
+# --------------------------------------------------------------------------- #
+# Public reuse surface.
+# --------------------------------------------------------------------------- #
+# Sibling glue that reuses D4's draft-PR / worktree posture (WS-8 D6's
+# scripts/parameterize_promotion.py) imports these instead of reaching into the
+# private originals above. The underscored names remain for this module's own
+# use and its existing tests; these aliases add no new behavior.
+
+RealGitRunner = _RealGitRunner
+DryRunPrCreator = _DryRunPrCreator
+GhPrCreator = _GhPrCreator
+write_contained = _write_contained
+copy_contained = _copy_contained
+
+
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -163,6 +163,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   acceptance stage, a floor, or an in-cell-clone decision (pinned by an AST test).
   This lets WS-6 fresh-generation trees plug into the same promotion path later
   without changing the bundle or lineage contract.
+- WS-8 catalog flywheel, D6 (parameterize-at-promotion glue and runbook): an
+  optional, manual-first `scripts/parameterize_promotion.py` lets an operator
+  parameterize an already-promoted contract-less tree as a SECOND
+  `skeleton-promotion` PR. It chains the existing `parameterize_skeleton.py`
+  transform (its six fail-closed checks) and `check_theme_contract.py` acceptance
+  over an operator-authored slotting plan and contract, honoring their exit codes
+  and adding no bypass, then prepares the draft PR reusing D4's worktree / no-auto-
+  merge posture. Per OQ-6 it never blocks the first promotion. A
+  `docs/planning/ws8-parameterize-at-promotion-runbook.md` documents the manual
+  steps, and `scripts/prepare_promotion_pr.py` gained a small public reuse surface
+  (additive aliases only; no logic change).
 
 ### Changed
 
