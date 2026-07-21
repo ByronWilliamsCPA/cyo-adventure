@@ -3069,9 +3069,9 @@ codebase is intentionally not duplicated here (see the OpenAPI schema instead).<
 prefix. Several operator-facing names are also honored unprefixed via
 validation_alias, matching what docker-compose*.yml and
 docs/guides/configuration.md already set: ENVIRONMENT, LOG_LEVEL, JSON_LOGS,
-DATABASE_URL, and the OLLAMA_<em>, OPENROUTER_</em>, OPENAI_API_KEY, and
-PERSPECTIVE_API_KEY credentials. Pydantic-settings handles the parsing and
-validation.</p>
+DATABASE_URL, WORKER_DATABASE_URL, and the OLLAMA_<em>, OPENROUTER_</em>,
+OPENAI_API_KEY, and PERSPECTIVE_API_KEY credentials. Pydantic-settings
+handles the parsing and validation.</p>
 
 
 
@@ -3228,7 +3228,60 @@ validation.</p>
 
 
 
+<h5 id="cyo_adventure.core.config.Settings-attributes">Attributes<a href="#cyo_adventure.core.config.Settings-attributes" class="headerlink" title="Permanent link">&para;</a></h5>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h6 id="cyo_adventure.core.config.Settings.worker_database_url_effective" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <code class="highlight language-python"><span class="n">worker_database_url_effective</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#cyo_adventure.core.config.Settings.worker_database_url_effective" class="headerlink" title="Permanent link">&para;</a></h6>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The DSN the worker engine (core/database.py::get_worker_engine) actually uses.</p>
+<p>Both an unset <code>worker_database_url</code> (<code>None</code>) and an explicitly
+empty string fall back to <code>database_url</code>. The empty-string case
+matters because compose interpolation of an unset variable
+(<code>${WORKER_DATABASE_URL:-}</code>) injects <code>""</code> rather than leaving the
+variable unset entirely; treating <code>""</code> as "no DSN configured" (not
+as a configured-but-empty DSN) is what keeps that interpolation safe
+(ADR-021).</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>str</code></td>            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>worker_database_url</code> when it is a non-empty string,
+otherwise <code>database_url</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
 
 
 

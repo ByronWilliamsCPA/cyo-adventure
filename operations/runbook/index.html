@@ -1202,6 +1202,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#11-service-account-cutover-adr-021" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Service-account cutover (ADR-021)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Service-account cutover (ADR-021)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-per-environment-cutover-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Per-environment cutover procedure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-future-table-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Future-table checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3263,6 +3302,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#11-service-account-cutover-adr-021" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Service-account cutover (ADR-021)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Service-account cutover (ADR-021)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-per-environment-cutover-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Per-environment cutover procedure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-future-table-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Future-table checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3800,7 +3878,106 @@ same caveat as the authoring-plan step noted in the authoring guide.</p>
 <li><a href="../../planning/r1-live-e2e-checklist/">R1 live E2E checklist</a></li>
 <li><a href="../authoring-guide/">Authoring guide</a> (this deliverable's companion document, written for
   non-technical guardians and admins)</li>
+<li><a href="../../planning/adr/adr-021-service-account-rls-and-worker-deployment/">ADR-021: Service accounts, RLS, and in-repo worker deployment</a>
+  (Section 11 below is this ADR's per-environment cutover procedure)</li>
 </ul>
+<h2 id="11-service-account-cutover-adr-021">11. Service-account cutover (ADR-021)<a class="headerlink" href="#11-service-account-cutover-adr-021" title="Permanent link">&para;</a></h2>
+<p>Per <a href="../../planning/adr/adr-021-service-account-rls-and-worker-deployment/">ADR-021</a>, the
+<code>cyo_api</code> and <code>cyo_worker</code> Postgres roles and their <code>service_rw</code> RLS policies ship as
+<code>NOLOGIN</code> migrations (<code>supabase/migrations/20260720170100_create_service_roles.sql</code>,
+<code>20260720170200_add_service_role_policies.sql</code>); applying those migrations changes nothing
+at runtime by itself. Every environment keeps connecting as the shared <code>postgres</code> owner
+role until an operator completes the steps below. <strong>Merging the migrations is not the
+cutover; this section is.</strong></p>
+<h3 id="111-per-environment-cutover-procedure">11.1 Per-environment cutover procedure<a class="headerlink" href="#111-per-environment-cutover-procedure" title="Permanent link">&para;</a></h3>
+<p>Do this once per environment (staging first, always; never production first):</p>
+<ol>
+<li><strong>Set each role's login password out-of-band.</strong> Never in a migration file, never in this
+   repo. Via the Supabase dashboard SQL editor (or <code>psql</code> against the project's direct
+   connection, not the pooler):</li>
+</ol>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_api</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;&lt;generated-secret&gt;&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Generate each password independently (do not reuse one password across roles or
+   environments); store both in the environment's existing secrets mechanism (GitHub
+   Actions Environment secrets / <code>homelab-infra</code> secret store, matching how
+   <code>CYO_ADVENTURE_DATABASE_URL</code> is already stored today, Section 8).</p>
+<ol>
+<li>
+<p><strong>Verify allow/deny before touching any running process.</strong> From a workstation or CI job
+   with network access to the target database, run
+   <code>uv run pytest tests/integration/test_rls_service_roles.py</code> against that project (or, at
+   minimum, manually connect as <code>cyo_api</code>/<code>cyo_worker</code> with <code>psql</code> and confirm a <code>SELECT</code>
+   against <code>public."user"</code> succeeds, then connect as <code>anon</code>/<code>authenticated</code> if those roles
+   exist on the target and confirm the same query is denied). Do not proceed to step 3 on a
+   failed verification.</p>
+</li>
+<li>
+<p><strong>Flip the connection secrets, staging first.</strong> Build the two new DSNs (same host/port/
+   database as today, <code>cyo_api</code>/<code>cyo_worker</code> in place of <code>postgres</code>, the passwords from step
+   1) and update:</p>
+</li>
+<li><code>CYO_ADVENTURE_DATABASE_URL</code> (or the unprefixed <code>DATABASE_URL</code> alias): the API process's
+     connection. Set it to the <code>cyo_api</code> DSN.</li>
+<li><code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> (or the unprefixed <code>WORKER_DATABASE_URL</code> alias): the
+     worker processes' connection. Set it to the <code>cyo_worker</code> DSN. Until this variable is
+     set, the worker silently keeps using <code>CYO_ADVENTURE_DATABASE_URL</code> (the
+     <code>worker_database_url_effective</code> fallback, <code>core/config.py</code>); this is intentional
+     non-breaking behavior, not a bug, but means an operator who forgets this step has not
+     actually completed the cutover for the worker process.</li>
+</ol>
+<p>Redeploy (or restart) the API and worker processes so the new environment variables take
+   effect; both processes build their engine once at import time (<code>core/database.py</code>), so a
+   running process never picks up a changed URL without a restart.</p>
+<ol>
+<li>
+<p><strong>Re-run the health check and a live smoke test</strong> (Section 3; a guardian login, a library
+   fetch, and if staging, a full story-request-to-review-queue pass) before considering the
+   environment cut over. Watch logs (Section 4) for any <code>insufficient_privilege</code> /
+   <code>permission denied</code> error in the minutes after restart; that means a table is missing
+   from the grant/policy migrations (see the future-table checklist below) or a role/
+   password was set incorrectly in step 1.</p>
+</li>
+<li>
+<p><strong>Repeat for production only after staging has run clean for a reasonable soak period</strong>
+   (ADR-012's existing staging-first rehearsal norm applies here unchanged).</p>
+</li>
+</ol>
+<p><strong>Rollback</strong>: revert <code>CYO_ADVENTURE_DATABASE_URL</code> / <code>CYO_ADVENTURE_WORKER_DATABASE_URL</code> (and
+the worker alias) to the prior <code>postgres</code>-role DSN and restart the affected process(es). The
+migrations themselves are forward-only (ADR-012) and never need to be undone: <code>cyo_api</code>/
+<code>cyo_worker</code> and their policies are additive and harmless to leave in place even while
+nothing connects as them. There is no data migration involved in this cutover, only a
+connection-identity change, so rollback is immediate and has no data-loss risk.</p>
+<h3 id="112-future-table-checklist">11.2 Future-table checklist<a class="headerlink" href="#112-future-table-checklist" title="Permanent link">&para;</a></h3>
+<p>RLS enforcement for <code>cyo_api</code>/<code>cyo_worker</code> is an explicit, per-table <code>GRANT</code> plus an
+explicit, per-table <code>CREATE POLICY</code>; neither is inferred automatically from
+<code>ENABLE ROW LEVEL SECURITY</code>. Any migration that adds a new application table and enables RLS
+on it (following <code>20260711200745_enable_rls_all_tables.sql</code>'s precedent) must, in the same
+PR, also add:</p>
+<ol>
+<li>A <code>GRANT SELECT, INSERT, UPDATE, DELETE ON public.&lt;new_table&gt; TO cyo_api, cyo_worker;</code>
+   statement (extend <code>20260720170100_create_service_roles.sql</code>'s table list, or add a new
+   migration following the same shape if that file has already shipped to production).</li>
+<li>A matching <code>service_rw</code> policy:</li>
+</ol>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">DROP</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">service_rw</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="n">new_table</span><span class="o">&gt;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span><span class="p">,</span><span class="w"> </span><span class="n">cyo_worker</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+</span></code></pre></div>
+<ol>
+<li>No <code>anon</code>/<code>authenticated</code> grant or policy, matching the deny-by-default posture
+   established by <code>20260711200745_enable_rls_all_tables.sql</code> and preserved by this ADR.</li>
+</ol>
+<p>Skipping either the <code>GRANT</code> or the policy leaves the new table effectively unreachable by
+the API/worker in any environment that has completed the cutover above: a policy without a
+<code>GRANT</code> is blocked at the privilege layer before RLS is even evaluated, and a <code>GRANT</code>
+without a policy is blocked by RLS itself (<code>USING</code> defaults to deny with no matching
+policy). <code>tests/integration/test_rls_service_roles.py</code>'s coverage-invariant test
+(<code>test_every_rls_table_grants_both_service_roles</code>) fails loudly on either gap, so a CI run
+against a PR that forgets this checklist should not pass silently, but the checklist exists
+because that test is currently the only thing that would notice.</p>
 
 
 
@@ -3823,7 +4000,7 @@ same caveat as the authoring-plan step noted in the authoring guide.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 23:40:10 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 21, 2026 01:23:40 UTC">July 21, 2026</span>
   </span>
 
     
