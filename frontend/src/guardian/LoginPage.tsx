@@ -21,6 +21,7 @@ import {
   KID_PICKER_PATH,
 } from '../routes'
 import './guardian.css'
+import { ResetPasswordRequestForm } from './ResetPasswordRequestForm'
 import { SetNewPasswordForm } from './SetNewPasswordForm'
 
 /**
@@ -119,7 +120,6 @@ export function LoginPage() {
     signInWithOAuth,
     signInWithPassword,
     signOut,
-    requestPasswordReset,
   } = useAuth()
   const [signInError, setSignInError] = useState(false)
   const [email, setEmail] = useState('')
@@ -135,9 +135,6 @@ export function LoginPage() {
   // recover into, so pre-open the reset-request panel instead of leaving the
   // guardian to rediscover "Forgot your password?" on their own.
   const [showReset, setShowReset] = useState(Boolean(recoveryError))
-  const [resetEmail, setResetEmail] = useState('')
-  const [resetStatus, setResetStatus] = useState<'idle' | 'sent' | 'error'>('idle')
-  const [resetSubmitting, setResetSubmitting] = useState(false)
   const [deviceAuthState, setDeviceAuthState] = useState<'idle' | 'authorizing' | 'failed'>('idle')
   const deviceWatchdogRef = useRef<number | null>(null)
   const location = useLocation()
@@ -356,32 +353,6 @@ export function LoginPage() {
     }
   }
 
-  // #ASSUME: security: requestPasswordReset resolves whether or not the address
-  // is registered (Supabase does not disclose it), so a resolution always maps
-  // to the neutral "if an account exists" confirmation, never a "sent" that
-  // would confirm the email. Only an operational rejection (rate limit, network,
-  // 5xx) surfaces a distinct, retryable connection error. Enumeration-resistant
-  // by construction, matching the login form's generic-credentials stance.
-  // #VERIFY: LoginPage.test.tsx forgot-password neutral-confirmation + error.
-  async function submitReset() {
-    setResetStatus('idle')
-    setResetSubmitting(true)
-    try {
-      await requestPasswordReset(resetEmail)
-      setResetStatus('sent')
-    } catch (err) {
-      // The user-facing message stays the same generic "couldn't send a
-      // reset link" regardless of cause (no enumeration leak either way);
-      // logging the real cause here is what makes a genuine bug
-      // distinguishable from a transient network blip in production
-      // monitoring, since nothing else observes this rejection.
-      logApiError('password-reset request failed', err)
-      setResetStatus('error')
-    } finally {
-      setResetSubmitting(false)
-    }
-  }
-
   // Recovery-link return leg (ADR-009 password reset). The link established a
   // session, so `status` is (or is becoming) 'signed-in', but the guardian must
   // set a new password before continuing rather than being redirected to the
@@ -524,45 +495,7 @@ export function LoginPage() {
       >
         Forgot your password?
       </button>
-      {showReset ? (
-        <form
-          className="guardian-login__form"
-          onSubmit={(event) => {
-            event.preventDefault()
-            void submitReset()
-          }}
-        >
-          <label className="guardian-login__field cyo-field">
-            <span>Email for reset link</span>
-            <input
-              type="email"
-              name="reset-email"
-              autoComplete="email"
-              required
-              className="cyo-field__control"
-              value={resetEmail}
-              onChange={(e) => setResetEmail(e.target.value)}
-            />
-          </label>
-          <button
-            type="submit"
-            className="guardian-login__provider"
-            disabled={resetSubmitting}
-          >
-            {resetSubmitting ? 'Sending...' : 'Send reset link'}
-          </button>
-          {resetStatus === 'sent' ? (
-            <p role="status" aria-live="polite" className="guardian-login__note">
-              If an account exists for that email, we&apos;ve sent a reset link. Check your inbox.
-            </p>
-          ) : null}
-          {resetStatus === 'error' ? (
-            <p role="alert" className="guardian-login__error cyo-text-error">
-              We couldn&apos;t send a reset link. Check your connection and try again.
-            </p>
-          ) : null}
-        </form>
-      ) : null}
+      {showReset ? <ResetPasswordRequestForm /> : null}
     </div>
   )
 }
