@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (GHSA-hm4w-wwcw-mr6r, uncontrolled resource consumption when decoding REAL
   values). Lockfile-only change; `pyasn1` is pulled in transitively via
   `google-auth`. Both advisories were tripping the merge-queue OSV-Scanner gate.
+- Bumped the transitive dependency `gitpython` from 3.1.50 to 3.1.53 to resolve
+  three High-severity advisories (GHSA-2f96-g7mh-g2hx, GHSA-956x-8gvw-wg5v,
+  GHSA-v396-v7q4-x2qj). Lockfile-only change; `gitpython` is pulled in
+  transitively via the docs dependency `mkdocs-git-revision-date-localized-plugin`
+  (dev extra). These advisories landed after the pyasn1 batch and were also
+  tripping the merge-queue OSV-Scanner and CI dependency-scan gates, so every PR
+  in the queue (including the pyasn1 fix itself) was being rejected until both
+  were bumped together.
 
 ## [0.25.1] - 2026-07-21
 
