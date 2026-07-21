@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Frontend nginx forwarded `X-Forwarded-Proto: $scheme` to the backend, but this
+  container listens on plain HTTP behind the TLS-terminating edge, so `$scheme`
+  was always `http`. The backend (which trusts this nginx via uvicorn
+  `--forwarded-allow-ips`) then resolved `request.url.scheme` to `http` and
+  `HealthExemptHTTPSRedirectMiddleware` 307-looped every `/api/*` request to its
+  own HTTPS URL. This broke guardian login after Google sign-in with "You're
+  signed in, but we couldn't load your account." nginx now forwards a hardcoded
+  `X-Forwarded-Proto: https` (the site is only ever served over HTTPS at the
+  edge), which also restores backend HSTS emission and per-client rate-limit
+  keying.
+
 ## [0.25.2] - 2026-07-21
 
 ### Security

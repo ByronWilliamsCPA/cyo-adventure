@@ -100,9 +100,13 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
-.env.local
-.env.*.local
+# Ignore every .env variant at any depth (may hold real secrets: prod/staging
+# DB URLs, Supabase keys, LLM provider tokens); keep committed *.example
+# templates. This single pattern covers .env, .env.local, .env.production,
+# .env.staging, .env.e2e-prod, and any future variant so a new secret file can
+# never be accidentally staged.
+.env*
+!.env*.example
 # Docker/Portainer stack env file: may hold real OLLAMA_AUTH / secrets, never commit
 stack.env
 .venv
@@ -315,9 +319,6 @@ docs/superpowers/plans/
 # children's/guardians' names, emails, or account details. Keep them local;
 # the tracked .gitkeep preserves the directory.
 docs/qa/naive-ux-reports/*.md
-
-# Staging environment secrets (template: .env.staging.example)
-.env.staging
 
 # Agent-session worktrees (auto-created by subagent isolation)
 .claude/worktrees/
