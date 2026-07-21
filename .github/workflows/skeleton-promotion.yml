@@ -1,0 +1,115 @@
+# Skeleton promotion gate (WS-8 D4, design 4.3 point 4 / stage S7)
+#
+# Repo enforcement for the catalog flywheel's automation boundary. On any PR that
+# touches skeletons/**, re-prove every changed skeleton shell from scratch:
+# check_skeleton (gate/cell/envelope), check_theme_contract (when a contract
+# sidecar is present), the WS-5 anti-clone floor, and verify_bundle-equivalent
+# lineage/hash validation. A hand-tampered or stale bundle cannot ride an
+# otherwise-green PR.
+#
+# The skeleton-promotion LABEL must never be auto-merged (ADR-020 decision 4; the
+# release workflow's auto-merge precedent makes this a real hazard). The
+# no-auto-merge job fails a labeled PR that has auto-merge enabled, so no
+# label-based automation can silently merge a promotion.
+name: Skeleton Promotion
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    branches: [main, master]
+    paths:
+      - "skeletons/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  prove-bundle:
+    name: Re-prove promoted skeletons
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # Need the base commit present so the changed-file diff resolves.
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.14"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+
+      # Importing cyo_adventure pulls SQLAlchemy in transitively (diversity), so
+      # the `api` extra is required to import the package at all, mirroring the
+      # `diversity` and `contract` jobs in ci.yml.
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      - name: Collect changed skeleton files
+        id: changed
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Only added/modified (not deleted) skeleton files are proved.
+          git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'skeletons/**' \
+            > changed-skeletons.txt || true
+          echo "count=$(wc -l < changed-skeletons.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          echo "Changed skeleton files:"; cat changed-skeletons.txt
+
+      - name: Re-prove changed skeletons from scratch
+        if: ${{ steps.changed.outputs.count != '0' }}
+        run: |
+          # The prover filters sidecars itself; passing the raw changed list is safe.
+          # shellcheck disable=SC2046
+          uv run python scripts/check_promotion_bundle.py $(cat changed-skeletons.txt)
+
+  no-auto-merge:
+    name: Enforce no auto-merge on skeleton-promotion
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: contains(github.event.pull_request.labels.*.name, 'skeleton-promotion')
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Fail if auto-merge is enabled on a promotion PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          # A skeleton-promotion PR is human-merge-only (ADR-020 decision 4). If
+          # any tooling enabled auto-merge, fail loudly so it cannot land unattended.
+          AUTO_MERGE="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.auto_merge')"
+          echo "auto_merge=${AUTO_MERGE}"
+          if [ "$AUTO_MERGE" != "null" ] && [ -n "$AUTO_MERGE" ]; then
+            echo "::error::Auto-merge is enabled on a skeleton-promotion PR;" \
+              "promotion is human-merge-only (ADR-020 decision 4). Disable auto-merge."
+            exit 1
+          fi
+          echo "No auto-merge enabled; a human must review and merge this promotion."

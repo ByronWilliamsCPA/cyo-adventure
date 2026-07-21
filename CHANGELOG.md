@@ -136,6 +136,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `--no-draft` leaves the manual path unchanged) that re-runs the unchanged
   acceptance harness with the resolved ids and degrades gracefully to a held
   candidate if the provider is unavailable.
+- WS-8 catalog flywheel, D4 (promotion-PR preparation and repo enforcement, the
+  automation boundary): a new `scripts/prepare_promotion_pr.py` refuses to run on
+  `main`/`master`, refuses a bundle that is not `promotable`/`fully_resolved`,
+  re-runs `verify_bundle` against the live catalog immediately before any copy,
+  writes only inside a dedicated git worktree (a containment guard raises rather
+  than write outside it), regenerates the catalog doc region and diagram, and
+  prepares a draft PR labeled `skeleton-promotion` through a guarded creator
+  (default dry-run prints the plan; nothing can merge, approve, or enable
+  auto-merge). A new `scripts/check_promotion_bundle.py` and a
+  `.github/workflows/skeleton-promotion.yml` CI job independently re-prove
+  `check_skeleton` + theme contract + the anti-clone floor + lineage/hash on
+  every `skeletons/**` PR, so a tampered or stale bundle cannot ride a green PR,
+  and the `skeleton-promotion` label is excluded from auto-merge. A dedicated
+  PR template carries the ADR-020 decision-4 per-item human structure-approval
+  checklist.
 
 ### Changed
 
