@@ -568,9 +568,15 @@ def _pick_donor(parent: CatalogEntry, catalog: Catalog) -> CatalogEntry | None:
 def _graft_params(parent: CatalogEntry, donor: CatalogEntry) -> OpParams | None:
     """Return a precondition-satisfying M3 graft params for a host/donor, or None.
 
-    Enumerates candidate ``(subtree_root, host_decision)`` pairs deterministically
-    (donor self-contained subtree roots x host non-ending 1-2-choice decisions)
-    and returns the first whose single-op graft chain is constructible.
+    Enumerates candidate ``(subtree_root, host_decision)`` pairs and returns the
+    first constructible one, with donor subtrees tried LARGEST-FIRST. Grafting the
+    biggest self-contained donor subtree that still fits the cell node envelope is
+    what pushes the composed result's structural distance from the parent up toward
+    the ``TAU_STRUCT`` anti-clone floor: a first-eligible (often tiny) graft barely
+    moves the tree, so this maximization is not cosmetic but the difference between
+    a floor-clearing candidate and a discard (measured: largest-first lifts a
+    reference graft from ~0.02 to ~0.32 parent distance). Ties on size break on the
+    root id for determinism.
 
     Args:
         parent: The host (parent) entry.
@@ -581,10 +587,15 @@ def _graft_params(parent: CatalogEntry, donor: CatalogEntry) -> OpParams | None:
             no eligible graft exists.
     """
     donor_start = _start_node(donor.document)
-    subtree_roots = [
-        root
-        for root in sorted(node_ids(donor.document))
+    sized_roots = [
+        (root, len(extract_subtree(donor.document, root).node_ids))
+        for root in node_ids(donor.document)
         if root != donor_start and extract_subtree(donor.document, root).self_contained
+    ]
+    # Largest subtree first (then id): the biggest in-envelope graft is the most
+    # structure-shifting one the anti-clone floor cares about.
+    subtree_roots = [
+        root for root, _ in sorted(sized_roots, key=lambda pair: (-pair[1], pair[0]))
     ]
     host_decisions = [
         node_id
