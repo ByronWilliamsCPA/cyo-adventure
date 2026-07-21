@@ -14,10 +14,12 @@ import {
 } from './parentalGateState'
 
 const mockSignInWithPassword = vi.fn()
+const mockSignInWithOAuth = vi.fn()
 const mockSignOut = vi.fn()
 vi.mock('./useAuth', () => ({
   useAuth: (): unknown => ({
     signInWithPassword: (...args: unknown[]): unknown => mockSignInWithPassword(...args),
+    signInWithOAuth: (...args: unknown[]): unknown => mockSignInWithOAuth(...args),
     signOut: (...args: unknown[]): unknown => mockSignOut(...args),
   }),
 }))
@@ -53,6 +55,28 @@ function oauthSession(userId = 'u1') {
           id: userId,
           email: 'guardian@example.com',
           app_metadata: { provider: 'google', providers: ['google'] },
+        },
+      },
+    },
+  }
+}
+
+/**
+ * A session whose user has BOTH an email/password identity and a linked
+ * Google identity, e.g. a guardian who set a password after first signing up
+ * with Google, or vice versa. This is the account shape Requirement 2 exists
+ * for: locked out of the password-only challenge because they usually sign
+ * in via Google.
+ */
+function googleAndPasswordSession(userId = 'u1', email = 'guardian@example.com') {
+  return {
+    data: {
+      session: {
+        access_token: 'tok-1',
+        user: {
+          id: userId,
+          email,
+          app_metadata: { provider: 'email', providers: ['email', 'google'] },
         },
       },
     },
@@ -122,6 +146,7 @@ async function flushSession() {
 beforeEach(() => {
   clearAdultGate()
   mockSignInWithPassword.mockReset()
+  mockSignInWithOAuth.mockReset()
   mockSignOut.mockReset()
   mockGetSession.mockReset().mockResolvedValue(passwordSession())
   sessionStorage.clear()
@@ -409,9 +434,7 @@ describe('AdultGate', () => {
 
   it('treats a user without app_metadata as having no password identity', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    mockGetSession.mockResolvedValue(
-      sessionWithUser({ id: 'u1', email: 'guardian@example.com' })
-    )
+    mockGetSession.mockResolvedValue(sessionWithUser({ id: 'u1', email: 'guardian@example.com' }))
     renderGate()
     expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('AdultGate'))
@@ -642,9 +665,7 @@ describe('AdultGate', () => {
     // because the gate component itself never unmounts between sibling
     // routes the way the old per-page ParentalGate did.
     warmAdultGate('u1')
-    render(
-      <MemoryRouter initialEntries={['/guardian/console']}>{gateRoutes()}</MemoryRouter>
-    )
+    render(<MemoryRouter initialEntries={['/guardian/console']}>{gateRoutes()}</MemoryRouter>)
     expect(await screen.findByText('Guardian page')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Grown-ups only' })).not.toBeInTheDocument()
   })
@@ -695,6 +716,168 @@ describe('AdultGate', () => {
       clearAdultGate()
       renderGate()
       expect(await screen.findByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
+    })
+  })
+
+  describe('idle-window activity reset (Requirement 1: 30-minute idle TTL)', () => {
+    // #ASSUME: timing dependencies: ADULT_GATE_TTL_MS is an IDLE window, not
+    // an absolute one: pointerdown/keydown while unlocked slides the warm
+    // expiry forward (throttled to ~30s so it does not thrash sessionStorage
+    // on every keystroke), and the re-lock check is a periodic poll instead
+    // of a single setTimeout so it can observe an expiry that moved after the
+    // effect first scheduled it.
+    // #VERIFY: the three tests below (stays unlocked across throttled
+    // activity, re-locks after true inactivity, throttles rapid activity).
+
+    it('slides the idle window forward on activity, staying unlocked past the original TTL', async () => {
+      vi.useFakeTimers()
+      warmAdultGate('u1')
+      renderGate()
+      await flushSession()
+      expect(screen.getByText('Sensitive content')).toBeInTheDocument()
+
+      // Advance to just short of the original expiry.
+      act(() => {
+        vi.advanceTimersByTime(ADULT_GATE_TTL_MS - 1_000)
+      })
+      expect(screen.getByText('Sensitive content')).toBeInTheDocument()
+
+      // Simulate a keystroke: this must re-warm and reset the idle clock.
+      act(() => {
+        document.dispatchEvent(new Event('pointerdown'))
+      })
+
+      // Advance by nearly the full window again. Without the reset this
+      // would be almost 2x the TTL past the original expiry.
+      act(() => {
+        vi.advanceTimersByTime(ADULT_GATE_TTL_MS - 1_000)
+      })
+      expect(screen.getByText('Sensitive content')).toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Grown-ups only' })).not.toBeInTheDocument()
+    })
+
+    it('re-locks after the full idle window elapses with no activity at all', async () => {
+      vi.useFakeTimers()
+      warmAdultGate('u1')
+      renderGate()
+      await flushSession()
+      expect(screen.getByText('Sensitive content')).toBeInTheDocument()
+
+      act(() => {
+        vi.advanceTimersByTime(ADULT_GATE_TTL_MS)
+      })
+
+      expect(screen.getByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
+      expect(screen.queryByText('Sensitive content')).not.toBeInTheDocument()
+    })
+
+    it('throttles activity re-warm to at most once per ~30s', async () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(0)
+      warmAdultGate('u1', 0)
+      renderGate()
+      await flushSession()
+      expect(screen.getByText('Sensitive content')).toBeInTheDocument()
+
+      // Inside the 30s throttle window since mount: activity must NOT touch
+      // the stored expiry.
+      vi.setSystemTime(10_000)
+      act(() => {
+        document.dispatchEvent(new Event('pointerdown'))
+      })
+      expect(adultGateRemainingMs('u1', 10_000)).toBe(ADULT_GATE_TTL_MS - 10_000)
+
+      // Once the throttle window has elapsed, the next activity DOES slide
+      // the expiry forward from the current time.
+      vi.setSystemTime(35_000)
+      act(() => {
+        document.dispatchEvent(new Event('keydown'))
+      })
+      expect(adultGateRemainingMs('u1', 35_000)).toBe(ADULT_GATE_TTL_MS)
+    })
+  })
+
+  describe('Google re-auth on the locked screen (Requirement 2)', () => {
+    it('shows a Continue with Google option for a guardian who also has a Google identity, and starts the OAuth redirect on click', async () => {
+      mockGetSession.mockResolvedValue(googleAndPasswordSession())
+      renderGate()
+      await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+      const googleButton = screen.getByRole('button', { name: /continue with google/i })
+      expect(googleButton).toBeInTheDocument()
+      // The password form must still be available too (Requirement 2 is
+      // additive, not a replacement).
+      expect(screen.getByLabelText('Password')).toBeInTheDocument()
+
+      fireEvent.click(googleButton)
+      await act(async () => {})
+
+      expect(mockSignInWithOAuth).toHaveBeenCalledWith('google')
+    })
+
+    it('does not show a Google option for a password-only guardian (no linked Google identity)', async () => {
+      mockGetSession.mockResolvedValue(passwordSession())
+      renderGate()
+      await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+      expect(
+        screen.queryByRole('button', { name: /continue with google/i })
+      ).not.toBeInTheDocument()
+      expect(screen.getByLabelText('Password')).toBeInTheDocument()
+    })
+
+    it('shows a connection error and re-enables the button when the OAuth redirect fails to start', async () => {
+      mockSignInWithOAuth.mockRejectedValue(new Error('network down'))
+      mockGetSession.mockResolvedValue(googleAndPasswordSession())
+      renderGate()
+      await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+      fireEvent.click(screen.getByRole('button', { name: /continue with google/i }))
+      await act(async () => {})
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(/sign-in didn.t start/i)
+      expect(screen.getByRole('button', { name: /continue with google/i })).not.toBeDisabled()
+    })
+
+    it('ignores a re-entrant Google click while one is already in flight', async () => {
+      let resolveOAuth: (() => void) | undefined
+      mockSignInWithOAuth.mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveOAuth = () => resolve()
+          })
+      )
+      mockGetSession.mockResolvedValue(googleAndPasswordSession())
+      renderGate()
+      await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+      const googleButton = screen.getByRole('button', { name: /continue with google/i })
+      fireEvent.click(googleButton)
+      fireEvent.click(googleButton)
+      fireEvent.click(googleButton)
+
+      expect(mockSignInWithOAuth).toHaveBeenCalledTimes(1)
+      resolveOAuth?.()
+      await act(async () => {})
+    })
+
+    it('disables the password Confirm button while the Google redirect is starting', async () => {
+      let resolveOAuth: (() => void) | undefined
+      mockSignInWithOAuth.mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveOAuth = () => resolve()
+          })
+      )
+      mockGetSession.mockResolvedValue(googleAndPasswordSession())
+      renderGate()
+      await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+      fireEvent.click(screen.getByRole('button', { name: /continue with google/i }))
+
+      expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled()
+      resolveOAuth?.()
+      await act(async () => {})
     })
   })
 })

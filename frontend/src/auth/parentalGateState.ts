@@ -4,7 +4,11 @@
  * A successful guardian re-auth (password re-entry, or the documented
  * OAuth-bypass) "warms" the gate for ADULT_GATE_TTL_MS so a grown-up is not
  * re-challenged on every navigation between adult console pages
- * (guardian<->guardian, guardian<->admin, admin<->guardian). The warm entry
+ * (guardian<->guardian, guardian<->admin, admin<->guardian). ADULT_GATE_TTL_MS
+ * is an IDLE window, not an absolute one: AdultGate.tsx slides the expiry
+ * forward on pointerdown/keydown activity while unlocked, so an actively used
+ * console session is never dropped mid-task; only true inactivity (or a
+ * navigation into kid mode, or sign-out) re-cold the gate. The warm entry
  * lives in `sessionStorage`, not module memory: a same-tab full-page reload
  * (the switch-account OAuth round-trip is exactly this) must NOT re-cold the
  * gate for the same user, or the switch-account flow re-prompts every time
@@ -31,8 +35,13 @@
  * the kid bundle (see router.tsx's header comment).
  */
 
-/** How long one successful re-auth (or OAuth-bypass) keeps the gate open. */
-export const ADULT_GATE_TTL_MS = 5 * 60 * 1000
+/**
+ * How long one successful re-auth (or OAuth-bypass) keeps the gate open,
+ * measured as an IDLE window: AdultGate.tsx's activity listeners call
+ * warmAdultGate() again while the gate is unlocked, sliding this expiry
+ * forward, so it only elapses after this much uninterrupted inactivity.
+ */
+export const ADULT_GATE_TTL_MS = 30 * 60 * 1000
 
 /** sessionStorage key for the single warm entry (one signed-in adult at a time). */
 const STORAGE_KEY = 'cyo_adult_gate_warm'
