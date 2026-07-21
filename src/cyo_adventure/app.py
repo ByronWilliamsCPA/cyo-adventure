@@ -434,20 +434,27 @@ def create_app() -> FastAPI:
     # sets its fronting domain(s) so a spoofed Host/X-Forwarded-Host is rejected.
     # #VERIFY: tests/unit/test_app.py::TestTrustedHost.
     _allowed_hosts = [h.strip() for h in settings.allowed_hosts.split(",") if h.strip()]
-    # #CRITICAL: security: HTTPSRedirectMiddleware inspects request.url.scheme,
-    # which only reflects the original client's scheme (rather than always
-    # "http", since Pangolin/the reverse proxy terminates TLS and forwards
-    # plain HTTP to this container) because forwarded_allow_ips already makes
-    # uvicorn trust X-Forwarded-Proto from the proxy (see that Settings
-    # field's docstring, audit Group A2). Enabling this without that trust
-    # already in place would either redirect-loop real HTTPS traffic or do
-    # nothing useful; it is safe now that the proxy-trust boundary is fixed.
-    # Disabled ONLY in ENVIRONMENT=local, mirroring the rate-limiter gate
-    # immediately below: local dev/CI talk to this app directly over plain
-    # HTTP with no reverse proxy in front of it, so a redirect would break
-    # every local request.
+    # #CRITICAL: security: HealthExemptHTTPSRedirectMiddleware inspects
+    # request.url.scheme, which only reflects the original client's scheme
+    # (rather than always "http", since Pangolin/the reverse proxy
+    # terminates TLS and forwards plain HTTP to this container) because
+    # forwarded_allow_ips already makes uvicorn trust X-Forwarded-Proto from
+    # the proxy (see that Settings field's docstring, audit Group A2).
+    # Enabling this without that trust already in place would either
+    # redirect-loop real HTTPS traffic or do nothing useful; it is safe now
+    # that the proxy-trust boundary is fixed. Disabled ONLY in
+    # ENVIRONMENT=local, mirroring the rate-limiter gate immediately below:
+    # local dev/CI talk to this app directly over plain HTTP with no reverse
+    # proxy in front of it, so a redirect would break every local request.
+    # `/health/*` is exempt from the redirect even where it's enabled, so a
+    # direct plain-HTTP liveness/uptime probe against this container (any
+    # such probe, not only ours) still gets a real response rather than a
+    # 307 (see HealthExemptHTTPSRedirectMiddleware's docstring).
     # #VERIFY: tests/unit/test_app.py::TestHttpsRedirectByEnvironment asserts
-    # the middleware is absent in local and present otherwise.
+    # the middleware is absent in local and present otherwise;
+    # tests/unit/test_security.py::TestAddSecurityMiddleware::
+    # test_https_redirect_exempts_health_path asserts the `/health/*`
+    # exemption itself.
     add_security_middleware(
         app,
         enable_rate_limiting=settings.environment != "local",

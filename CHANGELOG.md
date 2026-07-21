@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Backend HTTPS redirect (`HTTPSRedirectMiddleware`) had no path exemption, so a
+  direct plain-HTTP liveness/uptime probe against a deployed backend container
+  (bypassing the TLS-terminating reverse proxy) got a 307 instead of a real
+  response, which most probes treat as down. Replaced it with
+  `HealthExemptHTTPSRedirectMiddleware`, which exempts `/health/*` (read-only,
+  GET-only) from the redirect while every other path still redirects.
+
 ## [0.25.0] - 2026-07-21
 
 ### Added

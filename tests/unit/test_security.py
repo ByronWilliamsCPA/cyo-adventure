@@ -1140,16 +1140,49 @@ class TestAddSecurityMiddleware:
 
     @pytest.mark.unit
     def test_add_security_middleware_with_https_redirect(self) -> None:
-        """add_security_middleware registers HTTPSRedirectMiddleware when requested."""
-        from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
-
-        from cyo_adventure.middleware.security import add_security_middleware
+        """add_security_middleware registers HealthExemptHTTPSRedirectMiddleware when requested."""
+        from cyo_adventure.middleware.security import (
+            HealthExemptHTTPSRedirectMiddleware,
+            add_security_middleware,
+        )
 
         app = _minimal_app()
         add_security_middleware(app, enable_https_redirect=True)
 
         middleware_classes = [m.cls for m in app.user_middleware]
-        assert HTTPSRedirectMiddleware in middleware_classes
+        assert HealthExemptHTTPSRedirectMiddleware in middleware_classes
+
+    @pytest.mark.unit
+    def test_https_redirect_exempts_health_path(self) -> None:
+        """`/health/*` stays reachable over HTTP even with the redirect enabled.
+
+        A direct liveness/uptime probe hitting this container over plain
+        HTTP (rather than through the TLS-terminating reverse proxy) must
+        get a real 200, not a 307 that most probes treat as down. Every
+        other path still redirects.
+        """
+        from cyo_adventure.middleware.security import add_security_middleware
+
+        app = FastAPI()
+
+        @app.get("/")
+        async def root() -> dict[str, str]:
+            return {"hello": "world"}
+
+        @app.get("/health/live")
+        async def health_live() -> dict[str, str]:
+            return {"status": "ok"}
+
+        add_security_middleware(app, enable_https_redirect=True)
+        client = TestClient(app, raise_server_exceptions=True)
+
+        health_response = client.get("/health/live", follow_redirects=False)
+        assert health_response.status_code == 200
+        assert health_response.json() == {"status": "ok"}
+
+        root_response = client.get("/", follow_redirects=False)
+        assert root_response.status_code == 307
+        assert root_response.headers["location"].startswith("https://")
 
     @pytest.mark.unit
     def test_add_security_middleware_disable_rate_limiting(self) -> None:

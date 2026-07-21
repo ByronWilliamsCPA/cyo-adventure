@@ -390,7 +390,7 @@ class TestTrustedHost:
 
 
 class TestHttpsRedirectByEnvironment:
-    """create_app() must disable HTTPSRedirectMiddleware in ENVIRONMENT=local.
+    """create_app() must disable HealthExemptHTTPSRedirectMiddleware in ENVIRONMENT=local.
 
     Local dev/CI talk to this app directly over plain HTTP with no reverse
     proxy in front of it, so an unconditional redirect would break every
@@ -398,39 +398,46 @@ class TestHttpsRedirectByEnvironment:
     already makes uvicorn trust X-Forwarded-Proto from the TLS-terminating
     reverse proxy there, so request.url.scheme correctly reflects the
     original client's scheme rather than always "http". Mirrors
-    TestRateLimitingByEnvironment's gating pattern.
+    TestRateLimitingByEnvironment's gating pattern. The middleware itself
+    (including its `/health/*` exemption) is unit-tested directly in
+    tests/unit/test_security.py; this class only covers the local/deployed
+    on-off gate.
     """
 
     @pytest.mark.unit
     def test_https_redirect_absent_in_local_environment(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """No HTTPSRedirectMiddleware is wired when environment is local."""
-        from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
-
+        """No HealthExemptHTTPSRedirectMiddleware is wired when environment is local."""
         from cyo_adventure.core.config import settings
+        from cyo_adventure.middleware.security import (
+            HealthExemptHTTPSRedirectMiddleware,
+        )
 
         monkeypatch.setattr(settings, "environment", "local")
         app = create_app()
 
-        assert not any(m.cls is HTTPSRedirectMiddleware for m in app.user_middleware), (
-            "HTTPSRedirectMiddleware must be disabled in ENVIRONMENT=local"
-        )
+        assert not any(
+            m.cls is HealthExemptHTTPSRedirectMiddleware for m in app.user_middleware
+        ), "HealthExemptHTTPSRedirectMiddleware must be disabled in ENVIRONMENT=local"
 
     @pytest.mark.unit
     def test_https_redirect_present_outside_local_environment(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """HTTPSRedirectMiddleware is wired for deployed (non-local) environments."""
-        from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
-
+        """HealthExemptHTTPSRedirectMiddleware is wired for deployed (non-local) environments."""
         from cyo_adventure.core.config import settings
+        from cyo_adventure.middleware.security import (
+            HealthExemptHTTPSRedirectMiddleware,
+        )
 
         monkeypatch.setattr(settings, "environment", "production")
         app = create_app()
 
-        assert any(m.cls is HTTPSRedirectMiddleware for m in app.user_middleware), (
-            "HTTPSRedirectMiddleware must stay enabled outside ENVIRONMENT=local"
+        assert any(
+            m.cls is HealthExemptHTTPSRedirectMiddleware for m in app.user_middleware
+        ), (
+            "HealthExemptHTTPSRedirectMiddleware must stay enabled outside ENVIRONMENT=local"
         )
 
 
