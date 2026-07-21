@@ -90,9 +90,13 @@ def _load_thresholds() -> tuple[float, float, float]:
     return (tau_struct, tau_cell, tau_state)
 
 
-# The calibrated floors, loaded once from the committed baseline. Design 4.6:
-# TAU_CELL <= TAU_STRUCT (a mutant far enough from its parent may still clone a
-# sibling). TAU_STATE (design 5.4) is re-exported for state_ops.py.
+# The calibrated floors, loaded once from the committed baseline. ADR-020
+# Amendment 1 (floor recalibration): the mutant-vs-parent distance clause that
+# once gated on TAU_STRUCT is retired; TAU_CELL is now the in-cell
+# anti-duplication floor, applied to every in-cell tree INCLUDING the parent
+# (design 4.6, restated in this module's docstring). TAU_STRUCT is retained in
+# the baseline (fingerprint/calibration reuse) but no longer gates promotion.
+# TAU_STATE (design 5.4) is re-exported for state_ops.py.
 TAU_STRUCT, TAU_CELL, TAU_STATE = _load_thresholds()
 
 

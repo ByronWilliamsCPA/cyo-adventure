@@ -62,10 +62,13 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     # api/node_edit.py::edit_node.
     EventType.NODE_EDITED: frozenset({"node_id"}),
     # WS-8 catalog flywheel: the full cell coordinate plus the escalation
-    # level, all closed-vocabulary enum values (AgeBand/Length/NarrativeStyle/
-    # DifferentiationLevel). No theme text, family, or child identifier ever
-    # rides this payload; the flywheel trigger's distinct-request denominator
-    # is the row's entity_id anchor, not payload content (design section 4.1).
+    # level. The producer (the CELL_SATURATED emitter) writes closed-vocabulary
+    # enum values (AgeBand/Length/NarrativeStyle/DifferentiationLevel); the
+    # writer's own guarantee is the key allowlist plus the payload-type/length
+    # bound below (not enum-membership validation), which is enough that no theme
+    # text, family, or child identifier can ride this payload. The flywheel
+    # trigger's distinct-request denominator is the row's entity_id anchor, not
+    # payload content (design section 4.1).
     EventType.CELL_SATURATED: frozenset({"age_band", "length", "style", "level"}),
     # Phase 8a: the family_id filter (None when the admin listed across
     # every family) and the row count returned; no profile-level detail, so
