@@ -210,6 +210,127 @@ def load_outcomes(path: Path) -> dict[str, str]:
     return outcomes
 
 
+def _coerce_record(row: dict[str, object]) -> AttemptRecord | None:
+    """Return an :class:`AttemptRecord` from a parsed ledger row, or None on junk.
+
+    Every field is type-checked defensively so a hand-edited or partially written
+    line can never crash the reader (the D7 flywheel report reads this): a row
+    missing a required scalar, or carrying the wrong type, is dropped rather than
+    coerced. A row whose ``outcome`` is not a known outcome is also dropped, so the
+    funnel only ever aggregates interpretable records.
+
+    Args:
+        row: One parsed JSONL object.
+
+    Returns:
+        AttemptRecord | None: The typed record, or None when the row is malformed.
+    """
+    sig = row.get("attempt_sig")
+    parent_slug = row.get("parent_slug")
+    parent_sha256 = row.get("parent_sha256")
+    outcome = row.get("outcome")
+    timestamp = row.get("timestamp")
+    if not (
+        isinstance(sig, str)
+        and isinstance(parent_slug, str)
+        and isinstance(parent_sha256, str)
+        and isinstance(outcome, str)
+        and outcome in _OUTCOMES
+        and isinstance(timestamp, str)
+    ):
+        return None
+    raw_cell = row.get("cell")
+    cell = (
+        {
+            k: v
+            for k, v in cast("dict[str, object]", raw_cell).items()
+            if isinstance(v, str)
+        }
+        if isinstance(raw_cell, dict)
+        else {}
+    )
+    raw_chain = row.get("chain")
+    chain: list[dict[str, object]] = (
+        [
+            cast("dict[str, object]", step)
+            for step in cast("list[object]", raw_chain)
+            if isinstance(step, dict)
+        ]
+        if isinstance(raw_chain, list)
+        else []
+    )
+    raw_distances = row.get("distances")
+    distances = (
+        {
+            k: float(v)
+            for k, v in cast("dict[str, object]", raw_distances).items()
+            if isinstance(v, (int, float)) and not isinstance(v, bool)
+        }
+        if isinstance(raw_distances, dict)
+        else {}
+    )
+    failing_stage = row.get("failing_stage")
+    discard_reason = row.get("discard_reason")
+    return AttemptRecord(
+        attempt_sig=sig,
+        parent_slug=parent_slug,
+        parent_sha256=parent_sha256,
+        cell=cell,
+        chain=chain,
+        outcome=outcome,
+        failing_stage=failing_stage if isinstance(failing_stage, str) else None,
+        discard_reason=discard_reason if isinstance(discard_reason, str) else "",
+        distances=distances,
+        timestamp=timestamp,
+    )
+
+
+def load_records(path: Path) -> list[AttemptRecord]:
+    """Return every parsed :class:`AttemptRecord` from the ledger, in file order.
+
+    Where :func:`load_outcomes` collapses the ledger to a ``sig -> outcome`` map
+    (all the strategy's replay memory needs), the flywheel report's promotion
+    funnel needs the full records (the failing stage, the cell, the outcome), so
+    this reader keeps every field. A missing ledger is an empty list (the
+    pre-first-cycle bootstrap or a fresh checkout that lost the gitignored scratch
+    file); a malformed or non-interpretable line is skipped, never fatal, exactly
+    as :func:`load_outcomes` does, so a partial write can never wedge the report.
+
+    Records are returned in file (append) order, so a later record for a signature
+    does NOT supersede an earlier one here (unlike :func:`load_outcomes`'s
+    last-write-wins map); a caller that wants the latest disposition per signature
+    reduces the list itself.
+
+    Args:
+        path: The ledger file path.
+
+    Returns:
+        list[AttemptRecord]: One record per interpretable line, in file order.
+    """
+    # #EDGE: external-resources: the ledger is gitignored scratch; a missing file
+    # is an empty list, never an error (design 6.3 #EDGE), and a corrupt line is
+    # skipped. This reader is read-only: it never writes or creates the file.
+    # #VERIFY: tests round-trip appended records, assert a missing file loads
+    # empty, and assert a junk line is skipped.
+    if not path.is_file():
+        return []
+    records: list[AttemptRecord] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            parsed = cast("object", json.loads(stripped))
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(parsed, dict):
+            continue
+        record = _coerce_record(cast("dict[str, object]", parsed))
+        if record is not None:
+            records.append(record)
+    return records
+
+
 def append_record(path: Path, record: AttemptRecord) -> None:
     """Append one attempt record to the ledger, creating parent dirs as needed.
 

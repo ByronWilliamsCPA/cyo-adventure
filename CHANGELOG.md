@@ -174,6 +174,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `docs/planning/ws8-parameterize-at-promotion-runbook.md` documents the manual
   steps, and `scripts/prepare_promotion_pr.py` gained a small public reuse surface
   (additive aliases only; no logic change).
+- WS-8 catalog flywheel, D7 (metrics report): a read-only
+  `scripts/flywheel_report.py` emits a markdown report with the seven design
+  tables -- net new trees per month (attributing flywheel vs hand-authored trees
+  from `*.lineage.json` additions in git history), distinct trees per cell with
+  the in-cell structural-distance min/median, effective catalog size, the
+  promotion funnel from the ledger, re-guidance cost, demand response from
+  `CELL_SATURATED` events (DB-optional), and the catalog-hygiene minimum in-cell
+  pairwise distance (which surfaces the known 0.0009 near-duplicate pair). It is
+  read-only everywhere (its git runner refuses any subcommand but `log`, and it
+  writes only its `--out` report), never gates CI, is deterministic (the report
+  date is a required `--as-of` argument, never the wall clock), and degrades
+  gracefully to honest empty tables on a fresh system. Adds an additive
+  `flywheel/ledger.py::load_records` helper for the funnel.
 
 ### Changed
 
