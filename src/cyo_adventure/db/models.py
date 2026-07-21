@@ -146,7 +146,35 @@ _PIPELINE_ENTITY_TYPE_VALUES = (
 _USER_STATUS_VALUES = "'pending', 'active', 'deactivated', 'awaiting_approval'"
 
 
-class Family(Base):
+class UUIDPrimaryKeyMixin:
+    """A UUID surrogate primary key, client-side defaulted via ``uuid.uuid4``.
+
+    Mixed in alongside ``Base`` (never in place of it) on every ORM class
+    whose primary key is a plain UUID surrogate. Excluded from ``Storybook``
+    (``String`` natural key), ``ModerationSetting`` (``String`` natural key),
+    and the five composite-primary-key tables (``StorybookVersion``,
+    ``ReadingState``, ``Completion``, ``Rating``, ``StorybookAssignment``),
+    which define their own primary keys.
+    """
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+
+
+class CreatedAtMixin:
+    """A server-defaulted insert timestamp (UTC, TIMESTAMPTZ)."""
+
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+class UpdatedAtMixin:
+    """A server-defaulted timestamp that also refreshes on every update."""
+
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
+    )
+
+
+class Family(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A family: the ownership root for users, profiles, and stories."""
 
     __tablename__ = "family"
@@ -157,7 +185,6 @@ class Family(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200))
     # ADR-015 G7: the guardian cost gate's per-family monthly spend ceiling
     # (spend = story requests that entered "approved" in the current UTC
@@ -176,7 +203,6 @@ class Family(Base):
     # case and tests/integration/test_story_requests_budget.py pins the
     # override case end to end.
     monthly_story_quota: Mapped[int | None] = mapped_column(default=None)
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     # Nullable timestamp rather than a status string (contrast User.status):
     # a family only ever has two states, so "when was it deactivated" is
     # strictly more useful than a third enum value would be. Set by
@@ -188,7 +214,7 @@ class Family(Base):
     deactivated_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
-class Series(Base):
+class Series(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A named, family-owned chain of storybooks (WS-B PR 3, decision B2).
 
     DB-level linkage only in WS-B: books reference a series via
@@ -216,7 +242,6 @@ class Series(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
     # family's own series are family-owned content, deleted along with it.
     # #VERIFY: tests/integration/test_deletion_drill.py.
@@ -232,10 +257,9 @@ class Series(Base):
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
-class User(Base):
+class User(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """An authenticated user (guardian, child, or admin) within a family.
 
     ``role`` is the single base persona; the ``is_admin`` flag is an
@@ -281,7 +305,6 @@ class User(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): every
     # guardian/admin/child login row in a deleted family is deleted with it.
     # #VERIFY: tests/integration/test_deletion_drill.py.
@@ -327,7 +350,6 @@ class User(Base):
     child_profile_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE"), default=None
     )
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     # #CRITICAL: security: 'pending' is an admin-created invite row (WS-J):
     # its authn_subject is a synthetic placeholder (api/admin_users.py's
     # _PENDING_SUBJECT_PREFIX) that no real JWT can ever carry, but
@@ -368,7 +390,7 @@ class User(Base):
     consent_ip: Mapped[str | None] = mapped_column(String(64), default=None)
 
 
-class ChildProfile(Base):
+class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A per-child reading profile with age band and content caps."""
 
     __tablename__ = "child_profile"
@@ -386,7 +408,6 @@ class ChildProfile(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
     # family's own child profiles are deleted along with it.
     # #VERIFY: tests/integration/test_deletion_drill.py.
@@ -446,7 +467,6 @@ class ChildProfile(Base):
     # monthly_request_envelope IS NULL as "cannot auto-approve", never as
     # unlimited; tests/unit/test_story_requests.py pins this.
     monthly_request_envelope: Mapped[int | None] = mapped_column(default=None)
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     # Soft-remove (WS-J admin user management): a deactivated profile is
     # excluded from every listing a picker or guardian console reads
     # (api/deps.py::_resolve_profiles, api/profiles.py::list_profiles) and
@@ -469,7 +489,7 @@ class ChildProfile(Base):
     processing_restricted_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
-class FamilyConnection(Base):
+class FamilyConnection(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A directional cross-family opt-in for story recommendations (WS-J).
 
     ``family_id`` is the "viewer": the family that has opted in to seeing
@@ -536,7 +556,6 @@ class FamilyConnection(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     # #CRITICAL: data-integrity: CASCADE both sides (Phase 3a): the connection
     # is a permission edge between two families, not identity data with its
     # own retention value; if either family is deleted, the edge is meaningless.
@@ -550,7 +569,6 @@ class FamilyConnection(Base):
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     # #CRITICAL: data-integrity: deliberately NOT ondelete=SET NULL. The
     # viewer/sharer consent-pairing CHECK constraints below require
     # user_id and at to be null together; a bare SET NULL on only the
@@ -574,7 +592,7 @@ class FamilyConnection(Base):
     consented_by_sharer_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
 
 
-class Storybook(Base):
+class Storybook(CreatedAtMixin, Base):
     """A story's lifecycle row; one per story id regardless of version."""
 
     __tablename__ = "storybook"
@@ -638,10 +656,9 @@ class Storybook(Base):
         ForeignKey(_FK_SERIES), default=None
     )
     book_index: Mapped[int | None] = mapped_column(default=None)
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
-class StorybookVersion(Base):
+class StorybookVersion(CreatedAtMixin, Base):
     """An immutable version of a story, including its content blob.
 
     The Storybook JSON is stored inline on ``blob`` for Phase 1; ``blob_ref`` is
@@ -683,7 +700,6 @@ class StorybookVersion(Base):
     # any version predating this column (WS-C PR2). Set once, at persist time,
     # from the job's authoring_metadata["skeleton_slug"]; never backfilled.
     skeleton_slug: Mapped[str | None] = mapped_column(String(120), default=None)
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     cover_image_url: Mapped[str | None] = mapped_column(String(512), default=None)
     cover_status: Mapped[str] = mapped_column(
         String(20), default="none", server_default="none"
@@ -697,7 +713,7 @@ class StorybookVersion(Base):
     )
 
 
-class ReadingState(Base):
+class ReadingState(CreatedAtMixin, UpdatedAtMixin, Base):
     """Per-child, per-story reading progress with revision-based concurrency.
 
     ``visit_set`` is persisted as a JSON list (it drives ``once: true`` effects)
@@ -739,10 +755,6 @@ class ReadingState(Base):
     last_event_id: Mapped[str | None] = mapped_column(String(64), default=None)
     updated_by_device_id: Mapped[str | None] = mapped_column(String(64), default=None)
     last_synced_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        _TS, server_default=func.now(), onupdate=func.now()
-    )
 
 
 class Completion(Base):
@@ -772,7 +784,7 @@ class Completion(Base):
     found_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
-class Rating(Base):
+class Rating(UpdatedAtMixin, Base):
     """A child's 1-5 rating of a storybook.
 
     Unlike ``Completion``, which pins to an immutable ``storybook_version`` via a
@@ -804,12 +816,9 @@ class Rating(Base):
     # at-rest backstop.
     value: Mapped[int] = mapped_column()
     rated_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        _TS, server_default=func.now(), onupdate=func.now()
-    )
 
 
-class StorybookAssignment(Base):
+class StorybookAssignment(CreatedAtMixin, Base):
     """A guardian's grant of one published story to one child profile.
 
     Composite-keyed on ``(child_profile_id, storybook_id)`` so a profile is
@@ -842,10 +851,9 @@ class StorybookAssignment(Base):
     assigned_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
-class Concept(Base):
+class Concept(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A generation concept brief: the intake form for a story request.
 
     One Concept row is created per guardian request and holds the serialized
@@ -864,7 +872,6 @@ class Concept(Base):
 
     __tablename__ = "concept"
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
     # family's own concepts are family-owned content, deleted with it. Also
     # cascades to GenerationJob.concept_id below (NOT NULL there), which
@@ -882,10 +889,9 @@ class Concept(Base):
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
-class StoryRequest(Base):
+class StoryRequest(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A child's free-text story idea awaiting a guardian or admin decision.
 
     Submitted by a child (running under the guardian token in R1). The request
@@ -1016,7 +1022,6 @@ class StoryRequest(Base):
         Index("ix_story_request_status_reviewed_at", "status", "reviewed_at"),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
     # family's own story requests are family-owned content, deleted with it.
     # #VERIFY: tests/integration/test_deletion_drill.py.
@@ -1086,13 +1091,12 @@ class StoryRequest(Base):
         String(120), ForeignKey(_FK_STORYBOOK, ondelete="SET NULL"), default=None
     )
     proposed_series_title: Mapped[str | None] = mapped_column(String(120), default=None)
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
 _MIN_VERDICT_VALUES = "'advisory', 'flag', 'block'"
 
 
-class ModerationThreshold(Base):
+class ModerationThreshold(UUIDPrimaryKeyMixin, UpdatedAtMixin, Base):
     """Sparse per-(age_band, category) override of the surfacing default.
 
     Absence of a row means the code default applies
@@ -1141,7 +1145,6 @@ class ModerationThreshold(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     age_band: Mapped[str] = mapped_column(String(16))
     category: Mapped[str] = mapped_column(String(64))
     min_verdict: Mapped[str] = mapped_column(String(16))
@@ -1152,12 +1155,9 @@ class ModerationThreshold(Base):
     updated_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
-    updated_at: Mapped[datetime] = mapped_column(
-        _TS, server_default=func.now(), onupdate=func.now()
-    )
 
 
-class ModerationThresholdAudit(Base):
+class ModerationThresholdAudit(UUIDPrimaryKeyMixin, Base):
     """Append-only audit of threshold edits (who changed what, when).
 
     Deliberately minimal: WS-D's pipeline_event log will subsume this role;
@@ -1193,7 +1193,6 @@ class ModerationThresholdAudit(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     age_band: Mapped[str] = mapped_column(String(16))
     category: Mapped[str] = mapped_column(String(64))
     action: Mapped[str] = mapped_column(String(16))  # 'upsert' | 'delete'
@@ -1222,7 +1221,7 @@ class ModerationThresholdAudit(Base):
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
-class PipelineEvent(Base):
+class PipelineEvent(UUIDPrimaryKeyMixin, Base):
     """Append-only log of every story-lifecycle transition (WS-D capture layer).
 
     Written from the transaction performing the transition (spec decision D1). Rows
@@ -1259,7 +1258,6 @@ class PipelineEvent(Base):
         Index("ix_pipeline_event_occurred_at", "occurred_at"),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     occurred_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     # #CRITICAL: data-integrity: deliberately NOT a ForeignKey (Phase 3a). This
     # table is enforced append-only by a DB trigger that rejects any UPDATE or
@@ -1291,7 +1289,7 @@ class PipelineEvent(Base):
     )
 
 
-class ModerationSetting(Base):
+class ModerationSetting(UpdatedAtMixin, Base):
     """A single named global moderation scalar (WS-A admin noise-floor addendum).
 
     Distinct from ``ModerationThreshold``: this table holds global scalars
@@ -1337,15 +1335,12 @@ class ModerationSetting(Base):
     updated_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
-    updated_at: Mapped[datetime] = mapped_column(
-        _TS, server_default=func.now(), onupdate=func.now()
-    )
 
 
 _ALLOWLIST_PROVIDER_VALUES = "'anthropic', 'openrouter', 'modal', 'ollama'"
 
 
-class ProviderModelAllowlist(Base):
+class ProviderModelAllowlist(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     """Admin-editable allowlist of (provider, model_id) pairs eligible for generation.
 
     Providers are a code-fixed enum (the CHECK below); only the model id
@@ -1386,7 +1381,6 @@ class ProviderModelAllowlist(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     provider: Mapped[str] = mapped_column(String(32))
     model_id: Mapped[str] = mapped_column(String(120))
     enabled: Mapped[bool] = mapped_column(default=True, server_default=text("true"))
@@ -1399,13 +1393,9 @@ class ProviderModelAllowlist(Base):
     updated_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
     )
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        _TS, server_default=func.now(), onupdate=func.now()
-    )
 
 
-class ProviderModelAllowlistAudit(Base):
+class ProviderModelAllowlistAudit(UUIDPrimaryKeyMixin, Base):
     """Append-only audit of allowlist edits (who changed what, when).
 
     Deliberately minimal, mirroring ``ModerationThresholdAudit``: WS-D's
@@ -1438,7 +1428,6 @@ class ProviderModelAllowlistAudit(Base):
         ),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     provider: Mapped[str] = mapped_column(String(32))
     model_id: Mapped[str] = mapped_column(String(120))
     action: Mapped[str] = mapped_column(String(16))
@@ -1462,7 +1451,7 @@ class ProviderModelAllowlistAudit(Base):
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
-class GenerationJob(Base):
+class GenerationJob(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin, Base):
     """Tracks a single staged-generation attempt for a Concept.
 
     One job row is created when a generation run is enqueued. The status
@@ -1510,7 +1499,6 @@ class GenerationJob(Base):
         Index("ix_generation_job_status_updated_at", "status", "updated_at"),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): this
     # FK is NOT NULL, so it MUST cascade rather than SET NULL; Concept.family_id
     # already CASCADEs when a family is deleted, and without this cascade too,
@@ -1566,13 +1554,9 @@ class GenerationJob(Base):
     storybook_id: Mapped[str | None] = mapped_column(String(120), default=None)
     version: Mapped[int | None] = mapped_column(default=None)
     error: Mapped[str | None] = mapped_column(String(512), default=None)
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        _TS, server_default=func.now(), onupdate=func.now()
-    )
 
 
-class DeviceGrant(Base):
+class DeviceGrant(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A guardian-minted, revocable device authorization (ADR-014 phase 1).
 
     A row here is the durable, database-backed counterpart to a device grant
@@ -1605,7 +1589,6 @@ class DeviceGrant(Base):
 
     __tablename__ = "device_grant"
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     # #CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure): a
     # family's own device grants are deleted with it. authorized_by
     # deliberately keeps no ondelete action: the authorizing guardian is
@@ -1619,7 +1602,6 @@ class DeviceGrant(Base):
     authorized_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
     label: Mapped[str | None] = mapped_column(String(120), default=None)
     jti: Mapped[uuid.UUID] = mapped_column(Uuid, unique=True)
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     revoked_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     # NOT NULL with no DB default: every real row supplies it (mint stamps it,
     # the backfill migration set it for pre-existing rows), and omitting a
@@ -1634,7 +1616,7 @@ _KID_FLAG_REASON_VALUES = "'did_not_like', 'scared_me', 'confusing'"
 _KID_FLAG_RESOLUTION_VALUES = "'dismissed', 'archived_book', 'noted'"
 
 
-class KidFlag(Base):
+class KidFlag(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     """A child's structured "I didn't like this / this scared me" signal (K15).
 
     Feeds the admin moderation queue (A1) directly via this table, and,
@@ -1706,7 +1688,6 @@ class KidFlag(Base):
         Index("ix_kid_flag_resolved_created", "resolved_at", "created_at"),
     )
 
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     # #CRITICAL: data-integrity: CASCADE both FKs (Phase 3a): a flag is
     # child-linked data, purged with either the family or the flagging
     # profile.
@@ -1723,7 +1704,6 @@ class KidFlag(Base):
     version: Mapped[int] = mapped_column()
     reason: Mapped[str] = mapped_column(String(16))
     node_id: Mapped[str | None] = mapped_column(String(120), default=None)
-    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     # #CRITICAL: data-integrity: deliberately NOT ondelete=SET NULL, unlike
     # most nullable *_by references. ck_kid_flag_resolved_pairing requires
     # resolved_by and resolved_at to be null together; a bare SET NULL on
