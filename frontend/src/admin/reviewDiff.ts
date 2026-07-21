@@ -228,9 +228,9 @@ export interface VersionDiff {
  * synthetic id rather than a silent drop). Nodes are keyed by id, first
  * occurrence wins (matching buildReadThrough's duplicate-id rule): a node id
  * only on one side is added/removed, and a node id on both sides is
- * `changed` when its body text differs OR its choices array differs (by
- * JSON.stringify; ChoiceView's shape is stable, so this also catches a
- * reworded label, an added/removed choice, or a retargeted/reordered one).
+ * `changed` when its body text differs OR its choices differ per `diffChoices`
+ * (matched by target, not position, so a reworded label, an added/removed
+ * choice, or a retargeted one counts, but a pure reorder does not).
  *
  * #ASSUME: data integrity: this is a reviewer-facing summary, not the
  * safety-critical read-through above; it does not attempt to distinguish a

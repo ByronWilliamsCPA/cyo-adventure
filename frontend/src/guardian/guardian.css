@@ -546,15 +546,6 @@
   padding: 0.75rem;
 }
 
-.intake-retry {
-  background: transparent;
-  border: 1px solid var(--color-error, #9b2c2c);
-  color: var(--color-error, #9b2c2c);
-  border-radius: 999px;
-  padding: 0.15rem 0.7rem;
-  cursor: pointer;
-}
-
 .intake-requests {
   list-style: none;
   padding: 0;
@@ -1486,16 +1477,6 @@
   border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
 }
 
-.reading-card__retry {
-  border: none;
-  background: none;
-  color: var(--color-amber-deep, #c17b2a);
-  font-weight: var(--weight-semibold, 600);
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 0;
-}
-
 .reading-book-list {
   list-style: none;
   padding: 0;
@@ -1667,16 +1648,6 @@
 
 .notification-bell__item-age {
   font-size: 0.75rem;
-}
-
-.notification-bell__retry {
-  border: none;
-  background: none;
-  color: var(--color-amber-deep, #c17b2a);
-  font-weight: var(--weight-semibold, 600);
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 0;
 }
 
 /* ============================================================================
