@@ -93,8 +93,10 @@ jobs:
         if: ${{ steps.changed.outputs.count != '0' }}
         run: |
           # The prover filters sidecars itself; passing the raw changed list is safe.
-          # shellcheck disable=SC2046
-          uv run python scripts/check_promotion_bundle.py $(cat changed-skeletons.txt)
+          # Read newline-delimited paths into an array so each is a single quoted
+          # argument (no word-splitting on spaces, no glob expansion).
+          mapfile -t changed_skeletons < changed-skeletons.txt
+          uv run python scripts/check_promotion_bundle.py "${changed_skeletons[@]}"
 
   no-auto-merge:
     name: Enforce no auto-merge on skeleton-promotion
