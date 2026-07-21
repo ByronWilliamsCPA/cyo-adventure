@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import calendar
 import json
 import subprocess  # nosec B404 -- read-only `gh pr list` only, list-form argv; audited below
 import sys
@@ -213,9 +214,14 @@ def _git_merge_history(catalog: Catalog, as_of_month: str) -> MergeHistory:
     tree adds a ``*.lineage.json`` sidecar, so a tree addition whose slug is in
     the lineage-slug set is a flywheel merge. Merge dates are month-granular here
     (the D7 reader keys on ``YYYY-MM``); a deployment needing day-precise
-    cool-downs injects a finer provider. Month granularity is conservative for
-    the cool-down (a mid-month merge reads as the 1st, which is at worst slightly
-    older, never falsely fresh).
+    cool-downs injects a finer provider. A mid-month merge is rounded UP to the
+    last day of the month, which is conservative for the cool-down cap: the
+    cool-down blocks a cell whose last merge is fewer than ``COOLDOWN_DAYS`` old
+    (:func:`~cyo_adventure.flywheel.cadence.select_growable_cells`), so reading a
+    merge as at-worst slightly FRESHER than reality can only make the gate wait
+    longer, never clear the cool-down early. Flooring to the 1st would do the
+    opposite (read a merge as older, shrinking the measured cool-down) and could
+    falsely permit a re-promotion still inside the window.
 
     Args:
         catalog: The (post-merge) catalog scan; a merged tree's slug resolves to
@@ -242,7 +248,10 @@ def _git_merge_history(catalog: Catalog, as_of_month: str) -> MergeHistory:
             continue
         # Newest-first: keep the first (most recent) merge date seen per cell.
         if cell not in last_merge_by_cell:
-            last_merge_by_cell[cell] = date.fromisoformat(f"{addition.month}-01")
+            year, month = (int(part) for part in addition.month.split("-"))
+            last_day = calendar.monthrange(year, month)[1]
+            # Round UP to month-end: conservative for the cool-down (see docstring).
+            last_merge_by_cell[cell] = date(year, month, last_day)
     return MergeHistory(
         last_merge_by_cell=last_merge_by_cell, month_merge_count=month_merge_count
     )
