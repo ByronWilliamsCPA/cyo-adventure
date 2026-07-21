@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- Bumped the transitive dependency `pyasn1` from 0.6.3 to 0.6.4 to resolve two
+  denial-of-service advisories: CVE-2026-59885 (GHSA-8ppf-4f7h-5ppj, quadratic
+  complexity in OBJECT IDENTIFIER / RELATIVE-OID processing) and CVE-2026-59886
+  (GHSA-hm4w-wwcw-mr6r, uncontrolled resource consumption when decoding REAL
+  values). Lockfile-only change; `pyasn1` is pulled in transitively via
+  `google-auth`. Both advisories were tripping the merge-queue OSV-Scanner gate.
+
 ## [0.25.1] - 2026-07-21
 
 ### Fixed
