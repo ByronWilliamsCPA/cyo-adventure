@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ADR-021 story catalog import: a batch importer that runs the 25 authored draft
+  stories through the deterministic validator gate and moderation into the review
+  queue under the catalog family, plus a guarded catalog-publish command for
+  admin promotion. Legacy schema 1.0 stories are normalized to 2.0 on import.
+
 ## [0.24.0] - 2026-07-21
 
 ### Added

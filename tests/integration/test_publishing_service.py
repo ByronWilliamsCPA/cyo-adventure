@@ -145,7 +145,15 @@ async def test_archive_published(
 
 
 def _principal(user_id: uuid.UUID, family_id: uuid.UUID) -> object:
-    """Build a guardian Principal for service tests."""
+    """Build an admin approver Principal for service tests.
+
+    Every approval-service operation exercised here (approve, send_back,
+    archive) is admin-only in production: api/approval.py routes each handler
+    through ``_load_admin_story``, which enforces ``principal.is_admin``, and
+    ``approve()`` now re-checks the same invariant at the service boundary.
+    The principal therefore carries the admin capability (a valid dual-role
+    ``role=guardian, is_admin=True`` adult).
+    """
     from cyo_adventure.api.deps import Principal
 
     return Principal(
@@ -154,4 +162,5 @@ def _principal(user_id: uuid.UUID, family_id: uuid.UUID) -> object:
         role="guardian",
         family_id=family_id,
         profile_ids=frozenset(),
+        is_admin=True,
     )
