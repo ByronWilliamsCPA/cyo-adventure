@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- WS-8 catalog flywheel (D1-D8): the demand-driven, human-gated catalog-growth
+  loop. D1 persists WS-4's cell-saturation as an enum-only `CELL_SATURATED`
+  pipeline event (no theme text; LLM01 enforced both directions) with a read-only
+  `scripts/flywheel_scan.py`. D2 adds a pure `flywheel/strategy.py` that plans
+  bounded per-cell mutation attempts over the unchanged WS-5 engine (parent
+  eligibility, lineage-depth ceiling, the four chain templates, section 6.4
+  ranking) with a deterministic `flywheel/ledger.py` discard memory and a
+  `flywheel_candidates.py` CLI. D3 adds fenced agent re-guidance drafting
+  (`flywheel/reguide_draft.py`, the ratified OQ-1 hybrid) screened by a
+  deterministic floor that never self-resolves. D4 adds
+  `scripts/prepare_promotion_pr.py` + `scripts/check_promotion_bundle.py` + a
+  `skeleton-promotion` CI job: automation prepares a draft PR (worktree-only,
+  verify-refusals, no auto-merge) and a human merges. D5 adds the feed-agnostic
+  `LineageV2` promotion contract (an `origin` discriminator with v1 read-compat)
+  so WS-6 fresh trees can plug in later. D6 adds optional
+  `scripts/parameterize_promotion.py` glue + runbook. D7 adds a read-only
+  `scripts/flywheel_report.py` metrics/hygiene report. D8 adds
+  `scripts/flywheel_cycle.py`, the weekly S1-S6 runner, with a single pure
+  enforcement gate (`flywheel/cadence.py`) for the six section-8.2 hard caps
+  (3 events/30 days/2 requests to trigger; 12 attempts/cell; 1 PR/cell; 3 global;
+  30-day cool-down; 4 merges/month), reporting every capped cell and always
+  ending at a draft PR. Nothing reaches a child without the full fill -> gate ->
+  moderation -> ADR-005 approval chain.
+
+### Changed
+
+- WS-8 / ADR-020 floor-recalibration amendment (owner-approved): re-scoped the
+  mutation-origin anti-clone floor so bounded mutations can actually clear it. The
+  mutant parent-distance-vs-`TAU_STRUCT` clause is retired (`TAU_STRUCT` -- the
+  25th percentile of same-cell hand-authored SIBLING-PAIR distances, 0.3325 -- was
+  mis-applied to the parent-to-mutant distance, which is categorically smaller, so
+  it rejected ~every mutant). The in-cell anti-duplication clause `TAU_CELL` is now
+  the guarantee, applied against every in-cell tree INCLUDING the parent, and
+  raised from the too-weak clamped 0.01 to a fixed owner-chosen 0.05 (rejects the
+  catalog's observed 0.0009 near-duplicate with a ~53x margin). The fingerprint
+  anti-no-op clause is unchanged. No safety level changes: this is a
+  catalog-curation bar behind the full gate + moderation + human structure
+  approval + human story approval. Touches `mutation/floors.py`,
+  `scripts/calibrate_mutation_floors.py`, `docs/planning/ws5_floor_baseline.json`
+  (baseline v2), and ADR-020 (amendment 1); see
+  `docs/planning/ws8-floor-recalibration-proposal.md`.
+
 ## [0.25.3] - 2026-07-21
 
 ### Fixed
@@ -91,140 +135,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   under the build toolchain).
 
 ## [0.22.1] - 2026-07-20
-### Added
-
-- WS-8 catalog flywheel, D1 (trigger persistence and scan): a request-time
-  cell-saturation signal is now persisted as an enum-only `CELL_SATURATED`
-  pipeline event (payload carries only the closed-vocabulary cell coordinate
-  `age_band`/`length`/`style` plus the escalation `level`, never theme text),
-  a new pure `flywheel/trigger.py` aggregates those rows into per-cell
-  saturation readings and applies the trigger thresholds, and a read-only
-  `scripts/flywheel_scan.py` reports which cells are over threshold. The
-  OWASP LLM01 safety property is enforced in both directions: the writer
-  allowlist rejects any non-enum or extra payload key, and the reader drops
-  any row whose values are not members of their closed vocabulary.
-- WS-8 catalog flywheel, D2 (candidate strategy and discard ledger): a new pure
-  `flywheel/strategy.py` plans the bounded mutation attempts for a saturated
-  cell, filtering parents by production-eligibility, standalone (non-series)
-  status, and a lineage-depth ceiling (walked from `*.lineage.json` sidecars so
-  no promoted tree is more than two derivations from a hand-authored root),
-  instantiating the four fixed chain templates (T1 graft-and-remap, T2
-  swap-and-remap, T3 insert-swap-remap, T4 Tier-2 state retune-and-gate) in
-  value order under a per-cell attempt budget, and ranking survivors by the
-  section 6.4 precedence (in-cell headroom, then parent distance, then fewer
-  re-guidance items, then lower seed). A new `flywheel/ledger.py` records every
-  attempt under gitignored `out/` keyed by a timestamp-independent `attempt_sig`
-  so known-dead signatures are never re-run, and a `scripts/flywheel_candidates.py`
-  CLI runs the plan through the unchanged WS-5 acceptance harness and writes the
-  best candidate's promotion bundle. The strategy imports nothing from
-  `story_requests` and accepts no brief or theme (LLM01), and wraps the WS-5
-  engine without modifying it.
-- WS-8 catalog flywheel, D3 (re-guidance drafting and the deterministic floor):
-  implements the ratified OQ-1 hybrid. A new `flywheel/reguide_draft.py` drafts
-  each outstanding re-guidance item through an injectable generation provider
-  (one LLM touchpoint, consuming catalog content and cell enums only) and screens
-  every draft through a deterministic floor (FILL `role=`/`words=` surface
-  parity, slot-token subset discipline, structural injection block reusing
-  `validator/slots.py`, and a band-mandatory vocabulary denylist); a floor
-  failure leaves the item unresolved and the candidate held, and the floor never
-  marks anything resolved on its own. A new `generation/templates/reguide_draft.md`
-  fences its catalog-content inputs as data. Drafted resolutions are attributed
-  `author="agent:<model-id>"` for the per-item human approval in the promotion
-  PR, `mutation/reguide.py`'s docstring is amended to reflect author-attributed
-  (possibly agent-drafted) resolutions while staying generation-free, and
-  `scripts/flywheel_candidates.py` gains an opt-in `--draft` mode (default
-  `--no-draft` leaves the manual path unchanged) that re-runs the unchanged
-  acceptance harness with the resolved ids and degrades gracefully to a held
-  candidate if the provider is unavailable.
-- WS-8 catalog flywheel, D4 (promotion-PR preparation and repo enforcement, the
-  automation boundary): a new `scripts/prepare_promotion_pr.py` refuses to run on
-  `main`/`master`, refuses a bundle that is not `promotable`/`fully_resolved`,
-  re-runs `verify_bundle` against the live catalog immediately before any copy,
-  writes only inside a dedicated git worktree (a containment guard raises rather
-  than write outside it), regenerates the catalog doc region and diagram, and
-  prepares a draft PR labeled `skeleton-promotion` through a guarded creator
-  (default dry-run prints the plan; nothing can merge, approve, or enable
-  auto-merge). A new `scripts/check_promotion_bundle.py` and a
-  `.github/workflows/skeleton-promotion.yml` CI job independently re-prove
-  `check_skeleton` + theme contract + the anti-clone floor + lineage/hash on
-  every `skeletons/**` PR, so a tampered or stale bundle cannot ride a green PR,
-  and the `skeleton-promotion` label is excluded from auto-merge. A dedicated
-  PR template carries the ADR-020 decision-4 per-item human structure-approval
-  checklist.
-- WS-8 catalog flywheel, D5 (feed-agnostic Lineage v2 contract): a new
-  `LineageV2` promotion-bundle provenance record adds an `origin` discriminator
-  (`mutation` / `fresh` / `composed`) with cross-field validators, so the D4
-  promotion path is agnostic to which workstream produced a tree. `build_lineage`
-  now writes v2 (`origin="mutation"`); `load_lineage` reads v1 sidecars with full
-  backward compatibility (upgrading them to the canonical shape); and
-  `verify_bundle` branches on origin (a `mutation` verifies the parent hash as
-  before, a `fresh` tree verifies its acceptance digest since it has no parent to
-  go stale). The `origin` value is provenance metadata only and never keys an
-  acceptance stage, a floor, or an in-cell-clone decision (pinned by an AST test).
-  This lets WS-6 fresh-generation trees plug into the same promotion path later
-  without changing the bundle or lineage contract.
-- WS-8 catalog flywheel, D6 (parameterize-at-promotion glue and runbook): an
-  optional, manual-first `scripts/parameterize_promotion.py` lets an operator
-  parameterize an already-promoted contract-less tree as a SECOND
-  `skeleton-promotion` PR. It chains the existing `parameterize_skeleton.py`
-  transform (its six fail-closed checks) and `check_theme_contract.py` acceptance
-  over an operator-authored slotting plan and contract, honoring their exit codes
-  and adding no bypass, then prepares the draft PR reusing D4's worktree / no-auto-
-  merge posture. Per OQ-6 it never blocks the first promotion. A
-  `docs/planning/ws8-parameterize-at-promotion-runbook.md` documents the manual
-  steps, and `scripts/prepare_promotion_pr.py` gained a small public reuse surface
-  (additive aliases only; no logic change).
-- WS-8 catalog flywheel, D7 (metrics report): a read-only
-  `scripts/flywheel_report.py` emits a markdown report with the seven design
-  tables -- net new trees per month (attributing flywheel vs hand-authored trees
-  from `*.lineage.json` additions in git history), distinct trees per cell with
-  the in-cell structural-distance min/median, effective catalog size, the
-  promotion funnel from the ledger, re-guidance cost, demand response from
-  `CELL_SATURATED` events (DB-optional), and the catalog-hygiene minimum in-cell
-  pairwise distance (which surfaces the known 0.0009 near-duplicate pair). It is
-  read-only everywhere (its git runner refuses any subcommand but `log`, and it
-  writes only its `--out` report), never gates CI, is deterministic (the report
-  date is a required `--as-of` argument, never the wall clock), and degrades
-  gracefully to honest empty tables on a fresh system. Adds an additive
-  `flywheel/ledger.py::load_records` helper for the funnel.
-- WS-8 catalog flywheel, D8 (scheduled cadence runner + hard caps): a
-  `scripts/flywheel_cycle.py` weekly S1-S6 runner ties the loop together (scan
-  saturation events, gate by the caps, generate candidates, prepare draft PRs),
-  and a new pure `flywheel/cadence.py::select_growable_cells` is the single place
-  the six section-8.2 hard bounds are enforced: the trigger threshold and
-  `MAX_ATTEMPTS_PER_CELL` (pre-existing) plus the four new reviewed-PR-only
-  constants `OPEN_PR_PER_CELL=1`, `OPEN_PR_GLOBAL=3`, `COOLDOWN_DAYS=30`, and
-  `MONTHLY_MERGE_BUDGET=4`. Every triggered-but-capped cell is reported with its
-  specific blocking bound, never silently dropped; the runner always ends at a
-  draft PR (never merges, approves, or enables auto-merge, inheriting the D4
-  boundary), and degrades conservatively (opens nothing when it cannot confirm
-  PR capacity). Open-PR and merge-history state are injected (a read-only
-  `gh pr list` feed and D7's git-log lineage-addition reader by default), so
-  tests drive the caps with canned state and no live GitHub/DB call. Completes
-  WS-8: the catalog can now grow with usage behind a hard ceiling of three open
-  PRs and four merges per month. Also marks WS-8 delivered in
-  `story-flexibility-plan.md`, `capability-register.md` (K3), and ADR-020's
-  consequences (a delivered pointer; the status line is unchanged).
 
 ### Changed
 
-- WS-8 / ADR-020 floor-recalibration amendment (owner-approved): re-scoped the
-  mutation-origin anti-clone floor so bounded mutations can actually clear it. The
-  mutant parent-distance-vs-`TAU_STRUCT` clause is retired (`TAU_STRUCT` -- the
-  25th percentile of same-cell hand-authored SIBLING-PAIR distances, 0.3325 -- was
-  mis-applied to the parent-to-mutant distance, which is categorically smaller, so
-  it rejected ~every mutant). The in-cell anti-duplication clause `TAU_CELL` is now
-  the guarantee, applied against every in-cell tree INCLUDING the parent, and
-  raised from the too-weak clamped 0.01 to a fixed owner-chosen 0.05 (rejects the
-  catalog's observed 0.0009 near-duplicate with a ~53x margin). The fingerprint
-  anti-no-op clause is unchanged. No safety level changes: this is a
-  catalog-curation bar behind the full gate + moderation + human structure
-  approval + human story approval. Verified end to end: mutants at or above 0.05
-  from their parent and every sibling now reach `promotable`; a too-near mutant is
-  still discarded at the structure floor. Touches `mutation/floors.py`,
-  `scripts/calibrate_mutation_floors.py`, `docs/planning/ws5_floor_baseline.json`
-  (baseline v2), and ADR-020 (amendment 1); see
-  `docs/planning/ws8-floor-recalibration-proposal.md`.
 - Reconciled `docs/planning/roadmap.md` and `docs/planning/PROJECT-PLAN.md` with
   actually delivered code: a 12-agent audit found both master planning documents
   had gone unupdated across roughly 20 releases, still marking Phases 4b, 4c, 4d,
