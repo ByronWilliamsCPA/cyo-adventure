@@ -46,7 +46,7 @@ from pydantic import ValidationError as PydanticValidationError
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.diversity.structure import structure_fingerprint
 from cyo_adventure.generation.skeleton import is_sidecar
-from cyo_adventure.mutation.bundle import Lineage, content_sha256
+from cyo_adventure.mutation.bundle import LineageV2, content_sha256, load_lineage
 from cyo_adventure.mutation.floors import load_in_cell_catalog, structural_floor_reason
 
 if TYPE_CHECKING:
@@ -107,12 +107,15 @@ def _find_parent_file(skeletons_root: Path, parent_slug: str) -> Path | None:
     return matches[0] if matches else None
 
 
-def _verify_parent_hash(lineage: Lineage, skeletons_root: Path) -> str | None:
+def _verify_parent_hash(lineage: LineageV2, skeletons_root: Path) -> str | None:
     """Return why the lineage parent hash fails to verify, or None when it matches.
 
     This is the ``verify_bundle`` staleness gate, restated for an explicit lineage
     record so it works both for a bundle directory and for a lineage sidecar that
-    a PR placed beside its shell under ``skeletons/``.
+    a PR placed beside its shell under ``skeletons/``. It applies to a ``mutation``
+    record only: a ``fresh`` (WS-6) tree has no parent to go stale, and its
+    acceptance-digest gate is ``verify_bundle``'s responsibility at the bundle
+    level, so a parentless record yields no failure reason here.
 
     Args:
         lineage: The validated lineage record.
@@ -120,7 +123,8 @@ def _verify_parent_hash(lineage: Lineage, skeletons_root: Path) -> str | None:
 
     Returns:
         str | None: A failure reason, or None when the live parent's canonical
-            content hash equals the recorded ``parent_sha256``.
+            content hash equals the recorded ``parent_sha256`` (or there is no
+            parent to verify).
     """
     # #CRITICAL: data-integrity: a promotion PR could be raised from a bundle
     # whose parent skeleton changed on main after derivation; the acceptance
@@ -128,28 +132,32 @@ def _verify_parent_hash(lineage: Lineage, skeletons_root: Path) -> str | None:
     # comparison is the hard gate that catches it in CI (design 4.3, 9.2 #EDGE).
     # #VERIFY: the D4 CI-fixture tests assert a matching parent verifies and an
     # edited parent (and a missing parent) fail.
-    parent_path = _find_parent_file(skeletons_root, lineage.parent_slug)
+    parent_slug = lineage.parent_slug
+    expected = lineage.parent_sha256
+    if lineage.origin != "mutation" or parent_slug is None or expected is None:
+        return None
+    parent_path = _find_parent_file(skeletons_root, parent_slug)
     if parent_path is None:
         return (
-            f"parent '{lineage.parent_slug}' not found under {skeletons_root}; "
+            f"parent '{parent_slug}' not found under {skeletons_root}; "
             f"the bundle cannot be verified"
         )
     try:
         parent_document = _load_json_object(parent_path)
     except (OSError, json.JSONDecodeError, ValueError) as exc:
-        return f"parent '{lineage.parent_slug}' could not be read: {exc}"
+        return f"parent '{parent_slug}' could not be read: {exc}"
     actual = content_sha256(parent_document)
-    if actual != lineage.parent_sha256:
+    if actual != expected:
         return (
-            f"parent hash mismatch for '{lineage.parent_slug}': the parent changed "
-            f"since derivation (recorded {lineage.parent_sha256}, recomputed "
+            f"parent hash mismatch for '{parent_slug}': the parent changed "
+            f"since derivation (recorded {expected}, recomputed "
             f"{actual}); this bundle must not promote"
         )
     return None
 
 
 def _floor_reason(
-    shell_doc: Mapping[str, object], lineage: Lineage, skeletons_root: Path
+    shell_doc: Mapping[str, object], lineage: LineageV2, skeletons_root: Path
 ) -> str | None:
     """Return why the shell fails the WS-5 anti-clone floor, or None when it passes.
 
@@ -170,7 +178,13 @@ def _floor_reason(
         str | None: The floor's discard reason, or None when the floor passes (or
             does not apply).
     """
-    parent_path = _find_parent_file(skeletons_root, lineage.parent_slug)
+    parent_slug = lineage.parent_slug
+    if parent_slug is None:
+        # A parentless (fresh) tree has no parent-relative anti-clone floor: its
+        # in-cell TAU_CELL clause runs at acceptance against the declared target
+        # cell, not here. Not a failure.
+        return None
+    parent_path = _find_parent_file(skeletons_root, parent_slug)
     if parent_path is None:
         # The lineage/hash check already reports the missing parent; do not
         # double-count it here.
@@ -197,7 +211,7 @@ def _floor_reason(
         shell_hash = content_sha256(shell_doc)
         in_cell = [
             sibling
-            for sibling in load_in_cell_catalog(shell_doc, lineage.parent_slug)
+            for sibling in load_in_cell_catalog(shell_doc, parent_slug)
             if content_sha256(sibling) != shell_hash
         ]
         return structural_floor_reason(parent_doc, shell_doc, in_cell)
@@ -233,8 +247,8 @@ def prove_shell(shell_path: Path, *, skeletons_root: Path) -> list[str]:
         return reasons
 
     try:
-        lineage = Lineage.model_validate_json(lineage_path.read_text(encoding="utf-8"))
-    except (OSError, PydanticValidationError, ValidationError) as exc:
+        lineage = load_lineage(lineage_path.read_text(encoding="utf-8"))
+    except (OSError, PydanticValidationError, ValidationError, ValueError) as exc:
         reasons.append(f"{name}: lineage sidecar is invalid: {exc}")
         return reasons
 

@@ -151,6 +151,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and the `skeleton-promotion` label is excluded from auto-merge. A dedicated
   PR template carries the ADR-020 decision-4 per-item human structure-approval
   checklist.
+- WS-8 catalog flywheel, D5 (feed-agnostic Lineage v2 contract): a new
+  `LineageV2` promotion-bundle provenance record adds an `origin` discriminator
+  (`mutation` / `fresh` / `composed`) with cross-field validators, so the D4
+  promotion path is agnostic to which workstream produced a tree. `build_lineage`
+  now writes v2 (`origin="mutation"`); `load_lineage` reads v1 sidecars with full
+  backward compatibility (upgrading them to the canonical shape); and
+  `verify_bundle` branches on origin (a `mutation` verifies the parent hash as
+  before, a `fresh` tree verifies its acceptance digest since it has no parent to
+  go stale). The `origin` value is provenance metadata only and never keys an
+  acceptance stage, a floor, or an in-cell-clone decision (pinned by an AST test).
+  This lets WS-6 fresh-generation trees plug into the same promotion path later
+  without changing the bundle or lineage contract.
 
 ### Changed
 

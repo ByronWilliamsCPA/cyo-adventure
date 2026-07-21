@@ -50,7 +50,7 @@ from typing import TYPE_CHECKING, Protocol, cast
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.diagram import skeleton_to_plantuml
-from cyo_adventure.mutation.bundle import Lineage, verify_bundle
+from cyo_adventure.mutation.bundle import LineageV2, load_lineage, verify_bundle
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -233,7 +233,7 @@ class LoadedBundle:
     shell_doc: dict[str, object]
     acceptance: dict[str, object]
     reguide: dict[str, object]
-    lineage: Lineage
+    lineage: LineageV2
 
 
 def _load_json_object(path: Path) -> dict[str, object]:
@@ -291,7 +291,7 @@ def load_bundle(bundle_dir: Path) -> LoadedBundle:
         raise ValueError(msg)
 
     try:
-        lineage = Lineage.model_validate_json(lineage_path.read_text(encoding="utf-8"))
+        lineage = load_lineage(lineage_path.read_text(encoding="utf-8"))
     except (ValidationError, ValueError) as exc:
         msg = f"lineage {lineage_path} is invalid: {exc}"
         raise ValueError(msg) from exc
@@ -478,10 +478,49 @@ def _para(*parts: str) -> str:
     return "".join(parts)
 
 
+def _lineage_lines(lineage: LineageV2, band: str) -> list[str]:
+    """Render the origin-aware lineage bullet list (design 7.2).
+
+    A ``mutation`` record renders its parent, op chain, and donors; a ``fresh``
+    record has no parent, so it renders its generation provenance instead. This is
+    what lets the promotion PR body tolerate a parentless (WS-6) bundle without
+    dereferencing an absent ``parent_slug`` / ``parent_sha256``.
+    """
+    if lineage.origin == "mutation":
+        parent_slug = lineage.parent_slug or "(unknown)"
+        parent_sha = lineage.parent_sha256 or ""
+        parent_ref = (
+            f"`{parent_slug}` (`{parent_sha[:12]}...`)"
+            if parent_sha
+            else (f"`{parent_slug}`")
+        )
+        op_chain = " -> ".join(entry.op_id for entry in lineage.op_chain)
+        return [
+            "- **Origin:** mutation (WS-5)",
+            f"- **Parent:** {parent_ref}",
+            f"- **Op chain:** {op_chain or '(none)'}",
+            f"- **Donors:** {', '.join(lineage.donor_slugs) or '(none)'}",
+            f"- **Band / cell:** {band}",
+            f"- **Tool version:** {lineage.tool_version}",
+        ]
+    if lineage.origin == "fresh":
+        return [
+            "- **Origin:** fresh (WS-6)",
+            f"- **Generator:** `{lineage.generator or '(unknown)'}`",
+            f"- **Generation params:** `{(lineage.generation_params_sha256 or '')[:12]}...`",
+            f"- **Band / cell:** {band}",
+            f"- **Tool version:** {lineage.tool_version}",
+        ]
+    return [
+        "- **Origin:** composed (reserved; not yet produced)",
+        f"- **Band / cell:** {band}",
+        f"- **Tool version:** {lineage.tool_version}",
+    ]
+
+
 def compose_pr_body(bundle: LoadedBundle) -> str:
     """Compose the draft PR body: transcript, reguide table, diagram, lineage (S7)."""
     lineage = bundle.lineage
-    op_chain = " -> ".join(entry.op_id for entry in lineage.op_chain)
     stages = bundle.acceptance.get("stages")
     stage_count = len(cast("list[object]", stages)) if isinstance(stages, list) else 0
     agent_items = _count_agent_drafted(bundle.reguide)
@@ -522,12 +561,7 @@ def compose_pr_body(bundle: LoadedBundle) -> str:
         "",
         "### Lineage",
         "",
-        "- **Origin:** mutation (WS-5)",
-        f"- **Parent:** `{lineage.parent_slug}` (`{lineage.parent_sha256[:12]}...`)",
-        f"- **Op chain:** {op_chain or '(none)'}",
-        f"- **Donors:** {', '.join(lineage.donor_slugs) or '(none)'}",
-        f"- **Band / cell:** {bundle.band}",
-        f"- **Tool version:** {lineage.tool_version}",
+        *_lineage_lines(lineage, bundle.band),
         "",
         "### Acceptance transcript",
         "",
