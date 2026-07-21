@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.3] - 2026-07-21
+
 ### Fixed
 
 - Frontend nginx forwarded `X-Forwarded-Proto: $scheme` to the backend, but this
@@ -2433,7 +2435,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.2...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.3...HEAD
+[0.25.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.2...v0.25.3
 [0.25.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.1...v0.25.2
 [0.25.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.24.0...v0.25.0
