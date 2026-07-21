@@ -24,7 +24,7 @@ cut over 2026-07-05).
 ## Container Stack
 
 | Container | Image | Purpose |
-|-----------|-------|---------|
+| ----------- | ------- | --------- |
 | `cyo-backend` | `cyo-backend:latest` | FastAPI application (uvicorn, port 8000) |
 | `cyo-worker` | `cyo-worker:latest` | RQ generation worker (long-running, no inbound HTTP) |
 | `cyo-postgres` | `postgres:16-alpine` | Retained for one-redeploy rollback only; off the data path, tracked for removal in homelab-infra #577 |
@@ -62,11 +62,36 @@ Internal container-to-container communication uses Docker's bridge network:
 
 Egress to the managed database (not on the Docker bridge network):
 
-- `cyo-backend` -> Supabase Postgres (async SQLAlchemy, session pooler, port 5432)
-- `cyo-worker` -> Supabase Postgres (job status updates, session pooler, port 5432)
+- `cyo-backend` -> Supabase Postgres (async SQLAlchemy, session pooler, port 5432,
+  connects as the `cyo_api` service role, ADR-021)
+- `cyo-worker` -> Supabase Postgres (job status updates, session pooler, port 5432,
+  connects as the `cyo_worker` service role, ADR-021)
 
 `cyo-postgres` is retained in the compose stack only as a one-redeploy rollback
 fallback; it carries no live traffic (tracked for removal in homelab-infra #577).
+
+## Service Accounts and Row Level Security (ADR-021)
+
+The single shared `postgres` owner-role connection has been replaced with two
+dedicated, least-privilege Postgres roles: `cyo_api` (the FastAPI web process) and
+`cyo_worker` (`generation/worker.py`, `generation/worker_main.py`, `covers/worker.py`).
+`core/config.py`'s `worker_database_url` defaults to `database_url` when unset, so an
+environment that has not split credentials yet keeps working unchanged.
+
+Row Level Security, enabled on every application table since
+`supabase/migrations/20260711200745_enable_rls_all_tables.sql`, is now enforced by
+explicit `CREATE POLICY` grants for both roles
+(`supabase/migrations/20260720170100_create_service_roles.sql` and
+`20260720170200_add_service_role_policies.sql`). Previously RLS was enabled with zero
+policies attached, a placeholder that the RLS-enable migration's own comment warned
+would start restricting queries the moment a non-owner role connected.
+
+`docker-compose.yml` and `docker-compose.prod.yml` now also define the `worker` and
+`redis` services directly in this repository (previously only defined in the separate
+`homelab-infra` repo), so `docker-compose up` exercises the full story
+request -> generation -> review queue pipeline locally and in CI without depending on
+that sibling repo's state. `homelab-infra` remains the deployment orchestrator of
+record for the live environment.
 
 ## PWA Delivery
 
@@ -98,7 +123,7 @@ Two backend-only signing secrets are validated at startup, not just read: a
 either is unset, empty, or shorter than the minimum key length.
 
 | Env var | Purpose | Validated at startup |
-|---------|---------|-----------------------|
+| --------- | --------- | ----------------------- |
 | `CHILD_SESSION_SECRET` | Signs/verifies the 12-hour, no-refresh child-session HS256 token (`core/child_session.py`) | Yes, outside `local` |
 | `DEVICE_GRANT_SECRET` | Signs/verifies the 90-day, revocable device-grant HS256 token, audience `cyo-device-grant` (`core/device_grant.py`, ADR-014) | Yes, outside `local`, mirroring `CHILD_SESSION_SECRET` |
 
@@ -134,9 +159,14 @@ development convention; CI produces versioned tags aligned with SemVer releases.
 - **Sentry:** error tracking (planned; configurable via `settings.sentry_dsn`).
 - **Correlation IDs:** every request carries `X-Correlation-ID`; the header propagates
   into all log lines for the request lifecycle.
+- **Generation-queue health (ADR-021):** `GET /health/ready`'s non-gating
+  `check_generation_queue` sub-check (`api/health.py`) counts stale `queued`/`running`
+  `GenerationJob` rows and recent failures, so a stopped or misbehaving worker becomes
+  an observable readiness signal instead of a silent stuck queue.
 
 ## Related ADRs
 
 - ADR-004: [Homelab-First Deployment](../planning/adr/adr-004-homelab-first-deployment.md)
+- ADR-021: [Dedicated Least-Privilege Service Accounts, Enforced RLS, and In-Repo Worker Deployment](../planning/adr/adr-021-service-account-rls-and-worker-deployment.md)
 - ADR-002: [Client: Progressive Web App](../planning/adr/adr-002-client-pwa.md)
 - ADR-003: [Frontier LLM Story Generation](../planning/adr/adr-003-frontier-llm-generation.md)

@@ -50,10 +50,15 @@ entity "user" as user_t #E3F2FD {
   email : VARCHAR(320) NULL [contact only, never an identity key]
   child_profile_id : UUID <<FK child_profile.id, NULL>>
   created_at : TIMESTAMPTZ
-  status : VARCHAR(16) [pending|active|deactivated, default active]
+  status : VARCHAR(20) [pending|active|deactivated|\nawaiting_approval, default active]
+  consent_accepted_at : TIMESTAMPTZ NULL [ADR-018 D1 VPC record]
+  consent_policy_version : VARCHAR(32) NULL
+  consent_signer_name : VARCHAR(200) NULL [typed legal-name signature]
+  consent_ip : VARCHAR(64) NULL [evidentiary only, never queried/joined]
   --
   CHECK (role<>'child' OR is_admin=false)
   CHECK (role<>'admin' OR is_admin=true)
+  CHECK (consent_accepted_at/policy_version/\nsigner_name/ip all NULL or all set)
 }
 
 entity "child_profile" as child_profile #FFF3E0 {
@@ -72,6 +77,7 @@ entity "child_profile" as child_profile #FFF3E0 {
   monthly_request_envelope : INT NULL [ADR-015 G3 auto-approve cap]
   created_at : TIMESTAMPTZ
   deactivated_at : TIMESTAMPTZ NULL [soft-remove; history preserved]
+  processing_restricted_at : TIMESTAMPTZ NULL [GDPR Art. 18/21; blocks\nNEW story requests only, distinct\nfrom deactivated_at]
 }
 
 entity "family_connection" as family_connection #E8F5E9 {
@@ -244,7 +250,7 @@ entity "pipeline_event" as pipeline_event #ECEFF1 {
   actor_role : VARCHAR(16) [system|guardian|child|admin|device]
   entity_type : VARCHAR(32) [story_request|generation_job|storybook|...]
   entity_id : VARCHAR(255)
-  event_type : VARCHAR(48) [20 values, see EventType]
+  event_type : VARCHAR(48) [21 values, see EventType]
   from_state : VARCHAR(32) NULL
   to_state : VARCHAR(32) NULL
   payload : JSONB [PII-free, allowlisted fields only]
@@ -423,6 +429,36 @@ note bottom of pipeline_event
   entity_id=<uuid>). Not a foreign key:
   entity_type varies per row, so no
   single-table FK target applies.
+end note
+
+note left of family
+  ON DELETE behaviour (src/cyo_adventure/db/models.py):
+  - family_id FKs: CASCADE (deleting a family
+    removes every family-owned row: user,
+    child_profile, storybook, concept, series,
+    story_request.family_id, device_grant, kid_flag)
+  - child_profile_id FKs: CASCADE (reading_state,
+    completion, rating, storybook_assignment,
+    kid_flag, user.child_profile_id), EXCEPT
+    story_request.profile_id which is SET NULL
+    (the request survives, de-linked from the child)
+  - storybook_id FKs: CASCADE (storybook_version,
+    storybook_assignment, rating, reading_state,
+    kid_flag), EXCEPT story_request.anchor_storybook_id
+    which is SET NULL
+  - user.id attribution FKs (created_by, updated_by,
+    approved_by, reviewed_by, resolved_by, changed_by,
+    consented_by_*): SET NULL (soft attribution; the
+    owning row survives a deleted user), except the
+    two *_audit.changed_by columns which are NOT NULL
+  - generation_job.concept_id: CASCADE (job history is
+    subordinate to its concept)
+  - story_request.series_id: no ON DELETE action (plain
+    RESTRICT); deliberately not SET NULL because
+    ck_story_request_anchor_requires_series would then
+    be violated by an anchored row -- safe in practice
+    since the owning family_id CASCADE always fires
+    first (a series and its requests share one family)
 end note
 
 @enduml

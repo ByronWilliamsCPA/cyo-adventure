@@ -51,9 +51,9 @@ The container diagram shows how the system is split across runtime boundaries.
 **Container responsibilities:**
 
 | Container | Technology | Responsibility |
-|-----------|------------|----------------|
+| ----------- | ------------ | ---------------- |
 | PWA | React 19, TypeScript, Vite | Reader UI, library, offline cache, XState player |
-| FastAPI Backend | Python 3.12, FastAPI, Pydantic v2 | API routers, auth, validator, generation dispatch |
+| FastAPI Backend | Python 3.14, FastAPI, Pydantic v2 | API routers, auth, validator, generation dispatch |
 | Generation Worker | RQ, Python | Async staged generation; long-running, separate container |
 | PostgreSQL | PostgreSQL 16, SQLAlchemy 2 | All operational entities (22 ORM tables) |
 | Redis | Redis 7, RQ | Generation job queue and broker |

@@ -42,7 +42,7 @@ rectangle "PWA Container\n[React 19, TypeScript, Vite]\nServed as static assets"
 }
 
 ' --- Backend ---
-rectangle "FastAPI Backend\n[Python 3.12, FastAPI, Pydantic v2]\nsrc/cyo_adventure/" as backend #E8F5E9 {
+rectangle "FastAPI Backend\n[Python 3.14, FastAPI, Pydantic v2]\nsrc/cyo_adventure/" as backend #E8F5E9 {
   rectangle "API Routers (28)\n-- public / identity --\nhealth, me, onboarding\n-- kid / profile-scoped --\nlibrary, reading, reading_history, ratings,\nrecommendations, flags (+admin queue)\n-- guardian --\ngeneration (+admin force-fail), profiles,\nassignments, story_requests (+admin queue),\nnotifications, child_sessions, device_grants\n-- admin [global] --\napproval, covers, families, audit, rescreen,\nmoderation_thresholds, moderation_dashboard,\nprovider_allowlist, admin_users, admin_profiles,\nfamily_connections (+guardian consent)\n-- admin or guardian-own-family --\nnode_edit" as routers #CCEECC
   rectangle "Auth Seam\napi/deps.py\nPrincipal / family / role + is_admin\n(guardian, child, admin, device)" as auth #CCEECC
   rectangle "Storybook Domain\nstorybook/models.py\nstorybook/evaluator.py\nstorybook/condition.py" as storybook_dom #CCEECC

@@ -46,7 +46,7 @@ actor "Admin\n(global safety operator,\ncross-family, ADR-005)" as admin #EDE7F6
 ' --- System boundary ---
 rectangle "CYO Adventure System\n[Homelab, Docker, Pangolin zero-trust]" as system #FFF3E0 {
   rectangle "PWA Reader\n[React 19, TypeScript]\nPlay stories, offline support" as pwa #E3F2FD
-  rectangle "FastAPI Backend\n[Python 3.12]\nLibrary, generation, reading state,\nguardian review" as backend #E8F5E9
+  rectangle "FastAPI Backend\n[Python 3.14]\nLibrary, generation, reading state,\nguardian review" as backend #E8F5E9
 }
 
 ' --- External systems ---

@@ -60,7 +60,7 @@ PWA (React 19, TypeScript)
   - API client: generated from OpenAPI schema (not hand-written)
   |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
   v
-FastAPI backend (Python 3.12)
+FastAPI backend (Python 3.14)
   - api/: 28 routers -- health, library, reading, reading_history, generation,
                  profiles, families, ratings, assignments, approval (global admin),
                  node_edit, covers, moderation_thresholds, moderation_dashboard,
@@ -113,6 +113,9 @@ FastAPI backend (Python 3.12)
 
 ## Architecture Decision Records
 
+The table below lists all 21 ADRs in `docs/planning/adr/`; see that directory for the
+full decision records.
+
 | ADR | Title | Status |
 | --- | ----- | ------ |
 | [ADR-001](../planning/adr/adr-001-story-format-json-storybook.md) | Story format: JSON Storybook | Accepted |
@@ -121,3 +124,18 @@ FastAPI backend (Python 3.12)
 | [ADR-004](../planning/adr/adr-004-homelab-first-deployment.md) | Homelab-first deployment | Accepted |
 | [ADR-005](../planning/adr/adr-005-mandatory-human-approval.md) | Mandatory human approval gate | Accepted |
 | [ADR-006](../planning/adr/adr-006-conditions-inhouse-evaluator.md) | Conditions: in-house evaluator | Accepted |
+| [ADR-007](../planning/adr/adr-007-raw-output-retention.md) | Raw LLM output retention policy | Proposed |
+| [ADR-008](../planning/adr/adr-008-public-app-store-launch.md) | Public App Store launch, tiered subscription | Proposed |
+| [ADR-009](../planning/adr/adr-009-supabase-platform.md) | Supabase: auth, database, and storage platform | Accepted |
+| [ADR-010](../planning/adr/adr-010-modal-review-and-gated-generation.md) | Modal for moderation review, evidence-gated generation | Proposed |
+| [ADR-011](../planning/adr/adr-011-story-scale-framework.md) | Story-scale framework (band x length x style) | Accepted |
+| [ADR-012](../planning/adr/adr-012-supabase-cli-migrations.md) | Supabase CLI SQL migrations replace Alembic | Accepted |
+| [ADR-013](../planning/adr/adr-013-hybrid-pqc-readiness.md) | Hybrid post-quantum cryptography readiness | Accepted |
+| [ADR-014](../planning/adr/adr-014-device-authorized-kid-access.md) | Device-authorized kid access | Accepted |
+| [ADR-015](../planning/adr/adr-015-story-request-initiation-and-gating.md) | Story initiation: guardian cost gate, admin safety gate | Accepted |
+| [ADR-016](../planning/adr/adr-016-recommendation-sharing-social-boundary.md) | Recommendation sharing and the social boundary | Accepted |
+| [ADR-017](../planning/adr/adr-017-ai-cover-art.md) | AI cover art per storybook version | Accepted |
+| [ADR-018](../planning/adr/adr-018-childrens-privacy-compliance.md) | Children's-privacy compliance (COPPA, GDPR-K, AADC) | Proposed |
+| [ADR-019](../planning/adr/adr-019-parameterized-skeletons-theme-contracts.md) | Parameterized skeletons and theme contracts | Accepted |
+| [ADR-020](../planning/adr/adr-020-mutation-derived-skeletons-and-catalog-growth.md) | Mutation-derived skeletons and catalog growth | Accepted |
+| [ADR-021](../planning/adr/adr-021-service-account-rls-and-worker-deployment.md) | Service-account RLS and in-repo worker deployment | Proposed |

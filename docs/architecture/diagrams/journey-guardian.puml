@@ -13,6 +13,10 @@
 '   frontend/src/auth/AdultGate.tsx  (ADR-014: one kid-to-adult boundary crossing,
 '     warm state in sessionStorage, 5-min TTL, parked on entering kid mode)
 '   frontend/src/guardian/LoginPage.tsx, ConsolePage.tsx (family console)
+'   frontend/src/auth/GuardianAwaitingApprovalPage.tsx (/guardian/awaiting-approval,
+'     WS-J self-signup approval interstitial)
+'   frontend/src/auth/GuardianConsentPage.tsx (/guardian/consent, Phase 2 /
+'     ADR-018 D1 verifiable-parental-consent)
 '   frontend/src/admin/AdminConsolePage.tsx (review queue), admin/ReviewDetailPage.tsx
 '   frontend/src/guardian/IntakePage.tsx, ProfilesPage.tsx, AssignChildrenDialog.tsx
 '   frontend/src/guardian/RequestsPage.tsx  (/guardian/requests: approve/decline
@@ -23,6 +27,8 @@
 '   docs/planning/adr/adr-005-mandatory-human-approval.md
 '   docs/planning/adr/adr-014-device-authorized-kid-access.md (single AdultGate
 '     boundary; role-based post-login redirect)
+'   docs/planning/adr/adr-018-childrens-privacy-compliance.md (D1 verifiable
+'     parental consent)
 '   Phase 4a mobile UI wireframe concept spec (PR #47, shipped; the source doc under
 '     docs/superpowers/specs/ was retired as scratch output once its work merged)
 ' ============================================================
@@ -53,6 +59,19 @@ start
 (email/password or Google,
 Apple if the flag is on);
 note right: /guardian/login  •  shipped\nADR-014 -- conditional now: only a cold entry\nor a step-up crossing UP from kid mode reaches\nthis (or the "Grown-ups only" password re-entry);\nadult<->adult navigation is free once warm
+if (Self-signed-up,\nnot yet admin-approved?) then (yes)
+  :See "waiting for approval"
+  interstitial;
+  note right: /guardian/awaiting-approval  •  shipped\nProtectedRoute redirect target (AuthStatus\n'awaiting-approval'); no further in-app action\nuntil an admin approves the account (WS-J)
+  stop
+else (no)
+endif
+if (Approved, but VPC\nconsent not yet recorded?) then (yes)
+  :Confirm parental consent
+  (typed legal name + checkbox);
+  note right: /guardian/consent  •  shipped\nPhase 2 / ADR-018 D1 verifiable-parental-consent;\nProtectedRoute redirect target (AuthStatus\n'needs-consent'); recordConsent() then\ncontinues to the console below
+else (no)
+endif
 :Land on the Console
 (role-based: admin-only -> /admin;\nguardian-only or dual-role -> /guardian);
 note right: AdultGate + ProtectedRoute  •  shipped

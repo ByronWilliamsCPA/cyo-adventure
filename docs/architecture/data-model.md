@@ -28,7 +28,7 @@ checked on every resource access; a valid token for family A cannot reach family
 data.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | name | VARCHAR(200) | Display name |
 | monthly_story_quota | INT NULL | ADR-015 cost gate: per-family monthly spend ceiling; NULL uses the platform default (`settings.default_monthly_story_quota`), never unlimited. CHECK `ck_family_monthly_story_quota_non_negative` |
@@ -42,7 +42,7 @@ An authenticated user within a family. `role` is the single base persona
 one adult can be a guardian, an admin, or both.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | family_id | UUID FK | family.id |
 | role | VARCHAR(16) | `guardian`, `child`, or `admin` |
@@ -51,7 +51,11 @@ one adult can be a guardian, an admin, or both.
 | email | VARCHAR(320) NULL | Contact only (Supabase email claim); never an identity key, nullable |
 | child_profile_id | UUID FK NULL | child_profile.id; NULL for guardians and admins |
 | created_at | TIMESTAMPTZ | |
-| status | VARCHAR(16) | `pending` (admin-created invite), `active` (default), or `deactivated` (blocks auth; row and history preserved) |
+| status | VARCHAR(20) | `pending` (admin-created invite), `active` (default), `deactivated` (blocks auth; row and history preserved), or `awaiting_approval` (self-signed-up guardian pending admin approval, WS-J) |
+| consent_accepted_at | TIMESTAMPTZ NULL | Phase 2 / ADR-018 D1 verifiable-parental-consent timestamp; written once by `api/onboarding.py::_record_consent`, never overwritten |
+| consent_policy_version | VARCHAR(32) NULL | Policy version the guardian consented to; paired with `consent_accepted_at` (both NULL or both set) |
+| consent_signer_name | VARCHAR(200) NULL | Guardian's typed full-legal-name electronic signature |
+| consent_ip | VARCHAR(64) NULL | Evidentiary record of the consenting request's client IP; never queried or joined on |
 
 ### `child_profile`
 
@@ -59,7 +63,7 @@ Per-child reading profile. Age band and content caps filter which stories are vi
 `tts_enabled` gates the Web Speech API read-aloud feature.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | family_id | UUID FK | family.id |
 | display_name | VARCHAR(120) | Used in PII screening |
@@ -74,6 +78,7 @@ Per-child reading profile. Age band and content caps filter which stories are vi
 | monthly_request_envelope | INT NULL | ADR-015 G3 monthly auto-approve cap; NULL blocks auto-approval (never unlimited). CHECK `ck_child_profile_monthly_request_envelope_non_negative` |
 | created_at | TIMESTAMPTZ | |
 | deactivated_at | TIMESTAMPTZ NULL | Soft-remove (WS-J); excluded from pickers/listings and session mint, history preserved |
+| processing_restricted_at | TIMESTAMPTZ NULL | GDPR Article 18/21 restriction-of-processing marker; distinct from `deactivated_at` (the profile still reads its library and logs in normally, but `api/story_requests.py` refuses a NEW request for it). Set/cleared via `api/profiles.py::update_profile` (guardian-only) |
 
 ### `family_connection`
 
@@ -84,7 +89,7 @@ the relationship is deliberately one-way, so mutual visibility is two rows, not 
 only when both guardians have consented (see the consent columns below).
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | family_id | UUID FK | family.id; the viewer family that opted in |
 | connected_family_id | UUID FK | family.id; the source family whose stories may be recommended |
@@ -113,7 +118,7 @@ cross-book SR-1..SR-7 validator stays dormant until structural chaining is added
 `True` for all higher bands.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | family_id | UUID FK | family.id (decision B3; widening is WS-E) |
 | title | VARCHAR(120) | Guardian- or admin-ratified series title, screened at intake |
@@ -129,7 +134,7 @@ have been generated. `current_published_version` points to the version visible t
 children.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | VARCHAR(120) PK | Stable across versions |
 | family_id | UUID FK | family.id |
 | current_published_version | INT NULL | NULL until first publish |
@@ -155,7 +160,7 @@ publication is the admin approve action.
 An immutable snapshot of a story. Composite primary key `(storybook_id, version)`.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | storybook_id | VARCHAR(120) PK FK | storybook.id |
 | version | INT PK | Monotonically increasing |
 | blob | JSONB | Full Storybook JSON (Phase 1 inline storage) |
@@ -186,7 +191,7 @@ A composite foreign key `(storybook_id, version)` references `storybook_version`
 prevent saving state for a version that does not exist.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | child_profile_id | UUID PK FK | child_profile.id |
 | storybook_id | VARCHAR(120) PK FK | storybook.id |
 | version | INT | Pinned via composite FK to storybook_version |
@@ -208,7 +213,7 @@ Records that a child found a particular ending of a story version. Composite
 primary key `(child_profile_id, storybook_id, version, ending_id)`.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | child_profile_id | UUID PK FK | child_profile.id |
 | storybook_id | VARCHAR(120) PK | |
 | version | INT PK | |
@@ -223,7 +228,7 @@ as a whole and is mutable: a child may re-rate, overwriting the prior value.
 Composite primary key `(child_profile_id, storybook_id)`.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | child_profile_id | UUID PK FK | child_profile.id |
 | storybook_id | VARCHAR(120) PK FK | storybook.id |
 | value | INT | 1-5, enforced by `ck_rating_value_range` |
@@ -238,7 +243,7 @@ This table is the read-gate: the library listing and the direct version fetch bo
 filter on it, so a child sees only stories explicitly assigned to their profile.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | child_profile_id | UUID PK FK | child_profile.id |
 | storybook_id | VARCHAR(120) PK FK | storybook.id |
 | assigned_by | UUID FK NULL | user.id of granting guardian; NULL for a system backfill |
@@ -255,7 +260,7 @@ audience `cyo-device-grant`, 90-day expiry) is never stored; only its unique `jt
 and mint metadata are, here.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | family_id | UUID FK | family.id; the device is authorized for exactly this family |
 | authorized_by | UUID FK | user.id of the guardian who minted the grant |
@@ -277,7 +282,7 @@ at the application boundary by the Pydantic model before insertion. Immutable on
 written.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | family_id | UUID FK | family.id |
 | brief | JSONB | Full ConceptBrief JSON |
@@ -295,7 +300,7 @@ denormalized (stored, not derived from `profile_id`) so the guardian list and th
 family-scope authz check stay single-table.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | family_id | UUID FK | family.id |
 | profile_id | UUID FK NULL | child_profile.id; NULL for a profile-less request (WS-B PR 2) |
@@ -330,7 +335,7 @@ Tracks one staged-generation attempt for a concept. Status transitions:
 jobs and cleared once the human-authored fill is imported.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | concept_id | UUID FK | concept.id |
 | status | VARCHAR(20) | `queued`, `running`, `passed`, `needs_review`, `failed`, `awaiting_manual_fill` |
@@ -358,7 +363,7 @@ Absence of a row means the code default applies
 so policy loads read it whole.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | age_band | VARCHAR(16) | The reader age band this override applies to |
 | category | VARCHAR(64) | The moderation category this override applies to |
@@ -376,7 +381,7 @@ Deliberately minimal; the `pipeline_event` log will subsume this role in a futur
 iteration, so this table stays write-only until then.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | age_band | VARCHAR(16) | Age band of the edited override |
 | category | VARCHAR(64) | Moderation category of the edited override |
@@ -397,7 +402,7 @@ admin review surface: `ADVISORY` findings scoring below the floor are hidden;
 `BLOCK`/`FLAG` findings and unscored findings always surface regardless.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | key | VARCHAR(64) PK | Setting's unique name (e.g. `admin_noise_floor`) |
 | value | FLOAT | Constrained to [0.0, 1.0] |
 | updated_by | UUID FK NULL | user.id of admin who last edited |
@@ -413,7 +418,7 @@ trigger created in the migration; the ORM never updates or deletes them.
 `events/writer.py::_PAYLOAD_ALLOWLIST`.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | occurred_at | TIMESTAMPTZ | Server default |
 | actor_id | UUID FK NULL | user.id; NULL iff actor_role is `system` |
@@ -433,7 +438,7 @@ provider is admin-managed. `mock` is never allowlisted: it is a CI-only test
 double, never a real generation backend.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | provider | VARCHAR(32) | One of `anthropic`, `openrouter`, `modal`, `ollama` |
 | model_id | VARCHAR(120) | Provider-native model id (e.g. `claude-sonnet-4-6`) |
@@ -453,7 +458,7 @@ Append-only audit of `provider_model_allowlist` edits (who changed what, when),
 mirroring `moderation_threshold_audit`.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | provider | VARCHAR(32) | Affected row's provider (natural-key half) |
 | model_id | VARCHAR(120) | Affected row's model id (natural-key half) |
@@ -475,7 +480,7 @@ vocabulary and `node_id` is a story-graph node id, so there is nothing to modera
 before an adult sees it.
 
 | Column | Type | Notes |
-|--------|------|-------|
+| -------- | ------ | ------- |
 | id | UUID PK | |
 | family_id | UUID FK | family.id; denormalized from the flagging profile |
 | profile_id | UUID FK | child_profile.id; the flagging child |
@@ -500,3 +505,22 @@ Family ownership is checked on every resource. The `Principal` in `api/deps.py` 
 `family_id` and `profile_ids`. Every endpoint calls `authorize_family()` and/or
 `authorize_profile()` before touching any row. See
 `docs/planning/authorization-matrix.md` for the full access matrix.
+
+## Database Access Control (RLS and Service Roles)
+
+ADR-021 replaces the single shared `postgres` owner-role connection with two
+dedicated, least-privilege Postgres roles: `cyo_api` (the FastAPI web process,
+`core/database.py::get_session`) and `cyo_worker` (`generation/worker.py`,
+`generation/worker_main.py`, `covers/worker.py`, via `get_worker_session`).
+`core/config.py::worker_database_url` defaults to `database_url` when unset, so an
+environment that has not split credentials yet keeps working unchanged.
+
+Row Level Security, enabled on every application table by
+`supabase/migrations/20260711200745_enable_rls_all_tables.sql`, is enforced by explicit
+`CREATE POLICY` grants added in
+`supabase/migrations/20260720170200_add_service_role_policies.sql` (the roles
+themselves are created in `20260720170100_create_service_roles.sql`). This closes the
+placeholder the RLS-enable migration's own comment warned about: RLS with no policies
+attached is equivalent to no RLS at all for the connecting role. The app-level
+authorization above (`Principal`/`authorize_family`/`authorize_profile`) remains the
+primary authorization boundary; RLS is defense-in-depth beneath it, not a replacement.
