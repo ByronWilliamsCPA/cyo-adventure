@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
@@ -101,8 +102,23 @@ def _load_json_object(path: Path) -> dict[str, object]:
     return cast("dict[str, object]", data)
 
 
+# A skeleton slug is a bare filename stem: letters, digits, dot, hyphen,
+# underscore. This rejects path separators and glob metacharacters, both of
+# which matter because parent_slug is interpolated into a glob pattern below.
+_SAFE_SLUG = re.compile(r"^[A-Za-z0-9._-]+$")
+
+
 def _find_parent_file(skeletons_root: Path, parent_slug: str) -> Path | None:
     """Return the parent skeleton file under the catalog root, or None when absent."""
+    # #CRITICAL: security: parent_slug comes from an untrusted lineage sidecar a
+    # PR placed in the bundle; it is interpolated into a glob pattern. A slug
+    # containing "/" would let the glob escape the intended "*/" cell layer, and
+    # glob metacharacters ("*?[") would match unintended files.
+    # #VERIFY: reject anything that is not a bare slug before globbing; a
+    # malformed slug resolves to "parent not found", the same clear failure the
+    # callers already handle.
+    if not _SAFE_SLUG.match(parent_slug):
+        return None
     matches = sorted(skeletons_root.glob(f"*/{parent_slug}.json"))
     return matches[0] if matches else None
 
