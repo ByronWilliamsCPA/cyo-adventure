@@ -29,37 +29,24 @@ deterministic validation gate and mandatory admin approval (ADR-005).
 ## Diagram Index
 
 All diagrams are PlantUML source + rendered SVG pairs under `docs/architecture/diagrams/`.
+The full catalog, with per-diagram source-file traceability, is in
+[diagrams/INDEX.md](diagrams/INDEX.md). Authoring and styling conventions (the colour
+palette, the `@startuml`-name rule, status stereotypes, traceability notes) are in
+[diagrams/STYLE_GUIDE.md](diagrams/STYLE_GUIDE.md); shared skinparams and colour constants
+live in [diagrams/style.puml](diagrams/style.puml).
 
-| Diagram | File | Description |
-| ------- | ---- | ----------- |
-| End-to-End User Journey | [journey-end-to-end.puml](diagrams/journey-end-to-end.puml) / [.svg](diagrams/journey-end-to-end.svg) | Target-state UX flow across Child/Guardian/Admin/System lanes; shipped vs planned |
-| Kid-Surface Journey | [journey-kid.puml](diagrams/journey-kid.puml) / [.svg](diagrams/journey-kid.svg) | Zoomed child-facing flow: picker, library, story request, reader, offline/conflict, error exits |
-| Guardian Surface Journey | [journey-guardian.puml](diagrams/journey-guardian.puml) / [.svg](diagrams/journey-guardian.svg) | Zoomed parent flow: login, intake, child story-request approval, review/approve (ADR-005), assign |
-| Journey Test Coverage | [journey-dev-coverage.puml](diagrams/journey-dev-coverage.puml) / [.svg](diagrams/journey-dev-coverage.svg) | Journey recolored by e2e/unit/none coverage; Playwright gap map |
-| C4 Context (L1) | [c4-context.puml](diagrams/c4-context.puml) / [.svg](diagrams/c4-context.svg) | Actors and external systems |
-| C4 Container (L2) | [c4-container.puml](diagrams/c4-container.puml) / [.svg](diagrams/c4-container.svg) | Runtime containers and data stores |
-| Generation Pipeline | [component-generation.puml](diagrams/component-generation.puml) / [.svg](diagrams/component-generation.svg) | Orchestrator, prompts, providers, gate |
-| Validator Gate | [component-validator.puml](diagrams/component-validator.puml) / [.svg](diagrams/component-validator.svg) | L1/Policy/L2/RL/SAFE layers |
-| Player Engine | [component-player.puml](diagrams/component-player.puml) / [.svg](diagrams/component-player.svg) | StoryEngine, evaluator, XState |
-| API and Persistence | [component-api-persistence.puml](diagrams/component-api-persistence.puml) / [.svg](diagrams/component-api-persistence.svg) | Routers, auth seam, ORM |
-| Moderation Pipeline | [component-moderation.puml](diagrams/component-moderation.puml) / [.svg](diagrams/component-moderation.svg) | Stage 0-4 review, auto-repair, admin thresholds |
-| Publishing | [component-publishing.puml](diagrams/component-publishing.puml) / [.svg](diagrams/component-publishing.svg) | Approval state machine, admin-only approve (ADR-005) |
-| Pipeline Event Log | [component-events.puml](diagrams/component-events.puml) / [.svg](diagrams/component-events.svg) | Append-only PipelineEvent writers across every workflow |
-| Generation Sequence | [seq-generation.puml](diagrams/seq-generation.puml) / [.svg](diagrams/seq-generation.svg) | Stage A/B/C with provider fallback |
-| Reading-State PUT | [seq-reading-state.puml](diagrams/seq-reading-state.puml) / [.svg](diagrams/seq-reading-state.svg) | Optimistic concurrency, 409 reconciliation |
-| Offline and Reconnect | [seq-offline.puml](diagrams/seq-offline.puml) / [.svg](diagrams/seq-offline.svg) | IndexedDB queue, replay, conflict |
-| ER Diagram | [er-diagram.puml](diagrams/er-diagram.puml) / [.svg](diagrams/er-diagram.svg) | All 22 ORM tables and FK relationships |
-| Deployment | [deployment.puml](diagrams/deployment.puml) / [.svg](diagrams/deployment.svg) | Docker containers, Pangolin, Supabase OIDC, device-grant secret |
-| Device Grant Sequence | [seq-device-grant.puml](diagrams/seq-device-grant.puml) / [.svg](diagrams/seq-device-grant.svg) | ADR-014: mint/verify/revoke, the three-tokens/three-lifetimes/three-scopes model |
-| Sitemap and Flows | [sitemap-and-flows.puml](diagrams/sitemap-and-flows.puml) / [.svg](diagrams/sitemap-and-flows.svg) | Every route and its purpose; Kid zone, Adult zone, and the two auth-boundary crossings (ADR-014) |
-
-To regenerate SVGs after editing a PUML file:
+To regenerate SVGs after editing a PUML file, use the generator (it resolves and
+SHA-256-verifies the pinned PlantUML **1.2024.7** jar for you, so there is no ephemeral
+`/tmp/plantuml.jar` to manage):
 
 ```bash
-java -jar /tmp/plantuml.jar -tsvg docs/architecture/diagrams/<file>.puml
+python tools/generate_diagram_svgs.py          # re-render diagrams with a stale SVG
+python tools/generate_diagram_svgs.py --all     # force a full re-render
+python tools/generate_diagram_svgs.py --check   # CI gate: non-zero if any SVG is stale
 ```
 
-PlantUML version used to produce current SVGs: **1.2024.7** (jar at `/tmp/plantuml.jar`).
+The auto-generated story-skeleton diagrams under `diagrams/skeletons/` are owned by
+`scripts/render_skeleton_diagrams.py`, not this tool.
 
 ## System at a Glance
 
@@ -73,7 +60,7 @@ PWA (React 19, TypeScript)
   - API client: generated from OpenAPI schema (not hand-written)
   |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
   v
-FastAPI backend (Python 3.12)
+FastAPI backend (Python 3.14)
   - api/: 28 routers -- health, library, reading, reading_history, generation,
                  profiles, families, ratings, assignments, approval (global admin),
                  node_edit, covers, moderation_thresholds, moderation_dashboard,
@@ -126,6 +113,9 @@ FastAPI backend (Python 3.12)
 
 ## Architecture Decision Records
 
+The table below lists all 21 ADRs in `docs/planning/adr/`; see that directory for the
+full decision records.
+
 | ADR | Title | Status |
 | --- | ----- | ------ |
 | [ADR-001](../planning/adr/adr-001-story-format-json-storybook.md) | Story format: JSON Storybook | Accepted |
@@ -134,3 +124,18 @@ FastAPI backend (Python 3.12)
 | [ADR-004](../planning/adr/adr-004-homelab-first-deployment.md) | Homelab-first deployment | Accepted |
 | [ADR-005](../planning/adr/adr-005-mandatory-human-approval.md) | Mandatory human approval gate | Accepted |
 | [ADR-006](../planning/adr/adr-006-conditions-inhouse-evaluator.md) | Conditions: in-house evaluator | Accepted |
+| [ADR-007](../planning/adr/adr-007-raw-output-retention.md) | Raw LLM output retention policy | Proposed |
+| [ADR-008](../planning/adr/adr-008-public-app-store-launch.md) | Public App Store launch, tiered subscription | Proposed |
+| [ADR-009](../planning/adr/adr-009-supabase-platform.md) | Supabase: auth, database, and storage platform | Accepted |
+| [ADR-010](../planning/adr/adr-010-modal-review-and-gated-generation.md) | Modal for moderation review, evidence-gated generation | Proposed |
+| [ADR-011](../planning/adr/adr-011-story-scale-framework.md) | Story-scale framework (band x length x style) | Accepted |
+| [ADR-012](../planning/adr/adr-012-supabase-cli-migrations.md) | Supabase CLI SQL migrations replace Alembic | Accepted |
+| [ADR-013](../planning/adr/adr-013-hybrid-pqc-readiness.md) | Hybrid post-quantum cryptography readiness | Accepted |
+| [ADR-014](../planning/adr/adr-014-device-authorized-kid-access.md) | Device-authorized kid access | Accepted |
+| [ADR-015](../planning/adr/adr-015-story-request-initiation-and-gating.md) | Story initiation: guardian cost gate, admin safety gate | Accepted |
+| [ADR-016](../planning/adr/adr-016-recommendation-sharing-social-boundary.md) | Recommendation sharing and the social boundary | Accepted |
+| [ADR-017](../planning/adr/adr-017-ai-cover-art.md) | AI cover art per storybook version | Accepted |
+| [ADR-018](../planning/adr/adr-018-childrens-privacy-compliance.md) | Children's-privacy compliance (COPPA, GDPR-K, AADC) | Proposed |
+| [ADR-019](../planning/adr/adr-019-parameterized-skeletons-theme-contracts.md) | Parameterized skeletons and theme contracts | Accepted |
+| [ADR-020](../planning/adr/adr-020-mutation-derived-skeletons-and-catalog-growth.md) | Mutation-derived skeletons and catalog growth | Accepted |
+| [ADR-021](../planning/adr/adr-021-service-account-rls-and-worker-deployment.md) | Service-account RLS and in-repo worker deployment | Proposed |

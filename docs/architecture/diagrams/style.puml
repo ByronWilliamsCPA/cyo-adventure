@@ -1,0 +1,75 @@
+' =============================================================================
+' style.puml -- shared PlantUML styling for CYO Adventure architecture diagrams
+' -----------------------------------------------------------------------------
+' Include from a diagram by adding, just after that diagram's opening line:
+'
+'     !include style.puml
+'
+' (use a path relative to the including diagram's location). This file is
+' include-only: it declares no diagram of its own and renders nothing directly.
+' The SVG generator (tools/generate_diagram_svgs.py) skips any .puml with no
+' real diagram-start line, so this file is never rendered on its own.
+'
+' It codifies the palette and skinparams that the existing top-level diagrams
+' currently inline by hand. New diagrams SHOULD include it instead of
+' copy-pasting skinparams; see STYLE_GUIDE.md for the full convention set,
+' including the domain-to-colour mapping and the traceability-note format.
+'
+' NOTE: the existing 20 diagrams still inline these values (retrofitting them to
+' !include would re-render every SVG for no visual change). Keep any inline
+' values in sync with the constants below.
+' =============================================================================
+
+' --- Base canvas -------------------------------------------------------------
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam rectangle {
+  BorderColor #555555
+  FontColor #222222
+}
+skinparam component {
+  BorderColor #555555
+  FontColor #222222
+}
+
+' --- Domain palette (preprocessor colour constants) --------------------------
+' Fill colours carry meaning; keep them consistent across diagrams so a reader
+' learns the legend once. See STYLE_GUIDE.md for the authoritative mapping.
+'
+' NOTE: PlantUML rejects a trailing "'" comment on a "!$" line (it swallows the
+' comment into the value), so each colour's meaning is documented here, not
+' inline. Do not add end-of-line comments to the assignments below.
+'
+'   kid_blue      Child / PWA surface (container fill)
+'   kid_blue_sub  Child / PWA sub-component fill
+'   backend_green Backend / guardian surface (container fill)
+'   backend_sub   Backend sub-component fill
+'   backend_teal  Backend runtime process (e.g. uvicorn app)
+'   admin_purple  Admin / global safety operator
+'   build_grey    Build output or external / managed system
+'   store_amber   Data store (Postgres / Redis / object storage)
+!$kid_blue       = "#E3F2FD"
+!$kid_blue_sub   = "#DDEEFF"
+!$backend_green  = "#E8F5E9"
+!$backend_sub    = "#CCEECC"
+!$backend_teal   = "#B2DFDB"
+!$admin_purple   = "#EDE7F6"
+!$build_grey     = "#E0E0E0"
+!$store_amber    = "#FFF3E0"
+
+' --- Status stereotypes ------------------------------------------------------
+' Use these for elements that are NOT yet shipped so "planned" reads as a
+' deliberate mark, not an omission. Verify against code before removing them.
+skinparam rectangle<<planned>> {
+  BackgroundColor #FCE4EC
+  BorderColor #AD1457
+  FontColor #880E4F
+}
+skinparam rectangle<<unverified>> {
+  BackgroundColor #FFF8E1
+  BorderColor #F57F17
+  FontColor #E65100
+}

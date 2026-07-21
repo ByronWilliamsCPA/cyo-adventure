@@ -30,6 +30,11 @@
 '   frontend/src/auth/ProtectedRoute.tsx    (role/capability gate beneath
 '                                            AdultGate)
 '   frontend/src/guardian/LoginPage.tsx     (?intent=authorize-device)
+'   frontend/src/auth/GuardianAwaitingApprovalPage.tsx (/guardian/awaiting-approval,
+'                                            WS-J self-signup approval interstitial)
+'   frontend/src/auth/GuardianConsentPage.tsx (/guardian/consent, ADR-018 D1 VPC)
+'   frontend/src/routes.ts                  (GUARDIAN_AWAITING_APPROVAL_PATH,
+'                                            GUARDIAN_CONSENT_PATH)
 '   frontend/src/kid/ProfilePickerPage.tsx, library/LibraryPage.tsx,
 '     reader/ReaderRoute.tsx
 '   frontend/src/guardian/ConsolePage.tsx, IntakePage.tsx, RequestsPage.tsx,
@@ -54,6 +59,8 @@ skinparam component {
 package "Landing / Device Boundary\n(chunk-neutral, no KidShell, no Supabase)" #FFF3E0 {
   component "LandingPage\n/\nTwo doors: Kids + Grown-ups.\nKids door target depends on\nhasValidDeviceGrant()" as landing #FFE0B2
   component "LoginPage\n/guardian/login\n[?intent=authorize-device]\nSupabase sign-in; mints a\ndevice grant when the intent\nis present" as login #FFE0B2
+  component "GuardianAwaitingApprovalPage\n/guardian/awaiting-approval\nSelf-signed-up guardian,\nnot yet admin-approved (WS-J)" as awaiting_approval #FFE0B2
+  component "GuardianConsentPage\n/guardian/consent\nADR-018 D1 VPC: typed legal\nname + checkbox attestation" as consent_page #FFE0B2
 }
 
 package "Kid Zone\nDeviceAuthorizedRoute: local device-grant check" #E0F7FA {
@@ -124,6 +131,9 @@ landing -[#a8660a,dashed]-> login : "**no valid grant**\n(Kids door) OR\nGrown-u
 login -[#a8660a,dashed]-> picker : "authorize-device intent:\nmint grant, then redirect\nto /kids"
 login -[#a8660a,dashed]-> console : "normal redirect:\nguardian-only or dual-role"
 login -[#a8660a,dashed]-> admin_console : "normal redirect:\nadmin-only"
+login -[#a8660a,dashed]-> awaiting_approval : "ProtectedRoute redirect:\nAuthStatus 'awaiting-approval'\n(real session, not yet approved)"
+login -[#a8660a,dashed]-> consent_page : "ProtectedRoute redirect:\nAuthStatus 'needs-consent'\n(approved, VPC not yet recorded)"
+consent_page -[#a8660a,dashed]-> console : "recordConsent() succeeds\n-> AuthStatus 'signed-in'"
 picker -[#a8660a,dashed]-> login : "**AdultGate step-up**\ncrossing UP from kid mode\n(password re-entry if not warm)"
 
 note bottom of landing
@@ -141,6 +151,27 @@ note bottom of login
   redirect, then drops back to /kids. A
   rejected mint (e.g. admin-only, no family)
   falls through to the normal redirect.
+end note
+
+note bottom of awaiting_approval
+  Sits OUTSIDE AdultGate/ProtectedRoute in the
+  route tree (a sibling of /guardian/login), but
+  is only ever reached via ProtectedRoute's
+  redirect: the guardian has a real Supabase
+  session (AdultGate's own check passes) but
+  AuthStatus never reaches 'signed-in' for them.
+  No further in-app action; an admin must
+  approve the account elsewhere (WS-J).
+end note
+
+note bottom of consent_page
+  Same reasoning as awaiting_approval: reached
+  via ProtectedRoute's redirect, not a direct
+  login target. Phase 2 / ADR-018 D1: a typed
+  full-legal-name attestation is the FTC
+  "sign and submit electronically" method,
+  layered on the OAuth login that already
+  authenticated this session.
 end note
 
 note right of picker
