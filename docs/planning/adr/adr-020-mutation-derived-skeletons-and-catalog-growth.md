@@ -144,7 +144,12 @@ It is deliberately distinct from ADR-005 story approval (which continues to gate
 published story) and from ADR-019's no-new-theme-review posture (themes still need no
 human step; structures always did need one, and this names it). No auto-merge for
 skeleton promotion PRs (OQ-5). WS-8 automation, when built, prepares PRs; humans merge
-them.
+them. **Delivered (2026-07-21):** WS-8 D1-D8 built exactly this boundary. Automation
+prepares a draft PR (`scripts/prepare_promotion_pr.py`, D4) and the scheduled S1-S6
+cadence runner (`scripts/flywheel_cycle.py`, D8) ends every cycle at a draft PR behind
+six reviewed-PR-only caps; no WS-8 code path merges, approves, enables auto-merge, or
+writes `skeletons/` on `main`. See
+[ws8-catalog-flywheel-design.md](../ws8-catalog-flywheel-design.md).
 
 ### 5. Cell inheritance
 

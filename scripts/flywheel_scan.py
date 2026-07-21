@@ -231,5 +231,15 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+# --------------------------------------------------------------------------- #
+# Public reuse surface.
+# --------------------------------------------------------------------------- #
+# The D8 scheduled cadence runner (scripts/flywheel_cycle.py) reuses this exact
+# read-only, DB-optional event read for its S1 stage instead of reaching into the
+# private original (mirroring D4's public-alias pattern). It adds no new behavior.
+
+fetch_saturation_events = _fetch_events
+
+
 if __name__ == "__main__":
     raise SystemExit(main())

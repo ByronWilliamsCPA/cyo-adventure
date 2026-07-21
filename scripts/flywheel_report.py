@@ -216,6 +216,28 @@ def parse_tree_additions(log_output: str) -> tuple[list[TreeAddition], set[str]]
     return additions, lineage_slugs
 
 
+def added_skeleton_history(
+    git_runner: GitRunner,
+) -> tuple[list[TreeAddition], set[str]]:
+    """Return the parsed ``skeletons/**`` add-history and the lineage-slug set.
+
+    The public reuse seam for the D8 scheduled cadence runner
+    (``scripts/flywheel_cycle.py``), which derives its merge history from the same
+    read-only ``git log`` lineage-addition reader this report uses. It composes
+    the two existing steps (:func:`_log_added_skeleton_files` then
+    :func:`parse_tree_additions`) so a caller reuses D7's git-log reader without
+    touching this module's private helpers.
+
+    Args:
+        git_runner: The injected read-only git runner.
+
+    Returns:
+        tuple[list[TreeAddition], set[str]]: The tree additions in git-log order
+            (newest first) and the set of slugs that ever gained a lineage sidecar.
+    """
+    return parse_tree_additions(_log_added_skeleton_files(git_runner))
+
+
 def _render_net_new_table(
     additions: Sequence[TreeAddition], lineage_slugs: set[str]
 ) -> list[str]:

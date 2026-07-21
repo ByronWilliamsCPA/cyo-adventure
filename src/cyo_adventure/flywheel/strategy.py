@@ -66,6 +66,34 @@ _STYLE_AWARE_BANDS = frozenset({"13-16", "16+"})
 # cannot burn a cycle no matter how many parents/templates apply.
 MAX_ATTEMPTS_PER_CELL = 12
 
+# The remaining four of the six design-8.2 hard bounds (the trigger threshold
+# lives in ``flywheel/trigger.py`` as ``DEFAULT_MIN_CATALOG_EVENTS`` /
+# ``DEFAULT_MIN_DISTINCT_REQUESTS`` and ``MAX_ATTEMPTS_PER_CELL`` is above; all
+# six are constants changed ONLY by a reviewed PR, with no runtime override
+# path). The scheduled cadence runner (D8) enforces every one of these in a
+# single pure gate (:func:`cyo_adventure.flywheel.cadence.select_growable_cells`)
+# so a triggered-but-capped cell is always REPORTED, never silently dropped
+# (design 8.2 safety property).
+
+# At most one open ``skeleton-promotion`` PR per cell: the reviewer compares one
+# candidate against one cell at a time; a second candidate for the same cell
+# waits (design 8.2).
+OPEN_PR_PER_CELL = 1
+
+# At most this many open ``skeleton-promotion`` PRs across the whole catalog:
+# review-queue protection so the flywheel can never flood the one human it
+# depends on (design 8.2).
+OPEN_PR_GLOBAL = 3
+
+# Per-cell cool-down after a merge, in days: let the WS-0 metrics and real
+# selection absorb the new tree before growing the same cell again (design 8.2).
+COOLDOWN_DAYS = 30
+
+# The monthly promotion budget, in merged trees: matches the headline metric's
+# unit (net new trees per month) and keeps the accepted contract-maintenance
+# growth deliberate (design 8.2).
+MONTHLY_MERGE_BUDGET = 4
+
 # Seeds tried per (parent, template). For a template with an rng-selected step
 # (M1/M2/M4), each seed explores a different selection; for a fully
 # parameter-driven template (T1's graft, T4's M5 chain) the seed is recorded but

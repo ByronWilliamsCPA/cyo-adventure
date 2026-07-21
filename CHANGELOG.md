@@ -187,6 +187,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   date is a required `--as-of` argument, never the wall clock), and degrades
   gracefully to honest empty tables on a fresh system. Adds an additive
   `flywheel/ledger.py::load_records` helper for the funnel.
+- WS-8 catalog flywheel, D8 (scheduled cadence runner + hard caps): a
+  `scripts/flywheel_cycle.py` weekly S1-S6 runner ties the loop together (scan
+  saturation events, gate by the caps, generate candidates, prepare draft PRs),
+  and a new pure `flywheel/cadence.py::select_growable_cells` is the single place
+  the six section-8.2 hard bounds are enforced: the trigger threshold and
+  `MAX_ATTEMPTS_PER_CELL` (pre-existing) plus the four new reviewed-PR-only
+  constants `OPEN_PR_PER_CELL=1`, `OPEN_PR_GLOBAL=3`, `COOLDOWN_DAYS=30`, and
+  `MONTHLY_MERGE_BUDGET=4`. Every triggered-but-capped cell is reported with its
+  specific blocking bound, never silently dropped; the runner always ends at a
+  draft PR (never merges, approves, or enables auto-merge, inheriting the D4
+  boundary), and degrades conservatively (opens nothing when it cannot confirm
+  PR capacity). Open-PR and merge-history state are injected (a read-only
+  `gh pr list` feed and D7's git-log lineage-addition reader by default), so
+  tests drive the caps with canned state and no live GitHub/DB call. Completes
+  WS-8: the catalog can now grow with usage behind a hard ceiling of three open
+  PRs and four merges per month. Also marks WS-8 delivered in
+  `story-flexibility-plan.md`, `capability-register.md` (K3), and ADR-020's
+  consequences (a delivered pointer; the status line is unchanged).
 
 ### Changed
 

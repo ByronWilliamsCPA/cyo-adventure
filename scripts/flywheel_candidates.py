@@ -30,6 +30,7 @@ import argparse
 import asyncio
 import datetime
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
@@ -456,34 +457,66 @@ def _draft_best(catalog: Catalog, cell: Cell, best: _Survivor, model_id: str) ->
     best.resolutions = resolutions
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Plan, run, rank, and bundle flywheel candidates for one cell.
+@dataclass(frozen=True, slots=True)
+class CellCandidateResult:
+    """The outcome of one cell's plan/run/rank/bundle pass (design S2-S5).
+
+    Attributes:
+        cell: The cell that was planned.
+        planned: The number of fresh attempts run this cycle.
+        known_records: The number of ledger records loaded at plan time.
+        survivors: The surviving candidates, best-first.
+        best: The selected (bundled) survivor, or None when none survived.
+        bundle_dir: The written bundle directory, or None when nothing was bundled.
+    """
+
+    cell: Cell
+    planned: int
+    known_records: int
+    survivors: list[_Survivor]
+    best: _Survivor | None
+    bundle_dir: Path | None
+
+
+def run_cell_candidates(
+    cell: Cell,
+    *,
+    out_root: Path,
+    ledger_root: Path,
+    excluded_parent_slugs: frozenset[str] = frozenset(),
+    draft: bool = False,
+    model_id: str = "unknown",
+) -> CellCandidateResult:
+    """Plan, run, rank, and bundle candidates for one cell (design S2-S5).
+
+    The shared core of the manual candidates CLI (:func:`main`) and the D8
+    scheduled cadence runner (``scripts/flywheel_cycle.py``): it loads the
+    catalog and ledger, plans the bounded attempt set, runs each through the
+    UNCHANGED WS-5 acceptance harness (recording every outcome to the ledger),
+    ranks the survivors, and writes the single best candidate's promotion bundle
+    under ``out/``. It writes NOTHING under ``skeletons/`` and opens no PR (that
+    is D4).
 
     Args:
-        argv: Optional argument list (defaults to ``sys.argv``).
+        cell: The saturated cell to grow.
+        out_root: The bundle output root under ``out/``.
+        ledger_root: The repository root the ledger hangs off (``out/mutations/
+            _ledger/attempts.jsonl``).
+        excluded_parent_slugs: Parents with an open promotion PR to exclude
+            (design 6.1 rule 4); empty by default.
+        draft: Whether to agent-draft re-guidance for a held best candidate (D3).
+        model_id: The drafting model id, recorded as ``agent:<model-id>``.
 
     Returns:
-        int: ``0`` on a printed report, ``2`` on an argparse usage error.
+        CellCandidateResult: The planned/survivor/bundle outcome.
     """
-    parser = _build_parser()
-    try:
-        args = parser.parse_args(argv)
-    except SystemExit as exc:
-        return exc.code if isinstance(exc.code, int) else 2
-
-    cell = Cell(
-        band=cast("str", args.band),
-        length=cast("str", args.length),
-        style=cast("str", args.style),
-    )
-    out_root = Path(cast("str", args.out_dir)).resolve()
-    excluded = frozenset(cast("list[str]", args.exclude))
-
     catalog = load_catalog()
-    path = ledger_path(Path.cwd())
+    path = ledger_path(ledger_root)
     known = load_outcomes(path)
     known_records = len(known)
-    plans = plan_attempts(cell, catalog, known, excluded_parent_slugs=excluded)
+    plans = plan_attempts(
+        cell, catalog, known, excluded_parent_slugs=excluded_parent_slugs
+    )
 
     survivors: list[_Survivor] = []
     for plan in plans:
@@ -495,8 +528,8 @@ def main(argv: list[str] | None = None) -> int:
     survivors.sort(key=lambda s: ranking_key(s.metrics))
     best = survivors[0] if survivors else None
 
-    if best is not None and cast("bool", args.draft):
-        _draft_best(catalog, cell, best, cast("str", args.model_id))
+    if best is not None and draft:
+        _draft_best(catalog, cell, best, model_id)
 
     bundle_dir: Path | None = None
     if best is not None:
@@ -523,14 +556,56 @@ def main(argv: list[str] | None = None) -> int:
                 ),
             )
 
+    return CellCandidateResult(
+        cell=cell,
+        planned=len(plans),
+        known_records=known_records,
+        survivors=survivors,
+        best=best,
+        bundle_dir=bundle_dir,
+    )
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Plan, run, rank, and bundle flywheel candidates for one cell.
+
+    Args:
+        argv: Optional argument list (defaults to ``sys.argv``).
+
+    Returns:
+        int: ``0`` on a printed report, ``2`` on an argparse usage error.
+    """
+    parser = _build_parser()
+    try:
+        args = parser.parse_args(argv)
+    except SystemExit as exc:
+        return exc.code if isinstance(exc.code, int) else 2
+
+    cell = Cell(
+        band=cast("str", args.band),
+        length=cast("str", args.length),
+        style=cast("str", args.style),
+    )
+    out_root = Path(cast("str", args.out_dir)).resolve()
+    excluded = frozenset(cast("list[str]", args.exclude))
+
+    result = run_cell_candidates(
+        cell,
+        out_root=out_root,
+        ledger_root=Path.cwd(),
+        excluded_parent_slugs=excluded,
+        draft=cast("bool", args.draft),
+        model_id=cast("str", args.model_id),
+    )
+
     sys.stdout.write(
         _render_report(
             cell,
-            planned=len(plans),
-            known_records=known_records,
-            survivors=survivors,
-            best=best,
-            bundle_dir=bundle_dir,
+            planned=result.planned,
+            known_records=result.known_records,
+            survivors=result.survivors,
+            best=result.best,
+            bundle_dir=result.bundle_dir,
         )
     )
     return 0
