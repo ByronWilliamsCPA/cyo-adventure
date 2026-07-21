@@ -21,7 +21,9 @@
 '                                              overrides + noise-floor scalar)
 '   src/cyo_adventure/api/moderation_dashboard.py  (admin: review surface + suggestions)
 '   src/cyo_adventure/api/provider_allowlist.py    (admin: provider/model allowlist CRUD)
-'   src/cyo_adventure/api/me.py              (principal identity)
+'   src/cyo_adventure/api/me.py              (principal identity; guardian-only
+'                                              family export + self-service
+'                                              family erasure, Phase 3b/3c)
 '   src/cyo_adventure/api/story_requests.py  (child request lifecycle: submit,
 '                                              list, approve, decline, authored,
 '                                              authoring-plan; WS-B)
@@ -97,7 +99,7 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
     component "generation.py [guardian; force-fail admin]\nPOST /concepts (PII-screened, family quota gate)\nPOST /concepts/{id}/generate\nGET /generation-jobs, /generation-jobs/{id}\n(raw report admin-only)\nPOST /admin/generation-jobs/{id}/force-fail [admin]\nPOST /storybooks/{id}/versions/{v}/validate" as gen_router #B2DFDB
 
-    component "profiles.py [guardian-only]\nGET /profiles\nPOST /profiles\nPATCH /profiles/{id}" as profiles_router #B2DFDB
+    component "profiles.py [guardian-only]\nGET /profiles\nPOST /profiles\nPATCH /profiles/{id}\nDELETE /profiles/{id}\n(GDPR Art. 17 / COPPA 312.10 erasure)" as profiles_router #B2DFDB
 
     component "families.py [admin]\nGET /admin/families\nPOST /admin/families\nPATCH /admin/families/{id}" as families_router #B2DFDB
 
@@ -115,7 +117,7 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
     component "ratings.py\nPOST /ratings\nGET /ratings/{profile_id}" as ratings_router #B2DFDB
 
-    component "me.py\nGET /me (principal identity)" as me_router #B2DFDB
+    component "me.py [guardian-only export/erase]\nGET /me (principal identity)\nGET /me/export\n(COPPA 312.6(a) / GDPR Art. 20 portability)\nDELETE /me/family\n(GDPR Art. 17 / COPPA 312.10 erasure)" as me_router #B2DFDB
 
     component "story_requests.py [WS-B]\nPOST /story-requests (child/guardian)\nPOST /story-requests/authored [guardian/admin]\nGET /story-requests; GET /admin/story-requests [admin]\nGET /families/me/budget [guardian/admin]\nPOST /story-requests/{id}/approve|decline\nPOST /story-requests/{id}/authoring-plan [admin]" as story_req_router #B2DFDB
 
@@ -123,7 +125,7 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
     component "device_grants.py [ADR-014]\nPOST /device-grants (mint)\nGET /device-grants (list, own family)\nDELETE /device-grants/{id} (revoke)\nGuardian/admin only; never a device token" as device_grants_router #B2DFDB
 
-    component "onboarding.py\nPOST /onboarding\nFirst-login guardian/admin\nprovisioning; refuses child\nsession + device grant tokens" as onboarding_router #B2DFDB
+    component "onboarding.py\nPOST /onboarding\nFirst-login guardian/admin\nprovisioning; refuses child\nsession + device grant tokens;\nbody also records ADR-018 D1\nVPC consent (idempotent, once)" as onboarding_router #B2DFDB
 
     component "admin_users.py [admin]\nGET /admin/users\nPOST /admin/users (invite, 201)\nPATCH /admin/users/{id}\n(WS-J user management)" as admin_users_router #B2DFDB
 

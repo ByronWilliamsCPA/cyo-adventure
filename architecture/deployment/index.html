@@ -1355,6 +1355,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#service-accounts-and-row-level-security-adr-021" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Accounts and Row Level Security (ADR-021)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pwa-delivery" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2965,6 +2976,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#service-accounts-and-row-level-security-adr-021" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Accounts and Row Level Security (ADR-021)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pwa-delivery" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3139,11 +3161,32 @@ FastAPI container internally rather than Pangolin forwarding to it directly. See
 </ul>
 <p>Egress to the managed database (not on the Docker bridge network):</p>
 <ul>
-<li><code>cyo-backend</code> -&gt; Supabase Postgres (async SQLAlchemy, session pooler, port 5432)</li>
-<li><code>cyo-worker</code> -&gt; Supabase Postgres (job status updates, session pooler, port 5432)</li>
+<li><code>cyo-backend</code> -&gt; Supabase Postgres (async SQLAlchemy, session pooler, port 5432,
+  connects as the <code>cyo_api</code> service role, ADR-021)</li>
+<li><code>cyo-worker</code> -&gt; Supabase Postgres (job status updates, session pooler, port 5432,
+  connects as the <code>cyo_worker</code> service role, ADR-021)</li>
 </ul>
 <p><code>cyo-postgres</code> is retained in the compose stack only as a one-redeploy rollback
 fallback; it carries no live traffic (tracked for removal in homelab-infra #577).</p>
+<h2 id="service-accounts-and-row-level-security-adr-021">Service Accounts and Row Level Security (ADR-021)<a class="headerlink" href="#service-accounts-and-row-level-security-adr-021" title="Permanent link">&para;</a></h2>
+<p>The single shared <code>postgres</code> owner-role connection has been replaced with two
+dedicated, least-privilege Postgres roles: <code>cyo_api</code> (the FastAPI web process) and
+<code>cyo_worker</code> (<code>generation/worker.py</code>, <code>generation/worker_main.py</code>, <code>covers/worker.py</code>).
+<code>core/config.py</code>'s <code>worker_database_url</code> defaults to <code>database_url</code> when unset, so an
+environment that has not split credentials yet keeps working unchanged.</p>
+<p>Row Level Security, enabled on every application table since
+<code>supabase/migrations/20260711200745_enable_rls_all_tables.sql</code>, is now enforced by
+explicit <code>CREATE POLICY</code> grants for both roles
+(<code>supabase/migrations/20260720170100_create_service_roles.sql</code> and
+<code>20260720170200_add_service_role_policies.sql</code>). Previously RLS was enabled with zero
+policies attached, a placeholder that the RLS-enable migration's own comment warned
+would start restricting queries the moment a non-owner role connected.</p>
+<p><code>docker-compose.yml</code> and <code>docker-compose.prod.yml</code> now also define the <code>worker</code> and
+<code>redis</code> services directly in this repository (previously only defined in the separate
+<code>homelab-infra</code> repo), so <code>docker-compose up</code> exercises the full story
+request -&gt; generation -&gt; review queue pipeline locally and in CI without depending on
+that sibling repo's state. <code>homelab-infra</code> remains the deployment orchestrator of
+record for the live environment.</p>
 <h2 id="pwa-delivery">PWA Delivery<a class="headerlink" href="#pwa-delivery" title="Permanent link">&para;</a></h2>
 <p>The React 19 PWA is built as static assets and served by the backend container (or
 a co-located nginx, which can also reverse-proxy <code>/api</code> when nginx is the deploy's
@@ -3212,10 +3255,15 @@ development convention; CI produces versioned tags aligned with SemVer releases.
 <li><strong>Sentry:</strong> error tracking (planned; configurable via <code>settings.sentry_dsn</code>).</li>
 <li><strong>Correlation IDs:</strong> every request carries <code>X-Correlation-ID</code>; the header propagates
   into all log lines for the request lifecycle.</li>
+<li><strong>Generation-queue health (ADR-021):</strong> <code>GET /health/ready</code>'s non-gating
+  <code>check_generation_queue</code> sub-check (<code>api/health.py</code>) counts stale <code>queued</code>/<code>running</code>
+  <code>GenerationJob</code> rows and recent failures, so a stopped or misbehaving worker becomes
+  an observable readiness signal instead of a silent stuck queue.</li>
 </ul>
 <h2 id="related-adrs">Related ADRs<a class="headerlink" href="#related-adrs" title="Permanent link">&para;</a></h2>
 <ul>
 <li>ADR-004: <a href="../../planning/adr/adr-004-homelab-first-deployment/">Homelab-First Deployment</a></li>
+<li>ADR-021: <a href="../../planning/adr/adr-021-service-account-rls-and-worker-deployment/">Dedicated Least-Privilege Service Accounts, Enforced RLS, and In-Repo Worker Deployment</a></li>
 <li>ADR-002: <a href="../../planning/adr/adr-002-client-pwa/">Client: Progressive Web App</a></li>
 <li>ADR-003: <a href="../../planning/adr/adr-003-frontier-llm-generation/">Frontier LLM Story Generation</a></li>
 </ul>
@@ -3241,7 +3289,7 @@ development convention; CI produces versioned tags aligned with SemVer releases.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 14, 2026 15:01:05 UTC">July 14, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 21, 2026 20:43:15 UTC">July 21, 2026</span>
   </span>
 
     

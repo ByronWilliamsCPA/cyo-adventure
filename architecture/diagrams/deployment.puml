@@ -15,6 +15,20 @@
 '     local, no-round-trip verification on the kid PWA)
 '   src/cyo_adventure/core/device_grant.py, core/config.py (DEVICE_GRANT_SECRET,
 '     validated at startup, mirroring CHILD_SESSION_SECRET)
+'   docs/planning/adr/adr-021-service-account-rls-and-worker-deployment.md
+'     (cyo_api / cyo_worker least-privilege service roles; explicit RLS
+'     policies; in-repo worker + Redis service definitions)
+'   src/cyo_adventure/core/config.py (worker_database_url_effective,
+'     database_pool_size/database_max_overflow)
+'   src/cyo_adventure/core/database.py (get_worker_engine/get_worker_session,
+'     second async engine for the worker role)
+'   src/cyo_adventure/api/health.py (check_generation_queue: non-gating
+'     stale-job / recent-failure observability, ADR-021)
+'   docker-compose.yml, docker-compose.prod.yml (worker + redis services now
+'     also defined in this repo, ADR-021; homelab-infra remains the deployment
+'     orchestrator of record for the live environment)
+'   supabase/migrations/20260720170100_create_service_roles.sql,
+'     20260720170200_add_service_role_policies.sql
 '   CLAUDE.md (Docker, Pangolin zero-trust, Dockge)
 '
 ' Note: MinIO shown as planned (deferred Phase 5).
@@ -80,11 +94,11 @@ node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
 ' --- Network flows ---
 pwa_client --> tls : "HTTPS (443)"
 tls --> fastapi_app : "HTTP (8000)"
-fastapi_app --> supabase_pg_cloud : "async SQLAlchemy 2\nsession pooler :5432"
+fastapi_app --> supabase_pg_cloud : "async SQLAlchemy 2\nsession pooler :5432\nas cyo_api (ADR-021)"
 fastapi_app --> redis_db : "rq.Queue\n6379"
 fastapi_app --> ollama_svc : "HTTP\n11434"
 rq_worker --> redis_db : "dequeue\n6379"
-rq_worker --> supabase_pg_cloud : "update job\nsession pooler :5432"
+rq_worker --> supabase_pg_cloud : "update job\nsession pooler :5432\nas cyo_worker (ADR-021)"
 rq_worker --> openrouter_cloud : "HTTPS\nLLM completions\n(primary)"
 rq_worker ..> extra_provider_cloud : "HTTPS\nadmin-selected job override\n(anthropic/modal)"
 rq_worker ..> ollama_svc : "HTTP\nLLM fallback"
@@ -107,6 +121,30 @@ note right of worker_container
   Worker and API share the same image
   or a shared base; Dockge manages the
   compose stack.
+  ADR-021: this worker service and the
+  cyo-redis service below are now ALSO
+  defined in this repo's docker-compose.yml
+  / docker-compose.prod.yml (previously only
+  defined in homelab-infra), so the full
+  pipeline can be verified locally/in CI
+  without depending on that sibling repo.
+  homelab-infra remains the deployment
+  orchestrator of record for the live
+  environment.
+end note
+
+note bottom of supabase_pg_cloud
+  ADR-021: two dedicated, least-privilege
+  Postgres roles replace the single shared
+  postgres owner-role connection: cyo_api
+  (FastAPI web process) and cyo_worker
+  (generation/covers workers). RLS, enabled
+  on every application table since
+  20260711200745_enable_rls_all_tables.sql,
+  is now enforced by explicit CREATE POLICY
+  grants for both roles (previously a
+  placeholder: RLS enabled with zero
+  policies attached).
 end note
 
 note right of minio_container

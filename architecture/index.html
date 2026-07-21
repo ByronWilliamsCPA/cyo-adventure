@@ -2892,122 +2892,21 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
 </tbody>
 </table>
 <h2 id="diagram-index">Diagram Index<a class="headerlink" href="#diagram-index" title="Permanent link">&para;</a></h2>
-<p>All diagrams are PlantUML source + rendered SVG pairs under <code>docs/architecture/diagrams/</code>.</p>
-<table>
-<thead>
-<tr>
-<th>Diagram</th>
-<th>File</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>End-to-End User Journey</td>
-<td><a href="diagrams/journey-end-to-end.puml">journey-end-to-end.puml</a> / <a href="diagrams/journey-end-to-end.svg">.svg</a></td>
-<td>Target-state UX flow across Child/Guardian/Admin/System lanes; shipped vs planned</td>
-</tr>
-<tr>
-<td>Kid-Surface Journey</td>
-<td><a href="diagrams/journey-kid.puml">journey-kid.puml</a> / <a href="diagrams/journey-kid.svg">.svg</a></td>
-<td>Zoomed child-facing flow: picker, library, story request, reader, offline/conflict, error exits</td>
-</tr>
-<tr>
-<td>Guardian Surface Journey</td>
-<td><a href="diagrams/journey-guardian.puml">journey-guardian.puml</a> / <a href="diagrams/journey-guardian.svg">.svg</a></td>
-<td>Zoomed parent flow: login, intake, child story-request approval, review/approve (ADR-005), assign</td>
-</tr>
-<tr>
-<td>Journey Test Coverage</td>
-<td><a href="diagrams/journey-dev-coverage.puml">journey-dev-coverage.puml</a> / <a href="diagrams/journey-dev-coverage.svg">.svg</a></td>
-<td>Journey recolored by e2e/unit/none coverage; Playwright gap map</td>
-</tr>
-<tr>
-<td>C4 Context (L1)</td>
-<td><a href="diagrams/c4-context.puml">c4-context.puml</a> / <a href="diagrams/c4-context.svg">.svg</a></td>
-<td>Actors and external systems</td>
-</tr>
-<tr>
-<td>C4 Container (L2)</td>
-<td><a href="diagrams/c4-container.puml">c4-container.puml</a> / <a href="diagrams/c4-container.svg">.svg</a></td>
-<td>Runtime containers and data stores</td>
-</tr>
-<tr>
-<td>Generation Pipeline</td>
-<td><a href="diagrams/component-generation.puml">component-generation.puml</a> / <a href="diagrams/component-generation.svg">.svg</a></td>
-<td>Orchestrator, prompts, providers, gate</td>
-</tr>
-<tr>
-<td>Validator Gate</td>
-<td><a href="diagrams/component-validator.puml">component-validator.puml</a> / <a href="diagrams/component-validator.svg">.svg</a></td>
-<td>L1/Policy/L2/RL/SAFE layers</td>
-</tr>
-<tr>
-<td>Player Engine</td>
-<td><a href="diagrams/component-player.puml">component-player.puml</a> / <a href="diagrams/component-player.svg">.svg</a></td>
-<td>StoryEngine, evaluator, XState</td>
-</tr>
-<tr>
-<td>API and Persistence</td>
-<td><a href="diagrams/component-api-persistence.puml">component-api-persistence.puml</a> / <a href="diagrams/component-api-persistence.svg">.svg</a></td>
-<td>Routers, auth seam, ORM</td>
-</tr>
-<tr>
-<td>Moderation Pipeline</td>
-<td><a href="diagrams/component-moderation.puml">component-moderation.puml</a> / <a href="diagrams/component-moderation.svg">.svg</a></td>
-<td>Stage 0-4 review, auto-repair, admin thresholds</td>
-</tr>
-<tr>
-<td>Publishing</td>
-<td><a href="diagrams/component-publishing.puml">component-publishing.puml</a> / <a href="diagrams/component-publishing.svg">.svg</a></td>
-<td>Approval state machine, admin-only approve (ADR-005)</td>
-</tr>
-<tr>
-<td>Pipeline Event Log</td>
-<td><a href="diagrams/component-events.puml">component-events.puml</a> / <a href="diagrams/component-events.svg">.svg</a></td>
-<td>Append-only PipelineEvent writers across every workflow</td>
-</tr>
-<tr>
-<td>Generation Sequence</td>
-<td><a href="diagrams/seq-generation.puml">seq-generation.puml</a> / <a href="diagrams/seq-generation.svg">.svg</a></td>
-<td>Stage A/B/C with provider fallback</td>
-</tr>
-<tr>
-<td>Reading-State PUT</td>
-<td><a href="diagrams/seq-reading-state.puml">seq-reading-state.puml</a> / <a href="diagrams/seq-reading-state.svg">.svg</a></td>
-<td>Optimistic concurrency, 409 reconciliation</td>
-</tr>
-<tr>
-<td>Offline and Reconnect</td>
-<td><a href="diagrams/seq-offline.puml">seq-offline.puml</a> / <a href="diagrams/seq-offline.svg">.svg</a></td>
-<td>IndexedDB queue, replay, conflict</td>
-</tr>
-<tr>
-<td>ER Diagram</td>
-<td><a href="diagrams/er-diagram.puml">er-diagram.puml</a> / <a href="diagrams/er-diagram.svg">.svg</a></td>
-<td>All 22 ORM tables and FK relationships</td>
-</tr>
-<tr>
-<td>Deployment</td>
-<td><a href="diagrams/deployment.puml">deployment.puml</a> / <a href="diagrams/deployment.svg">.svg</a></td>
-<td>Docker containers, Pangolin, Supabase OIDC, device-grant secret</td>
-</tr>
-<tr>
-<td>Device Grant Sequence</td>
-<td><a href="diagrams/seq-device-grant.puml">seq-device-grant.puml</a> / <a href="diagrams/seq-device-grant.svg">.svg</a></td>
-<td>ADR-014: mint/verify/revoke, the three-tokens/three-lifetimes/three-scopes model</td>
-</tr>
-<tr>
-<td>Sitemap and Flows</td>
-<td><a href="diagrams/sitemap-and-flows.puml">sitemap-and-flows.puml</a> / <a href="diagrams/sitemap-and-flows.svg">.svg</a></td>
-<td>Every route and its purpose; Kid zone, Adult zone, and the two auth-boundary crossings (ADR-014)</td>
-</tr>
-</tbody>
-</table>
-<p>To regenerate SVGs after editing a PUML file:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>java<span class="w"> </span>-jar<span class="w"> </span>/tmp/plantuml.jar<span class="w"> </span>-tsvg<span class="w"> </span>docs/architecture/diagrams/&lt;file&gt;.puml
+<p>All diagrams are PlantUML source + rendered SVG pairs under <code>docs/architecture/diagrams/</code>.
+The full catalog, with per-diagram source-file traceability, is in
+<a href="diagrams/INDEX/">diagrams/INDEX.md</a>. Authoring and styling conventions (the colour
+palette, the <code>@startuml</code>-name rule, status stereotypes, traceability notes) are in
+<a href="diagrams/STYLE_GUIDE/">diagrams/STYLE_GUIDE.md</a>; shared skinparams and colour constants
+live in <a href="diagrams/style.puml">diagrams/style.puml</a>.</p>
+<p>To regenerate SVGs after editing a PUML file, use the generator (it resolves and
+SHA-256-verifies the pinned PlantUML <strong>1.2024.7</strong> jar for you, so there is no ephemeral
+<code>/tmp/plantuml.jar</code> to manage):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>tools/generate_diagram_svgs.py<span class="w">          </span><span class="c1"># re-render diagrams with a stale SVG</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>tools/generate_diagram_svgs.py<span class="w"> </span>--all<span class="w">     </span><span class="c1"># force a full re-render</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>python<span class="w"> </span>tools/generate_diagram_svgs.py<span class="w"> </span>--check<span class="w">   </span><span class="c1"># CI gate: non-zero if any SVG is stale</span>
 </span></code></pre></div>
-<p>PlantUML version used to produce current SVGs: <strong>1.2024.7</strong> (jar at <code>/tmp/plantuml.jar</code>).</p>
+<p>The auto-generated story-skeleton diagrams under <code>diagrams/skeletons/</code> are owned by
+<code>scripts/render_skeleton_diagrams.py</code>, not this tool.</p>
 <h2 id="system-at-a-glance">System at a Glance<a class="headerlink" href="#system-at-a-glance" title="Permanent link">&para;</a></h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Family devices (browsers, tablets)
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  |  HTTPS (Pangolin zero-trust)
@@ -3018,7 +2917,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  - API client: generated from OpenAPI schema (not hand-written)
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  v
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>FastAPI backend (Python 3.12)
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>FastAPI backend (Python 3.14)
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  - api/: 28 routers -- health, library, reading, reading_history, generation,
 </span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>                 profiles, families, ratings, assignments, approval (global admin),
 </span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>                 node_edit, covers, moderation_thresholds, moderation_dashboard,
@@ -3093,6 +2992,8 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
 </tbody>
 </table>
 <h2 id="architecture-decision-records">Architecture Decision Records<a class="headerlink" href="#architecture-decision-records" title="Permanent link">&para;</a></h2>
+<p>The table below lists all 21 ADRs in <code>docs/planning/adr/</code>; see that directory for the
+full decision records.</p>
 <table>
 <thead>
 <tr>
@@ -3132,6 +3033,81 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
 <td>Conditions: in-house evaluator</td>
 <td>Accepted</td>
 </tr>
+<tr>
+<td><a href="../planning/adr/adr-007-raw-output-retention/">ADR-007</a></td>
+<td>Raw LLM output retention policy</td>
+<td>Proposed</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-008-public-app-store-launch/">ADR-008</a></td>
+<td>Public App Store launch, tiered subscription</td>
+<td>Proposed</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-009-supabase-platform/">ADR-009</a></td>
+<td>Supabase: auth, database, and storage platform</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-010-modal-review-and-gated-generation/">ADR-010</a></td>
+<td>Modal for moderation review, evidence-gated generation</td>
+<td>Proposed</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-011-story-scale-framework/">ADR-011</a></td>
+<td>Story-scale framework (band x length x style)</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-012-supabase-cli-migrations/">ADR-012</a></td>
+<td>Supabase CLI SQL migrations replace Alembic</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-013-hybrid-pqc-readiness/">ADR-013</a></td>
+<td>Hybrid post-quantum cryptography readiness</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-014-device-authorized-kid-access/">ADR-014</a></td>
+<td>Device-authorized kid access</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-015-story-request-initiation-and-gating/">ADR-015</a></td>
+<td>Story initiation: guardian cost gate, admin safety gate</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a></td>
+<td>Recommendation sharing and the social boundary</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-017-ai-cover-art/">ADR-017</a></td>
+<td>AI cover art per storybook version</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-018-childrens-privacy-compliance/">ADR-018</a></td>
+<td>Children's-privacy compliance (COPPA, GDPR-K, AADC)</td>
+<td>Proposed</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-019-parameterized-skeletons-theme-contracts/">ADR-019</a></td>
+<td>Parameterized skeletons and theme contracts</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-020-mutation-derived-skeletons-and-catalog-growth/">ADR-020</a></td>
+<td>Mutation-derived skeletons and catalog growth</td>
+<td>Accepted</td>
+</tr>
+<tr>
+<td><a href="../planning/adr/adr-021-service-account-rls-and-worker-deployment/">ADR-021</a></td>
+<td>Service-account RLS and in-repo worker deployment</td>
+<td>Proposed</td>
+</tr>
 </tbody>
 </table>
 
@@ -3156,7 +3132,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 18, 2026 00:28:02 UTC">July 18, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 21, 2026 20:43:15 UTC">July 21, 2026</span>
   </span>
 
     
