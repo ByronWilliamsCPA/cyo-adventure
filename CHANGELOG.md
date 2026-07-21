@@ -103,6 +103,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   OWASP LLM01 safety property is enforced in both directions: the writer
   allowlist rejects any non-enum or extra payload key, and the reader drops
   any row whose values are not members of their closed vocabulary.
+- WS-8 catalog flywheel, D2 (candidate strategy and discard ledger): a new pure
+  `flywheel/strategy.py` plans the bounded mutation attempts for a saturated
+  cell, filtering parents by production-eligibility, standalone (non-series)
+  status, and a lineage-depth ceiling (walked from `*.lineage.json` sidecars so
+  no promoted tree is more than two derivations from a hand-authored root),
+  instantiating the four fixed chain templates (T1 graft-and-remap, T2
+  swap-and-remap, T3 insert-swap-remap, T4 Tier-2 state retune-and-gate) in
+  value order under a per-cell attempt budget, and ranking survivors by the
+  section 6.4 precedence (in-cell headroom, then parent distance, then fewer
+  re-guidance items, then lower seed). A new `flywheel/ledger.py` records every
+  attempt under gitignored `out/` keyed by a timestamp-independent `attempt_sig`
+  so known-dead signatures are never re-run, and a `scripts/flywheel_candidates.py`
+  CLI runs the plan through the unchanged WS-5 acceptance harness and writes the
+  best candidate's promotion bundle. The strategy imports nothing from
+  `story_requests` and accepts no brief or theme (LLM01), and wraps the WS-5
+  engine without modifying it.
 
 ### Changed
 
