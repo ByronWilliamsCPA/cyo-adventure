@@ -27,12 +27,15 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import asyncio
 import datetime
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure import __version__
+from cyo_adventure.core.config import settings
+from cyo_adventure.core.exceptions import BusinessLogicError, ExternalServiceError
 from cyo_adventure.flywheel.ledger import (
     OUTCOME_DISCARDED,
     OUTCOME_HELD,
@@ -44,6 +47,10 @@ from cyo_adventure.flywheel.ledger import (
     ledger_path,
     load_outcomes,
 )
+from cyo_adventure.flywheel.reguide_draft import (
+    NO_DRAFT_RESOLUTIONS,
+    draft_resolutions,
+)
 from cyo_adventure.flywheel.strategy import (
     Catalog,
     Cell,
@@ -53,6 +60,7 @@ from cyo_adventure.flywheel.strategy import (
     ranking_key,
 )
 from cyo_adventure.generation.diagram import skeleton_to_plantuml
+from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.mutation.acceptance import acceptance_to_dict
 from cyo_adventure.mutation.bundle import (
     build_lineage,
@@ -65,12 +73,14 @@ from cyo_adventure.mutation.compose import (
     run_chain_acceptance,
 )
 from cyo_adventure.mutation.floors import load_in_cell_catalog
-from cyo_adventure.mutation.reguide import reconcile
+from cyo_adventure.mutation.reguide import reconcile, resolved_ids
+from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.theme_contract import ThemeContract
 
 if TYPE_CHECKING:
     from cyo_adventure.flywheel.strategy import AttemptPlan, CandidateMetrics
     from cyo_adventure.mutation.acceptance import AcceptanceResult
+    from cyo_adventure.mutation.reguide import ReguideResolutions
 
 _DEFAULT_OUT_DIR = Path("out") / "mutations"
 
@@ -100,6 +110,21 @@ def _build_parser() -> argparse.ArgumentParser:
         default=[],
         metavar="PARENT_SLUG",
         help="A parent slug to exclude (an open promotion PR; repeatable).",
+    )
+    _ = parser.add_argument(
+        "--draft",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Agent-draft re-guidance resolutions for the selected held candidate "
+            "(D3, OQ-1 hybrid), floor-screen them, and re-run acceptance with the "
+            "resolved ids. Default --no-draft leaves the manual path unchanged."
+        ),
+    )
+    _ = parser.add_argument(
+        "--model-id",
+        default="unknown",
+        help="Drafting model id, recorded as author=agent:<model-id> (with --draft).",
     )
     return parser
 
@@ -163,12 +188,16 @@ class _Survivor:
     Attributes:
         plan: The attempt plan that produced it.
         chain: The applied chain (its candidate is the mutant shell).
-        result: The acceptance result (promotable or held).
+        result: The acceptance result (promotable or held); replaced in place by
+            :func:`_draft_best` when drafting re-runs acceptance.
         metrics: The section 6.4 ranking metrics.
         contract: The derived mutant contract, or None.
+        resolutions: The re-guidance resolutions bundled into ``reguide.json``;
+            empty on the default (``--no-draft``) path, agent-drafted under
+            ``--draft`` (design 5.4).
     """
 
-    __slots__ = ("chain", "contract", "metrics", "plan", "result")
+    __slots__ = ("chain", "contract", "metrics", "plan", "resolutions", "result")
 
     def __init__(
         self,
@@ -184,6 +213,7 @@ class _Survivor:
         self.result = result
         self.metrics = metrics
         self.contract = contract
+        self.resolutions: ReguideResolutions = NO_DRAFT_RESOLUTIONS
 
 
 def _mutant_slug(plan: AttemptPlan) -> str:
@@ -299,7 +329,7 @@ def _write_best_bundle(out_root: Path, catalog: Catalog, best: _Survivor) -> Pat
         candidate=best.chain.candidate,
         lineage=lineage,
         acceptance=acceptance,
-        reguide=reconcile(best.chain.reguide),
+        reguide=reconcile(best.chain.reguide, best.resolutions),
         contract=best.contract,
         diagram_puml=skeleton_to_plantuml(best.chain.candidate, name=slug),
     )
@@ -367,6 +397,65 @@ def _render_report(
     return "\n".join(lines) + "\n"
 
 
+def _draft_best(catalog: Catalog, cell: Cell, best: _Survivor, model_id: str) -> None:
+    """Agent-draft, floor-screen, and re-accept the held best survivor in place.
+
+    Behind ``--draft`` (OQ-1 hybrid, design 5.3-5.4). Drafts a resolution for each
+    outstanding re-guidance item (the floor screens each inside
+    :func:`~cyo_adventure.flywheel.reguide_draft.draft_resolutions`; a floor
+    failure leaves the item unresolved), then re-runs the UNCHANGED acceptance
+    harness with the resolved ids. A now-``promotable`` result and its
+    agent-attributed resolutions replace the survivor's, so the bundle's
+    ``reguide.json`` carries the ``author="agent:<model-id>"`` attribution. A
+    promotable-already or reguide-free survivor is left untouched.
+
+    Args:
+        catalog: The catalog scan (locates the parent document).
+        cell: The saturated cell (its enum coordinate drives the floor and prompt).
+        best: The selected survivor, mutated in place.
+        model_id: The drafting model id, recorded as ``agent:<model-id>``.
+    """
+    if best.result.promotable or not best.chain.reguide:
+        return
+    parent_entry = catalog.by_slug(best.plan.parent_slug)
+    if parent_entry is None:  # pragma: no cover -- plan parents come from catalog
+        return
+    # #EDGE: external-resources: drafting is best-effort enrichment. A provider
+    # failure (unconfigured backend, network, rate limit, exhausted dev mock)
+    # must not crash the run: the candidate keeps its valid held state and is
+    # still bundled for hand-authoring, matching the floor's "unresolved leaves
+    # it held" posture. The gate is never weakened by a drafting failure.
+    # #VERIFY: exercised by a --draft smoke run against the default mock provider
+    # (it exhausts and raises); the run degrades to held with a clear stderr note
+    # instead of a traceback, and still writes the held bundle.
+    try:
+        provider = build_provider(settings, model_override=model_id)
+        resolutions = asyncio.run(
+            draft_resolutions(
+                best.chain.reguide,
+                provider=provider,
+                model_id=model_id,
+                contract=best.contract,
+                age_band=AgeBand(cell.band),
+                length=cell.length,
+                style=cell.style,
+                parent=parent_entry.document,
+            )
+        )
+    except (ExternalServiceError, BusinessLogicError) as exc:
+        reason = f"drafting skipped (provider unavailable): {exc}"
+        sys.stderr.write(f"{reason}; candidate remains held for hand-authoring\n")
+        return
+    best.result = run_chain_acceptance(
+        parent_entry.document,
+        best.chain,
+        parent_slug=best.plan.parent_slug,
+        resolved_reguide_ids=resolved_ids(resolutions),
+        mutated_contract=best.contract,
+    )
+    best.resolutions = resolutions
+
+
 def main(argv: list[str] | None = None) -> int:
     """Plan, run, rank, and bundle flywheel candidates for one cell.
 
@@ -405,6 +494,9 @@ def main(argv: list[str] | None = None) -> int:
 
     survivors.sort(key=lambda s: ranking_key(s.metrics))
     best = survivors[0] if survivors else None
+
+    if best is not None and cast("bool", args.draft):
+        _draft_best(catalog, cell, best, cast("str", args.model_id))
 
     bundle_dir: Path | None = None
     if best is not None:

@@ -119,6 +119,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   best candidate's promotion bundle. The strategy imports nothing from
   `story_requests` and accepts no brief or theme (LLM01), and wraps the WS-5
   engine without modifying it.
+- WS-8 catalog flywheel, D3 (re-guidance drafting and the deterministic floor):
+  implements the ratified OQ-1 hybrid. A new `flywheel/reguide_draft.py` drafts
+  each outstanding re-guidance item through an injectable generation provider
+  (one LLM touchpoint, consuming catalog content and cell enums only) and screens
+  every draft through a deterministic floor (FILL `role=`/`words=` surface
+  parity, slot-token subset discipline, structural injection block reusing
+  `validator/slots.py`, and a band-mandatory vocabulary denylist); a floor
+  failure leaves the item unresolved and the candidate held, and the floor never
+  marks anything resolved on its own. A new `generation/templates/reguide_draft.md`
+  fences its catalog-content inputs as data. Drafted resolutions are attributed
+  `author="agent:<model-id>"` for the per-item human approval in the promotion
+  PR, `mutation/reguide.py`'s docstring is amended to reflect author-attributed
+  (possibly agent-drafted) resolutions while staying generation-free, and
+  `scripts/flywheel_candidates.py` gains an opt-in `--draft` mode (default
+  `--no-draft` leaves the manual path unchanged) that re-runs the unchanged
+  acceptance harness with the resolved ids and degrades gracefully to a held
+  candidate if the provider is unavailable.
 
 ### Changed
 
