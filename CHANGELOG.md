@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-07-21
+
 ### Added
 
 - ADR-021 story catalog import: a batch importer that runs the 25 authored draft
@@ -2388,7 +2390,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.24.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.0...HEAD
+[0.25.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.24.0...v0.25.0
 [0.24.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.22.1...v0.23.0
 [0.22.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.22.0...v0.22.1
