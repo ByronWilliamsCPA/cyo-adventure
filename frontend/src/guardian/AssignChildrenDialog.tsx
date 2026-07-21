@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { makeFetchStory } from '../api/readerApi'
 import { classifyApiError } from '../hooks/classifyApiError'
@@ -261,12 +262,12 @@ export function AssignChildrenDialog({
       }
     >
       {loadError ? (
-        <p role="alert">{loadError}</p>
+        <ErrorBanner>{loadError}</ErrorBanner>
       ) : profiles === null ? (
         <LoadingStatus />
       ) : (
         <>
-          {saveError ? <p role="alert">{saveError}</p> : null}
+          {saveError ? <ErrorBanner>{saveError}</ErrorBanner> : null}
           {summaryError ? (
             <p className="assign__content-summary console__notice cyo-text-muted">
               Content review unavailable right now. You can still assign, but flags could not be

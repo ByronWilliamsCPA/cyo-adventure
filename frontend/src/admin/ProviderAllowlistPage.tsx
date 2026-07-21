@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
@@ -84,11 +85,7 @@ export function ProviderAllowlistPage() {
     )
   }
   if (state.kind === 'error') {
-    return (
-      <p role="alert" className="console__error cyo-text-error">
-        {state.message}
-      </p>
-    )
+    return <ErrorBanner className="console__error">{state.message}</ErrorBanner>
   }
 
   const { data } = state
@@ -171,11 +168,7 @@ export function ProviderAllowlistPage() {
         <Link to="/admin/authoring-queue">authoring queue</Link>, constrained to whatever is
         enabled here.
       </p>
-      {actionError ? (
-        <p role="alert" className="console__error cyo-text-error">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <ErrorBanner className="console__error">{actionError}</ErrorBanner> : null}
       {data.rows.length === 0 ? (
         <p className="console__muted cyo-text-muted">No allowlist entries yet.</p>
       ) : (

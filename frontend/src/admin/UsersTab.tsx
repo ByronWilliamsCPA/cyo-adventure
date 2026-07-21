@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { classifyApiError } from '../hooks/classifyApiError'
 import type { FamilyView, UserView } from '../client/types.gen'
 import type { UserManagementApi } from './userManagementApi'
@@ -129,11 +130,7 @@ export function UsersTab({ api, families, users, onChanged }: UsersTabProps) {
   return (
     <section>
       <h2>Guardians &amp; admins</h2>
-      {actionError ? (
-        <p role="alert" className="console__error cyo-text-error">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <ErrorBanner className="console__error">{actionError}</ErrorBanner> : null}
       {users.length === 0 ? (
         <p className="console__muted cyo-text-muted">No guardians or admins yet.</p>
       ) : (

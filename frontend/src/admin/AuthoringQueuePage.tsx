@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
@@ -65,11 +66,7 @@ export function AuthoringQueuePage() {
     )
   }
   if (state.kind === 'error') {
-    return (
-      <p role="alert" className="console__error cyo-text-error">
-        {state.message}
-      </p>
-    )
+    return <ErrorBanner className="console__error">{state.message}</ErrorBanner>
   }
 
   const { requests, allowlistRows } = state

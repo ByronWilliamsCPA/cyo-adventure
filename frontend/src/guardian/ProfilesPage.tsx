@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
@@ -88,12 +89,9 @@ export function ProfilesPage() {
 
   if (loadError) {
     return (
-      <div role="alert" className="profiles__error">
-        <p>We could not load your family&apos;s profiles.</p>
-        <Button variant="primary" onClick={retry}>
-          Try again
-        </Button>
-      </div>
+      <ErrorBanner className="profiles__error" onRetry={retry}>
+        We could not load your family&apos;s profiles.
+      </ErrorBanner>
     )
   }
 

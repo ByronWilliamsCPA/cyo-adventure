@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { useAuth } from '../auth/useAuth'
 import { logApiError } from '../hooks/logApiError'
 import './guardian.css'
@@ -74,9 +75,9 @@ export function ResetPasswordRequestForm() {
         </p>
       ) : null}
       {resetStatus === 'error' ? (
-        <p role="alert" className="guardian-login__error cyo-text-error">
+        <ErrorBanner className="guardian-login__error">
           We couldn&apos;t send a reset link. Check your connection and try again.
-        </p>
+        </ErrorBanner>
       ) : null}
     </form>
   )

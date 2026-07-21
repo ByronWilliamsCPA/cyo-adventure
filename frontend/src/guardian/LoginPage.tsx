@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { hasValidDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import { makeDeviceGrantApi } from '../auth/deviceGrantApi'
@@ -401,9 +402,9 @@ export function LoginPage() {
       <h1>Guardian sign-in</h1>
       <p>Sign in to review, approve, and request stories for your family.</p>
       {recoveryError ? (
-        <p role="alert" className="guardian-login__error cyo-text-error">
+        <ErrorBanner className="guardian-login__error">
           That password reset link is invalid or has expired. Request a new one below.
-        </p>
+        </ErrorBanner>
       ) : null}
       <button
         type="button"
@@ -422,9 +423,9 @@ export function LoginPage() {
         </button>
       ) : null}
       {signInError ? (
-        <p role="alert" className="guardian-login__error cyo-text-error">
+        <ErrorBanner className="guardian-login__error">
           Sign-in didn&apos;t start. Check your connection and try again.
-        </p>
+        </ErrorBanner>
       ) : null}
 
       <div className="guardian-login__divider">
@@ -466,19 +467,19 @@ export function LoginPage() {
           {busy ? 'Signing in...' : 'Sign in'}
         </button>
         {!busy && formError === 'credentials' ? (
-          <p role="alert" className="guardian-login__error cyo-text-error">
+          <ErrorBanner className="guardian-login__error">
             That email and password didn&apos;t match. Please try again.
-          </p>
+          </ErrorBanner>
         ) : null}
         {!busy && formError === 'connection' ? (
-          <p role="alert" className="guardian-login__error cyo-text-error">
+          <ErrorBanner className="guardian-login__error">
             We couldn&apos;t reach the server. Check your connection and try again.
-          </p>
+          </ErrorBanner>
         ) : null}
         {!busy && !formError && authError ? (
-          <p role="alert" className="guardian-login__error cyo-text-error">
+          <ErrorBanner className="guardian-login__error">
             You&apos;re signed in, but we couldn&apos;t load your account. Please try again.
-          </p>
+          </ErrorBanner>
         ) : null}
         {!busy && stalled && !formError && !authError ? (
           <p role="status" aria-live="polite" className="guardian-login__note">

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
@@ -237,11 +238,7 @@ export function AuditPage() {
 
       {state.kind === 'loading' ? <LoadingStatus /> : null}
 
-      {state.kind === 'error' ? (
-        <p role="alert" className="console__error cyo-text-error">
-          {state.message}
-        </p>
-      ) : null}
+      {state.kind === 'error' ? <ErrorBanner className="console__error">{state.message}</ErrorBanner> : null}
 
       {refreshError ? (
         <p role="alert" className="console__notice cyo-text-muted">

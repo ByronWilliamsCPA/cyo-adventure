@@ -158,6 +158,6 @@ describe('ReadingPage', () => {
     expect(
       await screen.findByText(/We could not load this child's book detail/)
     ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
   })
 })

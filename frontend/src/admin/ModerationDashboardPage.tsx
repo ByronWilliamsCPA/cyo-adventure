@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import type {
   ModerationDashboardView,
@@ -186,11 +187,7 @@ export function ModerationDashboardPage() {
     )
   }
   if (state.kind === 'error') {
-    return (
-      <p role="alert" className="console__error cyo-text-error">
-        {state.message}
-      </p>
-    )
+    return <ErrorBanner className="console__error">{state.message}</ErrorBanner>
   }
 
   const { dashboard, suggestions } = state
@@ -216,11 +213,7 @@ export function ModerationDashboardPage() {
           </button>
         </p>
       ) : null}
-      {actionError ? (
-        <p role="alert" className="console__error cyo-text-error">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <ErrorBanner className="console__error">{actionError}</ErrorBanner> : null}
 
       <section aria-labelledby="suggestions-heading">
         <h2 id="suggestions-heading">Threshold suggestions</h2>

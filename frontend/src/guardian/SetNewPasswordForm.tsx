@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { useAuth } from '../auth/useAuth'
 import './guardian.css'
 
@@ -114,19 +115,17 @@ export function SetNewPasswordForm() {
         {submitting ? 'Saving...' : 'Set new password'}
       </button>
       {error?.kind === 'too-short' ? (
-        <p role="alert" className="guardian-login__error cyo-text-error">
+        <ErrorBanner className="guardian-login__error">
           Your password must be at least {MIN_PASSWORD_LENGTH} characters.
-        </p>
+        </ErrorBanner>
       ) : null}
       {error?.kind === 'mismatch' ? (
-        <p role="alert" className="guardian-login__error cyo-text-error">
+        <ErrorBanner className="guardian-login__error">
           Those passwords don&apos;t match. Please try again.
-        </p>
+        </ErrorBanner>
       ) : null}
       {error?.kind === 'server' ? (
-        <p role="alert" className="guardian-login__error cyo-text-error">
-          {error.message}
-        </p>
+        <ErrorBanner className="guardian-login__error">{error.message}</ErrorBanner>
       ) : null}
     </form>
   )

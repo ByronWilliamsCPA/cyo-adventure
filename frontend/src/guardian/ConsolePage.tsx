@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
 import { EmptyState } from '@ds/components/EmptyState'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import {
   clearDeviceGrant,
   getDeviceGrant,
@@ -291,9 +292,9 @@ export function ConsolePage() {
             </>
           )}
           {deviceStatus === 'error' ? (
-            <p role="alert" className="console-device__error cyo-text-error">
+            <ErrorBanner className="console-device__error">
               That didn&apos;t work. Check your connection and try again.
-            </p>
+            </ErrorBanner>
           ) : null}
         </section>
       )}

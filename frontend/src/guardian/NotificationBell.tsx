@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { useAuth } from '../auth/useAuth'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
@@ -219,12 +220,9 @@ export function NotificationBell() {
               Loading…
             </p>
           ) : panel.kind === 'error' ? (
-            <div role="alert" className="notification-bell__error cyo-text-error">
-              {panel.message}{' '}
-              <button type="button" className="notification-bell__retry" onClick={() => void loadPanel()}>
-                Retry
-              </button>
-            </div>
+            <ErrorBanner className="notification-bell__error" onRetry={() => void loadPanel()}>
+              {panel.message}
+            </ErrorBanner>
           ) : panel.items.length === 0 ? (
             <p className="notification-bell__empty cyo-text-muted">Nothing here yet.</p>
           ) : (

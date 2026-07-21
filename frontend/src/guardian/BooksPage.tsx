@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { useApi } from '../hooks/useApi'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
@@ -150,12 +151,9 @@ export function BooksPage() {
 
   if (state.kind === 'error') {
     return (
-      <div role="alert" className="console__error">
-        <p className="cyo-text-error">We could not load your family&apos;s books.</p>
-        <Button variant="primary" onClick={retry}>
-          Try again
-        </Button>
-      </div>
+      <ErrorBanner className="console__error" onRetry={retry}>
+        We could not load your family&apos;s books.
+      </ErrorBanner>
     )
   }
 

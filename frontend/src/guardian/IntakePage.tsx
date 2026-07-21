@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { Chip } from '@ds/components/Chip'
 import { EmptyState } from '@ds/components/EmptyState'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
@@ -276,12 +277,9 @@ export function IntakePage() {
     <section className="intake">
       <h1>Request a story</h1>
       {loadError ? (
-        <div role="alert" className="intake-form__error cyo-text-error">
-          {loadError}{' '}
-          <button type="button" className="intake-retry" onClick={() => void loadData()}>
-            Retry
-          </button>
-        </div>
+        <ErrorBanner className="intake-form__error" onRetry={() => void loadData()}>
+          {loadError}
+        </ErrorBanner>
       ) : null}
       <form
         className="intake-form"
@@ -295,11 +293,7 @@ export function IntakePage() {
             {SUBMIT_SUCCESS_NOTICE}
           </p>
         ) : null}
-        {error ? (
-          <p role="alert" className="intake-form__error cyo-text-error">
-            {error}
-          </p>
-        ) : null}
+        {error ? <ErrorBanner className="intake-form__error">{error}</ErrorBanner> : null}
 
         <fieldset className="intake-form__chips">
           <legend>Who&apos;s it for?</legend>

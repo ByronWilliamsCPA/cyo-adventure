@@ -19,6 +19,9 @@ export type { DialogProps } from './components/Dialog'
 export { EmptyState } from './components/EmptyState'
 export type { EmptyStateProps } from './components/EmptyState'
 
+export { ErrorBanner } from './components/ErrorBanner'
+export type { ErrorBannerProps } from './components/ErrorBanner'
+
 export { FormField } from './components/FormField'
 export type { FormFieldProps } from './components/FormField'
 
