@@ -32,9 +32,8 @@ from redis.asyncio import Redis
 from redis.exceptions import RedisError
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.responses import JSONResponse, Response
+from starlette.responses import JSONResponse, RedirectResponse, Response
 
 logger = logging.getLogger(__name__)
 # Structured logger for the Redis-backed rate limiter's fail-open path: an
@@ -136,6 +135,51 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             del response.headers["Server"]
 
         return response
+
+
+_HEALTH_PATH_PREFIX: Final = "/health"
+
+
+class HealthExemptHTTPSRedirectMiddleware(BaseHTTPMiddleware):
+    """Redirect HTTP to HTTPS, except for ``/health*`` liveness probes.
+
+    Starlette's stock ``HTTPSRedirectMiddleware`` has no path exemption, so
+    it 307s any plain-HTTP request, including a liveness/uptime probe that
+    hits this container directly rather than through the TLS-terminating
+    reverse proxy. Most such probes (container orchestrator health checks,
+    external uptime monitors) treat a redirect as a failed check, not a
+    live one. `/health/*` (see `api/health.py`) is read-only and returns
+    nothing sensitive, so exempting it from the redirect is a narrow,
+    deliberate carve-out; every other path still redirects.
+
+    #ASSUME: security: matches by path prefix only, not by verb or host, so
+    any HTTP method against `/health/*` is exempt. All health endpoints are
+    GET-only reads (see `api/health.py`), so this does not open a write
+    path to plain HTTP.
+    #VERIFY: tests/unit/test_security.py::TestAddSecurityMiddleware::
+    test_https_redirect_exempts_health_path.
+
+    #EDGE: security: like the middleware it replaces, this subclasses
+    `BaseHTTPMiddleware`, which only wraps HTTP scope requests; a WebSocket
+    upgrade bypasses `dispatch` entirely and is neither redirected nor
+    exempted. No route in this app accepts WebSocket connections today.
+    #VERIFY: if a WebSocket route is added, revisit this middleware (or
+    reintroduce a pure-ASGI wrapper, like `BodySizeLimitMiddleware`, so the
+    "ws" -> "wss" scheme upgrade Starlette's original middleware performed
+    is not silently lost).
+    """
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        """Redirect HTTP to HTTPS unless the request targets `/health/*`."""
+        if request.url.scheme == "https" or request.url.path.startswith(
+            _HEALTH_PATH_PREFIX
+        ):
+            return await call_next(request)
+
+        redirect_url = request.url.replace(scheme="https")
+        return RedirectResponse(redirect_url, status_code=307)
 
 
 class _BodyTooLargeError(Exception):
@@ -805,7 +849,11 @@ def add_security_middleware(
 
     Args:
         app: FastAPI application instance
-        enable_https_redirect: Redirect HTTP to HTTPS (production only)
+        enable_https_redirect: Redirect HTTP to HTTPS (production only),
+            except `/health/*`, which stays reachable over plain HTTP so a
+            direct liveness/uptime probe against this container (not routed
+            through the TLS-terminating reverse proxy) still gets a real
+            response instead of a redirect
         enable_rate_limiting: Enable rate limiting middleware
         enable_ssrf_prevention: Enable SSRF prevention middleware
         enable_body_size_limit: Enable the request-body size guard (413 over cap)
@@ -837,9 +885,9 @@ def add_security_middleware(
         ...     rate_limit_rpm=100,
         ... )
     """
-    # HTTPS redirect (production only)
+    # HTTPS redirect (production only), health endpoints exempt
     if enable_https_redirect:
-        app.add_middleware(HTTPSRedirectMiddleware)
+        app.add_middleware(HealthExemptHTTPSRedirectMiddleware)
 
     # Trusted hosts (OWASP A05)
     if allowed_hosts:
