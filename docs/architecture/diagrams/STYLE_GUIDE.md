@@ -125,8 +125,10 @@ python tools/generate_diagram_svgs.py --check
 
 The tool renders each diagram individually and derives its output path from the source
 stem, so it is immune to the "newest file in the directory, then rename" corruption that
-can silently swap two diagrams' SVGs. After a `--all` run it also fails loudly if any two
-sibling SVGs come out byte-identical, which would signal exactly that class of bug.
+can silently swap two diagrams' SVGs. In every mode (including `--check`, which renders
+nothing) it also fails loudly if any two sibling SVGs are byte-identical, which would
+signal exactly that class of bug. Freshness itself is judged by git commit time rather
+than filesystem mtime, so the `--check` gate stays reliable on a fresh CI clone.
 
 The pinned renderer is **PlantUML 1.2024.7** (SHA-256 verified). The jar is resolved from
 `$PLANTUML_JAR`, then a version-pinned cache at `~/.cache/cyo-adventure/`, then a one-time
