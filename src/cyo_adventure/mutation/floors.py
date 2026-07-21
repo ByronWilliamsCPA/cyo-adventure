@@ -59,7 +59,10 @@ _BASELINE_PATH = _REPO_ROOT / "docs" / "planning" / "ws5_floor_baseline.json"
 # minima, so a missing baseline degrades to the strictest safe floors rather than
 # a clone-admitting 0. The committed baseline always overrides these in practice.
 _FALLBACK_TAU_STRUCT = 0.01
-_FALLBACK_TAU_CELL = 0.01
+# ADR-020 floor-recalibration amendment: TAU_CELL is the anti-duplication floor
+# (min distance to any in-cell tree, parent included). The fallback mirrors the
+# committed baseline's owner-chosen value so a missing baseline degrades safely.
+_FALLBACK_TAU_CELL = 0.05
 _FALLBACK_TAU_STATE = 0.25
 
 
@@ -202,59 +205,67 @@ def structural_floor_reason(
 ) -> str | None:
     """Return why a shape-changed mutant fails the anti-clone floor, or None.
 
-    Applies the three design-4.6 clauses in order; the first failure is the
-    returned discard reason:
+    Applies two clauses (design 4.6 as amended by the ADR-020 floor-recalibration
+    amendment, ``docs/planning/ws8-floor-recalibration-proposal.md``); the first
+    failure is the returned discard reason:
 
-    1. ``structure_fingerprint(candidate) != structure_fingerprint(parent)`` -- a
-       pure structural-identity check. An M2-only re-map passes this clause
-       (``structure_fingerprint`` retains ending kind/id) but fails clause 2.
-    2. ``structural_distance(parent, candidate) >= TAU_STRUCT`` -- the mutant must
-       sit a meaningful structural distance from its parent. An M2-only re-map is
-       rejected HERE (its histograms are permutation-invariant, so its distance is
-       ~0), by the distance clause, not the fingerprint clause.
-    3. ``min over in-cell sibling s of structural_distance(s, candidate) >=
-       TAU_CELL`` -- the mutant must not clone ANY existing in-cell tree. When the
-       cell has no other tree the clause is vacuously satisfied.
+    1. ``structure_fingerprint(candidate) != structure_fingerprint(parent)`` -- the
+       anti-no-op clause: the mutation must change the gate-relevant structure
+       (topology / ending set), so a pure re-labeling never counts as a new tree.
+    2. ``min over EVERY in-cell tree t, INCLUDING the parent, of
+       structural_distance(t, candidate) >= TAU_CELL`` -- the anti-duplication
+       clause: the mutant must not be a near-duplicate of ANY existing in-cell
+       tree, its parent included (the parent is itself an in-cell tree). This
+       single, correctly-scoped clause replaces the retired parent-distance-vs-
+       ``TAU_STRUCT`` clause: ``TAU_STRUCT`` was the 25th percentile of same-cell
+       hand-authored SIBLING-PAIR distances, which is categorically larger than
+       any bounded mutation's distance from its own parent, so applying it to the
+       parent distance rejected ~every mutant. Folding the parent into the
+       ``TAU_CELL`` check keeps the anti-clone guarantee (an M2-only re-map, whose
+       distance from the parent is ~0, is rejected HERE) at a value bounded
+       mutations can actually clear. ``TAU_STRUCT`` is retained in the baseline as
+       the documented hand-authored cross-tree diversity target only.
 
     Reject-only (design CR-2, 4.6): a passing candidate returns ``None`` (the
     floor never raises promotability); a cloning candidate returns a reason.
 
     Args:
-        parent: The raw parent story document.
+        parent: The raw parent story document (compared as an in-cell tree).
         candidate: The mutated candidate document (graph shape changed).
         in_cell: The sibling in-cell catalog documents (see
-            :func:`load_in_cell_catalog`); the parent is removed defensively.
+            :func:`load_in_cell_catalog`), which already exclude the parent; the
+            parent is added back into the comparison set here.
 
     Returns:
         str | None: A discard reason when any clause fails, else None.
     """
-    # #CRITICAL: data-integrity: this is the structural analog of the anti-clone
-    # floor (design 4.6). It is reject-only: it can lower a candidate's
-    # promotability (a near-isomorphic copy is not a distinct tree) but never
-    # raise it, so a calibrated threshold carries no safety risk (design CR-2,
-    # floors reject-only). The gate stages remain mandatory upstream.
-    # #VERIFY: tests/unit/test_mutation_floors.py pins that an M2-only re-map is
-    # rejected by the DISTANCE clause (clause 2), a fingerprint-equal candidate by
-    # clause 1, and an in-cell clone by clause 3; a genuine structural mutant
-    # passes.
+    # #CRITICAL: data-integrity: this is the structural anti-clone floor (design
+    # 4.6, ADR-020 floor-recalibration amendment). It is reject-only: it can lower
+    # a candidate's promotability (a near-duplicate of an existing in-cell tree is
+    # not a distinct tree) but never raise it, so the calibrated TAU_CELL threshold
+    # carries no safety risk (design CR-2). Nothing reaches a child without the
+    # full gate + moderation + human structure approval (the promotion PR) + human
+    # story approval (ADR-005); this floor is a catalog-curation bar, not a safety
+    # gate. The parent is compared as an in-cell tree so a near-parent clone is
+    # rejected without the retired cross-tree TAU_STRUCT parent-distance clause.
+    # #VERIFY: tests/unit/test_mutation_floors.py pins that a fingerprint-equal
+    # candidate is rejected by clause 1; an M2-only re-map and any near-parent or
+    # near-sibling clone (< TAU_CELL) by clause 2; and that a genuine structural
+    # mutant at or above TAU_CELL from the parent and every sibling passes.
     if structure_fingerprint(candidate) == structure_fingerprint(parent):
         return (
             "structural fingerprint equals the parent's: the mutation left the "
             "gate-relevant structure unchanged (design 4.6 clause 1)"
         )
-    parent_distance = structural_distance(parent, candidate)
-    if parent_distance < TAU_STRUCT:
-        return (
-            f"structural distance to the parent {parent_distance:.4f} is below "
-            f"TAU_STRUCT {TAU_STRUCT}: too near-isomorphic to count as a new tree "
-            f"(design 4.6 clause 2)"
-        )
-    for sibling in _excluding_parent(parent, in_cell):
-        distance = structural_distance(sibling, candidate)
+    # The parent is itself an in-cell tree; compare against it plus every sibling.
+    # ``in_cell`` already excludes the parent (load_in_cell_catalog), so prepend it.
+    for tree in (parent, *_excluding_parent(parent, in_cell)):
+        distance = structural_distance(tree, candidate)
         if distance < TAU_CELL:
             return (
-                f"structural distance to an in-cell catalog tree {distance:.4f} is "
-                f"below TAU_CELL {TAU_CELL}: the mutant clones an existing sibling "
-                f"tree (design 4.6 clause 3)"
+                f"structural distance to an in-cell catalog tree (parent included) "
+                f"{distance:.4f} is below TAU_CELL {TAU_CELL}: the mutant is a "
+                f"near-duplicate of an existing in-cell tree (design 4.6 clause 2, "
+                f"ADR-020 floor-recalibration amendment)"
             )
     return None

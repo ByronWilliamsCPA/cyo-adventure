@@ -208,7 +208,11 @@ def test_structural_floor_discards_a_near_isomorphic_swap() -> None:
     )
     assert result.discarded_at_stage is Stage.STRUCTURE
     assert result.promotable is False
-    assert "TAU_STRUCT" in result.discard_reason
+    # ADR-020 floor-recalibration amendment: a near-isomorphic swap (distance ~0
+    # from its parent) is discarded by the re-scoped in-cell anti-duplication
+    # clause (parent included, < TAU_CELL), which subsumes the retired
+    # parent-distance-vs-TAU_STRUCT clause.
+    assert "TAU_CELL" in result.discard_reason
 
 
 @pytest.mark.unit

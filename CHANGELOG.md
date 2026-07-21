@@ -154,6 +154,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- WS-8 / ADR-020 floor-recalibration amendment (owner-approved): re-scoped the
+  mutation-origin anti-clone floor so bounded mutations can actually clear it. The
+  mutant parent-distance-vs-`TAU_STRUCT` clause is retired (`TAU_STRUCT` -- the
+  25th percentile of same-cell hand-authored SIBLING-PAIR distances, 0.3325 -- was
+  mis-applied to the parent-to-mutant distance, which is categorically smaller, so
+  it rejected ~every mutant). The in-cell anti-duplication clause `TAU_CELL` is now
+  the guarantee, applied against every in-cell tree INCLUDING the parent, and
+  raised from the too-weak clamped 0.01 to a fixed owner-chosen 0.05 (rejects the
+  catalog's observed 0.0009 near-duplicate with a ~53x margin). The fingerprint
+  anti-no-op clause is unchanged. No safety level changes: this is a
+  catalog-curation bar behind the full gate + moderation + human structure
+  approval + human story approval. Verified end to end: mutants at or above 0.05
+  from their parent and every sibling now reach `promotable`; a too-near mutant is
+  still discarded at the structure floor. Touches `mutation/floors.py`,
+  `scripts/calibrate_mutation_floors.py`, `docs/planning/ws5_floor_baseline.json`
+  (baseline v2), and ADR-020 (amendment 1); see
+  `docs/planning/ws8-floor-recalibration-proposal.md`.
 - Reconciled `docs/planning/roadmap.md` and `docs/planning/PROJECT-PLAN.md` with
   actually delivered code: a 12-agent audit found both master planning documents
   had gone unupdated across roughly 20 releases, still marking Phases 4b, 4c, 4d,
