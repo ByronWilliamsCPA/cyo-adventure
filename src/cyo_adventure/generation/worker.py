@@ -33,7 +33,7 @@ from typing import TYPE_CHECKING, cast
 from sqlalchemy import select
 
 from cyo_adventure.core.config import settings as _default_settings
-from cyo_adventure.core.database import get_session
+from cyo_adventure.core.database import get_worker_session
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.db.models import (
     ChildProfile,
@@ -1625,8 +1625,10 @@ async def run_generation_job(
             :data:`~cyo_adventure.core.config.settings`.
         session_factory: Optional callable returning an async context manager
             that yields an :class:`~sqlalchemy.ext.asyncio.AsyncSession`. When
-            ``None``, the production :func:`~cyo_adventure.core.database.get_session`
-            factory is used.
+            ``None``, the production
+            :func:`~cyo_adventure.core.database.get_worker_session` factory is
+            used (ADR-021: this runs in an RQ worker process, so it must use
+            the worker engine, not the API engine's ``get_session``).
 
     Raises:
         ResourceNotFoundError: If no GenerationJob row exists for ``job_id``.
@@ -1636,11 +1638,14 @@ async def run_generation_job(
     set_correlation_id(generate_correlation_id())
 
     # Resolve defaults: use injected factory or the production session factory.
-    # #ASSUME: external-resources: get_session() opens a DB connection on first
-    # use; an unreachable database surfaces here as a connection error.
+    # #ASSUME: external-resources: get_worker_session() opens a DB connection
+    # on first use; an unreachable database surfaces here as a connection
+    # error. ADR-021: this must stay get_worker_session, not get_session; a
+    # regression back to get_session would silently ignore a post-cutover
+    # WORKER_DATABASE_URL for background jobs.
     # #VERIFY: readiness probe on api/health.check_database catches DB outages
-    # before jobs are dispatched.
-    _factory = session_factory or get_session
+    # before jobs are dispatched; test_worker.py pins the default factory.
+    _factory = session_factory or get_worker_session
 
     async with _factory() as session:  # type: ignore[attr-defined]
         # #CRITICAL: concurrency: tracks whether the terminal commit below

@@ -54,8 +54,8 @@ async def _run(storybook_id: str, version: int) -> None:
     # Gemini + R2 calls via generate_cover; runs outside request context.
     # #VERIFY: generate_cover never raises and always lands a terminal status.
     from cyo_adventure.core.config import settings
-    from cyo_adventure.core.database import get_session
+    from cyo_adventure.core.database import get_worker_session
     from cyo_adventure.covers.service import generate_cover
 
-    async with get_session() as session:
+    async with get_worker_session() as session:
         await generate_cover(storybook_id, version, session=session, settings=settings)

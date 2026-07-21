@@ -17,7 +17,11 @@ import asyncio
 from rq import Worker
 
 from cyo_adventure.core.config import settings as _default_settings
-from cyo_adventure.core.database import get_engine, get_session
+from cyo_adventure.core.database import (
+    get_engine,
+    get_worker_engine,
+    get_worker_session,
+)
 from cyo_adventure.generation.queue import get_queue, requeue_stranded_jobs
 from cyo_adventure.utils.logging import get_logger
 
@@ -27,30 +31,39 @@ __all__ = ["main"]
 
 
 async def _reclaim_stranded_jobs() -> int:
-    """Run the stranded-job reclaim sweep once, against a fresh session.
+    """Run the stranded-job reclaim sweep once, against a fresh worker session.
 
-    Disposes the shared async engine's connection pool on the way out, while
-    this coroutine's event loop is still alive, so the worker loop (and every
-    forked work horse) starts from an empty pool.
+    Disposes BOTH the worker engine's and the API engine's connection pools
+    on the way out, while this coroutine's event loop is still alive, so the
+    worker loop (and every forked work horse) starts from empty pools.
 
     Returns:
         The number of ``"queued"`` rows re-enqueued.
     """
     try:
-        async with get_session() as session:
+        async with get_worker_session() as session:
             return await requeue_stranded_jobs(session)
     finally:
         # #CRITICAL: concurrency: the sweep checks asyncpg connections out of
-        # the module-level async engine's pool; once main()'s asyncio.run()
-        # loop closes, any connection still sitting in the pool stays bound to
+        # the module-level async engines' pools; once main()'s asyncio.run()
+        # loop closes, any connection still sitting in a pool stays bound to
         # that dead loop. The next asyncio.run() in this process or a forked
         # RQ work horse (run_generation_job_sync) then crashes with
         # "got Future <...> attached to a different loop" (issue #150, live
         # job 5af1239c-80a0-489e-95e3-d05f69049d46). Disposing here, inside
         # the same event loop as the sweep and before Worker.work() forks
-        # anything, empties the pool so job execution opens fresh connections.
-        # #VERIFY: tests/unit/test_worker_main.py asserts dispose is awaited
-        # after the sweep and before Worker.work() starts.
+        # anything, empties both pools so job execution opens fresh
+        # connections. ADR-021 widens this from one engine to two: this
+        # process now also holds the worker engine's pool (used by the sweep
+        # session above and by every generation job this process runs via
+        # run_generation_job_sync's default get_worker_session factory), and
+        # the API engine's pool remains reachable via get_engine() for any
+        # shared module-level import path; both must be emptied before the
+        # loop that populated them closes, or either can crash a later job
+        # with the same cross-loop Future error.
+        # #VERIFY: tests/unit/test_worker_main.py asserts both dispose calls
+        # are awaited after the sweep and before Worker.work() starts.
+        await get_worker_engine().dispose()
         await get_engine().dispose()
 
 

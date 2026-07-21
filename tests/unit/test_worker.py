@@ -1031,6 +1031,44 @@ def test_run_generation_job_sync_parses_uuid_and_delegates_to_async_worker(
     mock_async_worker.assert_awaited_once_with(job_id)
 
 
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_run_generation_job_default_session_factory_is_get_worker_session(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """run_generation_job's default session_factory must be get_worker_session (ADR-021).
+
+    A regression back to the API engine's get_session would silently ignore
+    a post-cutover WORKER_DATABASE_URL for every background job. Proven
+    decisively via two checks: (1) worker_module no longer even imports
+    get_session as a module attribute (asserted directly, so a reintroduced
+    `from ...database import get_session` import is caught even if nothing
+    calls it), and (2) get_worker_session is monkeypatched to a fake whose
+    __aenter__ raises a distinguishable sentinel, proving the DEFAULT
+    session_factory argument actually resolves to it.
+    """
+    import uuid as uuid_mod
+    from contextlib import asynccontextmanager
+
+    assert not hasattr(worker_module, "get_session"), (
+        "worker_module must not import get_session (ADR-021: RQ worker jobs "
+        "must use get_worker_session so WORKER_DATABASE_URL takes effect)"
+    )
+
+    class _SentinelFromWorkerSessionError(Exception):
+        """Raised only if the default factory (get_worker_session) was used."""
+
+    @asynccontextmanager
+    async def _fake_get_worker_session():
+        raise _SentinelFromWorkerSessionError
+        yield  # pragma: no cover - unreachable, satisfies the generator shape
+
+    monkeypatch.setattr(worker_module, "get_worker_session", _fake_get_worker_session)
+
+    with pytest.raises(_SentinelFromWorkerSessionError):
+        await worker_module.run_generation_job(uuid_mod.uuid4())
+
+
 @pytest.mark.asyncio
 async def test_load_and_start_job_claims_queued_row() -> None:
     """A 'queued' row is claimed: transitioned to 'running' and returned."""

@@ -4,9 +4,9 @@ Most settings are loaded from environment variables under the 'CYO_ADVENTURE_'
 prefix. Several operator-facing names are also honored unprefixed via
 validation_alias, matching what docker-compose*.yml and
 docs/guides/configuration.md already set: ENVIRONMENT, LOG_LEVEL, JSON_LOGS,
-DATABASE_URL, and the OLLAMA_*, OPENROUTER_*, OPENAI_API_KEY, and
-PERSPECTIVE_API_KEY credentials. Pydantic-settings handles the parsing and
-validation.
+DATABASE_URL, WORKER_DATABASE_URL, and the OLLAMA_*, OPENROUTER_*,
+OPENAI_API_KEY, and PERSPECTIVE_API_KEY credentials. Pydantic-settings
+handles the parsing and validation.
 """
 
 from __future__ import annotations
@@ -37,6 +37,43 @@ _DEV_DATABASE_URL = "postgresql+asyncpg://localhost/cyo_adventure"
 # mismatch; PgBouncer transaction mode has no fixed port and cannot be
 # detected this way, so this only covers the documented Supavisor case.
 _SUPAVISOR_TRANSACTION_POOLER_PORT = 6543
+
+
+def _check_pooler_port_requires_disabled_cache(
+    *, label: str, url: str, disable_prepared_cache: bool
+) -> None:
+    """Fail fast when a single database DSN is Supavisor's pooler port but the flag is off.
+
+    Extracted (ADR-021) so the model_validator below can apply the identical
+    check to both database_url (the API engine) and
+    worker_database_url_effective (the worker engine, core/database.py); a
+    typo or drift between the two checks would silently reopen the
+    prepared-statement collision for whichever DSN got skipped.
+
+    Args:
+        label: The operator-facing name of the DSN being checked, used only
+            in the error message (never the secret-bearing URL itself).
+        url: The DSN to inspect for the Supavisor pooler port.
+        disable_prepared_cache: The resolved
+            database_disable_prepared_cache flag value.
+
+    Raises:
+        ConfigurationError: when url's port is the Supavisor
+            transaction-pooler port and disable_prepared_cache is False,
+            since asyncpg then collides on cached/fixed-name prepared
+            statements once the pooler reassigns a backend mid-session.
+    """
+    port = urlsplit(url).port
+    if port == _SUPAVISOR_TRANSACTION_POOLER_PORT and not disable_prepared_cache:
+        msg = (
+            f"{label} uses port 6543 (Supabase Supavisor's transaction-mode "
+            "pooler) but CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE is not "
+            "set; refusing to start, since asyncpg will intermittently raise "
+            "DuplicatePreparedStatementError / InvalidSQLStatementNameError "
+            "under concurrency once the pooler reassigns a backend mid-session."
+        )
+        raise ConfigurationError(msg)
+
 
 # HS256 keys shorter than the 32-byte hash output are the ones PyJWT flags, so
 # 32 bytes is the floor for any backend-signed token secret.
@@ -210,6 +247,35 @@ class Settings(BaseSettings):
     # _require_prepared_cache_disabled_for_pooler_dsn below; consumed by
     # core/database.py::_build_connect_args and _build_engine_kwargs.
     database_disable_prepared_cache: bool = False
+    # Worker-process database DSN (ADR-021). None (default) falls back to
+    # database_url via worker_database_url_effective below, so an
+    # environment that has not split credentials yet keeps single-role
+    # behavior unchanged (the ADR's safety valve): merging this field alone
+    # changes zero connection identities anywhere. Same AliasChoices/prefix
+    # pattern as database_url, so both CYO_ADVENTURE_WORKER_DATABASE_URL and
+    # the unprefixed WORKER_DATABASE_URL (docker-compose's naming
+    # convention) bind, with the prefixed form winning if both are set.
+    worker_database_url: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "CYO_ADVENTURE_WORKER_DATABASE_URL", "WORKER_DATABASE_URL"
+        ),
+    )
+    # Explicit pool sizing for the direct-connection QueuePool branch,
+    # applied to both the API and worker engines (core/database.py). Closes
+    # the CRITICAL-tagged debt already recorded against core/database.py
+    # (ADR-009 Components Affected list, "now live and unsized"). Defaults
+    # match the SQLAlchemy QueuePool defaults that were previously implicit,
+    # so an environment that never sets these keeps its current pool ceiling.
+    # #CRITICAL: concurrency: these bounds only apply to a direct
+    # (non-pooler) connection; the Supavisor transaction-pooler branch uses
+    # NullPool, which has no pool_size/max_overflow of its own, and
+    # core/database.py::_build_engine_kwargs never passes them on that
+    # branch (doing so would raise TypeError at engine construction).
+    # #VERIFY: tests/unit/test_database.py::TestEngineKwargs pins both the
+    # direct-branch wiring and the pooler-branch TypeError-avoidance guard.
+    database_pool_size: int = Field(default=5, ge=1)
+    database_max_overflow: int = Field(default=10, ge=0)
     # Development default for local Redis; safe to leave unset in non-production
     # environments where no queue is configured. Production must override via
     # CYO_ADVENTURE_REDIS_URL. Accepts BOTH names, mirroring database_url above:
@@ -737,6 +803,24 @@ class Settings(BaseSettings):
         validation_alias="CYO_ADVENTURE_SENTRY_TRACES_SAMPLE_RATE",
     )
 
+    @property
+    def worker_database_url_effective(self) -> str:
+        """The DSN the worker engine (core/database.py::get_worker_engine) actually uses.
+
+        Both an unset ``worker_database_url`` (``None``) and an explicitly
+        empty string fall back to ``database_url``. The empty-string case
+        matters because compose interpolation of an unset variable
+        (``${WORKER_DATABASE_URL:-}``) injects ``""`` rather than leaving the
+        variable unset entirely; treating ``""`` as "no DSN configured" (not
+        as a configured-but-empty DSN) is what keeps that interpolation safe
+        (ADR-021).
+
+        Returns:
+            str: ``worker_database_url`` when it is a non-empty string,
+                otherwise ``database_url``.
+        """
+        return self.worker_database_url or self.database_url
+
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.
@@ -758,34 +842,37 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _require_prepared_cache_disabled_for_pooler_dsn(self) -> Settings:
-        """Fail fast when database_url is Supavisor's pooler port but the flag is off.
+        """Fail fast when a database DSN is Supavisor's pooler port but the flag is off.
 
-        Only catches the documented Supabase Supavisor case (port 6543); a
-        PgBouncer transaction-mode DSN has no distinguishing port and cannot
-        be detected from the URL alone, so this is a defense against the one
-        foreseeable, greppable mistake, not a complete guarantee.
+        Checks BOTH ``database_url`` (the API engine) and
+        ``worker_database_url_effective`` (the worker engine, ADR-021): a
+        worker DSN on Supavisor's transaction-pooler port has the identical
+        prepared-statement collision failure mode as the API DSN, and
+        ``core/database.py::_create_engine`` builds both engines from the
+        same ``database_disable_prepared_cache`` flag, so a mismatch on
+        either DSN is equally fatal. Only catches the documented Supabase
+        Supavisor case (port 6543); a PgBouncer transaction-mode DSN has no
+        distinguishing port and cannot be detected from the URL alone, so
+        this is a defense against the one foreseeable, greppable mistake,
+        not a complete guarantee.
 
         Raises:
-            ConfigurationError: when database_url's port is the Supavisor
+            ConfigurationError: when either DSN's port is the Supavisor
                 transaction-pooler port and database_disable_prepared_cache
                 is False, since asyncpg then collides on cached/fixed-name
                 prepared statements once the pooler reassigns a backend
                 mid-session (see the #CRITICAL note on database_disable_prepared_cache).
         """
-        port = urlsplit(self.database_url).port
-        if (
-            port == _SUPAVISOR_TRANSACTION_POOLER_PORT
-            and not self.database_disable_prepared_cache
-        ):
-            msg = (
-                "CYO_ADVENTURE_DATABASE_URL uses port 6543 (Supabase Supavisor's "
-                "transaction-mode pooler) but "
-                "CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE is not set; refusing "
-                "to start, since asyncpg will intermittently raise "
-                "DuplicatePreparedStatementError / InvalidSQLStatementNameError "
-                "under concurrency once the pooler reassigns a backend mid-session."
-            )
-            raise ConfigurationError(msg)
+        _check_pooler_port_requires_disabled_cache(
+            label="CYO_ADVENTURE_DATABASE_URL",
+            url=self.database_url,
+            disable_prepared_cache=self.database_disable_prepared_cache,
+        )
+        _check_pooler_port_requires_disabled_cache(
+            label="CYO_ADVENTURE_WORKER_DATABASE_URL",
+            url=self.worker_database_url_effective,
+            disable_prepared_cache=self.database_disable_prepared_cache,
+        )
         return self
 
     @model_validator(mode="after")

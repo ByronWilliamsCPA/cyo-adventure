@@ -1117,3 +1117,194 @@ class TestOidcAllowedAlgs:
 
         settings = Settings(oidc_allowed_algs=[" ES256 ", "RS256\t"])
         assert settings.oidc_allowed_algs == ["ES256", "RS256"]
+
+
+class TestWorkerDatabaseUrlEffectiveProperty:
+    """Tests for worker_database_url_effective (ADR-021)."""
+
+    @pytest.mark.unit
+    def test_none_falls_back_to_database_url(self) -> None:
+        """An unset worker_database_url falls back to database_url."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(database_url=_PROD_DB_URL, worker_database_url=None)
+
+        assert settings.worker_database_url_effective == _PROD_DB_URL
+
+    @pytest.mark.unit
+    def test_empty_string_falls_back_to_database_url(self) -> None:
+        """An explicitly empty worker_database_url also falls back.
+
+        Regression guard: compose interpolation of an unset variable
+        (${WORKER_DATABASE_URL:-}) injects "" rather than leaving the
+        variable unset, so "" must be treated the same as None, not as a
+        configured-but-empty DSN.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(database_url=_PROD_DB_URL, worker_database_url="")
+
+        assert settings.worker_database_url_effective == _PROD_DB_URL
+
+    @pytest.mark.unit
+    def test_explicit_value_is_used_as_is(self) -> None:
+        """A configured worker_database_url is returned unchanged, not merged."""
+        from cyo_adventure.core.config import Settings
+
+        worker_url = (
+            "postgresql+asyncpg://cyo_worker:testpass@db.example.com/cyo_adventure"
+        )
+        settings = Settings(database_url=_PROD_DB_URL, worker_database_url=worker_url)
+
+        assert settings.worker_database_url_effective == worker_url
+
+    @pytest.mark.unit
+    def test_worker_database_url_reads_unprefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """WORKER_DATABASE_URL (unprefixed) binds, matching DATABASE_URL's convention."""
+        from cyo_adventure.core.config import Settings
+
+        worker_url = (
+            "postgresql+asyncpg://cyo_worker:testpass@db.example.com/cyo_adventure"
+        )
+        monkeypatch.setenv("WORKER_DATABASE_URL", worker_url)
+
+        assert Settings().worker_database_url_effective == worker_url
+
+    @pytest.mark.unit
+    def test_worker_database_url_reads_prefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """CYO_ADVENTURE_WORKER_DATABASE_URL also binds."""
+        from cyo_adventure.core.config import Settings
+
+        worker_url = (
+            "postgresql+asyncpg://cyo_worker:testpass@db.example.com/cyo_adventure"
+        )
+        monkeypatch.setenv("CYO_ADVENTURE_WORKER_DATABASE_URL", worker_url)
+
+        assert Settings().worker_database_url_effective == worker_url
+
+    @pytest.mark.unit
+    def test_worker_database_url_prefixed_wins_when_both_set(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The CYO_ADVENTURE_-prefixed form wins over the unprefixed alias."""
+        from cyo_adventure.core.config import Settings
+
+        prefixed_url = "postgresql+asyncpg://cyo_worker:testpass@prefixed.example.com/x"
+        unprefixed_url = (
+            "postgresql+asyncpg://cyo_worker:testpass@unprefixed.example.com/x"
+        )
+        monkeypatch.setenv("CYO_ADVENTURE_WORKER_DATABASE_URL", prefixed_url)
+        monkeypatch.setenv("WORKER_DATABASE_URL", unprefixed_url)
+
+        assert Settings().worker_database_url_effective == prefixed_url
+
+
+class TestValidatorPreparedCacheAppliesToWorkerUrl:
+    """Tests that the pooler-port validator (ADR-021) also checks the worker DSN."""
+
+    @pytest.mark.unit
+    def test_worker_pooler_dsn_with_flag_false_raises(self) -> None:
+        """A worker DSN on the Supavisor pooler port must fail fast too."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(
+                database_url=_PROD_DB_URL,
+                worker_database_url=_POOLER_DB_URL,
+                database_disable_prepared_cache=False,
+            )
+
+    @pytest.mark.unit
+    def test_worker_pooler_dsn_with_flag_true_is_valid(self) -> None:
+        """A worker DSN on the pooler port with the flag on must not raise."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(
+            database_url=_PROD_DB_URL,
+            worker_database_url=_POOLER_DB_URL,
+            database_disable_prepared_cache=True,
+        )
+        assert settings.worker_database_url_effective == _POOLER_DB_URL
+
+    @pytest.mark.unit
+    def test_worker_url_falling_back_to_pooler_primary_still_raises(self) -> None:
+        """An unset worker_database_url that falls back to a pooler primary DSN
+        still fails fast (the fallback is evaluated, not skipped)."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(
+                database_url=_POOLER_DB_URL,
+                worker_database_url=None,
+                database_disable_prepared_cache=False,
+            )
+
+    @pytest.mark.unit
+    def test_error_message_for_worker_dsn_mentions_worker_env_var_name(self) -> None:
+        """The worker-DSN failure message names the worker env var, not just the API one."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError) as exc_info:
+            Settings(
+                database_url=_PROD_DB_URL,
+                worker_database_url=_POOLER_DB_URL,
+                database_disable_prepared_cache=False,
+            )
+
+        message = str(exc_info.value)
+        assert "6543" in message
+        assert "CYO_ADVENTURE_WORKER_DATABASE_URL" in message
+
+
+class TestDatabasePoolBounds:
+    """Tests for database_pool_size / database_max_overflow (ADR-021)."""
+
+    @pytest.mark.unit
+    def test_pool_size_defaults_to_five(self) -> None:
+        """database_pool_size defaults to 5, matching SQLAlchemy's prior implicit default."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().database_pool_size == 5
+
+    @pytest.mark.unit
+    def test_max_overflow_defaults_to_ten(self) -> None:
+        """database_max_overflow defaults to 10, matching SQLAlchemy's prior implicit default."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().database_max_overflow == 10
+
+    @pytest.mark.unit
+    def test_pool_size_zero_is_rejected(self) -> None:
+        """A pool size of 0 would starve every connection request; reject it."""
+        from pydantic import ValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        with pytest.raises(ValidationError):
+            Settings(database_pool_size=0)
+
+    @pytest.mark.unit
+    def test_max_overflow_zero_is_accepted(self) -> None:
+        """A max_overflow of 0 (no bursting past pool_size) is a valid, if strict, choice."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(database_max_overflow=0)
+
+        assert settings.database_max_overflow == 0
+
+    @pytest.mark.unit
+    def test_max_overflow_negative_is_rejected(self) -> None:
+        """A negative max_overflow is nonsensical; reject it."""
+        from pydantic import ValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        with pytest.raises(ValidationError):
+            Settings(database_max_overflow=-1)

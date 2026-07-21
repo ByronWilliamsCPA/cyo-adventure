@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ADR-021 service accounts and row-level security: NOLOGIN `cyo_api` and
+  `cyo_worker` Postgres roles with `service_rw` policies across the RLS-enabled
+  tables, split API and worker async database engines with explicit pool sizing,
+  and RQ worker entry points bound to the worker database session. Inert at
+  runtime until the per-environment credential cutover.
+
 ## [0.23.0] - 2026-07-20
 
 ### Added

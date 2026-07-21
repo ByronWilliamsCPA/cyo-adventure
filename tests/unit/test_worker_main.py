@@ -29,12 +29,22 @@ class _FakeSession:
 def _install_fake_engine(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """Replace worker_main.get_engine with one returning a dispose-mocked engine.
 
+    ADR-021: also installs a separate fake worker engine on
+    ``worker_main.get_worker_engine`` (both must be disposed), but only the
+    API-engine fake is returned, preserving this helper's existing call
+    signature for the tests below that only assert on the API engine.
+
     Returns:
-        The fake engine whose ``dispose`` is an ``AsyncMock``.
+        The fake API engine whose ``dispose`` is an ``AsyncMock``.
     """
     fake_engine = MagicMock(spec=AsyncEngine)
     fake_engine.dispose = AsyncMock()
     monkeypatch.setattr(worker_main, "get_engine", lambda: fake_engine)
+
+    fake_worker_engine = MagicMock(spec=AsyncEngine)
+    fake_worker_engine.dispose = AsyncMock()
+    monkeypatch.setattr(worker_main, "get_worker_engine", lambda: fake_worker_engine)
+
     return fake_engine
 
 
@@ -60,7 +70,7 @@ async def test_reclaim_stranded_jobs_uses_a_fresh_session(
         assert isinstance(session, _FakeSession)
         return 3
 
-    monkeypatch.setattr(worker_main, "get_session", _fake_get_session)
+    monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
     monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
     fake_engine = _install_fake_engine(monkeypatch)
 
@@ -92,7 +102,7 @@ def test_sweep_failure_disposes_engine_and_never_starts_the_worker(
         msg = "sweep exploded"
         raise RuntimeError(msg)
 
-    monkeypatch.setattr(worker_main, "get_session", _fake_get_session)
+    monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
     monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
     fake_engine = _install_fake_engine(monkeypatch)
     fake_get_queue = MagicMock()
@@ -144,7 +154,7 @@ def test_main_sweeps_before_starting_the_worker(
         assert connection == "fake-connection"
         return fake_worker_instance
 
-    monkeypatch.setattr(worker_main, "get_session", _fake_get_session)
+    monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
     monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
     _install_fake_engine(monkeypatch)
     monkeypatch.setattr(worker_main, "get_queue", _fake_get_queue)
@@ -160,16 +170,18 @@ def test_main_sweeps_before_starting_the_worker(
 def test_main_disposes_engine_after_sweep_and_before_worker_work(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """main() awaits engine.dispose() after the sweep, before Worker.work().
+    """main() awaits both engines' dispose() after the sweep, before Worker.work().
 
-    #CRITICAL: concurrency: this locks in the fix for issue #150. The sweep's
-    asyncio.run() loop dies before the worker loop starts; any connection left
-    in the engine pool at that point stays bound to the dead loop and crashes
-    the first RQ job cross-loop. dispose() must run inside the sweep's own
-    loop, before Worker.work() starts (and before any RQ work horse forks).
+    #CRITICAL: concurrency: this locks in the fix for issue #150, widened by
+    ADR-021 to both the worker and API engines. The sweep's asyncio.run()
+    loop dies before the worker loop starts; any connection left in either
+    engine's pool at that point stays bound to the dead loop and crashes the
+    first RQ job cross-loop. Both dispose() calls must run inside the
+    sweep's own loop, before Worker.work() starts (and before any RQ work
+    horse forks).
 
     Unlike the ordering test above, this one runs the REAL
-    _reclaim_stranded_jobs so the dispose call inside it is exercised.
+    _reclaim_stranded_jobs so the dispose calls inside it are exercised.
     """
     calls: list[str] = []
 
@@ -182,11 +194,16 @@ def test_main_disposes_engine_after_sweep_and_before_worker_work(
         calls.append("sweep")
         return 1
 
-    async def _fake_dispose() -> None:
-        calls.append("dispose")
+    async def _fake_dispose_worker() -> None:
+        calls.append("dispose_worker")
 
+    async def _fake_dispose_api() -> None:
+        calls.append("dispose_api")
+
+    fake_worker_engine = MagicMock(spec=AsyncEngine)
+    fake_worker_engine.dispose = AsyncMock(side_effect=_fake_dispose_worker)
     fake_engine = MagicMock(spec=AsyncEngine)
-    fake_engine.dispose = AsyncMock(side_effect=_fake_dispose)
+    fake_engine.dispose = AsyncMock(side_effect=_fake_dispose_api)
 
     fake_queue = MagicMock(spec=Queue)
     fake_queue.connection = "fake-connection"
@@ -203,13 +220,15 @@ def test_main_disposes_engine_after_sweep_and_before_worker_work(
         _ = queues, connection
         return fake_worker_instance
 
-    monkeypatch.setattr(worker_main, "get_session", _fake_get_session)
+    monkeypatch.setattr(worker_main, "get_worker_session", _fake_get_session)
     monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+    monkeypatch.setattr(worker_main, "get_worker_engine", lambda: fake_worker_engine)
     monkeypatch.setattr(worker_main, "get_engine", lambda: fake_engine)
     monkeypatch.setattr(worker_main, "get_queue", _fake_get_queue)
     monkeypatch.setattr(worker_main, "Worker", _fake_worker_cls)
 
     worker_main.main()
 
-    assert calls == ["sweep", "dispose", "worker_work"]
+    assert calls == ["sweep", "dispose_worker", "dispose_api", "worker_work"]
+    fake_worker_engine.dispose.assert_awaited_once()
     fake_engine.dispose.assert_awaited_once()
