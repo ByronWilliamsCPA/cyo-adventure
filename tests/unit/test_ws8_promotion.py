@@ -34,7 +34,7 @@ from cyo_adventure.flywheel.strategy import (  # noqa: E402
     load_catalog,
     plan_attempts,
 )
-from cyo_adventure.mutation.bundle import (  # noqa: E402  # noqa: E402
+from cyo_adventure.mutation.bundle import (  # noqa: E402
     Lineage,
     OpChainEntry,
     build_lineage,

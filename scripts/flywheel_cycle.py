@@ -60,7 +60,12 @@ from cyo_adventure.flywheel.cadence import (  # noqa: E402
     reading_cell,
     select_growable_cells,
 )
-from cyo_adventure.flywheel.strategy import Catalog, Cell, load_catalog  # noqa: E402
+from cyo_adventure.flywheel.strategy import (  # noqa: E402
+    Catalog,
+    Cell,
+    cell_of_entry,
+    load_catalog,
+)
 from cyo_adventure.flywheel.trigger import (  # noqa: E402
     DEFAULT_MIN_CATALOG_EVENTS,
     DEFAULT_MIN_DISTINCT_REQUESTS,
@@ -196,13 +201,9 @@ def _branch_cell(branch: str, catalog: Catalog) -> Cell | None:
     mutant_slug = branch[len(prefix) :]
     parent_slug = mutant_slug.rsplit("-fw-", 1)[0]
     entry = catalog.by_slug(parent_slug)
-    if entry is None or entry.metadata.length is None:
+    if entry is None:
         return None
-    return Cell(
-        band=entry.metadata.age_band.value,
-        length=entry.metadata.length.value,
-        style=entry.metadata.narrative_style.value,
-    )
+    return cell_of_entry(entry)
 
 
 def _git_merge_history(catalog: Catalog, as_of_month: str) -> MergeHistory:
@@ -234,13 +235,11 @@ def _git_merge_history(catalog: Catalog, as_of_month: str) -> MergeHistory:
         if addition.month == as_of_month:
             month_merge_count += 1
         entry = catalog.by_slug(addition.slug)
-        if entry is None or entry.metadata.length is None:
+        if entry is None:
             continue
-        cell = Cell(
-            band=entry.metadata.age_band.value,
-            length=entry.metadata.length.value,
-            style=entry.metadata.narrative_style.value,
-        )
+        cell = cell_of_entry(entry)
+        if cell is None:
+            continue
         # Newest-first: keep the first (most recent) merge date seen per cell.
         if cell not in last_merge_by_cell:
             last_merge_by_cell[cell] = date.fromisoformat(f"{addition.month}-01")

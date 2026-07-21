@@ -43,7 +43,11 @@ if TYPE_CHECKING:
 
 
 class ResolvedReguide(BaseModel):
-    """One author-supplied resolution for an emitted re-guidance item.
+    """One resolution for an emitted re-guidance item.
+
+    The resolution may be hand-authored or agent-drafted-then-floor-screened
+    (WS-8, OQ-1); ``author`` records which, and an agent-drafted resolution is
+    untrusted-derived content that still faces human PR approval.
 
     Attributes:
         target: The kind of surface resolved (node beats, choice label, ending
@@ -51,8 +55,10 @@ class ResolvedReguide(BaseModel):
         target_id: The node / choice / ending id the resolution addresses; this
             is the key that reconciles against the emitted items and feeds
             ``resolved_reguide_ids``.
-        resolved_text: The new author-written guidance (beats / label / title).
-        author: Who authored the resolution (audit and reviewer context).
+        resolved_text: The new guidance (beats / label / title), hand-authored or
+            agent-drafted.
+        author: Who authored the resolution: a human name, or ``agent:<model-id>``
+            for a floor-screened agent draft (audit and reviewer context).
         note: An optional rationale recorded alongside the resolution.
     """
 
@@ -66,7 +72,10 @@ class ResolvedReguide(BaseModel):
 
 
 class ReguideResolutions(BaseModel):
-    """An author's resolution file for one mutant's re-guidance items.
+    """A resolution file for one mutant's re-guidance items.
+
+    Entries may be hand-authored or agent-drafted-then-floor-screened (WS-8);
+    see :class:`ResolvedReguide`.
 
     The documented resolution-file format: a JSON object with an optional
     ``mutant_slug`` and a ``resolutions`` list of :class:`ResolvedReguide`. It is

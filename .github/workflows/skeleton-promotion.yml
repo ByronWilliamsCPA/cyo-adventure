@@ -15,7 +15,16 @@ name: Skeleton Promotion
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled]
+    # auto_merge_enabled/auto_merge_disabled are included so the no-auto-merge
+    # guard re-runs when auto-merge is toggled after the PR is opened; without
+    # them a promotion PR could have auto-merge enabled post-check and slip past.
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - auto_merge_enabled
+      - auto_merge_disabled
     branches: [main, master]
     paths:
       - "skeletons/**"
@@ -46,6 +55,9 @@ jobs:
         with:
           # Need the base commit present so the changed-file diff resolves.
           fetch-depth: 0
+          # This job only reads the tree; no pushes or credentialed git ops, so
+          # the persisted token is unnecessary attack surface (zizmor artipacked).
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
@@ -69,9 +81,11 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          # Only added/modified (not deleted) skeleton files are proved.
+          set -euo pipefail
+          # Only added/modified (not deleted) skeleton files are proved. Fail
+          # closed: if the diff cannot resolve, the prover must not be skipped.
           git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'skeletons/**' \
-            > changed-skeletons.txt || true
+            > changed-skeletons.txt
           echo "count=$(wc -l < changed-skeletons.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
           echo "Changed skeleton files:"; cat changed-skeletons.txt
 
@@ -89,6 +103,8 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'skeleton-promotion')
     permissions:
       contents: read
+      # pull-requests: read lets `gh api repos/.../pulls/N` read the auto_merge
+      # field on this PR; no write scope is granted, the guard only inspects.
       pull-requests: read
     steps:
       - name: Harden the runner

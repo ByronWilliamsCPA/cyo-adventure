@@ -255,6 +255,30 @@ class Catalog:
         return 1 + self.generation_of(parent_slug, _seen=_seen | {slug})
 
 
+def cell_of_entry(entry: CatalogEntry) -> Cell | None:
+    """Return an entry's exact ``(band, length, style)`` cell, or None.
+
+    Mirrors the floor calibrator's ``_cell_of``: a tree missing its length
+    coordinate (a length-less tree) forms no cell. This is the single source of
+    truth for deriving a cell from a catalog entry; the cycle runner and the
+    read-only report both build on it so they agree with the calibrator.
+
+    Args:
+        entry: The catalog entry.
+
+    Returns:
+        Cell | None: The entry's cell, or None when its length is unset.
+    """
+    metadata = entry.metadata
+    if metadata.length is None:
+        return None
+    return Cell(
+        band=metadata.age_band.value,
+        length=metadata.length.value,
+        style=metadata.narrative_style.value,
+    )
+
+
 def _raw_nodes(document: Mapping[str, object]) -> list[dict[str, object]]:
     """Return a document's node dicts, skipping any malformed entry."""
     raw = document.get("nodes")
@@ -393,6 +417,10 @@ def _decode_entry(path: Path, band: str) -> CatalogEntry | None:
         CatalogEntry | None: The decoded entry, or None when the file or its
             metadata is malformed.
     """
+    # #EDGE: data integrity: a skeleton file may be unreadable (races with a
+    # concurrent write) or hold malformed JSON; either yields a None entry so the
+    # catalog scan degrades gracefully rather than aborting the whole load.
+    # #VERIFY: OSError and JSONDecodeError are both caught below and mapped to None.
     try:
         document = cast(
             "dict[str, object]", json.loads(path.read_text(encoding="utf-8"))

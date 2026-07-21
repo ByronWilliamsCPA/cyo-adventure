@@ -67,7 +67,12 @@ from cyo_adventure.flywheel.ledger import (
     ledger_path,
     load_records,
 )
-from cyo_adventure.flywheel.strategy import Catalog, CatalogEntry, load_catalog
+from cyo_adventure.flywheel.strategy import (
+    Catalog,
+    CatalogEntry,
+    cell_of_entry,
+    load_catalog,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -305,14 +310,10 @@ def _cell_key(entry: CatalogEntry) -> tuple[str, str, str] | None:
     Returns:
         tuple[str, str, str] | None: The cell tuple, or None when incomplete.
     """
-    metadata = entry.metadata
-    if metadata.length is None:
+    cell = cell_of_entry(entry)
+    if cell is None:
         return None
-    return (
-        metadata.age_band.value,
-        metadata.length.value,
-        metadata.narrative_style.value,
-    )
+    return (cell.band, cell.length, cell.style)
 
 
 def _cells_by_key(catalog: Catalog) -> dict[tuple[str, str, str], list[CatalogEntry]]:
@@ -328,13 +329,28 @@ def _cells_by_key(catalog: Catalog) -> dict[tuple[str, str, str], list[CatalogEn
     return by_cell
 
 
-def _pairwise_distances(entries: Sequence[CatalogEntry]) -> list[float]:
-    """Return every in-cell pairwise ``structural_distance`` for a cohort."""
-    return [
-        structural_distance(entries[i].document, entries[j].document)
-        for i in range(len(entries))
-        for j in range(i + 1, len(entries))
-    ]
+def _pairwise_by_cell(
+    by_cell: dict[tuple[str, str, str], list[CatalogEntry]],
+) -> dict[tuple[str, str, str], list[tuple[float, str, str]]]:
+    """Compute every in-cell pairwise ``structural_distance`` once, keyed by cell.
+
+    ``structural_distance`` is the expensive call (graph-edit distance over the
+    full document); both the distinct-trees table (min/median) and the hygiene
+    table (nearest pair) derive from these same pairs, so they are computed once
+    here and shared rather than recomputed per table.
+    """
+    return {
+        cell: [
+            (
+                structural_distance(entries[i].document, entries[j].document),
+                entries[i].slug,
+                entries[j].slug,
+            )
+            for i in range(len(entries))
+            for j in range(i + 1, len(entries))
+        ]
+        for cell, entries in by_cell.items()
+    }
 
 
 def _fmt_cell(cell: tuple[str, str, str]) -> str:
@@ -344,6 +360,7 @@ def _fmt_cell(cell: tuple[str, str, str]) -> str:
 
 def _render_distinct_trees_table(
     by_cell: dict[tuple[str, str, str], list[CatalogEntry]],
+    pairwise: dict[tuple[str, str, str], list[tuple[float, str, str]]],
 ) -> list[str]:
     """Render the distinct-trees-per-cell table (design 9 trend, table 2)."""
     lines = [
@@ -373,7 +390,7 @@ def _render_distinct_trees_table(
     )
     for cell in sorted(by_cell):
         entries = by_cell[cell]
-        distances = _pairwise_distances(entries)
+        distances = [distance for distance, _, _ in pairwise[cell]]
         if distances:
             min_str = f"{min(distances):.6f}"
             median_str = f"{statistics.median(distances):.6f}"
@@ -474,9 +491,11 @@ def _render_funnel_table(records: Sequence[AttemptRecord]) -> list[str]:
             f"| Discarded | {counts[OUTCOME_DISCARDED]} |",
         ]
     )
-    for stage in sorted(_discards_by_stage(records)):
-        stage_count = _discards_by_stage(records)[stage]
-        lines.append(f"| Discarded at stage `{stage}` | {stage_count} |")
+    discards = _discards_by_stage(records)
+    lines.extend(
+        f"| Discarded at stage `{stage}` | {discards[stage]} |"
+        for stage in sorted(discards)
+    )
     lines.append("")
     return lines
 
@@ -536,7 +555,7 @@ def _render_demand_response_table(*, demand_available: bool) -> list[str]:
 
 
 def _render_hygiene_table(
-    by_cell: dict[tuple[str, str, str], list[CatalogEntry]],
+    pairwise: dict[tuple[str, str, str], list[tuple[float, str, str]]],
 ) -> list[str]:
     """Render the catalog-hygiene table (design 6.5, table 7)."""
     lines = [
@@ -552,16 +571,7 @@ def _render_hygiene_table(
         "",
     ]
     rows: list[tuple[float, tuple[str, str, str], str, str]] = []
-    for cell, entries in by_cell.items():
-        pairs = [
-            (
-                structural_distance(entries[i].document, entries[j].document),
-                entries[i].slug,
-                entries[j].slug,
-            )
-            for i in range(len(entries))
-            for j in range(i + 1, len(entries))
-        ]
+    for cell, pairs in pairwise.items():
         if not pairs:
             continue
         distance, slug_a, slug_b = min(
@@ -625,6 +635,7 @@ def build_report(
         _log_added_skeleton_files(git_runner)
     )
     by_cell = _cells_by_key(catalog)
+    pairwise = _pairwise_by_cell(by_cell)
     lines = [
         "# CYO Adventure catalog-flywheel report",
         "",
@@ -638,12 +649,12 @@ def build_report(
         "",
     ]
     lines.extend(_render_net_new_table(additions, lineage_slugs))
-    lines.extend(_render_distinct_trees_table(by_cell))
+    lines.extend(_render_distinct_trees_table(by_cell, pairwise))
     lines.extend(_render_effective_catalog_size(catalog))
     lines.extend(_render_funnel_table(records))
     lines.extend(_render_reguide_cost_table(records))
     lines.extend(_render_demand_response_table(demand_available=demand_available))
-    lines.extend(_render_hygiene_table(by_cell))
+    lines.extend(_render_hygiene_table(pairwise))
     return "\n".join(lines).rstrip("\n") + "\n"
 
 

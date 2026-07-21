@@ -15,7 +15,7 @@ tags:
   - generation
   - validation
   - diversity
-status: proposed
+status: delivered
 owner: core-maintainer
 authors:
   - name: "Byron Williams"
@@ -53,10 +53,22 @@ source: "docs/planning/story-flexibility-plan.md section 5 (WS-8, lines 355-361;
 
 # WS-8 Design: The Catalog Flywheel
 
-> **Status: proposed (Phase A).** This document is the input to a supervisor
-> sign-off review, mirroring the WS-1, WS-2, WS-5, and WS-7 Phase A process.
-> Nothing here is implemented; section 15 lists the decisions the reviewer must
-> ratify before an implementation pass.
+> **As-built note (2026-07-21).** This began as the Phase A design below and has
+> since been DELIVERED as D1-D8 (see the CHANGELOG `[Unreleased]` entries). The
+> body is preserved as the design-time record; where the delivered code deviates
+> from it, the delivered code governs. The one substantive deviation: the
+> anti-clone floor was recalibrated for mutation-derived candidates. The
+> `TAU_CELL = 0.01` clamp and the `TAU_STRUCT` parent-distance gate that several
+> sections below describe were superseded by ADR-020 Amendment 1, which retires
+> the parent-distance gate and sets `TAU_CELL = 0.05` against the parent and
+> in-cell siblings (see `docs/planning/ws8-floor-recalibration-proposal.md` and
+> `mutation/floors.py`). Read "proposed" / "nothing here is implemented" / the
+> `TAU_CELL = 0.01` references below as historical.
+
+> **Original status: proposed (Phase A).** This document was the input to a
+> supervisor sign-off review, mirroring the WS-1, WS-2, WS-5, and WS-7 Phase A
+> process. Section 15 listed the decisions the reviewer ratified before the
+> implementation pass.
 >
 > **The paragraph that governs everything else:** WS-8 is a *wiring*
 > workstream, not an engine workstream. Every safety-bearing mechanism it uses

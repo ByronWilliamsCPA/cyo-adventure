@@ -21,6 +21,10 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from cyo_adventure.flywheel.strategy import (  # noqa: E402
+    cell_of_entry,
+    load_catalog,
+)
 from cyo_adventure.flywheel.trigger import RawSaturationEvent  # noqa: E402
 from cyo_adventure.mutation.bundle import (  # noqa: E402
     Lineage,
@@ -290,6 +294,45 @@ def test_source_never_merges_approves_or_enables_auto_merge() -> None:
         ".approve(",
     ):
         assert forbidden not in source, f"forbidden token in runner source: {forbidden}"
+
+
+# --- _branch_cell edge cases ---------------------------------------------------
+
+
+def test_branch_cell_non_promotion_branch_returns_none() -> None:
+    """A branch outside the ``flywheel/promote-`` namespace maps to no cell."""
+    catalog = load_catalog()
+    assert cyc._branch_cell("feat/some-feature", catalog) is None
+
+
+def test_branch_cell_unknown_parent_returns_none() -> None:
+    """A promotion branch whose parent slug is not in the catalog maps to none.
+
+    ``rsplit('-fw-', ...)`` on a slug with no ``-fw-`` marker yields the whole
+    slug as the parent, which here does not resolve to any catalog entry.
+    """
+    catalog = load_catalog()
+    assert cyc._branch_cell("flywheel/promote-no-such-parent", catalog) is None
+
+
+def test_branch_cell_resolves_parent_cell() -> None:
+    """A well-formed promotion branch resolves to its parent's cell."""
+    catalog = load_catalog()
+    parent = next(e for e in catalog.entries if cell_of_entry(e) is not None)
+    branch = f"flywheel/promote-{parent.slug}-fw-deadbeef"
+    assert cyc._branch_cell(branch, catalog) == cell_of_entry(parent)
+
+
+def test_branch_cell_length_less_parent_returns_none() -> None:
+    """A parent with no length coordinate forms no cell (calibrator rule)."""
+    catalog = load_catalog()
+    length_less = next(
+        (e for e in catalog.entries if cell_of_entry(e) is None), None
+    )
+    if length_less is None:
+        return  # no length-less skeleton in the catalog; nothing to assert
+    branch = f"flywheel/promote-{length_less.slug}-fw-deadbeef"
+    assert cyc._branch_cell(branch, catalog) is None
 
 
 # --- determinism ---------------------------------------------------------------

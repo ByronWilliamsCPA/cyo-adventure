@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess  # nosec B404 -- git/gh invoked with list-form argv only; audited below
 import sys
@@ -189,7 +190,9 @@ class _GhPrCreator:
         # human review of this PR is the promotion instrument (ADR-020 decision 4).
         # #VERIFY: tests inject a recording creator and assert draft is True and
         # the skeleton-promotion label is present; no merge/approve call exists.
-        body_file = Path(tempfile.mkstemp(suffix=".md")[1])
+        fd, tmp_name = tempfile.mkstemp(suffix=".md")
+        os.close(fd)
+        body_file = Path(tmp_name)
         try:
             _ = body_file.write_text(request.body, encoding="utf-8")
             argv = [
