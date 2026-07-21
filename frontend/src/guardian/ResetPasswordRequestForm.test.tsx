@@ -66,10 +66,10 @@ describe('ResetPasswordRequestForm', () => {
   })
 
   it('shows a busy state while the request is in flight and re-enables after completion', async () => {
-    let resolveRequest: (value?: unknown) => void = () => {}
+    let resolveRequest: () => void = () => {}
     mockRequestPasswordReset.mockReturnValue(
-      new Promise((resolve) => {
-        resolveRequest = resolve
+      new Promise<void>((resolve) => {
+        resolveRequest = () => resolve()
       })
     )
     render(<ResetPasswordRequestForm />)
