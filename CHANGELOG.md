@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.27.2] - 2026-07-22
+
+### Bug Fixes
+
+- **offline**: Strip server-view fields before reading-state PUT
+  ([#365](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/365),
+  [`7d3d1b2`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/7d3d1b2f347f7884de7ee97f290b18a16b41ed2f))
+
+
 ## [0.27.1] - 2026-07-22
 
 ### Fixed
@@ -2525,6 +2534,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.27.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.1...v0.27.2
 [0.27.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.0...v0.27.1
 [0.27.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.3...v0.26.0
