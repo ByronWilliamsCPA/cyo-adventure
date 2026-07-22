@@ -435,7 +435,16 @@ def _summary_age_band(blob: object) -> str | None:
 
 
 def _summary_themes(blob: object) -> list[str]:
-    """Return the story's themes from the blob metadata, or [] if absent."""
+    """Return the story's themes from the blob metadata, or [] if absent.
+
+    Args:
+        blob: The stored Storybook content blob (``StorybookVersion.blob``),
+            typed ``object`` because a story with no version row yet has none.
+
+    Returns:
+        list[str]: ``metadata.themes``, filtered to string entries, or ``[]``
+            when the blob, metadata, or field is absent.
+    """
     if isinstance(blob, dict):
         metadata = blob.get("metadata")
         if isinstance(metadata, dict):
@@ -448,12 +457,19 @@ def _summary_themes(blob: object) -> list[str]:
 def _summary_content_flags(blob: object) -> ContentFlags | None:
     """Return the story's content-sensitivity flags, or None if absent/invalid.
 
-    #ASSUME: data integrity: a blob written by an older schema version may
-    carry a ``content_flags`` shape ``ContentFlags`` no longer accepts;
-    degrade to ``None`` (omit the badge) rather than fail the whole library
-    listing for a detail-only field.
-    #VERIFY: tests/unit/test_approval_unit.py.
+    Args:
+        blob: The stored Storybook content blob (``StorybookVersion.blob``),
+            typed ``object`` because a story with no version row yet has none.
+
+    Returns:
+        ContentFlags | None: The parsed ``metadata.content_flags``, or
+            ``None`` when absent or invalid.
     """
+    # #ASSUME: data integrity: a blob written by an older schema version may
+    # carry a ``content_flags`` shape ``ContentFlags`` no longer accepts;
+    # degrade to ``None`` (omit the badge) rather than fail the whole library
+    # listing for a detail-only field.
+    # #VERIFY: tests/unit/test_approval_unit.py.
     if isinstance(blob, dict):
         metadata = blob.get("metadata")
         if isinstance(metadata, dict):

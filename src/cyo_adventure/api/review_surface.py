@@ -338,7 +338,15 @@ def _queue_age_band(blob: dict[str, object]) -> str | None:
 
 
 def _queue_themes(blob: dict[str, object]) -> list[str]:
-    """Return the story's themes from the blob metadata, or [] if absent."""
+    """Return the story's themes from the blob metadata, or [] if absent.
+
+    Args:
+        blob: The stored Storybook content blob.
+
+    Returns:
+        list[str]: ``metadata.themes``, filtered to string entries, or ``[]``
+            when the metadata or field is absent.
+    """
     metadata = blob.get("metadata")
     if isinstance(metadata, dict):
         themes = metadata.get("themes")
@@ -350,12 +358,18 @@ def _queue_themes(blob: dict[str, object]) -> list[str]:
 def _queue_content_flags(blob: dict[str, object]) -> ContentFlags | None:
     """Return the story's content-sensitivity flags, or None if absent/invalid.
 
-    #ASSUME: data integrity: a blob written by an older schema version or a
-    corrupt-at-rest row may carry a ``content_flags`` shape ``ContentFlags``
-    no longer accepts; degrade to ``None`` (omit the badge) rather than fail
-    the whole queue row for a detail-only field.
-    #VERIFY: tests/unit/test_review_surface.py.
+    Args:
+        blob: The stored Storybook content blob.
+
+    Returns:
+        ContentFlags | None: The parsed ``metadata.content_flags``, or
+            ``None`` when absent or invalid.
     """
+    # #ASSUME: data integrity: a blob written by an older schema version or a
+    # corrupt-at-rest row may carry a ``content_flags`` shape ``ContentFlags``
+    # no longer accepts; degrade to ``None`` (omit the badge) rather than fail
+    # the whole queue row for a detail-only field.
+    # #VERIFY: tests/unit/test_review_surface.py.
     metadata = blob.get("metadata")
     if isinstance(metadata, dict):
         flags = metadata.get("content_flags")

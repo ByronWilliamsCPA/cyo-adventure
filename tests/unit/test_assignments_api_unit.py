@@ -65,7 +65,7 @@ class TestBookDetailHelpers:
         assert flags.peril == "moderate"
 
     @pytest.mark.unit
-    def test_book_content_flags_degrades_on_invalid_shape(self) -> None:
+    def test_book_content_flags_invalid_shape_returns_none(self) -> None:
         """A content_flags dict that no longer matches the schema degrades to
         None rather than failing the whole browse listing for a detail-only
         field."""

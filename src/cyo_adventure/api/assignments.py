@@ -356,7 +356,15 @@ def _book_age_band(blob: dict[str, object]) -> str:
 
 
 def _book_themes(blob: dict[str, object]) -> list[str]:
-    """Return the story's themes from the blob metadata, or [] if absent."""
+    """Return the story's themes from the blob metadata, or [] if absent.
+
+    Args:
+        blob: The stored Storybook content blob.
+
+    Returns:
+        list[str]: ``metadata.themes``, filtered to string entries, or ``[]``
+            when the metadata or field is absent.
+    """
     metadata = blob.get("metadata")
     if isinstance(metadata, dict):
         themes = metadata.get("themes")
@@ -368,12 +376,18 @@ def _book_themes(blob: dict[str, object]) -> list[str]:
 def _book_content_flags(blob: dict[str, object]) -> ContentFlags | None:
     """Return the story's content-sensitivity flags, or None if absent/invalid.
 
-    #ASSUME: data integrity: a blob written by an older schema version may
-    carry a ``content_flags`` shape ``ContentFlags`` no longer accepts;
-    degrade to ``None`` (omit the badge) rather than fail the whole browse
-    listing for a detail-only field.
-    #VERIFY: tests/integration/test_guardian_books_api.py.
+    Args:
+        blob: The stored Storybook content blob.
+
+    Returns:
+        ContentFlags | None: The parsed ``metadata.content_flags``, or
+            ``None`` when absent or invalid.
     """
+    # #ASSUME: data integrity: a blob written by an older schema version may
+    # carry a ``content_flags`` shape ``ContentFlags`` no longer accepts;
+    # degrade to ``None`` (omit the badge) rather than fail the whole browse
+    # listing for a detail-only field.
+    # #VERIFY: tests/integration/test_guardian_books_api.py.
     metadata = blob.get("metadata")
     if isinstance(metadata, dict):
         flags = metadata.get("content_flags")

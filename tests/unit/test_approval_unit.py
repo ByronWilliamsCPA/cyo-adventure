@@ -753,7 +753,7 @@ async def test_admin_storybooks_lists_all_statuses_bulk_newest_first() -> None:
 
 
 @pytest.mark.unit
-def test_summary_content_flags_degrades_on_invalid_shape() -> None:
+def test_summary_content_flags_invalid_shape_returns_none() -> None:
     """A content_flags dict that no longer matches the schema degrades to None
     rather than failing the whole library listing for a detail-only field."""
     blob = {"metadata": {"content_flags": {"violence": "catastrophic"}}}

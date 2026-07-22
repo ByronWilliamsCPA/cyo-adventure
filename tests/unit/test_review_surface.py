@@ -422,7 +422,7 @@ def test_queue_item_carries_themes_and_content_flags() -> None:
 
 
 @pytest.mark.unit
-def test_queue_item_themes_and_content_flags_absent_when_metadata_missing() -> None:
+def test_queue_item_metadata_missing_returns_empty_themes_and_none_flags() -> None:
     """A blob with no metadata leaves themes empty and content_flags None."""
     item = build_review_queue_item(
         storybook_id="s1",
@@ -436,7 +436,7 @@ def test_queue_item_themes_and_content_flags_absent_when_metadata_missing() -> N
 
 
 @pytest.mark.unit
-def test_queue_item_content_flags_degrades_on_invalid_shape() -> None:
+def test_queue_item_content_flags_invalid_shape_returns_none() -> None:
     """A content_flags dict that no longer matches the schema degrades to None
     rather than failing the whole queue row for a detail-only field."""
     item = build_review_queue_item(
