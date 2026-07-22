@@ -159,6 +159,15 @@ jobs:
         working-directory: ./frontend
         env:
           E2E_BACKEND_URL: http://localhost:8000
+          # The real-backend-pr-smoke project depends on real-backend-setup,
+          # which shells out to scripts/reset_e2e_real_state.py. That script
+          # reads CYO_ADVENTURE_DATABASE_URL via Settings and, when unset,
+          # falls back to the credential-less localhost default
+          # (core/config.py _DEV_DATABASE_URL), which asyncpg resolves with the
+          # OS user "runner" and fails auth. execFileSync in real-stack.ts
+          # inherits this step's env, so the DSN must live here, not only on
+          # the backend step.
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
         run: npm run test:e2e:real:pr-smoke
 
       - name: Upload backend log

@@ -219,6 +219,12 @@ jobs:
         working-directory: ./frontend
         env:
           E2E_BACKEND_URL: http://localhost:8000
+          # real-backend-setup (the reset dependency) shells out to
+          # scripts/reset_e2e_real_state.py, which needs the DSN in this step's
+          # own env (execFileSync inherits it); without it the script falls
+          # back to the credential-less localhost default and asyncpg fails
+          # auth as OS user "runner". See the same note on e2e-real-pr-smoke.yml.
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
         run: npm run test:e2e:real
 
       # Full-pipeline tier (G1, Phase 7.1): the ONLY real-backend spec that
@@ -257,6 +263,10 @@ jobs:
         working-directory: ./frontend
         env:
           E2E_BACKEND_URL: http://localhost:8000
+          # real-backend-pipeline also depends on real-backend-setup, so its
+          # reset shell-out needs the DSN in this step's env too (see the note
+          # on the real-backend tier step above).
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
         run: npm run test:e2e:real:pipeline
 
       - name: Upload worker log
