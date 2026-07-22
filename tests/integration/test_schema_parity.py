@@ -143,6 +143,19 @@ def _snapshot(sync_conn: Any) -> dict[str, Any]:
                 tuple(fk["constrained_columns"]),
                 fk["referred_table"],
                 tuple(fk["referred_columns"]),
+                # #CRITICAL: data-integrity: FK delete/update actions must match
+                # between the migrations and the ORM. The erasure-cascade
+                # migration (20260720170000_add_erasure_cascades.sql) relies on
+                # this parity for GDPR/COPPA-correct cascades; its header claims
+                # the ondelete= kwargs are "kept in parity by
+                # test_schema_parity.py", so the snapshot must actually compare
+                # them. Unspecified actions normalize to "NO ACTION" (the
+                # Postgres default) so both DBs compare symmetrically and None
+                # never enters the sort key.
+                # #VERIFY: both DBs are reflected through the same inspector, so
+                # the action strings are directly comparable.
+                (fk.get("options") or {}).get("ondelete") or "NO ACTION",
+                (fk.get("options") or {}).get("onupdate") or "NO ACTION",
             )
             for fk in insp.get_foreign_keys(table, schema="public")
         )
