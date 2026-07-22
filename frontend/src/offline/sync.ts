@@ -82,6 +82,45 @@ function makeId(opts: SaveOptions): string {
 }
 
 /**
+ * Build the strict reading-state PUT body from a state that may have been
+ * sourced from a cached server View.
+ *
+ * The PUT request model (ReadingStateBody, `extra="forbid"`) accepts only the
+ * engine-owned fields plus `device_id`/`event_id`. After a cross-device resume
+ * the client caches the server's ReadingStateView verbatim; that View also
+ * carries `child_profile_id`, `storybook_id`, `updated_by_device_id`, and
+ * `last_synced_at`. Spreading such a state into the body echoes those fields
+ * back and the server rejects the save with HTTP 422 `extra_forbidden`, so the
+ * save silently fails. Whitelisting the allowed fields (rather than deleting the
+ * known-bad ones) keeps the request valid even if the View gains new
+ * server-managed fields later.
+ */
+// #CRITICAL: data-integrity: the reading-state PUT model is extra="forbid". A
+// state read back from the local cache after a cross-device resume is a server
+// View with fields the body forbids; echoing them 422s and loses the save.
+// #VERIFY: this field set must match ReadingStateBody in
+// src/cyo_adventure/api/schemas.py; update it if that model changes. sync.test.ts
+// "PUT body hygiene" asserts no View-only key survives.
+export function toPutPayload(state: SaveBody): SaveBody {
+  const payload: SaveBody = {
+    version: state.version,
+    current_node: state.current_node,
+    var_state: state.var_state,
+    path: state.path,
+    visit_set: state.visit_set,
+    save_slots: state.save_slots,
+    state_revision: state.state_revision,
+  }
+  if (state.device_id !== undefined) {
+    payload.device_id = state.device_id
+  }
+  if (state.event_id !== undefined) {
+    payload.event_id = state.event_id
+  }
+  return payload
+}
+
+/**
  * Save reading progress. Updates the local cache, then attempts the server save:
  * returns `saved` on success, `conflict` on a 409, or `queued` if the network is
  * unavailable (the write is enqueued for later replay).
@@ -113,11 +152,11 @@ export async function saveProgress(
   } catch (cause) {
     throw new LocalWriteError('failed to write reading state to the local cache', cause)
   }
-  const body: SaveBody = {
+  const body = toPutPayload({
     ...state,
     device_id: opts.deviceId,
     event_id: eventId,
-  }
+  })
   try {
     const res = await api.putReadingState(profileId, storybookId, body)
     if (res.status === 409) {
@@ -250,11 +289,11 @@ export async function replayQueue(api: SyncApi): Promise<ReplayOutcome> {
       knownRevision === undefined ? item.state : { ...item.state, state_revision: knownRevision }
     let res: PutResponse
     try {
-      res = await api.putReadingState(item.profile_id, item.storybook_id, {
-        ...state,
-        device_id: item.device_id,
-        event_id: item.event_id,
-      })
+      res = await api.putReadingState(
+        item.profile_id,
+        item.storybook_id,
+        toPutPayload({ ...state, device_id: item.device_id, event_id: item.event_id })
+      )
     } catch (error) {
       if (error instanceof OfflineError) {
         break // still offline; leave this and the rest queued

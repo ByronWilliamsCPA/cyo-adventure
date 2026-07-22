@@ -9,10 +9,12 @@ import {
   LocalWriteError,
   OfflineError,
   type PutResponse,
+  type SaveBody,
   type SyncApi,
   replayQueue,
   resolveConflict,
   saveProgress,
+  toPutPayload,
 } from './sync'
 
 function makeState(node: string, revision: number): ReadingState {
@@ -29,6 +31,48 @@ function makeState(node: string, revision: number): ReadingState {
 
 function rowAt(node: string, revision: number): ReadingState {
   return makeState(node, revision)
+}
+
+/**
+ * The server-managed / View-only fields the strict PUT model (ReadingStateBody,
+ * extra="forbid") rejects. They appear on ReadingStateView but not the body, so
+ * a save that echoes them back 422s.
+ */
+const FORBIDDEN_VIEW_KEYS = [
+  'child_profile_id',
+  'storybook_id',
+  'updated_by_device_id',
+  'last_synced_at',
+] as const
+
+/**
+ * A reading state as it exists AFTER a cross-device resume caches the server's
+ * ReadingStateView verbatim: the engine fields plus the four View-only fields
+ * the strict PUT model forbids. The cast models the real (structurally unsound)
+ * runtime situation where a View is handed to code typed for ReadingState.
+ */
+function viewShapedState(node: string, revision: number): ReadingState {
+  return {
+    ...makeState(node, revision),
+    child_profile_id: '11111111-1111-1111-1111-111111111111',
+    storybook_id: 's1',
+    updated_by_device_id: 'device-a',
+    last_synced_at: '2026-07-21T00:00:00Z',
+  } as unknown as ReadingState
+}
+
+/** A fake API that records the full body sent to each PUT (not just event_id). */
+function capturingApi(
+  handler: (body: SaveBody) => PutResponse | never
+): SyncApi & { bodies: SaveBody[] } {
+  const bodies: SaveBody[] = []
+  return {
+    bodies,
+    putReadingState(_p, _s, body) {
+      bodies.push(body)
+      return Promise.resolve().then(() => handler(body))
+    },
+  }
 }
 
 /** A fake API whose putReadingState behaviour is supplied per test. */
@@ -134,6 +178,81 @@ describe('saveProgress', () => {
       saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
     ).rejects.toBeInstanceOf(LocalWriteError)
     expect(await listQueue()).toHaveLength(0)
+  })
+})
+
+describe('toPutPayload', () => {
+  it('strips View-only fields and keeps the engine + device/event fields', () => {
+    const payload = toPutPayload({
+      ...viewShapedState('n_mid', 3),
+      device_id: 'device-a',
+      event_id: 'evt-9',
+    })
+    for (const key of FORBIDDEN_VIEW_KEYS) {
+      expect(payload).not.toHaveProperty(key)
+    }
+    expect(payload).toEqual({
+      version: 1,
+      current_node: 'n_mid',
+      var_state: {},
+      path: ['n_start', 'n_mid'],
+      visit_set: ['n_start', 'n_mid'],
+      save_slots: {},
+      state_revision: 3,
+      device_id: 'device-a',
+      event_id: 'evt-9',
+    })
+  })
+
+  it('omits device_id and event_id when they are absent', () => {
+    const payload = toPutPayload(makeState('a', 0))
+    expect(payload).not.toHaveProperty('device_id')
+    expect(payload).not.toHaveProperty('event_id')
+    expect(payload.current_node).toBe('a')
+  })
+})
+
+describe('PUT body hygiene (strict extra="forbid" contract)', () => {
+  it('saveProgress never echoes View-only fields the PUT model forbids', async () => {
+    // Reproduces the 422 extra_forbidden bug: the SECOND save after a
+    // cross-device resume, where `state` was sourced from a cached server View.
+    const api = capturingApi(() => ({ status: 200, row: rowAt('n_mid', 1) }))
+    await saveProgress(api, 'p1', 's1', viewShapedState('n_mid', 0), { newId: ids })
+
+    const body = api.bodies[0]
+    for (const key of FORBIDDEN_VIEW_KEYS) {
+      expect(body).not.toHaveProperty(key)
+    }
+    // The engine-owned fields the PUT model requires must all survive.
+    expect(body).toMatchObject({
+      version: 1,
+      current_node: 'n_mid',
+      var_state: {},
+      path: ['n_start', 'n_mid'],
+      visit_set: ['n_start', 'n_mid'],
+      save_slots: {},
+      state_revision: 0,
+      event_id: 'evt-1',
+    })
+  })
+
+  it('replayQueue never echoes View-only fields the PUT model forbids', async () => {
+    const offline = capturingApi(() => {
+      throw new OfflineError()
+    })
+    await saveProgress(offline, 'p1', 's1', viewShapedState('a', 0), {
+      newId: ids,
+      deviceId: 'device-a',
+    })
+
+    const online = capturingApi(() => ({ status: 200, row: rowAt('synced', 1) }))
+    await replayQueue(online)
+
+    const body = online.bodies[0]
+    for (const key of FORBIDDEN_VIEW_KEYS) {
+      expect(body).not.toHaveProperty(key)
+    }
+    expect(body).toMatchObject({ current_node: 'a', state_revision: 0, device_id: 'device-a' })
   })
 })
 
