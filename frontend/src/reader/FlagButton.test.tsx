@@ -95,16 +95,32 @@ describe('FlagButton (K15)', () => {
       expect(screen.queryByText(/FlagCapReachedError/i)).not.toBeInTheDocument()
     })
 
-    it('shows an inline retry message on a generic failure and keeps the dialog open', async () => {
+    it('reassures the child and never dead-ends them on a generic failure, while still logging it', async () => {
+      // A distressed child who just tapped "tell a grown-up" must never see a
+      // scary error or be trapped in the dialog when the POST hiccups. They
+      // get the same gentle confirmation as success; the failure is logged so
+      // the miss stays observable (and could be retried) rather than swallowed.
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
       const submitFlag = vi.fn<SubmitFlagMock>().mockRejectedValue(new Error('network exploded'))
       renderFlagButton(submitFlag)
       fireEvent.click(screen.getByRole('button', { name: /tell a grown-up/i }))
       fireEvent.click(screen.getByRole('button', { name: /^i didn't like it$/i }))
 
-      const alert = await screen.findByRole('alert')
-      expect(alert).toHaveTextContent(/something went wrong/i)
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
+      // Reassuring, non-scary outcome: same copy as success, no error alert.
+      expect(
+        await screen.findByText(/thanks for telling us\. a grown-up will take a look\./i)
+      ).toBeInTheDocument()
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument()
+      // Not a dead end: the dialog closes so the child can keep reading.
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      // The raw error is never surfaced to the child, but it IS logged so the
+      // failed report is not silently swallowed.
       expect(screen.queryByText(/network exploded/i)).not.toBeInTheDocument()
+      expect(consoleError).toHaveBeenCalledWith(
+        '[reader] flag submit failed',
+        expect.objectContaining({ reason: 'did_not_like' })
+      )
     })
 
     it('Cancel closes the dialog without submitting', () => {

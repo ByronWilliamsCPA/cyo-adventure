@@ -4,9 +4,11 @@
  * content that scared a child can happen mid-story). Opens a kid-simple
  * choice of exactly three structured reasons; POSTs to /v1/flags with no
  * free text (the wire body forbids it, see KidFlagCreateBody's backend
- * docstring). Confirmation and the cap-reached message use the shared toast
- * (success/info tones only, matching the app's existing "no error red for a
- * background confirmation" convention).
+ * docstring). Confirmation, the cap-reached message, and even a failed submit
+ * all use the shared toast (success/info tones only, matching the app's
+ * existing "no error red for a background confirmation" convention): a
+ * distressed child who tapped "tell a grown-up" is never shown a scary error
+ * or dead-ended, only reassured (see the submit-failure branch in `pick`).
  */
 
 import { useState } from 'react'
@@ -61,7 +63,6 @@ export function FlagButton({
 }: FlagButtonProps) {
   const [open, setOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState(false)
   const { showToast } = useToast()
 
   const session = getValidChildSession()
@@ -70,13 +71,11 @@ export function FlagButton({
   function closeDialog() {
     if (submitting) return
     setOpen(false)
-    setError(false)
   }
 
   async function pick(reason: FlagReason) {
     if (submitting) return
     setSubmitting(true)
-    setError(false)
     try {
       await submitFlag({
         profileId,
@@ -92,6 +91,22 @@ export function FlagButton({
         setOpen(false)
         showToast("You've told us a lot already.", { tone: 'info' })
       } else {
+        // A network hiccup or backend failure must never dead-end a child who
+        // just reported distress. Their intent to tell a grown-up still
+        // matters, so we close the dialog and give the same gentle
+        // confirmation as success (never a scary red "try again" alert) and
+        // let them keep reading or go find a grown-up. The failure is still
+        // logged below so the miss is observable and can be retried.
+        //
+        // #ASSUME: security: a failed POST means this flag row was NOT
+        // persisted server-side, so the report itself can be lost; the
+        // console.error below is its only durable trace today. Reassuring the
+        // child is intentionally decoupled from delivery success on this, the
+        // most emotionally sensitive path in the app.
+        // #VERIFY: e2e/reader-flag.spec.ts "a failed flag submit still
+        // reassures the child and never dead-ends them"; a future retry/queue
+        // would close the delivery gap without changing this child-facing copy.
+        //
         // Redacted shape only, never the raw axios error (its `config`
         // carries the Authorization header); mirrors logApiError's intent.
         console.error('[reader] flag submit failed', {
@@ -100,7 +115,8 @@ export function FlagButton({
           reason,
           error: err,
         })
-        setError(true)
+        setOpen(false)
+        showToast('Thanks for telling us. A grown-up will take a look.', { tone: 'info' })
       }
     } finally {
       setSubmitting(false)
@@ -129,11 +145,6 @@ export function FlagButton({
         }
       >
         <p className="reader-flag-prompt">What happened?</p>
-        {error ? (
-          <p role="alert" className="reader-flag-error">
-            Something went wrong. Try again.
-          </p>
-        ) : null}
         <div className="reader-flag-reasons">
           {REASONS.map((reason) => (
             <Button
