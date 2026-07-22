@@ -1,0 +1,22 @@
+{#  EXAMPLE:
+
+## [X.Y.Z] - YYYY-MM-DD
+
+_This release is published under the MIT License._       # Release Notes Only
+
+- Initial Release
+
+    Emit the same Keep-a-Changelog bracketed heading as versioned_changes.md.j2
+    (## [X.Y.Z] - DATE, no 'v' prefix) so the init path matches the house
+    format and the heading resolves against the '[X.Y.Z]:' footer link.
+
+#}{{
+"## [%s] - %s\n" | format(
+    release.version | string,
+    release.tagged_date.strftime("%Y-%m-%d")
+)
+}}{%  if license_name is defined and license_name
+%}{{    "\n_This release is published under the %s License._\n" | format(license_name)
+}}{%  endif
+%}
+- Initial Release

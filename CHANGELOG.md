@@ -5,14 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Documentation
-
-- Added an explicit, measured load-testing capacity baseline (P9-13) to Phase 9
-  of `docs/planning/PROJECT-PLAN.md`, so public-launch capacity planning starts
-  from a recorded number instead of an architectural estimate. Also tightened
-  the Phase 9 quality gates and added a corresponding risk-register entry.
+<!-- version list -->
 
 ## [0.27.1] - 2026-07-22
 
@@ -2532,7 +2525,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.1...HEAD
 [0.27.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.0...v0.27.1
 [0.27.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.3...v0.26.0

@@ -987,7 +987,12 @@ version_toml = ["pyproject.toml:project.version"]
 # and "tag"; the pre-v10 alias "conventional_commits" is rejected with
 # "Unrecognized commit parser value" and fails the release job outright.
 commit_parser = "conventional"
-commit_parser_options = { parse_squash_commits = true, ignore_merge_commits = true }
+# parse_squash_commits = false: read only the squash commit's SUBJECT line (the
+# Conventional-Commit PR title), producing ONE changelog entry per merged PR
+# rather than unbundling every intermediate work-in-progress commit. The repo's
+# squash_merge_commit_message setting is COMMIT_MESSAGES, so leaving this true
+# would leak every "fix: address review"/"wip" subject into the public changelog.
+commit_parser_options = { parse_squash_commits = false, ignore_merge_commits = true }
 
 # Version behavior
 major_on_zero = false  # Don't bump to 1.0.0 automatically
@@ -1009,14 +1014,40 @@ prerelease = true
 prerelease_token = "rc"
 
 # Changelog configuration
+#
+# CHANGELOG.md is GENERATED at release time by python-semantic-release from
+# Conventional Commits; it is no longer hand-curated per PR. `mode = "update"`
+# splices each new version in at `insertion_flag`, preserving all existing
+# history below it (never regenerating the file, which the retired `init` mode
+# would do). `template_dir` holds a copy of PSR 10.6.1's bundled "conventional"
+# markdown templates, patched only to emit Keep-a-Changelog headings
+# `## [X.Y.Z] - DATE` (so scripts/extract_changelog_section.py still parses the
+# published section) and to match the dedup guard to that heading form.
+# `mode`, `insertion_flag`, and `template_dir` are set to their PSR 10.6.1
+# defaults explicitly here so an upstream default change cannot silently alter
+# release output.
 [tool.semantic_release.changelog]
+mode = "update"
+insertion_flag = "<!-- version list -->"
 template_dir = "templates"
-changelog_file = "CHANGELOG.md"
+# Keep the generated changelog to user-facing change types (feat, fix, perf,
+# refactor). Noise types are excluded; scope-tolerant so `docs(api):` is dropped
+# alongside `docs:`. #EDGE data-integrity: an excluded commit's breaking-change
+# note is dropped from the changelog too, so do not tag breaking changes onto a
+# chore/ci/build/docs/test/style commit. #VERIFY breaking changes ride on
+# feat/fix/perf/refactor commits.
 exclude_commit_patterns = [
-    "^chore\\(release\\):",
-    "^ci:",
-    "^build:",
+    "^chore(\\(|:)",
+    "^ci(\\(|:)",
+    "^build(\\(|:)",
+    "^docs(\\(|:)",
+    "^test(\\(|:)",
+    "^style(\\(|:)",
 ]
+
+[tool.semantic_release.changelog.default_templates]
+changelog_file = "CHANGELOG.md"
+output_format = "md"
 
 [tool.semantic_release.changelog.environment]
 block_start_string = "{%"

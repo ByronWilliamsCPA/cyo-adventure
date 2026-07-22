@@ -1,9 +1,12 @@
-"""Print one released version's section from the hand-curated CHANGELOG.
+"""Print one released version's section from the generated CHANGELOG.
 
 Used by the release workflow's publish job (.github/workflows/release.yml)
-to turn the section promote_changelog.py created into GitHub Release notes.
-Prints every line after the ``## [X.Y.Z]`` heading up to (excluding) the
-next ``## [`` heading or the trailing link-reference block.
+to turn the section python-semantic-release generated in the propose job into
+GitHub Release notes. Prints every line after the ``## [X.Y.Z]`` heading up to
+(excluding) the next ``## [`` heading or the trailing link-reference block.
+
+Only ever called for the just-released (newest) version, whose scan stops at
+the next ``## [`` heading before any footer link.
 
 Usage:
     python scripts/extract_changelog_section.py 0.2.0 > release-notes.md
@@ -43,9 +46,10 @@ def extract(version: str, changelog: Path = CHANGELOG) -> str:
         raise SystemExit(msg) from None
 
     # #ASSUME data-integrity: the section ends at the next '## [' heading or
-    # the trailing link-reference block ('[version]:' / '[Unreleased]:').
-    # #VERIFY these boundary markers stay in sync with promote_changelog.py;
-    # a drift would spill later sections into the release notes.
+    # the trailing link-reference block ('[version]:'; '[Unreleased]:' is a
+    # legacy boundary kept harmless now that PSR generates the file).
+    # #VERIFY these boundary markers stay in sync with the templates/ PSR
+    # changelog templates; a drift would spill later sections into the notes.
     # #EDGE data-integrity: a '## [' line inside a fenced code block (e.g. an
     # entry that documents the changelog format) is body text, not a section
     # boundary. #VERIFY track ``` fences and only break outside a fence.

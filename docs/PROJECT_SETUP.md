@@ -602,14 +602,17 @@ reuse addheader --license MIT --copyright "Byron Williams" <file>
 
 ### Release Process
 
-1. **Update version** in `pyproject.toml`
-2. **Update CHANGELOG.md** with release notes
-3. **Create a tag**:
-   ```bash
-   git tag -a v1.0.0 -m "Release v1.0.0"
-   git push origin v1.0.0
-   ```
-4. **Create GitHub Release** from the tag
+Releases are automated by the two-phase `release.yml` workflow; you do not
+hand-edit the version, changelog, or tags:
+
+1. **Merge Conventional-Commit PRs to `main`.** Commit subjects (`feat:`,
+   `fix:`, etc.) are the sole release input.
+2. **A `propose` job opens a `chore(release): vX.Y.Z` PR** that bumps
+   `pyproject.toml` and GENERATES the `CHANGELOG.md` section from those commits
+   via python-semantic-release. `CHANGELOG.md` is no longer hand-edited per PR.
+3. **Review and let that PR auto-merge** through the merge queue.
+4. **A `publish` job tags `vX.Y.Z` and creates the GitHub Release** with notes
+   extracted from the generated changelog section.
 
 ### Dependency Updates
 Renovate is configured to automatically create PRs for dependency updates. Review and merge these regularly.

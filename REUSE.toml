@@ -25,6 +25,7 @@ path = [
     "noxfile.py",
     "schema/**",  # JSON Schema generated from the MIT-licensed Pydantic models
     "supabase/migrations/**",  # Supabase CLI SQL migrations
+    "templates/**",  # PSR changelog templates (patched from MIT-licensed python-semantic-release)
 ]
 SPDX-License-Identifier = "MIT"
 SPDX-FileCopyrightText = "2025 Byron Williams"

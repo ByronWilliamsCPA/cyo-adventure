@@ -92,24 +92,25 @@ jobs:
             echo "✅ No dead code detected with 90% confidence." >> $GITHUB_STEP_SUMMARY
           fi
 
-  # Changelog Enforcement
+  # Changelog Enforcement (neutralized)
+  #
+  # CHANGELOG.md is now GENERATED at release time by python-semantic-release
+  # from Conventional Commits (see .github/workflows/release.yml); PRs no
+  # longer edit it. The old "every PR must touch CHANGELOG.md" gate is
+  # therefore obsolete, and was itself the source of the merge-queue changelog
+  # conflicts this change eliminates: it forced every PR to edit one shared
+  # file, so the speculative squash of any two queued PRs collided there.
+  #
+  # The job is kept as a passing no-op (rather than deleted) so the required
+  # "Dependency & Standards Validation" summary that `needs:` it keeps its
+  # topology, and any branch-protection required-check named "Changelog Check"
+  # still reports. Conventional Commit subjects drive the changelog now, and
+  # pr-title.yml already enforces those.
   changelog:
     name: Changelog Check
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    # Only meaningful on pull_request events: the changelog gate compares the
-    # PR head against its base. On merge_group events there is no PR context
-    # (github.base_ref and pull_request.labels are empty), so the job is skipped
-    # there and the validate-dependencies summary treats a skip as a pass. This
-    # keeps the required "Dependency & Standards Validation" check green inside
-    # the merge queue. Label payload skips avoid GitHub API label-timing races
-    # on the opened event (e.g. Renovate PRs).
-    if: |
-      github.event_name == 'pull_request' &&
-      !contains(github.event.pull_request.labels.*.name, 'skip-changelog') &&
-      !contains(github.event.pull_request.labels.*.name, 'dependencies') &&
-      !contains(github.event.pull_request.labels.*.name, 'documentation') &&
-      !contains(github.event.pull_request.labels.*.name, 'automated')
+    timeout-minutes: 5
+    if: github.event_name == 'pull_request'
     permissions:
       contents: read
     steps:
@@ -119,24 +120,17 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          fetch-depth: 0
-
-      - name: Check for CHANGELOG update
-        env:
-          BASE_REF: ${{ github.base_ref }}
-
+      - name: Changelog is generated at release (no per-PR entry required)
         run: |
-          git fetch origin "$BASE_REF" --no-tags
-          MERGE_BASE=$(git merge-base HEAD "origin/$BASE_REF")
-          if git diff --name-only "$MERGE_BASE" HEAD | grep -q "^CHANGELOG.md$"; then
-            echo "CHANGELOG.md was updated - check passed."
-          else
-            echo "::error::CHANGELOG.md was not updated. Please add a changelog entry, or add the 'skip-changelog' label if no entry is needed."
-            exit 1
-          fi
+          echo "::notice::CHANGELOG.md is generated at release time from" \
+            "Conventional Commits; no per-PR changelog entry is required."
+          {
+            echo "## Changelog Check"
+            echo ""
+            echo "ℹ️ CHANGELOG.md is generated at release by" \
+              "python-semantic-release. Conventional Commit subjects drive it," \
+              "so no per-PR changelog entry is required."
+          } >> "$GITHUB_STEP_SUMMARY"
 
 
   # Documentation Link Check
@@ -201,10 +195,12 @@ jobs:
             echo "⚠️ Dead Code Check: ${{ needs.dead-code.result }}" >> $GITHUB_STEP_SUMMARY
           fi
 
-          if [ "${{ needs.changelog.result }}" == "success" ]; then
-            echo "✅ Changelog: Updated" >> $GITHUB_STEP_SUMMARY
-          elif [ "${{ needs.changelog.result }}" == "skipped" ]; then
-            echo "⏭️ Changelog: Skipped" >> $GITHUB_STEP_SUMMARY
+          # Changelog is generated at release, not per PR; the changelog job is
+          # a passing no-op kept only for required-check topology. success and
+          # skipped (merge_group) both mean "not applicable" here.
+          if [ "${{ needs.changelog.result }}" == "success" ] \
+            || [ "${{ needs.changelog.result }}" == "skipped" ]; then
+            echo "ℹ️ Changelog: Generated at release (no per-PR entry)" >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ Changelog: ${{ needs.changelog.result }}" >> $GITHUB_STEP_SUMMARY
           fi
