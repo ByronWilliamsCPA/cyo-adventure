@@ -71,6 +71,19 @@ relate to the Supabase project constraints.
 - Component: `frontend/src/guardian/LoginPage.test.tsx`, `frontend/src/guardian/SetNewPasswordForm.test.tsx`, `frontend/src/auth/AuthContext.test.tsx`, `frontend/src/auth/AdultGate.test.tsx`, `frontend/src/auth/ProtectedRoute.test.tsx`, `frontend/src/auth/guardianToken.test.ts`, `frontend/src/auth/supabaseClient.test.ts`, `frontend/src/guardian/GuardianShell.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx`
 - Integration: `frontend/src/test/App.test.tsx`
 
+## Guardian: password recovery (reset link + set new password)
+
+The Supabase-backed forgot-password journey: request a reset email, then set a
+new password from the recovery link, including the cross-tab handoff (a
+recovery link opened in one tab must surface the set-new-password form in
+another open tab, via the `cyo-guardian-recovery` `BroadcastChannel`). These
+are GoTrue calls (`auth/v1/...`), not app-API calls, so the E2E mocks the
+Supabase endpoints rather than `/api/v1`.
+
+- E2E-mocked: `frontend/e2e/guardian-password-reset.spec.ts` (request-a-reset asserts the `POST auth/v1/recover` fired and the neutral confirmation renders; set-new-password drives a real implicit-grant recovery hash to a signed-in redirect and asserts the exact `PUT auth/v1/user` body; the cross-tab test opens two pages in one `BrowserContext` and proves the recovery `BroadcastChannel` surfaces the set-new form in the second tab)
+- Component: `frontend/src/guardian/ResetPasswordRequestForm.test.tsx`, `frontend/src/guardian/SetNewPasswordForm.test.tsx`
+- **Gap**: no `e2e-real`/`e2e-staging`/`e2e-prod` coverage; a real reset requires a live inbox, so staging durability (recording seeded passwords in a secret manager) is tracked separately in the audit handoff, not here.
+
 ## Guardian: consent gate (privacy notice / COPPA e-signature)
 
 - E2E-mocked: `frontend/e2e/guardian-consent.spec.ts` (needs-consent gate ->
@@ -138,12 +151,25 @@ relate to the Supabase project constraints.
 - Component: `frontend/src/guardian/ReadingPage.test.tsx`, `frontend/src/guardian/readingApi.test.ts`
 - **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
 
+## Guardian: family connections consent (ADR-016 ring 2, G17)
+
+The guardian's own side of a cross-family recommendation link (the "cousins"
+case, set up by an app admin). Privacy-load-bearing: nothing crosses a family
+boundary until BOTH families' guardians consent (dual-consent), and either
+guardian can revoke unilaterally and immediately. Both mutations are gated
+behind a confirmation dialog.
+
+- E2E-mocked: `frontend/e2e/guardian-connections.spec.ts` (allow gates the `POST /v1/family-connections/{id}/consent` behind the confirm dialog then flips the row to the waiting-on-counterpart state; revoke gates the `DELETE .../consent` behind its own dialog then reverts the row; both assert the mutation does NOT fire until the dialog is confirmed, at the network layer)
+- Component: `frontend/src/guardian/ConnectionsPage.test.tsx`, `frontend/src/guardian/connectionsApi.test.ts`
+- **Note**: the admin-side of connections (creating the link) is covered separately under WS-J (`frontend/src/admin/ConnectionsTab.test.tsx`).
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+
 ## Admin: review queue (single story review)
 
-- E2E-mocked: `frontend/e2e/guardian-review.spec.ts`, `frontend/e2e/guardian-console.spec.ts` (navigation), `frontend/e2e/naive-user/naive-admin-misuse.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts`
+- E2E-mocked: `frontend/e2e/guardian-review.spec.ts`, `frontend/e2e/review-edit.spec.ts` (passage-edit save: PATCHes a reachable node's body + choice_labels and an unreachable/orphan node's body-only from the review detail, asserting the exact `PATCH /v1/storybooks/{id}/versions/{v}/nodes/{node}` contract at the network layer), `frontend/e2e/guardian-console.spec.ts` (navigation), `frontend/e2e/naive-user/naive-admin-misuse.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts`
 - E2E-real: `frontend/e2e-real/approval-flow.spec.ts`
-- Component: `frontend/src/admin/ReviewDetailPage.test.tsx`, `frontend/src/admin/AdminConsolePage.test.tsx` (links into it), `frontend/src/guardian/reviewApi.test.ts`, `frontend/src/guardian/coverApi.test.ts` (cover generation on review page)
-- **Gap**: no E2E-staging coverage, `/admin/review/:id` needs a real storybook id and is excluded from the render-only staging smoke for the same reason `e2e-prod` excludes it.
+- Component: `frontend/src/admin/ReviewDetailPage.test.tsx`, `frontend/src/admin/AdminConsolePage.test.tsx` (links into it), `frontend/src/admin/passageEditApi.test.ts`, `frontend/src/admin/usePassageEdit.test.ts` (passage-edit save contract + choice_labels gating), `frontend/src/guardian/reviewApi.test.ts`, `frontend/src/guardian/coverApi.test.ts` (cover generation on review page)
+- **Gap**: no E2E-staging coverage, `/admin/review/:id` needs a real storybook id and is excluded from the render-only staging smoke for the same reason `e2e-prod` excludes it. The passage-edit E2E is mocked-only for now; promote alongside `approval-flow.spec.ts` when the real tier grows a review-edit journey.
 
 ## Admin: cover generation (A16)
 
@@ -203,6 +229,18 @@ read-only context (they cannot be re-edited at this step, matching the
 - Component: `frontend/src/admin/UserManagementPage.test.tsx`, `frontend/src/admin/UsersTab.test.tsx`, `frontend/src/admin/FamiliesTab.test.tsx`, `frontend/src/admin/ConnectionsTab.test.tsx`, `frontend/src/admin/KidsTab.test.tsx`, `frontend/src/admin/userManagementApi.test.ts`
 - **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
 
+## Admin: audit log, master library, and version-compare (read-heavy surfaces)
+
+Lower-exposure admin read surfaces that had component coverage but no
+browser-level journey until the 2026-07-22 audit backfill: the audit log
+(filter + paging), the admin master library (lifecycle-status filter), and the
+review version-compare panel (`ReviewCompare`, reachable only from the review
+detail when a storybook has more than one version).
+
+- E2E-mocked: `frontend/e2e/admin-read-heavy.spec.ts` (audit-log event-kind filter refetches `GET /v1/admin/audit?kind=...` and next-page refetches with `offset=50`; admin-library lifecycle filter refetches `GET /v1/admin/storybooks?status=archived`; the version-compare panel loads the previous version via `GET /v1/storybooks/{id}/review?version=...` and renders the diff)
+- Component: `frontend/src/admin/AuditPage.test.tsx`, `frontend/src/admin/auditApi.test.ts`, `frontend/src/admin/AdminLibraryPage.test.tsx`, `frontend/src/admin/adminLibraryApi.test.ts`, `frontend/src/admin/ReviewCompare.test.tsx` (owns the loading/error/404-unavailable compare branches the E2E leaves to it)
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet; these are read-only surfaces, so exposure is low.
+
 ## Kid: profile picker
 
 - E2E-mocked: `frontend/e2e/device-authorization.spec.ts`, `frontend/e2e/landing.spec.ts`, `frontend/e2e/profiles.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts`
@@ -248,8 +286,8 @@ read-only context (they cannot be re-edited at this step, matching the
 
 - E2E-mocked: `frontend/e2e/reader.spec.ts` (fully-offline play), `frontend/e2e/reader-conflict.spec.ts`, `frontend/e2e/reader-reload-resume.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts` (reload resume)
 - E2E-real: `frontend/e2e-real/offline-conflict-real.spec.ts` (two real `BrowserContext`s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly `e2e-real-nightly.yml`)
-- Component: `frontend/src/offline/db.test.ts`, `frontend/src/offline/sync.test.ts`, `frontend/src/reader/ReaderPage.test.tsx` (conflict dialog resolution paths), `frontend/src/reader/ReaderRoute.test.tsx` (replay-reconciliation suite), `frontend/src/reader/dialogs.test.tsx` (ConflictDialog UI), `frontend/src/hooks/useReplayOnReconnect.test.ts`, `frontend/src/hooks/useOnlineStatus.test.ts`
-- **Gap**: no `e2e-staging` or `e2e-prod` coverage of conflict/sync against a real backend.
+- Component: `frontend/src/offline/db.test.ts`, `frontend/src/offline/sync.test.ts`, `frontend/src/offline/revocation.test.ts` (offline-copy revocation reconcile: shared-blob refcounting, cross-profile isolation, queue-drop, never-purge-on-failed-fetch, and the documented mid-read latency window), `frontend/src/reader/ReaderPage.test.tsx` (conflict dialog resolution paths), `frontend/src/reader/ReaderRoute.test.tsx` (replay-reconciliation suite), `frontend/src/reader/dialogs.test.tsx` (ConflictDialog UI), `frontend/src/hooks/useReplayOnReconnect.test.ts`, `frontend/src/hooks/useOnlineStatus.test.ts`, `frontend/src/library/LibraryPage.test.tsx` (the reconcile call-site: fires only on the success branch, re-fires on reconnect, logs a reconcile rejection)
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage of conflict/sync against a real backend. Offline-copy revocation (register G8/A5) has a known mid-read latency window: a book pulled server-side is not purged from the device until the next successful library fetch drives a reconcile; closing it needs a revocation push channel or reader-route mid-session revalidation, both out of scope (pinned by the `revocation.test.ts` "mid-read latency window" characterization test).
 
 ## Kid: series continuation across storybooks
 
