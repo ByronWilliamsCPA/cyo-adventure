@@ -82,7 +82,7 @@ jobs:
     name: SBOM & Security
     needs: detect-release-pr
     if: needs.detect-release-pr.outputs.release_pr != 'true'
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-sbom.yml@7aaf24d13d9ff61d0d231797bfa6fd3cad478e2b  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-sbom.yml@7d12f5486ab5c856397ebaa4acd3c99ca385227c  # main
     with:
       python-version: '3.14'
       # cyo_adventure ships a build backend (it is an installable package), so the
