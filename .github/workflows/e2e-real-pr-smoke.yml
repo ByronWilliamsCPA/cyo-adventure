@@ -1,0 +1,178 @@
+# PR-path real-backend smoke (G4, Phase 7.4:
+# docs/planning/handoff-test-coverage-robustness-2026-07-22.md).
+#
+# The full real-backend Playwright tier (frontend/e2e-real/) is nightly-only
+# (e2e-real-nightly.yml) because it is too heavy for every PR. This workflow
+# promotes exactly ONE fast, seeded, happy-path spec (kid-reads.spec.ts, via
+# the `real-backend-pr-smoke` project) to the PR path, so a contributor gets a
+# real full-stack signal per PR without the whole tier's cost.
+#
+# Informational, NOT a merge gate. It triggers on `pull_request` only (no
+# `merge_group` trigger), so it never gates the merge queue; and it is not
+# listed in branch-protection required checks. A red run is a visible signal on
+# the PR to investigate, not a block. Promote it to a required check later by
+# adding it to branch protection, only once its per-PR flakiness rate is known
+# to be acceptable. (Deliberate decision, recorded here per the G4 answer:
+# "non-blocking PR check".)
+#
+# Path-filtered to code that can actually change the real-stack behavior this
+# spec exercises (frontend, backend, migrations, and this tier's own config),
+# so docs-only and unrelated PRs do not pay the ~4-6 min real-stack cost.
+#
+# Mirrors e2e-real-nightly.yml's proven setup (Postgres + Redis service
+# containers, real Supabase migration chain, seed_dev_data.py, background
+# uvicorn), minus the generation worker and the pipeline tier: kid-reads is a
+# pure read happy-path and needs neither a worker nor live generation.
+name: E2E (real backend, PR smoke)
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - 'src/cyo_adventure/**'
+      - 'supabase/migrations/**'
+      - '.github/workflows/e2e-real-pr-smoke.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  # One in-flight smoke per PR branch; a new push cancels the stale run. Safe:
+  # this tier owns no shared external resource (fresh per-run service
+  # containers, no real account).
+  group: e2e-real-pr-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-real-pr-smoke:
+    name: Playwright (real-backend PR smoke)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      db:
+        # postgres:18-alpine, pinned by digest, matching e2e-real-nightly.yml.
+        image: postgres:18-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
+        env:
+          POSTGRES_DB: cyo_adventure
+          POSTGRES_USER: cyo_adventure
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cyo_adventure"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        # Redis is defensive here (RateLimitMiddleware falls back to an
+        # in-memory counter without it); see the nightly's Redis note. Kept for
+        # parity and to remove the per-request fallback latency.
+        image: redis:8-alpine@sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.14'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@46f7f98c7f948ad727d22c1e67fab04c223a0520 # v3.0.0
+        with:
+          version: 2.109.1
+
+      - name: Ensure psql is available
+        run: |
+          command -v psql || (sudo apt-get update && sudo apt-get install -y --no-install-recommends postgresql-client)
+
+      - name: Create postgres role for baseline OWNER statements
+        run: |
+          PGPASSWORD=password psql -h localhost -U cyo_adventure -d cyo_adventure -c \
+            'DO $$ BEGIN CREATE ROLE "postgres"; EXCEPTION WHEN duplicate_object THEN NULL; END $$;'
+
+      - name: Apply database migrations
+        env:
+          PGSSLMODE: disable
+          SUPABASE_DB_URL: postgresql://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: |
+          supabase db push --db-url "$SUPABASE_DB_URL" --yes
+
+      - name: Seed dev data
+        env:
+          DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: uv run python scripts/seed_dev_data.py
+
+      - name: Start backend (uvicorn, background)
+        env:
+          ENVIRONMENT: local
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+          CYO_ADVENTURE_REDIS_URL: redis://localhost:6379/0
+          DEVICE_GRANT_SECRET: pr-smoke-e2e-real-device-grant-secret
+        run: |
+          uv run uvicorn cyo_adventure.app:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
+          echo $! > backend.pid
+
+      - name: Wait for backend readiness
+        run: |
+          curl --retry 15 --retry-delay 2 --retry-all-errors -fsS http://localhost:8000/health/ready
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+
+      # Runs ONLY the real-backend-pr-smoke project (kid-reads.spec.ts) with its
+      # deterministic reset dependency. Playwright's webServer builds and serves
+      # the app itself (npm run build && vite preview on :4173); no worker.
+      - name: E2E (Playwright, real-backend PR smoke)
+        working-directory: ./frontend
+        env:
+          E2E_BACKEND_URL: http://localhost:8000
+        run: npm run test:e2e:real:pr-smoke
+
+      - name: Upload backend log
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-real-pr-smoke-backend-log
+          path: backend.log
+          retention-days: 7
+
+      - name: Upload Playwright trace on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-real-pr-smoke-traces
+          path: frontend/test-results/
+          retention-days: 7

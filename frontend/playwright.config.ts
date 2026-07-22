@@ -127,5 +127,26 @@ export default defineConfig({
       retries: process.env.CI ? 1 : 0,
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      // PR-path smoke tier (G4, Phase 7.4): the ONE fast, seeded, happy-path
+      // real-backend spec promoted to run per-PR (npm run test:e2e:real:pr-smoke)
+      // so developers get a full-stack signal without the whole `real-backend`
+      // tier's cost. A dedicated project (not a `playwright test <file>`
+      // positional filter) is deliberate: a filename filter can also filter the
+      // `real-backend-setup` dependency out, silently skipping the deterministic
+      // reset, whereas testMatch selects exactly this spec while keeping the
+      // reset. kid-reads is a pure read happy-path: no state mutation, no
+      // generation worker, no live LLM, so it stays fast and deterministic.
+      // Run informational (non-blocking) in CI via e2e-real-pr-smoke.yml; this
+      // same spec also runs under `real-backend` in the nightly (a spec may be
+      // matched by more than one project).
+      name: 'real-backend-pr-smoke',
+      testDir: './e2e-real',
+      testMatch: /kid-reads\.spec\.ts/,
+      dependencies: ['real-backend-setup'],
+      fullyParallel: false,
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 })

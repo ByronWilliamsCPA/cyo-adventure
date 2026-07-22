@@ -79,6 +79,17 @@ relate to the Supabase project constraints.
   registered here rather than under a single journey. Intended for the nightly
   real-stack job (a worker must be started before it runs, or its poll deadline
   fails with an explicit worker-not-running message).
+- **Per-PR real-stack smoke (G4, Phase 7.4)**: `frontend/e2e-real/kid-reads.spec.ts`,
+  run on the PR path via the `real-backend-pr-smoke` Playwright project
+  (`npm run test:e2e:real:pr-smoke`, workflow `.github/workflows/e2e-real-pr-smoke.yml`).
+  The full `real-backend` tier is nightly-only for cost; this promotes exactly
+  one fast, seeded, happy-path read (no worker, no live generation) to every PR
+  so contributors get a real full-stack signal per change. Deliberately
+  **informational, not a merge gate**: it triggers on `pull_request` only (no
+  `merge_group`) and is not a branch-protection required check, so a red run is
+  a signal to investigate rather than a block; it can be promoted to required
+  once its per-PR flakiness rate is known. The same spec also runs under
+  `real-backend` in the nightly (one spec, two projects).
 
 ---
 
@@ -97,6 +108,19 @@ relate to the Supabase project constraints.
 - E2E-prod: `frontend/e2e-prod/landing-login.spec.ts`, `frontend/e2e-prod/guardian-admin-smoke.spec.ts`
 - Component: `frontend/src/guardian/LoginPage.test.tsx`, `frontend/src/guardian/SetNewPasswordForm.test.tsx`, `frontend/src/auth/AuthContext.test.tsx`, `frontend/src/auth/AdultGate.test.tsx`, `frontend/src/auth/ProtectedRoute.test.tsx`, `frontend/src/auth/guardianToken.test.ts`, `frontend/src/auth/supabaseClient.test.ts`, `frontend/src/guardian/GuardianShell.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx`
 - Integration: `frontend/src/test/App.test.tsx`
+- **Google OAuth sign-in (decision 2.6, manual-only flow + automated option
+  presence):** the full Google OAuth *round trip* is not automated at any tier
+  and is not automatable without a live Google session (faking the provider
+  redirect asserts nothing about the real integration), so the end-to-end flow
+  is a **manual check**: on staging (Google is live there), click "Continue
+  with Google" on `/guardian/login` and confirm the redirect completes to a
+  signed-in console. What IS automated is the part worth automating, that the
+  option renders where expected: `frontend/src/guardian/LoginPage.test.tsx`
+  (asserts the "Continue with Google" button is present) and
+  `frontend/src/auth/AdultGate.test.tsx` (asserts the Google option renders for
+  a Google-linked adult and that clicking it starts the `signInWithOAuth`
+  redirect). The Apple button is intentionally gated off behind
+  `VITE_ENABLE_APPLE_OAUTH` until that provider is live (`LoginPage.tsx`).
 
 ## Guardian: password recovery (reset link + set new password)
 
