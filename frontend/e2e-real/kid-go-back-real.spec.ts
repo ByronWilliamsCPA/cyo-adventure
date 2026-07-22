@@ -2,7 +2,13 @@ import { expect, test, type Page } from '@playwright/test'
 
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
-import { authorizeDevice, BACKEND, requireBackend, revokeDevice } from './real-stack'
+import {
+  authorizeDevice,
+  BACKEND,
+  requireBackend,
+  resetRealState,
+  revokeDevice,
+} from './real-stack'
 
 /**
  * Real-API K5 kid go-back path: Reader.tsx's "Go back" control (data-testid
@@ -65,6 +71,13 @@ async function findDevReaderProfileId(): Promise<string> {
 }
 
 let deviceGrant: DeviceGrant | null = null
+
+// Per-file reset (truncates reading_state) so the walk below always starts
+// at n_start for s_tide_pools, regardless of what ran earlier in the same
+// full-suite invocation and however that left the shared story's position.
+test.beforeAll(() => {
+  resetRealState()
+})
 
 test.beforeEach(async ({ context }) => {
   await requireBackend()

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { seedGuardianSession } from '../e2e/support/auth'
 
-import { BACKEND, requireBackend } from './real-stack'
+import { BACKEND, requireBackend, resetRealState } from './real-stack'
 
 /**
  * Real-API guardian profile CRUD (Phase 3.1 write-path backfill): the
@@ -57,6 +57,11 @@ async function findProfileId(displayName: string): Promise<string> {
   expect(row, `no profile named "${displayName}" found via GET /profiles`).toBeTruthy()
   return (row as ProfileRow).id
 }
+
+// Per-file reset so this file is order-independent in the shared-DB tier.
+test.beforeAll(() => {
+  resetRealState()
+})
 
 test.beforeEach(async () => {
   await requireBackend()

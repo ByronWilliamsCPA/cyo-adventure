@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { seedGuardianSession } from '../e2e/support/auth'
 
-import { requireBackend } from './real-stack'
+import { requireBackend, resetRealState } from './real-stack'
 
 /**
  * Real-API provider-allowlist CRUD (Phase 3.1 write-path backfill): an admin
@@ -25,6 +25,11 @@ import { requireBackend } from './real-stack'
 // never touched by this spec, and the add/remove pair below leaves no extra
 // row behind on a normal (non-failing) run either way.
 // #VERIFY: the test removes the row it creates before finishing.
+
+// Per-file reset so this file is order-independent in the shared-DB tier.
+test.beforeAll(() => {
+  resetRealState()
+})
 
 test.beforeEach(async () => {
   await requireBackend()

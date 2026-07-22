@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { seedGuardianSession } from '../e2e/support/auth'
 
-import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
+import { authorizeDevice, requireBackend, resetRealState, revokeDevice } from './real-stack'
 
 /**
  * Real G9 guardian reading-history path. The seeded child reads a real
@@ -26,6 +26,16 @@ import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
  */
 
 test.describe.configure({ mode: 'serial' })
+
+// Per-file reset (truncates reading_state and clears the seed family's
+// kid_flag rows) so this file starts from a pristine baseline regardless of
+// what ran earlier in the same full-suite invocation: a stale reading_state
+// row would change which node the read-to-ending walk starts from, and
+// accumulated kid-flag toasts would make the "Dev Reader" locator below
+// strict-mode-ambiguous even with the role-scoped fix.
+test.beforeAll(() => {
+  resetRealState()
+})
 
 test.beforeEach(async () => {
   await requireBackend()
@@ -63,8 +73,12 @@ test('the guardian sees the real read reflected in reading history', async ({ pa
   await page.getByRole('link', { name: 'Reading', exact: true }).click()
   await expect(page).toHaveURL(/\/guardian\/reading$/)
 
-  await expect(page.getByText('Dev Reader')).toBeVisible()
-  await page.getByRole('button', { name: /Dev Reader/ }).click()
+  // Scoped to the reading-card toggle button (not a bare getByText), which
+  // would also match a "Dev Reader flagged a story..." guardian-console toast
+  // once kid-flag-real.spec.ts has run earlier in a full-suite invocation.
+  const devReaderCard = page.getByRole('button', { name: /Dev Reader/ })
+  await expect(devReaderCard).toBeVisible()
+  await devReaderCard.click()
   await expect(page.getByText('The Clockwork Garden')).toBeVisible()
   // total_endings (4) is fixed by the fixture's metadata.ending_count;
   // endings_found is exactly 1 because the deterministic walk above always

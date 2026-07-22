@@ -2,7 +2,13 @@ import { expect, test } from '@playwright/test'
 
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
-import { authorizeDevice, BACKEND, requireBackend, revokeDevice } from './real-stack'
+import {
+  authorizeDevice,
+  BACKEND,
+  requireBackend,
+  resetRealState,
+  revokeDevice,
+} from './real-stack'
 
 /**
  * Real-API K7 kid read-aloud path: Reader.tsx's read-aloud toggle
@@ -91,6 +97,11 @@ async function setTtsEnabled(profileId: string, ttsEnabled: boolean): Promise<vo
 
 let deviceGrant: DeviceGrant | null = null
 let devReaderProfileId: string | null = null
+
+// Per-file reset so this file is order-independent in the shared-DB tier.
+test.beforeAll(() => {
+  resetRealState()
+})
 
 test.beforeEach(async ({ context }) => {
   await requireBackend()

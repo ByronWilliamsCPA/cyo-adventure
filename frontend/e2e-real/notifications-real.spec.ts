@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { seedGuardianSession } from '../e2e/support/auth'
 
-import { requireBackend } from './real-stack'
+import { requireBackend, resetRealState } from './real-stack'
 
 /**
  * Real G10 guardian notification path. The admin approves the seeded
@@ -30,6 +30,13 @@ import { requireBackend } from './real-stack'
  */
 
 test.describe.configure({ mode: 'serial' })
+
+// Per-file reset so the approve step below always starts from s_bridge_builder
+// back in in_review, regardless of what ran earlier in the same full-suite
+// invocation (e.g. approval-flow.spec.ts already having approved it for real).
+test.beforeAll(() => {
+  resetRealState()
+})
 
 test.beforeEach(async () => {
   await requireBackend()

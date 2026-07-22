@@ -89,6 +89,11 @@ export default defineConfig({
       name: 'real-backend',
       testDir: './e2e-real',
       dependencies: ['real-backend-setup'],
+      // full-pipeline-real.spec.ts drives a real RQ worker end-to-end; it is
+      // being moved to its own Playwright project (separate npm script) that
+      // starts that worker, so this project must not pick it up. Every other
+      // e2e-real spec has no such dependency and stays here.
+      testIgnore: ['full-pipeline-real.spec.ts'],
       fullyParallel: false,
       // #EDGE: data-integrity: the approve test mutates the database, so a CI
       // retry after a post-mutation failure re-enters an already-approved

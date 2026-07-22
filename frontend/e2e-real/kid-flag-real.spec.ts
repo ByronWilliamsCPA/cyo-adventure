@@ -2,7 +2,13 @@ import { expect, test } from '@playwright/test'
 
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
-import { authorizeDevice, BACKEND, requireBackend, revokeDevice } from './real-stack'
+import {
+  authorizeDevice,
+  BACKEND,
+  requireBackend,
+  resetRealState,
+  revokeDevice,
+} from './real-stack'
 
 /**
  * Real-API K15 kid flag path: the reader's "Tell a grown-up" affordance
@@ -30,6 +36,13 @@ const DEV_ADMIN_BEARER = 'dev-admin'
 
 let deviceGrant: DeviceGrant | null = null
 let createdFlagId: string | null = null
+
+// Per-file reset so this file's own flag lands against the seed family's
+// clean kid_flag baseline (MAX_OPEN_FLAGS_PER_PROFILE headroom), regardless
+// of what ran earlier in the same full-suite invocation.
+test.beforeAll(() => {
+  resetRealState()
+})
 
 test.beforeEach(async ({ context }) => {
   await requireBackend()

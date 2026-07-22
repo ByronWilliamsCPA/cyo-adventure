@@ -52,6 +52,18 @@ relate to the Supabase project constraints.
   dialog), and admin console/requests/moderation-thresholds/moderation-
   dashboard (`visual.spec.ts-snapshots/`). Same remaining-gap caveat as
   accessibility above: one state per surface, not every variant.
+- **API contract pinning (G2, Phase 7.2)**: `frontend/e2e-real/contract-smoke-real.spec.ts`
+  — a real-backend contract smoke that pins the real API response shape for
+  the four highest-drift endpoints the mocked `page.route` tier only assumes:
+  `GET /api/v1/library` (the `BookCard`/`LibraryPage` fields), `PUT
+  /api/v1/reading-state/{profile}/{story}` (the player/offline-sync
+  `ReadingState` fields), `POST` + `GET /api/v1/story-requests` (the
+  `StoryRequestQueue` fields), and `GET /api/v1/review-queue` +
+  `GET /api/v1/storybooks/{id}/review` (the admin review-console fields).
+  Spans multiple journeys, so it is registered here rather than under a
+  single one; guards against the failure class behind the prior P0-1
+  offline-resync 422, where a real backend field changed while every mocked
+  fixture kept passing.
 
 ---
 
@@ -293,7 +305,7 @@ detail when a storybook has more than one version).
 ## Kid: offline reading + sync/conflict resolution
 
 - E2E-mocked: `frontend/e2e/reader.spec.ts` (fully-offline play), `frontend/e2e/reader-conflict.spec.ts`, `frontend/e2e/reader-reload-resume.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts` (reload resume)
-- E2E-real: `frontend/e2e-real/offline-conflict-real.spec.ts` (two real `BrowserContext`s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly `e2e-real-nightly.yml`)
+- E2E-real: `frontend/e2e-real/offline-conflict-real.spec.ts` (two real `BrowserContext`s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly `e2e-real-nightly.yml`), `frontend/e2e-real/offline-online-parity-real.spec.ts` (G3, Phase 7.3: on "The Clockwork Garden", a condition-gated story, the identical five-choice sequence is driven online through the real backend and, in a separate profile, offline through the client player engine then synced; both land on the same final node/path/visit_set/var_state and the same ending, proving offline/online branch parity; each pass also forces a real Python-engine replay of its own choice sequence via the `choice_path` field on the reading-state PUT, so the parity is confirmed cross-engine, not just client-vs-client)
 - Component: `frontend/src/offline/db.test.ts`, `frontend/src/offline/sync.test.ts`, `frontend/src/offline/revocation.test.ts` (offline-copy revocation reconcile: shared-blob refcounting, cross-profile isolation, queue-drop, never-purge-on-failed-fetch, and the documented mid-read latency window), `frontend/src/reader/ReaderPage.test.tsx` (conflict dialog resolution paths), `frontend/src/reader/ReaderRoute.test.tsx` (replay-reconciliation suite), `frontend/src/reader/dialogs.test.tsx` (ConflictDialog UI), `frontend/src/hooks/useReplayOnReconnect.test.ts`, `frontend/src/hooks/useOnlineStatus.test.ts`, `frontend/src/library/LibraryPage.test.tsx` (the reconcile call-site: fires only on the success branch, re-fires on reconnect, logs a reconcile rejection)
 - **Gap**: no `e2e-staging` or `e2e-prod` coverage of conflict/sync against a real backend. Offline-copy revocation (register G8/A5) has a known mid-read latency window: a book pulled server-side is not purged from the device until the next successful library fetch drives a reconcile; closing it needs a revocation push channel or reader-route mid-session revalidation, both out of scope (pinned by the `revocation.test.ts` "mid-read latency window" characterization test).
 

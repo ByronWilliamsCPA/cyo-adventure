@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 
 import { seedGuardianSession } from '../e2e/support/auth'
 
-import { requireBackend } from './real-stack'
+import { requireBackend, resetRealState } from './real-stack'
 
 /**
  * Real-API WS-J admin user-management (Phase 3.1 write-path backfill): the
@@ -30,6 +30,11 @@ import { requireBackend } from './real-stack'
  * (admin/profiles.py has no delete route), so a reused dev stack accumulates
  * one harmless deactivated row per run rather than a stale active one.
  */
+
+// Per-file reset so this file is order-independent in the shared-DB tier.
+test.beforeAll(() => {
+  resetRealState()
+})
 
 test.beforeEach(async () => {
   await requireBackend()
