@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
 import { EmptyState } from '@ds/components/EmptyState'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import {
@@ -166,17 +168,13 @@ export function ConnectionsPage() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading your family connections…
-      </div>
+      <LoadingStatus>Loading your family connections…</LoadingStatus>
     )
   }
 
   if (state.kind === 'error') {
     return (
-      <p role="alert" className="connections__error cyo-text-error">
-        {state.message}
-      </p>
+      <ErrorBanner className="connections__error">{state.message}</ErrorBanner>
     )
   }
 
@@ -230,9 +228,9 @@ export function ConnectionsPage() {
                   )}
                 </div>
                 {rowErrors[connection.id] ? (
-                  <p role="alert" className="connections-card__error cyo-text-error">
+                  <ErrorBanner className="connections-card__error">
                     {rowErrors[connection.id]}
-                  </p>
+                  </ErrorBanner>
                 ) : null}
               </li>
             )

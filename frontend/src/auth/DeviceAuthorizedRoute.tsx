@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import {
   AUTHORIZE_DEVICE_INTENT_PARAM,
   AUTHORIZE_DEVICE_INTENT_VALUE,
@@ -76,9 +77,7 @@ export function DeviceAuthorizedRoute() {
 
   if (status === 'checking') {
     return (
-      <div role="status" aria-live="polite">
-        Loading…
-      </div>
+      <LoadingStatus />
     )
   }
 

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import '../guardian/guardian.css'
 import { GUARDIAN_CONSOLE_PATH, GUARDIAN_LOGIN_PATH } from '../routes'
 import { adultGateRemainingMs, warmAdultGate } from './parentalGateState'
@@ -337,11 +338,7 @@ export function AdultGate({ children }: { children?: ReactNode }) {
   }
 
   if (phase.kind === 'checking') {
-    return (
-      <div role="status" aria-live="polite">
-        Loading…
-      </div>
-    )
+    return <LoadingStatus />
   }
 
   if (phase.kind === 'error') {

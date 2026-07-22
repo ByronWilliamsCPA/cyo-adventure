@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { classifyApiError } from '../hooks/classifyApiError'
 import type { StoryRequestView } from '../guardian/storyRequestQueueApi'
 import type { AllowlistView, AuthoringPlanRequest } from '../client/types.gen'
@@ -153,9 +154,7 @@ export function AuthoringPlanDialog({
         }}
       >
         {errorMsg ? (
-          <p role="alert" className="authoring-plan-form__error cyo-text-error">
-            {errorMsg}
-          </p>
+          <ErrorBanner className="authoring-plan-form__error">{errorMsg}</ErrorBanner>
         ) : null}
         <dl className="authoring-plan-form__context">
           <dt>Age band</dt>

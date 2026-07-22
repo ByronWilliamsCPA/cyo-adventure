@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Button } from '@ds/components/Button'
 import { Chip } from '@ds/components/Chip'
 import { Dialog } from '@ds/components/Dialog'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { AVATARS } from '../profiles/avatars'
 import {
@@ -277,11 +278,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
           if (valid && !saving) void save()
         }}
       >
-        {errorMsg ? (
-          <p role="alert" className="profile-form__error cyo-text-error">
-            {errorMsg}
-          </p>
-        ) : null}
+        {errorMsg ? <ErrorBanner className="profile-form__error">{errorMsg}</ErrorBanner> : null}
         <label className="cyo-field">
           Name
           <input

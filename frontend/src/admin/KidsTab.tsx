@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { AVATARS } from '../profiles/avatars'
 import { AGE_BANDS, type AgeBandValue } from '../profiles/profilesApi'
@@ -170,11 +171,7 @@ export function KidsTab({ api, families, profiles, onChanged }: KidsTabProps) {
   return (
     <section>
       <h2>Kids</h2>
-      {actionError ? (
-        <p role="alert" className="console__error cyo-text-error">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <ErrorBanner className="console__error">{actionError}</ErrorBanner> : null}
       {profiles.length === 0 ? (
         <p className="console__muted cyo-text-muted">No child profiles yet.</p>
       ) : (

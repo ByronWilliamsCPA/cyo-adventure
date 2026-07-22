@@ -1,5 +1,6 @@
 import { Link, useRouteError } from 'react-router-dom'
 
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { lazyWithReload } from './lazyWithReload'
 import { KID_PICKER_PATH } from './routes'
 import './routeElements.css'
@@ -13,9 +14,7 @@ import './routeElements.css'
  */
 export function RouteFallback() {
   return (
-    <div className="route-fallback" role="status" aria-live="polite">
-      Just a sec...
-    </div>
+    <LoadingStatus className="route-fallback">Just a sec...</LoadingStatus>
   )
 }
 

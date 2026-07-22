@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { classifyApiError } from '../hooks/classifyApiError'
 import type { FamilyView } from '../client/types.gen'
 import type { UserManagementApi } from './userManagementApi'
@@ -94,11 +95,7 @@ export function FamiliesTab({ api, families, onChanged }: FamiliesTabProps) {
   return (
     <section>
       <h2>Families</h2>
-      {actionError ? (
-        <p role="alert" className="console__error cyo-text-error">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <ErrorBanner className="console__error">{actionError}</ErrorBanner> : null}
       {families.length === 0 ? (
         <p className="console__muted cyo-text-muted">No families yet.</p>
       ) : (

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { classifyApiError } from '../hooks/classifyApiError'
 import type { FamilyConnectionView, FamilyView } from '../client/types.gen'
 import type { UserManagementApi } from './userManagementApi'
@@ -73,11 +74,7 @@ export function ConnectionsTab({ api, families, connections, onChanged }: Connec
         A connection lets one family see recommendations sourced from another. It is one-way:
         connecting A to B does not also connect B to A.
       </p>
-      {actionError ? (
-        <p role="alert" className="console__error cyo-text-error">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <ErrorBanner className="console__error">{actionError}</ErrorBanner> : null}
       {connections.length === 0 ? (
         <p className="console__muted cyo-text-muted">No family connections yet.</p>
       ) : (
@@ -138,9 +135,7 @@ export function ConnectionsTab({ api, families, connections, onChanged }: Connec
           </select>
         </label>
         {viewerId.length > 0 && viewerId === sourceId ? (
-          <p role="alert" className="console__error cyo-text-error">
-            A family cannot connect to itself.
-          </p>
+          <ErrorBanner className="console__error">A family cannot connect to itself.</ErrorBanner>
         ) : null}
         <button type="submit" disabled={!canCreate}>
           Create connection
