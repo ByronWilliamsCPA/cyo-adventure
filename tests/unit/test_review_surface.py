@@ -394,6 +394,66 @@ def test_queue_item_age_band_absent_when_metadata_missing() -> None:
 
 
 @pytest.mark.unit
+def test_queue_item_carries_themes_and_content_flags() -> None:
+    """The book-detail popover reads themes/content_flags straight off the blob."""
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob={
+            "title": "The Lantern",
+            "metadata": {
+                "age_band": "6-8",
+                "themes": ["friendship", "courage"],
+                "content_flags": {
+                    "violence": "mild",
+                    "scariness": "none",
+                    "peril": "moderate",
+                },
+            },
+            "nodes": [{"id": "n1", "body": "Hi."}],
+        },
+        moderation_report=None,
+    )
+    assert item.themes == ["friendship", "courage"]
+    assert item.content_flags is not None
+    assert item.content_flags.violence == "mild"
+    assert item.content_flags.peril == "moderate"
+
+
+@pytest.mark.unit
+def test_queue_item_themes_and_content_flags_absent_when_metadata_missing() -> None:
+    """A blob with no metadata leaves themes empty and content_flags None."""
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob={"title": "T", "nodes": [{"id": "n1", "body": "Hi."}]},
+        moderation_report=None,
+    )
+    assert item.themes == []
+    assert item.content_flags is None
+
+
+@pytest.mark.unit
+def test_queue_item_content_flags_degrades_on_invalid_shape() -> None:
+    """A content_flags dict that no longer matches the schema degrades to None
+    rather than failing the whole queue row for a detail-only field."""
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob={
+            "title": "T",
+            "metadata": {"content_flags": {"violence": "catastrophic"}},
+            "nodes": [{"id": "n1", "body": "Hi."}],
+        },
+        moderation_report=None,
+    )
+    assert item.content_flags is None
+
+
+@pytest.mark.unit
 def test_queue_item_screened_clean_has_zero_flags() -> None:
     """A screened-clean story reports screened=True, flagged_count=0."""
     item = build_review_queue_item(

@@ -13,6 +13,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter
+from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import func, select, tuple_
 
 from cyo_adventure.api.deps import Context
@@ -44,6 +45,7 @@ from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.moderation.thresholds import load_admin_noise_floor
 from cyo_adventure.publishing import service as approval_service
 from cyo_adventure.publishing.state_machine import Visibility
+from cyo_adventure.storybook.models import ContentFlags
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -432,6 +434,38 @@ def _summary_age_band(blob: object) -> str | None:
     return None
 
 
+def _summary_themes(blob: object) -> list[str]:
+    """Return the story's themes from the blob metadata, or [] if absent."""
+    if isinstance(blob, dict):
+        metadata = blob.get("metadata")
+        if isinstance(metadata, dict):
+            themes = metadata.get("themes")
+            if isinstance(themes, list):
+                return [theme for theme in themes if isinstance(theme, str)]
+    return []
+
+
+def _summary_content_flags(blob: object) -> ContentFlags | None:
+    """Return the story's content-sensitivity flags, or None if absent/invalid.
+
+    #ASSUME: data integrity: a blob written by an older schema version may
+    carry a ``content_flags`` shape ``ContentFlags`` no longer accepts;
+    degrade to ``None`` (omit the badge) rather than fail the whole library
+    listing for a detail-only field.
+    #VERIFY: tests/unit/test_approval_unit.py.
+    """
+    if isinstance(blob, dict):
+        metadata = blob.get("metadata")
+        if isinstance(metadata, dict):
+            flags = metadata.get("content_flags")
+            if isinstance(flags, dict):
+                try:
+                    return ContentFlags.model_validate(flags)
+                except PydanticValidationError:
+                    return None
+    return None
+
+
 @router.get("/admin/storybooks")
 async def list_admin_storybooks(
     ctx: Context, status: str | None = None
@@ -545,6 +579,8 @@ async def list_admin_storybooks(
                 current_published_version=book.current_published_version,
                 created_at=book.created_at,
                 updated_at=row.created_at if row is not None else None,
+                themes=_summary_themes(blob),
+                content_flags=_summary_content_flags(blob),
             )
         )
     # Newest activity first: sort by the latest version's creation time, falling

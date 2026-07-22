@@ -20,6 +20,15 @@ export interface ReviewSummary {
   reviewer_independent: boolean
 }
 
+export type ContentFlagLevel = 'none' | 'mild' | 'moderate' | 'intense'
+
+/** Per-story content sensitivity flags, mirrors storybook/models.py::ContentFlags. */
+export interface ContentFlags {
+  violence?: ContentFlagLevel
+  scariness?: ContentFlagLevel
+  peril?: ContentFlagLevel
+}
+
 export interface ReviewQueueItem {
   storybook_id: string
   title: string
@@ -32,6 +41,9 @@ export interface ReviewQueueItem {
   age_band?: string | null
   /** When this version was created, a "waiting since" proxy (UX-A3). */
   waiting_since?: string | null
+  /** Themes and content-sensitivity flags for the book-detail popover. */
+  themes?: string[]
+  content_flags?: ContentFlags | null
 }
 
 export interface FindingView {

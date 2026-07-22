@@ -707,7 +707,15 @@ async def test_admin_storybooks_lists_all_statuses_bulk_newest_first() -> None:
     ver_a = StorybookVersion(
         storybook_id="a",
         version=1,
-        blob={"title": "A", "metadata": {"age_band": "6-8"}, "nodes": []},
+        blob={
+            "title": "A",
+            "metadata": {
+                "age_band": "6-8",
+                "themes": ["friendship"],
+                "content_flags": {"violence": "mild"},
+            },
+            "nodes": [],
+        },
     )
     ver_a.created_at = datetime(2026, 6, 10, tzinfo=UTC)  # newer activity
     ver_b = StorybookVersion(
@@ -732,6 +740,28 @@ async def test_admin_storybooks_lists_all_statuses_bulk_newest_first() -> None:
     assert first.status == "published"
     assert first.current_published_version == 1
     assert first.version == 1
+    assert first.themes == ["friendship"]
+    assert first.content_flags is not None
+    assert first.content_flags.violence == "mild"
+    # A blob with no metadata (book_b) leaves themes empty and flags None.
+    second = view.items[1]
+    assert second.themes == []
+    assert second.content_flags is None
     # Bulk: exactly 2 scalars (books, versions) + 1 execute (grouped max).
     assert session.scalars_calls == 2
     assert session.execute_calls == 1
+
+
+@pytest.mark.unit
+def test_summary_content_flags_degrades_on_invalid_shape() -> None:
+    """A content_flags dict that no longer matches the schema degrades to None
+    rather than failing the whole library listing for a detail-only field."""
+    blob = {"metadata": {"content_flags": {"violence": "catastrophic"}}}
+    assert approval._summary_content_flags(blob) is None
+
+
+@pytest.mark.unit
+def test_summary_themes_filters_non_string_entries() -> None:
+    """A themes list with a non-string entry keeps only the string values."""
+    blob = {"metadata": {"themes": ["friendship", 42, "courage"]}}
+    assert approval._summary_themes(blob) == ["friendship", "courage"]

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -26,6 +26,9 @@ const FLAGGED = {
     repaired: false,
     reviewer_independent: true,
   },
+  age_band: '8-11',
+  themes: ['adventure'],
+  content_flags: { violence: 'moderate', scariness: 'mild', peril: 'none' },
 }
 const READY = {
   storybook_id: 'ready-1',
@@ -105,6 +108,19 @@ describe('AdminConsolePage', () => {
     expect(screen.getByText('Gentle Tale')).toBeInTheDocument()
     expect(screen.getByText('2 flags')).toBeInTheDocument()
     expect(screen.getByText('Clean')).toBeInTheDocument()
+  })
+
+  it('opens a book-details dialog with age band, themes, content flags, and the queue moderation badge', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /View details for Scary Tale/ }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText('Ages 8-11')).toBeInTheDocument()
+    expect(within(dialog).getByText('adventure')).toBeInTheDocument()
+    expect(within(dialog).getByText(/Violence: moderate/)).toBeInTheDocument()
+    // The dialog's moderation slot reuses the same SeverityBadges the queue
+    // row already shows: "2 flags", not a duplicated/independent computation.
+    expect(within(dialog).getByText('2 flags')).toBeInTheDocument()
   })
 
   it('shows a Hard block badge (not a flag count) on a hard-blocked row', async () => {

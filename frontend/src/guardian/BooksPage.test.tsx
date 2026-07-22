@@ -56,6 +56,8 @@ const BOOKS = {
       flagged_count: 1,
       assigned_profile_ids: ['p1'],
       visibility: 'family' as const,
+      themes: ['friendship', 'courage'],
+      content_flags: { violence: 'mild', scariness: 'none', peril: 'moderate' },
     },
   ],
 }
@@ -113,6 +115,26 @@ describe('BooksPage', () => {
     // the count keeps this test true to what FlagBadge actually renders.
     expect(screen.getByText('1 flagged')).toBeInTheDocument()
     expect(screen.getByText(/Assigned to: Reader A$/)).toBeInTheDocument()
+  })
+
+  it('shows the age band next to each book', async () => {
+    routeGet()
+    renderPage()
+    expect(await screen.findByText('Ages 8-11')).toBeInTheDocument()
+  })
+
+  it('opens the book-details dialog with themes and content flags', async () => {
+    const user = userEvent.setup()
+    routeGet()
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /View details for The Lantern/ }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText('friendship, courage')).toBeInTheDocument()
+    expect(within(dialog).getByText(/Violence: mild/)).toBeInTheDocument()
+    expect(within(dialog).getByText(/Peril: moderate/)).toBeInTheDocument()
+    expect(within(dialog).getByText('1 flagged')).toBeInTheDocument()
+    await user.click(within(dialog).getByRole('button', { name: /^Close$/ }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('opens the assign dialog and assigns a sibling', async () => {

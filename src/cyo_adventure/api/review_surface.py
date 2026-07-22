@@ -23,6 +23,7 @@ from cyo_adventure.api.schemas import (
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import Source, Verdict
 from cyo_adventure.moderation.thresholds import admin_surfaces
+from cyo_adventure.storybook.models import ContentFlags
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -315,6 +316,8 @@ def build_review_queue_item(
         summary=surface.summary,
         age_band=_queue_age_band(blob),
         waiting_since=created_at,
+        themes=_queue_themes(blob),
+        content_flags=_queue_content_flags(blob),
     )
 
 
@@ -331,6 +334,36 @@ def _queue_age_band(blob: dict[str, object]) -> str | None:
         band = metadata.get("age_band")
         if isinstance(band, str) and band:
             return band
+    return None
+
+
+def _queue_themes(blob: dict[str, object]) -> list[str]:
+    """Return the story's themes from the blob metadata, or [] if absent."""
+    metadata = blob.get("metadata")
+    if isinstance(metadata, dict):
+        themes = metadata.get("themes")
+        if isinstance(themes, list):
+            return [theme for theme in themes if isinstance(theme, str)]
+    return []
+
+
+def _queue_content_flags(blob: dict[str, object]) -> ContentFlags | None:
+    """Return the story's content-sensitivity flags, or None if absent/invalid.
+
+    #ASSUME: data integrity: a blob written by an older schema version or a
+    corrupt-at-rest row may carry a ``content_flags`` shape ``ContentFlags``
+    no longer accepts; degrade to ``None`` (omit the badge) rather than fail
+    the whole queue row for a detail-only field.
+    #VERIFY: tests/unit/test_review_surface.py.
+    """
+    metadata = blob.get("metadata")
+    if isinstance(metadata, dict):
+        flags = metadata.get("content_flags")
+        if isinstance(flags, dict):
+            try:
+                return ContentFlags.model_validate(flags)
+            except PydanticValidationError:
+                return None
     return None
 
 
