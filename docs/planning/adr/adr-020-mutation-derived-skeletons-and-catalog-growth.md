@@ -144,7 +144,12 @@ It is deliberately distinct from ADR-005 story approval (which continues to gate
 published story) and from ADR-019's no-new-theme-review posture (themes still need no
 human step; structures always did need one, and this names it). No auto-merge for
 skeleton promotion PRs (OQ-5). WS-8 automation, when built, prepares PRs; humans merge
-them.
+them. **Delivered (2026-07-21):** WS-8 D1-D8 built exactly this boundary. Automation
+prepares a draft PR (`scripts/prepare_promotion_pr.py`, D4) and the scheduled S1-S6
+cadence runner (`scripts/flywheel_cycle.py`, D8) ends every cycle at a draft PR behind
+six reviewed-PR-only caps; no WS-8 code path merges, approves, enables auto-merge, or
+writes `skeletons/` on `main`. See
+[ws8-catalog-flywheel-design.md](../ws8-catalog-flywheel-design.md).
 
 ### 5. Cell inheritance
 
@@ -162,6 +167,46 @@ acceptance runner, including the band-mandatory denylist floor unioned in regard
 contract content. Mutants of the contract-less Tier-2 parents land contract-less at
 parity with their parent until the WS-2 Tier-2 migration wave, when they migrate in the
 same wave as ordinary skeletons (OQ-2).
+
+## Amendment 1 (2026-07-21): anti-clone floor recalibration
+
+Owner-approved. Full evidence and analysis:
+[`ws8-floor-recalibration-proposal.md`](../ws8-floor-recalibration-proposal.md).
+
+**Problem discovered building WS-8.** Decision 3's anti-clone floor rejected
+every automated mutation candidate. Its parent-distance clause required
+`structural_distance(parent, candidate) >= TAU_STRUCT`, but `TAU_STRUCT` (0.3325)
+is the 25th percentile of same-cell hand-authored *sibling-pair* distances. A
+bounded mutation shares most structure with its parent by construction, so the
+measured mutant parent-distances (min 0.029, median 0.082, max 0.117 across small
+trees; ~0.32 for a rare high-envelope-headroom tree) are essentially disjoint
+from the sibling-pair distribution (p05 0.231 to max 0.577). The floor applied a
+sibling-pair percentile to the parent distance and rejected ~100% of mutants.
+
+**Amendment.** The mutation-origin anti-clone floor is re-scoped (no safety level
+changes; the guarantee is preserved at a correctly-scoped threshold):
+
+1. The mutant parent-distance-vs-`TAU_STRUCT` clause is **retired**. `TAU_STRUCT`
+   is retained in the baseline as the documented hand-authored cross-tree
+   diversity target only.
+2. The in-cell anti-duplication clause (`TAU_CELL`) becomes the guarantee, applied
+   against **every in-cell tree including the parent** (the parent is itself an
+   in-cell tree). `TAU_CELL` is raised from the too-weak clamped 0.01 to a fixed,
+   owner-chosen **0.05** (rejects the catalog's observed near-duplicate pair at
+   0.0009 with a ~53x margin; admits mutations that are at least ~5% structurally
+   changed). This subsumes the retired clause: an M2-only re-map (distance ~0 from
+   its parent) is rejected here.
+3. The fingerprint anti-no-op clause is unchanged.
+
+This is a catalog-curation bar, not a safety gate: nothing reaches a child without
+the full deterministic gate, moderation, human structure approval (this ADR's
+decision 4 promotion PR), and human story approval (ADR-005). Verified end to end:
+mutants at or above 0.05 from their parent and every sibling now reach
+`promotable` (e.g. the-sleepy-little-star 0.117, puddle-jumping-day 0.066,
+the-teddy-bears-picnic 0.086), while a too-near mutant (the-lantern-festival
+0.0377) is correctly discarded at the structure floor. Implemented in
+`mutation/floors.py`, `scripts/calibrate_mutation_floors.py`, and
+`docs/planning/ws5_floor_baseline.json` (baseline v2).
 
 ## Consequences
 

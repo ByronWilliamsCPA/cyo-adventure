@@ -9,10 +9,18 @@ recorded in the bundle's ``reguide.json``, and their ``target_id`` values feed
 ``run_acceptance(..., resolved_reguide_ids=...)`` so a fully-resolved mutant
 becomes would-be-promotable and then faces the D7 anti-clone floor.
 
-The resolution content is ALWAYS author-supplied (design principle 6, OWASP
-LLM01: no untrusted input, and no LLM auto-authoring of guidance here). This
-module only models, loads, and reconciles that author input against the emitted
-items; it never generates guidance text.
+Resolution text is author-attributed: every :class:`ResolvedReguide` carries a
+mandatory ``author``. Under WS-8 (OQ-1 ratified, design 5.4) a resolution may be
+agent-drafted rather than hand-authored; an agent-drafted resolution is
+floor-screened, untrusted-derived content that MUST be human-reviewed in the
+promotion PR, and it is attributed ``author="agent:<model-id>"`` so the audit
+trail distinguishes drafted from hand-authored resolutions forever. This module
+stays generation-free: it only models, loads, and reconciles resolutions against
+the emitted items and never generates guidance text itself. The drafting and its
+deterministic reguide floor live in :mod:`cyo_adventure.flywheel.reguide_draft`,
+which feeds screened :class:`ResolvedReguide` values in (OWASP LLM01: the drafting
+prompt consumes catalog content only, and its output faces the floor, the full
+acceptance re-run, and human PR approval before it can reach the catalog).
 
 Pure module: standard library plus Pydantic and the ``mutation.ops`` value types.
 Deterministic: reconciliation is a pure function of the emitted items and the
@@ -35,7 +43,11 @@ if TYPE_CHECKING:
 
 
 class ResolvedReguide(BaseModel):
-    """One author-supplied resolution for an emitted re-guidance item.
+    """One resolution for an emitted re-guidance item.
+
+    The resolution may be hand-authored or agent-drafted-then-floor-screened
+    (WS-8, OQ-1); ``author`` records which, and an agent-drafted resolution is
+    untrusted-derived content that still faces human PR approval.
 
     Attributes:
         target: The kind of surface resolved (node beats, choice label, ending
@@ -43,8 +55,10 @@ class ResolvedReguide(BaseModel):
         target_id: The node / choice / ending id the resolution addresses; this
             is the key that reconciles against the emitted items and feeds
             ``resolved_reguide_ids``.
-        resolved_text: The new author-written guidance (beats / label / title).
-        author: Who authored the resolution (audit and reviewer context).
+        resolved_text: The new guidance (beats / label / title), hand-authored or
+            agent-drafted.
+        author: Who authored the resolution: a human name, or ``agent:<model-id>``
+            for a floor-screened agent draft (audit and reviewer context).
         note: An optional rationale recorded alongside the resolution.
     """
 
@@ -58,7 +72,10 @@ class ResolvedReguide(BaseModel):
 
 
 class ReguideResolutions(BaseModel):
-    """An author's resolution file for one mutant's re-guidance items.
+    """A resolution file for one mutant's re-guidance items.
+
+    Entries may be hand-authored or agent-drafted-then-floor-screened (WS-8);
+    see :class:`ResolvedReguide`.
 
     The documented resolution-file format: a JSON object with an optional
     ``mutant_slug`` and a ``resolutions`` list of :class:`ResolvedReguide`. It is

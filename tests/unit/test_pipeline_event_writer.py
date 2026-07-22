@@ -55,6 +55,41 @@ def test_validate_payload_rejects_non_scalar_value() -> None:
         _validate_payload(EventType.THRESHOLD_CHANGED, {"category": ["a", "b"]})
 
 
+def test_validate_payload_accepts_cell_saturated_enum_only_payload() -> None:
+    # WS-8 D1: the flywheel trigger's persisted signal is a closed-vocabulary
+    # cell coordinate plus the escalation level; a clean return is the pass
+    # signal for a fully enum-valued payload.
+    result = _validate_payload(
+        EventType.CELL_SATURATED,
+        {"age_band": "8-11", "length": "short", "style": "prose", "level": "catalog"},
+    )
+    assert result is None
+
+
+def test_validate_payload_rejects_cell_saturated_extra_key() -> None:
+    # An extra key (e.g. a theme brief mistakenly routed onto the flywheel
+    # signal) must be rejected before write: the trigger surface structurally
+    # cannot carry free text (writer half of the LLM01 property).
+    with pytest.raises(ValidationError, match="disallowed keys"):
+        _validate_payload(
+            EventType.CELL_SATURATED,
+            {
+                "age_band": "8-11",
+                "length": "short",
+                "style": "prose",
+                "level": "catalog",
+                "theme": "a fox finds a lantern",
+            },
+        )
+
+
+def test_validate_payload_rejects_cell_saturated_free_text_value() -> None:
+    # A free-text value under an allowlisted key is rejected on the value, not
+    # just the key: no theme prose can ride the flywheel signal.
+    with pytest.raises(ValidationError, match="free text is not permitted"):
+        _validate_payload(EventType.CELL_SATURATED, {"age_band": "x" * 201})
+
+
 def test_actor_system_has_no_user_id() -> None:
     actor = Actor.system()
     assert actor.actor_id is None

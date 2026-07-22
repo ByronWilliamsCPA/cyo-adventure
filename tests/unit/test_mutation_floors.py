@@ -104,14 +104,16 @@ def test_calibration_is_deterministic_and_committed_baseline_is_current() -> Non
 
 
 @pytest.mark.unit
-def test_degenerate_thresholds_are_clamped_and_recorded(
+def test_tau_cell_ships_the_fixed_floor_not_the_degenerate_observed_minimum(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A degenerate distribution clamps the floors up and records the anomaly.
+    """TAU_CELL ships as the fixed anti-duplication floor, never the observed minimum.
 
-    A same-cell minimum of 0 (two near-identical catalog trees) would ship a
-    clone-admitting TAU_CELL; the guard clamps it to the documented minimum and
-    records the clamp rather than silently shipping 0 (design 4.6, OQ-3).
+    ADR-020 floor-recalibration amendment: TAU_CELL is a fixed owner-chosen
+    anti-duplication floor (0.05), so a same-cell distribution whose minimum is a
+    near-duplicate (0.0) can never ship a clone-admitting TAU_CELL. The fixed value
+    is shipped and the observed minimum is recorded in the clamps note. TAU_STATE's
+    own anti-no-op clamp is unchanged.
     """
     monkeypatch.setattr(
         calib, "_same_cell_distances", lambda _catalog: [0.0, 0.004, 0.5]
@@ -121,11 +123,11 @@ def test_degenerate_thresholds_are_clamped_and_recorded(
     )
     baseline = calib.compute_baseline()
     clamps = cast("list[str]", baseline["clamps"])
-    assert clamps  # anomalies recorded, not silently shipped
-    assert baseline["tau_cell"] == calib._MIN_STRUCT_FLOOR  # pyright: ignore[reportPrivateUsage]
+    assert clamps  # the observed minimum is recorded, not silently shipped
+    assert baseline["tau_cell"] == calib._TAU_CELL_FLOOR  # pyright: ignore[reportPrivateUsage]
+    assert cast("float", baseline["tau_cell"]) > 0.004  # never the near-duplicate min
     # min cross state 0.1 -> 0.05 < 0.25, clamped up to the documented minimum.
     assert baseline["tau_state"] == calib._MIN_STATE_FLOOR  # pyright: ignore[reportPrivateUsage]
-    assert cast("float", baseline["tau_cell"]) <= cast("float", baseline["tau_struct"])
 
 
 # --- The structural anti-clone floor (design 4.6, three clauses) ---
@@ -146,25 +148,28 @@ def test_structural_floor_clause1_rejects_a_fingerprint_equal_candidate() -> Non
 
 @pytest.mark.unit
 @pytest.mark.security
-def test_structural_floor_clause2_rejects_m2_only_by_distance_not_fingerprint() -> None:
-    """An M2-only re-map passes the fingerprint clause but fails the DISTANCE clause.
+def test_structural_floor_rejects_an_m2_only_remap_as_a_near_parent_clone() -> None:
+    """An M2-only re-map (distance ~0 from its parent) is rejected as a near-parent clone.
 
-    The M2 subtlety (design 4.3): structure_fingerprint RETAINS ending kind/id, so
-    an M2-only mutant's fingerprint DOES change (clause 1 passes), but its
-    structural_distance is ~0 (the ending histograms are permutation-invariant), so
-    it fails clause 2 and is correctly rejected by the distance clause.
+    ADR-020 floor-recalibration amendment: the parent is compared as an in-cell
+    tree, so an M2-only re-map -- whose permutation-invariant ending histograms
+    leave its structural_distance from the parent ~0 -- is rejected by the
+    anti-duplication clause (< TAU_CELL), NOT by the retired parent-distance-vs-
+    TAU_STRUCT clause. Its fingerprint differs (kinds moved between leaves), so
+    clause 1 does not fire. The empty sibling cohort proves the parent itself is
+    the tree it clones.
     """
     _slug, parent = _first_m2_parent()
     candidate = M2.apply(parent, OpParams.of(), random.Random(0)).candidate
-    # Clause 1 would pass: the fingerprint differs (kinds moved between leaves).
+    # Clause 1 does not fire: the fingerprint differs (kinds moved between leaves).
     assert structure_fingerprint(candidate) != structure_fingerprint(parent)
-    # Clause 2 fails: the histograms are permutation-invariant, so distance is ~0.
-    assert structural_distance(parent, candidate) < TAU_STRUCT
+    # It sits below TAU_CELL from its parent (permutation-invariant histograms).
+    assert structural_distance(parent, candidate) < TAU_CELL
     reason = structural_floor_reason(parent, candidate, [])
     assert reason is not None
-    assert "distance to the parent" in reason
-    assert "TAU_STRUCT" in reason
-    # It is rejected by the DISTANCE clause, not the fingerprint clause.
+    assert "near-duplicate of an existing in-cell tree" in reason
+    assert "TAU_CELL" in reason
+    # Rejected by the anti-duplication clause, not the fingerprint clause.
     assert "fingerprint equals" not in reason
 
 

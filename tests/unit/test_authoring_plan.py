@@ -11,9 +11,14 @@ from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.api.schemas import AuthoringPlanRequest
 from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
-from cyo_adventure.db.models import Concept, GenerationJob, StoryRequest
+from cyo_adventure.db.models import (
+    Concept,
+    GenerationJob,
+    PipelineEvent,
+    StoryRequest,
+)
 from cyo_adventure.diversity.query import DifferentiationLevel, SimilarityContext
-from cyo_adventure.events import Actor
+from cyo_adventure.events import Actor, EventType
 from cyo_adventure.generation.skeleton_match import select_skeleton_for_cell
 from cyo_adventure.story_requests.authoring_plan import (
     build_authoring_plan,
@@ -802,6 +807,84 @@ async def test_skeleton_fill_auto_pick_catalog_saturation_warns_and_logs() -> No
     event, kwargs = logged[0]
     assert event == "selection.cell_theme_saturated"
     assert kwargs["level"] == "catalog"
+    # WS-8 D1: the log line now also carries the full cell coordinate.
+    assert kwargs["length"] == "short"
+    assert kwargs["style"] == "prose"
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_catalog_escalation_records_cell_saturated_event() -> None:
+    """WS-8 D1 pin: a past-tree escalation persists exactly one enum-only
+    CELL_SATURATED event, anchored to the request, with the four cell/level
+    keys and no free text (the writer allowlist would reject anything else)."""
+    ctx = _sim_ctx(
+        similar_count_per_slug=dict.fromkeys(_CELL_8_11_SHORT_PROSE, 2),
+        recommendation=DifferentiationLevel.CATALOG,
+    )
+    session = _FakeSession()
+    concept = _short_prose_8_11_concept()
+    request = _request()
+    request.id = uuid.uuid4()
+    with patch(
+        "cyo_adventure.story_requests.authoring_plan.similarity_context",
+        new=AsyncMock(return_value=ctx),
+    ):
+        await build_authoring_plan(
+            session,
+            request,
+            concept,
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
+            actor=_admin_actor(),
+        )
+    saturation_events = [
+        obj
+        for obj in session.added
+        if isinstance(obj, PipelineEvent)
+        and obj.event_type == str(EventType.CELL_SATURATED)
+    ]
+    assert len(saturation_events) == 1
+    event = saturation_events[0]
+    assert event.entity_type == "story_request"
+    assert event.entity_id == str(request.id)
+    assert event.actor_role == "system"
+    assert event.actor_id is None
+    assert event.payload == {
+        "age_band": "8-11",
+        "length": "short",
+        "style": "prose",
+        "level": "catalog",
+    }
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_tree_records_no_cell_saturated_event() -> None:
+    """WS-8 D1: the TREE (no-saturation) path emits no CELL_SATURATED event."""
+    ctx = _sim_ctx(
+        similar_count_per_slug=dict.fromkeys(_CELL_8_11_SHORT_PROSE, 0),
+        recommendation=DifferentiationLevel.TREE,
+    )
+    session = _FakeSession()
+    concept = _short_prose_8_11_concept()
+    with patch(
+        "cyo_adventure.story_requests.authoring_plan.similarity_context",
+        new=AsyncMock(return_value=ctx),
+    ):
+        await build_authoring_plan(
+            session,
+            _request(),
+            concept,
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
+            actor=_admin_actor(),
+        )
+    assert not any(
+        isinstance(obj, PipelineEvent)
+        and obj.event_type == str(EventType.CELL_SATURATED)
+        for obj in session.added
+    )
 
 
 @pytest.mark.asyncio

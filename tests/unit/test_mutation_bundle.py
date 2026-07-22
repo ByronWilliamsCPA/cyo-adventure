@@ -8,20 +8,24 @@ derivation (contract parity, graft slot import, prune slot drop).
 
 from __future__ import annotations
 
+import ast
 import json
 from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 import pytest
+from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.mutation.bundle import (
     LINEAGE_VERSION,
     Lineage,
+    LineageV2,
     OpChainEntry,
     acceptance_digest,
     build_lineage,
     content_sha256,
     derive_mutant_contract,
+    load_lineage,
     verify_bundle,
     write_bundle,
 )
@@ -51,7 +55,7 @@ def _acceptance_stub() -> dict[str, object]:
     return {"promotable": True, "stages": [{"stage": "1-gate", "passed": True}]}
 
 
-def _lineage(mutant_slug: str = "m-slug") -> Lineage:
+def _lineage(mutant_slug: str = "m-slug") -> LineageV2:
     return build_lineage(
         mutant_slug=mutant_slug,
         parent={"id": "p", "title": "P"},
@@ -78,6 +82,7 @@ def test_build_lineage_records_hash_and_digest() -> None:
     """build_lineage stamps the parent hash, acceptance digest, and version."""
     lineage = _lineage()
     assert lineage.lineage_version == LINEAGE_VERSION
+    assert lineage.origin == "mutation"
     assert lineage.parent_sha256 == content_sha256({"id": "p", "title": "P"})
     assert lineage.acceptance_digest == acceptance_digest(_acceptance_stub())
     assert lineage.donor_slugs == ["a-donor"]
@@ -86,9 +91,9 @@ def test_build_lineage_records_hash_and_digest() -> None:
 
 @pytest.mark.unit
 def test_lineage_round_trips_through_json() -> None:
-    """A serialized lineage validates back to an equal record."""
+    """A serialized v2 lineage validates back to an equal record."""
     lineage = _lineage()
-    restored = Lineage.model_validate_json(lineage.model_dump_json())
+    restored = LineageV2.model_validate_json(lineage.model_dump_json())
     assert restored == lineage
 
 
@@ -282,3 +287,214 @@ def test_derive_mutant_contract_imports_graft_slots() -> None:
     assert any(sid.startswith("M") and "_" in sid for sid in slot_ids)
     assert mutant.contract_version == 1
     assert mutant.skeleton_slug == "cave-graft"
+
+
+# --------------------------------------------------------------------------- #
+# Lineage v2: the feed-agnostic origin discriminator (WS-8 D5, design 7.2).
+# --------------------------------------------------------------------------- #
+
+
+def _v1_lineage(*, parent_slug: str, parent_sha256: str) -> Lineage:
+    """Build a genuine v1 (``lineage_version == 1``, no origin) lineage record."""
+    return Lineage(
+        lineage_version=1,
+        mutant_slug="m",
+        parent_slug=parent_slug,
+        parent_sha256=parent_sha256,
+        donor_slugs=["a-donor"],
+        op_chain=[OpChainEntry(op_id="M1", params={}, seed=0)],
+        created_at="2026-07-20T00:00:00+00:00",
+        tool_version="9.9.9",
+        acceptance_digest="abc123",
+    )
+
+
+@pytest.mark.unit
+def test_v1_bundle_still_verifies(tmp_path: Path) -> None:
+    """A v1 bundle on disk (no origin field) still loads and verify_bundle's OK."""
+    parent = _load(_CAVE)
+    v1 = _v1_lineage(
+        parent_slug="the-cave-of-echoes", parent_sha256=content_sha256(parent)
+    )
+    write_bundle(
+        tmp_path,
+        slug="m",
+        candidate=parent,
+        lineage=v1,
+        acceptance=_acceptance_stub(),
+        reguide={"items": []},
+    )
+    # The sidecar on disk is genuinely v1: keyed on lineage_version, no origin.
+    written = cast(
+        "dict[str, object]",
+        json.loads((tmp_path / "m" / "m.lineage.json").read_text(encoding="utf-8")),
+    )
+    assert written["lineage_version"] == 1
+    assert "origin" not in written
+    result = verify_bundle(tmp_path / "m", skeletons_root=_SKELETONS_ROOT)
+    assert result.ok is True
+    assert result.actual_sha256 == content_sha256(parent)
+
+
+@pytest.mark.unit
+def test_load_lineage_upgrades_v1_to_v2_mutation() -> None:
+    """A v1 payload upgrades to a canonical LineageV2 mutation record on read."""
+    v1 = _v1_lineage(parent_slug="p", parent_sha256="h")
+    upgraded = load_lineage(v1.model_dump_json())
+    assert isinstance(upgraded, LineageV2)
+    assert upgraded.origin == "mutation"
+    assert upgraded.lineage_version == LINEAGE_VERSION
+    assert upgraded.parent_slug == "p"
+    assert upgraded.parent_sha256 == "h"
+    assert [e.op_id for e in upgraded.op_chain] == ["M1"]
+
+
+@pytest.mark.unit
+def test_v2_mutation_without_parent_fails() -> None:
+    """A v2 mutation record without a parent fails cross-field validation."""
+    with pytest.raises(PydanticValidationError):
+        LineageV2(
+            origin="mutation",
+            mutant_slug="m",
+            parent_slug=None,
+            parent_sha256=None,
+            op_chain=[OpChainEntry(op_id="M1")],
+            created_at="2026-07-20T00:00:00+00:00",
+            tool_version="9.9.9",
+            acceptance_digest="abc123",
+        )
+
+
+@pytest.mark.unit
+def test_v2_mutation_with_empty_op_chain_fails() -> None:
+    """A v2 mutation record with an empty op_chain fails validation."""
+    with pytest.raises(PydanticValidationError):
+        LineageV2(
+            origin="mutation",
+            mutant_slug="m",
+            parent_slug="p",
+            parent_sha256="h",
+            op_chain=[],
+            created_at="2026-07-20T00:00:00+00:00",
+            tool_version="9.9.9",
+            acceptance_digest="abc123",
+        )
+
+
+@pytest.mark.unit
+def test_v2_fresh_without_generator_fails() -> None:
+    """A v2 fresh record without generator provenance fails validation."""
+    with pytest.raises(PydanticValidationError):
+        LineageV2(
+            origin="fresh",
+            mutant_slug="fresh-tree",
+            created_at="2026-07-20T00:00:00+00:00",
+            tool_version="9.9.9",
+            acceptance_digest="abc123",
+        )
+
+
+@pytest.mark.unit
+def test_v2_fresh_with_parent_fails() -> None:
+    """A v2 fresh record that carries a parent fails validation."""
+    with pytest.raises(PydanticValidationError):
+        LineageV2(
+            origin="fresh",
+            mutant_slug="fresh-tree",
+            parent_slug="p",
+            parent_sha256="h",
+            generator="ws6:0.1",
+            generation_params_sha256="params-hash",
+            created_at="2026-07-20T00:00:00+00:00",
+            tool_version="9.9.9",
+            acceptance_digest="abc123",
+        )
+
+
+def _fresh_lineage(*, acceptance_digest_value: str) -> LineageV2:
+    """Build a well-formed v2 fresh (WS-6) lineage record."""
+    return LineageV2(
+        origin="fresh",
+        mutant_slug="fresh-tree",
+        generator="ws6:0.1",
+        generation_params_sha256="params-hash",
+        created_at="2026-07-20T00:00:00+00:00",
+        tool_version="9.9.9",
+        acceptance_digest=acceptance_digest_value,
+    )
+
+
+@pytest.mark.unit
+def test_v2_fresh_bundle_verifies_acceptance_digest(tmp_path: Path) -> None:
+    """A well-formed fresh bundle verifies its acceptance digest, not a parent."""
+    acceptance = _acceptance_stub()
+    fresh = _fresh_lineage(acceptance_digest_value=acceptance_digest(acceptance))
+    write_bundle(
+        tmp_path,
+        slug="fresh-tree",
+        candidate={"id": "fresh-tree"},
+        lineage=fresh,
+        acceptance=acceptance,
+        reguide={"items": []},
+    )
+    written = cast(
+        "dict[str, object]",
+        json.loads(
+            (tmp_path / "fresh-tree" / "fresh-tree.lineage.json").read_text(
+                encoding="utf-8"
+            )
+        ),
+    )
+    assert written["origin"] == "fresh"
+    # No parent exists, so a nonexistent skeletons_root is irrelevant to the result.
+    result = verify_bundle(tmp_path / "fresh-tree", skeletons_root=_SKELETONS_ROOT)
+    assert result.ok is True
+    assert result.actual_sha256 == acceptance_digest(acceptance)
+
+
+@pytest.mark.unit
+def test_v2_fresh_bundle_hard_fails_on_tampered_acceptance(tmp_path: Path) -> None:
+    """A fresh bundle whose acceptance.json changed since bundling must not verify."""
+    fresh = _fresh_lineage(acceptance_digest_value="deadbeefdeadbeef")
+    write_bundle(
+        tmp_path,
+        slug="fresh-tree",
+        candidate={"id": "fresh-tree"},
+        lineage=fresh,
+        acceptance=_acceptance_stub(),  # digest will not match the recorded one
+        reguide={"items": []},
+    )
+    result = verify_bundle(tmp_path / "fresh-tree", skeletons_root=_SKELETONS_ROOT)
+    assert result.ok is False
+    assert "acceptance digest mismatch" in result.message
+
+
+@pytest.mark.unit
+def test_origin_is_metadata_only_no_acceptance_stage_branches() -> None:
+    """Safety pin: no acceptance stage or floor keys a decision off ``origin``.
+
+    The lineage ``origin`` is provenance metadata only (design 7.2 safety
+    property). If ``acceptance.py`` or ``floors.py`` ever read ``.origin`` or a bare
+    ``origin`` name, a promotion could be relaxed by declaring a different origin;
+    the contract forbids it, so every acceptance stage and floor that applies to a
+    tree applies regardless of origin. This AST check fails loudly if that ever
+    changes, and no ``origin`` value may be added to relax an acceptance stage.
+    """
+    import cyo_adventure.mutation.acceptance as acceptance_mod
+    import cyo_adventure.mutation.floors as floors_mod
+
+    for module in (acceptance_mod, floors_mod):
+        source_path = module.__file__
+        assert source_path is not None
+        tree = ast.parse(Path(source_path).read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Attribute):
+                assert node.attr != "origin", (
+                    f"{Path(source_path).name} branches on .origin; "
+                    f"origin must never key an acceptance/floor decision"
+                )
+            if isinstance(node, ast.Name):
+                assert node.id != "origin", (
+                    f"{Path(source_path).name} references a bare 'origin'; "
+                    f"origin must never key an acceptance/floor decision"
+                )

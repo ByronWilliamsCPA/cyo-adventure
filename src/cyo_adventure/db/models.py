@@ -118,7 +118,7 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated', "
     "'kid_flagged', 'flag_resolved', "
     "'user_managed', 'family_managed', 'family_connection_changed', "
-    "'node_edited', 'profile_viewed'"
+    "'node_edited', 'profile_viewed', 'cell_saturated'"
 )
 _PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (

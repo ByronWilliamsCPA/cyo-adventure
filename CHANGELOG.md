@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- WS-8 catalog flywheel (D1-D8): the demand-driven, human-gated catalog-growth
+  loop. D1 persists WS-4's cell-saturation as an enum-only `CELL_SATURATED`
+  pipeline event (no theme text; LLM01 enforced both directions) with a read-only
+  `scripts/flywheel_scan.py`. D2 adds a pure `flywheel/strategy.py` that plans
+  bounded per-cell mutation attempts over the unchanged WS-5 engine (parent
+  eligibility, lineage-depth ceiling, the four chain templates, section 6.4
+  ranking) with a deterministic `flywheel/ledger.py` discard memory and a
+  `flywheel_candidates.py` CLI. D3 adds fenced agent re-guidance drafting
+  (`flywheel/reguide_draft.py`, the ratified OQ-1 hybrid) screened by a
+  deterministic floor that never self-resolves. D4 adds
+  `scripts/prepare_promotion_pr.py` + `scripts/check_promotion_bundle.py` + a
+  `skeleton-promotion` CI job: automation prepares a draft PR (worktree-only,
+  verify-refusals, no auto-merge) and a human merges. D5 adds the feed-agnostic
+  `LineageV2` promotion contract (an `origin` discriminator with v1 read-compat)
+  so WS-6 fresh trees can plug in later. D6 adds optional
+  `scripts/parameterize_promotion.py` glue + runbook. D7 adds a read-only
+  `scripts/flywheel_report.py` metrics/hygiene report. D8 adds
+  `scripts/flywheel_cycle.py`, the weekly S1-S6 runner, with a single pure
+  enforcement gate (`flywheel/cadence.py`) for the six section-8.2 hard caps
+  (3 events/30 days/2 requests to trigger; 12 attempts/cell; 1 PR/cell; 3 global;
+  30-day cool-down; 4 merges/month), reporting every capped cell and always
+  ending at a draft PR. Nothing reaches a child without the full fill -> gate ->
+  moderation -> ADR-005 approval chain.
+
+### Changed
+
+- WS-8 / ADR-020 floor-recalibration amendment (owner-approved): re-scoped the
+  mutation-origin anti-clone floor so bounded mutations can actually clear it. The
+  mutant parent-distance-vs-`TAU_STRUCT` clause is retired (`TAU_STRUCT` -- the
+  25th percentile of same-cell hand-authored SIBLING-PAIR distances, 0.3325 -- was
+  mis-applied to the parent-to-mutant distance, which is categorically smaller, so
+  it rejected ~every mutant). The in-cell anti-duplication clause `TAU_CELL` is now
+  the guarantee, applied against every in-cell tree INCLUDING the parent, and
+  raised from the too-weak clamped 0.01 to a fixed owner-chosen 0.05 (rejects the
+  catalog's observed 0.0009 near-duplicate with a ~53x margin). The fingerprint
+  anti-no-op clause is unchanged. No safety level changes: this is a
+  catalog-curation bar behind the full gate + moderation + human structure
+  approval + human story approval. Touches `mutation/floors.py`,
+  `scripts/calibrate_mutation_floors.py`, `docs/planning/ws5_floor_baseline.json`
+  (baseline v2), and ADR-020 (amendment 1); see
+  `docs/planning/ws8-floor-recalibration-proposal.md`.
+
+### Security
+
+- Bump the transitive frontend dependency `fast-uri` from 3.1.3 to 3.1.4
+  (GHSA-v2hh-gcrm-f6hx). Lockfile-only patch within `ajv`'s existing `^3.0.1`
+  range; clears the OSV dependency-scan gate. `fast-uri` is dev/build tooling
+  (pulled via `workbox-build`), not runtime request-path code.
 ## [0.26.0] - 2026-07-22
 
 ### Changed

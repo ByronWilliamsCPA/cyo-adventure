@@ -359,6 +359,20 @@ in WS-0 must detect and fail it.
   (WS-5) tree via the neutralize transform (`out/pilot/_neutralize.py`) into the
   parameterized catalog, behind a human structure-approval step.
 - **Serves:** [K3](capability-register.md). **Metric:** net new trees per month.
+- **Status: Delivered (D1-D8).** The full loop is built, tested, and merged:
+  the enum-only `CELL_SATURATED` trigger + read-only scan (D1), the bounded
+  candidate strategy with the discard ledger (D2), the fenced agent re-guidance
+  drafting + deterministic floor (D3), draft-PR preparation with the worktree /
+  branch / verify refusals and CI re-proof (D4), the feed-agnostic Lineage v2
+  contract (D5), the parameterize-at-promotion glue (D6), the read-only metrics
+  report (D7), and the scheduled S1-S6 cadence runner behind the six section-8.2
+  hard caps + cool-downs, always ending at a draft PR (D8,
+  `scripts/flywheel_cycle.py` + `flywheel/cadence.py`). Automation prepares PRs;
+  a human always merges (ADR-020 decision 4). The ADR-020 amendment-1
+  anti-clone-floor recalibration (2026-07-21) re-scoped the mutation-origin
+  floor to the `TAU_CELL`-at-0.05 in-cell bar so automated candidates reach
+  `promotable`, with no safety-level change. See
+  [ws8-catalog-flywheel-design.md](ws8-catalog-flywheel-design.md).
 
 ### WS-7: Request interpretation and expectation-setting (delivers K19)
 

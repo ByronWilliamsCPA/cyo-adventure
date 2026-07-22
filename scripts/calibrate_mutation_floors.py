@@ -62,12 +62,27 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 _SKELETON_ROOT = _REPO_ROOT / "skeletons"
 _BASELINE_PATH = _REPO_ROOT / "docs" / "planning" / "ws5_floor_baseline.json"
 
-# The baseline schema version, bumped only when the artifact's shape changes.
-_BASELINE_VERSION = 1
+# The baseline schema version, bumped when the artifact's shape or a floor's
+# derivation changes. v2: the ADR-020 floor-recalibration amendment made TAU_CELL
+# a fixed owner-chosen anti-duplication floor and demoted TAU_STRUCT to
+# documentation (see _TAU_CELL_FLOOR and docs/planning/ws8-floor-recalibration-proposal.md).
+_BASELINE_VERSION = 2
 
 # The percentile (0-100) used for TAU_STRUCT (design 4.6 / OQ-3: P25 of same-cell
-# hand-authored pairs).
+# hand-authored pairs). As of the ADR-020 floor-recalibration amendment TAU_STRUCT
+# is retained as documentation only (the cross-tree diversity target); it no
+# longer gates mutants.
 _TAU_STRUCT_PERCENTILE = 25.0
+
+# TAU_CELL: the fixed, owner-chosen anti-duplication floor (ADR-020 floor-
+# recalibration amendment). It is the minimum structural_distance a mutant must
+# hold from EVERY in-cell tree INCLUDING its parent, replacing the retired
+# mutant parent-distance-vs-TAU_STRUCT clause. Chosen at 0.05: it rejects the
+# catalog's observed near-duplicate pair (~0.0009) with a ~53x margin while
+# admitting mutations that represent a genuine structural change. Tunable only
+# by a reviewed PR (a curation bar, not a data-derived value that would drift
+# with operator changes).
+_TAU_CELL_FLOOR = 0.05
 
 # The anti-no-op target and the fraction of the minimum cross-Tier-2 state
 # distance used to derive TAU_STATE (design 5.4). The smallest genuinely-distinct
@@ -242,7 +257,6 @@ def compute_baseline() -> dict[str, object]:
     raw_tau_struct = (
         _percentile(same_cell, _TAU_STRUCT_PERCENTILE) if same_cell else 0.0
     )
-    raw_tau_cell = min(same_cell) if same_cell else 0.0
     raw_tau_state = (
         min(_TAU_STATE_TARGET, min(cross_state) * _TAU_STATE_CROSS_FRACTION)
         if cross_state
@@ -258,24 +272,19 @@ def compute_baseline() -> dict[str, object]:
         clamps.append(struct_clamp)
         tau_struct = _MIN_STRUCT_FLOOR
 
-    tau_cell = raw_tau_cell
-    if tau_cell <= _MIN_STRUCT_FLOOR:
-        cell_clamp = (
-            f"TAU_CELL calibrated to {raw_tau_cell:.6f} (<= {_MIN_STRUCT_FLOOR}), "
-            f"which would admit a near-identical in-cell clone; clamped up to the "
-            f"documented minimum"
-        )
-        clamps.append(cell_clamp)
-        tau_cell = _MIN_STRUCT_FLOOR
-    # Design invariant: TAU_CELL <= TAU_STRUCT (a mutant far enough from its
-    # parent may still clone a sibling, so the in-cell floor is never stricter).
-    if tau_cell > tau_struct:
-        order_clamp = (
-            f"TAU_CELL {tau_cell:.6f} exceeded TAU_STRUCT {tau_struct:.6f}; lowered "
-            f"TAU_CELL to TAU_STRUCT to preserve TAU_CELL <= TAU_STRUCT"
-        )
-        clamps.append(order_clamp)
-        tau_cell = tau_struct
+    # ADR-020 floor-recalibration amendment: TAU_CELL is the fixed owner-chosen
+    # anti-duplication floor, NOT the observed same-cell minimum (which was the
+    # catalog's own near-duplicate pair). It gates a mutant against every in-cell
+    # tree including its parent; the retired parent-distance clause is subsumed.
+    observed_min = min(same_cell) if same_cell else 0.0
+    tau_cell = _TAU_CELL_FLOOR
+    cell_note = (
+        f"TAU_CELL is the fixed anti-duplication floor {_TAU_CELL_FLOOR} (ADR-020 "
+        f"floor-recalibration amendment); it rejects the observed same-cell minimum "
+        f"pair at {observed_min:.6f} with margin. The raw observed minimum is no "
+        f"longer shipped as the floor."
+    )
+    clamps.append(cell_note)
 
     tau_state = raw_tau_state
     if tau_state < _MIN_STATE_FLOOR:
@@ -295,12 +304,20 @@ def compute_baseline() -> dict[str, object]:
         "tau_state": round(tau_state, 6),
         "derivation": {
             "tau_struct": (
-                "25th percentile of same-cell hand-authored structural_distance"
-                " pairs (design 4.6, OQ-3)"
+                "DOCUMENTATION ONLY as of the ADR-020 floor-recalibration"
+                " amendment: the 25th percentile of same-cell hand-authored"
+                " structural_distance pairs (the cross-tree diversity target for"
+                " independently authored trees). No longer gates mutants; the"
+                " anti-clone guarantee is TAU_CELL against parent + siblings."
             ),
             "tau_cell": (
-                "observed same-cell minimum structural_distance (design 4.6, OQ-3),"
-                " clamped to <= TAU_STRUCT"
+                "owner-chosen fixed anti-duplication floor (ADR-020 floor-"
+                "recalibration amendment, docs/planning/ws8-floor-recalibration-"
+                "proposal.md): the minimum structural_distance a mutant must hold"
+                " from EVERY in-cell tree INCLUDING its parent. Replaces the"
+                " retired mutant parent-distance-vs-TAU_STRUCT clause, which"
+                " mis-applied a same-cell SIBLING-PAIR percentile to the parent"
+                " distance and rejected ~every bounded mutant."
             ),
             "tau_state": (
                 "anti-no-op floor min(0.5, min_cross_tier2_state_distance/2), clamped"
