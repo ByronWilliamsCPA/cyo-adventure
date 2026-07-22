@@ -1,0 +1,136 @@
+# Adversarial Safety Evaluation for CYO Adventure
+# Runs the adversarial corpus against the REAL moderation classifiers and gates
+# on the per-class acceptance thresholds in
+# docs/planning/safety/adversarial-safety-evaluation.md (the `llm_eval` tier in
+# tests/llm_eval/). The gate lives in the pytest assertions: classes A/B must be
+# 100% routed-to-human, class F 100% blocked pre-egress, and no negative control
+# may over-block.
+#
+# Cadence: weekly + manual only, never per PR (this tier needs live-model
+# credentials and real network I/O). Because a schedule-only failure never turns
+# a PR red, a failed scheduled run files/updates one tracking issue.
+#
+# Credentials: set the secrets OPENROUTER_API_KEY and one of OPENAI_API_KEY /
+# PERSPECTIVE_API_KEY. Until they exist the tier SKIPS (the run is green but
+# measures nothing); the pre-flight step warns loudly on a scheduled run so a
+# missing credential is visible rather than silently passing.
+name: Safety Evaluation
+
+on:
+  schedule:
+    # Weekly, Sundays at 04:00 UTC (offset from mutation-testing.yml at 02:00).
+    - cron: '0 4 * * 0'
+  workflow_dispatch:
+
+concurrency:
+  group: safety-eval-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  safety-eval:
+    name: Adversarial Safety Evaluation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write  # failure-notification step files a tracking issue
+
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.14'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+
+      - name: Install dependencies
+        run: uv sync --all-extras --locked
+
+      - name: Warn if credentials are absent on a scheduled run
+        if: github.event_name == 'schedule'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PERSPECTIVE_API_KEY: ${{ secrets.PERSPECTIVE_API_KEY }}
+        run: |
+          if [ -z "$OPENROUTER_API_KEY" ] || { [ -z "$OPENAI_API_KEY" ] && [ -z "$PERSPECTIVE_API_KEY" ]; }; then
+            echo "::warning::Safety-eval credentials not configured; the llm_eval tier will skip and measure nothing. Set OPENROUTER_API_KEY and one of OPENAI_API_KEY / PERSPECTIVE_API_KEY."
+          fi
+
+      - name: Run adversarial safety evaluation
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PERSPECTIVE_API_KEY: ${{ secrets.PERSPECTIVE_API_KEY }}
+          # The gate lives in the pytest assertions, not coverage, so run without
+          # the repo's default --cov/--cov-fail-under addopts (which would fail on
+          # this single-test selection). importlib import mode is preserved.
+          CYO_LLM_EVAL_OUT: safety-eval-results/adversarial-results.json
+        run: |
+          set -o pipefail
+          uv run pytest -m llm_eval -o addopts="--import-mode=importlib" -v -ra \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload evaluation results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: safety-eval-results
+          path: safety-eval-results/**
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: File tracking issue on scheduled failure
+        # Schedule-only workflows fail invisibly: no PR turns red and nobody is
+        # notified. Keep exactly one open tracking issue up to date.
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const title = 'Weekly adversarial safety evaluation is failing';
+            const body = [
+              'The scheduled Safety Evaluation workflow failed.',
+              '',
+              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              'A failure here means the moderation gate missed an adversarial',
+              'corpus item (class A/B routed-to-human, or an F PII egress) or a',
+              'negative control over-blocked. This issue is filed automatically',
+              'because schedule-only workflows never surface failures on a PR.',
+              'Close it once a weekly run succeeds again.',
+            ].join('\n');
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+            });
+            const existing = issues.find((issue) => issue.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['ci-failure'],
+              });
+            }
