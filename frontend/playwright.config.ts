@@ -71,10 +71,24 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      // Runs scripts/reset_e2e_real_state.py (via e2e-real/_reset.setup.ts)
+      // before the real-backend project's specs, so a second consecutive
+      // `npm run test:e2e:real` is deterministic (Phase 4.2): it reverts the
+      // seeded review story's real approval and clears reading_state rows a
+      // prior run pinned at an ending. Matched by testMatch, not the default
+      // spec/test glob, so `real-backend` below never picks this file up as
+      // an ordinary test; `chromium` has no backend to reset and does not
+      // depend on either project.
+      name: 'real-backend-setup',
+      testDir: './e2e-real',
+      testMatch: /_reset\.setup\.ts/,
+    },
+    {
       // Real-backend smoke tier: zero route mocks; requires the local stack
       // (Postgres + seeded uvicorn on :8000). Run via npm run test:e2e:real.
       name: 'real-backend',
       testDir: './e2e-real',
+      dependencies: ['real-backend-setup'],
       fullyParallel: false,
       // #EDGE: data-integrity: the approve test mutates the database, so a CI
       // retry after a post-mutation failure re-enters an already-approved

@@ -41,7 +41,10 @@ test('the admin sees the seeded in-review story in the real queue', async ({ pag
   await seedGuardianSession(context, 'dev-admin')
   await page.goto('/admin')
   await expect(page.getByRole('link', { name: /The Bridge Builder/ })).toBeVisible()
-  await expect(page.getByText('1 flagged')).toBeVisible()
+  // #ASSUME: data-integrity: AdminConsolePage.tsx renders "1 flag" (singular,
+  // no "-ged" suffix) for a single flagged passage; see FlagBadge label logic.
+  // #VERIFY: AdminConsolePage.test.tsx asserts the same literal text.
+  await expect(page.getByText('1 flag')).toBeVisible()
 })
 
 test('a dual-role adult can reach the admin queue from the guardian console', async ({
