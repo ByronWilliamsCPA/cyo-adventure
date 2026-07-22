@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeAuditApi, type AuditEventView, type AuditListView } from './auditApi'
@@ -234,17 +236,9 @@ export function AuditPage() {
         </button>
       </form>
 
-      {state.kind === 'loading' ? (
-        <div role="status" aria-live="polite">
-          Loading…
-        </div>
-      ) : null}
+      {state.kind === 'loading' ? <LoadingStatus /> : null}
 
-      {state.kind === 'error' ? (
-        <p role="alert" className="console__error cyo-text-error">
-          {state.message}
-        </p>
-      ) : null}
+      {state.kind === 'error' ? <ErrorBanner className="console__error">{state.message}</ErrorBanner> : null}
 
       {refreshError ? (
         <p role="alert" className="console__notice cyo-text-muted">
@@ -255,11 +249,7 @@ export function AuditPage() {
         </p>
       ) : null}
 
-      {refreshing && state.kind === 'ready' ? (
-        <div role="status" aria-live="polite">
-          Refreshing…
-        </div>
-      ) : null}
+      {refreshing && state.kind === 'ready' ? <LoadingStatus>Refreshing…</LoadingStatus> : null}
 
       {state.kind === 'ready' && state.data.events.length === 0 ? (
         <p className="console__muted cyo-text-muted">No matching audit events.</p>

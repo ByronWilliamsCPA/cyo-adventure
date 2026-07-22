@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { useAuth } from '../auth/useAuth'
 import { GUARDIAN_CONSOLE_PATH } from '../routes'
 import '../guardian/guardian.css'
@@ -65,9 +66,9 @@ export function AdminShell() {
         ) : null}
       </nav>
       {signOutError ? (
-        <p role="alert" className="guardian-shell__error cyo-text-error">
+        <ErrorBanner className="guardian-shell__error">
           Sign-out failed. Check your connection and try again.
-        </p>
+        </ErrorBanner>
       ) : null}
       <main className="guardian-shell__main">
         <Outlet />

@@ -350,7 +350,7 @@ describe('IntakePage', () => {
     renderPage()
 
     expect(await screen.findByText(/could not load your requests/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Retry/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Try again/i })).toBeInTheDocument()
     // A failed load must NOT masquerade as a submit failure.
     expect(screen.queryByText(/could not send this request/i)).toBeNull()
   })
@@ -448,7 +448,7 @@ describe('IntakePage', () => {
     expect(mockPost.mock.calls.filter((c) => c[0] === '/v1/concepts')).toHaveLength(1)
   })
 
-  it('retries the load when the Retry button is clicked after a load failure', async () => {
+  it('retries the load when the Try again button is clicked after a load failure', async () => {
     const user = userEvent.setup()
     let calls = 0
     mockGet.mockReset().mockImplementation((url: string) => {
@@ -464,7 +464,7 @@ describe('IntakePage', () => {
     renderPage()
 
     await screen.findByText(/could not load your requests/i)
-    await user.click(screen.getByRole('button', { name: /Retry/i }))
+    await user.click(screen.getByRole('button', { name: /Try again/i }))
 
     await waitFor(() =>
       expect(screen.queryByText(/could not load your requests/i)).not.toBeInTheDocument()

@@ -57,6 +57,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (GHSA-v2hh-gcrm-f6hx). Lockfile-only patch within `ajv`'s existing `^3.0.1`
   range; clears the OSV dependency-scan gate. `fast-uri` is dev/build tooling
   (pulled via `workbox-build`), not runtime request-path code.
+## [0.26.0] - 2026-07-22
+
+### Changed
+
+- Standardized guardian and admin console loading and error states on shared
+  `LoadingStatus` and `ErrorBanner` design-system components. Error retry
+  actions now render the design-system button labeled "Try again" (previously
+  "Retry" at some sites).
+- Deduplicated ORM column definitions in `db/models.py` behind shared UUID
+  primary-key and timestamp mixins; no schema change.
+- Extracted the forgot-password request form from `LoginPage` into a
+  self-contained `ResetPasswordRequestForm`, mirroring the existing
+  `SetNewPasswordForm`.
+- Split the oversized admin `ReviewDetailPage` into pure diff helpers, a
+  compare view, and three concern-scoped hooks, with reading and editing
+  behavior unchanged.
 
 ## [0.25.3] - 2026-07-21
 
@@ -2486,7 +2502,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.3...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.26.0...HEAD
+[0.26.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.3...v0.26.0
 [0.25.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.2...v0.25.3
 [0.25.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.1...v0.25.2
 [0.25.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.0...v0.25.1

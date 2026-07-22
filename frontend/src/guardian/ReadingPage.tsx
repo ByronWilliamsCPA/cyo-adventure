@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { formatRelativeTime } from './intakeApi'
@@ -161,17 +163,13 @@ export function ReadingPage() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading reading activity…
-      </div>
+      <LoadingStatus>Loading reading activity…</LoadingStatus>
     )
   }
 
   if (state.kind === 'error') {
     return (
-      <p role="alert" className="reading__error cyo-text-error">
-        {state.message}
-      </p>
+      <ErrorBanner className="reading__error">{state.message}</ErrorBanner>
     )
   }
 
@@ -226,16 +224,12 @@ export function ReadingPage() {
                         Loading books…
                       </p>
                     ) : entry.kind === 'error' ? (
-                      <div role="alert" className="reading-card__error cyo-text-error">
-                        {entry.message}{' '}
-                        <button
-                          type="button"
-                          className="reading-card__retry"
-                          onClick={() => void loadHistory(child.profile_id)}
-                        >
-                          Retry
-                        </button>
-                      </div>
+                      <ErrorBanner
+                        className="reading-card__error"
+                        onRetry={() => void loadHistory(child.profile_id)}
+                      >
+                        {entry.message}
+                      </ErrorBanner>
                     ) : entry.books.length === 0 ? (
                       <p className="reading-card__nudge cyo-text-muted">
                         No books started yet.{' '}

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { formatRelativeTime } from '../guardian/intakeApi'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { classifyApiError } from '../hooks/classifyApiError'
@@ -84,9 +85,7 @@ export function AdminLibraryPage() {
     return (
       <section className="admin-library">
         <h1>Story library</h1>
-        <div role="status" aria-live="polite">
-          Loading stories…
-        </div>
+        <LoadingStatus>Loading stories…</LoadingStatus>
       </section>
     )
   }
@@ -104,12 +103,9 @@ export function AdminLibraryPage() {
     return (
       <section className="admin-library">
         <h1>Story library</h1>
-        <div role="alert" className="console__error">
-          <p className="cyo-text-error">We could not load the story library.</p>
-          <Button variant="primary" onClick={retry}>
-            Try again
-          </Button>
-        </div>
+        <ErrorBanner className="console__error" onRetry={retry}>
+          We could not load the story library.
+        </ErrorBanner>
       </section>
     )
   }

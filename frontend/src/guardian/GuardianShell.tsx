@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
+import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { useAuth } from '../auth/useAuth'
 import { useApi } from '../hooks/useApi'
 import { ADMIN_CONSOLE_PATH } from '../routes'
@@ -155,9 +156,9 @@ export function GuardianShell() {
         {principal?.isAdmin ? <NavLink to={ADMIN_CONSOLE_PATH}>Admin console</NavLink> : null}
       </nav>
       {signOutError ? (
-        <p role="alert" className="guardian-shell__error cyo-text-error">
+        <ErrorBanner className="guardian-shell__error">
           Sign-out failed. Check your connection and try again.
-        </p>
+        </ErrorBanner>
       ) : null}
       <main className="guardian-shell__main">
         <Outlet />

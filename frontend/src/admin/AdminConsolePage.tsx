@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState, type ReactElement } from 're
 import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { FlagBadge } from '../guardian/FlagBadge'
 import { formatRelativeTime } from '../guardian/intakeApi'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
@@ -223,11 +225,7 @@ export function AdminConsolePage() {
 
   let content: ReactElement
   if (state.kind === 'loading') {
-    content = (
-      <div role="status" aria-live="polite">
-        Loading review queue…
-      </div>
-    )
+    content = <LoadingStatus>Loading review queue…</LoadingStatus>
   } else if (state.kind === 'forbidden') {
     content = (
       <section className="console">
@@ -239,9 +237,7 @@ export function AdminConsolePage() {
     )
   } else if (state.kind === 'error') {
     content = (
-      <p role="alert" className="console__error cyo-text-error">
-        We could not load the review queue. Please reload.
-      </p>
+      <ErrorBanner className="console__error">We could not load the review queue. Please reload.</ErrorBanner>
     )
   } else {
     const trimmedQuery = query.trim()
@@ -282,9 +278,9 @@ export function AdminConsolePage() {
           </div>
         </div>
         {refreshFailed ? (
-          <p role="alert" className="admin-console__refresh-error cyo-text-error">
+          <ErrorBanner className="admin-console__refresh-error">
             Refresh failed. Showing the queue from {formatUpdatedAt(state.updatedAt)}.
-          </p>
+          </ErrorBanner>
         ) : null}
         {nothingPending ? (
           <EmptyState

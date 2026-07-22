@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { AGE_BANDS, type AgeBandValue } from '../profiles/profilesApi'
@@ -124,17 +126,11 @@ export function ModerationThresholdsPage() {
 
   if (state.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading…
-      </div>
+      <LoadingStatus />
     )
   }
   if (state.kind === 'error') {
-    return (
-      <p role="alert" className="console__error cyo-text-error">
-        {state.message}
-      </p>
-    )
+    return <ErrorBanner className="console__error">{state.message}</ErrorBanner>
   }
 
   const { data } = state
@@ -227,11 +223,7 @@ export function ModerationThresholdsPage() {
         Default: findings surface to families at <strong>{data.default_min_verdict}</strong> and
         above. Overrides below change that for one age band and category.
       </p>
-      {actionError ? (
-        <p role="alert" className="console__error cyo-text-error">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <ErrorBanner className="console__error">{actionError}</ErrorBanner> : null}
       <section>
         <h2>Admin noise floor</h2>
         <p id="noise-floor-help" className="console__muted cyo-text-muted">

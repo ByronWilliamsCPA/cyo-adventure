@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
+import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { LoadingStatus } from '@ds/components/LoadingStatus'
 import type {
   AgeBand,
   FamilyView,
@@ -227,16 +229,14 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
 
   if (loadState.kind === 'loading') {
     return (
-      <div role="status" aria-live="polite">
-        Loading request form…
-      </div>
+      <LoadingStatus>Loading request form…</LoadingStatus>
     )
   }
   if (loadState.kind === 'error') {
     return (
-      <p role="alert" className="console__error cyo-text-error">
+      <ErrorBanner className="console__error">
         We could not load {mode === 'guardian' ? 'your children' : 'families'}. Please reload.
-      </p>
+      </ErrorBanner>
     )
   }
 
@@ -260,9 +260,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         </p>
       ) : null}
       {result.kind === 'error' ? (
-        <p role="alert" className="request-form__error cyo-text-error">
-          {result.message}
-        </p>
+        <ErrorBanner className="request-form__error">{result.message}</ErrorBanner>
       ) : null}
 
       {mode === 'guardian' ? (
