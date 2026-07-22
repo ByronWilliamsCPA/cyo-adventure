@@ -125,6 +125,7 @@ Supabase endpoints rather than `/api/v1`.
 ## Guardian: manage child profiles
 
 - E2E-mocked: `frontend/e2e/guardian-profiles.spec.ts`, `frontend/e2e/naive-user/naive-guardian-misuse.spec.ts` (empty state), `frontend/e2e/story-requests-authored.spec.ts` (child selector)
+- E2E-real: `frontend/e2e-real/guardian-profile-crud-real.spec.ts` (a guardian creates and edits a child profile through the real `POST`/`PATCH /v1/profiles` endpoints, both states persisting across reload; `ProfilesPage.tsx` has no delete control by design, so the erasure path, `DELETE /v1/profiles/{id}`, GDPR Article 17 / COPPA 312.10, is exercised via a direct authenticated fetch and confirmed gone from the console on reload)
 - E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only)
 - Component: `frontend/src/guardian/ProfilesPage.test.tsx`, `frontend/src/guardian/ProfileFormDialog.test.tsx`, `frontend/src/profiles/AvatarCircle.test.tsx`, `frontend/src/profiles/profilesApi.test.ts`
 
@@ -142,14 +143,16 @@ Supabase endpoints rather than `/api/v1`.
 ## Guardian: notifications (G10)
 
 - E2E-mocked: `frontend/e2e/guardian-notifications.spec.ts` (a guardian sees the unread-count badge from the notifications poll, opens the bell panel, sees a safety alert rendered with a visually distinct `--alert` class from an informational item, and the badge clears once the panel is opened)
+- E2E-real: `frontend/e2e-real/notifications-real.spec.ts` (a real admin approval fires a real `RELEASED` pipeline event, which `notifications/registry.py` composes into a "story_ready" item; the guardian's real `GET /v1/notifications` feed carries it, the bell reflects it, and it survives a reload. The backend keeps no server-side read/unread state for this slice, so "marking read" is the client-side `markSeen()`/localStorage model asserted directly, confirmed here to hold against the real backend's `since`-filtered poll rather than a mocked response)
 - Component: `frontend/src/guardian/NotificationBell.test.tsx`, `frontend/src/guardian/notificationsApi.test.ts`, `frontend/src/guardian/notificationSeenStore.test.ts`
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage yet.
 
 ## Guardian: reading history / engagement (G9)
 
 - E2E-mocked: `frontend/e2e/guardian-reading.spec.ts` (a guardian opens Reading from the nav, sees a per-child summary card, expands it to fetch that profile's per-book reading history, and a childless family sees an empty state linking to Books)
+- E2E-real: `frontend/e2e-real/reading-history-real.spec.ts` (the seeded child reads "The Clockwork Garden" to its `e_clock` ending against the real backend, producing a real `Completion` row; the guardian then opens Reading and the real `GET /v1/families/me/reading-summary` and `GET /v1/reading-history/{profile_id}` responses show the read reflected in the expanded card)
 - Component: `frontend/src/guardian/ReadingPage.test.tsx`, `frontend/src/guardian/readingApi.test.ts`
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage yet.
 
 ## Guardian: family connections consent (ADR-016 ring 2, G17)
 
@@ -199,8 +202,9 @@ behind a confirmation dialog.
 Built 2026-07-16, closing the gap this matrix previously flagged as "no coverage found, no UI exists." A 2026-07-16 audit confirmed the backend (full CRUD + audit trail, `src/cyo_adventure/api/provider_allowlist.py`, `tests/integration/test_provider_allowlist_api.py`) had no frontend page, and no ADR/roadmap/tech-spec ever explicitly deferred one; `AllowlistCreateBody.display_name`'s docstring ("for a future admin UI") implied it was anticipated. `ProviderAllowlistPage.tsx` is a general settings page (global, not tied to any one story): add/enable/disable/remove `(provider, model_id)` rows.
 
 - E2E-mocked: `frontend/e2e/provider-allowlist.spec.ts` (add, disable, remove a real row against the routed app)
+- E2E-real: `frontend/e2e-real/provider-allowlist-real.spec.ts` (an admin adds, disables, and removes a real `(provider, model_id)` row through the real `POST`/`PUT`/`DELETE /v1/admin/provider-allowlist` endpoints, each state persisting across reload; plus a plain guardian visiting the page is redirected back to the guardian console by the real `/v1/me` role)
 - Component: `frontend/src/admin/ProviderAllowlistPage.test.tsx`, `frontend/src/admin/providerAllowlistApi.test.ts`
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage yet.
 
 ## Admin: authoring plan (method/mechanism/model selection)
 
@@ -226,8 +230,9 @@ read-only context (they cannot be re-edited at this step, matching the
 ## Admin: user / profile / family management (WS-J)
 
 - E2E-mocked: `frontend/e2e/admin-user-management.spec.ts` (an admin reaches the console from the admin nav, switches to the Families tab and sees member counts, invites a guardian and confirms both the POST body and the roster refresh, and a plain guardian visiting `/admin/users` is redirected back to the guardian console)
+- E2E-real: `frontend/e2e-real/admin-management-real.spec.ts` (Kids tab only, the highest-value real write in this journey per the work order: an admin creates, edits, and deactivates a real profile in another family through `POST`/`PATCH /v1/admin/profiles`, each state persisting across reload; plus a plain guardian visiting `/admin/users` is redirected back to the guardian console by the real `/v1/me` role. There is no delete route, so a real run leaves one deactivated profile behind by design; Users/Families/Connections tabs are not covered here)
 - Component: `frontend/src/admin/UserManagementPage.test.tsx`, `frontend/src/admin/UsersTab.test.tsx`, `frontend/src/admin/FamiliesTab.test.tsx`, `frontend/src/admin/ConnectionsTab.test.tsx`, `frontend/src/admin/KidsTab.test.tsx`, `frontend/src/admin/userManagementApi.test.ts`
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage yet.
 
 ## Admin: audit log, master library, and version-compare (read-heavy surfaces)
 
@@ -267,20 +272,23 @@ detail when a storybook has more than one version).
 ## Kid: read-aloud (K7)
 
 - E2E-mocked: `frontend/e2e/kid-read-aloud.spec.ts` (the speaker toggle appears only for a profile with `tts_enabled: true`, picked through the real picker flow rather than a deep link, since the flag rides the picker's profiles fetch; tapping it toggles a "speaking" state, and both a re-tap and a choice navigation cancel speech; a fake `speechSynthesis` stands in for headless Chromium's real one, which has no installed voices)
+- E2E-real: `frontend/e2e-real/kid-read-aloud-real.spec.ts` (the `tts_enabled` gate is real: a guardian `PATCH /v1/profiles/{id}` turns it on, then the kid picker's real `GET /v1/profiles` reads it back and threads it into the reader as the `ttsEnabled` prop; the toggle itself is client-only, Web Speech, with only its own speak/stop state asserted, not audio output, and `window.speechSynthesis.speak` stubbed to remove a real timing race between the browser's own `onend` and the test's stop click)
 - Component: `frontend/src/kid/readAloudPreference.test.ts`, `frontend/src/reader/useReadAloud.test.ts`
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet; no tier exercises real audio output.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage yet; no tier asserts real audio output, the real tier above exercises the toggle and the real `tts_enabled` gate but stubs the speech call itself.
 
 ## Kid: flag a passage (K15)
 
 - E2E-mocked: `frontend/e2e/reader-flag.spec.ts` ("Tell a grown-up" posts a structured `reason` (no free-text field) and shows the kid-language confirmation; a 409 cap response shows the gentle "You've told us a lot already" message; the button is hidden entirely without a valid child session)
+- E2E-real: `frontend/e2e-real/kid-flag-real.spec.ts` (a kid submits a real structured flag through `POST /v1/flags`, asserted at the network layer as a `201` with `reason: scared_me`, then re-fetched via the real admin `GET /v1/admin/flags` to confirm it persisted open server-side rather than only in the POST's own response body; an `afterEach` resolves the flag it created so `MAX_OPEN_FLAGS_PER_PROFILE` is never exhausted by repeat runs)
 - Component: `frontend/src/reader/FlagButton.test.tsx`, `frontend/src/guardian/FlagBadge.test.tsx`
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage yet.
 
 ## Kid: go back / undo (K5)
 
 - E2E-mocked: `frontend/e2e/reader-go-back.spec.ts` ("Go back" is absent at the start node, appears after a choice, and undoing past a state-gated choice (`c_dark_passage`, gated on `has_lantern`) still offers that choice correctly afterward, proving the engine replays the recorded path rather than corrupting state)
+- E2E-real: `frontend/e2e-real/kid-go-back-real.spec.ts` (after two real choices, "Go back" reverts the reader to the prior node and the real `PUT /v1/reading-state/{profile_id}/{storybook_id}` this triggers persists the reverted `current_node`/`path`, confirmed not just via the PUT's own response but via an independent guardian-authorized `GET` re-fetch of the same row, proving the server, not only client state, holds the reverted position)
 - Component: `frontend/src/reader/BackToLibrary.test.tsx`, `frontend/src/player/engine.test.ts` (go-back is a bounded replay computation in the player engine)
-- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage yet.
 
 ## Kid: offline reading + sync/conflict resolution
 
