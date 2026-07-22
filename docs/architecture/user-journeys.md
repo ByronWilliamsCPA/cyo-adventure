@@ -82,7 +82,8 @@ lands on `/guardian`, an admin-only adult on `/admin`, and a dual-role adult on
 adult subtree, wrapping both `/guardian` and `/admin`. A signed-in adult
 navigating guardian&#8596;guardian, guardian&#8596;admin, or admin&#8596;guardian
 never sees the password re-entry once warm (warm state lives in
-`sessionStorage`, 5-minute TTL); the challenge fires only when crossing UP into
+`sessionStorage`, 30-minute idle TTL that re-warms on activity); the challenge
+fires only when crossing UP into
 the adult subtree from kid mode, or on a cold session. See
 [seq-device-grant](diagrams/seq-device-grant.svg) for the mint/verify/revoke
 mechanics and [sitemap-and-flows](diagrams/sitemap-and-flows.svg) for the full

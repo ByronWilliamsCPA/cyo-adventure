@@ -12,12 +12,15 @@ import { useAuth } from './useAuth'
 
 /**
  * The signed-in Supabase user as the gate needs to see it: who they are and
- * whether a password re-entry challenge is even possible for them.
+ * whether a password re-entry challenge is even possible for them, plus
+ * (Requirement 2) whether a Google identity is linked so the locked screen
+ * can offer OAuth re-auth as a second path past the challenge.
  */
 interface GateUser {
   userId: string
   email: string | null
   hasPassword: boolean
+  hasGoogle: boolean
 }
 
 type GatePhase =
@@ -138,12 +141,17 @@ function readProviders(meta: Record<string, unknown> | undefined): string[] {
  * for these users too, even though the bypass itself does not depend on
  * warmth (the hasPassword check runs before the warm check below). Follow-up:
  * give OAuth guardians a real challenge (e.g. a gate PIN set at onboarding, or
- * the backend re-auth grant above).
+ * the backend re-auth grant above). This is distinct from Requirement 2's
+ * Google button on the `locked` screen below: that button only ever renders
+ * for a guardian who DOES have a password identity (hasGoogle is additional,
+ * never a substitute), and it is a deliberate, user-initiated click rather
+ * than something the gate runs automatically, so the "would drop in-flight
+ * state and loop" concern above does not apply to it.
  * #VERIFY: AdultGate.test.tsx "lets an OAuth-only guardian through with a
  * console warning, and warms the gate".
  */
 export function AdultGate({ children }: { children?: ReactNode }) {
-  const { signInWithPassword, signOut } = useAuth()
+  const { signInWithPassword, signInWithOAuth, signOut } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [phase, setPhase] = useState<GatePhase>({ kind: 'checking' })
@@ -152,6 +160,13 @@ export function AdultGate({ children }: { children?: ReactNode }) {
   const [submitting, setSubmitting] = useState(false)
   const [switchingAccount, setSwitchingAccount] = useState(false)
   const [switchAccountError, setSwitchAccountError] = useState<SwitchAccountError | null>(null)
+  // Requirement 2: Google re-auth on the locked screen, alongside the
+  // password form. googleError is a bare boolean (not a discriminated union
+  // like SubmitError): signInWithOAuth only ever fails BEFORE the redirect
+  // starts (a network problem reaching Supabase/Google), the same single
+  // failure shape LoginPage's startSignIn already reports generically.
+  const [googleSigningIn, setGoogleSigningIn] = useState(false)
+  const [googleError, setGoogleError] = useState(false)
   // Bumped by the error phase's "Try again" button to re-run the session
   // lookup effect below.
   const [attempt, setAttempt] = useState(0)
@@ -178,9 +193,10 @@ export function AdultGate({ children }: { children?: ReactNode }) {
           typeof sessionUser.email === 'string' && sessionUser.email !== ''
             ? sessionUser.email
             : null
-        const hasPassword =
-          readProviders(sessionUser.app_metadata).includes('email') && email !== null
-        const user: GateUser = { userId: sessionUser.id, email, hasPassword }
+        const providers = readProviders(sessionUser.app_metadata)
+        const hasPassword = providers.includes('email') && email !== null
+        const hasGoogle = providers.includes('google')
+        const user: GateUser = { userId: sessionUser.id, email, hasPassword, hasGoogle }
         if (!hasPassword) {
           console.warn(
             'AdultGate: session has no password identity (OAuth sign-in); ' +
@@ -212,14 +228,24 @@ export function AdultGate({ children }: { children?: ReactNode }) {
     }
   }, [attempt])
 
-  // #ASSUME: timing dependencies: while unlocked, schedule the re-challenge
-  // for the moment the TTL runs out, so a guardian who walks away mid-session
-  // does not leave the adult subtree open indefinitely in a live tab.
-  // Background tabs throttle timers and bfcache restores revive stored state
-  // past the TTL, so visibilitychange/pageshow re-check the wall clock and
-  // lock immediately when the warmth has already expired.
-  // #VERIFY: AdultGate.test.tsx TTL-expiry, throttled-tab, and bfcache-restore
-  // re-lock tests (fake timers).
+  // #ASSUME: timing dependencies: ADULT_GATE_TTL_MS is an IDLE window
+  // (Requirement 1), not an absolute one: while unlocked, pointerdown/keydown
+  // activity re-warms the gate (throttled to ~30s so it does not thrash
+  // sessionStorage on every keystroke), so a guardian actively using the
+  // console is never dropped mid-task. Only true inactivity, or a
+  // navigation into kid mode (parkAdultGate), or sign-out (clearAdultGate),
+  // re-cold the gate. Because activity can slide the stored expiry forward
+  // at any moment from an event-listener closure, a single setTimeout
+  // scheduled once at mount cannot track it; the re-lock check is instead a
+  // periodic poll of the sessionStorage-backed expiry (cheap: a JSON parse
+  // plus a comparison), frequent enough to lock within one poll interval of
+  // true expiry. Background tabs throttle timers and bfcache restores revive
+  // stored state past the TTL, so visibilitychange/pageshow still separately
+  // re-check the wall clock and lock immediately when warmth has already
+  // expired, same as before.
+  // #VERIFY: AdultGate.test.tsx TTL-expiry (no-activity), idle-slide
+  // (activity keeps it unlocked past the original TTL), throttle,
+  // throttled-tab, and bfcache-restore re-lock tests (fake timers).
   useEffect(() => {
     if (phase.kind !== 'unlocked') return
     const user = phase.user
@@ -233,15 +259,40 @@ export function AdultGate({ children }: { children?: ReactNode }) {
     const onVisibilityChange = () => {
       if (document.visibilityState === 'visible') lockIfExpired()
     }
-    // Already-expired (a race between the state update and this effect) falls
-    // through to a zero-delay timeout rather than a synchronous setState in
-    // the effect body (react-hooks/set-state-in-effect).
-    const remaining = Math.max(adultGateRemainingMs(user.userId), 0)
-    const timer = setTimeout(lockNow, remaining)
+    // How often the poll re-checks the stored expiry. Small enough that
+    // locking feels immediate at page granularity against a 30-minute idle
+    // window; large enough to be free in practice.
+    const POLL_INTERVAL_MS = 5_000
+    // Already-expired (a race between the state update and this effect) is
+    // caught by this same poll rather than a synchronous setState in the
+    // effect body (react-hooks/set-state-in-effect); scheduling it via
+    // setInterval's own first tick would wait a full POLL_INTERVAL_MS, so an
+    // immediate zero-delay check runs once up front too.
+    const raceCheck = setTimeout(lockIfExpired, 0)
+    const pollTimer = setInterval(lockIfExpired, POLL_INTERVAL_MS)
+
+    // #CRITICAL: security: re-warming on activity must only ever extend the
+    // SAME user's existing warm entry (warmAdultGate always keys off
+    // user.userId, the current phase's own user), never adopt or create a
+    // warm entry for anyone else. This is the same single-user invariant
+    // parentalGateState.ts documents for the initial warm.
+    const REWARM_THROTTLE_MS = 30_000
+    let lastWarmAt = Date.now()
+    const onActivity = () => {
+      const now = Date.now()
+      if (now - lastWarmAt < REWARM_THROTTLE_MS) return
+      lastWarmAt = now
+      warmAdultGate(user.userId, now)
+    }
+    document.addEventListener('pointerdown', onActivity)
+    document.addEventListener('keydown', onActivity)
     document.addEventListener('visibilitychange', onVisibilityChange)
     window.addEventListener('pageshow', lockIfExpired)
     return () => {
-      clearTimeout(timer)
+      clearTimeout(raceCheck)
+      clearInterval(pollTimer)
+      document.removeEventListener('pointerdown', onActivity)
+      document.removeEventListener('keydown', onActivity)
       document.removeEventListener('visibilitychange', onVisibilityChange)
       window.removeEventListener('pageshow', lockIfExpired)
     }
@@ -262,13 +313,18 @@ export function AdultGate({ children }: { children?: ReactNode }) {
     // #CRITICAL: concurrency: a second submit while one is in flight (Enter
     // key on the still-focused input; the disabled attribute only guards the
     // button) must not stack a second re-auth call on the first. Also guards
-    // against switchAccount() racing a concurrent signOut() against the same
-    // Supabase client: without this, a sign-in already in flight could land
-    // after the sign-out and undo it.
+    // against switchAccount() racing a concurrent signOut(), and against
+    // continueWithGoogle() racing a concurrent signInWithOAuth(), against the
+    // same Supabase client: without these, a sign-in already in flight (via
+    // password re-auth OR the Google redirect) could land after the sign-out
+    // and undo it, or two sign-ins could race which one lands last. The guard
+    // family is symmetric: submit(), switchAccount(), and continueWithGoogle()
+    // each bail on all three in-flight states.
     // #VERIFY: AdultGate.test.tsx "ignores a re-entrant submit", "disables
     // the Confirm button while a switch-account sign-out is in flight".
     if (submitting) return
     if (switchingAccount) return
+    if (googleSigningIn) return
     if (phase.kind !== 'locked' || phase.user.email === null) return
     setError(null)
     setSubmitting(true)
@@ -297,14 +353,16 @@ export function AdultGate({ children }: { children?: ReactNode }) {
     // #CRITICAL: concurrency: same re-entrant guard as submit() above (a slow
     // network letting a second click land before the button disables): a
     // stacked second signOut() call is wasted work at best and a race against
-    // the first at worst. Also cross-guards against submit(): without this,
-    // signOut() and signInWithPassword() could run concurrently against the
-    // same Supabase client, racing which one lands last.
+    // the first at worst. Also cross-guards against submit() and
+    // continueWithGoogle(): without these, signOut() and signInWithPassword()
+    // (or signInWithOAuth()) could run concurrently against the same Supabase
+    // client, racing which one lands last.
     // #VERIFY: AdultGate.test.tsx "ignores a re-entrant switch-account
     // click while one is already in flight", "disables the switch-account
     // link while a password submit is in flight".
     if (switchingAccount) return
     if (submitting) return
+    if (googleSigningIn) return
     setSwitchAccountError(null)
     setSwitchingAccount(true)
     try {
@@ -320,6 +378,49 @@ export function AdultGate({ children }: { children?: ReactNode }) {
       // fails while switching accounts".
       setSwitchAccountError(classifySwitchAccountError(err))
       setSwitchingAccount(false)
+    }
+  }
+
+  // #ASSUME: security: Requirement 2. A guardian who signed in with Google AND
+  // has an email/password identity linked to the same account (hasGoogle)
+  // gets a second path past the locked screen besides typing a password:
+  // reuse LoginPage's exact `signInWithOAuth('google')` primitive
+  // (AuthContext.tsx), the SAME re-auth LoginPage itself offers, not a new
+  // one. Unlike submit()/switchAccount(), this never sets phase directly:
+  // signInWithOAuth resolving only means the browser is about to navigate
+  // away to Google's consent screen (a full-page redirect back to
+  // GUARDIAN_LOGIN_PATH), which unmounts this component. AuthContext's
+  // onAuthStateChange warms the gate on that later SIGNED_IN event (see
+  // AuthContext.tsx's syncPrincipal), so this handler must NOT call
+  // warmAdultGate itself, or a failed /me resolution after the redirect
+  // would leave a stale warm entry behind for a principal that never
+  // actually got signed in.
+  // #VERIFY: AdultGate.test.tsx "shows a Continue with Google option ...
+  // starts the OAuth redirect on click", "shows a connection error ... when
+  // the OAuth redirect fails to start".
+  async function continueWithGoogle() {
+    // #CRITICAL: concurrency: same re-entrant guard family as submit() and
+    // switchAccount() above: a second click while the redirect is starting,
+    // or a click landing while a password submit or switch-account sign-out
+    // is already in flight, must not fire a second signInWithOAuth call (or
+    // race signOut()) against the same Supabase client.
+    // #VERIFY: AdultGate.test.tsx "ignores a re-entrant Google click while
+    // one is already in flight", "disables the password Confirm button
+    // while the Google redirect is starting".
+    if (submitting) return
+    if (switchingAccount) return
+    if (googleSigningIn) return
+    setGoogleError(false)
+    setGoogleSigningIn(true)
+    try {
+      await signInWithOAuth('google')
+    } catch {
+      // #EDGE: external-resources: signInWithOAuth rejects when Supabase
+      // cannot start the OAuth redirect (network down, misconfigured
+      // provider). Without this the click would silently no-op, same failure
+      // mode LoginPage's startSignIn guards against.
+      setGoogleError(true)
+      setGoogleSigningIn(false)
     }
   }
 
@@ -380,6 +481,26 @@ export function AdultGate({ children }: { children?: ReactNode }) {
             reviewing, approving, and family settings behind a parent.
           </p>
         </div>
+        {phase.user.hasGoogle ? (
+          <>
+            <button
+              type="button"
+              className="guardian-login__provider"
+              disabled={googleSigningIn || submitting || switchingAccount}
+              onClick={() => void continueWithGoogle()}
+            >
+              {googleSigningIn ? 'Redirecting…' : 'Continue with Google'}
+            </button>
+            {!googleSigningIn && googleError ? (
+              <p role="alert" className="guardian-login__error">
+                Sign-in didn&apos;t start. Check your connection and try again.
+              </p>
+            ) : null}
+            <div className="guardian-login__divider">
+              <span>or use your password</span>
+            </div>
+          </>
+        ) : null}
         <form className="guardian-login__form" onSubmit={(event) => void submit(event)}>
           <label className="guardian-login__field">
             <span>Password</span>
@@ -395,7 +516,7 @@ export function AdultGate({ children }: { children?: ReactNode }) {
           <button
             type="submit"
             className="guardian-login__provider"
-            disabled={submitting || switchingAccount}
+            disabled={submitting || switchingAccount || googleSigningIn}
           >
             {submitting ? 'Checking...' : 'Confirm'}
           </button>
@@ -411,7 +532,7 @@ export function AdultGate({ children }: { children?: ReactNode }) {
         <button
           type="button"
           className="guardian-login__link"
-          disabled={switchingAccount || submitting}
+          disabled={switchingAccount || submitting || googleSigningIn}
           onClick={() => void switchAccount()}
         >
           {switchingAccount ? 'Signing out…' : 'Not you? Sign out and use a different account'}
