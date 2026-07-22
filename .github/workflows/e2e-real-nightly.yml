@@ -221,6 +221,52 @@ jobs:
           E2E_BACKEND_URL: http://localhost:8000
         run: npm run test:e2e:real
 
+      # Full-pipeline tier (G1, Phase 7.1): the ONLY real-backend spec that
+      # drives the real RQ generation worker, so the worker is started here,
+      # not at job setup. It must be started immediately before this step, not
+      # earlier: the worker's Redis connection uses socket_timeout=2
+      # (generation/queue.py) and the blocking dequeue idle-dies after roughly
+      # the worker TTL (~7 min) with "Redis connection timeout, quitting", so a
+      # worker started before the multi-minute `real-backend` run above would
+      # be dead by the time this step enqueues. The pipeline project rebuilds
+      # its own preview under CI (reuseExistingServer is false when CI is set),
+      # but that ~1-2 min build fits well inside the idle budget, so a worker
+      # started right here survives to consume the enqueued job (validated:
+      # the mock pipeline resolves a job in ~2s once picked up).
+      # #CRITICAL: external-resources: full-pipeline-real.spec.ts's poll
+      # deadline fails with an explicit worker-not-running message if this
+      # worker is absent or already dead; that is the intended signal, not a
+      # bare Playwright timeout.
+      # #VERIFY: if the socket_timeout=2 worker fragility is ever fixed at the
+      # source (a longer timeout, or burst-mode), this ordering constraint can
+      # relax; until then, keep the worker start adjacent to the pipeline step.
+      - name: Start generation worker (background)
+        env:
+          ENVIRONMENT: local
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+          CYO_ADVENTURE_REDIS_URL: redis://localhost:6379/0
+        run: |
+          uv run python -m cyo_adventure.generation.worker_main > worker.log 2>&1 &
+          echo $! > worker.pid
+          # Give the reclaim sweep + worker startup a moment to attach to the
+          # queue before Playwright begins its build; the spec's own 30s poll
+          # then absorbs any residual startup slack.
+          sleep 3
+
+      - name: E2E (Playwright, full-pipeline tier)
+        working-directory: ./frontend
+        env:
+          E2E_BACKEND_URL: http://localhost:8000
+        run: npm run test:e2e:real:pipeline
+
+      - name: Upload worker log
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-real-nightly-worker-log
+          path: worker.log
+          retention-days: 7
+
       - name: Upload backend log
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
