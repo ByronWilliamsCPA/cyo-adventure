@@ -326,9 +326,7 @@ def test_branch_cell_resolves_parent_cell() -> None:
 def test_branch_cell_length_less_parent_returns_none() -> None:
     """A parent with no length coordinate forms no cell (calibrator rule)."""
     catalog = load_catalog()
-    length_less = next(
-        (e for e in catalog.entries if cell_of_entry(e) is None), None
-    )
+    length_less = next((e for e in catalog.entries if cell_of_entry(e) is None), None)
     if length_less is None:
         return  # no length-less skeleton in the catalog; nothing to assert
     branch = f"flywheel/promote-{length_less.slug}-fw-deadbeef"
