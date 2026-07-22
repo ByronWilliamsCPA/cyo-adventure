@@ -71,6 +71,19 @@ relate to the Supabase project constraints.
 - Component: `frontend/src/guardian/LoginPage.test.tsx`, `frontend/src/guardian/SetNewPasswordForm.test.tsx`, `frontend/src/auth/AuthContext.test.tsx`, `frontend/src/auth/AdultGate.test.tsx`, `frontend/src/auth/ProtectedRoute.test.tsx`, `frontend/src/auth/guardianToken.test.ts`, `frontend/src/auth/supabaseClient.test.ts`, `frontend/src/guardian/GuardianShell.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx`
 - Integration: `frontend/src/test/App.test.tsx`
 
+## Guardian: consent gate (privacy notice / COPPA e-signature)
+
+- E2E-mocked: `frontend/e2e/guardian-consent.spec.ts` (needs-consent gate ->
+  legal-name + checkbox e-signature submit -> signed-in console; asserts the
+  exact `POST /v1/onboarding` consent payload and name trimming; plus the
+  awaiting-approval interstitial branch)
+- Component: `frontend/src/auth/GuardianConsentPage.test.tsx`,
+  `frontend/src/auth/GuardianAwaitingApprovalPage.test.tsx`
+- **Note**: the gate is driven by the `POST /v1/onboarding` response fields
+  (`consent_recorded`, `status`), NOT `/v1/me`; see the spec header. This was
+  every guardian's first screen yet only manually prod-verified before the
+  2026-07-22 audit added the E2E above.
+
 ## Guardian: submit story request (intake)
 
 - E2E-mocked: `frontend/e2e/intake.spec.ts`, `frontend/e2e/story-requests-authored.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts` (double-submit), `frontend/e2e/naive-user/naive-misuse-shared.spec.ts`
@@ -331,13 +344,41 @@ or a local npm run test:e2e / test:e2e:real) before trusting it as
 proven, and fix on sight if the live run disagrees with what static
 analysis could check.`
 
+## Cross-cutting component and utility tests
+
+These Vitest suites cover shared widgets, hooks, and infrastructure that are
+not tied to a single user journey above. They are listed here so the coverage
+matrix drift-guard (`scripts/check_coverage_matrix.py`) accounts for every
+`frontend/src/**/*.test.{ts,tsx}` file; journey-specific component tests live
+in their journey sections instead.
+
+- Guardian widgets: `frontend/src/guardian/BudgetBanner.test.tsx`,
+  `frontend/src/guardian/budgetApi.test.ts`,
+  `frontend/src/guardian/StoryStructureSummary.test.tsx`,
+  `frontend/src/guardian/storyRequestOptions.test.ts`
+- Auth/session utilities: `frontend/src/auth/childSession.test.ts`
+- Library display: `frontend/src/library/EndingsBadge.test.tsx`,
+  `frontend/src/library/RecommendationChip.test.tsx`,
+  `frontend/src/library/coverPalette.test.ts`,
+  `frontend/src/library/recommendationsApi.test.ts`,
+  `frontend/src/library/recommendationsUtils.test.ts`
+- Reader controls: `frontend/src/reader/EndingsProgress.test.tsx`,
+  `frontend/src/reader/TextSizeControl.test.tsx`
+- App shell / infrastructure: `frontend/src/AppErrorBoundary.test.tsx`,
+  `frontend/src/routeElements.test.tsx`, `frontend/src/lazyWithReload.test.ts`,
+  `frontend/src/observability.test.ts`,
+  `frontend/src/notifications/ToastProvider.test.tsx`,
+  `frontend/src/hooks/classifyApiError.test.ts`,
+  `frontend/src/hooks/logApiError.test.ts`
+
 ## Keeping this matrix current
 
 `#ASSUME: data-integrity: this matrix is hand-maintained and will drift as
-new spec files are added. #VERIFY: add a CI check that greps new files under
-frontend/e2e/, frontend/e2e-real/, frontend/e2e-prod/, and frontend/src/**/*.test.{ts,tsx}
-against this document and fails if a new spec file isn't referenced anywhere,
-so drift is caught at PR time rather than discovered during an audit.`
+new spec files are added. #VERIFY: DONE. scripts/check_coverage_matrix.py greps
+every file under frontend/e2e/, frontend/e2e-real/, frontend/e2e-staging/,
+frontend/e2e-prod/, and frontend/src/**/*.test.{ts,tsx} against this document
+and fails if any is not referenced. It runs in the Frontend CI job, so drift is
+caught at PR time rather than discovered during an audit.`
 
 When adding a new journey or page, add a section here in the same PR. When
 closing one of the gaps above, update its entry to reflect the new coverage

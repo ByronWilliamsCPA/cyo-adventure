@@ -177,6 +177,13 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      - name: Coverage matrix drift-guard
+        # Fails if any Playwright spec or Vitest test is missing from
+        # docs/testing/coverage-matrix.md. Stdlib-only Python. The script
+        # resolves the repo root from its own location, so running it from
+        # this job's ./frontend working directory via ../ is fine.
+        run: python3 ../scripts/check_coverage_matrix.py
+
       - name: Test
         run: npm run test:run -- --coverage
 
