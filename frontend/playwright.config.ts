@@ -89,10 +89,11 @@ export default defineConfig({
       name: 'real-backend',
       testDir: './e2e-real',
       dependencies: ['real-backend-setup'],
-      // full-pipeline-real.spec.ts drives a real RQ worker end-to-end; it is
-      // being moved to its own Playwright project (separate npm script) that
-      // starts that worker, so this project must not pick it up. Every other
-      // e2e-real spec has no such dependency and stays here.
+      // full-pipeline-real.spec.ts drives a real RQ worker end-to-end; it runs
+      // in its own `real-backend-pipeline` project (npm run test:e2e:real:pipeline)
+      // that additionally requires a running generation worker, so this project
+      // must not pick it up. Every other e2e-real spec has no such dependency
+      // and stays here.
       testIgnore: ['full-pipeline-real.spec.ts'],
       fullyParallel: false,
       // #EDGE: data-integrity: the approve test mutates the database, so a CI
@@ -100,6 +101,29 @@ export default defineConfig({
       // state and fails with a different symptom; read the FIRST attempt's
       // error when diagnosing.
       // #VERIFY: approval-flow.spec.ts asserts persisted state after reload.
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Full-pipeline tier: drives a story from a guardian concept through a
+      // REAL RQ generation worker (mock provider) to in_review, then admin
+      // approve/publish, then a kid read. Kept in its own project because it
+      // is the only e2e-real spec that requires the generation worker
+      // (`python -m cyo_adventure.generation.worker_main`) running alongside
+      // the seeded uvicorn; the worker is not part of the default local stack,
+      // so bundling this into `real-backend` would make that whole tier fail
+      // wherever no worker is up. Same deterministic reset dependency as
+      // `real-backend` (the reset also purges worker-generated storybooks so
+      // consecutive runs stay clean). Run via npm run test:e2e:real:pipeline.
+      // #CRITICAL: external-resources: this project is meaningless without a
+      // live worker consuming the "generation" queue; the spec's poll deadline
+      // fails with an explicit "worker not running" message if none is up.
+      // #VERIFY: the nightly job must start the worker before invoking this.
+      name: 'real-backend-pipeline',
+      testDir: './e2e-real',
+      testMatch: /full-pipeline-real\.spec\.ts/,
+      dependencies: ['real-backend-setup'],
+      fullyParallel: false,
       retries: process.env.CI ? 1 : 0,
       use: { ...devices['Desktop Chrome'] },
     },

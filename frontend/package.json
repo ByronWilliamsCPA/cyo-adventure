@@ -18,6 +18,7 @@
     "generate-client": "openapi-ts",
     "test:e2e": "playwright test --project=chromium",
     "test:e2e:real": "playwright test --project=real-backend --workers=1",
+    "test:e2e:real:pipeline": "playwright test --project=real-backend-pipeline --workers=1",
     "test:e2e:staging": "playwright test --config=playwright.e2e-staging.config.ts",
     "test:e2e:prod": "playwright test --config=playwright.e2e-prod.config.ts"
   },

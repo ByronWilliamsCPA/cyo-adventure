@@ -64,6 +64,21 @@ relate to the Supabase project constraints.
   single one; guards against the failure class behind the prior P0-1
   offline-resync 422, where a real backend field changed while every mocked
   fixture kept passing.
+- **Full generation pipeline, end to end (G1, Phase 7.1)**:
+  `frontend/e2e-real/full-pipeline-real.spec.ts` — the one spec that drives a
+  story through the *real* RQ generation worker rather than seeded data:
+  a guardian `POST /api/v1/concepts` + `/generate`, a real `generation_job`
+  polled until the worker (mock provider, but the full staged validator +
+  moderation gate) lands it at `in_review`, then the real admin approve/publish
+  UI, then the seeded child reads the produced story to an ending. Runs in its
+  own `real-backend-pipeline` Playwright project (`npm run test:e2e:real:pipeline`)
+  because it is the only real-backend spec that additionally requires a running
+  `python -m cyo_adventure.generation.worker_main`; the deterministic Phase 4.2
+  reset also purges each run's worker-generated storybook so consecutive runs
+  stay clean. Spans every backend stage between request and read, so it is
+  registered here rather than under a single journey. Intended for the nightly
+  real-stack job (a worker must be started before it runs, or its poll deadline
+  fails with an explicit worker-not-running message).
 
 ---
 
