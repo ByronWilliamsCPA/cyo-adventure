@@ -55,7 +55,21 @@ export default defineConfig({
     },
   },
   projects: [
-    { name: 'chromium', testDir: './e2e', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'chromium',
+      testDir: './e2e',
+      // P4-1: visual.spec.ts asserts pixel-exact screenshot baselines that are
+      // captured on the Linux CI runner. A developer host (macOS/Windows/WSL)
+      // renders fonts differently, so those baselines drift by sub-pixel anti-
+      // aliasing noise off-CI and every visual test "fails" locally for no real
+      // reason. Ignore them when CI is unset so a local `npm run test:e2e` is
+      // clean; CI (GitHub Actions sets CI=true) still runs and enforces them,
+      // and update-visual-snapshots.yml still regenerates them. Structural
+      // gating, not a per-test skip marker. Run locally with
+      // `CI=1 npm run test:e2e -- visual.spec.ts`.
+      testIgnore: process.env.CI ? [] : ['visual.spec.ts'],
+      use: { ...devices['Desktop Chrome'] },
+    },
     {
       // Real-backend smoke tier: zero route mocks; requires the local stack
       // (Postgres + seeded uvicorn on :8000). Run via npm run test:e2e:real.

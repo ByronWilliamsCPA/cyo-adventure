@@ -60,7 +60,17 @@ test("a hand-edited URL into another family's profile is rejected, not served", 
   // response is already awaited above, and the toHaveCount(0) assertions below
   // auto-retry, so the networkidle wait (which Playwright discourages as
   // flake-prone) adds nothing.
-  expect(apiResponse.status()).toBe(403)
+  //
+  // P4-4: this asserts 401, not 403. Under ADR-014 (device-authorized kid
+  // access), a kid reads a profile's library with a signed PER-PROFILE child
+  // session token. This device-authorized kid never minted a child session for
+  // the unrelated family's profile, so the request carries no valid credential
+  // FOR THAT RESOURCE and fails authentication (401), before any ownership
+  // check runs. That is distinct from, and stronger than, the 403 a fully
+  // authenticated wrong-family principal gets (see the guardian cross-family
+  // rows in tests/integration/test_authz_matrix.py). The old 403 assertion
+  // predates the per-profile-session model. 401 is the intended contract.
+  expect(apiResponse.status()).toBe(401)
   await expect(page.getByRole('region', { name: 'Continue Reading' })).toHaveCount(0)
   await expect(page.locator('.library__shelf > li')).toHaveCount(0)
 })
