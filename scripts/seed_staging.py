@@ -354,8 +354,27 @@ async def seed(
         )
         session.add(profile)
 
+        # Grant parental consent up front (ADR-018 verifiable parental
+        # consent). Without it the guardian's /v1/me resolves as
+        # status="needs-consent" and ProtectedRoute parks every /guardian/*
+        # route on the consent interstitial, so the guardian console never
+        # renders and guardian-admin-smoke.spec.ts:34 fails. The four
+        # consent_* columns are covered by a single all-or-nothing check
+        # constraint (db/models.py: "(consent_accepted_at IS NULL) = ..."),
+        # so they must be set together. Mirrors scripts/seed_dev_data.py's
+        # guardian consent; the synthetic policy_version marks this as a
+        # seed-granted record, distinct from the real "2026-07" user flow.
+        # #ASSUME: data-integrity: a schema change to the consent columns or
+        # their check constraint would require updating this block in lockstep.
+        # #VERIFY: db/models.py User consent_* columns + check constraint.
         guardian = User(
-            family_id=family.id, role="guardian", authn_subject=guardian_subject
+            family_id=family.id,
+            role="guardian",
+            authn_subject=guardian_subject,
+            consent_accepted_at=datetime.now(UTC),
+            consent_policy_version="staging-seed",
+            consent_signer_name="Staging Test Guardian",
+            consent_ip="127.0.0.1",
         )
         session.add(guardian)
         session.add(
