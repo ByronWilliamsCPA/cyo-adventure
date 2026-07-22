@@ -94,6 +94,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   migration seeds the canonical provider/model pairs so automated authoring can
   be configured on every fresh database.
 
+## [0.26.0] - 2026-07-22
+
+### Changed
+
+- Standardized guardian and admin console loading and error states on shared
+  `LoadingStatus` and `ErrorBanner` design-system components. Error retry
+  actions now render the design-system button labeled "Try again" (previously
+  "Retry" at some sites).
+- Deduplicated ORM column definitions in `db/models.py` behind shared UUID
+  primary-key and timestamp mixins; no schema change.
+- Extracted the forgot-password request form from `LoginPage` into a
+  self-contained `ResetPasswordRequestForm`, mirroring the existing
+  `SetNewPasswordForm`.
+- Split the oversized admin `ReviewDetailPage` into pure diff helpers, a
+  compare view, and three concern-scoped hooks, with reading and editing
+  behavior unchanged.
+
 ## [0.25.3] - 2026-07-21
 
 ### Fixed
