@@ -919,12 +919,19 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 - **Testing depth**: `cifuzzy.yml` (fuzzing), `mutation-testing.yml`
 - **Compliance/release**: `sbom.yml`, `reuse.yml`, `validate-cruft.yml`,
   `release.yml` (two-phase, ruleset-compatible flow, issues #183/#157/#158:
-  a `propose` job computes the next version with python-semantic-release as
-  a pure calculator, bumps `pyproject.toml`/`uv.lock`, promotes the
-  hand-curated CHANGELOG via `scripts/promote_changelog.py`, and opens an
-  auto-merging `release/vX.Y.Z` PR; a `publish` job tags and creates the
-  GitHub Release when that `chore(release):` commit merges, with notes from
-  `scripts/extract_changelog_section.py`. Requires the `RELEASE_TOKEN`
+  a `propose` job runs python-semantic-release's writer
+  (`--no-commit/--no-tag/--no-push`) to bump `pyproject.toml` and GENERATE the
+  CHANGELOG from Conventional Commits (PSR `mode="update"` splices each version
+  in at the `<!-- version list -->` marker, preserving history), re-locks,
+  injects the Keep-a-Changelog compare-link footer via
+  `scripts/inject_changelog_footer_link.py`, and opens an auto-merging
+  `release/vX.Y.Z` PR; a `publish` job tags and creates the GitHub Release when
+  that `chore(release):` commit merges, with notes from
+  `scripts/extract_changelog_section.py`. The changelog is no longer
+  hand-curated per PR, so PRs never touch `CHANGELOG.md` and the merge-queue
+  changelog conflict is gone; the `Changelog Check` gate in `pr-validation.yml`
+  is a passing no-op kept only for required-check topology. Requires the
+  `RELEASE_TOKEN`
   fine-grained PAT secret, contents + pull-requests write, because
   `GITHUB_TOKEN`-created PRs do not trigger required CI workflows.
   `publish-pypi.yml` was deleted: this is a deployed app, not a PyPI

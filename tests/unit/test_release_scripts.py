@@ -1,4 +1,15 @@
-"""Unit tests for scripts/promote_changelog.py and extract_changelog_section.py.
+"""Unit tests for the release helper scripts.
+
+Covers scripts/extract_changelog_section.py (turns a released section into
+GitHub Release notes) and scripts/inject_changelog_footer_link.py (adds the
+Keep-a-Changelog compare-link footer that python-semantic-release omits).
+
+CHANGELOG.md is GENERATED at release time by python-semantic-release
+(mode="update" splices each version in at the ``<!-- version list -->``
+insertion flag). These scripts run against that generated file, so the
+fixtures below model the generated format: no ``[Unreleased]`` section, an
+insertion marker, already-versioned headings, and a newest-first compare-link
+footer.
 
 scripts/ is not an importable package (no __init__.py, by design; see
 per-file-ignores INP for scripts/**/*.py in pyproject.toml), so the modules
@@ -30,31 +41,39 @@ def _load(name: str) -> ModuleType:
     return module
 
 
-promote_changelog = _load("promote_changelog")
 extract_changelog_section = _load("extract_changelog_section")
+inject_changelog_footer_link = _load("inject_changelog_footer_link")
 
 pytestmark = pytest.mark.unit
 
 _REPO = "https://github.com/ByronWilliamsCPA/cyo-adventure"
 
+# A generated-format changelog: insertion marker, versioned sections newest
+# first, compare-link footer newest first. This is what PSR's mode="update"
+# leaves on disk after a release.
 _SAMPLE = f"""# Changelog
 
-All notable changes.
+All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+<!-- version list -->
+
+## [0.2.0] - 2026-01-02
 
 ### Added
+
 - A new thing.
 
 ### Fixed
+
 - A bug.
 
-## [0.1.0] - TBD
+## [0.1.0] - 2026-01-01
 
 ### Added
+
 - Initial release.
 
-[Unreleased]: {_REPO}/compare/v0.1.0...HEAD
+[0.2.0]: {_REPO}/compare/v0.1.0...v0.2.0
 [0.1.0]: {_REPO}/releases/tag/v0.1.0
 """
 
@@ -67,99 +86,32 @@ def changelog(tmp_path: Path) -> Path:
     return path
 
 
-class TestPromote:
-    """promote_changelog.promote behavior."""
-
-    def test_inserts_version_heading_under_unreleased(self, changelog: Path) -> None:
-        """The new version heading lands directly below [Unreleased]."""
-        assert promote_changelog.promote("0.2.0", changelog) is True
-        text = changelog.read_text(encoding="utf-8")
-        unreleased_idx = text.index("## [Unreleased]")
-        version_idx = text.index("## [0.2.0] - ")
-        added_idx = text.index("### Added")
-        assert unreleased_idx < version_idx < added_idx
-
-    def test_updates_link_references(self, changelog: Path) -> None:
-        """[Unreleased] compares against the new tag; new compare link added."""
-        promote_changelog.promote("0.2.0", changelog)
-        text = changelog.read_text(encoding="utf-8")
-        assert f"[Unreleased]: {_REPO}/compare/v0.2.0...HEAD" in text
-        assert f"[0.2.0]: {_REPO}/compare/v0.1.0...v0.2.0" in text
-
-    def test_idempotent_when_version_exists(self, changelog: Path) -> None:
-        """A second run with the same version changes nothing."""
-        promote_changelog.promote("0.2.0", changelog)
-        first = changelog.read_text(encoding="utf-8")
-        assert promote_changelog.promote("0.2.0", changelog) is False
-        assert changelog.read_text(encoding="utf-8") == first
-
-    def test_missing_unreleased_heading_exits(self, tmp_path: Path) -> None:
-        """A changelog without [Unreleased] is a hard error."""
-        path = tmp_path / "CHANGELOG.md"
-        path.write_text("# Changelog\n", encoding="utf-8")
-        with pytest.raises(SystemExit):
-            promote_changelog.promote("0.2.0", path)
-
-    def test_missing_unreleased_link_exits(self, tmp_path: Path) -> None:
-        """A changelog without the [Unreleased]: compare link is a hard error."""
-        path = tmp_path / "CHANGELOG.md"
-        path.write_text("# Changelog\n\n## [Unreleased]\n", encoding="utf-8")
-        with pytest.raises(SystemExit):
-            promote_changelog.promote("0.2.0", path)
-
-    def test_insertion_is_line_anchored_not_prose(self, tmp_path: Path) -> None:
-        """A bare '## [Unreleased]' in prose does not misplace the insertion."""
-        text = (
-            "# Changelog\n\n"
-            "This project keeps a ## [Unreleased] section, described here.\n\n"
-            "## [Unreleased]\n\n"
-            "### Added\n- A new thing.\n\n"
-            "## [0.1.0] - TBD\n\n### Added\n- Initial release.\n\n"
-            f"[Unreleased]: {_REPO}/compare/v0.1.0...HEAD\n"
-            f"[0.1.0]: {_REPO}/releases/tag/v0.1.0\n"
-        )
-        path = tmp_path / "CHANGELOG.md"
-        path.write_text(text, encoding="utf-8")
-
-        assert promote_changelog.promote("0.2.0", path) is True
-        result = path.read_text(encoding="utf-8")
-
-        # The version heading lands under the real heading line, not the prose
-        # mention (an unanchored replace would insert it into the prose line).
-        real_heading_idx = result.index("\n## [Unreleased]\n")
-        version_idx = result.index("## [0.2.0] - ")
-        assert real_heading_idx < version_idx
-        assert result.count("## [0.2.0] - ") == 1
-        # The prose sentence is untouched.
-        assert "keeps a ## [Unreleased] section, described here." in result
-
-
 class TestExtract:
     """extract_changelog_section.extract behavior."""
 
-    def test_extracts_promoted_section(self, changelog: Path) -> None:
-        """After promotion, extraction returns exactly the released entries."""
-        promote_changelog.promote("0.2.0", changelog)
+    def test_extracts_latest_released_section(self, changelog: Path) -> None:
+        """Extraction returns exactly the newest version's entries."""
         section = extract_changelog_section.extract("0.2.0", changelog)
         assert "A new thing." in section
         assert "A bug." in section
+        # The older release is bounded out.
         assert "Initial release." not in section
-        assert "[Unreleased]" not in section
 
-    def test_fresh_unreleased_section_is_empty_after_promotion(
-        self, changelog: Path
-    ) -> None:
-        """Promotion leaves an empty [Unreleased] section on top."""
-        promote_changelog.promote("0.2.0", changelog)
-        text = changelog.read_text(encoding="utf-8")
-        between = text.split("## [Unreleased]")[1].split("## [0.2.0]")[0]
-        assert between.strip() == ""
-
-    def test_existing_version_section(self, changelog: Path) -> None:
-        """Extraction works for already-released sections."""
+    def test_extracts_older_released_section(self, changelog: Path) -> None:
+        """Extraction works for a section below the newest one."""
         section = extract_changelog_section.extract("0.1.0", changelog)
         assert "Initial release." in section
         assert "A new thing." not in section
+
+    def test_latest_section_excludes_footer_links(self, changelog: Path) -> None:
+        """The newest section (the one published) omits the compare-link block.
+
+        The publish job only ever extracts the just-released (newest) version,
+        whose scan stops at the next '## [' heading before any footer link.
+        """
+        section = extract_changelog_section.extract("0.2.0", changelog)
+        assert f"[0.2.0]: {_REPO}" not in section
+        assert "compare/" not in section
 
     def test_unknown_version_exits(self, changelog: Path) -> None:
         """Asking for a version that is not in the changelog is a hard error."""
@@ -170,7 +122,7 @@ class TestExtract:
         """A '## [' line inside a fenced code block is not a section boundary."""
         text = (
             "# Changelog\n\n"
-            "## [Unreleased]\n\n"
+            "<!-- version list -->\n\n"
             "## [0.2.0] - 2026-01-01\n\n"
             "### Added\n"
             "- Documented the changelog format:\n\n"
@@ -180,7 +132,6 @@ class TestExtract:
             "- A trailing entry after the fence.\n\n"
             "## [0.1.0] - 2025-01-01\n\n"
             "### Added\n- Initial release.\n\n"
-            f"[Unreleased]: {_REPO}/compare/v0.2.0...HEAD\n"
             f"[0.2.0]: {_REPO}/compare/v0.1.0...v0.2.0\n"
             f"[0.1.0]: {_REPO}/releases/tag/v0.1.0\n"
         )
@@ -193,53 +144,6 @@ class TestExtract:
         assert "A trailing entry after the fence." in section
         # The genuine next release section is still excluded.
         assert "Initial release." not in section
-
-
-class TestPromoteCLI:
-    """promote_changelog.main argument handling and dispatch."""
-
-    def test_usage_error_on_wrong_argc(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
-        capsys: pytest.CaptureFixture[str],
-    ) -> None:
-        """A missing version argument returns exit code 2 with a usage line."""
-        monkeypatch.setattr(sys, "argv", ["promote_changelog.py"])
-        assert promote_changelog.main() == 2
-        assert "usage:" in capsys.readouterr().err
-
-    def test_strips_v_prefix_and_reports_promotion(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
-        capsys: pytest.CaptureFixture[str],
-    ) -> None:
-        """A 'vX.Y.Z' argument is normalized before promote() is called."""
-        seen: dict[str, str] = {}
-
-        def _spy(version: str) -> bool:
-            seen["version"] = version
-            return True
-
-        monkeypatch.setattr(promote_changelog, "promote", _spy)
-        monkeypatch.setattr(sys, "argv", ["promote_changelog.py", "v0.2.0"])
-        assert promote_changelog.main() == 0
-        assert seen["version"] == "0.2.0"
-        assert "promoted" in capsys.readouterr().out
-
-    def test_idempotent_no_op_is_reported(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
-        capsys: pytest.CaptureFixture[str],
-    ) -> None:
-        """When promote() returns False, main reports the no-op and exits 0."""
-
-        def _noop(_version: str) -> bool:
-            return False
-
-        monkeypatch.setattr(promote_changelog, "promote", _noop)
-        monkeypatch.setattr(sys, "argv", ["promote_changelog.py", "0.2.0"])
-        assert promote_changelog.main() == 0
-        assert "already present" in capsys.readouterr().out
 
 
 class TestExtractCLI:
@@ -286,57 +190,169 @@ class TestExtractCLI:
         assert "_No curated changelog entries" in capsys.readouterr().out
 
 
+class TestInjectFooter:
+    """inject_changelog_footer_link.inject behavior."""
+
+    def test_inserts_link_newest_first(self, changelog: Path) -> None:
+        """The new compare link lands above the current highest footer link."""
+        assert inject_changelog_footer_link.inject("0.3.0", "0.2.0", changelog) is True
+        text = changelog.read_text(encoding="utf-8")
+        assert f"[0.3.0]: {_REPO}/compare/v0.2.0...v0.3.0" in text
+        # Newest first: the new link precedes the previously-highest one.
+        assert text.index("[0.3.0]:") < text.index("[0.2.0]:")
+
+    def test_derives_base_from_existing_link(self, tmp_path: Path) -> None:
+        """The compare-URL base is taken from an existing link, not hardcoded."""
+        other = "https://example.test/team/app"
+        text = (
+            "# Changelog\n\n<!-- version list -->\n\n"
+            "## [1.0.0] - 2026-01-01\n\n### Added\n- Thing.\n\n"
+            f"[1.0.0]: {other}/releases/tag/v1.0.0\n"
+        )
+        path = tmp_path / "CHANGELOG.md"
+        path.write_text(text, encoding="utf-8")
+        assert inject_changelog_footer_link.inject("1.1.0", "1.0.0", path) is True
+        assert f"[1.1.0]: {other}/compare/v1.0.0...v1.1.0" in path.read_text(
+            encoding="utf-8"
+        )
+
+    def test_idempotent_when_link_exists(self, changelog: Path) -> None:
+        """A second run for the same version changes nothing."""
+        inject_changelog_footer_link.inject("0.3.0", "0.2.0", changelog)
+        first = changelog.read_text(encoding="utf-8")
+        assert inject_changelog_footer_link.inject("0.3.0", "0.2.0", changelog) is False
+        assert changelog.read_text(encoding="utf-8") == first
+
+    def test_missing_footer_links_exits(self, tmp_path: Path) -> None:
+        """A changelog with no footer link to derive the base from is an error."""
+        path = tmp_path / "CHANGELOG.md"
+        path.write_text(
+            "# Changelog\n\n<!-- version list -->\n\n## [0.1.0] - 2026-01-01\n",
+            encoding="utf-8",
+        )
+        with pytest.raises(SystemExit):
+            inject_changelog_footer_link.inject("0.2.0", "0.1.0", path)
+
+    def test_line_anchored_not_prose(self, tmp_path: Path) -> None:
+        """A bracketed version inside prose is not mistaken for a footer link."""
+        text = (
+            "# Changelog\n\n<!-- version list -->\n\n"
+            "## [0.2.0] - 2026-01-02\n\n"
+            "### Fixed\n- Referenced [0.3.0] in a note, not yet released.\n\n"
+            "## [0.1.0] - 2026-01-01\n\n### Added\n- Initial release.\n\n"
+            f"[0.2.0]: {_REPO}/compare/v0.1.0...v0.2.0\n"
+            f"[0.1.0]: {_REPO}/releases/tag/v0.1.0\n"
+        )
+        path = tmp_path / "CHANGELOG.md"
+        path.write_text(text, encoding="utf-8")
+        # The prose "[0.3.0]" must not count as an existing footer link.
+        assert inject_changelog_footer_link.inject("0.3.0", "0.2.0", path) is True
+        result = path.read_text(encoding="utf-8")
+        assert f"[0.3.0]: {_REPO}/compare/v0.2.0...v0.3.0" in result
+        # The prose sentence is untouched.
+        assert "Referenced [0.3.0] in a note, not yet released." in result
+
+
+class TestInjectFooterCLI:
+    """inject_changelog_footer_link.main argument handling and dispatch."""
+
+    def test_usage_error_on_wrong_argc(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Fewer than two positional args returns exit code 2 with a usage line."""
+        monkeypatch.setattr(sys, "argv", ["inject_changelog_footer_link.py", "0.2.0"])
+        assert inject_changelog_footer_link.main() == 2
+        assert "usage:" in capsys.readouterr().err
+
+    def test_strips_v_prefix_on_both_args(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """'vX.Y.Z' arguments are normalized before inject() is called."""
+        seen: dict[str, str] = {}
+
+        def _spy(version: str, prev: str) -> bool:
+            seen["version"] = version
+            seen["prev"] = prev
+            return True
+
+        monkeypatch.setattr(inject_changelog_footer_link, "inject", _spy)
+        monkeypatch.setattr(
+            sys, "argv", ["inject_changelog_footer_link.py", "v0.3.0", "v0.2.0"]
+        )
+        assert inject_changelog_footer_link.main() == 0
+        assert seen == {"version": "0.3.0", "prev": "0.2.0"}
+        assert "inserted compare-link footer" in capsys.readouterr().out
+
+    def test_idempotent_no_op_is_reported(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """When inject() returns False, main reports the no-op and exits 0."""
+
+        def _noop(_version: str, _prev: str) -> bool:
+            return False
+
+        monkeypatch.setattr(inject_changelog_footer_link, "inject", _noop)
+        monkeypatch.setattr(
+            sys, "argv", ["inject_changelog_footer_link.py", "0.3.0", "0.2.0"]
+        )
+        assert inject_changelog_footer_link.main() == 0
+        assert "already present" in capsys.readouterr().out
+
+
 class TestRealChangelog:
     """Smoke tests against the repository's actual CHANGELOG.md.
 
-    The synthetic fixtures above never exercise the ~1300-line file that is the
-    scripts' only real consumer; these tests catch format drift the scripts
-    could not otherwise detect until a live release run.
+    The synthetic fixtures above never exercise the ~2500-line file that is the
+    scripts' only real consumer; these tests catch generated-format drift the
+    scripts could not otherwise detect until a live release run.
     """
 
     _REAL = Path(__file__).resolve().parents[2] / "CHANGELOG.md"
 
-    def test_real_changelog_promotes_and_extracts_bounded_section(
+    def _latest_version(self) -> str:
+        """Return the newest '## [X.Y.Z]' version string in the real file."""
+        for line in self._REAL.read_text(encoding="utf-8").splitlines():
+            if line.startswith("## ["):
+                # '## [0.27.0] - 2026-07-22' -> '0.27.0'
+                return line.split("[", 1)[1].split("]", 1)[0]
+        pytest.fail("real CHANGELOG has no '## [X.Y.Z]' heading")
+
+    def test_real_changelog_has_generated_format(self) -> None:
+        """The real file carries the markers both scripts rely on."""
+        text = self._REAL.read_text(encoding="utf-8")
+        # Exactly one insertion marker for PSR's mode="update" splice.
+        assert text.count("<!-- version list -->") == 1
+        # At least one compare-link footer for inject to derive the base from.
+        assert inject_changelog_footer_link._FOOTER_LINK_RE.search(text) is not None
+        # No hand-curated Unreleased section survives the migration.
+        assert "\n## [Unreleased]\n" not in text
+
+    def test_real_changelog_extracts_bounded_latest_section(self) -> None:
+        """Extracting the newest real section yields a bounded body."""
+        section = extract_changelog_section.extract(self._latest_version(), self._REAL)
+        lines = section.splitlines()
+        # No later release heading or trailing link-block line leaked in.
+        assert not any(line.startswith("## [") for line in lines)
+        assert not any(line.startswith("[") and "]: http" in line for line in lines)
+
+    def test_inject_on_real_changelog_is_bounded_and_idempotent(
         self, tmp_path: Path
     ) -> None:
-        """Promoting then extracting the real file yields a bounded section."""
+        """Injecting a footer link on a copy of the real file is safe."""
         copied = tmp_path / "CHANGELOG.md"
-        real_text = self._REAL.read_text(encoding="utf-8")
-        # #ASSUME data-integrity: this smoke test exercises the real file's
-        # header/link format, not its current content, so the Unreleased
-        # section is seeded with a sentinel entry here rather than relied
-        # upon to already be non-empty. On a release branch the real
-        # Unreleased section is empty by design (promote_changelog.py
-        # already ran to produce this PR's own diff), so asserting against
-        # the unmodified real content is self-referentially false on the
-        # one branch this script actually runs against.
-        # #VERIFY the seeded entry is bounded away from later sections the
-        # same way a real entry would be; the assertions below cover that.
-        seeded_text = real_text.replace(
-            "\n## [Unreleased]\n",
-            "\n## [Unreleased]\n\n### Added\n- Smoke-test sentinel entry.\n",
-            1,
-        )
-        copied.write_text(seeded_text, encoding="utf-8")
+        copied.write_text(self._REAL.read_text(encoding="utf-8"), encoding="utf-8")
+        latest = self._latest_version()
 
-        assert promote_changelog.promote("9.9.9", copied) is True
-        section = extract_changelog_section.extract("9.9.9", copied)
-
-        # Non-empty: seeded above, deterministic regardless of whether the
-        # real repo's Unreleased section currently carries entries.
-        assert section
-        # Bounded: no later release heading line or trailing link-block line
-        # leaked in. Checked line-anchored (a '## [' may appear inline in an
-        # entry's prose without being a section boundary).
-        lines = section.splitlines()
-        assert not any(line.startswith("## [") for line in lines)
-        assert not any(line.startswith("[Unreleased]:") for line in lines)
-        assert not any(line.startswith("[9.9.9]:") for line in lines)
-
-    def test_real_changelog_parses_cleanly_under_both_scripts(self) -> None:
-        """The real CHANGELOG satisfies the structure both scripts require."""
-        text = self._REAL.read_text(encoding="utf-8")
-        # Exactly one bare '## [Unreleased]' heading line for promote to anchor.
-        assert text.count("\n## [Unreleased]\n") == 1
-        # The [Unreleased] compare link promote rewrites is present.
-        assert promote_changelog.UNRELEASED_LINK_RE.search(text) is not None
+        assert inject_changelog_footer_link.inject("99.0.0", latest, copied) is True
+        text = copied.read_text(encoding="utf-8")
+        assert "[99.0.0]: " in text
+        # Newest first: inserted above the previously-latest footer link.
+        assert text.index("[99.0.0]:") < text.index(f"[{latest}]:")
+        # Idempotent on a second run.
+        assert inject_changelog_footer_link.inject("99.0.0", latest, copied) is False

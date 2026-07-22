@@ -8,19 +8,24 @@
 # the release into two phases that respect the rulesets:
 #
 #   1. propose  - on every push to main (except release-bump merges):
-#      compute the next version from conventional commits
-#      (python-semantic-release is used ONLY as the version calculator;
-#      it never writes files), bump pyproject.toml + uv.lock, promote the
-#      hand-curated CHANGELOG "[Unreleased]" section to the new version,
-#      then open a version-bump PR and enable auto-merge so it flows
-#      through the merge queue like any other change.
+#      compute the next version from conventional commits, then run
+#      python-semantic-release's writer (--no-commit/--no-tag/--no-push) to
+#      bump pyproject.toml and splice the new version section into
+#      CHANGELOG.md, re-lock (uv lock), inject the Keep-a-Changelog
+#      compare-link footer PSR omits, assert the artifacts, and open a
+#      version-bump PR with auto-merge so it flows through the merge queue
+#      like any other change.
 #   2. publish  - when that release PR's squash commit
 #      ("chore(release): vX.Y.Z") lands on main: create the vX.Y.Z tag
-#      and the GitHub Release with the promoted CHANGELOG section as the
+#      and the GitHub Release with the generated CHANGELOG section as the
 #      release notes.
 #
-# CHANGELOG.md stays hand-curated (Keep a Changelog); semantic-release's
-# generated changelog is deliberately not used.
+# CHANGELOG.md is GENERATED at release time from Conventional Commits (PSR
+# mode="update" splices each version in at the insertion flag, preserving
+# history); it is no longer hand-curated per PR. This is what eliminated the
+# per-PR "[Unreleased]" edit that made every merge-queue PR conflict on the
+# changelog. The templates/ dir holds PSR's bundled markdown templates,
+# patched only to emit Keep-a-Changelog headings.
 #
 # The PyPI publish step was removed: this app is not a PyPI package and
 # the step never had a dist/ to upload (issue #158).
@@ -81,13 +86,15 @@ jobs:
     # rather than double-bump. #VERIFY do not delete the head_commit.message
     # guard on that assumption alone: a PSR change could break the no-op and
     # cause a double bump, so the message guard is the real protection.
-    # #ASSUME external: releases are cut only from main. Restricting to
-    # refs/heads/main blocks a prerelease workflow_dispatch from a
-    # develop/release branch, which would break the pipeline end to end
-    # (`uv version` PEP 440-normalizes 0.2.1-rc.1 to 0.2.1rc1 while the branch,
-    # PR title and CHANGELOG keep the hyphen; publish greps the normalized
-    # string, extract hard-exits on the heading mismatch, and the tag fails the
-    # live tag ruleset regex). #VERIFY propose runs only for refs/heads/main.
+    # #ASSUME external: releases are cut only from stable main. The pipeline is
+    # intentionally main-only: PSR's [branches.main] sets prerelease=false, so
+    # the writer emits a clean X.Y.Z into pyproject.toml and CHANGELOG. A
+    # workflow_dispatch from a develop/ or release/ branch would instead select
+    # PSR's prerelease branch config (dev/rc tokens); that whole path is
+    # unvalidated end to end (the writer's prerelease version string vs. what
+    # `uv lock` accepts, the "## [X.Y.Z]" heading extract_changelog_section.py
+    # greps for, and the live tag ruleset regex) and is deliberately blocked
+    # here. #VERIFY propose runs only for refs/heads/main.
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'workflow_dispatch' ||
@@ -177,14 +184,85 @@ jobs:
             echo "Next version: v${NEXT} (current v${CURRENT})"
           fi
 
-      - name: Bump version and promote CHANGELOG
+      - name: Write version and changelog
+        if: steps.version.outputs.released == 'true'
+        env:
+          # PSR's [tool.semantic_release.remote] reads GH_TOKEN at config load
+          # even for a local-only write. --no-commit/--no-tag/--no-push keep
+          # this a pure file mutation (version_toml bump + CHANGELOG render);
+          # --no-vcs-release stops PSR creating a GitHub Release (the publish
+          # job owns that); --skip-build because there is no build_command and
+          # propose must not build. The signed release commit is assembled from
+          # these files by the GraphQL mutation in the next step.
+          GH_TOKEN: ${{ github.token }}
+          FORCE_LEVEL: ${{ inputs.force_level }}
+          NEXT: ${{ steps.version.outputs.next }}
+          CURRENT: ${{ steps.version.outputs.current }}
+        run: |
+          set -euo pipefail
+          FORCE_FLAG=""
+          if [ -n "${FORCE_LEVEL}" ]; then
+            FORCE_FLAG="--${FORCE_LEVEL}"
+          fi
+          # shellcheck disable=SC2086  # FORCE_FLAG is intentionally unquoted
+          uvx --from 'python-semantic-release==10.6.1' \
+            semantic-release version \
+              --no-commit --no-tag --no-push --no-vcs-release --skip-build \
+              ${FORCE_FLAG}
+          uv lock
+          # PSR renders the "## [X.Y.Z]" section but not the Keep-a-Changelog
+          # compare-link footer; add it so the heading resolves as a link like
+          # every prior entry. Append-only at the top of the footer block, so
+          # it cannot reintroduce a merge-queue conflict.
+          uv run python scripts/inject_changelog_footer_link.py "${NEXT}" "${CURRENT}"
+
+      - name: Verify release artifacts
         if: steps.version.outputs.released == 'true'
         env:
           NEXT: ${{ steps.version.outputs.next }}
         run: |
-          uv version "${NEXT}"
-          uv lock
-          uv run python scripts/promote_changelog.py "${NEXT}"
+          set -euo pipefail
+          # #CRITICAL data-integrity: the version bump and the changelog splice
+          # ARE the release. If PSR silently no-ops (a config or template
+          # regression, an upstream default change) the GraphQL commit would
+          # still open a PR that tags and publishes an empty or wrong release,
+          # exactly the kind of silent stall this pipeline exists to prevent
+          # (cf. PR #241). Assert every artifact here, before the commit is
+          # built, so a malformed release fails loudly instead of shipping.
+          # #VERIFY each assertion below fails the job rather than continuing.
+          FAIL=0
+          ACTUAL="$(uv version --short)"
+          if [ "${ACTUAL}" != "${NEXT}" ]; then
+            echo "::error::pyproject version is '${ACTUAL}', expected '${NEXT}'."
+            FAIL=1
+          fi
+          if ! grep -qF "## [${NEXT}] - " CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '## [${NEXT}] - ' section heading."
+            FAIL=1
+          fi
+          if ! grep -qF "[${NEXT}]: " CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '[${NEXT}]: ' compare-link footer."
+            FAIL=1
+          fi
+          if ! grep -qF '<!-- version list -->' CHANGELOG.md; then
+            echo "::error::CHANGELOG.md lost its '<!-- version list -->' insertion marker."
+            FAIL=1
+          fi
+          # mode="update" splices; it must never truncate. Guard against a
+          # regression that regenerates (init mode) and drops prior history.
+          OLD_LINES="$(git show HEAD:CHANGELOG.md | wc -l)"
+          NEW_LINES="$(wc -l < CHANGELOG.md)"
+          if [ "${NEW_LINES}" -lt "${OLD_LINES}" ]; then
+            echo "::error::CHANGELOG.md shrank from ${OLD_LINES} to" \
+              "${NEW_LINES} lines; prior history may have been lost."
+            FAIL=1
+          fi
+          if ! grep -qF '[0.1.0]: ' CHANGELOG.md; then
+            echo "::error::CHANGELOG.md lost its history tail ('[0.1.0]:' link)."
+            FAIL=1
+          fi
+          [ "${FAIL}" -eq 0 ] || exit 1
+          echo "Release artifacts verified for v${NEXT}."
 
       - name: Open release PR
         if: steps.version.outputs.released == 'true' && !inputs.dry_run
@@ -386,9 +464,10 @@ jobs:
               --body "$(printf '%s\n' \
                 "Automated version bump to v${NEXT}." \
                 "" \
-                "Promotes the hand-curated CHANGELOG [Unreleased] section and" \
-                "bumps pyproject.toml plus uv.lock. When this PR merges, the" \
-                "publish job in release.yml creates the tag and GitHub Release." \
+                "Regenerates the CHANGELOG from Conventional Commits via" \
+                "python-semantic-release and bumps pyproject.toml plus uv.lock." \
+                "When this PR merges, the publish job in release.yml creates" \
+                "the tag and GitHub Release." \
                 "" \
                 "Closes #183" \
                 "Closes #157" \
@@ -422,10 +501,24 @@ jobs:
         env:
           NEXT: ${{ steps.version.outputs.next }}
         run: |
-          echo "Dry run: would open a release PR for v${NEXT}." >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          git diff --stat >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          set -euo pipefail
+          # The writer step already ran (it is gated on `released`, not
+          # `dry_run`), so the bumped files exist on disk; show the reviewer
+          # exactly what would be committed without opening a PR.
+          {
+            echo "Dry run: would open a release PR for v${NEXT}."
+            echo ""
+            echo "### Files changed"
+            echo '```'
+            git diff --stat
+            echo '```'
+            echo ""
+            echo "### Generated CHANGELOG section for v${NEXT}"
+            echo '```markdown'
+            echo "## [${NEXT}]"
+            uv run python scripts/extract_changelog_section.py "${NEXT}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   publish:
     name: Tag and GitHub Release
