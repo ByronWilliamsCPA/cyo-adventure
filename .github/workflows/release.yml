@@ -240,6 +240,27 @@ jobs:
             echo "::error::CHANGELOG.md has no '## [${NEXT}] - ' section heading."
             FAIL=1
           fi
+          # #ASSUME data-integrity: a heading alone is not a release; the
+          # section must carry actual entries. An empty section means the
+          # commit filter dropped everything, so fail rather than publish a
+          # heading with no notes. #VERIFY awk captures the body between this
+          # version's heading and the next '## ' heading, and grep proves it
+          # holds a non-whitespace line.
+          SECTION_BODY="$(
+            awk -v h="## [${NEXT}] - " '
+              index($0, h) == 1 { in_sec = 1; next }
+              in_sec && /^## / { exit }
+              in_sec { print }
+            ' CHANGELOG.md
+          )"
+          if ! printf '%s' "${SECTION_BODY}" | grep -q '[^[:space:]]'; then
+            echo "::error::CHANGELOG.md section '[${NEXT}]' has a heading but no entries."
+            FAIL=1
+          fi
+          # The paired heading + footer assertions jointly guarantee the
+          # just-injected footer link resolves to a real section: both key off
+          # ${NEXT}, so a footer with no section (or a section with no footer)
+          # fails here, before the commit that tags and publishes is built.
           if ! grep -qF "[${NEXT}]: " CHANGELOG.md; then
             echo "::error::CHANGELOG.md has no '[${NEXT}]: ' compare-link footer."
             FAIL=1

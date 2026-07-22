@@ -45,6 +45,40 @@ def _footer_link_re(version: str) -> re.Pattern[str]:
     return re.compile(rf"^\[{re.escape(version)}\]: ", re.MULTILINE)
 
 
+def _fenced_spans(text: str) -> list[tuple[int, int]]:
+    """Return the character spans covered by fenced code blocks.
+
+    A footer-shaped line (``[x]: https://.../compare/...``) can legitimately
+    appear inside a fenced code block, for instance when the changelog
+    documents its own format. Such a line is prose, not a real reference-style
+    link, so scans exclude these spans before matching.
+    """
+    spans: list[tuple[int, int]] = []
+    fence_open: int | None = None
+    pos = 0
+    for line in text.splitlines(keepends=True):
+        if line.lstrip().startswith(("```", "~~~")):
+            if fence_open is None:
+                fence_open = pos
+            else:
+                spans.append((fence_open, pos + len(line)))
+                fence_open = None
+        pos += len(line)
+    if fence_open is not None:  # an unterminated fence runs to end of file
+        spans.append((fence_open, pos))
+    return spans
+
+
+def _first_outside_fences(
+    pattern: re.Pattern[str], text: str, spans: list[tuple[int, int]]
+) -> re.Match[str] | None:
+    """Return the first match of ``pattern`` that starts outside every span."""
+    for match in pattern.finditer(text):
+        if not any(start <= match.start() < end for start, end in spans):
+            return match
+    return None
+
+
 def inject(version: str, prev: str, changelog: Path = CHANGELOG) -> bool:
     """Insert the compare-link footer for ``version`` into ``changelog``.
 
@@ -62,14 +96,16 @@ def inject(version: str, prev: str, changelog: Path = CHANGELOG) -> bool:
             repository compare-URL base from.
     """
     text = changelog.read_text(encoding="utf-8")
+    fenced = _fenced_spans(text)
 
     # #ASSUME data-integrity: one footer link per line, newest first, at the
-    # bottom of the file. #VERIFY match line-anchored so a bracketed version
-    # inside a prose entry cannot be mistaken for a footer link.
-    if _footer_link_re(version).search(text):
+    # bottom of the file. #VERIFY match line-anchored AND skip fenced code, so
+    # neither a bracketed version inside a prose entry nor a footer-shaped line
+    # inside a code fence can be mistaken for a real footer link.
+    if _first_outside_fences(_footer_link_re(version), text, fenced) is not None:
         return False
 
-    first_link = _FOOTER_LINK_RE.search(text)
+    first_link = _first_outside_fences(_FOOTER_LINK_RE, text, fenced)
     if first_link is None:
         msg = (
             f"{changelog.name} has no existing '[X.Y.Z]: .../compare/...' footer "

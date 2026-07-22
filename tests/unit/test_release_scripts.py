@@ -252,6 +252,42 @@ class TestInjectFooter:
         # The prose sentence is untouched.
         assert "Referenced [0.3.0] in a note, not yet released." in result
 
+    def test_fenced_footer_line_is_not_a_real_link(self, tmp_path: Path) -> None:
+        """A footer-shaped line inside a code fence is ignored for base + insert.
+
+        When a changelog documents its own format, a fenced block can contain a
+        line like '[9.9.9]: https://.../compare/...'. That line is prose, not a
+        reference link, so its (possibly foreign) base must not be derived and
+        the new footer must not be spliced into the middle of the document.
+        """
+        bogus = "https://evil.example/not/this/repo"
+        text = (
+            "# Changelog\n\n<!-- version list -->\n\n"
+            "## [0.3.0] - 2026-01-03\n\n"
+            "### Added\n- Documented the footer format:\n\n"
+            "```\n"
+            f"[9.9.9]: {bogus}/compare/v9.9.8...v9.9.9\n"
+            "```\n\n"
+            "## [0.2.0] - 2026-01-02\n\n### Added\n- A thing.\n\n"
+            f"[0.2.0]: {_REPO}/compare/v0.1.0...v0.2.0\n"
+            f"[0.1.0]: {_REPO}/releases/tag/v0.1.0\n"
+        )
+        path = tmp_path / "CHANGELOG.md"
+        path.write_text(text, encoding="utf-8")
+        assert inject_changelog_footer_link.inject("0.4.0", "0.2.0", path) is True
+        result = path.read_text(encoding="utf-8")
+        # Base derived from the real footer block, not the fenced bogus line.
+        assert f"[0.4.0]: {_REPO}/compare/v0.2.0...v0.4.0" in result
+        assert bogus not in result.replace(
+            f"[9.9.9]: {bogus}/compare/v9.9.8...v9.9.9", ""
+        )
+        # The new link lands in the real footer block, above [0.2.0], and not
+        # above the fenced pseudo-link earlier in the document body.
+        assert result.index("[0.4.0]:") > result.index("## [0.2.0]")
+        assert result.index("[0.4.0]:") < result.index(f"[0.2.0]: {_REPO}")
+        # The fenced block is left byte-for-byte intact.
+        assert f"```\n[9.9.9]: {bogus}/compare/v9.9.8...v9.9.9\n```" in result
+
 
 class TestInjectFooterCLI:
     """inject_changelog_footer_link.main argument handling and dispatch."""
