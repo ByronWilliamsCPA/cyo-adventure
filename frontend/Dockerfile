@@ -1,3 +1,12 @@
+# check=skip=SecretsUsedInArgOrEnv
+# The skip above silences a BuildKit false positive on the VITE_SUPABASE_* args
+# below (see the builder stage). VITE_SUPABASE_ANON_KEY is Supabase's publishable
+# key: Vite inlines every VITE_* var into the browser bundle at build time by
+# design, so this value is meant to ship to every client. It is protected by
+# Postgres Row-Level Security, not by secrecy, so holding it in an ARG/ENV is
+# correct and required. The SecretsUsedInArgOrEnv check only pattern-matches the
+# "*_KEY" name and cannot tell a publishable key from a real secret.
+
 # Multi-stage Dockerfile for CYO Adventure Frontend
 # Based on FastAPI full-stack template best practices
 
