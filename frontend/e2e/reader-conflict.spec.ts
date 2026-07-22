@@ -10,20 +10,22 @@ const READER_PATH = '/read/child-a/s_lantern_cave/1'
 
 /**
  * 409 reconciliation (the last amber gap). NOTE the scope: this suite drives
- * the LIVE-save conflict path (a save returning 409 opens ConflictDialog with
- * two resolutions; both are covered here). The other wired path, the offline
- * queue's reconnect flush (useReplayOnReconnect in ReaderRoute invokes
- * replayQueue on mount and on 'online'), is covered component-side in
- * src/reader/ReaderRoute.test.tsx, including its conflict dialog, failed
- * banner, and the "All caught up!" success toast for a clean replay. The
- * fresh browser context here has an empty queue, so the mount-time flush is
- * a no-op (replayed 0) and never toasts into these assertions.
+ * the LIVE-save conflict path (a save returning 409). Per the product decision
+ * (child-UX), a reading-state conflict is resolved by NEWEST-WRITE-WINS,
+ * SILENTLY: the app adopts the server's newest row and keeps the child reading,
+ * with no dialog ever shown. The other wired path, the offline queue's
+ * reconnect flush (useReplayOnReconnect in ReaderRoute invokes replayQueue on
+ * mount and on 'online'), is covered component-side in
+ * src/reader/ReaderRoute.test.tsx, including its silent conflict discard, the
+ * failed banner, and the "All caught up!" success toast for a clean replay. The
+ * fresh browser context here has an empty queue, so the mount-time flush is a
+ * no-op (replayed 0) and never toasts into these assertions.
  *
  * ReaderPage persists on mount, not only on the first choice: Reader.tsx's
  * progress effect fires `onProgress` for the initial reading state as soon
  * as the machine mounts (frontend/src/reader/Reader.tsx:41-43), so the first
  * PUT (and thus the 409) arrives before any choice click could fire. The
- * dialog is asserted right after `reader` is visible; no choice click.
+ * silent adoption is asserted right after `reader` is visible; no choice click.
  */
 
 // What "the other device" saved: further along, at the cave fork, revision 5.
@@ -47,9 +49,7 @@ test.beforeEach(async ({ page, context }) => {
   await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
 })
 
-test('a 409 on save opens the conflict dialog; keeping this device rebases and re-saves', async ({
-  page,
-}) => {
+test('a 409 on save silently adopts the server position and re-saves it', async ({ page }) => {
   const putBodies: Array<Record<string, unknown>> = []
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
@@ -68,19 +68,15 @@ test('a 409 on save opens the conflict dialog; keeping this device rebases and r
   await page.goto(READER_PATH)
   await expect(page.getByTestId('reader')).toBeVisible()
 
-  await expect(page.getByTestId('conflict-dialog')).toBeVisible()
-  await expect(page.getByText('You were reading on another device')).toBeVisible()
-
-  await page.getByTestId('conflict-keep').click()
-  await expect(page.getByTestId('conflict-dialog')).toHaveCount(0)
-
-  // resolveConflict('continue_from_this_device') rebases the local save onto
-  // the server's revision before re-sending (offline/sync.ts:183-187).
+  // Newest-write-wins: the reader silently adopts the server row and re-saves
+  // it at the server's revision (5), with no dialog shown to the child.
   await expect.poll(() => putBodies.length).toBeGreaterThanOrEqual(2)
   expect(putBodies[1].state_revision).toBe(5)
+  await expect(page.getByTestId('conflict-dialog')).toHaveCount(0)
+  await expect(page.getByText('You were reading on another device')).toHaveCount(0)
 })
 
-test('choosing the newest place adopts the server position', async ({ page }) => {
+test('a 409 on save moves the reader to the server position, no dialog', async ({ page }) => {
   let puts = 0
   await page.route('**/api/v1/reading-state/**', (route) => {
     if (route.request().method() === 'GET') {
@@ -94,10 +90,8 @@ test('choosing the newest place adopts the server position', async ({ page }) =>
   await page.goto(READER_PATH)
   await expect(page.getByTestId('reader')).toBeVisible()
 
-  await expect(page.getByTestId('conflict-dialog')).toBeVisible()
-  await page.getByTestId('conflict-use-newest').click()
-
   // The reader remounts seeded from the adopted server row: the cave fork.
-  await expect(page.getByTestId('conflict-dialog')).toHaveCount(0)
+  // No dialog and no "which place do you want to keep?" prompt ever appear.
   await expect(page.getByText('The cave splits.')).toBeVisible()
+  await expect(page.getByTestId('conflict-dialog')).toHaveCount(0)
 })

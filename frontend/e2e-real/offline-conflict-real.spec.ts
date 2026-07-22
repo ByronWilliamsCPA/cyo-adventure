@@ -16,9 +16,11 @@ import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
  * rest of this tier. Backend pytest coverage
  * (tests/integration/test_reading_state.py) already proves the 409
  * mechanism in isolation; this spec proves the FRONTEND's reconciliation
- * (ConflictDialog, offline/sync.ts resolveConflict) against a real 409 from
- * a real backend, mirroring the mocked frontend/e2e/reader-conflict.spec.ts
- * assertions one-for-one.
+ * (newest-write-wins silent adoption via offline/sync.ts resolveConflict)
+ * against a real 409 from a real backend, mirroring the mocked
+ * frontend/e2e/reader-conflict.spec.ts assertions one-for-one. Per the product
+ * decision, a conflict is resolved SILENTLY: the child is never shown a dialog;
+ * the app adopts the server's newest row and keeps reading.
  *
  * Implements the real-backend gap described in
  * docs/planning/handoff-offline-conflict-real-backend-2026-07-16.md (that
@@ -53,8 +55,9 @@ import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
  * carries A's stale revision and 409s for real. No mock ever stands in for
  * the server's response.
  * #VERIFY: each conflict assertion below checks both the 409 response
- * (waitForConflictPut) and the resulting ConflictDialog UI, so a change to
- * either the server contract or the frontend wiring fails this spec.
+ * (waitForConflictPut) and the resulting silent adoption (no dialog appears;
+ * the reader moves to the server's row), so a change to either the server
+ * contract or the frontend wiring fails this spec.
  *
  * #EDGE: data-integrity: "The Clockwork Garden" is deliberately not read by
  * any other e2e-real spec (kid-reads.spec.ts and series-continue-real.spec.ts
@@ -174,51 +177,47 @@ test.describe.serial('S2: two real devices race a save on the same story', () =>
     )
   })
 
-  test('a stale device A save gets a real 409; "Keep this device" rebases and wins', async () => {
+  test('a stale device A save gets a real 409; newest-write-wins silently adopts the server row', async () => {
     // Device A never learned about device B's resync-and-advance above (A's
     // page was never reloaded), so A's in-memory revision is now stale. A's
     // own next choice, "Search the leaning garden shed," carries that stale
     // revision and the real server rejects it with a genuine 409.
     const conflicted = waitForConflictPut(pageA)
+    // Newest-write-wins re-saves the adopted server row after remounting the
+    // Reader; wait for that real 200 PUT before asserting the moved position.
+    const adopted = waitForSavedPut(pageA)
     await pageA.getByTestId('choice-c_shed').click()
     await conflicted
 
-    await expect(pageA.getByTestId('conflict-dialog')).toBeVisible()
-    await expect(pageA.getByText('You were reading on another device')).toBeVisible()
-
-    // resolveConflict('continue_from_this_device') rebases A's own local
-    // choice onto the server's current revision and re-sends it for real
-    // (offline/sync.ts); A's position wins and becomes the new real state.
-    const rebased = waitForSavedPut(pageA)
-    await pageA.getByTestId('conflict-keep').click()
-    await rebased
-
+    // No dialog is shown to the child (product decision). A silently adopts the
+    // server's current row (device B's hedge advance) via
+    // resolveConflict('use_newer_progress'), mirrors it locally, and remounts
+    // the Reader seeded from it, moving A to the server-canonical position even
+    // though A's own shed choice was more recent locally. That local-position
+    // discard is by design.
+    await adopted
     await expect(pageA.getByTestId('conflict-dialog')).toHaveCount(0)
     await expect(pageA.getByTestId('passage-body')).toContainText(
-      'Dust hangs in the light. A toolbox sits beside a wall of strange brass gears.'
+      'Through a gap you glimpse a fountain and a tower wrapped in ivy.'
     )
   })
 
-  test('a stale device B save gets a real 409; "Use the newest place" adopts the server row', async () => {
-    // Symmetric to the previous case: device B is now the stale side (it
-    // never learned about A's rebase-and-win). B's next choice, "Squeeze
-    // bravely through the gap," 409s for real against A's now-current row.
+  test('a stale device B save gets a real 409; newest-write-wins silently adopts the server row', async () => {
+    // Symmetric to the previous case: device B is now the stale side (it never
+    // learned about A's silent adopt-and-resave). B's next choice, "Squeeze
+    // bravely through the gap," 409s for real against the server's current row.
     const conflicted = waitForConflictPut(pageB)
+    const adopted = waitForSavedPut(pageB)
     await pageB.getByTestId('choice-c_squeeze').click()
     await conflicted
 
-    await expect(pageB.getByTestId('conflict-dialog')).toBeVisible()
-    await expect(pageB.getByText('You were reading on another device')).toBeVisible()
-
-    // resolveConflict('use_newer_progress') adopts the server row locally
-    // (no further network write) and ReaderPage remounts the Reader seeded
-    // from it, so B's screen shows device A's real, server-canonical
-    // position.
-    await pageB.getByTestId('conflict-use-newest').click()
-
+    // No dialog: B silently adopts the server's current row (the position A
+    // left canonical) and the Reader remounts seeded from it, so B's screen
+    // shows the server-canonical position rather than B's own squeeze choice.
+    await adopted
     await expect(pageB.getByTestId('conflict-dialog')).toHaveCount(0)
     await expect(pageB.getByTestId('passage-body')).toContainText(
-      'Dust hangs in the light. A toolbox sits beside a wall of strange brass gears.'
+      'Through a gap you glimpse a fountain and a tower wrapped in ivy.'
     )
   })
 })

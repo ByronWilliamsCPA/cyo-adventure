@@ -451,39 +451,3 @@ test('the profile-form dialog has no detectable accessibility violations', async
   await expect(page.getByRole('dialog')).toBeVisible()
   await assertNoViolations(page)
 })
-
-const CONFLICT_SERVER_ROW = {
-  current_node: 'n_cave_fork',
-  var_state: {},
-  path: ['n_entrance', 'n_cave_fork'],
-  visit_set: ['n_entrance', 'n_cave_fork'],
-  version: 1,
-  state_revision: 5,
-  save_slots: {},
-}
-
-test('the reader conflict dialog has no detectable accessibility violations', async ({
-  page,
-  context,
-}) => {
-  await context.addInitScript(() => {
-    window.localStorage.setItem('auth_token', 'child-a')
-  })
-  await seedDeviceGrant(context)
-  await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
-  let puts = 0
-  await page.route('**/api/v1/reading-state/**', (route) => {
-    if (route.request().method() === 'GET') {
-      return route.fulfill({ status: 404, json: { error: 'not found' } })
-    }
-    puts += 1
-    if (puts === 1) {
-      return route.fulfill({ status: 409, json: { current_row: CONFLICT_SERVER_ROW } })
-    }
-    return route.fulfill({ status: 200, json: CONFLICT_SERVER_ROW })
-  })
-
-  await page.goto('/read/child-a/s_lantern_cave/1')
-  await expect(page.getByTestId('conflict-dialog')).toBeVisible()
-  await assertNoViolations(page)
-})

@@ -10,7 +10,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ToastProvider } from '../notifications/ToastProvider'
-import { _resetDbHandle, enqueueWrite, type QueuedWrite } from '../offline/db'
+import { _resetDbHandle, enqueueWrite } from '../offline/db'
 import type { ReadingState, Storybook } from '../player/types'
 import { ReaderRoute } from './ReaderRoute'
 
@@ -215,7 +215,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
     cleanup()
   })
 
-  it('shows the conflict dialog for a replayed 409 and resends the local device state on "keep this device"', async () => {
+  it('silently discards a replayed 409 without showing a conflict dialog', async () => {
     const profileId = 'p_replay'
     const queuedState: ReadingState = {
       current_node: lantern.nodes[0].id,
@@ -226,7 +226,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
       state_revision: 1,
       save_slots: {},
     }
-    const queuedWrite: QueuedWrite = {
+    await enqueueWrite({
       event_id: 'evt-replay-1',
       profile_id: profileId,
       storybook_id: lantern.id,
@@ -234,8 +234,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
       state: queuedState,
       device_id: 'device-a',
       queued_at: Date.now(),
-    }
-    await enqueueWrite(queuedWrite)
+    })
 
     mockGet.mockImplementation((url: string) => {
       if (url.startsWith('/v1/storybooks/')) {
@@ -247,26 +246,20 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
 
+    // The queued write (revision 1) 409s during the mount-time replay flush;
+    // ReaderPage's own live save (revision 0) succeeds. Newest-write-wins: the
+    // held write is silently discarded, so no dialog, no banner, and no success
+    // toast (a conflict suppresses the toast) ever appear. Distinguish the two
+    // saves by state_revision, not call order.
     const serverRow: ReadingState = { ...queuedState, state_revision: 2 }
-    // ReaderPage's own live save (Reader reporting its initial position on
-    // mount) races with the replay flush; both go through the same mocked
-    // `put`. Distinguish by state_revision rather than call order: the queued
-    // write (and its "keep this device" resend, which reuses the same
-    // unrebased item.state) carry revision 1, ReaderPage's fresh live save
-    // carries revision 0.
-    let replayConflictSent = false
     mockPut.mockImplementation((_url: string, body: { state_revision: number }) => {
       if (body.state_revision === 1) {
-        if (!replayConflictSent) {
-          replayConflictSent = true
-          return Promise.reject(
-            mockAxiosError({
-              isAxiosError: true,
-              response: { status: 409, data: { current_row: serverRow } },
-            })
-          )
-        }
-        return Promise.resolve({ data: serverRow })
+        return Promise.reject(
+          mockAxiosError({
+            isAxiosError: true,
+            response: { status: 409, data: { current_row: serverRow } },
+          })
+        )
       }
       return Promise.resolve({ data: { ...body, state_revision: 1 } })
     })
@@ -274,106 +267,28 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
     renderAt(`/read/${profileId}/${lantern.id}/${lantern.version}`)
 
     await screen.findByTestId('reader')
-    await screen.findByTestId('conflict-dialog')
 
-    // A conflicted replay is not "all caught up": the success toast must not
-    // appear alongside (and contradict) the conflict dialog.
-    expect(screen.queryByText('All caught up! Your reading is saved.')).toBeNull()
-
-    function putBodies(): { current_node: string; state_revision: number }[] {
-      return mockPut.mock.calls.map(
-        (call) => call[1] as { current_node: string; state_revision: number }
-      )
+    function replayBodies(): { state_revision: number }[] {
+      return mockPut.mock.calls
+        .map((call) => call[1] as { state_revision: number })
+        .filter((body) => body.state_revision === 1)
     }
-    function replayBodies(): { current_node: string; state_revision: number }[] {
-      return putBodies().filter((body) => body.state_revision === 1)
-    }
+    // The replay attempt reached the server (and 409'd) exactly once; it is
+    // never resent, because newest-write-wins discards it instead of offering
+    // a "keep this device" resend.
+    await waitFor(() => expect(replayBodies().length).toBe(1))
 
+    // Give any (incorrect) dialog or resend a chance to appear before asserting
+    // their absence.
+    await new Promise((resolve) => setTimeout(resolve, 100))
     expect(replayBodies().length).toBe(1)
-
-    fireEvent.click(screen.getByTestId('conflict-keep'))
-
-    await waitFor(() => expect(replayBodies().length).toBe(2))
-    expect(replayBodies()[1]).toMatchObject({ current_node: queuedState.current_node })
-
-    await waitFor(() => expect(screen.queryByTestId('conflict-dialog')).toBeNull())
-  })
-
-  it('rebases and retries once when the resend itself conflicts, then clears the dialog on success', async () => {
-    const profileId = 'p_replay_retry_ok'
-    const queuedState: ReadingState = {
-      current_node: lantern.nodes[0].id,
-      var_state: {},
-      path: [lantern.nodes[0].id],
-      visit_set: [lantern.nodes[0].id],
-      version: lantern.version,
-      state_revision: 1,
-      save_slots: {},
-    }
-    await enqueueWrite({
-      event_id: 'evt-retry-ok-1',
-      profile_id: profileId,
-      storybook_id: lantern.id,
-      base_revision: 1,
-      state: queuedState,
-      device_id: 'device-a',
-      queued_at: Date.now(),
-    })
-
-    mockGet.mockImplementation((url: string) => {
-      if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
-      if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
-      }
-      return Promise.reject(new Error(`unexpected GET ${url}`))
-    })
-
-    // First conflict happens during B1's mount-time replay flush. The second
-    // conflict happens on "keep this device"'s resend (still at revision 1,
-    // the item's original base): a fresh concurrent edit landed while the
-    // dialog was open, and the fix must rebase onto its currentRow (revision
-    // 3) and retry once, which succeeds.
-    const flushConflictRow: ReadingState = { ...queuedState, state_revision: 2 }
-    const resendConflictRow: ReadingState = { ...queuedState, state_revision: 3 }
-    let revision1Calls = 0
-    mockPut.mockImplementation((_url: string, body: { state_revision: number }) => {
-      if (body.state_revision === 1) {
-        revision1Calls += 1
-        const currentRow = revision1Calls === 1 ? flushConflictRow : resendConflictRow
-        return Promise.reject(
-          mockAxiosError({
-            isAxiosError: true,
-            response: { status: 409, data: { current_row: currentRow } },
-          })
-        )
-      }
-      if (body.state_revision === 3) {
-        return Promise.resolve({ data: { ...body, state_revision: 3 } as ReadingState })
-      }
-      return Promise.resolve({ data: { ...body, state_revision: 1 } as ReadingState })
-    })
-
-    renderAt(`/read/${profileId}/${lantern.id}/${lantern.version}`)
-
-    await screen.findByTestId('reader')
-    await screen.findByTestId('conflict-dialog')
-
-    fireEvent.click(screen.getByTestId('conflict-keep'))
-
-    await waitFor(() => expect(revision1Calls).toBe(2))
-    await waitFor(() =>
-      expect(
-        mockPut.mock.calls.some(
-          (call) => (call[1] as { state_revision: number }).state_revision === 3
-        )
-      ).toBe(true)
-    )
-    await waitFor(() => expect(screen.queryByTestId('conflict-dialog')).toBeNull())
+    expect(screen.queryByTestId('conflict-dialog')).toBeNull()
     expect(screen.queryByRole('alert')).toBeNull()
+    expect(screen.queryByText('All caught up! Your reading is saved.')).toBeNull()
   })
 
-  it('keeps the dialog open for a story whose resend conflicts again even after the rebased retry', async () => {
-    const profileId = 'p_replay_retry_conflict'
+  it('surfaces the ask-a-grown-up banner when a replayed write fails outright', async () => {
+    const profileId = 'p_replay_failed'
     const queuedState: ReadingState = {
       current_node: lantern.nodes[0].id,
       var_state: {},
@@ -384,7 +299,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
       save_slots: {},
     }
     await enqueueWrite({
-      event_id: 'evt-retry-conflict-1',
+      event_id: 'evt-replay-failed-1',
       profile_id: profileId,
       storybook_id: lantern.id,
       base_revision: 1,
@@ -401,131 +316,30 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
 
-    const flushConflictRow: ReadingState = { ...queuedState, state_revision: 2 }
-    const resendConflictRow: ReadingState = { ...queuedState, state_revision: 3 }
-    const retryConflictRow: ReadingState = { ...queuedState, state_revision: 4 }
-    let revision1Calls = 0
+    // The queued write (revision 1) fails with a non-offline server error, so
+    // replayQueue drops it and reports it in outcome.failed; ReaderPage's own
+    // live save (revision 0) succeeds. A genuine failure is NOT silently
+    // discarded like a conflict: it still defers to a grown-up via the banner.
     mockPut.mockImplementation((_url: string, body: { state_revision: number }) => {
       if (body.state_revision === 1) {
-        revision1Calls += 1
-        const currentRow = revision1Calls === 1 ? flushConflictRow : resendConflictRow
-        return Promise.reject(
-          mockAxiosError({
-            isAxiosError: true,
-            response: { status: 409, data: { current_row: currentRow } },
-          })
-        )
-      }
-      if (body.state_revision === 3) {
-        // The rebased retry conflicts again: a second concurrent edit landed.
-        return Promise.reject(
-          mockAxiosError({
-            isAxiosError: true,
-            response: { status: 409, data: { current_row: retryConflictRow } },
-          })
-        )
-      }
-      return Promise.resolve({ data: { ...body, state_revision: 1 } as ReadingState })
-    })
-
-    renderAt(`/read/${profileId}/${lantern.id}/${lantern.version}`)
-
-    await screen.findByTestId('reader')
-    await screen.findByTestId('conflict-dialog')
-
-    fireEvent.click(screen.getByTestId('conflict-keep'))
-
-    await waitFor(() => expect(revision1Calls).toBe(2))
-    await waitFor(() =>
-      expect(
-        mockPut.mock.calls.some(
-          (call) => (call[1] as { state_revision: number }).state_revision === 3
-        )
-      ).toBe(true)
-    )
-    // The story re-conflicted after the single allowed retry: the dialog must
-    // stay open for this story rather than being blanket-cleared, and no
-    // failure banner should appear (this is an unresolved conflict, not a
-    // dropped write).
-    expect(screen.getByTestId('conflict-dialog')).toBeTruthy()
-    expect(screen.queryByRole('alert')).toBeNull()
-  })
-
-  it('counts a thrown resend error toward the failed-progress banner instead of an unhandled rejection', async () => {
-    const profileId = 'p_replay_resend_throws'
-    const queuedState: ReadingState = {
-      current_node: lantern.nodes[0].id,
-      var_state: {},
-      path: [lantern.nodes[0].id],
-      visit_set: [lantern.nodes[0].id],
-      version: lantern.version,
-      state_revision: 1,
-      save_slots: {},
-    }
-    await enqueueWrite({
-      event_id: 'evt-resend-throws-1',
-      profile_id: profileId,
-      storybook_id: lantern.id,
-      base_revision: 1,
-      state: queuedState,
-      device_id: 'device-a',
-      queued_at: Date.now(),
-    })
-
-    mockGet.mockImplementation((url: string) => {
-      if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
-      if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
-      }
-      return Promise.reject(new Error(`unexpected GET ${url}`))
-    })
-
-    const flushConflictRow: ReadingState = { ...queuedState, state_revision: 2 }
-    let revision1Calls = 0
-    mockPut.mockImplementation((_url: string, body: { state_revision: number }) => {
-      if (body.state_revision === 1) {
-        revision1Calls += 1
-        if (revision1Calls === 1) {
-          return Promise.reject(
-            mockAxiosError({
-              isAxiosError: true,
-              response: { status: 409, data: { current_row: flushConflictRow } },
-            })
-          )
-        }
-        // The resend itself fails outright (a real HTTP error, not a 409 and
-        // not a transport failure): saveProgress must propagate this rather
-        // than queue it, and resolveKeepThisDevice must catch it per story.
         return Promise.reject(
           mockAxiosError({ isAxiosError: true, response: { status: 500, data: {} } })
         )
       }
-      return Promise.resolve({ data: { ...body, state_revision: 1 } as ReadingState })
+      return Promise.resolve({ data: { ...body, state_revision: 1 } })
     })
-
-    let unhandledRejection: unknown
-    function onUnhandledRejection(event: PromiseRejectionEvent): void {
-      unhandledRejection = event.reason
-    }
-    window.addEventListener('unhandledrejection', onUnhandledRejection)
 
     renderAt(`/read/${profileId}/${lantern.id}/${lantern.version}`)
 
     await screen.findByTestId('reader')
-    await screen.findByTestId('conflict-dialog')
-
-    fireEvent.click(screen.getByTestId('conflict-keep'))
-
-    await waitFor(() => expect(revision1Calls).toBe(2))
     await waitFor(() => expect(screen.getByRole('alert')).toBeTruthy())
     expect(screen.getByRole('alert').textContent).toContain(
       "We couldn't save some of your reading."
     )
     // The banner's only control reads "OK", not "Dismiss": young kids read it.
     expect(screen.getByRole('button', { name: 'OK' })).toBeTruthy()
-
-    window.removeEventListener('unhandledrejection', onUnhandledRejection)
-    expect(unhandledRejection).toBeUndefined()
+    // A failure is not a conflict: no dialog appears.
+    expect(screen.queryByTestId('conflict-dialog')).toBeNull()
   })
 })
 
