@@ -4543,6 +4543,11 @@ successful App Store submission.</p>
 <td>Modal moderation review backend (<a href="../adr/adr-010-modal-review-and-gated-generation/">ADR-010</a>, executes deferred slice 2b)</td>
 <td>Implement <code>review_provider = "modal"</code> in <code>moderation/review_provider.py</code> (currently raises as deferred) against a Modal-served open-weight reviewer, weights prestaged on a Modal volume; reviewer independence from the generation provider is the point; Stage-0 deterministic classifiers stay mandatory; OpenRouter reviewer remains the fallback; can start any time in the public rungs R2/R3 (independent of Phases 6-8)</td>
 </tr>
+<tr>
+<td>P9-13</td>
+<td>Load testing and capacity baseline</td>
+<td>Before P9-09 upgrades the production Supabase project to Pro, run a load test against the P9-03 hosted infra with <code>core/database.py</code> pool sizing and RQ worker replica count actually tuned (not left at the unsized/single-replica defaults inherited from Phase 5): measure sustained concurrent-family capacity, DB connection headroom against the plan tier's direct-vs-pooler connection limits, and generation-worker throughput under a queued-job backlog; exercise the transaction-mode pooler fallback (<code>CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE</code>, ADR-009 Task 1.7) at least once as a documented escape valve if the direct-connection budget is the binding constraint; record the measured ceiling and the exact config used to reach it in <code>docs/planning/capacity-baseline.md</code>, so a future scale-up phase starts from a measured number instead of an architectural estimate</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Acceptance criteria</strong>:</p>
@@ -4553,12 +4558,16 @@ successful App Store submission.</p>
 <li>Generation spend per family is bounded by quota; the global cost circuit breaker fires in
   a test; alarms reach the operator.</li>
 <li>Live moderation is provably active in production (config validation + smoke test).</li>
+<li>A measured concurrent-family capacity baseline is recorded (P9-13), with the DB pool
+  sizing and worker replica count that were tuned to reach it.</li>
 </ul>
 <p><strong>Quality gates</strong> (plus Section 7 standards):</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Restore drill on hosted infra documented and passing</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Load sanity check: library and reading APIs meet the Phase 5 latency targets under
-      simulated multi-family load</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Load sanity check (P9-13): library and reading APIs meet the Phase 5 latency targets
+      under simulated multi-family load, at a stated concurrent-family figure, with the DB
+      connection budget and worker throughput at that load recorded in
+      <code>docs/planning/capacity-baseline.md</code></li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> P7-08 compliance checklist re-verified at submission time</li>
 </ul>
 <p><strong>Dependencies</strong>: Requires Phases 6, 7 (P7-08 gate), and 8. This phase closes the public rungs (R2/R3).</p>
@@ -4943,6 +4952,13 @@ documents.</p>
 <td>M</td>
 <td>H</td>
 <td>Curated starter library with per-band coverage (P9-02); weekly-release cadence; 4b read-aloud as subscription lever</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Public-launch traffic ramp exceeds an unverified DB-connection or generation-worker capacity budget</td>
+<td>M</td>
+<td>H</td>
+<td>Explicit pool sizing (P9-03); transaction-mode pooler fallback already implemented (ADR-009 Task 1.7); measured load-testing capacity baseline before the Pro upgrade (P9-13)</td>
 <td>9</td>
 </tr>
 </tbody>
@@ -5371,7 +5387,7 @@ sign-off and pre-submission (P9-10)
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 18:38:10 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 22, 2026 02:20:20 UTC">July 22, 2026</span>
   </span>
 
     
