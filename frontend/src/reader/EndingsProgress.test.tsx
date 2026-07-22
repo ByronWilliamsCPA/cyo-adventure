@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
 import type { ReadingHistoryItem } from '../client/types.gen'
@@ -23,11 +23,7 @@ describe('EndingsProgress (K6, ending screen)', () => {
       .fn()
       .mockResolvedValue([historyRow({ endings_found: 3, total_endings: 7 })])
     render(
-      <EndingsProgress
-        profileId="p1"
-        storybookId="s1"
-        fetchReadingHistory={fetchReadingHistory}
-      />
+      <EndingsProgress profileId="p1" storybookId="s1" fetchReadingHistory={fetchReadingHistory} />
     )
     expect(
       await screen.findByText('You found ending 3 of 7! Read again to find more.')
@@ -40,11 +36,7 @@ describe('EndingsProgress (K6, ending screen)', () => {
       .fn()
       .mockResolvedValue([historyRow({ endings_found: 1, total_endings: 1 })])
     const { container } = render(
-      <EndingsProgress
-        profileId="p1"
-        storybookId="s1"
-        fetchReadingHistory={fetchReadingHistory}
-      />
+      <EndingsProgress profileId="p1" storybookId="s1" fetchReadingHistory={fetchReadingHistory} />
     )
     await waitFor(() => expect(fetchReadingHistory).toHaveBeenCalled())
     expect(container.textContent).toBe('')
@@ -55,11 +47,7 @@ describe('EndingsProgress (K6, ending screen)', () => {
       .fn()
       .mockResolvedValue([historyRow({ storybook_id: 'other-book', total_endings: 5 })])
     const { container } = render(
-      <EndingsProgress
-        profileId="p1"
-        storybookId="s1"
-        fetchReadingHistory={fetchReadingHistory}
-      />
+      <EndingsProgress profileId="p1" storybookId="s1" fetchReadingHistory={fetchReadingHistory} />
     )
     await waitFor(() => expect(fetchReadingHistory).toHaveBeenCalled())
     expect(container.textContent).toBe('')
@@ -69,11 +57,7 @@ describe('EndingsProgress (K6, ending screen)', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const fetchReadingHistory = vi.fn().mockRejectedValue(new Error('boom'))
     const { container } = render(
-      <EndingsProgress
-        profileId="p1"
-        storybookId="s1"
-        fetchReadingHistory={fetchReadingHistory}
-      />
+      <EndingsProgress profileId="p1" storybookId="s1" fetchReadingHistory={fetchReadingHistory} />
     )
     await waitFor(() => expect(fetchReadingHistory).toHaveBeenCalled())
     expect(container.textContent).toBe('')
@@ -83,13 +67,51 @@ describe('EndingsProgress (K6, ending screen)', () => {
   it('renders nothing before the lookup resolves', () => {
     const fetchReadingHistory = vi.fn().mockReturnValue(new Promise(() => {}))
     const { container } = render(
-      <EndingsProgress
-        profileId="p1"
-        storybookId="s1"
-        fetchReadingHistory={fetchReadingHistory}
-      />
+      <EndingsProgress profileId="p1" storybookId="s1" fetchReadingHistory={fetchReadingHistory} />
     )
     expect(container.textContent).toBe('')
+  })
+
+  it('discards a stale fetch from a previous storybook so it cannot over-report on the current one', async () => {
+    // Guards the #ASSUME race in EndingsProgress.tsx: under-reporting (a slow
+    // fetch that beats the completion POST) is accepted, but a stale response
+    // must never overwrite the current book's count with a higher one. Here
+    // the first (s1) fetch is slow and would be numerically impossible for
+    // s2's total_endings if it were allowed through; the cancelled-guard in
+    // the effect cleanup must drop it.
+    let resolveFirst: (books: ReadingHistoryItem[]) => void = () => {}
+    const firstFetch = new Promise<ReadingHistoryItem[]>((resolve) => {
+      resolveFirst = resolve
+    })
+    const fetchReadingHistory = vi
+      .fn()
+      .mockReturnValueOnce(firstFetch)
+      .mockResolvedValueOnce([
+        historyRow({ storybook_id: 's2', endings_found: 1, total_endings: 2 }),
+      ])
+
+    const { rerender } = render(
+      <EndingsProgress profileId="p1" storybookId="s1" fetchReadingHistory={fetchReadingHistory} />
+    )
+    rerender(
+      <EndingsProgress profileId="p1" storybookId="s2" fetchReadingHistory={fetchReadingHistory} />
+    )
+
+    expect(
+      await screen.findByText('You found ending 1 of 2! Read again to find more.')
+    ).toBeInTheDocument()
+
+    // The stale s1 fetch finally resolves with a count that would be
+    // impossible for s2 (5 exceeds s2's total_endings of 2). It must be
+    // discarded, not rendered.
+    await act(async () => {
+      resolveFirst([historyRow({ storybook_id: 's1', endings_found: 5, total_endings: 6 })])
+      await Promise.resolve()
+    })
+
+    expect(
+      screen.getByText('You found ending 1 of 2! Read again to find more.')
+    ).toBeInTheDocument()
   })
 
   it('re-fetches when the storybookId changes', async () => {
@@ -97,18 +119,10 @@ describe('EndingsProgress (K6, ending screen)', () => {
       .fn()
       .mockResolvedValue([historyRow({ storybook_id: 's2', endings_found: 1, total_endings: 4 })])
     const { rerender } = render(
-      <EndingsProgress
-        profileId="p1"
-        storybookId="s1"
-        fetchReadingHistory={fetchReadingHistory}
-      />
+      <EndingsProgress profileId="p1" storybookId="s1" fetchReadingHistory={fetchReadingHistory} />
     )
     rerender(
-      <EndingsProgress
-        profileId="p1"
-        storybookId="s2"
-        fetchReadingHistory={fetchReadingHistory}
-      />
+      <EndingsProgress profileId="p1" storybookId="s2" fetchReadingHistory={fetchReadingHistory} />
     )
     await waitFor(() => expect(fetchReadingHistory).toHaveBeenCalledTimes(2))
     expect(
