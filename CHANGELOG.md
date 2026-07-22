@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- Added an explicit, measured load-testing capacity baseline (P9-13) to Phase 9
+  of `docs/planning/PROJECT-PLAN.md`, so public-launch capacity planning starts
+  from a recorded number instead of an architectural estimate. Also tightened
+  the Phase 9 quality gates and added a corresponding risk-register entry.
+
 ## [0.27.1] - 2026-07-22
 
 ### Fixed

@@ -1160,6 +1160,7 @@ successful App Store submission.
 | P9-10 | Submission and launch | Submit; respond to review; post-launch monitoring runbook (review queue, spend alarms, Sentry triage rota) |
 | P9-11 | Public-tier generation provider configuration | Production config uses OpenRouter only (primary model + in-provider fallback per ADR-003, reaffirmed by [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md)); the homelab Ollama leg is **not** a public-tier fallback (availability and provider-terms posture): set `provider_fallback_enabled` accordingly and leave `ollama_*` settings unset in production; Ollama remains a dev/family-tier leg only; the Modal generation leg (post-launch backlog) joins the public path only via the ADR-010 promotion gate |
 | P9-12 | Modal moderation review backend ([ADR-010](./adr/adr-010-modal-review-and-gated-generation.md), executes deferred slice 2b) | Implement `review_provider = "modal"` in `moderation/review_provider.py` (currently raises as deferred) against a Modal-served open-weight reviewer, weights prestaged on a Modal volume; reviewer independence from the generation provider is the point; Stage-0 deterministic classifiers stay mandatory; OpenRouter reviewer remains the fallback; can start any time in the public rungs R2/R3 (independent of Phases 6-8) |
+| P9-13 | Load testing and capacity baseline | Before P9-09 upgrades the production Supabase project to Pro, run a load test against the P9-03 hosted infra with `core/database.py` pool sizing and RQ worker replica count actually tuned (not left at the unsized/single-replica defaults inherited from Phase 5): measure sustained concurrent-family capacity, DB connection headroom against the plan tier's direct-vs-pooler connection limits, and generation-worker throughput under a queued-job backlog; exercise the transaction-mode pooler fallback (`CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE`, ADR-009 Task 1.7) at least once as a documented escape valve if the direct-connection budget is the binding constraint; record the measured ceiling and the exact config used to reach it in `docs/planning/capacity-baseline.md`, so a future scale-up phase starts from a measured number instead of an architectural estimate |
 
 **Acceptance criteria**:
 
@@ -1169,12 +1170,16 @@ successful App Store submission.
 - Generation spend per family is bounded by quota; the global cost circuit breaker fires in
   a test; alarms reach the operator.
 - Live moderation is provably active in production (config validation + smoke test).
+- A measured concurrent-family capacity baseline is recorded (P9-13), with the DB pool
+  sizing and worker replica count that were tuned to reach it.
 
 **Quality gates** (plus Section 7 standards):
 
 - [ ] Restore drill on hosted infra documented and passing
-- [ ] Load sanity check: library and reading APIs meet the Phase 5 latency targets under
-      simulated multi-family load
+- [ ] Load sanity check (P9-13): library and reading APIs meet the Phase 5 latency targets
+      under simulated multi-family load, at a stated concurrent-family figure, with the DB
+      connection budget and worker throughput at that load recorded in
+      `docs/planning/capacity-baseline.md`
 - [ ] P7-08 compliance checklist re-verified at submission time
 
 **Dependencies**: Requires Phases 6, 7 (P7-08 gate), and 8. This phase closes the public rungs (R2/R3).
@@ -1311,6 +1316,7 @@ documents.
 | Modal review backend outage or regression | M | L | Bursty usage (near-zero idle cost); OpenRouter reviewer stays as configured fallback; Stage-0 classifiers unaffected | 9 |
 | asyncpg misbehaves behind transaction-mode pooling | M | M | Direct or session-mode connections only (ADR-009); documented in `TECHNICAL_BASELINE.md` at Phase 6; connection-mode smoke test in CI against staging | 6, 9 |
 | Thin catalog at launch kills conversion and retention | M | H | Curated starter library with per-band coverage (P9-02); weekly-release cadence; 4b read-aloud as subscription lever | 9 |
+| Public-launch traffic ramp exceeds an unverified DB-connection or generation-worker capacity budget | M | H | Explicit pool sizing (P9-03); transaction-mode pooler fallback already implemented (ADR-009 Task 1.7); measured load-testing capacity baseline before the Pro upgrade (P9-13) | 9 |
 
 ---
 
