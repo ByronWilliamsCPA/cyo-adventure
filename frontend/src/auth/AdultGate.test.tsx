@@ -879,6 +879,56 @@ describe('AdultGate', () => {
       resolveOAuth?.()
       await act(async () => {})
     })
+
+    it('ignores a password submit (Enter in the focused input) while a Google redirect is in flight', async () => {
+      // The disabled Confirm button blocks clicks, but Enter in the still-focused
+      // password input submits the form directly; the submit() guard must drop
+      // that so a password re-auth cannot race the in-flight OAuth redirect.
+      let resolveOAuth: (() => void) | undefined
+      mockSignInWithOAuth.mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveOAuth = () => resolve()
+          })
+      )
+      mockGetSession.mockResolvedValue(googleAndPasswordSession())
+      renderGate()
+      await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+      fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'pw' } })
+      fireEvent.click(screen.getByRole('button', { name: /continue with google/i }))
+
+      const form = document.querySelector('form')
+      if (!form) throw new Error('challenge form not rendered')
+      fireEvent.submit(form)
+
+      expect(mockSignInWithPassword).not.toHaveBeenCalled()
+      resolveOAuth?.()
+      await act(async () => {})
+    })
+
+    it('ignores a switch-account click while a Google redirect is in flight', async () => {
+      // The disabled attribute guards the link, but the switchAccount() body
+      // guard must also drop a stray activation so signOut() cannot race the
+      // in-flight OAuth sign-in against the same Supabase client.
+      let resolveOAuth: (() => void) | undefined
+      mockSignInWithOAuth.mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveOAuth = () => resolve()
+          })
+      )
+      mockGetSession.mockResolvedValue(googleAndPasswordSession())
+      renderGate()
+      await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+      fireEvent.click(screen.getByRole('button', { name: /continue with google/i }))
+      fireEvent.click(screen.getByRole('button', { name: /use a different account/i }))
+
+      expect(mockSignOut).not.toHaveBeenCalled()
+      resolveOAuth?.()
+      await act(async () => {})
+    })
   })
 })
 

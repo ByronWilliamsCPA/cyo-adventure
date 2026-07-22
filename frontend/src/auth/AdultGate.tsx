@@ -313,13 +313,18 @@ export function AdultGate({ children }: { children?: ReactNode }) {
     // #CRITICAL: concurrency: a second submit while one is in flight (Enter
     // key on the still-focused input; the disabled attribute only guards the
     // button) must not stack a second re-auth call on the first. Also guards
-    // against switchAccount() racing a concurrent signOut() against the same
-    // Supabase client: without this, a sign-in already in flight could land
-    // after the sign-out and undo it.
+    // against switchAccount() racing a concurrent signOut(), and against
+    // continueWithGoogle() racing a concurrent signInWithOAuth(), against the
+    // same Supabase client: without these, a sign-in already in flight (via
+    // password re-auth OR the Google redirect) could land after the sign-out
+    // and undo it, or two sign-ins could race which one lands last. The guard
+    // family is symmetric: submit(), switchAccount(), and continueWithGoogle()
+    // each bail on all three in-flight states.
     // #VERIFY: AdultGate.test.tsx "ignores a re-entrant submit", "disables
     // the Confirm button while a switch-account sign-out is in flight".
     if (submitting) return
     if (switchingAccount) return
+    if (googleSigningIn) return
     if (phase.kind !== 'locked' || phase.user.email === null) return
     setError(null)
     setSubmitting(true)
@@ -348,14 +353,16 @@ export function AdultGate({ children }: { children?: ReactNode }) {
     // #CRITICAL: concurrency: same re-entrant guard as submit() above (a slow
     // network letting a second click land before the button disables): a
     // stacked second signOut() call is wasted work at best and a race against
-    // the first at worst. Also cross-guards against submit(): without this,
-    // signOut() and signInWithPassword() could run concurrently against the
-    // same Supabase client, racing which one lands last.
+    // the first at worst. Also cross-guards against submit() and
+    // continueWithGoogle(): without these, signOut() and signInWithPassword()
+    // (or signInWithOAuth()) could run concurrently against the same Supabase
+    // client, racing which one lands last.
     // #VERIFY: AdultGate.test.tsx "ignores a re-entrant switch-account
     // click while one is already in flight", "disables the switch-account
     // link while a password submit is in flight".
     if (switchingAccount) return
     if (submitting) return
+    if (googleSigningIn) return
     setSwitchAccountError(null)
     setSwitchingAccount(true)
     try {
