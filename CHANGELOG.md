@@ -75,6 +75,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Split the oversized admin `ReviewDetailPage` into pure diff helpers, a
   compare view, and three concern-scoped hooks, with reading and editing
   behavior unchanged.
+### Fixed
+
+- Guardian adult-gate (the "Grown-ups only" step-up challenge) locked screen
+  showed only the password form, even for accounts that sign in with Google, so
+  a guardian returned to `/guardian` after a prior sign-in had no way through.
+  The locked screen now offers a "Continue with Google" button (above the
+  password form) whenever the signed-in account has a Google identity.
+  Google-only accounts keep their existing bypass; email-only accounts are
+  unchanged.
+- Guardian adult-gate re-locked after only five minutes, interrupting an
+  in-progress task such as adding a profile. The window is now 30 minutes and
+  behaves as an idle timeout: pointer and keyboard activity slide the expiry
+  forward, so an actively used console session is no longer dropped mid-task.
+- The admin authoring-plan dialog rendered empty provider and model dropdowns
+  because the `provider_model_allowlist` table shipped unseeded (the original
+  seed was never ported to the Supabase migration set). A new idempotent
+  migration seeds the canonical provider/model pairs so automated authoring can
+  be configured on every fresh database.
 
 ## [0.25.3] - 2026-07-21
 
