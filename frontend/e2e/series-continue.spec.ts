@@ -46,6 +46,10 @@ const BOOK1 = {
   ],
 }
 
+// Book 2's default start_node (n_b2_intro) deliberately DIVERGES from its
+// series_entry_node (n_b2_start). A continuation must land on the entry node,
+// not the default start, so a reader that ignored the carried entry node would
+// render the prologue body instead: the assertions below catch exactly that.
 const BOOK2 = {
   schema_version: '2.0',
   id: 's_ember_2',
@@ -53,8 +57,14 @@ const BOOK2 = {
   title: 'Ember Trail 2',
   metadata: { series: seriesBlock(2, 'n_b2_start') },
   variables: [{ name: 'courage', type: 'int', initial: 0, min: 0, max: 5 }],
-  start_node: 'n_b2_start',
+  start_node: 'n_b2_intro',
   nodes: [
+    {
+      id: 'n_b2_intro',
+      body: 'Prologue nobody should reach on a continuation.',
+      is_ending: false,
+      choices: [{ id: 'c_intro', label: 'Begin', target: 'n_b2_start' }],
+    },
     {
       id: 'n_b2_start',
       body: 'The trail continues.',
@@ -139,8 +149,14 @@ test('continues a series into the next book with carried state', async ({ page }
   await expect(continueButton).toBeVisible()
   await continueButton.click()
 
-  // Book 2 opens at its entry node...
+  // The continuation navigates to book 2's route...
+  await expect(page).toHaveURL(/\/read\/child-a\/s_ember_2\/1/)
+  // ...and opens at its series ENTRY node (n_b2_start), which now diverges from
+  // book 2's default start_node (n_b2_intro): the entry-node body shows and the
+  // prologue never does, so this proves a real transition to the entry node
+  // rather than a tautology where start_node == entry_node.
   await expect(page.getByTestId('passage-body')).toContainText('The trail continues.')
+  await expect(page.getByTestId('passage-body')).not.toContainText('Prologue')
   // ...and the carried courage (3) makes the conditional choice visible.
   await expect(page.getByTestId('choice-c_carried')).toBeVisible()
 })
