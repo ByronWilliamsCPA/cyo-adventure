@@ -49,9 +49,14 @@ Fixing these is a product change; the test change follows.
   assert this dialog as correct behavior, locking it in.
 - The softer pattern already exists two elements over: the replay-failed banner
   (`ReaderRoute.tsx:227-240`) tells the child gently and defers to a grown-up.
-- **Recommend**: auto-resolve conflicts (silently adopt the newest place, never
-  lose the child's furthest position); a child should never see a merge prompt.
-  Then assert *no* conflict dialog reaches the child.
+- **Recommend**: auto-resolve conflicts silently; a child should never see a
+  merge prompt. Then assert *no* conflict dialog reaches the child.
+- **Decision (implemented, commit `161fca4`)**: newest-write-wins, silently.
+  The app adopts the server's most recent row and keeps reading, with no dialog.
+  This deliberately accepts moving the child backward when the other device is
+  less far along (data loss tagged `#ASSUME:data-integrity` in `ReaderPage.tsx`
+  and `ReaderRoute.tsx`); it was chosen over "keep the furthest place" because it
+  is the simplest rule to reason about and reading must never block on a conflict.
 
 ### P-2 [HIGH] The flag/report path can dead-end a distressed child on a scary error
 - `FlagButton.tsx:132-136` renders `role="alert"` "Something went wrong. Try
