@@ -51,6 +51,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (baseline v2), and ADR-020 (amendment 1); see
   `docs/planning/ws8-floor-recalibration-proposal.md`.
 
+### Security
+
+- Bump the transitive frontend dependency `fast-uri` from 3.1.3 to 3.1.4
+  (GHSA-v2hh-gcrm-f6hx). Lockfile-only patch within `ajv`'s existing `^3.0.1`
+  range; clears the OSV dependency-scan gate. `fast-uri` is dev/build tooling
+  (pulled via `workbox-build`), not runtime request-path code.
+
 ## [0.25.3] - 2026-07-21
 
 ### Fixed
