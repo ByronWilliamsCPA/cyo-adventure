@@ -161,6 +161,17 @@ test('the guardian assigns the approved book to the target child', async ({ page
   await childRow.getByRole('checkbox').check()
   await dialog.getByRole('button', { name: 'Assign', exact: true }).click()
 
+  // #ASSUME: timing dependencies: the Assign button's onClick fires save()
+  // asynchronously (onClick={() => void save()}), so the click resolves the
+  // instant it is dispatched, not when the POST /assignments settles. Reloading
+  // straight away aborts that in-flight POST on navigation, silently dropping
+  // the assignment under load (this raced red in the full shared-DB tier and
+  // green in isolation). The dialog closes only after save() awaits the POST,
+  // so waiting for it to disappear pins the write as committed before reload.
+  // #VERIFY: assert the dialog is hidden (save resolved, no error banner) before
+  // reloading; a genuine assign failure leaves it open and fails here clearly.
+  await expect(dialog).toBeHidden()
+
   // Persisted, not optimistic: reload and confirm the assignment stuck.
   await page.reload()
   const reloadedRow = page.locator('li.books__row', { hasText: REVIEW_STORY_TITLE })

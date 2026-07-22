@@ -136,6 +136,21 @@ test('mashing reader choices never corrupts state or dead-ends', async ({ page }
   // avoids leaving series reading state behind.
   await page.getByRole('link', { name: 'The Tide Pool Mystery' }).click()
   await expect(page).toHaveURL(/\/read\//)
+
+  // #ASSUME: data integrity: the shared-DB real tier persists reading_state
+  // across spec files, and kid-reads.spec.ts (which runs earlier, same seeded
+  // "Dev Reader", same pinned title) reads this book to an ending. The reader
+  // restores the last persisted node, so this test can open straight onto the
+  // ending screen, which carries data-testid="ending-screen" and no
+  // data-testid="reader". Starting the mash there would fail on the missing
+  // reader before a single choice is tapped.
+  // #VERIFY: wait for whichever surface the restore lands on, and if it is the
+  // ending screen, "Read again" (data-testid="restart") returns to a fresh
+  // reading passage so the mash starts from a real choice node.
+  await expect(page.getByTestId('reader').or(page.getByTestId('ending-screen'))).toBeVisible()
+  if (await page.getByTestId('ending-screen').count()) {
+    await page.getByTestId('restart').click()
+  }
   await expect(page.getByTestId('reader')).toBeVisible()
 
   // The child jabs at the choice buttons far faster than pages render. The
