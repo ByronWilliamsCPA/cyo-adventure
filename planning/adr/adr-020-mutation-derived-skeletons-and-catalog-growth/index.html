@@ -2920,6 +2920,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amendment-1-2026-07-21-anti-clone-floor-recalibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amendment 1 (2026-07-21): anti-clone floor recalibration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#consequences" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3104,7 +3115,12 @@ It is deliberately distinct from ADR-005 story approval (which continues to gate
 published story) and from ADR-019's no-new-theme-review posture (themes still need no
 human step; structures always did need one, and this names it). No auto-merge for
 skeleton promotion PRs (OQ-5). WS-8 automation, when built, prepares PRs; humans merge
-them.</p>
+them. <strong>Delivered (2026-07-21):</strong> WS-8 D1-D8 built exactly this boundary. Automation
+prepares a draft PR (<code>scripts/prepare_promotion_pr.py</code>, D4) and the scheduled S1-S6
+cadence runner (<code>scripts/flywheel_cycle.py</code>, D8) ends every cycle at a draft PR behind
+six reviewed-PR-only caps; no WS-8 code path merges, approves, enables auto-merge, or
+writes <code>skeletons/</code> on <code>main</code>. See
+<a href="../../ws8-catalog-flywheel-design/">ws8-catalog-flywheel-design.md</a>.</p>
 <h3 id="5-cell-inheritance">5. Cell inheritance<a class="headerlink" href="#5-cell-inheritance" title="Permanent link">&para;</a></h3>
 <p>A mutant declares its parent's <code>(band, length, style)</code> cell verbatim in v1.
 Cross-cell derivation (for example a prune/graft moving the node count across a length
@@ -3118,6 +3134,42 @@ acceptance runner, including the band-mandatory denylist floor unioned in regard
 contract content. Mutants of the contract-less Tier-2 parents land contract-less at
 parity with their parent until the WS-2 Tier-2 migration wave, when they migrate in the
 same wave as ordinary skeletons (OQ-2).</p>
+<h2 id="amendment-1-2026-07-21-anti-clone-floor-recalibration">Amendment 1 (2026-07-21): anti-clone floor recalibration<a class="headerlink" href="#amendment-1-2026-07-21-anti-clone-floor-recalibration" title="Permanent link">&para;</a></h2>
+<p>Owner-approved. Full evidence and analysis:
+<a href="../../ws8-floor-recalibration-proposal/"><code>ws8-floor-recalibration-proposal.md</code></a>.</p>
+<p><strong>Problem discovered building WS-8.</strong> Decision 3's anti-clone floor rejected
+every automated mutation candidate. Its parent-distance clause required
+<code>structural_distance(parent, candidate) &gt;= TAU_STRUCT</code>, but <code>TAU_STRUCT</code> (0.3325)
+is the 25<sup>th</sup> percentile of same-cell hand-authored <em>sibling-pair</em> distances. A
+bounded mutation shares most structure with its parent by construction, so the
+measured mutant parent-distances (min 0.029, median 0.082, max 0.117 across small
+trees; ~0.32 for a rare high-envelope-headroom tree) are essentially disjoint
+from the sibling-pair distribution (p05 0.231 to max 0.577). The floor applied a
+sibling-pair percentile to the parent distance and rejected ~100% of mutants.</p>
+<p><strong>Amendment.</strong> The mutation-origin anti-clone floor is re-scoped (no safety level
+changes; the guarantee is preserved at a correctly-scoped threshold):</p>
+<ol>
+<li>The mutant parent-distance-vs-<code>TAU_STRUCT</code> clause is <strong>retired</strong>. <code>TAU_STRUCT</code>
+   is retained in the baseline as the documented hand-authored cross-tree
+   diversity target only.</li>
+<li>The in-cell anti-duplication clause (<code>TAU_CELL</code>) becomes the guarantee, applied
+   against <strong>every in-cell tree including the parent</strong> (the parent is itself an
+   in-cell tree). <code>TAU_CELL</code> is raised from the too-weak clamped 0.01 to a fixed,
+   owner-chosen <strong>0.05</strong> (rejects the catalog's observed near-duplicate pair at
+   0.0009 with a ~53x margin; admits mutations that are at least ~5% structurally
+   changed). This subsumes the retired clause: an M2-only re-map (distance ~0 from
+   its parent) is rejected here.</li>
+<li>The fingerprint anti-no-op clause is unchanged.</li>
+</ol>
+<p>This is a catalog-curation bar, not a safety gate: nothing reaches a child without
+the full deterministic gate, moderation, human structure approval (this ADR's
+decision 4 promotion PR), and human story approval (ADR-005). Verified end to end:
+mutants at or above 0.05 from their parent and every sibling now reach
+<code>promotable</code> (e.g. the-sleepy-little-star 0.117, puddle-jumping-day 0.066,
+the-teddy-bears-picnic 0.086), while a too-near mutant (the-lantern-festival
+0.0377) is correctly discarded at the structure floor. Implemented in
+<code>mutation/floors.py</code>, <code>scripts/calibrate_mutation_floors.py</code>, and
+<code>docs/planning/ws5_floor_baseline.json</code> (baseline v2).</p>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3226,7 +3278,7 @@ is captured here.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 17:39:53 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 22, 2026 01:13:54 UTC">July 22, 2026</span>
   </span>
 
     

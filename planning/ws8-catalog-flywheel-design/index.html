@@ -1,0 +1,4397 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Phase A design for WS-8: close the loop from WS-4's cell-saturation demand signal to a merged skeletons/ promotion PR, using the delivered WS-5 mutation engine (bounded composed chains, the unchanged acceptance harness, the promotion bundle) as the candidate generator and the ADR-020 decision set as fixed law. Automation triggers, generates, accepts, drafts re-guidance, assembles bundles, and prepares promotion PRs; a human always performs structure approval by reviewing and merging the PR, with no auto-merge ever. Feed-agnostic by contract so WS-6 fresh-generated trees plug into the same promotion path later; WS-5-mutant-only first value is recommended.">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/ws8-catalog-flywheel-design/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>WS-8 Design: The Catalog Flywheel (grow the tree catalog with usage) - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ws-8-design-the-catalog-flywheel" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WS-8 Design: The Catalog Flywheel (grow the tree catalog with usage)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../template_feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Feedback
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-objective-and-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Objective and scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-current-state-the-exact-seams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Current state (the exact seams)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Current state (the exact seams)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-the-demand-signal-exists-but-is-not-yet-consumable-as-a-cell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 The demand signal exists but is not yet consumable as a cell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-the-engine-is-delivered-and-its-hand-off-shape-is-fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 The engine is delivered and its hand-off shape is fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-the-promotion-target-and-its-regeneration-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 The promotion target and its regeneration tooling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-the-neutralizeparameterize-transform-for-contract-less-trees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 The neutralize/parameterize transform for contract-less trees
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-the-measurement-instruments-ws-0-delivered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 The measurement instruments (WS-0, delivered)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-what-is-missing-the-ws-8-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 What is missing (the WS-8 gap)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Design principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-flywheel-loop-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The flywheel loop, end to end
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. The flywheel loop, end to end">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-stage-s1-the-trigger-ws-4-saturation-persisted-as-an-enum-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Stage S1: the trigger (WS-4 saturation, persisted as an enum event)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-the-stage-table-interfaces-and-where-automation-stops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 The stage table (interfaces, and where automation stops)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-the-automation-boundary-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The automation boundary (CRITICAL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-re-guidance-resolution-at-scale-the-pivotal-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Re-guidance resolution at scale (the pivotal problem)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Re-guidance resolution at scale (the pivotal problem)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-why-this-is-the-crux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Why this is the crux
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-the-options-analyzed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 The options, analyzed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-the-deterministic-reguide-floor-d3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 The deterministic reguide floor (D3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-what-the-human-sees-the-s7-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 What the human sees (the S7 contract)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-candidate-strategy-per-saturated-cell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Candidate strategy per saturated cell
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Candidate strategy per saturated cell">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-parent-eligibility-precedence-ordered-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Parent eligibility (precedence-ordered filter)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-chain-templates-what-to-attempt-in-value-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Chain templates (what to attempt, in value order)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-attempt-budget-and-the-discard-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Attempt budget and the discard ledger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-ranking-and-selection-precedence-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Ranking and selection (precedence rules)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-catalog-hygiene-the-tau_cell-clamp-lesson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Catalog hygiene (the TAU_CELL clamp lesson)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-feed-agnostic-promotion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Feed-agnostic promotion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Feed-agnostic promotion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-the-promotion-bundle-contract-normative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 The promotion-bundle contract (normative)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-lineage-v2-the-origin-discriminator-d5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Lineage v2: the origin discriminator (D5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-parameterize-at-promotion-the-neutralize-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Parameterize-at-promotion (the neutralize path)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-scheduling-cadence-and-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Scheduling, cadence, and bounds
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Scheduling, cadence, and bounds">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-cadence-manual-first-then-periodic-oq-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Cadence: manual-first, then periodic (OQ-2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-hard-bounds-the-operationalization-of-grow-with-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Hard bounds (the operationalization of "grow with usage")
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-metrics-and-observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Metrics and observability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-safety-invariant-mapping-plan-section-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Safety-invariant mapping (plan section 7)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-what-does-not-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. What does not change
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-deliverables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Deliverables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Testing strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-risks-and-critical-review-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Risks and critical-review items
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-open-questions-for-sign-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Open questions for sign-off
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="ws-8-design-the-catalog-flywheel">WS-8 Design: The Catalog Flywheel<a class="headerlink" href="#ws-8-design-the-catalog-flywheel" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>As-built note (2026-07-21).</strong> This began as the Phase A design below and has
+since been DELIVERED as D1-D8 (see the CHANGELOG <code>[Unreleased]</code> entries). The
+body is preserved as the design-time record; where the delivered code deviates
+from it, the delivered code governs. The one substantive deviation: the
+anti-clone floor was recalibrated for mutation-derived candidates. The
+<code>TAU_CELL = 0.01</code> clamp and the <code>TAU_STRUCT</code> parent-distance gate that several
+sections below describe were superseded by ADR-020 Amendment 1, which retires
+the parent-distance gate and sets <code>TAU_CELL = 0.05</code> against the parent and
+in-cell siblings (see <code>docs/planning/ws8-floor-recalibration-proposal.md</code> and
+<code>mutation/floors.py</code>). Read "proposed" / "nothing here is implemented" / the
+<code>TAU_CELL = 0.01</code> references below as historical.</p>
+<p><strong>Original status: proposed (Phase A).</strong> This document was the input to a
+supervisor sign-off review, mirroring the WS-1, WS-2, WS-5, and WS-7 Phase A
+process. Section 15 listed the decisions the reviewer ratified before the
+implementation pass.</p>
+<p><strong>The paragraph that governs everything else:</strong> WS-8 is a <em>wiring</em>
+workstream, not an engine workstream. Every safety-bearing mechanism it uses
+already exists and is consumed unchanged: the WS-5 operators and bounded
+chains generate candidates, the byte-identical acceptance harness (gate,
+cell assertion, Tier-2 walk checks, anti-clone floors, contract acceptance)
+proves them, the promotion bundle packages them, and ADR-020 (accepted
+2026-07-20, binding) fixes the promotion model: mutants are first-class
+citizens with no inherited trust, lineage is a sidecar, the gate is
+byte-identical plus reject-only floors, <strong>human structure approval is the
+skeletons/ PR review with no auto-merge</strong>, cells are inherited, contracts
+keep parity. WS-8 adds the loop around that engine: a demand trigger read
+from WS-4's saturation signal (consumed as an enum cell coordinate, never as
+theme text, OWASP LLM01), a bounded candidate strategy per saturated cell, a
+resolution path for re-guidance at scale, promotion-PR preparation, and
+WS-0-instrumented metrics that close the loop. The automation boundary is
+absolute: automation prepares PRs, humans merge them (WS-5 CR-1, ADR-020
+decision 4). Nothing WS-8 builds can write under <code>skeletons/</code>, weaken a
+floor, or touch the fill -&gt; gate -&gt; moderation -&gt; ADR-005 chain a promoted
+tree's stories still run in full.</p>
+</blockquote>
+<hr />
+<h2 id="1-objective-and-scope">1. Objective and scope<a class="headerlink" href="#1-objective-and-scope" title="Permanent link">&para;</a></h2>
+<p>WS-8 per the master plan (<code>story-flexibility-plan.md</code> section 5, "WS-8:
+Catalog flywheel (highest ceiling)", lines 355-361): <strong>grow the tree catalog
+with usage, not authoring budget.</strong> Promote any gate-passed, human-approved
+fresh (WS-6) or composed/mutated (WS-5) tree into the parameterized catalog via
+the neutralize transform, behind a human structure-approval step. Sequencing
+(section 6, line 391): WS-5 feeds WS-8, WS-6 also feeds WS-8; WS-8 consumes
+WS-4's saturation signal and WS-0's metrics. Of those four inputs, three are
+delivered (WS-0 Phases 1-2, WS-4 request-time consumption, WS-5 D1-D8 plus
+ADR-020) and one is not started (WS-6). Section 15 OQ-3 recommends delivering
+WS-8's first value on WS-5 mutants alone.</p>
+<p><strong>Capability served</strong> (register IDs, <code>capability-register.md</code>):</p>
+<ul>
+<li><strong>K3 (primary):</strong> "Choices are consequential: paths genuinely differ,
+  endings vary, the story remembers state" (line 112). WS-5 built the
+  mechanism that grows structural and state variation; WS-8 is the demand loop
+  that makes the mechanism run when and where readers actually need it, so K3
+  holds up for heavy readers in saturated cells without a standing authoring
+  budget.</li>
+<li><strong>K13 (gate, not served):</strong> the age-band content guarantee bounds every
+  promoted tree exactly as it bounds a hand-authored one (section 10).</li>
+</ul>
+<p><strong>Metric (from the plan, line 361):</strong> net new trees per month. Operationalized
+with existing instruments only (section 9): merged skeleton-promotion PRs
+counted from <code>*.lineage.json</code> sidecar additions in git history, the WS-0
+distinct-trees-per-cell trend weighted by
+<code>diversity.structure.structural_distance</code>, and <code>effective_catalog_size</code>. WS-8
+adds no new metric machinery, only a report that reads what WS-0 computes.</p>
+<p><strong>Explicitly in scope:</strong></p>
+<ul>
+<li>The end-to-end flywheel loop specification: trigger, candidate strategy,
+  acceptance, re-guidance resolution, bundle assembly, promotion-PR
+  preparation, merge, measurement (section 4), with a hard automation boundary
+  (section 4.3).</li>
+<li>Making the WS-4 trigger consumable: today <code>selection.cell_theme_saturated</code>
+  logs only <code>band</code> and <code>level</code> (<code>authoring_plan.py:428-432</code>); WS-8 persists a
+  full, enum-only cell coordinate (section 4.1, D1).</li>
+<li>The candidate strategy: parent and chain-template selection per saturated
+  cell, attempt budgets, discard-ledger memory, distance-ranked candidate
+  selection (section 6).</li>
+<li>Re-guidance at scale: the hybrid agent-draft / human-approve model with a
+  deterministic reguide floor and LLM01 containment (section 5, OQ-1).</li>
+<li>The feed-agnostic promotion contract: Lineage v2 with an origin
+  discriminator so WS-6 fresh trees ship the same bundle (section 7), and the
+  parameterize-at-promotion path for contract-less trees via the WS-2 recipe.</li>
+<li>Bounded scheduling: per-cell and global caps, cool-downs, manual-first
+  cadence (section 8).</li>
+<li>Metrics and the flywheel report (section 9); the D1-D8 plan (section 12).</li>
+</ul>
+<p><strong>Explicitly out of scope:</strong></p>
+<ul>
+<li><strong>Any change to the WS-5 engine.</strong> Operators, <code>acceptance.py</code>'s stage
+  ladder, <code>floors.py</code> thresholds, <code>compose.py</code>'s <code>MAX_CHAIN_LENGTH = 3</code>,
+  <code>bundle.py</code>'s writer/verifier, and <code>scripts/mutate_skeleton.py</code> are consumed
+  as-is. Where WS-8 needs an extension (Lineage v2, a reguide floor) it is
+  additive and lands behind its own deliverable.</li>
+<li><strong>WS-6 itself.</strong> WS-8 defines the feed contract WS-6 must satisfy
+  (section 7.2) but builds no fresh-generation pipeline.</li>
+<li><strong>The grammar-based composer.</strong> Still deferred per WS-5 section 7; a
+  composed tree, when it exists, enters through the same feed contract.</li>
+<li><strong>Auto-merge, an in-app promotion surface, or any promotion path that is
+  not a reviewed git PR.</strong> ADR-020 decision 4 is binding; an in-app surface
+  was explicitly deferred by that ADR's alternatives section until promotion
+  volume warrants it, and this design does not reach that volume (section 8's
+  caps guarantee it).</li>
+<li><strong>Selection changes.</strong> <code>skeleton_match.py</code> weights, the WS-4 similarity
+  blend, and the <code>_weight</code>/<code>_blended_weight</code> novelty floor are untouched; a
+  promoted tree enters selection as an unused candidate at weight 1.0, which
+  is already the mechanism that carries new trees to readers.</li>
+<li><strong>Catalog deletion or de-duplication of existing trees.</strong> The hygiene
+  signal WS-5 surfaced (section 6.5) is reported to the owner, never acted on
+  by automation.</li>
+</ul>
+<p><strong>Deliverables:</strong> D1-D8, section 12.</p>
+<h2 id="2-current-state-the-exact-seams">2. Current state (the exact seams)<a class="headerlink" href="#2-current-state-the-exact-seams" title="Permanent link">&para;</a></h2>
+<h3 id="21-the-demand-signal-exists-but-is-not-yet-consumable-as-a-cell">2.1 The demand signal exists but is not yet consumable as a cell<a class="headerlink" href="#21-the-demand-signal-exists-but-is-not-yet-consumable-as-a-cell" title="Permanent link">&para;</a></h3>
+<p><code>story_requests/authoring_plan.py::_resolve_skeleton_fill</code> (lines 423-432)
+emits, whenever a family's similarity context escalates past tree-level
+differentiation, the info log <code>selection.cell_theme_saturated</code> with fields
+<code>band</code> and <code>level</code> (<code>DifferentiationLevel.LEAF</code> or <code>.CATALOG</code>), annotated in
+the source as "a signal for the WS-8 catalog flywheel". The escalation ladder
+(<code>diversity/query.py::score_history</code>, lines 149-159) is deterministic:
+<code>CATALOG</code> means every candidate slug in the cell has been used for a
+similar-theme story for this family AND at least one slug has been used twice.
+Two gaps for WS-8:</p>
+<ol>
+<li><strong>The log line carries <code>band</code> but not <code>length</code> or <code>style</code></strong>, so the full
+   <code>(band, length, style)</code> cell coordinate the flywheel must target is not
+   recoverable from the event. Both values are in scope at the emission site
+   (<code>_resolve_skeleton_fill</code> computed the cell to build <code>skeleton_alternatives</code>);
+   adding them is a two-field change (D1).</li>
+<li><strong>A log line is not a queryable counter.</strong> The flywheel needs "how many
+   CATALOG escalations has cell X seen in the last 30 days, from how many
+   distinct requests", which means a persisted, append-only record. The
+   <code>events/</code> package is the established pattern: <code>events/writer.py</code> enforces a
+   per-event-type payload key allowlist whose contract is "ids, enum values,
+   scores, counts, controlled-vocab reasons only; never free text", which is
+   exactly the LLM01 posture the trigger needs (section 4.1).</li>
+</ol>
+<h3 id="22-the-engine-is-delivered-and-its-hand-off-shape-is-fixed">2.2 The engine is delivered and its hand-off shape is fixed<a class="headerlink" href="#22-the-engine-is-delivered-and-its-hand-off-shape-is-fixed" title="Permanent link">&para;</a></h3>
+<p>WS-5 D1-D8 are merged. The exact seams WS-8 drives:</p>
+<ul>
+<li><strong>Candidate generation:</strong> <code>mutation/compose.py::apply_chain</code> applies a
+  bounded chain (1..<code>MAX_CHAIN_LENGTH = 3</code> steps of <code>(op_id, params, seed)</code>),
+  atomic (any step's precondition failure aborts the chain), deterministic
+  (byte-identical replay from the recorded chain). <code>mutation/operators.py</code>
+  registers M1-M4, <code>mutation/state_ops.py</code> M5. ADR-020's evidence exhibit and
+  the D7 calibration record the load-bearing fact for strategy design:
+  <strong>a single structural op usually falls below <code>TAU_STRUCT</code> (0.332507), so
+  composed chains pairing a structural op with an M2 outcome re-map are the
+  value path.</strong></li>
+<li><strong>Acceptance:</strong> <code>mutation/acceptance.py::run_acceptance</code> (via
+  <code>compose.run_chain_acceptance</code> for chains) runs the fixed stage ladder:
+  stage 0 preconditions, stage 1 the byte-identical <code>run_gate</code>, stage 2 cell
+  assertion, stage 3 Tier-2 single-walk checks (ending coverage, clock
+  re-proof, state-signature floor for shape-unchanged mutants), the
+  structural anti-clone floor for shape-changed would-be-promotable
+  candidates, stage 4 contract acceptance. Every failure is a structured
+  <code>mutation.discarded</code> log carrying parent slug and sha256, op chain, params,
+  seed, failing stage, and rule ids. A candidate with unresolved re-guidance
+  is <em>held</em>: it exists but <code>promotable</code> is false.</li>
+<li><strong>Floors:</strong> <code>mutation/floors.py</code> loads <code>TAU_STRUCT = 0.332507</code>,
+  <code>TAU_CELL = 0.01</code>, <code>TAU_STATE = 0.5</code> from the committed
+  <code>docs/planning/ws5_floor_baseline.json</code>; reject-only by construction. The
+  baseline's <code>clamps</code> note records the catalog-hygiene finding WS-8 must
+  respect: two existing in-cell siblings sit at structural distance 0.000947,
+  and the calibrator clamped <code>TAU_CELL</code> up to 0.01 so that pair could never
+  justify admitting a clone (section 6.5).</li>
+<li><strong>Re-guidance:</strong> <code>mutation/reguide.py</code> models author resolutions
+  (<code>ResolvedReguide</code> with a mandatory <code>author</code> field), reconciles them against
+  emitted items by <code>target_id</code>, and its module docstring pins the current
+  posture: "The resolution content is ALWAYS author-supplied (design
+  principle 6, OWASP LLM01 ...); it never generates guidance text." WS-8's
+  section 5 is the deliberate, fenced amendment of exactly that posture, and
+  it is the workstream's pivotal open question (OQ-1).</li>
+<li><strong>The bundle:</strong> <code>mutation/bundle.py</code> writes
+  <code>out/mutations/&lt;slug&gt;/</code> containing the gate-passing shell, the mutated
+  contract (parameterized parents), the <code>*.lineage.json</code> sidecar
+  (<code>Lineage</code>: <code>parent_slug</code>, <code>parent_sha256</code>, <code>donor_slugs</code>, <code>op_chain</code>,
+  <code>created_at</code>, <code>tool_version</code>, <code>acceptance_digest</code>; <code>LINEAGE_VERSION = 1</code>),
+  <code>acceptance.json</code>, <code>reguide.json</code> (before/after per item, <code>fully_resolved</code>),
+  <code>sample-fill/</code>, and the diagram. <code>verify_bundle</code> recomputes the live
+  parent's hash and <strong>hard-fails a bundle whose parent changed since
+  derivation</strong>; this is the staleness gate every promotion must re-run.</li>
+<li><strong>The CLI:</strong> <code>scripts/mutate_skeleton.py</code> runs single-op, <code>--chain</code>,
+  <code>--resolve</code> (author resolution file), <code>--sample-fill-mock</code>, and
+  <code>--verify-bundle</code> modes, derives a collision-safe mutant slug from the
+  parent slug and chain signature, and <strong>refuses any <code>--out-dir</code> that
+  resolves under a <code>skeletons/</code> directory</strong> (CR-1: promotion is a PR, never a
+  script side effect). WS-8 automation wraps this CLI; it does not reimplement
+  it.</li>
+</ul>
+<h3 id="23-the-promotion-target-and-its-regeneration-tooling">2.3 The promotion target and its regeneration tooling<a class="headerlink" href="#23-the-promotion-target-and-its-regeneration-tooling" title="Permanent link">&para;</a></h3>
+<p><code>skeletons/&lt;band&gt;/&lt;slug&gt;.json</code> plus sidecars, scanned by
+<code>generation/skeleton_match.py::_production_candidates</code> with the shared
+<code>generation/skeleton.py::is_sidecar</code> predicate
+(<code>SIDECAR_SUFFIXES = (".contract.json", ".lineage.json")</code>), so a lineage
+sidecar landing in a band directory is already invisible to selection
+(ADR-020 decision 2, delivered). Zero lineage sidecars exist on disk today:
+the first flywheel promotion is also the first production use of the scanner
+generalization. A promotion PR additionally regenerates: the catalog document
+region (<code>generation/skeleton_catalog.py::build_catalog_region</code> between its
+BEGIN/END markers in <code>docs/architecture/story-skeletons.md</code>) and the skeleton
+diagram (<code>scripts/render_skeleton_diagrams.py</code>, SHA-verified PlantUML jar with
+a graceful <code>.puml</code>-only degrade).</p>
+<h3 id="24-the-neutralizeparameterize-transform-for-contract-less-trees">2.4 The neutralize/parameterize transform for contract-less trees<a class="headerlink" href="#24-the-neutralizeparameterize-transform-for-contract-less-trees" title="Permanent link">&para;</a></h3>
+<p><code>scripts/parameterize_skeleton.py</code> (the production generalization of
+<code>out/pilot/_neutralize.py</code>, which the plan's WS-8 section names) applies an
+agent-authored slotting plan (<code>beats</code>/<code>titles</code>/<code>labels</code> maps) to a pristine
+skeleton under six fail-closed checks (coverage, dangling references,
+role/words byte-preserved, fingerprint equality, gate not blocked, slot-token
+grammar). Its input shape is exactly a promotion bundle's shell, by WS-5
+design (WS-5 section 2.4). This is the parameterize-at-promotion path for a
+contract-less promoted tree (section 7.3): a WS-5 mutant of a parameterized
+parent already ships its contract (stage 4 proved it), so the transform is
+needed only for contract-less-parity mutants (Tier-2 parents) and future WS-6
+fresh trees.</p>
+<h3 id="25-the-measurement-instruments-ws-0-delivered">2.5 The measurement instruments (WS-0, delivered)<a class="headerlink" href="#25-the-measurement-instruments-ws-0-delivered" title="Permanent link">&para;</a></h3>
+<p><code>diversity/structure.py::structural_distance</code> and <code>structure_fingerprint</code>;
+<code>diversity/aggregate.py::effective_catalog_size</code> (trend-only, never gates CI
+per the WS-0 "never" list); the committed eval panel and
+<code>scripts/run_diversity_eval.py</code> with its per-PR regression rules. WS-8's
+report (section 9) composes these; it adds no new distance, no new judge, and
+no CI gate.</p>
+<h3 id="26-what-is-missing-the-ws-8-gap">2.6 What is missing (the WS-8 gap)<a class="headerlink" href="#26-what-is-missing-the-ws-8-gap" title="Permanent link">&para;</a></h3>
+<p>Every piece exists; no loop exists. Today the CATALOG escalation terminates in
+a log line nobody reads, mutation runs only when a human picks a parent,
+operators, and seeds by hand, re-guidance resolution requires a human to write
+every seam beat, and promotion requires a human to assemble a PR by hand from
+bundle files. The cost per promoted tree is therefore still dominated by human
+attention at four points, and the plan's metric (net new trees per month)
+rounds to zero. WS-8 removes the human from every point except the one ADR-020
+requires: structure approval at the PR.</p>
+<h2 id="3-design-principles">3. Design principles<a class="headerlink" href="#3-design-principles" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Wire, do not rebuild.</strong> WS-8 composes delivered surfaces
+   (<code>apply_chain</code>, <code>run_chain_acceptance</code>, <code>write_bundle</code>, <code>verify_bundle</code>,
+   <code>parameterize_skeleton.py</code>, <code>build_catalog_region</code>, WS-0 distances). Any
+   gap is closed by an additive extension in the owning module, never a
+   parallel implementation.</li>
+<li><strong>Demand-driven, supply-capped.</strong> The loop starts only from a persisted
+   saturation reading for a specific cell and stops at hard caps (per-cell,
+   global, cool-down; section 8). "Grow with usage" means: no saturation, no
+   candidates; saturation, at most a bounded trickle of PRs.</li>
+<li><strong>The automation boundary is a file-system and git boundary.</strong> Automation
+   writes under <code>out/</code> and on non-default git branches, and may open a draft
+   PR. Only a human merge writes to <code>main</code>'s <code>skeletons/</code>. No WS-8 code path
+   may push to <code>main</code>, enable auto-merge, or approve a PR (section 4.3).</li>
+<li><strong>Discard, never weaken</strong> (inherited from WS-5 principle 4). A candidate
+   that fails acceptance is logged to the discard ledger and never retried
+   with the same signature; no threshold moves. High discard rates tune the
+   candidate strategy, never the gate or floors.</li>
+<li><strong>Untrusted input never enters the loop as text (OWASP LLM01).</strong> The
+   trigger is consumed as enum-valued cell coordinates validated against the
+   closed band/length/style vocabularies; no request text, theme brief, or
+   family identifier reaches candidate generation. The one LLM touchpoint WS-8
+   adds (re-guidance drafting, section 5) consumes catalog content only, and
+   its output is untrusted-derived: it passes a deterministic reguide floor,
+   the full unchanged acceptance re-run, and human PR review before it can
+   exist in the catalog, and it is labeled as agent-authored in the bundle.</li>
+<li><strong>Feed-agnostic by contract.</strong> A promotion bundle is a promotion bundle:
+   the promotion path (verify, PR prep, review, merge, measure) keys on the
+   bundle contract (section 7.1), not on which workstream produced the tree.</li>
+<li><strong>Determinism and replayability</strong> (inherited from WS-5 principle 5). Every
+   flywheel attempt is a pure function of (parent content hash, chain,
+   seeds); the ledger records the signature; any promoted tree re-derives
+   byte-for-byte.</li>
+</ol>
+<h2 id="4-the-flywheel-loop-end-to-end">4. The flywheel loop, end to end<a class="headerlink" href="#4-the-flywheel-loop-end-to-end" title="Permanent link">&para;</a></h2>
+<h3 id="41-stage-s1-the-trigger-ws-4-saturation-persisted-as-an-enum-event">4.1 Stage S1: the trigger (WS-4 saturation, persisted as an enum event)<a class="headerlink" href="#41-stage-s1-the-trigger-ws-4-saturation-persisted-as-an-enum-event" title="Permanent link">&para;</a></h3>
+<p><strong>Extension at the emission site (D1).</strong> <code>_resolve_skeleton_fill</code> gains two
+fields on the existing log line (<code>length</code>, <code>style</code>) and, in the same
+transaction posture the surrounding code already uses, appends one pipeline
+event through <code>events/writer.py</code>:</p>
+<ul>
+<li>New <code>EventType.CELL_SATURATED</code> with payload allowlist
+  <code>frozenset({"age_band", "length", "style", "level"})</code>. All four values are
+  members of closed enums (<code>AgeBand</code>, the length vocabulary, the style
+  vocabulary, <code>DifferentiationLevel</code>); the writer's allowlist mechanism
+  already rejects anything else before write, which is the enforcement of the
+  no-free-text rule.</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># #ASSUME: data-integrity: PipelineEvent rows anchor to the request whose plan</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># escalated, giving the trigger a distinct-request denominator without ever</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># recording a family or child identifier in the payload. The payload carries</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># ONLY closed-vocabulary enum values (events/writer.py allowlist contract);</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># the request anchor is the row&#39;s existing foreign key, not payload content.</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># #VERIFY: D1 unit test round-trips a CELL_SATURATED event and asserts (a) a</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># payload with any extra key or non-enum value is rejected by the writer, and</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># (b) the reader (flywheel_scan) drops any row whose values fail enum</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># validation instead of propagating them.</span>
+</span></code></pre></div>
+<p><strong>The reading interface.</strong> A pure function over the event rows:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">SaturationReading</span><span class="p">:</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">band</span><span class="p">:</span> <span class="nb">str</span>          <span class="c1"># validated AgeBand member</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">length</span><span class="p">:</span> <span class="nb">str</span>        <span class="c1"># validated length member</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">style</span><span class="p">:</span> <span class="nb">str</span>         <span class="c1"># validated style member</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">catalog_events</span><span class="p">:</span> <span class="nb">int</span>      <span class="c1"># CATALOG-level events in the window</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">leaf_events</span><span class="p">:</span> <span class="nb">int</span>         <span class="c1"># LEAF-level events in the window (context only)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">distinct_requests</span><span class="p">:</span> <span class="nb">int</span>   <span class="c1"># distinct request anchors behind catalog_events</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">window_days</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">saturated_cells</span><span class="p">(</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">readings</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">SaturationReading</span><span class="p">],</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="n">min_catalog_events</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="n">min_distinct_requests</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SaturationReading</span><span class="p">]:</span> <span class="o">...</span>
+</span></code></pre></div>
+<p>A cell <strong>triggers</strong> when <code>catalog_events &gt;= 3</code> within a 30-day window from
+<code>distinct_requests &gt;= 2</code> (defaults; ratify as OQ-4). The distinct-requests
+qualifier keeps one prolific family from single-handedly commissioning
+catalog growth; the threshold values are module constants, tunable only by a
+reviewed PR (the same posture as the floor baseline).</p>
+<p><strong>LLM01 rule, restated as the trigger's contract:</strong> the flywheel consumes the
+saturation signal as a <em>cell coordinate and counters</em>, never as theme text.
+Nothing about <em>which theme</em> saturated the cell reaches candidate generation,
+by construction: the event payload cannot carry it (allowlist) and the
+strategy (section 6) takes only the cell tuple. Growing the catalog is
+theme-agnostic on purpose: a new tree serves every future theme in the cell.</p>
+<h3 id="42-the-stage-table-interfaces-and-where-automation-stops">4.2 The stage table (interfaces, and where automation stops)<a class="headerlink" href="#42-the-stage-table-interfaces-and-where-automation-stops" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>What happens</th>
+<th>Interface (exact)</th>
+<th>Actor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1 Trigger</td>
+<td>Saturation readings computed per cell from <code>CELL_SATURATED</code> events; cells over threshold selected, subject to section 8 caps</td>
+<td>D1: <code>events</code> writer + <code>flywheel/trigger.py::saturated_cells</code>; CLI <code>scripts/flywheel_scan.py</code> (read-only report)</td>
+<td>Automation</td>
+</tr>
+<tr>
+<td>S2 Candidate plan</td>
+<td>For each triggered cell: eligible parents enumerated, chain templates instantiated, seed budget assigned, ledger-known-dead attempts excluded</td>
+<td>D2: <code>flywheel/strategy.py::plan_attempts(cell, catalog, ledger) -&gt; list[AttemptPlan]</code></td>
+<td>Automation</td>
+</tr>
+<tr>
+<td>S3 Generate + accept</td>
+<td>Each attempt runs <code>apply_chain</code> then <code>run_chain_acceptance</code> (the unchanged WS-5 harness); discards append to the ledger</td>
+<td>Existing: <code>mutation/compose.py</code>; D2 wraps, never modifies</td>
+<td>Automation</td>
+</tr>
+<tr>
+<td>S4 Re-guidance</td>
+<td>Held candidates get drafted resolutions (agent), each passing the deterministic reguide floor; acceptance re-runs with <code>resolved_reguide_ids</code>; drafts recorded with <code>author="agent:&lt;model-id&gt;"</code></td>
+<td>D3: <code>flywheel/reguide_draft.py</code> + <code>generation/templates/reguide_draft.md</code>; feeds <code>mutation/reguide.py</code> unchanged</td>
+<td>Automation drafts; human approves later at S6</td>
+</tr>
+<tr>
+<td>S5 Bundle</td>
+<td>Best surviving candidate per cell (section 6.4 ranking) bundled via <code>write_bundle</code>, including sample-fill evidence and diagram</td>
+<td>Existing: <code>scripts/mutate_skeleton.py</code> end-to-end</td>
+<td>Automation</td>
+</tr>
+<tr>
+<td>S6 PR preparation</td>
+<td><code>verify_bundle</code> re-run against live <code>skeletons/</code>; shell + contract + lineage copied onto a fresh branch under <code>skeletons/&lt;band&gt;/</code>; catalog doc region + diagram regenerated; draft PR opened with the acceptance transcript, reguide before/after table, diagram, and sample-fill evidence in the body; labeled <code>skeleton-promotion</code></td>
+<td>D4: <code>scripts/prepare_promotion_pr.py</code></td>
+<td>Automation, ending at an OPEN DRAFT PR</td>
+</tr>
+<tr>
+<td><strong>S7 Structure approval</strong></td>
+<td><strong>Review of the diagram, acceptance transcript, lineage, contract diff, and every agent-drafted reguide item; merge or close</strong></td>
+<td><strong>GitHub PR review; the promotion CI job (D4) independently re-proves gate + contract + floors + verify-bundle on the PR's files</strong></td>
+<td><strong>Human only. No auto-merge, ever (ADR-020 decision 4)</strong></td>
+</tr>
+<tr>
+<td>S8 Close the loop</td>
+<td>Merge makes the tree an ordinary catalog skeleton (selection weight 1.0, novelty floor intact); WS-0 metrics and the flywheel report (section 9) record the growth; the cell's saturation counter naturally decays as the new tree absorbs demand</td>
+<td>D7: <code>scripts/flywheel_report.py</code>; no runtime change</td>
+<td>Automation (measurement only)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-the-automation-boundary-critical">4.3 The automation boundary (CRITICAL)<a class="headerlink" href="#43-the-automation-boundary-critical" title="Permanent link">&para;</a></h3>
+<p>Restating ADR-020 decision 4 and WS-5 CR-1 as implementable rules:</p>
+<ol>
+<li><strong>Automation may:</strong> read events and the catalog; run mutation, acceptance,
+   drafting, bundling under <code>out/</code>; create and push a non-default git branch;
+   open a <strong>draft</strong> PR labeled <code>skeleton-promotion</code>; comment evidence on it.</li>
+<li><strong>Automation may never:</strong> write under <code>skeletons/</code> on <code>main</code> (the CLI
+   refusal is inherited; <code>prepare_promotion_pr.py</code> writes only inside a
+   checkout of its own branch); mark the PR ready-for-review is permitted,
+   approving it is not; enable auto-merge on it; merge it; push to <code>main</code>;
+   modify <code>floors.py</code>, the baseline JSON, anything under <code>validator/</code>, or the
+   caps in section 8.</li>
+<li><strong>The PR itself is the human structure-approval instrument</strong> (ADR-020
+   decision 4): the reviewer is the owner or a delegated admin, the evidence
+   is the bundle's transcript/diagram/sample-fill/lineage, and the review
+   explicitly includes every agent-drafted reguide resolution (section 5.4).</li>
+<li><strong>Repo enforcement, not just discipline (D4):</strong> the <code>skeleton-promotion</code>
+   label excludes the PR from any auto-merge tooling (the release workflow's
+   auto-merge precedent makes this a real hazard, not a hypothetical); a CI
+   job on PRs touching <code>skeletons/**</code> re-runs <code>check_skeleton</code>,
+   <code>check_theme_contract</code> (when a contract is present), the anti-clone floor,
+   and <code>verify_bundle</code>-equivalent lineage/hash validation from scratch, so a
+   hand-tampered or stale bundle cannot ride an otherwise-green PR.</li>
+<li><strong>Post-merge, safety is unchanged:</strong> every story generated from the
+   promoted tree still runs fill -&gt; <code>run_gate</code> -&gt; moderation -&gt; ADR-005 human
+   story approval. Structure approval and story approval remain two distinct
+   human steps, exactly as ADR-020 separates them.</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># #CRITICAL: security: the promotion branch preparation is the one WS-8 step</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1"># that writes files destined for skeletons/. It must operate ONLY inside a</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># dedicated worktree/checkout of its own feature branch, refuse to run when</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># the current branch is main, and re-run verify_bundle IMMEDIATELY before</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># copying (a parent changed between bundling and PR prep invalidates the</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># acceptance evidence; design 9.2 #EDGE in WS-5).</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># #VERIFY: D4 tests: prepare_promotion_pr exits non-zero on branch==main, on</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c1"># a verify_bundle mismatch, and on a bundle whose acceptance.json says</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># promotable=false or fully_resolved=false; a filesystem sandbox test asserts</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1"># it never writes outside its own worktree.</span>
+</span></code></pre></div>
+<h2 id="5-re-guidance-resolution-at-scale-the-pivotal-problem">5. Re-guidance resolution at scale (the pivotal problem)<a class="headerlink" href="#5-re-guidance-resolution-at-scale-the-pivotal-problem" title="Permanent link">&para;</a></h2>
+<h3 id="51-why-this-is-the-crux">5.1 Why this is the crux<a class="headerlink" href="#51-why-this-is-the-crux" title="Permanent link">&para;</a></h3>
+<p>Every valuable chain emits re-guidance: the ADR-020 evidence exhibit's 2-op
+chain emitted 9 items (a graft-seam label, a graft-root entry beat, M2-affected
+ending titles and leaf beats). WS-5 D8 closed the loop with <em>author-supplied</em>
+resolutions, and <code>mutation/reguide.py</code> deliberately refuses to generate text.
+At flywheel scale, human-authoring ~9 seam texts per candidate is the dominant
+cost and the throughput ceiling; leaving it manual makes "grow with usage, not
+authoring budget" false in exactly the place it was supposed to be true. Three
+options:</p>
+<h3 id="52-the-options-analyzed">5.2 The options, analyzed<a class="headerlink" href="#52-the-options-analyzed" title="Permanent link">&para;</a></h3>
+<p><strong>(a) Agent-only: an LLM authors the seam guidance, no human reads it before
+merge-time review of the whole PR.</strong> Cost: lowest. Safety analysis: the
+drafted text becomes beats guidance inside <code>&lt;&lt;FILL ...&gt;&gt;</code> bodies, which means
+it re-enters <em>every future fill prompt</em> for stories from this tree; it is
+untrusted-derived prompt material (plan safety invariant 4). Mitigations that
+exist regardless: the drafting inputs are catalog content only (the parent's
+surrounding beats, the emitted item's <code>current_text</code>, the contract's slot
+meanings), never request text; the resolved shell must re-pass the full gate,
+the anti-clone floor, and the sample fill; every story later filled from it
+faces the fill gate, fidelity review, moderation, and ADR-005. Residual risk:
+guidance <em>quality</em> (an awkward seam yields awkward stories) and subtle
+tone/content drift below classifier thresholds, with no human having read the
+seam text as such (the PR reviewer would see it only if they dig into the
+JSON). Verdict: the safety floor holds, but it wastes the one human review the
+process already requires.</p>
+<p><strong>(b) Human-only (status quo).</strong> Cost: highest; the throughput ceiling.
+Safety: maximal. Verdict: correct fallback, wrong default; it re-creates the
+authoring-budget dependence WS-8 exists to remove, for a surface (seam beats)
+that is a fraction of a tree.</p>
+<p><strong>&copy; Hybrid: the agent drafts, the deterministic reguide floor screens, and
+the human approves each draft inside the same PR review that ADR-020 already
+mandates.</strong> Cost: near (a); the marginal human cost is reading ~9 short
+before/after pairs, rendered as a table in the PR body (D4), inside a review
+the human is performing anyway. Safety: (a)'s mechanical floor plus a human
+actually reading every drafted seam before it can exist on <code>main</code>. The
+<code>ResolvedReguide.author</code> field records <code>agent:&lt;model-id&gt;</code> so the audit trail
+distinguishes drafted from hand-authored resolutions forever, and the reviewer
+may overwrite any draft in the PR (it is a text field in a JSON file on a
+branch).</p>
+<p><strong>Recommendation: &copy;, ratify as OQ-1.</strong> It converts the ADR-020 review from
+a rubber-stampable formality into the exact control point the drafted content
+needs, at zero added process.</p>
+<h3 id="53-the-deterministic-reguide-floor-d3">5.3 The deterministic reguide floor (D3)<a class="headerlink" href="#53-the-deterministic-reguide-floor-d3" title="Permanent link">&para;</a></h3>
+<p>Every drafted resolution must pass, before it is written into the resolution
+file (fail = the item stays unresolved and the candidate stays held):</p>
+<ol>
+<li><strong>Surface parity.</strong> For a NODE target: substituting the drafted beats into
+   the FILL body still parses under the FILL grammar with <code>role=</code> and
+   <code>words=</code> byte-identical to the pre-mutation values (the same invariant
+   <code>parameterize_skeleton.py</code> check 3 enforces). For a CHOICE/ENDING target:
+   single line, and the label keeps the frozen action-semantic obligation in
+   scope for the human check (mechanically unverifiable; flagged in the PR
+   table).</li>
+<li><strong>Slot-token discipline.</strong> <code>{TOKEN}</code>s in the drafted text must be a subset
+   of the mutant contract's declared slot ids (no invented slots; no dropped
+   mandatory coverage, re-proven by stage 4 contract acceptance on the re-run
+   anyway); for contract-less mutants, zero <code>{</code>/<code>}</code> characters.</li>
+<li><strong>Structural injection block.</strong> No <code>&lt;&lt;</code>/<code>&gt;&gt;</code>, no fence-marker strings, no
+   control characters, printable charset, no U+2014 and no U+2013; length
+   capped (beats &lt;= 600 characters, labels/titles &lt;= 120), reusing the
+   exported <code>validator/slots.py</code> structural helpers where they fit rather
+   than copying them.</li>
+<li><strong>Band vocabulary floor.</strong> The band-mandatory denylist bundles
+   (<code>band_mandatory_bundles</code>) stem-matched against the drafted text; a hit
+   fails the draft. Stricter than strictly necessary (the gate and moderation
+   re-check downstream) and deliberately so: drafted guidance should never
+   need the downstream net.</li>
+<li><strong>Determinism of acceptance.</strong> After resolution, <code>run_chain_acceptance</code>
+   re-runs in full with <code>resolved_reguide_ids</code>; only a <code>promotable=true</code>
+   result proceeds to bundling. The floor never marks anything resolved by
+   itself; it only refuses drafts.</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># #CRITICAL: security: the drafting prompt consumes catalog content only</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># (parent beats, item current_text, contract slot meanings) and the mutant</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># cell enums; no request text, brief, family, or child artifact may be an</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># input, transitively. The drafted output is untrusted-derived (LLM01): it is</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># fenced as data if ever re-prompted, floor-screened before persistence, and</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># faces the full acceptance re-run plus human PR review before touching main.</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># #VERIFY: D3 grep-style test (mirroring WS-1 exit criterion 5 and WS-5 CR-5):</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># flywheel/ imports nothing from story_requests/ and no drafting function</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c1"># accepts a brief or premise; unit tests pin every floor rule with a</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># violating fixture (invented slot token, fence marker, denylist stem,</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1"># words= drift) and assert the item stays unresolved.</span>
+</span></code></pre></div>
+<h3 id="54-what-the-human-sees-the-s7-contract">5.4 What the human sees (the S7 contract)<a class="headerlink" href="#54-what-the-human-sees-the-s7-contract" title="Permanent link">&para;</a></h3>
+<p>The PR body renders <code>reguide.json</code> as a table: target, reason, before,
+drafted-after, author. The review checklist (committed as part of D4's PR
+template for <code>skeleton-promotion</code> PRs) requires the reviewer to check a box
+per drafted item. The <code>mutation/reguide.py</code> docstring is amended (D3) from
+"never generates guidance text" to "resolution text is author-attributed;
+agent-drafted resolutions are floor-screened untrusted-derived content that
+MUST be human-reviewed in the promotion PR", keeping the module's own code
+generation-free (drafting lives in <code>flywheel/</code>, feeding <code>ResolvedReguide</code>
+values in).</p>
+<h2 id="6-candidate-strategy-per-saturated-cell">6. Candidate strategy per saturated cell<a class="headerlink" href="#6-candidate-strategy-per-saturated-cell" title="Permanent link">&para;</a></h2>
+<h3 id="61-parent-eligibility-precedence-ordered-filter">6.1 Parent eligibility (precedence-ordered filter)<a class="headerlink" href="#61-parent-eligibility-precedence-ordered-filter" title="Permanent link">&para;</a></h3>
+<p>From the triggered cell's catalog (the same discovery
+<code>floors.load_in_cell_catalog</code> uses), keep parents that are, in order:</p>
+<ol>
+<li><code>production_eligible</code> (never the MVP seeds);</li>
+<li><code>metadata.series is None</code> (WS-5 operator precondition, inherited);</li>
+<li>within lineage depth: a parent whose own <code>*.lineage.json</code> sidecar exists is
+   generation &gt;= 1; v1 requires parent generation &lt;= 1, so no tree is ever
+   more than two derivations from a hand-authored root (recommendation;
+   OQ-5). Depth is computed by walking lineage sidecars on disk, no new
+   metadata;</li>
+<li>not the parent of an already-open <code>skeleton-promotion</code> PR for this cell
+   (section 8's one-PR-per-cell cap makes this mostly moot, kept as a
+   belt-and-braces check).</li>
+</ol>
+<h3 id="62-chain-templates-what-to-attempt-in-value-order">6.2 Chain templates (what to attempt, in value order)<a class="headerlink" href="#62-chain-templates-what-to-attempt-in-value-order" title="Permanent link">&para;</a></h3>
+<p>Fixed, versioned templates in <code>flywheel/strategy.py</code>, instantiated per parent;
+all bounded by <code>MAX_CHAIN_LENGTH = 3</code> (OQ-7, ratified in WS-5):</p>
+<table>
+<thead>
+<tr>
+<th>Template</th>
+<th>Chain</th>
+<th>Applies to</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>M3 graft (same-band donor) -&gt; M2 re-map</td>
+<td>Tier-1 parents with an eligible donor</td>
+<td>The proven highest-value pairing (ADR-020 evidence exhibit: distance 0.3362 &gt;= TAU_STRUCT)</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>M1 swap -&gt; M2 re-map</td>
+<td>Tier-1 parents with two swappable closed subtrees</td>
+<td>Cheapest structural pairing; M1 alone preserves aggregate features, M2 decouples outcomes</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>M4 insert-decision -&gt; M1 swap -&gt; M2 re-map</td>
+<td>Tier-1 parents under the cell node envelope max</td>
+<td>The 3-op reach when T1/T2 seeds fall short of TAU_STRUCT</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>M5a retune + M5b gate/rewire (chain of 2)</td>
+<td>Tier-2 parents</td>
+<td>State-only growth for the 12 stateful trees; judged by TAU_STATE, not TAU_STRUCT</td>
+</tr>
+</tbody>
+</table>
+<p>Donor selection for T1: same band, <code>production_eligible</code>, non-series, and
+maximum <code>structural_distance</code> from the host among eligible donors (a distant
+donor imports genuinely different material, which is what pushes the composed
+result over the floor).</p>
+<h3 id="63-attempt-budget-and-the-discard-ledger">6.3 Attempt budget and the discard ledger<a class="headerlink" href="#63-attempt-budget-and-the-discard-ledger" title="Permanent link">&para;</a></h3>
+<p>Per triggered cell per cycle: at most <code>MAX_ATTEMPTS_PER_CELL = 12</code> acceptance
+runs (for example 3 templates x 4 seeds, or fewer templates with more seeds
+where preconditions filter parents). Attempts are cheap (preconditions gate
+free, gate runs are sub-second, the Tier-2 walk is the only costly stage and
+only T4 pays it), but the budget exists so a pathological cell cannot burn a
+cycle.</p>
+<p><strong>The ledger (D2):</strong> <code>out/mutations/_ledger/attempts.jsonl</code>, append-only, one
+record per attempt:
+<code>{attempt_sig, parent_slug, parent_sha256, cell, chain: [(op, params, seed)],
+outcome: promotable|held|discarded, failing_stage, discard_reason, distances,
+timestamp}</code> where <code>attempt_sig = sha256(parent_sha256 + canonical chain
+JSON)</code>. The strategy skips any planned attempt whose <code>attempt_sig</code> already has
+an outcome: operators are deterministic, so re-running a known-dead signature
+provably reproduces the discard. A parent content change changes
+<code>parent_sha256</code>, which correctly invalidates the memory for that parent.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># #EDGE: external-resources: the ledger lives under gitignored out/, so a</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># fresh checkout loses it. Acceptable by design: determinism means a lost</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># ledger costs only recomputation, never correctness, and committing per-</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># attempt records would spam git history (OQ-7 asks whether to commit it).</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># #VERIFY: D2 test: a ledger round-trip skips a recorded signature; deleting</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1"># the ledger and re-running reproduces byte-identical outcomes for the same</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># (parent_sha256, chain) signatures.</span>
+</span></code></pre></div>
+<h3 id="64-ranking-and-selection-precedence-rules">6.4 Ranking and selection (precedence rules)<a class="headerlink" href="#64-ranking-and-selection-precedence-rules" title="Permanent link">&para;</a></h3>
+<p>Among the cycle's surviving candidates for a cell (promotable, or held with
+all reguide items successfully drafted and re-accepted), pick <strong>one</strong> to
+bundle and PR (per the section 8 cap), by precedence:</p>
+<ol>
+<li>Larger <code>min over in-cell siblings of structural_distance(s, candidate)</code>
+   (headroom above <code>TAU_CELL</code>: prefer the candidate least like <em>anything</em>
+   already in the cell; this is the flywheel's own anti-near-duplicate
+   preference layered above the floor);</li>
+<li>then larger <code>structural_distance(parent, candidate)</code> (for T4: larger state
+   signature distance);</li>
+<li>then fewer re-guidance items (cheaper review);</li>
+<li>then the lower seed (a deterministic tiebreak).</li>
+</ol>
+<p>Non-selected survivors are recorded in the ledger as <code>outcome: shelved</code> and
+are naturally reconsidered next cycle at zero regeneration cost (same
+signature, known outcome, bundle re-derivable).</p>
+<h3 id="65-catalog-hygiene-the-tau_cell-clamp-lesson">6.5 Catalog hygiene (the TAU_CELL clamp lesson)<a class="headerlink" href="#65-catalog-hygiene-the-tau_cell-clamp-lesson" title="Permanent link">&para;</a></h3>
+<p>The floor baseline's clamp note is a standing warning: the hand-authored
+catalog already contains one near-identical in-cell pair (distance 0.000947),
+which is exactly the failure mode a careless flywheel would mass-produce. Two
+responses, both in this design: (a) the anti-clone floor plus the section 6.4
+rank-by-headroom preference mean the flywheel structurally cannot add a
+near-duplicate and actively prefers distinctness; (b) the flywheel report
+(section 9) includes a standing "in-cell minimum pairwise distance" table over
+the WHOLE catalog, so the pre-existing pair and any future erosion is visible
+to the owner every cycle. Automation reports; the owner decides whether the
+legacy pair warrants curation. No automated deletion, ever.</p>
+<h2 id="7-feed-agnostic-promotion">7. Feed-agnostic promotion<a class="headerlink" href="#7-feed-agnostic-promotion" title="Permanent link">&para;</a></h2>
+<h3 id="71-the-promotion-bundle-contract-normative">7.1 The promotion-bundle contract (normative)<a class="headerlink" href="#71-the-promotion-bundle-contract-normative" title="Permanent link">&para;</a></h3>
+<p>A promotion bundle is a directory containing, exactly as <code>bundle.write_bundle</code>
+already lays out: the gate-passing shell <code>&lt;slug&gt;.json</code>; <code>&lt;slug&gt;.lineage.json</code>
+(section 7.2); <code>acceptance.json</code> with <code>promotable: true</code> and a full stage
+transcript; <code>reguide.json</code> with <code>fully_resolved: true</code>; <code>&lt;slug&gt;.contract.json</code>
+when the tree is parameterized; <code>sample-fill/</code> evidence; a diagram. The
+promotion path (S6-S8) consumes ONLY this contract: <code>prepare_promotion_pr.py</code>
+takes a bundle directory, verifies it, and prepares the PR without knowing or
+caring which workstream produced the tree. WS-5's CLI already emits it; WS-6
+must emit it; a future composer must emit it.</p>
+<h3 id="72-lineage-v2-the-origin-discriminator-d5">7.2 Lineage v2: the origin discriminator (D5)<a class="headerlink" href="#72-lineage-v2-the-origin-discriminator-d5" title="Permanent link">&para;</a></h3>
+<p><code>Lineage</code> v1 requires <code>parent_slug</code> and a non-empty <code>op_chain</code>, which a WS-6
+fresh tree cannot honestly supply. D5 bumps <code>LINEAGE_VERSION</code> to 2, keeping v1
+readable (the reader keys on <code>lineage_version</code>, per the module's own
+contract):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">LineageV2</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">lineage_version</span><span class="p">:</span> <span class="nb">int</span>          <span class="c1"># 2</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">origin</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">,</span> <span class="s2">&quot;fresh&quot;</span><span class="p">,</span> <span class="s2">&quot;composed&quot;</span><span class="p">]</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">mutant_slug</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="c1"># origin == &quot;mutation&quot;: exactly the v1 fields</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">parent_slug</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">parent_sha256</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="n">donor_slugs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="n">op_chain</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OpChainEntry</span><span class="p">]</span>  <span class="c1"># empty permitted only for origin != &quot;mutation&quot;</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="c1"># origin == &quot;fresh&quot; (WS-6): the generation provenance instead</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="n">generator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>         <span class="c1"># e.g. &quot;ws6:&lt;pipeline-version&gt;&quot;</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    <span class="n">generation_params_sha256</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>    <span class="n">created_at</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    <span class="n">tool_version</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="n">acceptance_digest</span><span class="p">:</span> <span class="nb">str</span>
+</span></code></pre></div>
+<p>Cross-field validators enforce the origin-specific requirements (a
+<code>mutation</code> record must carry parent fields and a non-empty chain, byte-
+compatible with v1 semantics; a <code>fresh</code> record must carry generator fields and
+no parent). <code>verify_bundle</code> gains an origin branch: <code>mutation</code> verifies the
+parent hash as today; <code>fresh</code> verifies the acceptance digest only (there is no
+parent to go stale, but the transcript must match). Acceptance for parentless
+candidates reuses the existing ladder with the parent-relative clauses
+inapplicable: the gate, cell assertion (against the declared target cell, not
+an inherited one), Tier-2 checks, and the in-cell <code>TAU_CELL</code> clause all apply;
+the fingerprint-vs-parent and <code>TAU_STRUCT</code> clauses are vacuous without a
+parent. The exact WS-6 acceptance entry point is specified when WS-6 is
+designed; D5's obligation is only that the bundle and lineage contracts do not
+have to change again for it.</p>
+<h3 id="73-parameterize-at-promotion-the-neutralize-path">7.3 Parameterize-at-promotion (the neutralize path)<a class="headerlink" href="#73-parameterize-at-promotion-the-neutralize-path" title="Permanent link">&para;</a></h3>
+<p>A contract-less promoted tree (a Tier-2-parity mutant today; a WS-6 fresh tree
+later) may be parameterized at promotion using the WS-2 recipe verbatim: an
+agent authors a slotting plan, <code>scripts/parameterize_skeleton.py</code> applies it
+under its six fail-closed checks, a contract is authored, and
+<code>scripts/check_theme_contract.py</code> accepts. Recommendation (OQ-6): promotion
+does NOT block on parameterization. Rationale: ADR-020 decision 6 already
+accepts contract-less parity (a contract-less mutant is exactly as safe as its
+contract-less parent, same free-text fill path, same gate), the WS-2 Tier-2
+migration wave is the scheduled home for closing that gap, and coupling two
+reviewed transforms into one PR doubles the review surface per promotion. A
+tree promoted contract-less simply joins that wave.</p>
+<h2 id="8-scheduling-cadence-and-bounds">8. Scheduling, cadence, and bounds<a class="headerlink" href="#8-scheduling-cadence-and-bounds" title="Permanent link">&para;</a></h2>
+<h3 id="81-cadence-manual-first-then-periodic-oq-2">8.1 Cadence: manual-first, then periodic (OQ-2)<a class="headerlink" href="#81-cadence-manual-first-then-periodic-oq-2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>v1 (D1-D4): operator-driven.</strong> <code>scripts/flywheel_scan.py</code> prints the
+  saturation report; the owner runs <code>flywheel_candidates</code> for chosen cells and
+  <code>prepare_promotion_pr.py</code> for the winner. Every stage is automated
+  internally, but a human presses each button. This exercises the whole loop
+  and the review workflow before any scheduler exists, exactly the
+  cheapest-and-safest-first posture WS-5 used (one manual promotion before any
+  automation).</li>
+<li><strong>v2 (D8): periodic.</strong> A scheduled run (weekly; a nox session invoked by an
+  operator cron or a scheduled workflow, environment-dependent since S1 needs
+  database read access) executes S1-S6 within the caps below and stops at
+  draft PRs. No event-driven per-request triggering: saturation is a
+  slow-moving 30-day aggregate and weekly is faster than review capacity
+  anyway.</li>
+</ul>
+<h3 id="82-hard-bounds-the-operationalization-of-grow-with-usage">8.2 Hard bounds (the operationalization of "grow with usage")<a class="headerlink" href="#82-hard-bounds-the-operationalization-of-grow-with-usage" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Bound</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trigger threshold</td>
+<td>3 CATALOG events / 30 days / &gt;= 2 distinct requests</td>
+<td>No demand, no growth (section 4.1, OQ-4)</td>
+</tr>
+<tr>
+<td><code>MAX_ATTEMPTS_PER_CELL</code> per cycle</td>
+<td>12</td>
+<td>Compute and log hygiene (section 6.3)</td>
+</tr>
+<tr>
+<td>Open <code>skeleton-promotion</code> PRs per cell</td>
+<td>1</td>
+<td>The reviewer compares one candidate against one cell at a time; a second candidate for the same cell waits</td>
+</tr>
+<tr>
+<td>Open <code>skeleton-promotion</code> PRs global</td>
+<td>3</td>
+<td>Review-queue protection: the flywheel must never flood the one human it depends on</td>
+</tr>
+<tr>
+<td>Per-cell cool-down after a merge</td>
+<td>30 days</td>
+<td>Let WS-0 metrics and real selection absorb the new tree before growing the same cell again</td>
+</tr>
+<tr>
+<td>Monthly promotion budget</td>
+<td>4 merged trees</td>
+<td>Matches the metric's unit (net new trees per month) and keeps contract-maintenance growth (ADR-020 accepted cost) deliberate</td>
+</tr>
+</tbody>
+</table>
+<p>All six are constants in <code>flywheel/strategy.py</code>, changed only by reviewed PR.
+When a bound blocks a triggered cell, the scan report says so explicitly
+(<code>"cell X saturated but capped: &lt;bound&gt;"</code>), so demand pressure is never
+silently dropped, only deferred.</p>
+<h2 id="9-metrics-and-observability">9. Metrics and observability<a class="headerlink" href="#9-metrics-and-observability" title="Permanent link">&para;</a></h2>
+<p>All computed from existing instruments; trend-only, never a CI gate (the WS-0
+"never" list applies).</p>
+<ul>
+<li><strong>Net new trees per month (the headline):</strong> merged <code>skeleton-promotion</code> PRs,
+  derived from <code>*.lineage.json</code> additions in <code>skeletons/**</code> git history plus
+  the catalog scan; hand-authored additions are counted separately (no
+  lineage sidecar) so the flywheel's contribution is honest.</li>
+<li><strong>Distinct trees per cell (trend):</strong> per cell, the skeleton count and the
+  in-cell pairwise <code>structural_distance</code> distribution (min/median), the same
+  numbers the floor calibrator computes; a rising count with a collapsing
+  minimum distance would be the flywheel gaming its own metric, and the
+  report surfaces both together on purpose.</li>
+<li><strong>Effective catalog size:</strong> <code>diversity.aggregate.effective_catalog_size</code>
+  over the served window, unchanged.</li>
+<li><strong>Promotion funnel:</strong> per cycle from the ledger: attempts, discards by
+  stage (the discard-rate economics WS-5 flagged), held, drafted-resolved,
+  shelved, bundled, PR opened, merged, closed-without-merge. Promotion
+  acceptance rate = merged / PRs opened.</li>
+<li><strong>Re-guidance cost:</strong> items per bundled candidate; agent-draft floor-pass
+  rate; human edit rate at review (drafts overwritten in the PR before merge,
+  measurable from the PR diff vs the bundle's reguide.json). This is the
+  evidence OQ-1's ratification asks to be re-checked against after the first
+  promotions.</li>
+<li><strong>Demand response:</strong> per triggered cell, CATALOG-event rate before vs after
+  a merge (does growing the cell actually relieve saturation; if not, the
+  trigger threshold or the escalation ladder needs revisiting, and the report
+  is where that shows up).</li>
+</ul>
+<p>Shape: <code>scripts/flywheel_report.py</code> emits a markdown report (committed under
+<code>docs/planning/flywheel-reports/</code> per run or attached to the cycle's PRs;
+OQ-8) with the six tables above; <code>run_diversity_eval.py</code> is not modified.</p>
+<h2 id="10-safety-invariant-mapping-plan-section-7">10. Safety-invariant mapping (plan section 7)<a class="headerlink" href="#10-safety-invariant-mapping-plan-section-7" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Invariant</th>
+<th>How WS-8 upholds it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>7.1</strong> The frozen safety object is the ADR-011 constraint grammar, enforced by the gate on every tree and fill.</td>
+<td>WS-8 creates no tree except through WS-5 operators (grammar-precondition-checked) or, later, WS-6 candidates, and every one passes the byte-identical <code>run_gate</code> inside the unchanged acceptance harness (S3) plus the promotion CI re-proof (S7). No WS-8 module imports anything from <code>validator/</code> except to call it; the floors, thresholds, and caps it adds are all reject-only or supply-limiting.</td>
+</tr>
+<tr>
+<td><strong>7.2</strong> Every generated story passes the full gate and moderation before publish. No novelty exception.</td>
+<td>Doubly inherited: the promoted shell passed the full gate at acceptance and re-passes at every <code>load_skeleton</code>; every story filled from it runs the untouched fill -&gt; gate -&gt; moderation -&gt; ADR-005 chain. The WS-8 additions (trigger thresholds, reguide floor, ranking, caps) can only prevent or defer a promotion, never exempt one. ADR-020 decision 3 restated: composed and fresh trees inherit the same bar via the section 7 contract.</td>
+</tr>
+<tr>
+<td><strong>7.3</strong> Per-band content guarantees (K13) are enforced by structure + gate, never by trusting a brief.</td>
+<td>The flywheel is theme-blind by construction (section 4.1): no brief exists in the loop. Contracts ride the WS-5 stage-4 acceptance with the band-mandatory floor unioned in regardless of contract content; the reguide floor adds a band-denylist screen on drafted guidance (5.3 rule 4), stricter-only.</td>
+</tr>
+<tr>
+<td><strong>7.4</strong> LLM01 covers derived artifacts; fence at every reuse.</td>
+<td>The two derived-content surfaces are (1) the saturation signal, consumed as allowlisted enum coordinates that structurally cannot carry text (4.1), and (2) agent-drafted reguide text, which is labeled untrusted-derived, floor-screened, re-accepted by the full harness, human-reviewed per item in the PR, and, once merged, becomes beats guidance that re-enters prompts only through the existing fenced fill pipeline (5.3 #CRITICAL). The drafting prompt itself consumes catalog content only.</td>
+</tr>
+<tr>
+<td><strong>7.5</strong> Novelty floor: selection never fully excludes an eligible option.</td>
+<td>Untouched: <code>skeleton_match.py</code> is not modified, promoted trees enter at weight 1.0, and the complementary direction is strengthened, not weakened: the anti-clone floor plus the 6.4 headroom ranking and the 6.5 hygiene report keep "new tree" meaning genuinely new, so the novelty the floor protects is real.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11-what-does-not-change">11. What does not change<a class="headerlink" href="#11-what-does-not-change" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>validator/</code>, <code>moderation/</code>, <code>publishing/</code>, ADR-005 approval: no rule,
+  threshold, cap, or severity is edited.</li>
+<li><code>mutation/</code> operators, <code>acceptance.py</code>'s ladder, <code>floors.py</code> values and the
+  committed baseline, <code>compose.py</code>'s bound, <code>scripts/mutate_skeleton.py</code>'s
+  refusal semantics. (Additive only: Lineage v2 in <code>bundle.py</code> (D5), the
+  reguide docstring amendment (D3).)</li>
+<li><code>generation/skeleton_match.py</code>: weights, novelty floor, sidecar skip.</li>
+<li>The WS-2 contract format, slot validator, render post-conditions;
+  <code>scripts/parameterize_skeleton.py</code> (consumed as-is in 7.3).</li>
+<li><code>skeletons/**</code> on <code>main</code>: changed exclusively by human-merged PRs.</li>
+<li>The WS-4 escalation ladder and the <code>3x</code> similarity penalty (the trigger
+  reads the ladder's output; it does not tune it).</li>
+</ul>
+<h2 id="12-deliverables">12. Deliverables<a class="headerlink" href="#12-deliverables" title="Permanent link">&para;</a></h2>
+<p>Ordered cheapest-and-safest first; each independently landable and reviewable;
+D1-D4 are the manual-loop v1, D5-D8 the scale-out.</p>
+<ul>
+<li><strong>D1. Trigger persistence + scan</strong> (<code>events/models.py</code> + <code>events/writer.py</code>
+  allowlist entry, the two log fields in <code>authoring_plan.py</code>, new pure
+  <code>src/cyo_adventure/flywheel/trigger.py</code>, CLI <code>scripts/flywheel_scan.py</code>,
+  read-only). <strong>Tests:</strong> allowlist rejection of extra/non-enum payload keys;
+  enum re-validation on read drops junk rows; threshold math on hand-built
+  readings; the log-field pin. <strong>Safety property:</strong> the trigger surface
+  structurally cannot carry free text (writer allowlist + reader enum
+  validation, both directions tested).</li>
+<li><strong>D2. Candidate strategy + ledger</strong> (<code>flywheel/strategy.py</code>: parent
+  eligibility filter incl. lineage-depth walk, chain templates T1-T4, donor
+  pick, attempt budget, <code>attempt_sig</code> ledger, 6.4 ranking; CLI
+  <code>scripts/flywheel_candidates.py</code> wrapping <code>apply_chain</code> +
+  <code>run_chain_acceptance</code> + the existing bundle writer). <strong>Tests:</strong> template
+  instantiation over the real catalog; ledger skip/replay determinism;
+  ranking precedence on fixtures; series/MVP/depth exclusions. <strong>Safety
+  property:</strong> strategy inputs are catalog files and cell enums only (grep
+  test: <code>flywheel/</code> imports nothing from <code>story_requests/</code>; no function
+  accepts a brief).</li>
+<li><strong>D3. Re-guidance drafting + floor</strong> (<code>flywheel/reguide_draft.py</code>,
+  <code>generation/templates/reguide_draft.md</code>, the deterministic floor of 5.3,
+  the <code>reguide.py</code> docstring amendment, <code>author="agent:&lt;model-id&gt;"</code>
+  attribution; acceptance re-run wiring). Behind OQ-1's ratification; ships
+  with a <code>--no-draft</code> mode so the manual path survives. <strong>Tests:</strong> every
+  floor rule with a violating fixture; a drafted resolution set drives a held
+  candidate to promotable via the UNCHANGED harness; attribution round-trips
+  into <code>reguide.json</code>. <strong>Safety property:</strong> no drafting code path can mark an
+  item resolved without the floor passing, and the drafting provider call
+  carries no request-derived content (5.3 #CRITICAL's #VERIFY).</li>
+<li><strong>D4. Promotion-PR preparation + repo enforcement</strong>
+  (<code>scripts/prepare_promotion_pr.py</code>: fresh <code>verify_bundle</code>, worktree-only
+  writes, branch refusal on <code>main</code>, catalog doc region + diagram regen, PR
+  body with transcript and the 5.4 reguide table, <code>skeleton-promotion</code> label,
+  draft PR; the PR-template checklist; the CI job on <code>skeletons/**</code> PRs
+  re-running check_skeleton + contract + floors + lineage/hash validation;
+  auto-merge exclusion for the label). <strong>Tests:</strong> the 4.3 #VERIFY set;
+  CI-job fixture PRs (valid bundle passes, tampered shell fails, stale parent
+  fails, missing lineage fails). <strong>Safety property:</strong> automation ends at a
+  draft PR; nothing in D4 can merge, approve, or write <code>skeletons/</code> on
+  <code>main</code>. One end-to-end manual-loop promotion (D1-D4, a real saturated cell
+  or a staged one) is D4's exit criterion, mirroring WS-5 D8's evidence
+  posture.</li>
+<li><strong>D5. Feed-agnostic contract v2</strong> (<code>bundle.py</code>: LineageV2 with the origin
+  discriminator and cross-field validators, v1 read-compat, <code>verify_bundle</code>
+  origin branch; the written feed-contract note in this doc's section 7
+  referenced from the WS-6 plan section). <strong>Tests:</strong> v1 bundles still verify;
+  a <code>fresh</code> record without generator fields fails validation; a <code>mutation</code>
+  record without a parent fails. <strong>Safety property:</strong> no origin value relaxes
+  any acceptance stage that applies to it (the in-cell clone clause and gate
+  apply to every origin).</li>
+<li><strong>D6. Parameterize-at-promotion glue</strong> (runbook + script glue chaining
+  <code>parameterize_skeleton.py</code> -&gt; contract authoring -&gt; <code>check_theme_contract.py</code>
+  for a contract-less bundle, as an optional second PR after promotion, per
+  OQ-6's recommendation). <strong>Tests:</strong> the chained checks on a fixture bundle.
+  <strong>Safety property:</strong> the transform's six fail-closed checks are the
+  gatekeeper; the glue adds no bypass.</li>
+<li><strong>D7. Metrics + the flywheel report</strong> (<code>scripts/flywheel_report.py</code>: the
+  six section 9 tables from git history, the catalog, WS-0 functions, and the
+  ledger; includes the 6.5 hygiene table). <strong>Tests:</strong> report determinism on a
+  fixture repo/ledger; the lineage-vs-hand-authored attribution split.
+  <strong>Safety property:</strong> read-only everywhere; never gates CI.</li>
+<li><strong>D8. Scheduled cadence + docs</strong> (the periodic S1-S6 runner with the
+  section 8.2 caps and cool-downs, behind OQ-2; update
+  <code>story-flexibility-plan.md</code> WS-8 status, <code>capability-register.md</code> K3 note,
+  the ADR-020 "WS-8 automation, when built, prepares PRs" consequence with a
+  delivered pointer, and <code>docs/template_feedback.md</code> if any template gap
+  surfaces, none identified by this design). <strong>Tests:</strong> cap and cool-down
+  enforcement on simulated event streams (a flood of saturation events yields
+  at most the capped PR count). <strong>Safety property:</strong> every bound of 8.2 is
+  enforced in one place and a capped cell is reported, never silently
+  dropped.</li>
+</ul>
+<p>Sizing: D1-D2 are the first implementer unit (the trigger and the strategy,
+pure code plus two CLIs); D3 the second (the one LLM touchpoint, isolated);
+D4 the third (git/PR machinery plus CI, ending in the evidence promotion);
+D5-D6 a fourth (contract work); D7-D8 the fifth. Each unit lands green on the
+standard quality gates before the next starts.</p>
+<h2 id="13-testing-strategy">13. Testing strategy<a class="headerlink" href="#13-testing-strategy" title="Permanent link">&para;</a></h2>
+<p>Unit (no network, no live DB, per the <code>tests/</code> posture; the flywheel is
+designed so only D1's writer touch and D8's runner need DB fixtures):</p>
+<ul>
+<li>Property tests over the real catalog corpus: for every triggered-cell
+  simulation, every strategy-planned attempt signature is deterministic and
+  ledger-replayable; every D2-selected candidate satisfies the 6.4 precedence
+  ordering (pinned by pairwise comparison).</li>
+<li>Discard-path coverage: every stage of the S1-S6 pipeline has a pinned
+  refusing fixture (unsaturated cell, capped cell, exhausted budget, all
+  attempts discarded, draft floor failure, stale bundle, tampered shell,
+  branch==main).</li>
+<li>The LLM01 pins: the D1 allowlist both-directions test, the D2/D3 grep
+  tests (no <code>story_requests</code> import, no brief-accepting signature), the D3
+  floor fixtures, and a template test that <code>reguide_draft.md</code> fences its
+  catalog-content inputs as data.</li>
+<li>The automation-boundary pins: <code>prepare_promotion_pr.py</code> sandbox tests
+  (writes only inside its worktree, exits non-zero on every 4.3 refusal), a
+  repo-config test that the <code>skeleton-promotion</code> label is excluded from
+  auto-merge tooling, and the D4 CI job's fixture PRs.</li>
+<li>Mutation-testing candidates (mutmut): the trigger threshold math, the
+  ledger signature, the 6.4 ranking comparator, the reguide floor rules.</li>
+<li>Coverage: &gt;= 80% overall, near-100% for <code>flywheel/trigger.py</code>,
+  <code>flywheel/strategy.py</code>, and the reguide floor (the decision-bearing pure
+  core). Quality gates: BasedPyright strict, Ruff, Bandit, pre-commit, signed
+  Conventional Commits, no U+2014 or U+2013 anywhere including templates,
+  report strings, and PR-body text.</li>
+</ul>
+<p>Integration: the D4 end-to-end (scan -&gt; candidates -&gt; draft -&gt; bundle -&gt;
+verify -&gt; PR-prep dry run against a temp copy of <code>skeletons/</code>) as a
+nox-runnable script; D8's cap simulation. The promoted tree's fill path is
+covered by existing worker/orchestrator suites automatically once merged (no
+new runtime seam, by design).</p>
+<h2 id="14-risks-and-critical-review-items">14. Risks and critical-review items<a class="headerlink" href="#14-risks-and-critical-review-items" title="Permanent link">&para;</a></h2>
+<p><strong>CR-1 (blocking). Automation prepares PRs, humans merge them.</strong> No WS-8 code
+path may write <code>skeletons/</code> on <code>main</code>, approve, enable auto-merge on, or merge
+a <code>skeleton-promotion</code> PR; the label is excluded from auto-merge tooling and
+the D4 CI job independently re-proves every promotion PR. (ADR-020 decision 4;
+WS-5 CR-1 inherited verbatim.)</p>
+<p><strong>CR-2 (blocking). Reject-only, discard-only.</strong> The acceptance harness,
+floors, and gate are consumed unchanged; every WS-8 addition (trigger
+thresholds, reguide floor, ranking, caps) can prevent or defer a promotion but
+never admit, exempt, or retry-by-loosening. No WS-8 module imports <code>validator/</code>
+except to call it.</p>
+<p><strong>CR-3 (blocking, LLM01). The trigger is enums, the draft is fenced.</strong> The
+saturation event payload is allowlist-enforced enum-only in both write and
+read directions; no request text, brief, theme, family, or child artifact
+enters <code>flywheel/</code> transitively; agent-drafted reguide text is
+untrusted-derived, floor-screened, attribution-labeled, re-accepted by the
+full harness, and human-reviewed per item before merge.</p>
+<p><strong>CR-4 (blocking). Staleness is a hard failure.</strong> <code>verify_bundle</code> (or its
+origin-aware v2) must pass immediately before PR preparation AND again in the
+promotion CI job; a parent changed after bundling, a missing lineage, or an
+acceptance transcript that does not match the shipped files fails the PR.</p>
+<p><strong>CR-5 (blocking). The metric cannot be gamed by the thing it measures.</strong> The
+distinct-trees count is reported only alongside the in-cell distance
+distribution (section 9), the anti-clone floor is blocking at promotion, and
+the 6.4 ranking prefers headroom; a rising count with collapsing distances is
+surfaced, not celebrated.</p>
+<p>Risks (non-blocking):</p>
+<ol>
+<li><strong>Draft quality</strong> is the residual editorial surface (WS-5 risk 1, now at
+   scale). Bounded by the reguide floor, the sample fill, fill-time fidelity,
+   and the per-item human check; measured by the D7 edit-rate metric, which is
+   the designated evidence for revisiting OQ-1.</li>
+<li><strong>Review-queue fatigue.</strong> Even 3 open PRs of ~100-node trees is real work.
+   Mitigated by the bundle's diagram/transcript/sample-fill (built for cheap
+   review), the caps, and the one-per-cell rule; if fatigue persists, the
+   in-app surface deferred by ADR-020 becomes the follow-up, not a loosened
+   review.</li>
+<li><strong>Trigger sensitivity.</strong> The 3-events/2-requests threshold is a guess;
+   too low floods, too high starves. Tunable constants plus the D7
+   demand-response table exist exactly to calibrate it (OQ-4).</li>
+<li><strong>Template exhaustion.</strong> Four chain templates over a small in-cell parent
+   set may run dry (all signatures ledgered) while a cell stays saturated.
+   The scan reports "cell saturated, strategy exhausted", which is precisely
+   the evidence the plan needs to prioritize WS-6 (fresh trees) or the
+   composer; the flywheel degrades to a signal, never to a weakened floor.</li>
+<li><strong>Generational drift</strong> (mutant-of-mutant chains diverging from
+   human-authored guidance). Capped at depth 1 parents in v1 (OQ-5); the
+   lineage sidecars make depth computable forever, so the cap can be lifted
+   with evidence.</li>
+<li><strong>Scheduler environment coupling.</strong> D8's runner needs DB read access and
+   git push credentials in one place; environment-specific and deliberately
+   last. The manual v1 loop has no such coupling.</li>
+</ol>
+<h2 id="15-open-questions-for-sign-off">15. Open questions for sign-off<a class="headerlink" href="#15-open-questions-for-sign-off" title="Permanent link">&para;</a></h2>
+<p>Each with a recommendation; all are ratification items for the supervisor
+review. OQ-1 and OQ-2 are the decisions the requester specifically asked to be
+confirmed.</p>
+<ul>
+<li><strong>OQ-1 (PIVOTAL: re-guidance at scale).</strong> Agent-only drafting (a),
+  human-only authoring (b), or hybrid agent-draft with deterministic floor
+  plus per-item human approval inside the promotion PR &copy;, per section 5.
+  <strong>Recommendation: &copy; hybrid.</strong> It removes the throughput ceiling while
+  spending the human review ADR-020 already mandates on exactly the content
+  that needs it; the D7 edit-rate metric is the designated evidence for
+  tightening or relaxing later. Ratifying &copy; also ratifies the
+  <code>reguide.py</code> docstring amendment (D3) and the <code>author</code> attribution rule.</li>
+<li><strong>OQ-2 (cadence and boundary).</strong> Manual-first (operator runs each stage via
+  CLI, D1-D4) then a weekly scheduled S1-S6 run behind the section 8.2 caps
+  (D8), with automation always ending at a draft PR. <strong>Recommendation:
+  ratify exactly this</strong>, including the six cap defaults (3 events/30
+  days/2 requests; 12 attempts; 1 PR per cell; 3 global; 30-day cool-down;
+  4 merges per month) as reviewed-PR-only constants.</li>
+<li><strong>OQ-3 (wait for WS-6?).</strong> Build the WS-5-mutant-only flywheel now and
+  integrate WS-6 later through the D5 feed contract, or block WS-8 on WS-6.
+  <strong>Recommendation: mutant-only first.</strong> Three of four inputs are delivered;
+  the feed contract (section 7) makes WS-6 a plug-in, not a rework; and the
+  flywheel's own exhaustion signal (risk 4) is the best evidence for when
+  WS-6 is actually needed and for which cells.</li>
+<li><strong>OQ-4 (trigger threshold values).</strong> Ratify 3 CATALOG events per 30 days
+  from &gt;= 2 distinct requests as the trigger default. <strong>Recommendation: yes,
+  as tunable constants</strong>, recalibrated against the D7 demand-response table
+  after the first quarter.</li>
+<li><strong>OQ-5 (lineage depth).</strong> Restrict flywheel parents to generation &lt;= 1
+  (promoted mutants may parent once; grandchildren may not parent) in v1.
+  <strong>Recommendation: yes.</strong> Guidance quality decays with derivation distance
+  from a human author; lift with edit-rate and fidelity evidence via an
+  ADR-020 amendment note, not silently.</li>
+<li><strong>OQ-6 (parameterize-at-promotion posture).</strong> Optional follow-up per tree
+  (this design, section 7.3) vs mandatory contract at every promotion.
+  <strong>Recommendation: optional.</strong> ADR-020 decision 6's parity rule already
+  covers the safety question; mandatory coupling doubles per-promotion review
+  for no gate-relevant gain, and the WS-2 Tier-2 wave is the scheduled
+  closure.</li>
+<li><strong>OQ-7 (ledger placement).</strong> Local gitignored <code>out/mutations/_ledger/</code>
+  (this design) vs a committed ledger. <strong>Recommendation: local.</strong> Determinism
+  makes ledger loss harmless (recompute), and per-attempt records would spam
+  history; revisit only if D8's scheduled runs land on ephemeral
+  environments where recomputation is measurably wasteful.</li>
+<li><strong>OQ-8 (report placement).</strong> Commit cycle reports under
+  <code>docs/planning/flywheel-reports/</code> vs attach to the cycle's PRs only.
+  <strong>Recommendation: commit them.</strong> The trend tables (hygiene, demand
+  response) are longitudinal and belong in versioned history; a PR attachment
+  dies with the PR tab.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 22, 2026 01:13:54 UTC">July 22, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 22, 2026 01:13:54 UTC">July 22, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

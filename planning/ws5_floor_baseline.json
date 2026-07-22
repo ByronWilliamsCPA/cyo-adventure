@@ -1,12 +1,12 @@
 {
-  "baseline_version": 1,
+  "baseline_version": 2,
   "clamps": [
-    "TAU_CELL calibrated to 0.000947 (<= 0.01), which would admit a near-identical in-cell clone; clamped up to the documented minimum"
+    "TAU_CELL is the fixed anti-duplication floor 0.05 (ADR-020 floor-recalibration amendment); it rejects the observed same-cell minimum pair at 0.000947 with margin. The raw observed minimum is no longer shipped as the floor."
   ],
   "derivation": {
-    "tau_cell": "observed same-cell minimum structural_distance (design 4.6, OQ-3), clamped to <= TAU_STRUCT",
+    "tau_cell": "owner-chosen fixed anti-duplication floor (ADR-020 floor-recalibration amendment, docs/planning/ws8-floor-recalibration-proposal.md): the minimum structural_distance a mutant must hold from EVERY in-cell tree INCLUDING its parent. Replaces the retired mutant parent-distance-vs-TAU_STRUCT clause, which mis-applied a same-cell SIBLING-PAIR percentile to the parent distance and rejected ~every bounded mutant.",
     "tau_state": "anti-no-op floor min(0.5, min_cross_tier2_state_distance/2), clamped to >= 0.25 (design 5.4)",
-    "tau_struct": "25th percentile of same-cell hand-authored structural_distance pairs (design 4.6, OQ-3)"
+    "tau_struct": "DOCUMENTATION ONLY as of the ADR-020 floor-recalibration amendment: the 25th percentile of same-cell hand-authored structural_distance pairs (the cross-tree diversity target for independently authored trees). No longer gates mutants; the anti-clone guarantee is TAU_CELL against parent + siblings."
   },
   "generated_by": "scripts/calibrate_mutation_floors.py",
   "stats": {
@@ -27,7 +27,7 @@
       "p25": 0.332507
     }
   },
-  "tau_cell": 0.01,
+  "tau_cell": 0.05,
   "tau_state": 0.5,
   "tau_struct": 0.332507
 }
