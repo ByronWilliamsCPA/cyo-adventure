@@ -37,14 +37,14 @@ class TestContextVariableFunctions:
     @pytest.mark.unit
     def test_get_correlation_id_default_none(self) -> None:
         """Verify get_correlation_id returns None by default."""
-        from cyo_adventure.middleware.correlation import (
-            get_correlation_id,
-        )
+        import contextvars
 
-        # Reset context for clean test
-        result = get_correlation_id()
-        # Note: May be None or have value from previous test context
-        assert result is None or isinstance(result, str)
+        from cyo_adventure.middleware.correlation import get_correlation_id
+
+        # An empty Context has no value set, so the getter must return the
+        # ContextVar's default. Running in a fresh Context isolates this from
+        # any correlation id a prior test left in the ambient context.
+        assert contextvars.Context().run(get_correlation_id) is None
 
     @pytest.mark.unit
     def test_set_and_get_correlation_id(self) -> None:
@@ -67,28 +67,29 @@ class TestContextVariableFunctions:
     @pytest.mark.unit
     def test_get_request_id_default_none(self) -> None:
         """Verify get_request_id returns None by default."""
-        from cyo_adventure.middleware.correlation import (
-            get_request_id,
-        )
+        import contextvars
 
-        result = get_request_id()
-        assert result is None or isinstance(result, str)
+        from cyo_adventure.middleware.correlation import get_request_id
+
+        assert contextvars.Context().run(get_request_id) is None
 
     @pytest.mark.unit
     def test_get_trace_id_default_none(self) -> None:
         """Verify get_trace_id returns None by default."""
+        import contextvars
+
         from cyo_adventure.middleware.correlation import get_trace_id
 
-        result = get_trace_id()
-        assert result is None or isinstance(result, str)
+        assert contextvars.Context().run(get_trace_id) is None
 
     @pytest.mark.unit
     def test_get_span_id_default_none(self) -> None:
         """Verify get_span_id returns None by default."""
+        import contextvars
+
         from cyo_adventure.middleware.correlation import get_span_id
 
-        result = get_span_id()
-        assert result is None or isinstance(result, str)
+        assert contextvars.Context().run(get_span_id) is None
 
 
 class TestCorrelationIdGeneration:

@@ -403,10 +403,13 @@ async def test_prose_edit_applies_body_and_choice_label() -> None:
         f["node_id"] == _NODE_ID and f["source"] == "llm_safety" for f in findings
     )
 
-    # The response surface reflects the edit.
+    # The response surface reflects the edit: the returned blob is the same
+    # edited story state persisted above (asserted on version_row.blob at the
+    # top of this test). flagged_passages is a filtered projection: PASS
+    # verdicts and, for admins, noise-floored findings drop out, so it is not a
+    # reliable oracle that the edit is visible; the surface blob is.
     assert result.storybook_id == "s1"
-    passage_bodies = {p.prose for p in result.flagged_passages}
-    assert any("NEWLY WRITTEN" in body_text for body_text in passage_bodies) or True
+    assert result.blob == version_row.blob
 
 
 @pytest.mark.asyncio
