@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.27.1] - 2026-07-22
+
 ### Fixed
 
 - Guardian adult-gate (the "Grown-ups only" step-up challenge) locked screen
@@ -2523,7 +2525,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.1...HEAD
+[0.27.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.0...v0.27.1
 [0.27.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.3...v0.26.0
 [0.25.3]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.25.2...v0.25.3
