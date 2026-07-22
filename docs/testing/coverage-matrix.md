@@ -113,12 +113,30 @@ relate to the Supabase project constraints.
 - E2E-real: `frontend/e2e-real/approval-flow.spec.ts`
 - Component: `frontend/src/admin/ReviewDetailPage.test.tsx`, `frontend/src/guardian/reviewApi.test.ts`, `frontend/src/guardian/storyRequestQueueApi.test.ts` (approve/decline for pending requests), `frontend/src/guardian/RequestsPage.test.tsx` (approve/decline)
 
+## Guardian: notifications (G10)
+
+- E2E-mocked: `frontend/e2e/guardian-notifications.spec.ts` (a guardian sees the unread-count badge from the notifications poll, opens the bell panel, sees a safety alert rendered with a visually distinct `--alert` class from an informational item, and the badge clears once the panel is opened)
+- Component: `frontend/src/guardian/NotificationBell.test.tsx`, `frontend/src/guardian/notificationsApi.test.ts`, `frontend/src/guardian/notificationSeenStore.test.ts`
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+
+## Guardian: reading history / engagement (G9)
+
+- E2E-mocked: `frontend/e2e/guardian-reading.spec.ts` (a guardian opens Reading from the nav, sees a per-child summary card, expands it to fetch that profile's per-book reading history, and a childless family sees an empty state linking to Books)
+- Component: `frontend/src/guardian/ReadingPage.test.tsx`, `frontend/src/guardian/readingApi.test.ts`
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+
 ## Admin: review queue (single story review)
 
 - E2E-mocked: `frontend/e2e/guardian-review.spec.ts`, `frontend/e2e/guardian-console.spec.ts` (navigation), `frontend/e2e/naive-user/naive-admin-misuse.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts`
 - E2E-real: `frontend/e2e-real/approval-flow.spec.ts`
 - Component: `frontend/src/admin/ReviewDetailPage.test.tsx`, `frontend/src/admin/AdminConsolePage.test.tsx` (links into it), `frontend/src/guardian/reviewApi.test.ts`, `frontend/src/guardian/coverApi.test.ts` (cover generation on review page)
 - **Gap**: no E2E-staging coverage, `/admin/review/:id` needs a real storybook id and is excluded from the render-only staging smoke for the same reason `e2e-prod` excludes it.
+
+## Admin: cover generation (A16)
+
+- E2E-mocked: `frontend/e2e/admin-review-cover.spec.ts` (the "Generate cover" button on `/admin/review/:id` is present, a status GET seeds its state on mount, clicking it fires the mocked POST to `/storybooks/:id/versions/:version/cover`, and the button shows a "Generating cover…" pending state)
+- Component: `frontend/src/admin/useCoverGeneration.test.ts`, `frontend/src/guardian/coverApi.test.ts` (`coverApi.ts` lives under `guardian/` but is used only by the admin review page)
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
 
 ## Admin: cross-family request queue
 
@@ -166,6 +184,12 @@ read-only context (they cannot be re-edited at this step, matching the
 - **Real bug found and fixed during this build**: `prep_model` is unconstrained free text for `mechanism='automated_provider'` but is validated against a fixed set of Claude Code session model aliases (`SKILL_MECHANISM_MODELS`) for `mechanism='skill'`; a free-text field for both would have shipped a confusing live 422 ("prep_model 'x' is not a recognized Claude Code session model") for any real admin using the skill path. Caught only by running `e2e-real/authoring-plan-real.spec.ts` against a real backend, not by any mocked test. Fixed by rendering a constrained `<select>` for `mechanism='skill'` and free text only for `mechanism='automated_provider'`.
 - **Gap**: no `e2e-staging` or `e2e-prod` coverage yet. `review_stage1_model`/`review_stage2_model` (optional Stage 1/2 overrides, skeleton_fill only) are deliberately not exposed in the UI at all, a v1 scoping decision, not a test gap.
 
+## Admin: user / profile / family management (WS-J)
+
+- E2E-mocked: `frontend/e2e/admin-user-management.spec.ts` (an admin reaches the console from the admin nav, switches to the Families tab and sees member counts, invites a guardian and confirms both the POST body and the roster refresh, and a plain guardian visiting `/admin/users` is redirected back to the guardian console)
+- Component: `frontend/src/admin/UserManagementPage.test.tsx`, `frontend/src/admin/UsersTab.test.tsx`, `frontend/src/admin/FamiliesTab.test.tsx`, `frontend/src/admin/ConnectionsTab.test.tsx`, `frontend/src/admin/KidsTab.test.tsx`, `frontend/src/admin/userManagementApi.test.ts`
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+
 ## Kid: profile picker
 
 - E2E-mocked: `frontend/e2e/device-authorization.spec.ts`, `frontend/e2e/landing.spec.ts`, `frontend/e2e/profiles.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts`
@@ -189,11 +213,30 @@ read-only context (they cannot be re-edited at this step, matching the
 - Component: `frontend/src/reader/Reader.test.tsx`, `frontend/src/reader/ReaderPage.test.tsx` (largest suite), `frontend/src/reader/ReaderRoute.test.tsx`, `frontend/src/reader/ReaderChrome.test.tsx`, `frontend/src/reader/ReaderLeave.test.tsx`, `frontend/src/reader/BackToLibrary.test.tsx`, `frontend/src/reader/dialogs.test.tsx`, `frontend/src/reader/readerProgress.test.ts`, `frontend/src/player/engine.test.ts`, `frontend/src/player/evaluator.test.ts`, `frontend/src/player/machine.test.ts`, `frontend/src/api/readerApi.test.ts`
 - Integration: `frontend/src/test/App.test.tsx`
 
+## Kid: read-aloud (K7)
+
+- E2E-mocked: `frontend/e2e/kid-read-aloud.spec.ts` (the speaker toggle appears only for a profile with `tts_enabled: true`, picked through the real picker flow rather than a deep link, since the flag rides the picker's profiles fetch; tapping it toggles a "speaking" state, and both a re-tap and a choice navigation cancel speech; a fake `speechSynthesis` stands in for headless Chromium's real one, which has no installed voices)
+- Component: `frontend/src/kid/readAloudPreference.test.ts`, `frontend/src/reader/useReadAloud.test.ts`
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet; no tier exercises real audio output.
+
+## Kid: flag a passage (K15)
+
+- E2E-mocked: `frontend/e2e/reader-flag.spec.ts` ("Tell a grown-up" posts a structured `reason` (no free-text field) and shows the kid-language confirmation; a 409 cap response shows the gentle "You've told us a lot already" message; the button is hidden entirely without a valid child session)
+- Component: `frontend/src/reader/FlagButton.test.tsx`, `frontend/src/guardian/FlagBadge.test.tsx`
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+
+## Kid: go back / undo (K5)
+
+- E2E-mocked: `frontend/e2e/reader-go-back.spec.ts` ("Go back" is absent at the start node, appears after a choice, and undoing past a state-gated choice (`c_dark_passage`, gated on `has_lantern`) still offers that choice correctly afterward, proving the engine replays the recorded path rather than corrupting state)
+- Component: `frontend/src/reader/BackToLibrary.test.tsx`, `frontend/src/player/engine.test.ts` (go-back is a bounded replay computation in the player engine)
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage yet.
+
 ## Kid: offline reading + sync/conflict resolution
 
 - E2E-mocked: `frontend/e2e/reader.spec.ts` (fully-offline play), `frontend/e2e/reader-conflict.spec.ts`, `frontend/e2e/reader-reload-resume.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts` (reload resume)
+- E2E-real: `frontend/e2e-real/offline-conflict-real.spec.ts` (two real `BrowserContext`s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly `e2e-real-nightly.yml`)
 - Component: `frontend/src/offline/db.test.ts`, `frontend/src/offline/sync.test.ts`, `frontend/src/reader/ReaderPage.test.tsx` (conflict dialog resolution paths), `frontend/src/reader/ReaderRoute.test.tsx` (replay-reconciliation suite), `frontend/src/reader/dialogs.test.tsx` (ConflictDialog UI), `frontend/src/hooks/useReplayOnReconnect.test.ts`, `frontend/src/hooks/useOnlineStatus.test.ts`
-- **Gap**: no `e2e-real` or `e2e-prod` coverage of conflict/sync against a real backend.
+- **Gap**: no `e2e-staging` or `e2e-prod` coverage of conflict/sync against a real backend.
 
 ## Kid: series continuation across storybooks
 
@@ -221,9 +264,10 @@ read-only context (they cannot be re-edited at this step, matching the
 
 ## Known gaps (as of this audit)
 
-Gaps 1, 2, and 4 below were closed in a follow-up pass; entries are kept
-(marked Closed) rather than deleted so the audit trail of what was fixed and
-when is preserved, per the policy at the bottom of this file.
+Gaps 1, 2, 4, and 6 below were closed (fully or per-tier) in follow-up
+passes; entries are kept (marked Closed) rather than deleted so the audit
+trail of what was fixed and when is preserved, per the policy at the bottom
+of this file.
 
 1. **Screening/anchoring** — Closed. `StoryRequestQueue.test.tsx` now gives
    the shared anchored-request component its own dedicated unit coverage
@@ -256,22 +300,34 @@ when is preserved, per the policy at the bottom of this file.
    no `dev`-tier environment (see `docs/testing/README.md`); that requires a
    frontend deploy pipeline this repo does not own. Not addressed in this
    pass.
-6. **Offline sync/conflict resolution has no real-backend, staging, or prod
-   coverage.** Mocked-tier and component coverage is strong, but reproducing
-   a genuine 409 against a real backend means fabricating a real race
-   between two devices, not just one more request/response case. Handed off
-   with exact mechanics (the reading.py conflict logic, the two-
-   BrowserContext recipe using `real-stack.ts`'s existing `authorizeDevice`,
-   and why production is explicitly out of scope for this one) in
-   `docs/planning/handoff-offline-conflict-real-backend-2026-07-16.md` for a
-   team with local access to implement and iterate on directly, rather than
-   landing a first cut nobody watched pass or fail.
+6. **Offline sync/conflict resolution** — Closed for the real-backend tier.
+   `frontend/e2e-real/offline-conflict-real.spec.ts` races two genuine
+   `BrowserContext`s ("device A" and "device B") against a real backend on
+   "The Clockwork Garden": device A opens first and creates the real
+   reading-state row; device B opens second, resyncs onto that row, and
+   advances it with a real choice; device A's next save then gets a real
+   409, resolved via "Keep this device" (rebases A's stale choice and wins);
+   device B's next save then gets a real 409 of its own, resolved via "Use
+   the newest place" (adopts the server row). No route mocks: every save is
+   a genuine `PUT /api/v1/reading-state/{profile_id}/{storybook_id}` against
+   uvicorn. The spec is picked up by the nightly `e2e-real-nightly.yml`
+   workflow, not the PR path, per the flakiness guidance in the handoff doc
+   below. A 2026-07-22 `toPutPayload` whitelist fix in
+   `frontend/src/offline/sync.ts` (send only the fields the PUT body's
+   `extra="forbid"` schema accepts, instead of echoing back server-View-only
+   fields picked up on cross-device resync) was needed to make the spec pass
+   4/4; before that fix a resynced save 422'd. Staging and production
+   conflict coverage remain genuinely absent; production is explicitly out
+   of scope, per the reasoning in
+   `docs/planning/handoff-offline-conflict-real-backend-2026-07-16.md`
+   (which also documents the original two-BrowserContext recipe this spec
+   implements).
 
 `#ASSUME: external-resources: gaps 2, 4, and (if attempted) 6 above were
 authored without access to a running browser or a live backend/Postgres
-instance in the environment that wrote them, only `tsc -b`, ESLint, and
-`playwright --list` verified them. #VERIFY: run each new spec for real (CI
-or a local `npm run test:e2e` / `test:e2e:real`) before trusting it as
+instance in the environment that wrote them, only tsc -b, ESLint, and
+playwright --list verified them. #VERIFY: run each new spec for real (CI
+or a local npm run test:e2e / test:e2e:real) before trusting it as
 proven, and fix on sight if the live run disagrees with what static
 analysis could check.`
 
@@ -287,3 +343,9 @@ When adding a new journey or page, add a section here in the same PR. When
 closing one of the gaps above, update its entry to reflect the new coverage
 rather than deleting the gap silently, so the audit trail of what was fixed
 when is preserved.
+
+This pass (2026-07-22) is exactly that CI check run by hand once: it added
+the 8 previously-orphaned specs that existed on disk but were unreferenced
+anywhere in this matrix, and corrected gap 6 to reflect its real-backend
+closure. A companion action-level verdict for this audit lives at
+`docs/testing/action-coverage-robustness-2026-07-22.md`.
