@@ -80,8 +80,12 @@ def _load_thresholds() -> tuple[float, float, float]:
             note="using conservative fallback floors; run calibrate_mutation_floors",
         )
         return (_FALLBACK_TAU_STRUCT, _FALLBACK_TAU_CELL, _FALLBACK_TAU_STATE)
+    # dict[str, object] has no forward reference to defer, so there is no
+    # runtime cost to not quoting it in these cast() calls (see
+    # review_surface.py for the same pattern); left unquoted here so the type
+    # expression is not a duplicated string literal (S1192) across the module.
     data = cast(
-        "dict[str, object]",
+        dict[str, object],  # noqa: TC006
         json.loads(_BASELINE_PATH.read_text(encoding="utf-8")),
     )
     tau_struct = float(cast("float", data["tau_struct"]))
@@ -125,7 +129,81 @@ def _matches_cell(
     return band not in _STYLE_AWARE_BANDS or metadata.narrative_style == style
 
 
-def load_in_cell_catalog(  # noqa: C901 -- one cohesive sibling-catalog scan with per-file skips
+def _cell_from_candidate(
+    candidate: Mapping[str, object],
+) -> tuple[str, str, str] | None:
+    """Return the candidate's declared ``(age_band, length, narrative_style)``.
+
+    Args:
+        candidate: The mutated candidate document.
+
+    Returns:
+        tuple[str, str, str] | None: The declared cell, or None when the
+            candidate's metadata is missing or not fully typed.
+    """
+    meta_raw = candidate.get("metadata")
+    if not isinstance(meta_raw, dict):
+        return None
+    # dict[str, object] has no forward reference to defer, so there is no
+    # runtime cost to not quoting it in these cast() calls (see
+    # review_surface.py for the same pattern); left unquoted here so the type
+    # expression is not a duplicated string literal (S1192) across the module.
+    typed_meta = cast(dict[str, object], meta_raw)  # noqa: TC006
+    band = typed_meta.get("age_band")
+    length = typed_meta.get("length")
+    style = typed_meta.get("narrative_style")
+    if isinstance(band, str) and isinstance(length, str) and isinstance(style, str):
+        return band, length, style
+    return None
+
+
+def _load_sibling_document(path: Path) -> dict[str, object] | None:
+    """Return the parsed sibling skeleton document at ``path``, or None.
+
+    Args:
+        path: The candidate sibling skeleton file.
+
+    Returns:
+        dict[str, object] | None: The parsed document, or None when the file
+            cannot be read or does not parse as JSON.
+    """
+    try:
+        return cast(
+            dict[str, object],  # noqa: TC006
+            json.loads(path.read_text(encoding="utf-8")),
+        )
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _is_eligible_sibling(
+    document: Mapping[str, object], *, band: str, length: str, style: str
+) -> bool:
+    """Return whether ``document`` is a production-eligible sibling in the cell.
+
+    Args:
+        document: The parsed sibling skeleton document.
+        band: The candidate's age band.
+        length: The candidate's length.
+        style: The candidate's narrative style.
+
+    Returns:
+        bool: True when the sibling has valid, production-eligible metadata
+            matching the given ``(band, length, style)`` cell.
+    """
+    meta = document.get("metadata")
+    if not isinstance(meta, dict):
+        return False
+    try:
+        typed = StoryMetadata.model_validate(meta)
+    except ValueError:
+        return False
+    return typed.production_eligible and _matches_cell(
+        typed, band=band, length=length, style=style
+    )
+
+
+def load_in_cell_catalog(
     candidate: Mapping[str, object], parent_slug: str
 ) -> list[dict[str, object]]:
     """Return the in-cell catalog trees a mutant must not clone (design 4.6).
@@ -152,17 +230,10 @@ def load_in_cell_catalog(  # noqa: C901 -- one cohesive sibling-catalog scan wit
     # catalog-time from the repository root (design section 6 #ASSUME).
     # #VERIFY: tests/unit/test_mutation_floors.py loads a real in-cell cohort and
     # asserts the parent and MVP seeds are excluded.
-    meta_raw = candidate.get("metadata")
-    if not isinstance(meta_raw, dict):
+    cell = _cell_from_candidate(candidate)
+    if cell is None:
         return []
-    typed_meta = cast("dict[str, object]", meta_raw)
-    band = typed_meta.get("age_band")
-    length = typed_meta.get("length")
-    style = typed_meta.get("narrative_style")
-    if not (
-        isinstance(band, str) and isinstance(length, str) and isinstance(style, str)
-    ):
-        return []
+    band, length, style = cell
 
     band_dir = _SKELETON_ROOT / band
     if not band_dir.is_dir():
@@ -172,25 +243,11 @@ def load_in_cell_catalog(  # noqa: C901 -- one cohesive sibling-catalog scan wit
     for path in sorted(band_dir.glob("*.json")):
         if is_sidecar(path) or path.stem == parent_slug:
             continue
-        try:
-            document = cast(
-                "dict[str, object]",
-                json.loads(path.read_text(encoding="utf-8")),
-            )
-        except (OSError, json.JSONDecodeError):
-            continue
-        meta = document.get("metadata")
-        if not isinstance(meta, dict):
-            continue
-        try:
-            typed = StoryMetadata.model_validate(meta)
-        except ValueError:
-            continue
-        if not typed.production_eligible:
-            continue
-        if not _matches_cell(typed, band=band, length=length, style=style):
-            continue
-        siblings.append(document)
+        document = _load_sibling_document(path)
+        if document is not None and _is_eligible_sibling(
+            document, band=band, length=length, style=style
+        ):
+            siblings.append(document)
     return siblings
 
 

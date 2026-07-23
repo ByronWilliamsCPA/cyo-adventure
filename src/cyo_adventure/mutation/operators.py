@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import copy
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
@@ -69,12 +70,20 @@ from cyo_adventure.validator.layer1 import ScalePlacement, resolve_node_budget
 
 if TYPE_CHECKING:
     import random
-    from collections.abc import Callable, Mapping, Sequence
+    from collections.abc import Callable, Sequence
 
     # A donor resolver maps a catalog slug to its decoded skeleton document. M3's
     # graft loads a donor through one of these; the default reads the git-versioned
     # catalog, and tests inject an in-memory resolver to keep the operator pure.
     DonorResolver = Callable[[str], dict[str, object]]
+
+# This module's dict accessors cast repeatedly to ``Mapping[str, object]``,
+# ``list[object]``, and ``dict[str, object]``. Those generic-alias type
+# expressions have no forward reference to defer, so there is no runtime cost
+# to leaving them unquoted in a ``cast()`` call (see review_surface.py for the
+# same repo-wide pattern); left unquoted throughout this module (each site
+# carries a TC006 lint suppression) so the type expression is never a
+# duplicated string literal (S1192).
 
 # The M1 operator id, recorded in every lineage manifest and used as the
 # registry key. Kept as a module constant so the CLI and tests never spell the
@@ -131,7 +140,7 @@ _M2_PARAMS_MSG = (
 def _metadata_of(story: Mapping[str, object]) -> Mapping[str, object]:
     """Return the story's metadata block, or an empty mapping when absent."""
     meta = story.get("metadata")
-    return cast("Mapping[str, object]", meta) if isinstance(meta, dict) else {}
+    return cast(Mapping[str, object], meta) if isinstance(meta, dict) else {}  # noqa: TC006
 
 
 def _node_body(story: Mapping[str, object], node_id: str) -> str:
@@ -301,7 +310,7 @@ def _satisfying_ending_ids(story: Mapping[str, object]) -> set[str]:
         ending = node.get("ending")
         if node_id is None or not isinstance(ending, dict):
             continue
-        kind = _str_field(cast("Mapping[str, object]", ending), "kind")
+        kind = _str_field(cast(Mapping[str, object], ending), "kind")  # noqa: TC006
         if kind in _SATISFYING_KINDS:
             targets.add(node_id)
     return targets
@@ -620,17 +629,17 @@ def _apply_swap(parent: Mapping[str, object], pair: _SwapPair) -> dict[str, obje
     if not isinstance(nodes, list):
         msg = "parent story has no nodes list to swap"
         raise ValidationError(msg, field="nodes", value=None)
-    for raw_node in cast("list[object]", nodes):
+    for raw_node in cast(list[object], nodes):  # noqa: TC006
         if not isinstance(raw_node, dict):
             continue
-        node = cast("dict[str, object]", raw_node)
+        node = cast(dict[str, object], raw_node)  # noqa: TC006
         raw_choices = node.get("choices")
         if not isinstance(raw_choices, list):
             continue
-        for raw_choice in cast("list[object]", raw_choices):
+        for raw_choice in cast(list[object], raw_choices):  # noqa: TC006
             if not isinstance(raw_choice, dict):
                 continue
-            choice = cast("dict[str, object]", raw_choice)
+            choice = cast(dict[str, object], raw_choice)  # noqa: TC006
             choice_id = choice.get("id")
             if choice_id == pair.choice1_id:
                 choice["target"] = pair.root2
@@ -898,7 +907,7 @@ def _ending_leaves(story: Mapping[str, object]) -> list[_EndingLeaf]:
         ending = node.get("ending")
         if node_id is None or not isinstance(ending, dict):
             continue
-        ending_map = cast("Mapping[str, object]", ending)
+        ending_map = cast(Mapping[str, object], ending)  # noqa: TC006
         ending_id = _str_field(ending_map, "id")
         kind = _str_field(ending_map, "kind")
         valence = _str_field(ending_map, "valence")
@@ -1308,10 +1317,10 @@ def _apply_remap(parent: Mapping[str, object], plan: _RemapPlan) -> dict[str, ob
         node_id: copy.deepcopy(dict(source_blocks[source]))
         for node_id, source in plan.assignment
     }
-    for raw_node in cast("list[object]", nodes):
+    for raw_node in cast(list[object], nodes):  # noqa: TC006
         if not isinstance(raw_node, dict):
             continue
-        node = cast("dict[str, object]", raw_node)
+        node = cast(dict[str, object], raw_node)  # noqa: TC006
         node_id = node.get("id")
         if isinstance(node_id, str) and node_id in new_block_for_node:
             node["ending"] = new_block_for_node[node_id]
@@ -1638,23 +1647,32 @@ def _region_cleanliness_reason(
     # on_enter effect, a choice effect, or a choice condition is rejected.
     for node in _nodes_of(story):
         node_id = _str_field(node, "id")
-        if node_id is None or node_id not in region_ids:
-            continue
-        on_enter = node.get("on_enter")
-        if isinstance(on_enter, list) and on_enter:
-            return f"graft region node '{node_id}' carries on_enter effects (v1 is state-free)"
-        for choice in _choices_of(node):
-            if choice.get("condition") is not None:
-                return (
-                    f"graft region choice in node '{node_id}' carries a condition "
-                    f"(v1 is condition-free)"
-                )
-            effects = choice.get("effects")
-            if isinstance(effects, list) and effects:
-                return (
-                    f"graft region choice in node '{node_id}' carries effects "
-                    f"(v1 is effect-free)"
-                )
+        if node_id is not None and node_id in region_ids:
+            reason = _node_state_reason(node, node_id)
+            if reason is not None:
+                return reason
+    return None
+
+
+def _node_state_reason(node: Mapping[str, object], node_id: str) -> str | None:
+    """Return why one region node fails the D4 state-freeness scan, or None."""
+    on_enter = node.get("on_enter")
+    if isinstance(on_enter, list) and on_enter:
+        return (
+            f"graft region node '{node_id}' carries on_enter effects (v1 is state-free)"
+        )
+    for choice in _choices_of(node):
+        if choice.get("condition") is not None:
+            return (
+                f"graft region choice in node '{node_id}' carries a condition "
+                f"(v1 is condition-free)"
+            )
+        effects = choice.get("effects")
+        if isinstance(effects, list) and effects:
+            return (
+                f"graft region choice in node '{node_id}' carries effects "
+                f"(v1 is effect-free)"
+            )
     return None
 
 
@@ -1674,20 +1692,27 @@ def region_referenced_slots(nodes: list[Mapping[str, object]]) -> frozenset[str]
     """
     tokens: set[str] = set()
     for node in nodes:
-        body = _str_field(node, "body")
-        if body is not None:
-            match = _M3_FILL_RE.match(body)
-            if match is not None:
-                tokens.update(SLOT_TOKEN_RE.findall(match.group(3)))
-        ending = node.get("ending")
-        if isinstance(ending, dict):
-            title = _str_field(cast("Mapping[str, object]", ending), "title")
-            if title is not None:
-                tokens.update(SLOT_TOKEN_RE.findall(title))
-        for choice in _choices_of(node):
-            label = _str_field(choice, "label")
-            if label is not None:
-                tokens.update(SLOT_TOKEN_RE.findall(label))
+        tokens |= _node_referenced_slots(node)
+    return frozenset(tokens)
+
+
+def _node_referenced_slots(node: Mapping[str, object]) -> frozenset[str]:
+    """Return the ``{SLOT}`` tokens one region node references in its surfaces."""
+    tokens: set[str] = set()
+    body = _str_field(node, "body")
+    if body is not None:
+        match = _M3_FILL_RE.match(body)
+        if match is not None:
+            tokens.update(SLOT_TOKEN_RE.findall(match.group(3)))
+    ending = node.get("ending")
+    if isinstance(ending, dict):
+        title = _str_field(cast(Mapping[str, object], ending), "title")  # noqa: TC006
+        if title is not None:
+            tokens.update(SLOT_TOKEN_RE.findall(title))
+    for choice in _choices_of(node):
+        label = _str_field(choice, "label")
+        if label is not None:
+            tokens.update(SLOT_TOKEN_RE.findall(label))
     return frozenset(tokens)
 
 
@@ -1715,25 +1740,29 @@ def _rename_region_slot_tokens(nodes: list[dict[str, object]], k: int) -> None:
         k: The mutation index used in the ``M<k>_`` prefix.
     """
     for node in nodes:
-        body = node.get("body")
-        if isinstance(body, str):
-            match = _M3_FILL_RE.match(body)
-            if match is not None:
-                role, words, beats = match.group(1), match.group(2), match.group(3)
-                new_beats = _rename_slot_tokens_in_text(beats, k)
-                node["body"] = f"<<FILL role={role} words={words} beats='{new_beats}'>>"
-        ending = node.get("ending")
-        if isinstance(ending, dict):
-            ending_map = cast("dict[str, object]", ending)
-            title = ending_map.get("title")
-            if isinstance(title, str):
-                ending_map["title"] = _rename_slot_tokens_in_text(title, k)
-        raw_choices = node.get("choices")
-        if isinstance(raw_choices, list):
-            for raw_choice in cast("list[object]", raw_choices):
-                if not isinstance(raw_choice, dict):
-                    continue
-                choice = cast("dict[str, object]", raw_choice)
+        _rename_node_slot_tokens(node, k)
+
+
+def _rename_node_slot_tokens(node: dict[str, object], k: int) -> None:
+    """Rename one grafted node's ``{SLOT}`` tokens to ``M<k>_`` form, in place."""
+    body = node.get("body")
+    if isinstance(body, str):
+        match = _M3_FILL_RE.match(body)
+        if match is not None:
+            role, words, beats = match.group(1), match.group(2), match.group(3)
+            new_beats = _rename_slot_tokens_in_text(beats, k)
+            node["body"] = f"<<FILL role={role} words={words} beats='{new_beats}'>>"
+    ending = node.get("ending")
+    if isinstance(ending, dict):
+        ending_map = cast(dict[str, object], ending)  # noqa: TC006
+        title = ending_map.get("title")
+        if isinstance(title, str):
+            ending_map["title"] = _rename_slot_tokens_in_text(title, k)
+    raw_choices = node.get("choices")
+    if isinstance(raw_choices, list):
+        for raw_choice in cast(list[object], raw_choices):  # noqa: TC006
+            if isinstance(raw_choice, dict):
+                choice = cast(dict[str, object], raw_choice)  # noqa: TC006
                 label = choice.get("label")
                 if isinstance(label, str):
                     choice["label"] = _rename_slot_tokens_in_text(label, k)
@@ -1781,7 +1810,8 @@ def _post_prune_decision_count(
     return count
 
 
-def _evaluate_prune(  # noqa: PLR0911 -- one cohesive precondition ladder, one reason each
+# One cohesive precondition ladder, one reason each (PLR0911).
+def _evaluate_prune(  # noqa: PLR0911
     story: Mapping[str, object], choice_id: str
 ) -> tuple[_PrunePlan | None, str | None]:
     """Validate a prune of the subtree behind one choice edge (design 4.4).
@@ -1916,7 +1946,7 @@ def _is_choice_with_id(choice: object, choice_id: str) -> bool:
     """Return whether ``choice`` is a choice dict whose id equals ``choice_id``."""
     return (
         isinstance(choice, dict)
-        and cast("dict[str, object]", choice).get("id") == choice_id
+        and cast(dict[str, object], choice).get("id") == choice_id  # noqa: TC006
     )
 
 
@@ -1939,11 +1969,11 @@ def _apply_prune(parent: Mapping[str, object], plan: _PrunePlan) -> dict[str, ob
         msg = "parent story has no nodes list to prune"
         raise ValidationError(msg, field="nodes", value=None)
     kept: list[object] = []
-    for raw_node in cast("list[object]", nodes):
+    for raw_node in cast(list[object], nodes):  # noqa: TC006
         if not isinstance(raw_node, dict):
             kept.append(raw_node)
             continue
-        node = cast("dict[str, object]", raw_node)
+        node = cast(dict[str, object], raw_node)  # noqa: TC006
         node_id = node.get("id")
         if isinstance(node_id, str) and node_id in plan.region_ids:
             continue
@@ -1952,7 +1982,7 @@ def _apply_prune(parent: Mapping[str, object], plan: _PrunePlan) -> dict[str, ob
             if isinstance(raw_choices, list):
                 node["choices"] = [
                     choice
-                    for choice in cast("list[object]", raw_choices)
+                    for choice in cast(list[object], raw_choices)  # noqa: TC006
                     if not _is_choice_with_id(choice, plan.choice_id)
                 ]
         kept.append(node)
@@ -2033,7 +2063,7 @@ def _region_all_ids(nodes: list[Mapping[str, object]]) -> set[str]:
                 ids.add(choice_id)
         ending = node.get("ending")
         if isinstance(ending, dict):
-            ending_id = _str_field(cast("Mapping[str, object]", ending), "id")
+            ending_id = _str_field(cast(Mapping[str, object], ending), "id")  # noqa: TC006
             if ending_id is not None:
                 ids.add(ending_id)
     return ids
@@ -2110,7 +2140,7 @@ def _satisfying_in_nodes(nodes: list[dict[str, object]]) -> set[str]:
         ending = node.get("ending")
         if node_id is None or not isinstance(ending, dict):
             continue
-        kind = _str_field(cast("Mapping[str, object]", ending), "kind")
+        kind = _str_field(cast(Mapping[str, object], ending), "kind")  # noqa: TC006
         if kind in _SATISFYING_KINDS:
             targets.add(node_id)
     return targets
@@ -2123,7 +2153,8 @@ def _clamp_position(position: int | None, current_len: int) -> int:
     return max(0, position)
 
 
-def _evaluate_graft(  # noqa: PLR0911, PLR0913 -- one cohesive precondition ladder, one reason each
+# One cohesive precondition ladder, one reason each (PLR0911, PLR0913).
+def _evaluate_graft(  # noqa: PLR0911, PLR0913
     host: Mapping[str, object],
     donor: Mapping[str, object],
     donor_slug: str,
@@ -2309,18 +2340,18 @@ def _apply_graft(host: Mapping[str, object], plan: _GraftPlan) -> dict[str, obje
     if not isinstance(nodes, list):
         msg = "host story has no nodes list to graft into"
         raise ValidationError(msg, field="nodes", value=None)
-    node_list = cast("list[object]", nodes)
+    node_list = cast(list[object], nodes)  # noqa: TC006
     for renamed_node in plan.renamed_nodes:
         node_list.append(copy.deepcopy(renamed_node))
     for raw_node in node_list:
         if not isinstance(raw_node, dict):
             continue
-        node = cast("dict[str, object]", raw_node)
+        node = cast(dict[str, object], raw_node)  # noqa: TC006
         if node.get("id") != plan.host_decision:
             continue
         raw_choices = node.get("choices")
         choices = (
-            list(cast("list[object]", raw_choices))
+            list(cast(list[object], raw_choices))  # noqa: TC006
             if isinstance(raw_choices, list)
             else []
         )
@@ -2406,7 +2437,7 @@ def _load_catalog_donor(slug: str) -> dict[str, object]:
     if not isinstance(data, dict):
         msg = f"donor skeleton '{slug}' is not a JSON object"
         raise ValidationError(msg, field="donor", value=slug)
-    return cast("dict[str, object]", data)
+    return cast(dict[str, object], data)  # noqa: TC006
 
 
 # --- M3 contract-merge transform (dry in D4; wired into acceptance in D7) ---
@@ -2963,12 +2994,30 @@ def path_decision_counts(story: Mapping[str, object]) -> tuple[tuple[int, ...], 
                 truncated = True
                 break
             continue
-        for target in sorted(graph.get(node, ()), reverse=True):
-            if target in visited:
-                continue
+        _push_path_successors(stack, (node, visited, dcount), graph, decisions)
+    return tuple(counts), truncated
+
+
+def _push_path_successors(
+    stack: list[tuple[str, frozenset[str], int]],
+    frame: tuple[str, frozenset[str], int],
+    graph: Mapping[str, tuple[str, ...]],
+    decisions: set[str],
+) -> None:
+    """Push every unvisited successor of ``frame``'s node onto the DFS stack.
+
+    Args:
+        stack: The depth-first search stack (mutated in place).
+        frame: The popped ``(node, visited, dcount)`` frame whose successors are
+            pushed.
+        graph: The story's adjacency map.
+        decisions: The story's decision-node id set.
+    """
+    node, visited, dcount = frame
+    for target in sorted(graph.get(node, ()), reverse=True):
+        if target not in visited:
             add = 1 if target in decisions else 0
             stack.append((target, visited | {target}, dcount + add))
-    return tuple(counts), truncated
 
 
 def _decision_window_reason(
@@ -3225,14 +3274,15 @@ def _retarget_choice(
     candidate: dict[str, object], choice_id: str, new_target: str
 ) -> None:
     """Rewrite the target of the choice with ``choice_id``, in place."""
-    for raw_node in cast("list[object]", candidate.get("nodes", [])):
+    for raw_node in cast(list[object], candidate.get("nodes", [])):  # noqa: TC006
         if not isinstance(raw_node, dict):
             continue
         for raw_choice in cast(
-            "list[object]", cast("dict[str, object]", raw_node).get("choices", [])
+            list[object],  # noqa: TC006
+            cast(dict[str, object], raw_node).get("choices", []),  # noqa: TC006
         ):
             if isinstance(raw_choice, dict):
-                choice = cast("dict[str, object]", raw_choice)
+                choice = cast(dict[str, object], raw_choice)  # noqa: TC006
                 if choice.get("id") == choice_id:
                     choice["target"] = new_target
 
@@ -3253,7 +3303,7 @@ def _candidate_nodes(candidate: dict[str, object]) -> list[object]:
     if not isinstance(nodes, list):
         msg = "parent story has no nodes list to mutate"
         raise ValidationError(msg, field="nodes", value=None)
-    return cast("list[object]", nodes)
+    return cast(list[object], nodes)  # noqa: TC006
 
 
 # --- M4 insert-linear ---
@@ -3436,12 +3486,12 @@ def _apply_remove_linear(
         if not isinstance(raw_node, dict):
             kept.append(raw_node)
             continue
-        node = cast("dict[str, object]", raw_node)
+        node = cast(dict[str, object], raw_node)  # noqa: TC006
         if node.get("id") == plan.node_id:
             continue
-        for raw_choice in cast("list[object]", node.get("choices", [])):
+        for raw_choice in cast(list[object], node.get("choices", [])):  # noqa: TC006
             if isinstance(raw_choice, dict):
-                choice = cast("dict[str, object]", raw_choice)
+                choice = cast(dict[str, object], raw_choice)  # noqa: TC006
                 if choice.get("target") == plan.node_id:
                     choice["target"] = plan.successor
         kept.append(node)
@@ -3449,7 +3499,8 @@ def _apply_remove_linear(
     return candidate
 
 
-def _evaluate_remove_linear(  # noqa: PLR0911, C901 -- one cohesive precondition ladder, one reason each
+# One cohesive precondition ladder, one reason each (PLR0911, C901).
+def _evaluate_remove_linear(  # noqa: PLR0911, C901
     parent: Mapping[str, object], node_id: str
 ) -> tuple[_RemoveLinearPlan | None, str | None]:
     """Validate a remove-linear splice of one passage node (design 4.5).
@@ -3698,7 +3749,8 @@ def _micro_stub_kind_reason(parent: Mapping[str, object]) -> str | None:
     return None
 
 
-def _evaluate_insert_decision(  # noqa: PLR0911 -- one cohesive precondition ladder, one reason each
+# One cohesive precondition ladder, one reason each (PLR0911).
+def _evaluate_insert_decision(  # noqa: PLR0911
     parent: Mapping[str, object],
     choice_id: str,
     variant: str,

@@ -45,6 +45,7 @@ from __future__ import annotations
 import copy
 import json
 from collections import Counter, deque
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
@@ -75,11 +76,18 @@ from cyo_adventure.validator.walk import walk_configurations
 
 if TYPE_CHECKING:
     import random
-    from collections.abc import Mapping
 
     from pydantic import JsonValue
 
     from cyo_adventure.validator.walk import ConfigKey, WalkResult
+
+# This module's dict accessors cast repeatedly to ``Mapping[str, object]``,
+# ``list[object]``, and ``dict[str, object]``. Those generic-alias type
+# expressions have no forward reference to defer, so there is no runtime cost
+# to leaving them unquoted in a ``cast()`` call (see review_surface.py for the
+# same repo-wide pattern); left unquoted throughout this module (each site
+# carries a TC006 lint suppression) so the type expression is never a
+# duplicated string literal (S1192).
 
 # The M5 operator id, recorded in every lineage manifest and used as the registry
 # key. Kept as a module constant so the CLI and tests never spell the literal.
@@ -198,8 +206,8 @@ def _nodes_of(story: Mapping[str, object]) -> list[Mapping[str, object]]:
     if not isinstance(raw, list):
         return []
     return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
+        cast(Mapping[str, object], item)  # noqa: TC006
+        for item in cast(list[object], raw)  # noqa: TC006
         if isinstance(item, dict)
     ]
 
@@ -210,8 +218,8 @@ def _choices_of(node: Mapping[str, object]) -> list[Mapping[str, object]]:
     if not isinstance(raw, list):
         return []
     return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
+        cast(Mapping[str, object], item)  # noqa: TC006
+        for item in cast(list[object], raw)  # noqa: TC006
         if isinstance(item, dict)
     ]
 
@@ -225,7 +233,7 @@ def _str_field(container: Mapping[str, object], key: str) -> str | None:
 def _metadata_of(story: Mapping[str, object]) -> Mapping[str, object]:
     """Return the story's metadata block, or an empty mapping when absent."""
     meta = story.get("metadata")
-    return cast("Mapping[str, object]", meta) if isinstance(meta, dict) else {}
+    return cast(Mapping[str, object], meta) if isinstance(meta, dict) else {}  # noqa: TC006
 
 
 def _variables_of(story: Mapping[str, object]) -> list[Mapping[str, object]]:
@@ -234,8 +242,8 @@ def _variables_of(story: Mapping[str, object]) -> list[Mapping[str, object]]:
     if not isinstance(raw, list):
         return []
     return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
+        cast(Mapping[str, object], item)  # noqa: TC006
+        for item in cast(list[object], raw)  # noqa: TC006
         if isinstance(item, dict)
     ]
 
@@ -292,7 +300,7 @@ def _ending_multiset(story: Mapping[str, object]) -> tuple[tuple[str, str, str],
         ending = node.get("ending")
         if not isinstance(ending, dict):
             continue
-        block = cast("Mapping[str, object]", ending)
+        block = cast(Mapping[str, object], ending)  # noqa: TC006
         entries.append(
             (
                 _str_field(block, "id") or "",
@@ -375,8 +383,8 @@ def _effects_of(node: Mapping[str, object]) -> list[Mapping[str, object]]:
     if not isinstance(raw, list):
         return []
     return [
-        cast("Mapping[str, object]", item)
-        for item in cast("list[object]", raw)
+        cast(Mapping[str, object], item)  # noqa: TC006
+        for item in cast(list[object], raw)  # noqa: TC006
         if isinstance(item, dict)
     ]
 
@@ -390,10 +398,10 @@ def _choice_references_var(choice: Mapping[str, object], var_name: str) -> bool:
         return True
     raw = choice.get("effects")
     if isinstance(raw, list):
-        for item in cast("list[object]", raw):
+        for item in cast(list[object], raw):  # noqa: TC006
             if (
                 isinstance(item, dict)
-                and cast("dict[str, object]", item).get("var") == var_name
+                and cast(dict[str, object], item).get("var") == var_name  # noqa: TC006
             ):
                 return True
     return False
@@ -404,7 +412,8 @@ def _choice_references_var(choice: Mapping[str, object], var_name: str) -> bool:
 # ---------------------------------------------------------------------------
 
 
-def _assemble_condition(  # noqa: PLR0911 -- one cohesive whitelist ladder, one reason each
+# One cohesive whitelist ladder, one reason each (PLR0911).
+def _assemble_condition(  # noqa: PLR0911
     story: Mapping[str, object], gate_var: object, gate_op: object, gate_value: object
 ) -> tuple[dict[str, object] | None, str | None]:
     """Assemble ``{op: [{"var": name}, value]}`` from scalar params, or a reason.
@@ -525,23 +534,38 @@ def _clamp_literals_for_var(
     """
     if low is None and high is None:
         return
-    for raw_node in cast("list[object]", candidate.get("nodes", [])):
-        if not isinstance(raw_node, dict):
-            continue
-        node = cast("dict[str, object]", raw_node)
-        for effect in _mutable_effects(node.get("on_enter")):
-            _clamp_set_effect(effect, var_name, low, high)
-        for raw_choice in cast("list[object]", node.get("choices", [])):
-            if not isinstance(raw_choice, dict):
-                continue
-            choice = cast("dict[str, object]", raw_choice)
-            for effect in _mutable_effects(choice.get("effects")):
-                _clamp_set_effect(effect, var_name, low, high)
-            condition = choice.get("condition")
-            if isinstance(condition, dict):
-                _clamp_condition_literals(
-                    cast("dict[str, object]", condition), var_name, low, high
-                )
+    for raw_node in cast(list[object], candidate.get("nodes", [])):  # noqa: TC006
+        if isinstance(raw_node, dict):
+            node = cast(dict[str, object], raw_node)  # noqa: TC006
+            _clamp_node_literals(node, var_name, low, high)
+
+
+def _clamp_node_literals(
+    node: dict[str, object], var_name: str, low: int | None, high: int | None
+) -> None:
+    """Clamp one node's own on_enter effects and every choice's effects/condition."""
+    for effect in _mutable_effects(node.get("on_enter")):
+        _clamp_set_effect(effect, var_name, low, high)
+    for raw_choice in cast(list[object], node.get("choices", [])):  # noqa: TC006
+        if isinstance(raw_choice, dict):
+            choice = cast(dict[str, object], raw_choice)  # noqa: TC006
+            _clamp_choice_literals(choice, var_name, low, high)
+
+
+def _clamp_choice_literals(
+    choice: dict[str, object], var_name: str, low: int | None, high: int | None
+) -> None:
+    """Clamp one choice's effect values and condition literals into ``[low, high]``."""
+    for effect in _mutable_effects(choice.get("effects")):
+        _clamp_set_effect(effect, var_name, low, high)
+    condition = choice.get("condition")
+    if isinstance(condition, dict):
+        _clamp_condition_literals(
+            cast(dict[str, object], condition),  # noqa: TC006
+            var_name,
+            low,
+            high,
+        )
 
 
 def _mutable_effects(raw: object) -> list[dict[str, object]]:
@@ -549,8 +573,8 @@ def _mutable_effects(raw: object) -> list[dict[str, object]]:
     if not isinstance(raw, list):
         return []
     return [
-        cast("dict[str, object]", item)
-        for item in cast("list[object]", raw)
+        cast(dict[str, object], item)  # noqa: TC006
+        for item in cast(list[object], raw)  # noqa: TC006
         if isinstance(item, dict)
     ]
 
@@ -574,18 +598,24 @@ def _clamp_condition_literals(
     if operator == "!":
         if isinstance(operand, dict):
             _clamp_condition_literals(
-                cast("dict[str, object]", operand), var_name, low, high
+                cast(dict[str, object], operand),  # noqa: TC006
+                var_name,
+                low,
+                high,
             )
         return
     if operator in {"and", "or"}:
-        for clause in cast("list[object]", operand):
+        for clause in cast(list[object], operand):  # noqa: TC006
             if isinstance(clause, dict):
                 _clamp_condition_literals(
-                    cast("dict[str, object]", clause), var_name, low, high
+                    cast(dict[str, object], clause),  # noqa: TC006
+                    var_name,
+                    low,
+                    high,
                 )
         return
     if operator in COMPARISON_OPERATORS and isinstance(operand, list):
-        _clamp_comparison_pair(cast("list[object]", operand), var_name, low, high)
+        _clamp_comparison_pair(cast(list[object], operand), var_name, low, high)  # noqa: TC006
 
 
 def _clamp_comparison_pair(
@@ -607,20 +637,20 @@ def _names_var(operand: object, var_name: str) -> bool:
     """Return whether an operand is ``{"var": var_name}``."""
     return (
         isinstance(operand, dict)
-        and cast("dict[str, object]", operand).get("var") == var_name
+        and cast(dict[str, object], operand).get("var") == var_name  # noqa: TC006
     )
 
 
 def _rename_var_everywhere(candidate: dict[str, object], old: str, new: str) -> None:
     """Rename a variable in its declaration and every effect/condition reference."""
-    for raw_var in cast("list[object]", candidate.get("variables", [])):
+    for raw_var in cast(list[object], candidate.get("variables", [])):  # noqa: TC006
         if isinstance(raw_var, dict):
-            var = cast("dict[str, object]", raw_var)
+            var = cast(dict[str, object], raw_var)  # noqa: TC006
             if var.get("name") == old:
                 var["name"] = new
-    for raw_node in cast("list[object]", candidate.get("nodes", [])):
+    for raw_node in cast(list[object], candidate.get("nodes", [])):  # noqa: TC006
         if isinstance(raw_node, dict):
-            _rename_node_var_refs(cast("dict[str, object]", raw_node), old, new)
+            _rename_node_var_refs(cast(dict[str, object], raw_node), old, new)  # noqa: TC006
 
 
 def _rename_node_var_refs(node: dict[str, object], old: str, new: str) -> None:
@@ -628,35 +658,35 @@ def _rename_node_var_refs(node: dict[str, object], old: str, new: str) -> None:
     for effect in _mutable_effects(node.get("on_enter")):
         if effect.get("var") == old:
             effect["var"] = new
-    for raw_choice in cast("list[object]", node.get("choices", [])):
+    for raw_choice in cast(list[object], node.get("choices", [])):  # noqa: TC006
         if not isinstance(raw_choice, dict):
             continue
-        choice = cast("dict[str, object]", raw_choice)
+        choice = cast(dict[str, object], raw_choice)  # noqa: TC006
         for effect in _mutable_effects(choice.get("effects")):
             if effect.get("var") == old:
                 effect["var"] = new
         condition = choice.get("condition")
         if isinstance(condition, dict):
-            _rename_condition_var(cast("dict[str, object]", condition), old, new)
+            _rename_condition_var(cast(dict[str, object], condition), old, new)  # noqa: TC006
 
 
 def _rename_condition_var(condition: dict[str, object], old: str, new: str) -> None:
     """Rename every ``{"var": old}`` reference in a condition tree, in place."""
-    for _operator, operand in list(condition.items()):
-        if isinstance(operand, dict):
-            inner = cast("dict[str, object]", operand)
-            if inner.get("var") == old:
-                inner["var"] = new
-            else:
-                _rename_condition_var(inner, old, new)
-        elif isinstance(operand, list):
-            for item in cast("list[object]", operand):
-                if isinstance(item, dict):
-                    inner = cast("dict[str, object]", item)
-                    if inner.get("var") == old:
-                        inner["var"] = new
-                    else:
-                        _rename_condition_var(inner, old, new)
+    for operand in condition.values():
+        _rename_operand_var(operand, old, new)
+
+
+def _rename_operand_var(operand: object, old: str, new: str) -> None:
+    """Rename a ``{"var": old}`` reference within one condition operand, in place."""
+    if isinstance(operand, dict):
+        inner = cast(dict[str, object], operand)  # noqa: TC006
+        if inner.get("var") == old:
+            inner["var"] = new
+        else:
+            _rename_condition_var(inner, old, new)
+    elif isinstance(operand, list):
+        for item in cast(list[object], operand):  # noqa: TC006
+            _rename_operand_var(item, old, new)
 
 
 # ---------------------------------------------------------------------------
@@ -731,7 +761,7 @@ def _rewrite_condition_tokens(
 def _rewrite_operand_tokens(operand: object, token_map: Mapping[str, str]) -> object:
     """Return an operand with any ``{"var": name}`` rewritten to its token."""
     if isinstance(operand, dict):
-        inner = cast("dict[str, object]", operand)
+        inner = cast(dict[str, object], operand)  # noqa: TC006
         name = inner.get("var")
         if isinstance(name, str) and name in token_map:
             return {"var": token_map[name]}
@@ -739,7 +769,7 @@ def _rewrite_operand_tokens(operand: object, token_map: Mapping[str, str]) -> ob
     if isinstance(operand, list):
         return [
             _rewrite_operand_tokens(item, token_map)
-            for item in cast("list[object]", operand)
+            for item in cast(list[object], operand)  # noqa: TC006
         ]
     return operand
 
@@ -1251,9 +1281,9 @@ def _apply_retune(parent: Mapping[str, object], params: OpParams) -> MutationRes
         msg = f"M5 retune of '{variable}' is ineligible: {reason}"
         raise ValidationError(msg, field="variable", value=variable)
     candidate = copy.deepcopy(dict(parent))
-    for raw_var in cast("list[object]", candidate.get("variables", [])):
+    for raw_var in cast(list[object], candidate.get("variables", [])):  # noqa: TC006
         if isinstance(raw_var, dict):
-            var_dict = cast("dict[str, object]", raw_var)
+            var_dict = cast(dict[str, object], raw_var)  # noqa: TC006
             if var_dict.get("name") == variable:
                 var_dict.clear()
                 var_dict.update(new_decl)
@@ -1326,15 +1356,34 @@ def _set_choice_condition(
     candidate: dict[str, object], choice_id: str, condition: dict[str, object]
 ) -> tuple[str, str]:
     """Set a choice's condition in place and return its node id and label."""
-    for raw_node in cast("list[object]", candidate.get("nodes", [])):
-        if not isinstance(raw_node, dict):
-            continue
-        node = cast("dict[str, object]", raw_node)
-        node_id = node.get("id")
-        for raw_choice in cast("list[object]", node.get("choices", [])):
-            if not isinstance(raw_choice, dict):
-                continue
-            choice = cast("dict[str, object]", raw_choice)
+    for raw_node in cast(list[object], candidate.get("nodes", [])):  # noqa: TC006
+        if isinstance(raw_node, dict):
+            node = cast(dict[str, object], raw_node)  # noqa: TC006
+            result = _set_choice_condition_in_node(node, choice_id, condition)
+            if result is not None:
+                return result
+    msg = f"gate-choice target '{choice_id}' vanished during apply"
+    raise ValidationError(msg, field="choice", value=choice_id)
+
+
+def _set_choice_condition_in_node(
+    node: dict[str, object], choice_id: str, condition: dict[str, object]
+) -> tuple[str, str] | None:
+    """Set the named choice's condition within one node, in place.
+
+    Args:
+        node: The node dict whose choices are scanned.
+        choice_id: The target choice id.
+        condition: The condition to set.
+
+    Returns:
+        tuple[str, str] | None: The choice's ``(node_id, label)`` when found and
+            updated, else None (the choice is not in this node).
+    """
+    node_id = node.get("id")
+    for raw_choice in cast(list[object], node.get("choices", [])):  # noqa: TC006
+        if isinstance(raw_choice, dict):
+            choice = cast(dict[str, object], raw_choice)  # noqa: TC006
             if choice.get("id") == choice_id:
                 choice["condition"] = condition
                 label = choice.get("label")
@@ -1342,8 +1391,7 @@ def _set_choice_condition(
                     node_id if isinstance(node_id, str) else "",
                     label if isinstance(label, str) else "",
                 )
-    msg = f"gate-choice target '{choice_id}' vanished during apply"
-    raise ValidationError(msg, field="choice", value=choice_id)
+    return None
 
 
 def _apply_add_route(parent: Mapping[str, object], params: OpParams) -> MutationResult:
@@ -1410,10 +1458,10 @@ def _append_choice(  # noqa: PLR0913 -- the fields one new gated choice needs
     condition: dict[str, object],
 ) -> None:
     """Append a condition-gated choice to a host node's choice list, in place."""
-    for raw_node in cast("list[object]", candidate.get("nodes", [])):
+    for raw_node in cast(list[object], candidate.get("nodes", [])):  # noqa: TC006
         if not isinstance(raw_node, dict):
             continue
-        node = cast("dict[str, object]", raw_node)
+        node = cast(dict[str, object], raw_node)  # noqa: TC006
         if node.get("id") != host:
             continue
         choices = node.get("choices")
@@ -1426,7 +1474,7 @@ def _append_choice(  # noqa: PLR0913 -- the fields one new gated choice needs
             "target": target,
             "condition": condition,
         }
-        cast("list[object]", choices).append(new_choice)
+        cast(list[object], choices).append(new_choice)  # noqa: TC006
         return
     msg = f"add-route host '{host}' vanished during apply"
     raise ValidationError(msg, field="host", value=host)
@@ -1470,33 +1518,60 @@ def _move_on_enter_effect(
     Raises:
         ValidationError: If the source effect or the destination node vanished.
     """
-    moved: dict[str, object] | None = None
-    for raw_node in cast("list[object]", candidate.get("nodes", [])):
-        if not isinstance(raw_node, dict):
-            continue
-        node = cast("dict[str, object]", raw_node)
-        if node.get("id") == from_node:
-            effects = _mutable_effects(node.get("on_enter"))
-            if 0 <= index < len(effects):
-                moved = effects[index]
-                # Rebuild the list without the moved effect, preserving order.
-                node["on_enter"] = [e for i, e in enumerate(effects) if i != index]
+    moved = _extract_on_enter_effect(candidate, from_node, index)
     if moved is None:
         msg = f"relocate-effect source at '{from_node}'[{index}] vanished during apply"
         raise ValidationError(msg, field="from_node", value=from_node)
-    for raw_node in cast("list[object]", candidate.get("nodes", [])):
-        if not isinstance(raw_node, dict):
-            continue
-        node = cast("dict[str, object]", raw_node)
-        if node.get("id") == to_node:
-            dest = node.get("on_enter")
-            if not isinstance(dest, list):
-                dest = []
-                node["on_enter"] = dest
-            cast("list[object]", dest).append(copy.deepcopy(moved))
-            return moved
-    msg = f"relocate-effect destination '{to_node}' vanished during apply"
-    raise ValidationError(msg, field="to_node", value=to_node)
+    if not _append_on_enter_effect(candidate, to_node, copy.deepcopy(moved)):
+        msg = f"relocate-effect destination '{to_node}' vanished during apply"
+        raise ValidationError(msg, field="to_node", value=to_node)
+    return moved
+
+
+def _extract_on_enter_effect(
+    candidate: dict[str, object], from_node: str, index: int
+) -> dict[str, object] | None:
+    """Remove and return the on_enter effect at ``index`` on ``from_node``, in place.
+
+    Scans every node sharing ``from_node``'s id (a malformed duplicate-id
+    document mutates every match, matching the pre-refactor loop exactly).
+
+    Returns:
+        dict[str, object] | None: The removed effect, or None when no matching
+            node carried an effect at ``index``.
+    """
+    moved: dict[str, object] | None = None
+    for raw_node in cast(list[object], candidate.get("nodes", [])):  # noqa: TC006
+        if isinstance(raw_node, dict):
+            node = cast(dict[str, object], raw_node)  # noqa: TC006
+            if node.get("id") == from_node:
+                effects = _mutable_effects(node.get("on_enter"))
+                if 0 <= index < len(effects):
+                    moved = effects[index]
+                    # Rebuild the list without the moved effect, preserving order.
+                    node["on_enter"] = [e for i, e in enumerate(effects) if i != index]
+    return moved
+
+
+def _append_on_enter_effect(
+    candidate: dict[str, object], to_node: str, effect: dict[str, object]
+) -> bool:
+    """Append ``effect`` to the first node matching ``to_node``'s on_enter list.
+
+    Returns:
+        bool: True when the destination node was found and updated, else False.
+    """
+    for raw_node in cast(list[object], candidate.get("nodes", [])):  # noqa: TC006
+        if isinstance(raw_node, dict):
+            node = cast(dict[str, object], raw_node)  # noqa: TC006
+            if node.get("id") == to_node:
+                dest = node.get("on_enter")
+                if not isinstance(dest, list):
+                    dest = []
+                    node["on_enter"] = dest
+                cast(list[object], dest).append(effect)  # noqa: TC006
+                return True
+    return False
 
 
 class M5StateVariation:
