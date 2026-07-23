@@ -354,7 +354,7 @@ describe('ReaderPage', () => {
     })
   })
 
-  it('surfaces the conflict dialog on a 409 and resolves it', async () => {
+  it('silently adopts the server position on a 409 without showing a dialog', async () => {
     let calls = 0
     const api: SyncApi = {
       putReadingState: (_p, _s, body) => {
@@ -386,13 +386,14 @@ describe('ReaderPage', () => {
         />
       </MemoryRouter>
     )
-    // The initial save (on mount) returns 409, so the dialog appears.
-    await screen.findByTestId('conflict-dialog')
-    fireEvent.click(screen.getByTestId('conflict-keep'))
-    await waitFor(() => expect(screen.queryByTestId('conflict-dialog')).toBeNull())
+    // The initial save (on mount) 409s. Newest-write-wins: the reader silently
+    // adopts the server row (the cave fork) and keeps reading; no conflict
+    // dialog is ever shown to the child.
+    await waitFor(() => expect(screen.getByTestId('passage-body').textContent).toContain('splits'))
+    expect(screen.queryByTestId('conflict-dialog')).toBeNull()
   })
 
-  it('adopts the server position when "Use the newest place" is chosen on a 409', async () => {
+  it('silently adopts the server var_state and position on a 409', async () => {
     const serverState: ReadingState = {
       current_node: 'n_cave_fork',
       var_state: { has_lantern: true },
@@ -423,16 +424,12 @@ describe('ReaderPage', () => {
         />
       </MemoryRouter>
     )
-    // The mount-time save returns 409 (another device is ahead), so the
-    // dialog appears; the reader is still at the entrance here.
-    await screen.findByTestId('conflict-dialog')
-    fireEvent.click(screen.getByTestId('conflict-use-newest'))
-    await waitFor(() => expect(screen.queryByTestId('conflict-dialog')).toBeNull())
-
-    // The Reader remounted seeded from the adopted server state: the fork
-    // passage renders, and the lantern-gated choice is visible because the
+    // The mount-time save 409s (another device is ahead). No dialog is shown:
+    // the Reader silently remounts seeded from the adopted server state, so the
+    // fork passage renders, and the lantern-gated choice is visible because the
     // server's var_state (has_lantern: true) was adopted too.
     await waitFor(() => expect(screen.getByTestId('passage-body').textContent).toContain('splits'))
+    expect(screen.queryByTestId('conflict-dialog')).toBeNull()
     expect(screen.getByTestId('choice-c_dark_passage')).toBeTruthy()
 
     // The adopted state was mirrored into the local cache so the next open

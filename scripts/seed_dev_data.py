@@ -132,6 +132,37 @@ def _series_blob(
     start = f"{prefix}_start"
     middle = f"{prefix}_middle"
     end = f"{prefix}_end"
+    # Every book's start node offers a courage-setting brave choice and a plain
+    # one. A book that can carry state from a prior book (book_index >= 2) also
+    # offers a THIRD choice gated on carried ``courage`` (>= 2): it is hidden on
+    # a fresh play (courage starts at 0) and only unlocks when book 1's brave
+    # path (which sets courage = 3) carried its state into this book. This is
+    # what ``series-continue-real.spec.ts`` asserts: carried var_state, the
+    # defining behavior of ``carries_state: true``, actually gates a choice. All
+    # three choices converge on the middle node, so the book stays completable
+    # in at most two clicks whether or not the gated choice is visible.
+    start_choices: list[dict[str, object]] = [
+        {
+            "id": f"c_{prefix}_brave",
+            "label": "Face it with courage",
+            "target": middle,
+            "effects": [{"op": "set", "var": "courage", "value": 3}],
+        },
+        {
+            "id": f"c_{prefix}_plain",
+            "label": "Walk on carefully",
+            "target": middle,
+        },
+    ]
+    if book_index >= 2:
+        start_choices.append(
+            {
+                "id": f"c_{prefix}_carried",
+                "label": "Draw on your carried courage",
+                "target": middle,
+                "condition": {">=": [{"var": "courage"}, 2]},
+            }
+        )
     return {
         "schema_version": "2.0",
         "id": story_id,
@@ -163,19 +194,7 @@ def _series_blob(
                 "id": start,
                 "body": f"{title}: the trail begins.",
                 "is_ending": False,
-                "choices": [
-                    {
-                        "id": f"c_{prefix}_brave",
-                        "label": "Face it with courage",
-                        "target": middle,
-                        "effects": [{"op": "set", "var": "courage", "value": 3}],
-                    },
-                    {
-                        "id": f"c_{prefix}_plain",
-                        "label": "Walk on carefully",
-                        "target": middle,
-                    },
-                ],
+                "choices": start_choices,
             },
             {
                 "id": middle,

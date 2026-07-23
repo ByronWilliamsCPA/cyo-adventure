@@ -69,11 +69,13 @@ test('flagged passages render before the full story', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Full story' })).toBeVisible()
 })
 
-test('admin approve posts and returns to the console (ADR-005)', async ({ page }) => {
+test('admin approve posts visibility:family by default and returns to the console (ADR-005)', async ({
+  page,
+}) => {
   await mockMe(page, { role: 'admin' })
-  let approvePosted = false
+  let approveBody: unknown = null
   await page.route('**/api/v1/storybooks/s1/approve', (route) => {
-    approvePosted = true
+    approveBody = route.request().postDataJSON()
     return route.fulfill({
       json: {
         id: 's1',
@@ -81,6 +83,7 @@ test('admin approve posts and returns to the console (ADR-005)', async ({ page }
         current_published_version: 1,
         approved_by: 'admin-user-id',
         published_at: '2026-07-04T00:00:00Z',
+        visibility: 'family',
       },
     })
   })
@@ -88,10 +91,56 @@ test('admin approve posts and returns to the console (ADR-005)', async ({ page }
   await page.goto('/admin/review/s1')
   await page.getByRole('button', { name: /^Approve$/ }).click()
   await expect(page.getByText('Approve this story?')).toBeVisible()
+  // The default (untouched) approval publishes to this family only, never the
+  // cross-family catalog: the PII warning stays absent until catalog is chosen.
+  await expect(page.getByText(/Catalog books are visible to every family/)).toHaveCount(0)
   await page.getByRole('button', { name: 'Confirm approve' }).click()
 
   await expect(page).toHaveURL(/\/admin$/)
-  expect(approvePosted).toBe(true)
+  // Assert the wire body, not just that a POST fired: 'family' is the
+  // safe-by-default scope and must be what ships when the radio is untouched.
+  await expect.poll(() => approveBody).toEqual({ visibility: 'family' })
+})
+
+test('approving to the catalog surfaces the PII warning and posts visibility:catalog', async ({
+  page,
+}) => {
+  // The catalog option publishes this story to EVERY family, so it is the one
+  // approve path that must warn about personal details before it ships. This
+  // exercises both halves of that contract: the warning copy appears only once
+  // catalog is selected, and 'catalog' is what actually goes on the wire.
+  await mockMe(page, { role: 'admin' })
+  let approveBody: unknown = null
+  await page.route('**/api/v1/storybooks/s1/approve', (route) => {
+    approveBody = route.request().postDataJSON()
+    return route.fulfill({
+      json: {
+        id: 's1',
+        status: 'published',
+        current_published_version: 1,
+        approved_by: 'admin-user-id',
+        published_at: '2026-07-04T00:00:00Z',
+        visibility: 'catalog',
+      },
+    })
+  })
+
+  await page.goto('/admin/review/s1')
+  await page.getByRole('button', { name: /^Approve$/ }).click()
+  await expect(page.getByText('Approve this story?')).toBeVisible()
+
+  await page.getByRole('radio', { name: 'Catalog (every family)' }).check()
+  await expect(
+    page.getByText(
+      'Catalog books are visible to every family. Confirm the story contains no names, ' +
+        'photos, or personal details before sharing.'
+    )
+  ).toBeVisible()
+
+  await page.getByRole('button', { name: 'Confirm approve' }).click()
+
+  await expect(page).toHaveURL(/\/admin$/)
+  await expect.poll(() => approveBody).toEqual({ visibility: 'catalog' })
 })
 
 test('a backend 403 on approve fails closed in the UI', async ({ page }) => {

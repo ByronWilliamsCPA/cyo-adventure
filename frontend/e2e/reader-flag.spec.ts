@@ -111,6 +111,37 @@ test('a 409 cap response shows the gentle "told us a lot already" message', asyn
   await expect(page.getByRole('dialog')).toHaveCount(0)
 })
 
+test('a failed flag submit still reassures the child and never dead-ends them', async ({
+  page,
+}) => {
+  // The most emotionally sensitive path in the app: a child reported distress
+  // and the POST failed. They must never see a scary "something went wrong"
+  // alert or be trapped in the dialog. They get the same gentle confirmation
+  // as success and can keep reading; the failure is logged, not surfaced.
+  await page.route('**/api/v1/flags', (route) =>
+    route.fulfill({ status: 500, json: { detail: 'internal server error' } })
+  )
+
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('reader')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Tell a grown-up' }).click()
+  await page
+    .getByRole('dialog', { name: 'Tell a grown-up' })
+    .getByRole('button', { name: 'It scared me' })
+    .click()
+
+  // Reassured with the exact success copy, never a scary error alert.
+  await expect(
+    page.getByText('Thanks for telling us. A grown-up will take a look.')
+  ).toBeVisible()
+  await expect(page.getByText('Something went wrong. Try again.')).toHaveCount(0)
+  await expect(page.getByRole('alert')).toHaveCount(0)
+  // Not a dead end: the dialog closes and the reader stays fully usable.
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(page.getByTestId('reader')).toBeVisible()
+})
+
 test('the flag button is hidden without a valid child session', async ({ page, context }) => {
   // Override the seeded child_session with nothing: a guardian browsing the
   // reader directly (device-grant + guardian-style token only, per

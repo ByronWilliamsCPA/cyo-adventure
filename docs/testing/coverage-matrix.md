@@ -183,6 +183,7 @@ Supabase endpoints rather than `/api/v1`.
 ## Guardian: assign children to books
 
 - E2E-mocked: `frontend/e2e/assignments.spec.ts`, `frontend/e2e/guardian-books.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts` (double-click guard)
+- E2E-real: `frontend/e2e-real/assign-visibility-real.spec.ts` (the full approve -> assign -> child-sees loop end to end: a guardian assigns an approved book via `/guardian/books` and the assigned child's real library gains it, while a never-assigned child's library never shows it; causal negative (same child empty before assignment) and concurrent negative (a second unassigned child) prove the assignment step is what makes the book visible, not approval alone)
 - Component: `frontend/src/guardian/AssignChildrenDialog.test.tsx`, `frontend/src/guardian/assignApi.test.ts`
 
 ## Guardian: approve and publish a story

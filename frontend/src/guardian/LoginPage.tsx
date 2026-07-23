@@ -401,6 +401,14 @@ export function LoginPage() {
     <div className="guardian-login">
       <h1>Guardian sign-in</h1>
       <p>Sign in to review, approve, and request stories for your family.</p>
+      {/* ADR-014 section 5: on a fresh (unauthorized) device the Kids door
+          routes a CHILD here to fetch a grown-up, so this bare adult
+          email/password form is the first thing that child sees. One plain,
+          jargon-free line tells them what to do; it shows ONLY for the
+          authorize-device intent, so the ordinary guardian login is unchanged. */}
+      {authorizeDeviceIntent ? (
+        <p className="guardian-login__note">Ask a grown-up to set up this device for you.</p>
+      ) : null}
       {recoveryError ? (
         <ErrorBanner className="guardian-login__error">
           That password reset link is invalid or has expired. Request a new one below.

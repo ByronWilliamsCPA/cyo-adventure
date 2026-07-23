@@ -1,10 +1,15 @@
 {
   "default": true,
-  "MD024": { "siblings_only": true },
+  "MD024": {
+    "siblings_only": true
+  },
   "MD013": false,
   "MD033": false,
   "MD041": false,
   "line-length": false,
   "no-inline-html": false,
-  "first-line-heading": false
+  "first-line-heading": false,
+  "MD025": {
+    "front_matter_title": ""
+  }
 }

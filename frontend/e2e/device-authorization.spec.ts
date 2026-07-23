@@ -41,6 +41,13 @@ test.describe('authorize-device intent (ADR-014 section 5)', () => {
     await page.getByRole('link', { name: /kids/i }).click()
     await expect(page).toHaveURL('/guardian/login?intent=authorize-device')
 
+    // A child who tapped the Kids door lands on this adult login form; the
+    // authorize-device framing tells them, in plain words, to fetch a grown-up
+    // (LoginPage renders it ONLY for this intent).
+    await expect(
+      page.getByText('Ask a grown-up to set up this device for you.')
+    ).toBeVisible()
+
     // Signing in with the intent present mints a grant for THIS device and
     // returns to the picker (LoginPage's authorize-device effect), so the kid
     // never sees the console.
@@ -50,6 +57,16 @@ test.describe('authorize-device intent (ADR-014 section 5)', () => {
 
     await expect(page).toHaveURL('/kids')
     await expect(page.getByText('No profiles yet')).toBeVisible()
+
+    // #CRITICAL: security: after minting the grant the LoginPage.tsx
+    // authorize-device effect signs the guardian OUT, so the guardian bearer
+    // ('auth_token', the key useApi attaches on kid routes) MUST be gone from
+    // this now-kid device. If a regression re-leaks the session, a child would
+    // read the whole family's library via the useApi guardian-bearer fallthrough.
+    // #VERIFY: the poll assertion below fails the moment that bearer lingers.
+    await expect
+      .poll(() => page.evaluate(() => window.localStorage.getItem('auth_token')))
+      .toBeNull()
 
     // The minted grant persisted to localStorage: a full reload into a kid
     // route now renders instead of bouncing back to authorize-device.

@@ -103,6 +103,20 @@ test('a plain guardian visiting /admin/users is sent back to the guardian consol
   await page.route('**/api/v1/profiles', (route) =>
     route.fulfill({ json: { profiles: [{ id: 'p1' }] } })
   )
+  // #12b (client half): the wire-boundary 403 is asserted in the real tier
+  // (admin-management-real.spec.ts::#12b). Here, in the mocked tier, assert
+  // the complementary client-side guard: ProtectedRoute redirects a guardian
+  // before UserManagementPage mounts, so the cross-family admin endpoints are
+  // never even requested from the browser (defense in depth, not a substitute
+  // for the server 403).
+  const adminRequests: string[] = []
+  page.on('request', (request) => {
+    const url = request.url()
+    if (url.includes('/api/v1/admin/profiles') || url.includes('/api/v1/admin/users')) {
+      adminRequests.push(url)
+    }
+  })
   await page.goto('/admin/users')
   await expect(page).toHaveURL(/\/guardian$/)
+  expect(adminRequests, 'a guardian must never reach the cross-family admin endpoints').toEqual([])
 })

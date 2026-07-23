@@ -60,17 +60,21 @@ client-agnostic format keeps a future native app open for any of the kids.
 ### Option 1: PWA ✓
 
 **Pros**:
+
 - ✅ One codebase; offline reading; instant updates; no store friction.
 
 **Cons**:
+
 - ❌ Slightly less native polish; iOS PWA storage-eviction and install nuances.
 
 ### Option 2: Native iOS/Android
 
 **Pros**:
+
 - ✅ Best polish, native TTS.
 
 **Cons**:
+
 - ❌ Two codebases, app-store friction, slow updates. Overkill for a reading app.
 
 ### Option 3: React Native / Flutter
@@ -117,7 +121,12 @@ remains. More than a reading app needs at v1.
 ### Success Criteria
 
 - [ ] A downloaded story plays start to finish with the network disabled.
-- [ ] A two-device conflict resolves without silent loss.
+- [ ] A two-device conflict resolves without silent loss **on adult surfaces**.
+      On the child reader path this criterion was deliberately relaxed to silent
+      newest-write-wins (see the amendment note below): a conflict adopts the
+      server row without a prompt and may discard the local position, because a
+      young child cannot answer a "which place do you want to keep?" dialog and
+      reading must never block on a conflict.
 
 ### Review Schedule
 

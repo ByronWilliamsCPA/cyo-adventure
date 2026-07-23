@@ -36,7 +36,6 @@ import { startContinuation } from '../player/engine'
 import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
-import { ConflictDialog } from './ConflictDialog'
 import { DownloadNeeded } from './DownloadNeeded'
 import { Reader } from './Reader'
 
@@ -104,11 +103,6 @@ type PageState =
   | { phase: 'offline' }
   | { phase: 'error' }
 
-interface ConflictState {
-  local: ReadingState
-  server: ReadingState
-}
-
 function loadErrorPhase(error: unknown): ErrorPhase {
   if (error instanceof StoryNotFoundError) return 'not-found'
   if (error instanceof ForbiddenError) return 'forbidden'
@@ -133,7 +127,6 @@ export function ReaderPage({
   submitFlag,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
-  const [conflict, setConflict] = useState<ConflictState | null>(null)
   // A single-instance-lifetime warning, not tied to the load phase: a dropped
   // save doesn't stop the reader from playing, so it renders as a banner
   // alongside the reading UI rather than as its own page state.
@@ -311,7 +304,36 @@ export function ReaderPage({
         if (result.kind === 'saved') {
           revisionRef.current = result.row.state_revision
         } else if (result.kind === 'conflict') {
-          setConflict({ local: stamped, server: result.currentRow })
+          // #ASSUME: data-integrity: newest-write-wins. A 409 means another
+          // device advanced this story's row; we silently adopt the server's
+          // current row (the most recent write) and keep reading. This can
+          // discard THIS device's local position even when the other device is
+          // LESS far along, moving the child to wherever that device last was.
+          // That data loss is deliberate, per the product decision: a 5-10 year
+          // old cannot reason about a "which place do you want to keep?" prompt,
+          // so reading must never block on a conflict and no dialog is ever
+          // shown to the child. Reuses resolveConflict's use_newer_progress
+          // branch (mirror the server row locally, then remount the Reader).
+          // #VERIFY: ReaderPage.test.tsx "silently adopts the server position on
+          // a 409 without showing a dialog"; e2e reader-conflict.spec.ts asserts
+          // no conflict dialog ever appears.
+          const serverRow = result.currentRow
+          await resolveConflict(
+            api,
+            profileId,
+            storybookId,
+            stamped,
+            serverRow,
+            'use_newer_progress',
+            { deviceId }
+          )
+          revisionRef.current = serverRow.state_revision
+          setPageState((prev) =>
+            prev.phase === 'reading' ? { ...prev, initialReading: serverRow } : prev
+          )
+          // Remount the Reader so its machine re-initialises from the adopted
+          // server state; without this the reader keeps playing the local place.
+          setReaderKey((key) => key + 1)
         }
       } catch (error) {
         if (error instanceof LocalWriteError) {
@@ -429,44 +451,6 @@ export function ReaderPage({
     [recordCompletion, profileId, storybookId, version]
   )
 
-  const keepThisDevice = useCallback(async () => {
-    if (!conflict) return
-    const result = await resolveConflict(
-      api,
-      profileId,
-      storybookId,
-      conflict.local,
-      conflict.server,
-      'continue_from_this_device',
-      { deviceId }
-    )
-    if (result.kind === 'saved') {
-      revisionRef.current = result.row.state_revision
-    }
-    setConflict(null)
-  }, [api, conflict, deviceId, profileId, storybookId])
-
-  const adoptNewest = useCallback(async () => {
-    if (!conflict) return
-    await resolveConflict(
-      api,
-      profileId,
-      storybookId,
-      conflict.local,
-      conflict.server,
-      'use_newer_progress',
-      { deviceId }
-    )
-    revisionRef.current = conflict.server.state_revision
-    setPageState((prev) =>
-      prev.phase === 'reading' ? { ...prev, initialReading: conflict.server } : prev
-    )
-    // Remount the Reader so its machine re-initialises from the adopted server
-    // state; without this the reader keeps playing from the local position.
-    setReaderKey((key) => key + 1)
-    setConflict(null)
-  }, [api, conflict, deviceId, profileId, storybookId])
-
   if (pageState.phase === 'loading') {
     // Branded, kid-facing loading state (mirrors the library's role="status"
     // loading pattern); data-testid="loading" is pinned by ReaderPage tests.
@@ -563,12 +547,6 @@ export function ReaderPage({
         fetchReadingHistory={fetchReadingHistory}
         submitFlag={submitFlag}
       />
-      {conflict ? (
-        <ConflictDialog
-          onKeepThisDevice={() => void keepThisDevice()}
-          onUseNewest={() => void adoptNewest()}
-        />
-      ) : null}
     </>
   )
 }

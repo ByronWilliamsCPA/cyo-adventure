@@ -59,6 +59,36 @@ test('a dual-role adult can reach the admin queue from the guardian console', as
   await expect(page.getByRole('link', { name: /The Bridge Builder/ })).toBeVisible()
 })
 
+test('the in-review story is absent from the child library before approval', async ({
+  page,
+  context,
+}) => {
+  // The negative of the ADR-005 invariant, proven before the approve step below
+  // (serial, so this runs while s_bridge_builder is still in_review). The seed
+  // (scripts/seed_dev_data.py) inserts the story already ASSIGNED to "Dev
+  // Reader" but unapproved, so if assignment alone made a book readable it would
+  // show here. It must not: api/library.py::list_library requires
+  // approved_by IS NOT NULL, so nothing reaches a child reader without a human
+  // approval, no matter its assignment state.
+  const grant = await authorizeDevice(context)
+  try {
+    await context.addInitScript(() => {
+      window.localStorage.setItem('auth_token', 'dev-child')
+    })
+    await page.goto('/kids')
+    await page.getByText('Dev Reader').click()
+    await expect(page).toHaveURL(/\/library\//)
+    // A published seed book confirms the shelf actually rendered, so the
+    // absence below is a real "not present", not an unrendered or empty page.
+    await expect(page.getByText('The Clockwork Garden')).toBeVisible()
+    await expect(page.getByText('The Bridge Builder')).toHaveCount(0)
+  } finally {
+    // Revoke the minted grant even if an assertion fails, so a reused dev stack
+    // does not keep a live grant row; best-effort (see revokeDevice).
+    await revokeDevice(grant)
+  }
+})
+
 test('the admin approves the story through the real API', async ({ page, context }) => {
   await seedGuardianSession(context, 'dev-admin')
   await page.goto('/admin/review/s_bridge_builder')
