@@ -84,6 +84,7 @@ router = APIRouter(
 _log = logging.getLogger(__name__)
 
 _VALID_STATUSES: frozenset[str] = frozenset(get_args(StoryRequestStatus))
+_GUARDIAN_OR_ADMIN_ROLE_REQUIRED = "guardian or admin role required"
 
 
 def _enqueue_safely(job_id: str) -> None:
@@ -642,7 +643,7 @@ async def create_authored_story_request(
     # only thing standing between a child token and an unreviewed concept.
     # #VERIFY: test_story_requests_authored.py::test_child_cannot_author.
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
-        msg = "guardian or admin role required"
+        msg = _GUARDIAN_OR_ADMIN_ROLE_REQUIRED
         raise AuthorizationError(msg)
 
     family_uuid = await _resolve_authored_family(ctx, body)
@@ -874,7 +875,7 @@ async def get_family_budget(ctx: Context) -> FamilyBudgetView:
     # guardian/admin; tests/unit/test_story_requests.py pins the 403 for
     # child and device tokens directly.
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
-        msg = "guardian or admin role required"
+        msg = _GUARDIAN_OR_ADMIN_ROLE_REQUIRED
         raise AuthorizationError(msg)
     family = await ctx.session.get(Family, ctx.principal.family_id)
     if family is None:
@@ -1005,7 +1006,7 @@ async def approve_story_request_endpoint(
     # a child principal must never approve its own request.
     # #VERIFY: authorization-matrix; a child token is rejected here.
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
-        msg = "guardian or admin role required"
+        msg = _GUARDIAN_OR_ADMIN_ROLE_REQUIRED
         raise AuthorizationError(msg)
     request = await _load_scoped_request(ctx, request_id, for_update=True)
     if body.series_title is not None:
@@ -1147,7 +1148,7 @@ async def decline_story_request_endpoint(
         AuthorizationError: If a child token reaches this endpoint (-> 403).
     """
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
-        msg = "guardian or admin role required"
+        msg = _GUARDIAN_OR_ADMIN_ROLE_REQUIRED
         raise AuthorizationError(msg)
     request = await _load_scoped_request(ctx, request_id, for_update=True)
     await service.decline_story_request(ctx.session, ctx.principal, request)

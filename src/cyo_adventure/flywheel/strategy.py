@@ -284,9 +284,16 @@ def _raw_nodes(document: Mapping[str, object]) -> list[dict[str, object]]:
     raw = document.get("nodes")
     if not isinstance(raw, list):
         return []
+    # #ASSUME: data-integrity: "dict[str, object]"/"list[object]" repeat
+    # across this module's cast() calls (Sonar S1192); a module-level
+    # constant would break basedpyright's cast() overload resolution (it
+    # narrows a type only from a literal string in source, not a variable),
+    # and dropping the quotes trips this project's own ruff TC006. See
+    # api/node_edit.py's identical rationale.
+    # #VERIFY: uv run basedpyright + uv run ruff check on this file.
     return [
-        cast("dict[str, object]", node)
-        for node in cast("list[object]", raw)
+        cast("dict[str, object]", node)  # NOSONAR
+        for node in cast("list[object]", raw)  # NOSONAR
         if isinstance(node, dict)
     ]
 

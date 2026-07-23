@@ -215,9 +215,19 @@ def _find_node(
     """
     nodes = blob.get("nodes")
     if isinstance(nodes, list):
-        for entry in cast("list[object]", nodes):
+        # #ASSUME: data-integrity: "list[object]"/"dict[str, object]" repeat
+        # across this module's cast() calls (Sonar S1192); hoisting either to
+        # a module-level constant breaks basedpyright's cast() overload
+        # (it only narrows a type from a literal string in the source, not a
+        # variable, so the result silently becomes Unknown), and dropping the
+        # quotes to a bare `cast(dict[str, object], ...)` trips this
+        # project's own ruff TC006 (quote type expressions in typing.cast()).
+        # Kept as repeated literals; both other options regress an enforced
+        # gate.
+        # #VERIFY: uv run basedpyright + uv run ruff check on this file.
+        for entry in cast("list[object]", nodes):  # NOSONAR
             if isinstance(entry, dict):
-                typed_entry = cast("dict[str, object]", entry)
+                typed_entry = cast("dict[str, object]", entry)  # NOSONAR
                 if typed_entry.get("id") == node_id:
                     return typed_entry
     msg = f"node '{node_id}' not found in storybook '{storybook_id}' v{version}"

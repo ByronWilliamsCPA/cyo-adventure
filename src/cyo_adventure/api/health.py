@@ -109,7 +109,6 @@ class ReadinessStatus(HealthStatus):
 
 @router.get(
     "/live",
-    response_model=HealthStatus,
     status_code=status.HTTP_200_OK,
     summary="Liveness probe",
     description="Indicates if the application is running. Used by Kubernetes liveness probe.",
@@ -150,7 +149,12 @@ async def check_database() -> ReadinessCheck:
             latency_ms=round(latency_ms, 2),
         )
     except Exception as exc:
-        latency_ms = (time.time() - start) * 1000
+        # #EDGE: data-integrity: the parens below are required, not
+        # redundant (Sonar S1110 false positive): "-" binds looser than
+        # "*" in Python, so removing them would silently compute
+        # time.time() - start * 1000 instead of the intended latency.
+        # #VERIFY: tests/unit/test_health.py latency-value assertions.
+        latency_ms = (time.time() - start) * 1000  # NOSONAR
         logger.warning(_CHECK_FAILED_LOG, check="database", error=str(exc))
         return ReadinessCheck(
             name="database",
@@ -224,7 +228,9 @@ async def check_cache() -> ReadinessCheck:
             state="ok",
         )
     except Exception as exc:
-        latency_ms = (time.time() - start) * 1000
+        # #EDGE: data-integrity: parens required, not redundant (Sonar
+        # S1110 false positive); see check_database's identical comment.
+        latency_ms = (time.time() - start) * 1000  # NOSONAR
         logger.warning(_CHECK_FAILED_LOG, check="cache", error=str(exc))
         return ReadinessCheck(
             name="cache",
@@ -363,7 +369,9 @@ async def check_generation_queue() -> ReadinessCheck:
             state="ok",
         )
     except Exception as exc:
-        latency_ms = (time.time() - start) * 1000
+        # #EDGE: data-integrity: parens required, not redundant (Sonar
+        # S1110 false positive); see check_database's identical comment.
+        latency_ms = (time.time() - start) * 1000  # NOSONAR
         logger.warning(_CHECK_FAILED_LOG, check="generation_queue", error=str(exc))
         return ReadinessCheck(
             name="generation_queue",
@@ -374,8 +382,17 @@ async def check_generation_queue() -> ReadinessCheck:
         )
 
 
-async def check_external_service() -> ReadinessCheck:
+async def check_external_service() -> ReadinessCheck:  # NOSONAR
     """Check external API/service connectivity.
+
+    #ASSUME: external resources: kept ``async``, and awaits nothing yet, on
+    purpose (Sonar S7503): this is a placeholder sibling of check_database /
+    check_cache / check_generation_queue, all real ``async def check_x() ->
+    ReadinessCheck`` callables awaited uniformly by readiness(). Enabling the
+    commented-out httpx call below only requires uncommenting code, not
+    touching this signature or any caller/test; dropping ``async`` now would
+    require re-adding it later and would break the existing
+    ``await check_external_service()`` call sites in tests/unit/test_health.py.
 
     Returns:
         ReadinessCheck: external service status.
@@ -401,7 +418,9 @@ async def check_external_service() -> ReadinessCheck:
             latency_ms=round(latency_ms, 2),
         )
     except Exception as exc:
-        latency_ms = (time.time() - start) * 1000
+        # #EDGE: data-integrity: parens required, not redundant (Sonar
+        # S1110 false positive); see check_database's identical comment.
+        latency_ms = (time.time() - start) * 1000  # NOSONAR
         logger.warning(_CHECK_FAILED_LOG, check="external_api", error=str(exc))
         return ReadinessCheck(
             name="external_api",
@@ -413,7 +432,6 @@ async def check_external_service() -> ReadinessCheck:
 
 @router.get(
     "/ready",
-    response_model=ReadinessStatus,
     responses={
         200: {"description": "Application is ready to serve traffic"},
         503: {"description": "Application is not ready (dependencies unavailable)"},
@@ -497,7 +515,6 @@ async def readiness() -> ReadinessStatus:
 
 @router.get(
     "/startup",
-    response_model=HealthStatus,
     status_code=status.HTTP_200_OK,
     summary="Startup probe",
     description="Indicates if the application has completed startup. Used by Kubernetes startup probe.",
@@ -521,7 +538,6 @@ async def startup() -> HealthStatus:
 
 @router.get(
     "/",
-    response_model=HealthStatus,
     status_code=status.HTTP_200_OK,
     summary="Basic health check",
     description="Simple health check endpoint for load balancers and monitoring.",

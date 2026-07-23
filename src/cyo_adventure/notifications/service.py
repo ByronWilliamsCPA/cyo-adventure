@@ -129,11 +129,17 @@ async def _profile_names(
             )
         )
     ).all()
-    # A plain dict(rows) is what ruff (C416) wants here, but basedpyright's
-    # dict() overload resolution picks the wrong overload for a sequence of
-    # SQLAlchemy Row tuples and reports a spurious dict[bytes, bytes] return
-    # type error; the comprehension sidesteps that and type-checks cleanly.
-    return {profile_id: display_name for profile_id, display_name in rows}  # noqa: C416
+    # A plain dict(rows) is what ruff (C416) and Sonar S7500 want here, but
+    # basedpyright's dict() overload resolution picks the wrong overload for a
+    # sequence of SQLAlchemy Row tuples and reports a spurious dict[bytes,
+    # bytes] return type error; the comprehension sidesteps that and
+    # type-checks cleanly.
+    # #ASSUME: data-integrity: dict(rows) was tried and reverted for the
+    # basedpyright overload issue above; do not "simplify" this back.
+    # #VERIFY: uv run basedpyright src/cyo_adventure/notifications/service.py
+    return {  # NOSONAR  # noqa: C416
+        profile_id: display_name for profile_id, display_name in rows
+    }
 
 
 async def _titles_for_pairs(

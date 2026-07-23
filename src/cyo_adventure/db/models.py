@@ -47,6 +47,11 @@ _FK_CHILD_PROFILE = "child_profile.id"
 _FK_STORYBOOK = "storybook.id"
 _FK_CONCEPT = "concept.id"
 _FK_SERIES = "series.id"
+_FK_STORYBOOK_VERSION_STORYBOOK_ID = "storybook_version.storybook_id"
+_FK_STORYBOOK_VERSION_VERSION = "storybook_version.version"
+
+# ON DELETE action, named once to avoid duplicated string literals.
+_ONDELETE_SET_NULL = "SET NULL"
 
 # The single, well-known "system catalog" family that owns admin-initiated
 # catalog-origin content (#173). Instead of making family_id nullable across
@@ -255,7 +260,7 @@ class Series(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # series row (family-owned content) survives independently of who
     # created it.
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
 
 
@@ -567,7 +572,7 @@ class FamilyConnection(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         ForeignKey(_FK_FAMILY, ondelete="CASCADE"), index=True
     )
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
     # #CRITICAL: data-integrity: deliberately NOT ondelete=SET NULL. The
     # viewer/sharer consent-pairing CHECK constraints below require
@@ -641,7 +646,7 @@ class Storybook(CreatedAtMixin, Base):
         String(16), default="family", server_default=text("'family'")
     )
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
     # #CRITICAL: data-integrity: deliberately NOT ondelete=SET NULL, unlike
     # most nullable *_by/​*_id references in this file. The
@@ -683,7 +688,7 @@ class StorybookVersion(CreatedAtMixin, Base):
         JSONB, default=None
     )
     approved_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
     published_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     model: Mapped[str | None] = mapped_column(String(120), default=None)
@@ -730,7 +735,7 @@ class ReadingState(CreatedAtMixin, UpdatedAtMixin, Base):
         # #VERIFY: tests/integration/test_deletion_drill.py.
         ForeignKeyConstraint(
             ["storybook_id", "version"],
-            ["storybook_version.storybook_id", "storybook_version.version"],
+            [_FK_STORYBOOK_VERSION_STORYBOOK_ID, _FK_STORYBOOK_VERSION_VERSION],
             ondelete="CASCADE",
         ),
     )
@@ -767,7 +772,7 @@ class Completion(Base):
         # #VERIFY: tests/integration/test_deletion_drill.py.
         ForeignKeyConstraint(
             ["storybook_id", "version"],
-            ["storybook_version.storybook_id", "storybook_version.version"],
+            [_FK_STORYBOOK_VERSION_STORYBOOK_ID, _FK_STORYBOOK_VERSION_VERSION],
             ondelete="CASCADE",
         ),
     )
@@ -849,7 +854,7 @@ class StorybookAssignment(CreatedAtMixin, Base):
         String(120), ForeignKey(_FK_STORYBOOK, ondelete="CASCADE"), primary_key=True
     )
     assigned_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
 
 
@@ -887,7 +892,7 @@ class Concept(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # before calling session.add(Concept(...)).
     brief: Mapped[dict[str, object]] = mapped_column(JSONB)
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
 
 
@@ -1032,7 +1037,7 @@ class StoryRequest(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # requests rather than deleting them; the family-owned request (and its
     # moderation history) survives at the family level.
     profile_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_CHILD_PROFILE, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_CHILD_PROFILE, ondelete=_ONDELETE_SET_NULL), default=None
     )
     request_text: Mapped[str] = mapped_column(String(500))
     status: Mapped[str] = mapped_column(String(16), default="pending")
@@ -1069,12 +1074,12 @@ class StoryRequest(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         JSONB, default=None
     )
     reviewed_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
     reviewed_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     approved_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     concept_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_CONCEPT, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_CONCEPT, ondelete=_ONDELETE_SET_NULL), default=None
     )
     # #CRITICAL: data-integrity: deliberately NOT ondelete=SET NULL, unlike
     # most nullable references here. ck_story_request_anchor_requires_series
@@ -1088,7 +1093,9 @@ class StoryRequest(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         ForeignKey(_FK_SERIES), default=None
     )
     anchor_storybook_id: Mapped[str | None] = mapped_column(
-        String(120), ForeignKey(_FK_STORYBOOK, ondelete="SET NULL"), default=None
+        String(120),
+        ForeignKey(_FK_STORYBOOK, ondelete=_ONDELETE_SET_NULL),
+        default=None,
     )
     proposed_series_title: Mapped[str | None] = mapped_column(String(120), default=None)
 
@@ -1153,7 +1160,7 @@ class ModerationThreshold(UUIDPrimaryKeyMixin, UpdatedAtMixin, Base):
     # child-owned; a deleted admin's attribution is dropped, the override
     # itself survives.
     updated_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
 
 
@@ -1216,7 +1223,7 @@ class ModerationThresholdAudit(UUIDPrimaryKeyMixin, Base):
     # row per upsert/delete and never mutate existing rows;
     # tests/integration/test_deletion_drill.py covers the erasure path.
     changed_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
@@ -1333,7 +1340,7 @@ class ModerationSetting(UpdatedAtMixin, Base):
     # SET NULL (Phase 3a): global admin-config row; a deleted admin's
     # attribution is dropped, the setting itself survives.
     updated_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
 
 
@@ -1388,10 +1395,10 @@ class ProviderModelAllowlist(UUIDPrimaryKeyMixin, CreatedAtMixin, UpdatedAtMixin
     # SET NULL (Phase 3a): global admin-config row; a deleted admin's
     # attribution is dropped, the allowlist entry itself survives.
     created_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
     updated_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
 
 
@@ -1446,7 +1453,7 @@ class ProviderModelAllowlistAudit(UUIDPrimaryKeyMixin, Base):
     # old/new_enabled pairing; tests/integration/test_deletion_drill.py
     # covers the erasure path.
     changed_by: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey(_FK_USER, ondelete="SET NULL"), default=None
+        ForeignKey(_FK_USER, ondelete=_ONDELETE_SET_NULL), default=None
     )
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
@@ -1670,7 +1677,7 @@ class KidFlag(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         # #VERIFY: tests/integration/test_deletion_drill.py.
         ForeignKeyConstraint(
             ["storybook_id", "version"],
-            ["storybook_version.storybook_id", "storybook_version.version"],
+            [_FK_STORYBOOK_VERSION_STORYBOOK_ID, _FK_STORYBOOK_VERSION_VERSION],
             ondelete="CASCADE",
         ),
         CheckConstraint(
