@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
+from cyo_adventure.api import assignments
 from cyo_adventure.api.deps import Principal, RequestContext
 from cyo_adventure.api.schemas import AssignmentCreateBody, AssignmentListView
 from cyo_adventure.core.exceptions import (
@@ -37,6 +38,49 @@ class TestAssignmentSchemas:
         view = AssignmentListView(storybook_id="s1", profile_ids=["p1", "p2"])
         assert view.storybook_id == "s1"
         assert view.profile_ids == ["p1", "p2"]
+
+
+class TestBookDetailHelpers:
+    """The book-detail popover's themes/content_flags extraction (blob-only,
+    no DB), mirroring the equivalent tests in test_review_surface.py and
+    test_approval_unit.py."""
+
+    @pytest.mark.unit
+    def test_book_themes_reads_from_metadata(self) -> None:
+        blob: dict[str, object] = {"metadata": {"themes": ["friendship", "courage"]}}
+        assert assignments._book_themes(blob) == ["friendship", "courage"]
+
+    @pytest.mark.unit
+    def test_book_themes_absent_when_metadata_missing(self) -> None:
+        assert assignments._book_themes({}) == []
+
+    @pytest.mark.unit
+    def test_book_themes_metadata_without_themes_key_returns_empty_list(self) -> None:
+        assert assignments._book_themes({"metadata": {}}) == []
+
+    @pytest.mark.unit
+    def test_book_content_flags_reads_from_metadata(self) -> None:
+        blob: dict[str, object] = {
+            "metadata": {"content_flags": {"violence": "mild", "peril": "moderate"}}
+        }
+        flags = assignments._book_content_flags(blob)
+        assert flags is not None
+        assert flags.violence == "mild"
+        assert flags.peril == "moderate"
+
+    @pytest.mark.unit
+    def test_book_content_flags_invalid_shape_returns_none(self) -> None:
+        """A content_flags dict that no longer matches the schema degrades to
+        None rather than failing the whole browse listing for a detail-only
+        field."""
+        blob: dict[str, object] = {
+            "metadata": {"content_flags": {"violence": "catastrophic"}}
+        }
+        assert assignments._book_content_flags(blob) is None
+
+    @pytest.mark.unit
+    def test_book_content_flags_metadata_without_flags_key_returns_none(self) -> None:
+        assert assignments._book_content_flags({"metadata": {}}) is None
 
 
 class _FakeScalars:

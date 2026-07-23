@@ -27,6 +27,7 @@ from cyo_adventure.storybook.evaluator import VarState
 from cyo_adventure.storybook.models import (
     AgeBand,
     ContentFlagLevel,
+    ContentFlags,
     Length,
     NarrativeStyle,
 )
@@ -521,11 +522,13 @@ class GuardianBookItem(BaseModel):
     """A published family book as the guardian browses it to assign (Task 2.2).
 
     Carries a redacted content badge (``screened`` + ``flagged_count``, the same
-    two signals the assign dialog and console rows show) and the set of child
-    profiles the book is currently assigned to. The full story-level findings are
-    deliberately not embedded here: the assign dialog lazy-fetches them from the
-    content-summary endpoint (Task 2.1) when it opens, so the browse list stays
-    lean and the findings projection lives in exactly one place.
+    two signals the assign dialog and console rows show), descriptive metadata
+    (``themes``, ``content_flags``) for the book-detail popover, and the set of
+    child profiles the book is currently assigned to. The full story-level
+    findings are deliberately not embedded here: the assign dialog lazy-fetches
+    them from the content-summary endpoint (Task 2.1) when it opens, so the
+    browse list stays lean and the findings projection lives in exactly one
+    place.
     """
 
     storybook_id: str
@@ -536,6 +539,11 @@ class GuardianBookItem(BaseModel):
     screened: bool
     flagged_count: int = Field(ge=0)
     assigned_profile_ids: list[str]
+    # Book-detail popover (age-bands-details): themes and content-sensitivity
+    # flags read straight from the blob's metadata, so the browse list can show
+    # a detail popover without a second round trip.
+    themes: list[str] = Field(default_factory=list)
+    content_flags: ContentFlags | None = None
 
     @model_validator(mode="after")
     def _unscreened_has_no_flags(self) -> GuardianBookItem:
@@ -1425,6 +1433,12 @@ class ReviewQueueItem(BaseModel):
     # blob missing metadata still projects a valid queue item.
     age_band: str | None = None
     waiting_since: datetime | None = None
+    # Book-detail popover (age-bands-details): themes and content-sensitivity
+    # flags read straight from the blob's metadata, alongside the fields above.
+    # Both default empty/None so a blob missing metadata still projects a valid
+    # queue item.
+    themes: list[str] = Field(default_factory=list)
+    content_flags: ContentFlags | None = None
 
 
 class ReviewQueueView(BaseModel):
@@ -1452,6 +1466,11 @@ class StorybookSummary(BaseModel):
     current_published_version: int | None = None
     created_at: datetime
     updated_at: datetime | None = None
+    # Book-detail popover (age-bands-details): themes and content-sensitivity
+    # flags read straight from the blob's metadata. Both default empty/None so
+    # a story with no version row yet (draft, blob-less) still projects.
+    themes: list[str] = Field(default_factory=list)
+    content_flags: ContentFlags | None = None
 
 
 class StorybookLibraryView(BaseModel):

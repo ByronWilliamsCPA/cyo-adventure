@@ -677,6 +677,28 @@
   color: var(--color-ink, #2c1a0e);
 }
 
+/* Rows that pair console-row__link with a sibling trigger (the "Details"
+   button opening BookDetailsDialog.tsx, in AdminConsolePage/AdminLibraryPage)
+   lay the link and button out side by side. Scoped to this modifier, not the
+   base .console-row, because StoryRequestQueue.tsx and AuthoringQueuePage.tsx
+   reuse .console-row for a stacked console-row__body layout that must not
+   become a flex row.
+   #ASSUME: UI state: the modifier is applied only where a console-row__link
+   is paired with exactly one trailing console-row__link + trigger button
+   (see AdminConsolePage.tsx's QueueRow, AdminLibraryPage.tsx's row markup).
+   #VERIFY: a visual/e2e check that the Details button never overlaps the
+   link's own click target on narrow viewports. */
+.console-row--with-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.console-row--with-details .console-row__link {
+  flex: 1;
+  min-width: 0;
+}
+
 .console-row__link:focus-visible {
   outline: 2px solid var(--color-amber-deep, #c17b2a);
   outline-offset: 2px;
@@ -1215,6 +1237,45 @@
   gap: 0.75rem 1.25rem;
 }
 
+/* Book-detail popover (BookDetailsDialog.tsx), shared by the guardian browse
+   list and the admin review queue / master library. */
+.book-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.book-details__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.book-details__row dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.book-details__row dd {
+  margin: 0;
+}
+
+.book-details__flags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.book-details__trigger {
+  flex-shrink: 0;
+}
+
 /* Collapsible overview panel above the admin passage list
    (ReviewDetailPage.tsx): the skim entry point before flagged passages. */
 .review-overview {
@@ -1326,6 +1387,15 @@
   margin: 0;
   color: var(--color-ink-muted, #8c6f56);
   font-size: 0.9rem;
+}
+
+.books__age {
+  font-size: 0.8125rem;
+}
+
+.books__actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 /* ============================================================================

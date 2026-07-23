@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 
+import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
+import { BookDetailsDialog } from '../guardian/BookDetailsDialog'
 import { FlagBadge } from '../guardian/FlagBadge'
 import { formatRelativeTime } from '../guardian/intakeApi'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
@@ -98,9 +100,7 @@ function SeverityBadges({ item }: { item: ReviewQueueItem }): ReactElement {
 /** At-a-glance triage metadata: age band and how long the story has waited (UX-A3). */
 function QueueRowMeta({ item, nowMs }: { item: ReviewQueueItem; nowMs: number }) {
   const waited =
-    typeof item.waiting_since === 'string'
-      ? formatRelativeTime(item.waiting_since, nowMs)
-      : null
+    typeof item.waiting_since === 'string' ? formatRelativeTime(item.waiting_since, nowMs) : null
   if (!item.age_band && !waited) return null
   return (
     <span className="console-row__meta cyo-text-muted">
@@ -115,13 +115,15 @@ function QueueRow({
   item,
   queue,
   nowMs,
+  onShowDetails,
 }: {
   item: ReviewQueueItem
   queue: string[]
   nowMs: number
+  onShowDetails: (storybookId: string) => void
 }) {
   return (
-    <li className="console-row cyo-card cyo-card--interactive">
+    <li className="console-row console-row--with-details cyo-card cyo-card--interactive">
       {/* Pass the ordered ids of this bucket so the detail page can show queue
           position and auto-advance to the next item after a decision (UX-A1). */}
       <Link
@@ -133,6 +135,15 @@ function QueueRow({
         <QueueRowMeta item={item} nowMs={nowMs} />
         <SeverityBadges item={item} />
       </Link>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="book-details__trigger"
+        onClick={() => onShowDetails(item.storybook_id)}
+        aria-label={`View details for ${item.title}`}
+      >
+        Details
+      </Button>
     </li>
   )
 }
@@ -153,12 +164,10 @@ export function AdminConsolePage() {
   const [refreshing, setRefreshing] = useState(false)
   const [refreshFailed, setRefreshFailed] = useState(false)
   const [query, setQuery] = useState('')
+  const [detailsFor, setDetailsFor] = useState<string | null>(null)
 
   const fetchQueue = useCallback(async () => {
-    const [items, processing] = await Promise.all([
-      reviewApi.queue(),
-      reviewApi.stillProcessing(),
-    ])
+    const [items, processing] = await Promise.all([reviewApi.queue(), reviewApi.stillProcessing()])
     return { items, processing }
   }, [reviewApi])
 
@@ -237,7 +246,9 @@ export function AdminConsolePage() {
     )
   } else if (state.kind === 'error') {
     content = (
-      <ErrorBanner className="console__error">We could not load the review queue. Please reload.</ErrorBanner>
+      <ErrorBanner className="console__error">
+        We could not load the review queue. Please reload.
+      </ErrorBanner>
     )
   } else {
     const trimmedQuery = query.trim()
@@ -258,107 +269,125 @@ export function AdminConsolePage() {
     const nothingPending = state.items.length === 0 && state.processing.length === 0
     const noMatches =
       searching && flagged.length === 0 && ready.length === 0 && processing.length === 0
+    const detailsItem =
+      detailsFor !== null
+        ? (state.items.find((item) => item.storybook_id === detailsFor) ?? null)
+        : null
 
     content = (
-      <section className="console">
-        <div className="admin-console__header">
-          <h1>Review queue</h1>
-          <div className="admin-console__meta">
-            <span className="admin-console__updated cyo-text-muted">
-              Updated {formatUpdatedAt(state.updatedAt)}
-            </span>
-            <button
-              type="button"
-              className="admin-console__refresh"
-              onClick={() => void refresh()}
-              disabled={refreshing}
-            >
-              Refresh
-            </button>
+      <>
+        <section className="console">
+          <div className="admin-console__header">
+            <h1>Review queue</h1>
+            <div className="admin-console__meta">
+              <span className="admin-console__updated cyo-text-muted">
+                Updated {formatUpdatedAt(state.updatedAt)}
+              </span>
+              <button
+                type="button"
+                className="admin-console__refresh"
+                onClick={() => void refresh()}
+                disabled={refreshing}
+              >
+                Refresh
+              </button>
+            </div>
           </div>
-        </div>
-        {refreshFailed ? (
-          <ErrorBanner className="admin-console__refresh-error">
-            Refresh failed. Showing the queue from {formatUpdatedAt(state.updatedAt)}.
-          </ErrorBanner>
-        ) : null}
-        {nothingPending ? (
-          <EmptyState
-            title="Nothing to review"
-            description="New stories appear here once they finish generating."
-          />
-        ) : (
-          <>
-            <label className="admin-search cyo-field" htmlFor="admin-queue-search">
-              Search by title
-              <input
-                id="admin-queue-search"
-                type="search"
-                className="cyo-field__control"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-              />
-            </label>
-            {noMatches ? (
-              <p role="status" className="admin-search__no-matches cyo-text-muted">
-                No matches for &quot;{trimmedQuery}&quot;
-              </p>
-            ) : (
-              <>
-                {flagged.length > 0 ? (
-                  <div className="console-group">
-                    <h2 className="console-group__heading">Flagged (review carefully)</h2>
-                    <ul className="console-list">
-                      {flagged.map((item) => (
-                        <QueueRow
-                          key={item.storybook_id}
-                          item={item}
-                          queue={flagged.map((i) => i.storybook_id)}
-                          nowMs={state.updatedAt.getTime()}
-                        />
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {ready.length > 0 ? (
-                  <div className="console-group">
-                    <h2 className="console-group__heading">Ready to review</h2>
-                    <ul className="console-list">
-                      {ready.map((item) => (
-                        <QueueRow
-                          key={item.storybook_id}
-                          item={item}
-                          queue={ready.map((i) => i.storybook_id)}
-                          nowMs={state.updatedAt.getTime()}
-                        />
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {searching && processing.length === 0 ? null : (
-                  <div className="console-group">
-                    <h2 className="console-group__heading">Still processing</h2>
-                    {processing.length === 0 ? (
-                      <p className="console__muted cyo-text-muted">
-                        No stories are generating right now.
-                      </p>
-                    ) : (
+          {refreshFailed ? (
+            <ErrorBanner className="admin-console__refresh-error">
+              Refresh failed. Showing the queue from {formatUpdatedAt(state.updatedAt)}.
+            </ErrorBanner>
+          ) : null}
+          {nothingPending ? (
+            <EmptyState
+              title="Nothing to review"
+              description="New stories appear here once they finish generating."
+            />
+          ) : (
+            <>
+              <label className="admin-search cyo-field" htmlFor="admin-queue-search">
+                Search by title
+                <input
+                  id="admin-queue-search"
+                  type="search"
+                  className="cyo-field__control"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                />
+              </label>
+              {noMatches ? (
+                <p role="status" className="admin-search__no-matches cyo-text-muted">
+                  No matches for &quot;{trimmedQuery}&quot;
+                </p>
+              ) : (
+                <>
+                  {flagged.length > 0 ? (
+                    <div className="console-group">
+                      <h2 className="console-group__heading">Flagged (review carefully)</h2>
                       <ul className="console-list">
-                        {processing.map((job) => (
-                          <li key={job.job_id} className="console-row cyo-card">
-                            <span className="console-row__title">{job.title}</span>
-                            <FlagBadge tone="processing" />
-                          </li>
+                        {flagged.map((item) => (
+                          <QueueRow
+                            key={item.storybook_id}
+                            item={item}
+                            queue={flagged.map((i) => i.storybook_id)}
+                            nowMs={state.updatedAt.getTime()}
+                            onShowDetails={setDetailsFor}
+                          />
                         ))}
                       </ul>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </section>
+                    </div>
+                  ) : null}
+                  {ready.length > 0 ? (
+                    <div className="console-group">
+                      <h2 className="console-group__heading">Ready to review</h2>
+                      <ul className="console-list">
+                        {ready.map((item) => (
+                          <QueueRow
+                            key={item.storybook_id}
+                            item={item}
+                            queue={ready.map((i) => i.storybook_id)}
+                            nowMs={state.updatedAt.getTime()}
+                            onShowDetails={setDetailsFor}
+                          />
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                  {searching && processing.length === 0 ? null : (
+                    <div className="console-group">
+                      <h2 className="console-group__heading">Still processing</h2>
+                      {processing.length === 0 ? (
+                        <p className="console__muted cyo-text-muted">
+                          No stories are generating right now.
+                        </p>
+                      ) : (
+                        <ul className="console-list">
+                          {processing.map((job) => (
+                            <li key={job.job_id} className="console-row cyo-card">
+                              <span className="console-row__title">{job.title}</span>
+                              <FlagBadge tone="processing" />
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        </section>
+        {detailsItem !== null ? (
+          <BookDetailsDialog
+            title={detailsItem.title}
+            ageBand={detailsItem.age_band ?? null}
+            themes={detailsItem.themes ?? []}
+            contentFlags={detailsItem.content_flags}
+            moderationBadge={<SeverityBadges item={detailsItem} />}
+            onClose={() => setDetailsFor(null)}
+          />
+        ) : null}
+      </>
     )
   }
 

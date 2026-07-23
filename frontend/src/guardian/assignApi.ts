@@ -8,7 +8,7 @@
 
 import type { AxiosInstance } from 'axios'
 
-import type { FindingVerdict, ReviewSummary } from './reviewApi'
+import type { ContentFlags, FindingVerdict, ReviewSummary } from './reviewApi'
 
 export interface AssignmentList {
   storybook_id: string
@@ -39,6 +39,9 @@ export interface GuardianBookItem {
   screened: boolean
   flagged_count: number
   assigned_profile_ids: string[]
+  /** Themes and content-sensitivity flags for the book-detail popover. */
+  themes?: string[]
+  content_flags?: ContentFlags | null
 }
 
 export interface GuardianBooksView {
@@ -55,22 +58,17 @@ export interface AssignApi {
 export function makeAssignApi(api: AxiosInstance): AssignApi {
   return {
     async get(storybookId: string): Promise<string[]> {
-      const res = await api.get<AssignmentList>(
-        `/v1/storybooks/${storybookId}/assignments`
-      )
+      const res = await api.get<AssignmentList>(`/v1/storybooks/${storybookId}/assignments`)
       return res.data.profile_ids
     },
     async add(storybookId: string, profileIds: string[]): Promise<string[]> {
-      const res = await api.post<AssignmentList>(
-        `/v1/storybooks/${storybookId}/assignments`,
-        { profile_ids: profileIds }
-      )
+      const res = await api.post<AssignmentList>(`/v1/storybooks/${storybookId}/assignments`, {
+        profile_ids: profileIds,
+      })
       return res.data.profile_ids
     },
     async contentSummary(storybookId: string): Promise<ContentSummary> {
-      const res = await api.get<ContentSummary>(
-        `/v1/storybooks/${storybookId}/content-summary`
-      )
+      const res = await api.get<ContentSummary>(`/v1/storybooks/${storybookId}/content-summary`)
       return res.data
     },
     async listBooks(): Promise<GuardianBookItem[]> {

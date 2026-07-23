@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
+import { BookDetailsDialog } from '../guardian/BookDetailsDialog'
 import { formatRelativeTime } from '../guardian/intakeApi'
 import { ageBandLabel } from '../guardian/storyRequestOptions'
 import { classifyApiError } from '../hooks/classifyApiError'
@@ -50,6 +52,7 @@ export function AdminLibraryPage() {
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [filter, setFilter] = useState('all')
   const [reloadKey, setReloadKey] = useState(0)
+  const [detailsFor, setDetailsFor] = useState<string | null>(null)
   const retry = useCallback(() => setReloadKey((k) => k + 1), [])
 
   useEffect(() => {
@@ -68,10 +71,7 @@ export function AdminLibraryPage() {
           return
         }
         // Log the message, never the axios error (its config carries the bearer).
-        console.error(
-          'admin library load failed:',
-          err instanceof Error ? err.message : err
-        )
+        console.error('admin library load failed:', err instanceof Error ? err.message : err)
         setState({ kind: 'error' })
       }
     }
@@ -111,6 +111,8 @@ export function AdminLibraryPage() {
   }
 
   const { items, loadedAt } = state
+  const detailsItem =
+    detailsFor !== null ? (items.find((item) => item.storybook_id === detailsFor) ?? null) : null
   return (
     <section className="admin-library">
       <h1>Story library</h1>
@@ -132,10 +134,7 @@ export function AdminLibraryPage() {
         ))}
       </div>
       {items.length === 0 ? (
-        <EmptyState
-          title="No stories here"
-          description="No stories match this filter yet."
-        />
+        <EmptyState title="No stories here" description="No stories match this filter yet." />
       ) : (
         <ul className="console-list">
           {items.map((item) => {
@@ -144,7 +143,10 @@ export function AdminLibraryPage() {
                 ? formatRelativeTime(item.updated_at, loadedAt)
                 : null
             return (
-              <li key={item.storybook_id} className="console-row cyo-card cyo-card--interactive">
+              <li
+                key={item.storybook_id}
+                className="console-row console-row--with-details cyo-card cyo-card--interactive"
+              >
                 <Link className="console-row__link" to={`/admin/review/${item.storybook_id}`}>
                   <span className="console-row__title">{item.title}</span>
                   <span className="console-row__meta cyo-text-muted">
@@ -153,11 +155,29 @@ export function AdminLibraryPage() {
                     {updated ? <span> · Updated {updated}</span> : null}
                   </span>
                 </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="book-details__trigger"
+                  onClick={() => setDetailsFor(item.storybook_id)}
+                  aria-label={`View details for ${item.title}`}
+                >
+                  Details
+                </Button>
               </li>
             )
           })}
         </ul>
       )}
+      {detailsItem !== null ? (
+        <BookDetailsDialog
+          title={detailsItem.title}
+          ageBand={detailsItem.age_band ?? null}
+          themes={detailsItem.themes ?? []}
+          contentFlags={detailsItem.content_flags}
+          onClose={() => setDetailsFor(null)}
+        />
+      ) : null}
     </section>
   )
 }

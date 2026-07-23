@@ -9,7 +9,9 @@ import { useApi } from '../hooks/useApi'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { AssignChildrenDialog } from './AssignChildrenDialog'
 import { makeAssignApi, type GuardianBookItem } from './assignApi'
+import { BookDetailsDialog } from './BookDetailsDialog'
 import { FlagBadge } from './FlagBadge'
+import { ageBandLabel } from './storyRequestOptions'
 import './guardian.css'
 
 type LoadState =
@@ -37,10 +39,7 @@ function ContentBadge({ book }: { book: GuardianBookItem }) {
  * that IS assigned never renders the misleading "No one yet". Only a genuinely
  * empty assignment set renders "No one yet".
  */
-function assignedNames(
-  book: GuardianBookItem,
-  nameById: Map<string, string>
-): string {
+function assignedNames(book: GuardianBookItem, nameById: Map<string, string>): string {
   if (book.assigned_profile_ids.length === 0) return 'No one yet'
   const names: string[] = []
   let unknown = 0
@@ -69,6 +68,7 @@ export function BooksPage() {
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [assigning, setAssigning] = useState<string | null>(null)
+  const [detailsFor, setDetailsFor] = useState<string | null>(null)
 
   // Build the id->name lookup once per profiles change (not once per book row).
   // onAssigned preserves the profiles reference, so this survives an assign.
@@ -86,10 +86,7 @@ export function BooksPage() {
     async function load() {
       setState({ kind: 'loading' })
       try {
-        const [books, profiles] = await Promise.all([
-          assignApi.listBooks(),
-          profilesApi.list(),
-        ])
+        const [books, profiles] = await Promise.all([assignApi.listBooks(), profilesApi.list()])
         if (!cancelled) setState({ kind: 'ready', books, profiles })
       } catch (err) {
         // #CRITICAL: security: this browse-to-assign page is guardian-only; an
@@ -104,10 +101,7 @@ export function BooksPage() {
         }
         // Log the message, not the axios error object (its config.headers
         // carries the caller's Authorization bearer token).
-        console.error(
-          'guardian books load failed:',
-          err instanceof Error ? err.message : err
-        )
+        console.error('guardian books load failed:', err instanceof Error ? err.message : err)
         if (!cancelled) setState({ kind: 'error' })
       }
     }
@@ -123,18 +117,14 @@ export function BooksPage() {
       return {
         ...prev,
         books: prev.books.map((book) =>
-          book.storybook_id === storybookId
-            ? { ...book, assigned_profile_ids: profileIds }
-            : book
+          book.storybook_id === storybookId ? { ...book, assigned_profile_ids: profileIds } : book
         ),
       }
     })
   }
 
   if (state.kind === 'loading') {
-    return (
-      <LoadingStatus>Loading books…</LoadingStatus>
-    )
+    return <LoadingStatus>Loading books…</LoadingStatus>
   }
 
   if (state.kind === 'forbidden') {
@@ -142,8 +132,7 @@ export function BooksPage() {
       <section className="books">
         <h1>Books</h1>
         <p className="console__notice cyo-text-muted">
-          Assigning books is handled by a guardian. You do not manage
-          assignments here.
+          Assigning books is handled by a guardian. You do not manage assignments here.
         </p>
       </section>
     )
@@ -158,6 +147,8 @@ export function BooksPage() {
   }
 
   const { books } = state
+  const detailsBook =
+    detailsFor !== null ? (books.find((book) => book.storybook_id === detailsFor) ?? null) : null
 
   return (
     <section className="books">
@@ -173,20 +164,30 @@ export function BooksPage() {
             <li key={book.storybook_id} className="books__row cyo-card">
               <div className="books__main">
                 <span className="books__title">{book.title}</span>
-                {book.visibility === 'catalog' && (
-                  <span className="intake-pill">Catalog</span>
-                )}
+                {book.visibility === 'catalog' && <span className="intake-pill">Catalog</span>}
+                {book.age_band ? (
+                  <span className="books__age cyo-text-muted">{ageBandLabel(book.age_band)}</span>
+                ) : null}
                 <ContentBadge book={book} />
               </div>
-              <p className="books__assigned">
-                Assigned to: {assignedNames(book, nameById)}
-              </p>
-              <Button
-                onClick={() => setAssigning(book.storybook_id)}
-                aria-label={`Assign ${book.title}`}
-              >
-                Assign
-              </Button>
+              <p className="books__assigned">Assigned to: {assignedNames(book, nameById)}</p>
+              <div className="books__actions">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="book-details__trigger"
+                  onClick={() => setDetailsFor(book.storybook_id)}
+                  aria-label={`View details for ${book.title}`}
+                >
+                  Details
+                </Button>
+                <Button
+                  onClick={() => setAssigning(book.storybook_id)}
+                  aria-label={`Assign ${book.title}`}
+                >
+                  Assign
+                </Button>
+              </div>
             </li>
           ))}
         </ul>
@@ -196,6 +197,16 @@ export function BooksPage() {
           storybookId={assigning}
           onClose={() => setAssigning(null)}
           onAssigned={(profileIds) => onAssigned(assigning, profileIds)}
+        />
+      ) : null}
+      {detailsBook !== null ? (
+        <BookDetailsDialog
+          title={detailsBook.title}
+          ageBand={detailsBook.age_band}
+          themes={detailsBook.themes ?? []}
+          contentFlags={detailsBook.content_flags}
+          moderationBadge={<ContentBadge book={detailsBook} />}
+          onClose={() => setDetailsFor(null)}
         />
       ) : null}
     </section>
