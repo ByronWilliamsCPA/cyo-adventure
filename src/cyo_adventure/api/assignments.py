@@ -387,7 +387,7 @@ def _book_content_flags(blob: dict[str, object]) -> ContentFlags | None:
     # carry a ``content_flags`` shape ``ContentFlags`` no longer accepts;
     # degrade to ``None`` (omit the badge) rather than fail the whole browse
     # listing for a detail-only field.
-    # #VERIFY: tests/integration/test_guardian_books_api.py.
+    # #VERIFY: tests/unit/test_assignments_api_unit.py::TestBookDetailHelpers.
     metadata = blob.get("metadata")
     if isinstance(metadata, dict):
         flags = metadata.get("content_flags")

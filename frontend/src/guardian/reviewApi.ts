@@ -1,12 +1,21 @@
 /**
  * Adapter from the axios instance to the guardian review + approval API (C4a-4).
  *
- * Hand-typed like profilesApi.ts: the generated client in src/client/ is not
- * committed and nothing imports it. Types mirror ReviewQueueItem /
- * ReviewSurfaceView and the approval views in src/cyo_adventure/api/schemas.py.
+ * Hand-typed like profilesApi.ts: axios calls here are hand-written (baseURL,
+ * auth, and 401 recovery come from useApi()'s instance, not the generated
+ * SDK), and most types mirror ReviewQueueItem / ReviewSurfaceView and the
+ * approval views in src/cyo_adventure/api/schemas.py by hand. ContentFlags /
+ * ContentFlagLevel are the exception: they're re-exported from the generated
+ * client (see readingApi.ts / notificationsApi.ts for the same pattern) so a
+ * future backend field change can't update the generated type while silently
+ * leaving this hand-written mirror behind the OpenAPI drift gate never checks.
  */
 
 import { type AxiosInstance, isAxiosError } from 'axios'
+
+import type { ContentFlagLevel, ContentFlags } from '../client/types.gen'
+
+export type { ContentFlagLevel, ContentFlags }
 
 export type FindingVerdict = 'block' | 'flag' | 'advisory' | 'pass'
 
@@ -18,15 +27,6 @@ export interface ReviewSummary {
   soft_flag: boolean
   repaired: boolean
   reviewer_independent: boolean
-}
-
-export type ContentFlagLevel = 'none' | 'mild' | 'moderate' | 'intense'
-
-/** Per-story content sensitivity flags, mirrors storybook/models.py::ContentFlags. */
-export interface ContentFlags {
-  violence?: ContentFlagLevel
-  scariness?: ContentFlagLevel
-  peril?: ContentFlagLevel
 }
 
 export interface ReviewQueueItem {

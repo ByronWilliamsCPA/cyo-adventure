@@ -123,6 +123,17 @@ describe('BooksPage', () => {
     expect(await screen.findByText('Ages 8-11')).toBeInTheDocument()
   })
 
+  it('omits the age band chip instead of rendering a bare "Ages" when age_band is empty', async () => {
+    routeGet({
+      '/v1/guardian/books': {
+        books: [{ ...BOOKS.books[0], age_band: '' }],
+      },
+    })
+    renderPage()
+    await screen.findByText('The Lantern')
+    expect(screen.queryByText(/^Ages/)).not.toBeInTheDocument()
+  })
+
   it('opens the book-details dialog with themes and content flags', async () => {
     const user = userEvent.setup()
     routeGet()
@@ -166,9 +177,7 @@ describe('BooksPage', () => {
       return Promise.resolve({ data: PROFILES })
     })
     renderPage()
-    expect(
-      await screen.findByText(/Assigning books is handled by a guardian/)
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/Assigning books is handled by a guardian/)).toBeInTheDocument()
   })
 
   it('shows a generic error on a non-403 failure', async () => {
@@ -179,9 +188,7 @@ describe('BooksPage', () => {
       return Promise.resolve({ data: PROFILES })
     })
     renderPage()
-    expect(
-      await screen.findByText(/We could not load your family's books/)
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/We could not load your family's books/)).toBeInTheDocument()
   })
 
   it('retries the load in place when Try again is clicked (UX-C1)', async () => {
@@ -226,9 +233,7 @@ describe('BooksPage', () => {
       },
     })
     renderPage()
-    expect(
-      await screen.findByText(/Assigned to: Reader A, 1 unknown profile$/)
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/Assigned to: Reader A, 1 unknown profile$/)).toBeInTheDocument()
     expect(screen.getByText(/Assigned to: 1 unknown profile$/)).toBeInTheDocument()
     expect(screen.queryByText(/Assigned to: No one yet/)).not.toBeInTheDocument()
   })

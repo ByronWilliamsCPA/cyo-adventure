@@ -165,7 +165,9 @@ export function BooksPage() {
               <div className="books__main">
                 <span className="books__title">{book.title}</span>
                 {book.visibility === 'catalog' && <span className="intake-pill">Catalog</span>}
-                <span className="books__age cyo-text-muted">{ageBandLabel(book.age_band)}</span>
+                {book.age_band ? (
+                  <span className="books__age cyo-text-muted">{ageBandLabel(book.age_band)}</span>
+                ) : null}
                 <ContentBadge book={book} />
               </div>
               <p className="books__assigned">Assigned to: {assignedNames(book, nameById)}</p>
