@@ -171,7 +171,7 @@ Supabase endpoints rather than `/api/v1`.
 
 - E2E-mocked: `frontend/e2e/guardian-books.spec.ts`, `frontend/e2e/naive-user/naive-guardian-misuse.spec.ts` (empty state)
 - E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only)
-- Component: `frontend/src/guardian/BooksPage.test.tsx`, `frontend/src/guardian/assignApi.test.ts` (listBooks)
+- Component: `frontend/src/guardian/BooksPage.test.tsx`, `frontend/src/guardian/assignApi.test.ts` (listBooks), `frontend/src/guardian/BookDetailsDialog.test.tsx` (book-detail popover: age band, themes, content flags, caller-supplied moderation badge, and the omit-when-absent branches)
 
 ## Guardian: manage child profiles
 
