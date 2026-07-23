@@ -56,6 +56,8 @@ const BOOKS = {
       flagged_count: 1,
       assigned_profile_ids: ['p1'],
       visibility: 'family' as const,
+      themes: ['friendship', 'courage'],
+      content_flags: { violence: 'mild', scariness: 'none', peril: 'moderate' },
     },
   ],
 }
@@ -115,6 +117,51 @@ describe('BooksPage', () => {
     expect(screen.getByText(/Assigned to: Reader A$/)).toBeInTheDocument()
   })
 
+  it('shows the age band next to each book', async () => {
+    routeGet()
+    renderPage()
+    expect(await screen.findByText('Ages 8-11')).toBeInTheDocument()
+  })
+
+  it('omits the age band chip instead of rendering a bare "Ages" when age_band is empty', async () => {
+    routeGet({
+      '/v1/guardian/books': {
+        books: [{ ...BOOKS.books[0], age_band: '' }],
+      },
+    })
+    renderPage()
+    await screen.findByText('The Lantern')
+    expect(screen.queryByText(/^Ages/)).not.toBeInTheDocument()
+  })
+
+  it('opens the book-details dialog with themes and content flags', async () => {
+    const user = userEvent.setup()
+    routeGet()
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /View details for The Lantern/ }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText('friendship, courage')).toBeInTheDocument()
+    expect(within(dialog).getByText(/Violence: mild/)).toBeInTheDocument()
+    expect(within(dialog).getByText(/Peril: moderate/)).toBeInTheDocument()
+    expect(within(dialog).getByText('1 flagged')).toBeInTheDocument()
+    await user.click(within(dialog).getByRole('button', { name: /^Close$/ }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('omits themes from the dialog when a book carries none', async () => {
+    const user = userEvent.setup()
+    routeGet({
+      '/v1/guardian/books': {
+        books: [{ ...BOOKS.books[0], themes: undefined, content_flags: undefined }],
+      },
+    })
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /View details for The Lantern/ }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).queryByText('Themes')).not.toBeInTheDocument()
+    expect(within(dialog).queryByText('Content flags')).not.toBeInTheDocument()
+  })
+
   it('opens the assign dialog and assigns a sibling', async () => {
     const user = userEvent.setup()
     routeGet()
@@ -144,9 +191,7 @@ describe('BooksPage', () => {
       return Promise.resolve({ data: PROFILES })
     })
     renderPage()
-    expect(
-      await screen.findByText(/Assigning books is handled by a guardian/)
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/Assigning books is handled by a guardian/)).toBeInTheDocument()
   })
 
   it('shows a generic error on a non-403 failure', async () => {
@@ -157,9 +202,7 @@ describe('BooksPage', () => {
       return Promise.resolve({ data: PROFILES })
     })
     renderPage()
-    expect(
-      await screen.findByText(/We could not load your family's books/)
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/We could not load your family's books/)).toBeInTheDocument()
   })
 
   it('retries the load in place when Try again is clicked (UX-C1)', async () => {
@@ -204,9 +247,7 @@ describe('BooksPage', () => {
       },
     })
     renderPage()
-    expect(
-      await screen.findByText(/Assigned to: Reader A, 1 unknown profile$/)
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/Assigned to: Reader A, 1 unknown profile$/)).toBeInTheDocument()
     expect(screen.getByText(/Assigned to: 1 unknown profile$/)).toBeInTheDocument()
     expect(screen.queryByText(/Assigned to: No one yet/)).not.toBeInTheDocument()
   })

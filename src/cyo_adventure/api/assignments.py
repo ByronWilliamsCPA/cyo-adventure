@@ -21,6 +21,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter
+from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import Select, and_, or_, select
 
 from cyo_adventure.api.deps import (
@@ -53,6 +54,7 @@ from cyo_adventure.db.models import (
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.publishing.state_machine import Visibility
+from cyo_adventure.storybook.models import ContentFlags
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -353,6 +355,50 @@ def _book_age_band(blob: dict[str, object]) -> str:
     return ""
 
 
+def _book_themes(blob: dict[str, object]) -> list[str]:
+    """Return the story's themes from the blob metadata, or [] if absent.
+
+    Args:
+        blob: The stored Storybook content blob.
+
+    Returns:
+        list[str]: ``metadata.themes``, filtered to string entries, or ``[]``
+            when the metadata or field is absent.
+    """
+    metadata = blob.get("metadata")
+    if isinstance(metadata, dict):
+        themes = metadata.get("themes")
+        if isinstance(themes, list):
+            return [theme for theme in themes if isinstance(theme, str)]
+    return []
+
+
+def _book_content_flags(blob: dict[str, object]) -> ContentFlags | None:
+    """Return the story's content-sensitivity flags, or None if absent/invalid.
+
+    Args:
+        blob: The stored Storybook content blob.
+
+    Returns:
+        ContentFlags | None: The parsed ``metadata.content_flags``, or
+            ``None`` when absent or invalid.
+    """
+    # #ASSUME: data integrity: a blob written by an older schema version may
+    # carry a ``content_flags`` shape ``ContentFlags`` no longer accepts;
+    # degrade to ``None`` (omit the badge) rather than fail the whole browse
+    # listing for a detail-only field.
+    # #VERIFY: tests/unit/test_assignments_api_unit.py::TestBookDetailHelpers.
+    metadata = blob.get("metadata")
+    if isinstance(metadata, dict):
+        flags = metadata.get("content_flags")
+        if isinstance(flags, dict):
+            try:
+                return ContentFlags.model_validate(flags)
+            except PydanticValidationError:
+                return None
+    return None
+
+
 def _guardian_book_item(
     book: Storybook,
     version_row: StorybookVersion,
@@ -416,6 +462,8 @@ def _guardian_book_item(
         screened=screened,
         flagged_count=flagged_count,
         assigned_profile_ids=sorted(assigned_profile_ids),
+        themes=_book_themes(version_row.blob),
+        content_flags=_book_content_flags(version_row.blob),
     )
 
 

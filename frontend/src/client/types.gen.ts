@@ -983,6 +983,17 @@ export type ContentFlagCaps = {
 export type ContentFlagLevel = 'none' | 'mild' | 'moderate' | 'intense';
 
 /**
+ * ContentFlags
+ *
+ * Per-story content sensitivity flags scored per age band.
+ */
+export type ContentFlags = {
+    violence?: ContentFlagLevel;
+    scariness?: ContentFlagLevel;
+    peril?: ContentFlagLevel;
+};
+
+/**
  * ContentSummaryView
  *
  * The guardian-facing content review summary for a published story.
@@ -1625,11 +1636,13 @@ export type GenerationJobResponse = {
  * A published family book as the guardian browses it to assign (Task 2.2).
  *
  * Carries a redacted content badge (``screened`` + ``flagged_count``, the same
- * two signals the assign dialog and console rows show) and the set of child
- * profiles the book is currently assigned to. The full story-level findings are
- * deliberately not embedded here: the assign dialog lazy-fetches them from the
- * content-summary endpoint (Task 2.1) when it opens, so the browse list stays
- * lean and the findings projection lives in exactly one place.
+ * two signals the assign dialog and console rows show), descriptive metadata
+ * (``themes``, ``content_flags``) for the book-detail popover, and the set of
+ * child profiles the book is currently assigned to. The full story-level
+ * findings are deliberately not embedded here: the assign dialog lazy-fetches
+ * them from the content-summary endpoint (Task 2.1) when it opens, so the
+ * browse list stays lean and the findings projection lives in exactly one
+ * place.
  */
 export type GuardianBookItem = {
     /**
@@ -1664,6 +1677,11 @@ export type GuardianBookItem = {
      * Assigned Profile Ids
      */
     assigned_profile_ids: Array<string>;
+    /**
+     * Themes
+     */
+    themes?: Array<string>;
+    content_flags?: ContentFlags | null;
 };
 
 /**
@@ -2960,6 +2978,11 @@ export type ReviewQueueItem = {
      * Waiting Since
      */
     waiting_since?: string | null;
+    /**
+     * Themes
+     */
+    themes?: Array<string>;
+    content_flags?: ContentFlags | null;
 };
 
 /**
@@ -3448,6 +3471,11 @@ export type StorybookSummary = {
      * Updated At
      */
     updated_at?: string | null;
+    /**
+     * Themes
+     */
+    themes?: Array<string>;
+    content_flags?: ContentFlags | null;
 };
 
 /**

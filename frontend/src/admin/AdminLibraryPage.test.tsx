@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -20,6 +21,8 @@ const PUBLISHED = {
   current_published_version: 2,
   created_at: '2026-06-01T00:00:00Z',
   updated_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+  themes: ['friendship'],
+  content_flags: { violence: 'none', scariness: 'mild', peril: 'none' },
 }
 const ARCHIVED = {
   storybook_id: 's2',
@@ -97,5 +100,29 @@ describe('AdminLibraryPage', () => {
     mockGet.mockReset().mockResolvedValue({ data: { items: [] } })
     renderPage()
     expect(await screen.findByText(/No stories here/i)).toBeInTheDocument()
+  })
+
+  it('opens a book-details dialog with themes and content flags, no moderation row', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /View details for The Lantern/ }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText('Ages 6-8')).toBeInTheDocument()
+    expect(within(dialog).getByText('friendship')).toBeInTheDocument()
+    expect(within(dialog).getByText(/Scariness: mild/)).toBeInTheDocument()
+    // The master library's list item carries no screened/flagged_count, so
+    // the dialog omits the Moderation row rather than showing a placeholder.
+    expect(within(dialog).queryByText('Moderation')).not.toBeInTheDocument()
+    await user.click(within(dialog).getByRole('button', { name: /^Close$/ }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('omits age band and themes from the dialog when a story carries neither', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /View details for Old Tale/ }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).queryByText('Age band')).not.toBeInTheDocument()
+    expect(within(dialog).queryByText('Themes')).not.toBeInTheDocument()
   })
 })
