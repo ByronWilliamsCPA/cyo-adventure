@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-002-client-pwa/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/handoff-e2e-workflow-logic-review-2026-07-22/">
       
       
-        <link rel="prev" href="../adr-001-story-format-json-storybook/">
-      
-      
-        <link rel="next" href="../adr-003-frontier-llm-generation/">
       
       
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>ADR-002: Client is a Progressive Web App - CYO Adventure</title>
+        <title>E2E Workflow-Logic and Fidelity Review (2026-07-22) - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-002-client-is-a-progressive-web-app" class="md-skip">
+        <a href="#e2e-workflow-logic-and-fidelity-review-2026-07-22" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-002: Client is a Progressive Web App
+              E2E Workflow-Logic and Fidelity Review (2026-07-22)
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../guides/overview/" class="md-tabs__link">
+        <a href="../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../api-reference/" class="md-tabs__link">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../operations/runbook/" class="md-tabs__link">
+        <a href="../../operations/runbook/" class="md-tabs__link">
           
   
   
@@ -326,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -348,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -370,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -388,13 +384,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -416,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -438,7 +432,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -474,7 +468,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -504,7 +498,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -602,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/overview/" class="md-nav__link">
+      <a href="../../guides/overview/" class="md-nav__link">
         
   
   
@@ -637,7 +631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/configuration/" class="md-nav__link">
+      <a href="../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -672,7 +666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/usage/" class="md-nav__link">
+      <a href="../../guides/usage/" class="md-nav__link">
         
   
   
@@ -707,7 +701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -807,7 +801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api-reference/" class="md-nav__link">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -909,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/runbook/" class="md-nav__link">
+      <a href="../../operations/runbook/" class="md-nav__link">
         
   
   
@@ -944,7 +938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../operations/authoring-guide/" class="md-nav__link">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
         
   
   
@@ -1023,7 +1017,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../architecture/" class="md-nav__link ">
+            <a href="../../architecture/" class="md-nav__link ">
               
   
   
@@ -1074,7 +1068,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -1109,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1144,7 +1138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1179,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1214,7 +1208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/data-model/" class="md-nav__link">
+      <a href="../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1249,7 +1243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/deployment/" class="md-nav__link">
+      <a href="../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1324,7 +1318,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../api/" class="md-nav__link ">
+            <a href="../../api/" class="md-nav__link ">
               
   
   
@@ -1373,7 +1367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1408,7 +1402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1445,7 +1439,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1480,7 +1474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1584,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1619,7 +1613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1654,7 +1648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -1693,8 +1687,6 @@
       
   
   
-    
-  
   
   
     
@@ -1718,23 +1710,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -1759,13 +1750,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1785,7 +1776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project-vision/" class="md-nav__link">
+      <a href="../project-vision/" class="md-nav__link">
         
   
   
@@ -1820,7 +1811,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tech-spec/" class="md-nav__link">
+      <a href="../tech-spec/" class="md-nav__link">
         
   
   
@@ -1855,7 +1846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1890,7 +1881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/" class="md-nav__link">
+      <a href="../roadmap/" class="md-nav__link">
         
   
   
@@ -1922,8 +1913,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1961,21 +1950,20 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../adr/" class="md-nav__link ">
               
   
   
@@ -2000,13 +1988,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2026,7 +2014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2058,44 +2046,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ADR-002
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--accepted"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2118,304 +2072,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TL;DR
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Context
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Context">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Problem
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#constraints" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Constraints
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#significance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Significance
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Decision">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#rationale" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rationale
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#options-considered" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Options Considered
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Options Considered">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-1-pwa" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 1: PWA ✓
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-2-native-iosandroid" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 2: Native iOS/Android
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-3-react-native-flutter" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 3: React Native / Flutter
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Consequences
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Consequences">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#positive" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Positive
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#trade-offs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Trade-offs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#technical-debt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Debt
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Implementation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#components-affected" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Components Affected
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#testing-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Testing Strategy
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Validation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#success-criteria" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Success Criteria
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#review-schedule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Review Schedule
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2428,7 +2084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2463,7 +2119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2498,7 +2154,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2533,7 +2189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2568,7 +2224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2603,7 +2259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2638,7 +2294,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2673,7 +2329,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2708,7 +2364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2822,7 +2478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2857,7 +2513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2892,7 +2548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2927,7 +2583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../template_feedback/" class="md-nav__link">
+      <a href="../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2996,7 +2652,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -3047,7 +2703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -3109,10 +2765,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        Method
       
     </span>
   </a>
@@ -3120,22 +2776,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
+  <a href="#overall-assessment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Context
+        Overall assessment
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Context">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-child-workflow-product-issues-flow-is-wrong-for-the-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1: CHILD WORKFLOW PRODUCT ISSUES (flow is wrong for the user)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1: CHILD WORKFLOW PRODUCT ISSUES (flow is wrong for the user)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
+  <a href="#p-1-high-a-child-can-be-shown-a-blocking-undismissable-multi-device-conflict-dialog" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem
+        P-1 [HIGH] A child can be shown a blocking, undismissable multi-device conflict dialog
       
     </span>
   </a>
@@ -3143,10 +2810,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#constraints" class="md-nav__link">
+  <a href="#p-2-high-the-flagreport-path-can-dead-end-a-distressed-child-on-a-scary-error" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Constraints
+        P-2 [HIGH] The flag/report path can dead-end a distressed child on a scary error
       
     </span>
   </a>
@@ -3154,10 +2821,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#significance" class="md-nav__link">
+  <a href="#p-3-med-the-ending-screens-what-now-affordances-are-never-asserted-dead-end-risk" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Significance
+        P-3 [MED] The ending screen's "what now" affordances are never asserted (dead-end risk)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p-4-med-the-child-pin-gate-is-untested-and-the-fresh-device-login-has-no-child-framing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P-4 [MED] The child PIN gate is untested and the fresh-device login has no child framing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p-5-med-read-aloud-is-weak-for-its-actual-audience-pre-readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P-5 [MED] Read-aloud is weak for its actual audience (pre-readers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p-6-low-parent-facing-copyflow-snags-the-tests-entrench" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P-6 [LOW] Parent-facing copy/flow snags the tests entrench
       
     </span>
   </a>
@@ -3170,22 +2870,77 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
+  <a href="#part-2-child-workflow-fidelity-gaps-would-pass-if-broken" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision
+        Part 2: CHILD WORKFLOW FIDELITY GAPS (would pass if broken)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Decision">
+    <nav class="md-nav" aria-label="Part 2: CHILD WORKFLOW FIDELITY GAPS (would pass if broken)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#rationale" class="md-nav__link">
+  <a href="#f-1-high-the-security-critical-guardian-bearer-shed-handoff-has-zero-e2e-coverage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rationale
+        F-1 [HIGH] The security-critical guardian-bearer-shed handoff has zero e2e coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f-2-high-the-core-real-reading-loop-never-asserts-the-child-sees-any-story-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F-2 [HIGH] The core real reading loop never asserts the child sees any story text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f-3-med-read-aloud-tests-never-assert-spoken-content-equals-the-passage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F-3 [MED] Read-aloud tests never assert spoken content equals the passage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f-4-med-the-series-feature-is-never-proven-end-to-end-on-a-real-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F-4 [MED] The series feature is never proven end-to-end on a real backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f-5-med-naive-kid-misuse-real-contains-no-child-misuse-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F-5 [MED] "naive-kid-misuse-real" contains no child-misuse tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f-6-low-other-child-recovery-paths-uncovered-at-e2e-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F-6 [LOW] Other child-recovery paths uncovered at e2e level
       
     </span>
   </a>
@@ -3198,22 +2953,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#options-considered" class="md-nav__link">
+  <a href="#part-3-adult-system-fidelity-safety-gaps" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Options Considered
+        Part 3: ADULT / SYSTEM FIDELITY + SAFETY GAPS
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Options Considered">
+    <nav class="md-nav" aria-label="Part 3: ADULT / SYSTEM FIDELITY + SAFETY GAPS">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#option-1-pwa" class="md-nav__link">
+  <a href="#s-1-high-the-approve-assign-child-sees-loop-is-never-tested-end-to-end" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 1: PWA ✓
+        S-1 [HIGH] The approve -&gt; assign -&gt; child-sees loop is never tested end-to-end
       
     </span>
   </a>
@@ -3221,10 +2976,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#option-2-native-iosandroid" class="md-nav__link">
+  <a href="#s-2-high-catalog-visibility-publish-is-entirely-untested-end-to-end" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 2: Native iOS/Android
+        S-2 [HIGH] Catalog-visibility publish is entirely untested end-to-end
       
     </span>
   </a>
@@ -3232,10 +2987,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#option-3-react-native-flutter" class="md-nav__link">
+  <a href="#s-3-high-cross-family-pii-compensating-controls-unverified" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 3: React Native / Flutter
+        S-3 [HIGH] Cross-family PII compensating controls unverified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s-4-med-the-human-approval-safety-invariant-is-proven-only-positively" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S-4 [MED] The human-approval safety invariant is proven only positively
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s-5-med-the-crown-jewel-full-pipeline-stubs-the-content-it-is-meant-to-prove-safe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S-5 [MED] The crown-jewel full-pipeline stubs the content it is meant to prove safe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s-6-med-real-tier-request-paths-weaker-than-their-mocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S-6 [MED] Real-tier request paths weaker than their mocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s-7-low-auth-negatives-asserted-only-positively" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S-7 [LOW] Auth negatives asserted only positively
       
     </span>
   </a>
@@ -3248,138 +3047,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
+  <a href="#genuine-strengths-models-to-copy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Consequences
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Consequences">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#positive" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Positive
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#trade-offs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Trade-offs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#technical-debt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Debt
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Implementation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#components-affected" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Components Affected
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#testing-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Testing Strategy
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Validation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#success-criteria" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Success Criteria
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#review-schedule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Review Schedule
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related
+        Genuine strengths (models to copy)
       
     </span>
   </a>
@@ -3406,117 +3077,230 @@
   
 
 
-<h1 id="adr-002-client-is-a-progressive-web-app">ADR-002: Client is a Progressive Web App<a class="headerlink" href="#adr-002-client-is-a-progressive-web-app" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Status</strong>: Accepted (2026-07-03; distribution premise amended by ADR-008)
-<strong>Date</strong>: 2026-06-20
-<strong>Amended by</strong>: ADR-008 (distribution: adds a Capacitor App Store shell; the web PWA remains the browser channel)</p>
-</blockquote>
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>Build the reader and the parent tools as a PWA (React 19, TypeScript, Vite, service
-worker, IndexedDB), because reading is the core interaction and a PWA serves it fully:
-installable, offline-capable, and updated by a deploy with no app-store review.</p>
-<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
-<p>Kids will read on mixed devices (iPads, phones, a laptop). We want easy updates and,
-ideally, offline reading. The choices are native iOS/Android, a cross-platform
-framework (React Native, Flutter), or a PWA.</p>
-<h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
+<h1 id="e2e-workflow-logic-and-fidelity-review-2026-07-22">E2E Workflow-Logic and Fidelity Review (2026-07-22)<a class="headerlink" href="#e2e-workflow-logic-and-fidelity-review-2026-07-22" title="Permanent link">&para;</a></h1>
+<h2 id="method">Method<a class="headerlink" href="#method" title="Permanent link">&para;</a></h2>
+<p>59 spec files across four tiers (mocked <code>e2e/</code>, real-backend <code>e2e-real/</code>,
+<code>e2e-staging/</code>, <code>e2e-prod/</code>) were reviewed by 11 journey-scoped agents. Each
+agent held two mandates:</p>
 <ul>
-<li><strong>Technical</strong>: offline play is a first-class requirement; iOS PWAs have storage and
-  install quirks to test for.</li>
-<li><strong>Business</strong>: a private family app gets no payoff from app-store distribution, and
-  app-store review is a real recurring cost.</li>
+<li><strong>Fidelity</strong>: does the test match the code, and would it fail if the real
+  experience broke?</li>
+<li><strong>Desirability</strong>: is the flow the test encodes what a real user, especially
+  a child (ages ~5-10, many pre/early readers), would expect and find simple?</li>
 </ul>
-<h3 id="significance">Significance<a class="headerlink" href="#significance" title="Permanent link">&para;</a></h3>
-<p>The client is a large build surface, but the JSON format (ADR-001) is client-agnostic,
-so this decision is reversible: a native app can be added later without touching the
-pipeline.</p>
-<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<p><strong>We will build the reader and parent tools as a PWA because it fully serves the core
-reading interaction while eliminating app-store friction.</strong> A service worker provides
-offline caching and IndexedDB holds downloaded stories and progress.</p>
-<h3 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h3>
-<p>Reading is installable to a home screen, offline-capable, and updated by a deploy with
-no review queue. App-store review buys nothing for a private family app. The
-client-agnostic format keeps a future native app open for any of the kids.</p>
-<h2 id="options-considered">Options Considered<a class="headerlink" href="#options-considered" title="Permanent link">&para;</a></h2>
-<h3 id="option-1-pwa">Option 1: PWA ✓<a class="headerlink" href="#option-1-pwa" title="Permanent link">&para;</a></h3>
-<p><strong>Pros</strong>:</p>
+<p>Child rubric applied: a child should always know what to tap next; never a
+dead end; no adult jargon or error codes; graceful recovery from a wrong tap
+or offline; the "find your grown-up" gate the only hard stop.</p>
+<h2 id="overall-assessment">Overall assessment<a class="headerlink" href="#overall-assessment" title="Permanent link">&para;</a></h2>
+<p>The suite is <strong>faithful and disciplined</strong>: tests generally assert the network
+write actually fired (captured request bodies, poll-on-boolean), confirmation
+dialogs are exercised, real-tier specs read persisted state back, often through
+a second principal. The problems are <strong>not false-green regressions in what is
+covered</strong>; they are (a) a small number of <strong>product flows that a child would
+not expect</strong>, which the tests currently enshrine as correct, and (b) <strong>coverage
+gaps</strong> where a broken real-world experience, especially a child one, would still
+pass.</p>
+<hr />
+<h2 id="part-1-child-workflow-product-issues-flow-is-wrong-for-the-user">Part 1: CHILD WORKFLOW PRODUCT ISSUES (flow is wrong for the user)<a class="headerlink" href="#part-1-child-workflow-product-issues-flow-is-wrong-for-the-user" title="Permanent link">&para;</a></h2>
+<p>These are places where the tested flow itself is not what a child would expect.
+Fixing these is a product change; the test change follows.</p>
+<h3 id="p-1-high-a-child-can-be-shown-a-blocking-undismissable-multi-device-conflict-dialog">P-1 [HIGH] A child can be shown a blocking, undismissable multi-device conflict dialog<a class="headerlink" href="#p-1-high-a-child-can-be-shown-a-blocking-undismissable-multi-device-conflict-dialog" title="Permanent link">&para;</a></h3>
 <ul>
-<li>✅ One codebase; offline reading; instant updates; no store friction.</li>
+<li><code>ConflictDialog.tsx:70-88</code>, rendered to the kid surface at <code>ReaderPage.tsx:566-567</code>
+  (live-save 409) and <code>ReaderRoute.tsx:220-225</code> (reconnect replay).</li>
+<li>Mid-story, a 5-10 year old is forced to answer "Which one do you want to keep?
+  Keep this device / Use the newest place" before they can read on. "Keep this
+  device" can discard the other device's progress.</li>
+<li>Both <code>reader-conflict.spec.ts:71-72,97-102</code> and <code>offline-conflict-real.spec.ts:186-211</code>
+  assert this dialog as correct behavior, locking it in.</li>
+<li>The softer pattern already exists two elements over: the replay-failed banner
+  (<code>ReaderRoute.tsx:227-240</code>) tells the child gently and defers to a grown-up.</li>
+<li><strong>Recommend</strong>: auto-resolve conflicts silently; a child should never see a
+  merge prompt. Then assert <em>no</em> conflict dialog reaches the child.</li>
+<li><strong>Decision (implemented, commit <code>161fca4</code>)</strong>: newest-write-wins, silently.
+  The app adopts the server's most recent row and keeps reading, with no dialog.
+  This deliberately accepts moving the child backward when the other device is
+  less far along (data loss tagged <code>#ASSUME:data-integrity</code> in <code>ReaderPage.tsx</code>
+  and <code>ReaderRoute.tsx</code>); it was chosen over "keep the furthest place" because it
+  is the simplest rule to reason about and reading must never block on a conflict.</li>
 </ul>
-<p><strong>Cons</strong>:</p>
+<h3 id="p-2-high-the-flagreport-path-can-dead-end-a-distressed-child-on-a-scary-error">P-2 [HIGH] The flag/report path can dead-end a distressed child on a scary error<a class="headerlink" href="#p-2-high-the-flagreport-path-can-dead-end-a-distressed-child-on-a-scary-error" title="Permanent link">&para;</a></h3>
 <ul>
-<li>❌ Slightly less native polish; iOS PWA storage-eviction and install nuances.</li>
+<li><code>FlagButton.tsx:132-136</code> renders <code>role="alert"</code> "Something went wrong. Try
+  again." A child who just reported that a story upset them gets an error alert.</li>
+<li>Untested in both tiers. It is exactly the dead-end the rubric forbids, on the
+  most emotionally sensitive path.</li>
+<li><strong>Recommend</strong>: replace the error with a reassuring, non-blocking message that
+  keeps the child in the story or points them to a grown-up; add a test.</li>
 </ul>
-<h3 id="option-2-native-iosandroid">Option 2: Native iOS/Android<a class="headerlink" href="#option-2-native-iosandroid" title="Permanent link">&para;</a></h3>
-<p><strong>Pros</strong>:</p>
+<h3 id="p-3-med-the-ending-screens-what-now-affordances-are-never-asserted-dead-end-risk">P-3 [MED] The ending screen's "what now" affordances are never asserted (dead-end risk)<a class="headerlink" href="#p-3-med-the-ending-screens-what-now-affordances-are-never-asserted-dead-end-risk" title="Permanent link">&para;</a></h3>
 <ul>
-<li>✅ Best polish, native TTS.</li>
+<li><code>Reader.tsx:372-397</code> renders "Read again", "Go back", "Back to my books",
+  optional "Continue the series". No spec asserts any of them; <code>reader.spec.ts:59-60</code>
+  asserts only <code>ending-screen</code> + the hidden <code>ending-id</code>.</li>
+<li>A regression shipping an ending with no forward action passes every test. The
+  rubric's "never a dead end" guarantee is unpinned.</li>
 </ul>
-<p><strong>Cons</strong>:</p>
+<h3 id="p-4-med-the-child-pin-gate-is-untested-and-the-fresh-device-login-has-no-child-framing">P-4 [MED] The child PIN gate is untested and the fresh-device login has no child framing<a class="headerlink" href="#p-4-med-the-child-pin-gate-is-untested-and-the-fresh-device-login-has-no-child-framing" title="Permanent link">&para;</a></h3>
 <ul>
-<li>❌ Two codebases, app-store friction, slow updates. Overkill for a reading app.</li>
+<li>PIN surface (<code>ProfilePickerPage.tsx:328-400</code>: padlock tile, "Type your secret
+  PIN", wrong-PIN retry, forgot-PIN "Ask a grown-up" escape) never renders in
+  any test because no fixture sets <code>has_pin</code>.</li>
+<li>Fresh-device: a child tapping "Kids" lands on a bare adult email/password form;
+  no test asserts any "ask your grown-up to set up this device" framing
+  (<code>device-authorization.spec.ts</code> test 1).</li>
+<li>Both are the child's only hard stops besides AdultGate and both are the highest
+  dead-end/confusion risk.</li>
 </ul>
-<h3 id="option-3-react-native-flutter">Option 3: React Native / Flutter<a class="headerlink" href="#option-3-react-native-flutter" title="Permanent link">&para;</a></h3>
-<p>One codebase with a near-native feel, but a heavier toolchain and store friction
-remains. More than a reading app needs at v1.</p>
-<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
-<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
+<h3 id="p-5-med-read-aloud-is-weak-for-its-actual-audience-pre-readers">P-5 [MED] Read-aloud is weak for its actual audience (pre-readers)<a class="headerlink" href="#p-5-med-read-aloud-is-weak-for-its-actual-audience-pre-readers" title="Permanent link">&para;</a></h3>
 <ul>
-<li>✅ One codebase, offline reading, zero install friction, fast iteration.</li>
+<li>No word/position highlight anywhere in <code>useReadAloud.ts</code>; a pre-reader cannot
+  follow along visually.</li>
+<li>Flag reason labels are text-only, no icons, no read-aloud (<code>FlagButton.tsx:36-40</code>),
+  yet a distressed pre-reader may not be able to read "It was confusing."</li>
 </ul>
-<h3 id="trade-offs">Trade-offs<a class="headerlink" href="#trade-offs" title="Permanent link">&para;</a></h3>
+<h3 id="p-6-low-parent-facing-copyflow-snags-the-tests-entrench">P-6 [LOW] Parent-facing copy/flow snags the tests entrench<a class="headerlink" href="#p-6-low-parent-facing-copyflow-snags-the-tests-entrench" title="Permanent link">&para;</a></h3>
 <ul>
-<li>⚠️ iOS PWAs can evict site data under storage pressure. Mitigation: treat IndexedDB
-  strictly as a cache, never the source of truth; the canonical reading progress is the
-  Postgres <code>reading_state</code> row. Call <code>navigator.storage.persist()</code> but do not trust it
-  on iOS.</li>
+<li>"Assign more" shown even for a book assigned to no one yet (<code>assignments.spec.ts</code>).</li>
+<li>Two divergent "Request a story" surfaces (<code>/guardian/intake</code> concept vs the
+  authored form on <code>/guardian/requests</code>) with different behavior and different
+  success copy; "sent for authoring" leaks jargon with no pointer to where the
+  story now appears.</li>
+<li>No UI to delete a child profile (the real test must call DELETE directly,
+  <code>guardian-profile-crud-real.spec.ts</code>).</li>
+<li>Awaiting-approval interstitial is a soft dead-end: only exit is a <code>Sign out</code>
+  button, no status re-check/poll/"we'll email you" (<code>GuardianAwaitingApprovalPage.tsx:56</code>).</li>
+<li>No new-visitor/sign-up affordance on the landing page; both doors lead to
+  existing-user destinations (<code>LandingPage.tsx:110-123</code>).</li>
 </ul>
-<h3 id="technical-debt">Technical Debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
+<hr />
+<h2 id="part-2-child-workflow-fidelity-gaps-would-pass-if-broken">Part 2: CHILD WORKFLOW FIDELITY GAPS (would pass if broken)<a class="headerlink" href="#part-2-child-workflow-fidelity-gaps-would-pass-if-broken" title="Permanent link">&para;</a></h2>
+<h3 id="f-1-high-the-security-critical-guardian-bearer-shed-handoff-has-zero-e2e-coverage">F-1 [HIGH] The security-critical guardian-bearer-shed handoff has zero e2e coverage<a class="headerlink" href="#f-1-high-the-security-critical-guardian-bearer-shed-handoff-has-zero-e2e-coverage" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Offline sync: budget service-worker and IndexedDB work into Phase 1; sync progress to
-  the server on every choice while online, queue writes when offline, and reconcile on
-  reconnect using the revision-based concurrency model (a stale <code>state_revision</code>
-  returns 409).</li>
+<li><code>handDeviceToChild()</code> (<code>ConsolePage.tsx:116-121</code>, the <code>#CRITICAL</code> sign-out-
+  before-handoff) is never clicked in any tier. Prod/staging reach <code>/kids</code> with
+  the guardian still signed in; the mocked test that runs the LoginPage sign-out
+  path never asserts <code>auth_token</code> was cleared (<code>device-authorization.spec.ts:51-58</code>).</li>
+<li>A regression re-leaking the family library to a child (PR #247 Critical class)
+  passes every one of these tests.</li>
 </ul>
-<h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
-<h3 id="components-affected">Components Affected<a class="headerlink" href="#components-affected" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>PWA shell</strong>: React 19 / Vite, service worker via vite-plugin-pwa (Workbox).</li>
-<li><strong>Offline cache</strong>: IndexedDB (<code>idb</code>) for stories and queued progress writes.</li>
-<li><strong>Sync client</strong>: revision-based reconciliation against the backend reading store.</li>
-</ol>
-<h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
+<h3 id="f-2-high-the-core-real-reading-loop-never-asserts-the-child-sees-any-story-text">F-2 [HIGH] The core real reading loop never asserts the child sees any story text<a class="headerlink" href="#f-2-high-the-core-real-reading-loop-never-asserts-the-child-sees-any-story-text" title="Permanent link">&para;</a></h3>
 <ul>
-<li>E2E (Playwright): a full playthrough including offline mode, save/resume, and
-  multi-device 409 reconciliation.</li>
-<li>Unit: the offline write queue and replay idempotency.</li>
+<li><code>kid-reads.spec.ts:49-53</code> clicks choices to an ending but asserts no passage
+  text, ending title, or content change. A backend serving blank/garbled prose
+  passes green. The real tier is the one that could actually serve malformed
+  prose, and it is the tier with no content assertion.</li>
 </ul>
-<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
-<h3 id="success-criteria">Success Criteria<a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h3>
-<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A downloaded story plays start to finish with the network disabled.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A two-device conflict resolves without silent loss <strong>on adult surfaces</strong>.
-      On the child reader path this criterion was deliberately relaxed to silent
-      newest-write-wins (see the amendment note below): a conflict adopts the
-      server row without a prompt and may discard the local position, because a
-      young child cannot answer a "which place do you want to keep?" dialog and
-      reading must never block on a conflict.</li>
-</ul>
-<h3 id="review-schedule">Review Schedule<a class="headerlink" href="#review-schedule" title="Permanent link">&para;</a></h3>
+<h3 id="f-3-med-read-aloud-tests-never-assert-spoken-content-equals-the-passage">F-3 [MED] Read-aloud tests never assert spoken content equals the passage<a class="headerlink" href="#f-3-med-read-aloud-tests-never-assert-spoken-content-equals-the-passage" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Initial: Phase 1 acceptance.</li>
-<li>Ongoing: on iOS Safari major releases.</li>
+<li><code>kid-read-aloud.spec.ts:74-80,142</code>, <code>kid-read-aloud-real.spec.ts:160-176</code>.
+  <code>speak()</code> is stubbed/no-op; a regression speaking the wrong text or nothing
+  passes.</li>
 </ul>
-<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<h3 id="f-4-med-the-series-feature-is-never-proven-end-to-end-on-a-real-backend">F-4 [MED] The series feature is never proven end-to-end on a real backend<a class="headerlink" href="#f-4-med-the-series-feature-is-never-proven-end-to-end-on-a-real-backend" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="../adr-001-story-format-json-storybook/">ADR-001</a>: the client-agnostic format that
-  keeps a native app open.</li>
-<li><a href="../adr-008-public-app-store-launch/">ADR-008</a>: adds a Capacitor App Store shell as a
-  distribution channel; the web PWA remains the browser channel.</li>
-<li><a href="../../tech-spec/#multi-device-sync-rules">Tech Spec: Multi-device sync rules</a></li>
+<li>Mocked (<code>series-continue.spec.ts:143</code>) proves carried <code>var_state</code> but the
+  "opens at entry node" claim is a tautology (<code>start_node == series_entry_node</code>).</li>
+<li>Real (<code>series-continue-real.spec.ts:58-62</code>) proves the URL but asserts nothing
+  about carried state, the defining behavior of <code>carries_state:true</code>.</li>
+<li>Neither tier proves both, so the headline series behavior is unproven on a
+  real backend.</li>
+</ul>
+<h3 id="f-5-med-naive-kid-misuse-real-contains-no-child-misuse-tests">F-5 [MED] "naive-kid-misuse-real" contains no child-misuse tests<a class="headerlink" href="#f-5-med-naive-kid-misuse-real-contains-no-child-misuse-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The file is a single cross-family authorization check. Real button-mashing
+  (double-tap into the real 5-request cap -&gt; 409, rapid choice-mashing, garbage/
+  emoji input, offline-mid-request, back-button mid-form, stale-anchor retry) is
+  untested against the real backend. Enumerated gaps in the kid-requests review.</li>
+</ul>
+<h3 id="f-6-low-other-child-recovery-paths-uncovered-at-e2e-level">F-6 [LOW] Other child-recovery paths uncovered at e2e level<a class="headerlink" href="#f-6-low-other-child-recovery-paths-uncovered-at-e2e-level" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Hardware/OS Back button (what a kid mashes on a tablet) has zero coverage; all
+  go-back tests drive the in-app control only.</li>
+<li>Offline library shelf and the library "Time to find your grown-up" gate
+  (<code>LibraryPage.tsx:277-297,379-383</code>) are unit-only.</li>
+<li>Gated-var replay + server persistence of go-back are split across tiers with a
+  hole in the middle (<code>reader-go-back.spec.ts</code> client-only; <code>kid-go-back-real.spec.ts</code>
+  ungated story).</li>
+<li>Conflict during offline-reconnect flush (<code>ReaderRoute.tsx:220</code>) is component-only.</li>
+</ul>
+<hr />
+<h2 id="part-3-adult-system-fidelity-safety-gaps">Part 3: ADULT / SYSTEM FIDELITY + SAFETY GAPS<a class="headerlink" href="#part-3-adult-system-fidelity-safety-gaps" title="Permanent link">&para;</a></h2>
+<h3 id="s-1-high-the-approve-assign-child-sees-loop-is-never-tested-end-to-end">S-1 [HIGH] The approve -&gt; assign -&gt; child-sees loop is never tested end-to-end<a class="headerlink" href="#s-1-high-the-approve-assign-child-sees-loop-is-never-tested-end-to-end" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Every assign test stops at the POST body (<code>guardian-books.spec.ts:142,200</code>,
+  <code>assignments.spec.ts:117</code>). The one real test where a child reads a book uses a
+  fixture-pre-assigned book (<code>reading-history-real.spec.ts</code>), not a guardian-driven
+  assignment. The single most non-obvious required step in the product (a book is
+  approved but invisible until separately assigned) is unverified from guardian
+  action through to the child's library.</li>
+</ul>
+<h3 id="s-2-high-catalog-visibility-publish-is-entirely-untested-end-to-end">S-2 [HIGH] Catalog-visibility publish is entirely untested end-to-end<a class="headerlink" href="#s-2-high-catalog-visibility-publish-is-entirely-untested-end-to-end" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The approve dialog's <code>catalog</code> option publishes to every family with a PII
+  warning (<code>ReviewDetailPage.tsx:663-689</code>). No test selects it, asserts the
+  warning, or even inspects the approve POST body to confirm <code>visibility</code> reaches
+  the wire (<code>guardian-review.spec.ts:72-95</code>). Highest-consequence child-privacy
+  decision on the surface.</li>
+</ul>
+<h3 id="s-3-high-cross-family-pii-compensating-controls-unverified">S-3 [HIGH] Cross-family PII compensating controls unverified<a class="headerlink" href="#s-3-high-cross-family-pii-compensating-controls-unverified" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The <code>PROFILE_VIEWED</code> cross-tenant read audit (<code>admin_profiles.py:119-134</code>) and
+  the <code>pin_hash</code>/<code>authn_subject</code> non-serialization boundary are never asserted by
+  the tier that receives real cross-family JSON (<code>admin-management-real.spec.ts</code>).</li>
+<li>The server-side admin 403 gate is never exercised; both guardian-redirect tests
+  assert only the client SPA redirect. Self-lockout guard and privilege escalation
+  (granting <code>is_admin:true</code>) have zero e2e coverage.</li>
+</ul>
+<h3 id="s-4-med-the-human-approval-safety-invariant-is-proven-only-positively">S-4 [MED] The human-approval safety invariant is proven only positively<a class="headerlink" href="#s-4-med-the-human-approval-safety-invariant-is-proven-only-positively" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>approval-flow.spec.ts:78-88</code> shows an approved story reaching the child library,
+  but nothing asserts an <code>in_review</code>/<code>needs_revision</code> story is ABSENT from it.
+  "No child content without human approval" is never demonstrated by pre-approval
+  invisibility.</li>
+<li>Re-screen-after-edit is unobservable (mock keeps original findings,
+  <code>review-edit.spec.ts:96-105</code>); the 422 unsafe-edit-rejected branch is
+  component-only.</li>
+</ul>
+<h3 id="s-5-med-the-crown-jewel-full-pipeline-stubs-the-content-it-is-meant-to-prove-safe">S-5 [MED] The crown-jewel full-pipeline stubs the content it is meant to prove safe<a class="headerlink" href="#s-5-med-the-crown-jewel-full-pipeline-stubs-the-content-it-is-meant-to-prove-safe" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>full-pipeline-real.spec.ts:22-25,63</code> runs the real worker/queue/DB/approve/
+  reader but the mock generation provider (canned "The Forest Path"). The gate can
+  only ever be observed passing; no hard-block/send-back negative path exists
+  anywhere. It also routes around the real family request/intake/gating surface
+  (uses the UI-less <code>/api/v1/concepts</code>), so it is a realistic generate-and-publish
+  journey, not the realistic family journey.</li>
+</ul>
+<h3 id="s-6-med-real-tier-request-paths-weaker-than-their-mocks">S-6 [MED] Real-tier request paths weaker than their mocks<a class="headerlink" href="#s-6-med-real-tier-request-paths-weaker-than-their-mocks" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>authored-request.spec.ts:35,53</code> asserts only the success notice; a backend that
+  201s but does nothing downstream passes. The concept-intake pipeline has no
+  real-backend test at all.</li>
+</ul>
+<h3 id="s-7-low-auth-negatives-asserted-only-positively">S-7 [LOW] Auth negatives asserted only positively<a class="headerlink" href="#s-7-low-auth-negatives-asserted-only-positively" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Cross-tab password recovery proves tab B shows the new-password form but not that
+  it avoided an old-password signed-in console (<code>guardian-password-reset.spec.ts:161-191</code>).</li>
+<li>Post-login deep-link <code>state.from</code> return-path untested (<code>guardian-console.spec.ts:32-37</code>).</li>
+<li>Sign-out "re-locks" asserts only the URL, never re-navigates to prove re-gating
+  (<code>guardian-auth.spec.ts:92-103</code>).</li>
+</ul>
+<hr />
+<h2 id="genuine-strengths-models-to-copy">Genuine strengths (models to copy)<a class="headerlink" href="#genuine-strengths-models-to-copy" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>offline-online-parity-real.spec.ts</code>: offline is silent to the child; reconnect
+  confirms with a friendly "All caught up! Your reading is saved."; cross-engine
+  Python replay. The right pattern.</li>
+<li><code>kid-flag-real.spec.ts</code> and <code>kid-go-back-real.spec.ts</code>: assert persisted server
+  state through a second principal, not just a toast.</li>
+<li><code>contract-smoke-real.spec.ts</code>: field-by-field real-shape pinning against named
+  consumers, the drift class behind P0-1.</li>
+<li><code>guardian-consent.spec.ts</code>: the only test that proves a gate is not client-side
+  bypassable (re-navigates after consent).</li>
+<li><code>library.spec.ts</code>: locks in "decorations degrade to absence, never an error"
+  and the ADR-016 no-messaging boundary.</li>
+<li><code>a11y.spec.ts</code> / <code>visual.spec.ts</code>: structurally CI-gated, animation-settled,
+  meaningful floors.</li>
 </ul>
 
 
@@ -3550,7 +3334,7 @@ remains. More than a reading app needs at v1.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 05:16:41 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 23, 2026 18:04:55 UTC">July 23, 2026</span>
   </span>
 
     
@@ -3627,10 +3411,10 @@ remains. More than a reading app needs at v1.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
