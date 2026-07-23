@@ -19,6 +19,7 @@ import { Dialog } from '@ds/components/Dialog'
 import type { KidFlagCreatedView } from '../client/types.gen'
 import { FlagCapReachedError, type FlagReason, type SubmitFlagParams } from '../api/readerApi'
 import { getValidChildSession } from '../auth/childSession'
+import { logApiError } from '../hooks/logApiError'
 import { useToast } from '../notifications/useToast'
 import './reader.css'
 
@@ -107,14 +108,15 @@ export function FlagButton({
         // reassures the child and never dead-ends them"; a future retry/queue
         // would close the delivery gap without changing this child-facing copy.
         //
-        // Redacted shape only, never the raw axios error (its `config`
-        // carries the Authorization header); mirrors logApiError's intent.
-        console.error('[reader] flag submit failed', {
-          profileId,
-          storybookId,
-          reason,
-          error: err,
-        })
+        // Routed through logApiError, the single redaction point: it logs only
+        // { status, url } for an AxiosError and never reads `.headers`, so the
+        // child bearer on `config.headers.Authorization` cannot reach the
+        // console. The diagnostic context (profile, story, reason) rides in the
+        // label so the miss stays observable without carrying auth material.
+        logApiError(
+          `[reader] flag submit failed (profile=${profileId} story=${storybookId} reason=${reason})`,
+          err,
+        )
         setOpen(false)
         showToast('Thanks for telling us. A grown-up will take a look.', { tone: 'info' })
       }

@@ -248,8 +248,9 @@ export class FlagCapReachedError extends Error {
 /**
  * Submit a child's structured flag (K15). Never carries free text; `reason`
  * is one of exactly three kid-simple choices (see FlagReason). A 409 maps to
- * FlagCapReachedError; every other failure propagates for the caller's
- * generic-retry copy.
+ * FlagCapReachedError; every other failure propagates so the caller can log it
+ * and reassure the child (FlagButton shows the same gentle confirmation as
+ * success, never a retry prompt, on the app's most emotionally sensitive path).
  */
 export function makeSubmitFlag(
   api: AxiosInstance

@@ -115,12 +115,15 @@ describe('FlagButton (K15)', () => {
       // Not a dead end: the dialog closes so the child can keep reading.
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
       // The raw error is never surfaced to the child, but it IS logged so the
-      // failed report is not silently swallowed.
+      // failed report is not silently swallowed. Logging is routed through
+      // logApiError (the single redaction point), so the diagnostic context
+      // rides in the label; the chosen reason must still be observable there.
       expect(screen.queryByText(/network exploded/i)).not.toBeInTheDocument()
       expect(consoleError).toHaveBeenCalledWith(
-        '[reader] flag submit failed',
-        expect.objectContaining({ reason: 'did_not_like' })
+        expect.stringContaining('flag submit failed'),
+        expect.anything()
       )
+      expect(consoleError.mock.calls[0]?.[0]).toContain('did_not_like')
     })
 
     it('Cancel closes the dialog without submitting', () => {
