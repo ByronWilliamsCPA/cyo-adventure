@@ -136,6 +136,13 @@ jobs:
           CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
           CYO_ADVENTURE_REDIS_URL: redis://localhost:6379/0
           DEVICE_GRANT_SECRET: pr-smoke-e2e-real-device-grant-secret
+          # kid-reads picks a profile, which mints a child-session token
+          # (POST /api/v1/child-sessions). That endpoint 400s
+          # (ConfigurationError) without a secret to sign it, even in local,
+          # so the kid library call 401s and the shelf never renders. Must be
+          # non-empty and distinct from DEVICE_GRANT_SECRET (config.py enforces
+          # distinctness in every environment; issue #251 audience separation).
+          CHILD_SESSION_SECRET: pr-smoke-e2e-real-child-session-secret
         run: |
           uv run uvicorn cyo_adventure.app:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
           echo $! > backend.pid
