@@ -52,7 +52,7 @@ test("a hand-edited URL into another family's profile is rejected, not served", 
     (res) => res.url().includes(`/api/v1/library`) && res.url().includes(UNRELATED_PROFILE_ID),
     { timeout: 5_000 }
   )
-  // #ASSUME: data integrity: page.goto()'s own response is the SPA's static
+  // #ASSUME: data-integrity: page.goto()'s own response is the SPA's static
   // document (client-side routing under Vite preview), which is 200 for any
   // path regardless of API authorization outcome, so it cannot stand in for
   // "was the other family's content served."
@@ -137,7 +137,7 @@ test('mashing reader choices never corrupts state or dead-ends', async ({ page }
   await page.getByRole('link', { name: 'The Tide Pool Mystery' }).click()
   await expect(page).toHaveURL(/\/read\//)
 
-  // #ASSUME: data integrity: the shared-DB real tier persists reading_state
+  // #ASSUME: data-integrity: the shared-DB real tier persists reading_state
   // across spec files, and kid-reads.spec.ts (which runs earlier, same seeded
   // "Dev Reader", same pinned title) reads this book to an ending. The reader
   // restores the last persisted node, so this test can open straight onto the

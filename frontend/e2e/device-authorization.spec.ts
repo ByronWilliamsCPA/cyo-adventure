@@ -58,12 +58,12 @@ test.describe('authorize-device intent (ADR-014 section 5)', () => {
     await expect(page).toHaveURL('/kids')
     await expect(page.getByText('No profiles yet')).toBeVisible()
 
-    // #CRITICAL security fidelity (LoginPage.tsx authorize-device effect): after
-    // minting the grant the effect signs the guardian OUT, so the guardian
-    // bearer ('auth_token', the key useApi attaches on kid routes) MUST be gone
-    // from this now-kid device. If a regression re-leaks the session, a child
-    // would read the whole family's library via the useApi guardian-bearer
-    // fallthrough; this assertion fails the moment that bearer lingers.
+    // #CRITICAL: security: after minting the grant the LoginPage.tsx
+    // authorize-device effect signs the guardian OUT, so the guardian bearer
+    // ('auth_token', the key useApi attaches on kid routes) MUST be gone from
+    // this now-kid device. If a regression re-leaks the session, a child would
+    // read the whole family's library via the useApi guardian-bearer fallthrough.
+    // #VERIFY: the poll assertion below fails the moment that bearer lingers.
     await expect
       .poll(() => page.evaluate(() => window.localStorage.getItem('auth_token')))
       .toBeNull()
