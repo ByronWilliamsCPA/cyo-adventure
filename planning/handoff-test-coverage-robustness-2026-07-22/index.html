@@ -2853,6 +2853,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#phase-7-structural-test-design-gaps-second-team-review-2026-07-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7, structural test-design gaps (second-team review, 2026-07-22)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 7, structural test-design gaps (second-team review, 2026-07-22)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-open-questions-answered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7 open questions (answered)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#do-not-re-derive-facts" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3024,6 +3052,58 @@ coverage. From the verdict doc's "suspected micro-holes":</p>
 <li><strong>6.4 USER-decision, dev Playwright tier.</strong> None exists (no frontend deploy
   pipeline this repo owns). Decide whether to add one or keep dev as manual smoke.</li>
 </ul>
+<h2 id="phase-7-structural-test-design-gaps-second-team-review-2026-07-22">Phase 7, structural test-design gaps (second-team review, 2026-07-22)<a class="headerlink" href="#phase-7-structural-test-design-gaps-second-team-review-2026-07-22" title="Permanent link">&para;</a></h2>
+<p>A second team reviewed <code>main</code> (before this work order's changes landed) and
+surfaced structural gaps that Phases 1 to 6 do not cover. Deduplicated against
+the phases above; only the genuinely-new items are listed. Their G5
+(performance/load) is out of this order's scope and already owned by roadmap
+Phase 9 (P9-13 capacity baseline), so it is not added here.</p>
+<ul>
+<li><strong>7.1 TODO (G1, highest), full-pipeline E2E through the real RQ worker.</strong> The
+  request to generate to gate to moderate to approve to publish to read pipeline
+  is only asserted in fragments; <code>e2e-real</code> seeds data rather than generating
+  it, and the RQ generation/cover workers are never in a browser E2E loop. Not
+  covered by Phase 3.1 (which submits a request but does not drive real
+  generation). Done when one nightly E2E submits a real story request, lets the
+  real RQ worker process it through the real validator gate + moderation, has a
+  guardian/admin approve via the real approval API, publishes, and drives a kid
+  to read the published book to a valid ending. Redis + worker must run in-loop.
+  Needs a dedicated nightly job with its own infra (see decision below); heavier
+  than the rest of Phase 3.</li>
+<li><strong>7.2 TODO (G2), pin the mocked tier to the real contract.</strong> The ~35
+  hand-written <code>page.route</code> fulfilments in <code>frontend/e2e/</code> can drift from the
+  real backend with no link to the OpenAPI schema; this is the same failure
+  class as the audit's P0-1 (the mocked tier did not enforce <code>extra=forbid</code>, so
+  the offline-resync defect was invisible until the real backend caught it).
+  Done when either the mocked-tier bodies are validated against the OpenAPI
+  component schemas, OR a few real-backend "contract smoke" specs cover the
+  highest-drift endpoints (library, reading-state PUT, intake, review).
+  Recommended: the contract-smoke route (lighter, and the real backend already
+  enforces <code>extra=forbid</code>).</li>
+<li><strong>7.3 TODO (G3), offline-vs-online branching parity.</strong> <code>back()</code>/<code>canGoBack()</code>
+  replay and <code>startContinuation()</code> are the client-engine paths most likely to
+  diverge from a server-side recompute, and no E2E asserts equivalence. Phase
+  3.2 adds a go-back (K5) spec, but not a parity assertion. Done when an E2E
+  reads a branching story offline (go back, re-choose, continue a series) and
+  asserts the resulting current node, variable state, and ending match the
+  online/server path for the same choice sequence.</li>
+<li><strong>7.4 TODO (G4), promote one real-stack smoke to the PR path.</strong> The real tier
+  is nightly-only, so developers get no full-stack signal per PR. Unblocked now
+  that Phase 4.2 made the tier deterministic. Done when one fast happy-path
+  real-stack spec (e.g. <code>kid-reads</code> or <code>approval-flow</code>) runs on PRs.</li>
+</ul>
+<h3 id="phase-7-open-questions-answered">Phase 7 open questions (answered)<a class="headerlink" href="#phase-7-open-questions-answered" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>G1 infra:</strong> run the full-pipeline test as a DEDICATED nightly job with its
+  own Redis + RQ worker services, not on the per-PR path. The per-PR full-stack
+  signal is 7.4 (a fast seeded happy-path), which needs neither the worker nor
+  live generation.</li>
+<li><strong>G2 approach:</strong> prefer a few real-backend contract smokes over
+  OpenAPI-example fixture generation; the real backend's <code>extra=forbid</code> is the
+  exact check that catches shape drift, and example-driven fixtures are brittle.</li>
+<li><strong>G5 performance/load:</strong> out of this order's scope; owned by roadmap Phase 9.
+  Confirm with the product owner rather than folding it in here.</li>
+</ul>
 <h2 id="do-not-re-derive-facts">Do-not-re-derive facts<a class="headerlink" href="#do-not-re-derive-facts" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Deep specs are LOCAL only (mocked 34 + real 9). Staging (2) + prod (3) are
@@ -3065,7 +3145,7 @@ pushes for approval. Read the linked verdict and audit docs first.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 22, 2026 06:06:54 UTC">July 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 23, 2026 15:42:58 UTC">July 23, 2026</span>
   </span>
 
     

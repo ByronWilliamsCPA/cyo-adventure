@@ -2807,6 +2807,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#guardian-password-recovery-reset-link-set-new-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardian: password recovery (reset link + set new password)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guardian-consent-gate-privacy-notice-coppa-e-signature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardian: consent gate (privacy notice / COPPA e-signature)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#guardian-submit-story-request-intake" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2906,6 +2928,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#guardian-family-connections-consent-adr-016-ring-2-g17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardian: family connections consent (ADR-016 ring 2, G17)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#admin-review-queue-single-story-review" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2976,6 +3009,17 @@
     <span class="md-ellipsis">
       
         Admin: user / profile / family management (WS-J)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#admin-audit-log-master-library-and-version-compare-read-heavy-surfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin: audit log, master library, and version-compare (read-heavy surfaces)
       
     </span>
   </a>
@@ -3104,6 +3148,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cross-cutting-component-and-utility-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-cutting component and utility tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#keeping-this-matrix-current" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3178,6 +3233,44 @@ relate to the Supabase project constraints.</p>
   dialog), and admin console/requests/moderation-thresholds/moderation-
   dashboard (<code>visual.spec.ts-snapshots/</code>). Same remaining-gap caveat as
   accessibility above: one state per surface, not every variant.</li>
+<li><strong>API contract pinning (G2, Phase 7.2)</strong>: <code>frontend/e2e-real/contract-smoke-real.spec.ts</code>:
+  a real-backend contract smoke that pins the real API response shape for
+  the four highest-drift endpoints the mocked <code>page.route</code> tier only assumes:
+  <code>GET /api/v1/library</code> (the <code>BookCard</code>/<code>LibraryPage</code> fields), <code>PUT
+  /api/v1/reading-state/{profile}/{story}</code> (the player/offline-sync
+  <code>ReadingState</code> fields), <code>POST</code> + <code>GET /api/v1/story-requests</code> (the
+  <code>StoryRequestQueue</code> fields), and <code>GET /api/v1/review-queue</code> +
+  <code>GET /api/v1/storybooks/{id}/review</code> (the admin review-console fields).
+  Spans multiple journeys, so it is registered here rather than under a
+  single one; guards against the failure class behind the prior P0-1
+  offline-resync 422, where a real backend field changed while every mocked
+  fixture kept passing.</li>
+<li><strong>Full generation pipeline, end to end (G1, Phase 7.1)</strong>:
+  <code>frontend/e2e-real/full-pipeline-real.spec.ts</code>: the one spec that drives a
+  story through the <em>real</em> RQ generation worker rather than seeded data:
+  a guardian <code>POST /api/v1/concepts</code> + <code>/generate</code>, a real <code>generation_job</code>
+  polled until the worker (mock provider, but the full staged validator +
+  moderation gate) lands it at <code>in_review</code>, then the real admin approve/publish
+  UI, then the seeded child reads the produced story to an ending. Runs in its
+  own <code>real-backend-pipeline</code> Playwright project (<code>npm run test:e2e:real:pipeline</code>)
+  because it is the only real-backend spec that additionally requires a running
+  <code>python -m cyo_adventure.generation.worker_main</code>; the deterministic Phase 4.2
+  reset also purges each run's worker-generated storybook so consecutive runs
+  stay clean. Spans every backend stage between request and read, so it is
+  registered here rather than under a single journey. Intended for the nightly
+  real-stack job (a worker must be started before it runs, or its poll deadline
+  fails with an explicit worker-not-running message).</li>
+<li><strong>Per-PR real-stack smoke (G4, Phase 7.4)</strong>: <code>frontend/e2e-real/kid-reads.spec.ts</code>,
+  run on the PR path via the <code>real-backend-pr-smoke</code> Playwright project
+  (<code>npm run test:e2e:real:pr-smoke</code>, workflow <code>.github/workflows/e2e-real-pr-smoke.yml</code>).
+  The full <code>real-backend</code> tier is nightly-only for cost; this promotes exactly
+  one fast, seeded, happy-path read (no worker, no live generation) to every PR
+  so contributors get a real full-stack signal per change. Deliberately
+  <strong>informational, not a merge gate</strong>: it triggers on <code>pull_request</code> only (no
+  <code>merge_group</code>) and is not a branch-protection required check, so a red run is
+  a signal to investigate rather than a block; it can be promoted to required
+  once its per-PR flakiness rate is known. The same spec also runs under
+  <code>real-backend</code> in the nightly (one spec, two projects).</li>
 </ul>
 <hr />
 <h2 id="landing-page-marketing">Landing page / marketing<a class="headerlink" href="#landing-page-marketing" title="Permanent link">&para;</a></h2>
@@ -3195,6 +3288,44 @@ relate to the Supabase project constraints.</p>
 <li>E2E-prod: <code>frontend/e2e-prod/landing-login.spec.ts</code>, <code>frontend/e2e-prod/guardian-admin-smoke.spec.ts</code></li>
 <li>Component: <code>frontend/src/guardian/LoginPage.test.tsx</code>, <code>frontend/src/guardian/SetNewPasswordForm.test.tsx</code>, <code>frontend/src/auth/AuthContext.test.tsx</code>, <code>frontend/src/auth/AdultGate.test.tsx</code>, <code>frontend/src/auth/ProtectedRoute.test.tsx</code>, <code>frontend/src/auth/guardianToken.test.ts</code>, <code>frontend/src/auth/supabaseClient.test.ts</code>, <code>frontend/src/guardian/GuardianShell.test.tsx</code>, <code>frontend/src/guardian/ConsolePage.test.tsx</code></li>
 <li>Integration: <code>frontend/src/test/App.test.tsx</code></li>
+<li><strong>Google OAuth sign-in (decision 2.6, manual-only flow + automated option
+  presence):</strong> the full Google OAuth <em>round trip</em> is not automated at any tier
+  and is not automatable without a live Google session (faking the provider
+  redirect asserts nothing about the real integration), so the end-to-end flow
+  is a <strong>manual check</strong>: on staging (Google is live there), click "Continue
+  with Google" on <code>/guardian/login</code> and confirm the redirect completes to a
+  signed-in console. What IS automated is the part worth automating, that the
+  option renders where expected: <code>frontend/src/guardian/LoginPage.test.tsx</code>
+  (asserts the "Continue with Google" button is present) and
+  <code>frontend/src/auth/AdultGate.test.tsx</code> (asserts the Google option renders for
+  a Google-linked adult and that clicking it starts the <code>signInWithOAuth</code>
+  redirect). The Apple button is intentionally gated off behind
+  <code>VITE_ENABLE_APPLE_OAUTH</code> until that provider is live (<code>LoginPage.tsx</code>).</li>
+</ul>
+<h2 id="guardian-password-recovery-reset-link-set-new-password">Guardian: password recovery (reset link + set new password)<a class="headerlink" href="#guardian-password-recovery-reset-link-set-new-password" title="Permanent link">&para;</a></h2>
+<p>The Supabase-backed forgot-password journey: request a reset email, then set a
+new password from the recovery link, including the cross-tab handoff (a
+recovery link opened in one tab must surface the set-new-password form in
+another open tab, via the <code>cyo-guardian-recovery</code> <code>BroadcastChannel</code>). These
+are GoTrue calls (<code>auth/v1/...</code>), not app-API calls, so the E2E mocks the
+Supabase endpoints rather than <code>/api/v1</code>.</p>
+<ul>
+<li>E2E-mocked: <code>frontend/e2e/guardian-password-reset.spec.ts</code> (request-a-reset asserts the <code>POST auth/v1/recover</code> fired and the neutral confirmation renders; set-new-password drives a real implicit-grant recovery hash to a signed-in redirect and asserts the exact <code>PUT auth/v1/user</code> body; the cross-tab test opens two pages in one <code>BrowserContext</code> and proves the recovery <code>BroadcastChannel</code> surfaces the set-new form in the second tab)</li>
+<li>Component: <code>frontend/src/guardian/ResetPasswordRequestForm.test.tsx</code>, <code>frontend/src/guardian/SetNewPasswordForm.test.tsx</code></li>
+<li><strong>Gap</strong>: no <code>e2e-real</code>/<code>e2e-staging</code>/<code>e2e-prod</code> coverage; a real reset requires a live inbox, so staging durability (recording seeded passwords in a secret manager) is tracked separately in the audit handoff, not here.</li>
+</ul>
+<h2 id="guardian-consent-gate-privacy-notice-coppa-e-signature">Guardian: consent gate (privacy notice / COPPA e-signature)<a class="headerlink" href="#guardian-consent-gate-privacy-notice-coppa-e-signature" title="Permanent link">&para;</a></h2>
+<ul>
+<li>E2E-mocked: <code>frontend/e2e/guardian-consent.spec.ts</code> (needs-consent gate -&gt;
+  legal-name + checkbox e-signature submit -&gt; signed-in console; asserts the
+  exact <code>POST /v1/onboarding</code> consent payload and name trimming; plus the
+  awaiting-approval interstitial branch)</li>
+<li>Component: <code>frontend/src/auth/GuardianConsentPage.test.tsx</code>,
+  <code>frontend/src/auth/GuardianAwaitingApprovalPage.test.tsx</code></li>
+<li><strong>Note</strong>: the gate is driven by the <code>POST /v1/onboarding</code> response fields
+  (<code>consent_recorded</code>, <code>status</code>), NOT <code>/v1/me</code>; see the spec header. This was
+  every guardian's first screen yet only manually prod-verified before the
+  2026-07-22 audit added the E2E above.</li>
 </ul>
 <h2 id="guardian-submit-story-request-intake">Guardian: submit story request (intake)<a class="headerlink" href="#guardian-submit-story-request-intake" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3219,11 +3350,12 @@ relate to the Supabase project constraints.</p>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/guardian-books.spec.ts</code>, <code>frontend/e2e/naive-user/naive-guardian-misuse.spec.ts</code> (empty state)</li>
 <li>E2E-prod: <code>frontend/e2e-prod/guardian-admin-smoke.spec.ts</code> (render only)</li>
-<li>Component: <code>frontend/src/guardian/BooksPage.test.tsx</code>, <code>frontend/src/guardian/assignApi.test.ts</code> (listBooks)</li>
+<li>Component: <code>frontend/src/guardian/BooksPage.test.tsx</code>, <code>frontend/src/guardian/assignApi.test.ts</code> (listBooks), <code>frontend/src/guardian/BookDetailsDialog.test.tsx</code> (book-detail popover: age band, themes, content flags, caller-supplied moderation badge, and the omit-when-absent branches)</li>
 </ul>
 <h2 id="guardian-manage-child-profiles">Guardian: manage child profiles<a class="headerlink" href="#guardian-manage-child-profiles" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/guardian-profiles.spec.ts</code>, <code>frontend/e2e/naive-user/naive-guardian-misuse.spec.ts</code> (empty state), <code>frontend/e2e/story-requests-authored.spec.ts</code> (child selector)</li>
+<li>E2E-real: <code>frontend/e2e-real/guardian-profile-crud-real.spec.ts</code> (a guardian creates and edits a child profile through the real <code>POST</code>/<code>PATCH /v1/profiles</code> endpoints, both states persisting across reload; <code>ProfilesPage.tsx</code> has no delete control by design, so the erasure path, <code>DELETE /v1/profiles/{id}</code>, GDPR Article 17 / COPPA 312.10, is exercised via a direct authenticated fetch and confirmed gone from the console on reload)</li>
 <li>E2E-prod: <code>frontend/e2e-prod/guardian-admin-smoke.spec.ts</code> (render only)</li>
 <li>Component: <code>frontend/src/guardian/ProfilesPage.test.tsx</code>, <code>frontend/src/guardian/ProfileFormDialog.test.tsx</code>, <code>frontend/src/profiles/AvatarCircle.test.tsx</code>, <code>frontend/src/profiles/profilesApi.test.ts</code></li>
 </ul>
@@ -3241,21 +3373,35 @@ relate to the Supabase project constraints.</p>
 <h2 id="guardian-notifications-g10">Guardian: notifications (G10)<a class="headerlink" href="#guardian-notifications-g10" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/guardian-notifications.spec.ts</code> (a guardian sees the unread-count badge from the notifications poll, opens the bell panel, sees a safety alert rendered with a visually distinct <code>--alert</code> class from an informational item, and the badge clears once the panel is opened)</li>
+<li>E2E-real: <code>frontend/e2e-real/notifications-real.spec.ts</code> (a real admin approval fires a real <code>RELEASED</code> pipeline event, which <code>notifications/registry.py</code> composes into a "story_ready" item; the guardian's real <code>GET /v1/notifications</code> feed carries it, the bell reflects it, and it survives a reload. The backend keeps no server-side read/unread state for this slice, so "marking read" is the client-side <code>markSeen()</code>/localStorage model asserted directly, confirmed here to hold against the real backend's <code>since</code>-filtered poll rather than a mocked response)</li>
 <li>Component: <code>frontend/src/guardian/NotificationBell.test.tsx</code>, <code>frontend/src/guardian/notificationsApi.test.ts</code>, <code>frontend/src/guardian/notificationSeenStore.test.ts</code></li>
-<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet.</li>
+<li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage yet.</li>
 </ul>
 <h2 id="guardian-reading-history-engagement-g9">Guardian: reading history / engagement (G9)<a class="headerlink" href="#guardian-reading-history-engagement-g9" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/guardian-reading.spec.ts</code> (a guardian opens Reading from the nav, sees a per-child summary card, expands it to fetch that profile's per-book reading history, and a childless family sees an empty state linking to Books)</li>
+<li>E2E-real: <code>frontend/e2e-real/reading-history-real.spec.ts</code> (the seeded child reads "The Clockwork Garden" to its <code>e_clock</code> ending against the real backend, producing a real <code>Completion</code> row; the guardian then opens Reading and the real <code>GET /v1/families/me/reading-summary</code> and <code>GET /v1/reading-history/{profile_id}</code> responses show the read reflected in the expanded card)</li>
 <li>Component: <code>frontend/src/guardian/ReadingPage.test.tsx</code>, <code>frontend/src/guardian/readingApi.test.ts</code></li>
+<li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage yet.</li>
+</ul>
+<h2 id="guardian-family-connections-consent-adr-016-ring-2-g17">Guardian: family connections consent (ADR-016 ring 2, G17)<a class="headerlink" href="#guardian-family-connections-consent-adr-016-ring-2-g17" title="Permanent link">&para;</a></h2>
+<p>The guardian's own side of a cross-family recommendation link (the "cousins"
+case, set up by an app admin). Privacy-load-bearing: nothing crosses a family
+boundary until BOTH families' guardians consent (dual-consent), and either
+guardian can revoke unilaterally and immediately. Both mutations are gated
+behind a confirmation dialog.</p>
+<ul>
+<li>E2E-mocked: <code>frontend/e2e/guardian-connections.spec.ts</code> (allow gates the <code>POST /v1/family-connections/{id}/consent</code> behind the confirm dialog then flips the row to the waiting-on-counterpart state; revoke gates the <code>DELETE .../consent</code> behind its own dialog then reverts the row; both assert the mutation does NOT fire until the dialog is confirmed, at the network layer)</li>
+<li>Component: <code>frontend/src/guardian/ConnectionsPage.test.tsx</code>, <code>frontend/src/guardian/connectionsApi.test.ts</code></li>
+<li><strong>Note</strong>: the admin-side of connections (creating the link) is covered separately under WS-J (<code>frontend/src/admin/ConnectionsTab.test.tsx</code>).</li>
 <li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet.</li>
 </ul>
 <h2 id="admin-review-queue-single-story-review">Admin: review queue (single story review)<a class="headerlink" href="#admin-review-queue-single-story-review" title="Permanent link">&para;</a></h2>
 <ul>
-<li>E2E-mocked: <code>frontend/e2e/guardian-review.spec.ts</code>, <code>frontend/e2e/guardian-console.spec.ts</code> (navigation), <code>frontend/e2e/naive-user/naive-admin-misuse.spec.ts</code>, <code>frontend/e2e/naive-user/naive-misuse-shared.spec.ts</code></li>
+<li>E2E-mocked: <code>frontend/e2e/guardian-review.spec.ts</code>, <code>frontend/e2e/review-edit.spec.ts</code> (passage-edit save: PATCHes a reachable node's body + choice_labels and an unreachable/orphan node's body-only from the review detail, asserting the exact <code>PATCH /v1/storybooks/{id}/versions/{v}/nodes/{node}</code> contract at the network layer), <code>frontend/e2e/guardian-console.spec.ts</code> (navigation), <code>frontend/e2e/naive-user/naive-admin-misuse.spec.ts</code>, <code>frontend/e2e/naive-user/naive-misuse-shared.spec.ts</code></li>
 <li>E2E-real: <code>frontend/e2e-real/approval-flow.spec.ts</code></li>
-<li>Component: <code>frontend/src/admin/ReviewDetailPage.test.tsx</code>, <code>frontend/src/admin/AdminConsolePage.test.tsx</code> (links into it), <code>frontend/src/guardian/reviewApi.test.ts</code>, <code>frontend/src/guardian/coverApi.test.ts</code> (cover generation on review page)</li>
-<li><strong>Gap</strong>: no E2E-staging coverage, <code>/admin/review/:id</code> needs a real storybook id and is excluded from the render-only staging smoke for the same reason <code>e2e-prod</code> excludes it.</li>
+<li>Component: <code>frontend/src/admin/ReviewDetailPage.test.tsx</code>, <code>frontend/src/admin/AdminConsolePage.test.tsx</code> (links into it), <code>frontend/src/admin/passageEditApi.test.ts</code>, <code>frontend/src/admin/usePassageEdit.test.ts</code> (passage-edit save contract + choice_labels gating), <code>frontend/src/guardian/reviewApi.test.ts</code>, <code>frontend/src/guardian/coverApi.test.ts</code> (cover generation on review page)</li>
+<li><strong>Gap</strong>: no E2E-staging coverage, <code>/admin/review/:id</code> needs a real storybook id and is excluded from the render-only staging smoke for the same reason <code>e2e-prod</code> excludes it. The passage-edit E2E is mocked-only for now; promote alongside <code>approval-flow.spec.ts</code> when the real tier grows a review-edit journey.</li>
 </ul>
 <h2 id="admin-cover-generation-a16">Admin: cover generation (A16)<a class="headerlink" href="#admin-cover-generation-a16" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3284,8 +3430,9 @@ relate to the Supabase project constraints.</p>
 <p>Built 2026-07-16, closing the gap this matrix previously flagged as "no coverage found, no UI exists." A 2026-07-16 audit confirmed the backend (full CRUD + audit trail, <code>src/cyo_adventure/api/provider_allowlist.py</code>, <code>tests/integration/test_provider_allowlist_api.py</code>) had no frontend page, and no ADR/roadmap/tech-spec ever explicitly deferred one; <code>AllowlistCreateBody.display_name</code>'s docstring ("for a future admin UI") implied it was anticipated. <code>ProviderAllowlistPage.tsx</code> is a general settings page (global, not tied to any one story): add/enable/disable/remove <code>(provider, model_id)</code> rows.</p>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/provider-allowlist.spec.ts</code> (add, disable, remove a real row against the routed app)</li>
+<li>E2E-real: <code>frontend/e2e-real/provider-allowlist-real.spec.ts</code> (an admin adds, disables, and removes a real <code>(provider, model_id)</code> row through the real <code>POST</code>/<code>PUT</code>/<code>DELETE /v1/admin/provider-allowlist</code> endpoints, each state persisting across reload; plus a plain guardian visiting the page is redirected back to the guardian console by the real <code>/v1/me</code> role)</li>
 <li>Component: <code>frontend/src/admin/ProviderAllowlistPage.test.tsx</code>, <code>frontend/src/admin/providerAllowlistApi.test.ts</code></li>
-<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet.</li>
+<li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage yet.</li>
 </ul>
 <h2 id="admin-authoring-plan-methodmechanismmodel-selection">Admin: authoring plan (method/mechanism/model selection)<a class="headerlink" href="#admin-authoring-plan-methodmechanismmodel-selection" title="Permanent link">&para;</a></h2>
 <p>New journey, not previously in this matrix: the step between a guardian/admin
@@ -3310,8 +3457,20 @@ read-only context (they cannot be re-edited at this step, matching the
 <h2 id="admin-user-profile-family-management-ws-j">Admin: user / profile / family management (WS-J)<a class="headerlink" href="#admin-user-profile-family-management-ws-j" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/admin-user-management.spec.ts</code> (an admin reaches the console from the admin nav, switches to the Families tab and sees member counts, invites a guardian and confirms both the POST body and the roster refresh, and a plain guardian visiting <code>/admin/users</code> is redirected back to the guardian console)</li>
+<li>E2E-real: <code>frontend/e2e-real/admin-management-real.spec.ts</code> (Kids tab only, the highest-value real write in this journey per the work order: an admin creates, edits, and deactivates a real profile in another family through <code>POST</code>/<code>PATCH /v1/admin/profiles</code>, each state persisting across reload; plus a plain guardian visiting <code>/admin/users</code> is redirected back to the guardian console by the real <code>/v1/me</code> role. There is no delete route, so a real run leaves one deactivated profile behind by design; Users/Families/Connections tabs are not covered here)</li>
 <li>Component: <code>frontend/src/admin/UserManagementPage.test.tsx</code>, <code>frontend/src/admin/UsersTab.test.tsx</code>, <code>frontend/src/admin/FamiliesTab.test.tsx</code>, <code>frontend/src/admin/ConnectionsTab.test.tsx</code>, <code>frontend/src/admin/KidsTab.test.tsx</code>, <code>frontend/src/admin/userManagementApi.test.ts</code></li>
-<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet.</li>
+<li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage yet.</li>
+</ul>
+<h2 id="admin-audit-log-master-library-and-version-compare-read-heavy-surfaces">Admin: audit log, master library, and version-compare (read-heavy surfaces)<a class="headerlink" href="#admin-audit-log-master-library-and-version-compare-read-heavy-surfaces" title="Permanent link">&para;</a></h2>
+<p>Lower-exposure admin read surfaces that had component coverage but no
+browser-level journey until the 2026-07-22 audit backfill: the audit log
+(filter + paging), the admin master library (lifecycle-status filter), and the
+review version-compare panel (<code>ReviewCompare</code>, reachable only from the review
+detail when a storybook has more than one version).</p>
+<ul>
+<li>E2E-mocked: <code>frontend/e2e/admin-read-heavy.spec.ts</code> (audit-log event-kind filter refetches <code>GET /v1/admin/audit?kind=...</code> and next-page refetches with <code>offset=50</code>; admin-library lifecycle filter refetches <code>GET /v1/admin/storybooks?status=archived</code>; the version-compare panel loads the previous version via <code>GET /v1/storybooks/{id}/review?version=...</code> and renders the diff)</li>
+<li>Component: <code>frontend/src/admin/AuditPage.test.tsx</code>, <code>frontend/src/admin/auditApi.test.ts</code>, <code>frontend/src/admin/AdminLibraryPage.test.tsx</code>, <code>frontend/src/admin/adminLibraryApi.test.ts</code>, <code>frontend/src/admin/ReviewCompare.test.tsx</code> (owns the loading/error/404-unavailable compare branches the E2E leaves to it)</li>
+<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet; these are read-only surfaces, so exposure is low.</li>
 </ul>
 <h2 id="kid-profile-picker">Kid: profile picker<a class="headerlink" href="#kid-profile-picker" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3339,27 +3498,30 @@ read-only context (they cannot be re-edited at this step, matching the
 <h2 id="kid-read-aloud-k7">Kid: read-aloud (K7)<a class="headerlink" href="#kid-read-aloud-k7" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/kid-read-aloud.spec.ts</code> (the speaker toggle appears only for a profile with <code>tts_enabled: true</code>, picked through the real picker flow rather than a deep link, since the flag rides the picker's profiles fetch; tapping it toggles a "speaking" state, and both a re-tap and a choice navigation cancel speech; a fake <code>speechSynthesis</code> stands in for headless Chromium's real one, which has no installed voices)</li>
+<li>E2E-real: <code>frontend/e2e-real/kid-read-aloud-real.spec.ts</code> (the <code>tts_enabled</code> gate is real: a guardian <code>PATCH /v1/profiles/{id}</code> turns it on, then the kid picker's real <code>GET /v1/profiles</code> reads it back and threads it into the reader as the <code>ttsEnabled</code> prop; the toggle itself is client-only, Web Speech, with only its own speak/stop state asserted, not audio output, and <code>window.speechSynthesis.speak</code> stubbed to remove a real timing race between the browser's own <code>onend</code> and the test's stop click)</li>
 <li>Component: <code>frontend/src/kid/readAloudPreference.test.ts</code>, <code>frontend/src/reader/useReadAloud.test.ts</code></li>
-<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet; no tier exercises real audio output.</li>
+<li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage yet; no tier asserts real audio output, the real tier above exercises the toggle and the real <code>tts_enabled</code> gate but stubs the speech call itself.</li>
 </ul>
 <h2 id="kid-flag-a-passage-k15">Kid: flag a passage (K15)<a class="headerlink" href="#kid-flag-a-passage-k15" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/reader-flag.spec.ts</code> ("Tell a grown-up" posts a structured <code>reason</code> (no free-text field) and shows the kid-language confirmation; a 409 cap response shows the gentle "You've told us a lot already" message; the button is hidden entirely without a valid child session)</li>
+<li>E2E-real: <code>frontend/e2e-real/kid-flag-real.spec.ts</code> (a kid submits a real structured flag through <code>POST /v1/flags</code>, asserted at the network layer as a <code>201</code> with <code>reason: scared_me</code>, then re-fetched via the real admin <code>GET /v1/admin/flags</code> to confirm it persisted open server-side rather than only in the POST's own response body; an <code>afterEach</code> resolves the flag it created so <code>MAX_OPEN_FLAGS_PER_PROFILE</code> is never exhausted by repeat runs)</li>
 <li>Component: <code>frontend/src/reader/FlagButton.test.tsx</code>, <code>frontend/src/guardian/FlagBadge.test.tsx</code></li>
-<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet.</li>
+<li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage yet.</li>
 </ul>
 <h2 id="kid-go-back-undo-k5">Kid: go back / undo (K5)<a class="headerlink" href="#kid-go-back-undo-k5" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/reader-go-back.spec.ts</code> ("Go back" is absent at the start node, appears after a choice, and undoing past a state-gated choice (<code>c_dark_passage</code>, gated on <code>has_lantern</code>) still offers that choice correctly afterward, proving the engine replays the recorded path rather than corrupting state)</li>
+<li>E2E-real: <code>frontend/e2e-real/kid-go-back-real.spec.ts</code> (after two real choices, "Go back" reverts the reader to the prior node and the real <code>PUT /v1/reading-state/{profile_id}/{storybook_id}</code> this triggers persists the reverted <code>current_node</code>/<code>path</code>, confirmed not just via the PUT's own response but via an independent guardian-authorized <code>GET</code> re-fetch of the same row, proving the server, not only client state, holds the reverted position)</li>
 <li>Component: <code>frontend/src/reader/BackToLibrary.test.tsx</code>, <code>frontend/src/player/engine.test.ts</code> (go-back is a bounded replay computation in the player engine)</li>
-<li><strong>Gap</strong>: no <code>e2e-real</code>, <code>e2e-staging</code>, or <code>e2e-prod</code> coverage yet.</li>
+<li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage yet.</li>
 </ul>
 <h2 id="kid-offline-reading-syncconflict-resolution">Kid: offline reading + sync/conflict resolution<a class="headerlink" href="#kid-offline-reading-syncconflict-resolution" title="Permanent link">&para;</a></h2>
 <ul>
 <li>E2E-mocked: <code>frontend/e2e/reader.spec.ts</code> (fully-offline play), <code>frontend/e2e/reader-conflict.spec.ts</code>, <code>frontend/e2e/reader-reload-resume.spec.ts</code>, <code>frontend/e2e/naive-user/naive-kid-misuse.spec.ts</code> (reload resume)</li>
-<li>E2E-real: <code>frontend/e2e-real/offline-conflict-real.spec.ts</code> (two real <code>BrowserContext</code>s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly <code>e2e-real-nightly.yml</code>)</li>
-<li>Component: <code>frontend/src/offline/db.test.ts</code>, <code>frontend/src/offline/sync.test.ts</code>, <code>frontend/src/reader/ReaderPage.test.tsx</code> (conflict dialog resolution paths), <code>frontend/src/reader/ReaderRoute.test.tsx</code> (replay-reconciliation suite), <code>frontend/src/reader/dialogs.test.tsx</code> (ConflictDialog UI), <code>frontend/src/hooks/useReplayOnReconnect.test.ts</code>, <code>frontend/src/hooks/useOnlineStatus.test.ts</code></li>
-<li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage of conflict/sync against a real backend.</li>
+<li>E2E-real: <code>frontend/e2e-real/offline-conflict-real.spec.ts</code> (two real <code>BrowserContext</code>s race saves on "The Clockwork Garden": device A creates the row, device B resyncs and advances it, device A's next save gets a real 409 resolved via "Keep this device", device B's next gets a real 409 resolved via "Use the newest place"; picked up by the nightly <code>e2e-real-nightly.yml</code>), <code>frontend/e2e-real/offline-online-parity-real.spec.ts</code> (G3, Phase 7.3: on "The Clockwork Garden", a condition-gated story, the identical five-choice sequence is driven online through the real backend and, in a separate profile, offline through the client player engine then synced; both land on the same final node/path/visit_set/var_state and the same ending, proving offline/online branch parity; each pass also forces a real Python-engine replay of its own choice sequence via the <code>choice_path</code> field on the reading-state PUT, so the parity is confirmed cross-engine, not just client-vs-client)</li>
+<li>Component: <code>frontend/src/offline/db.test.ts</code>, <code>frontend/src/offline/sync.test.ts</code>, <code>frontend/src/offline/revocation.test.ts</code> (offline-copy revocation reconcile: shared-blob refcounting, cross-profile isolation, queue-drop, never-purge-on-failed-fetch, and the documented mid-read latency window), <code>frontend/src/reader/ReaderPage.test.tsx</code> (conflict dialog resolution paths), <code>frontend/src/reader/ReaderRoute.test.tsx</code> (replay-reconciliation suite), <code>frontend/src/reader/dialogs.test.tsx</code> (ConflictDialog UI), <code>frontend/src/hooks/useReplayOnReconnect.test.ts</code>, <code>frontend/src/hooks/useOnlineStatus.test.ts</code>, <code>frontend/src/library/LibraryPage.test.tsx</code> (the reconcile call-site: fires only on the success branch, re-fires on reconnect, logs a reconcile rejection)</li>
+<li><strong>Gap</strong>: no <code>e2e-staging</code> or <code>e2e-prod</code> coverage of conflict/sync against a real backend. Offline-copy revocation (register G8/A5) has a known mid-read latency window: a book pulled server-side is not purged from the device until the next successful library fetch drives a reconcile; closing it needs a revocation push channel or reader-route mid-session revalidation, both out of scope (pinned by the <code>revocation.test.ts</code> "mid-read latency window" characterization test).</li>
 </ul>
 <h2 id="kid-series-continuation-across-storybooks">Kid: series continuation across storybooks<a class="headerlink" href="#kid-series-continuation-across-storybooks" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3451,12 +3613,39 @@ playwright --list verified them. #VERIFY: run each new spec for real (CI
 or a local npm run test:e2e / test:e2e:real) before trusting it as
 proven, and fix on sight if the live run disagrees with what static
 analysis could check.</code></p>
+<h2 id="cross-cutting-component-and-utility-tests">Cross-cutting component and utility tests<a class="headerlink" href="#cross-cutting-component-and-utility-tests" title="Permanent link">&para;</a></h2>
+<p>These Vitest suites cover shared widgets, hooks, and infrastructure that are
+not tied to a single user journey above. They are listed here so the coverage
+matrix drift-guard (<code>scripts/check_coverage_matrix.py</code>) accounts for every
+<code>frontend/src/**/*.test.{ts,tsx}</code> file; journey-specific component tests live
+in their journey sections instead.</p>
+<ul>
+<li>Guardian widgets: <code>frontend/src/guardian/BudgetBanner.test.tsx</code>,
+  <code>frontend/src/guardian/budgetApi.test.ts</code>,
+  <code>frontend/src/guardian/StoryStructureSummary.test.tsx</code>,
+  <code>frontend/src/guardian/storyRequestOptions.test.ts</code></li>
+<li>Auth/session utilities: <code>frontend/src/auth/childSession.test.ts</code></li>
+<li>Library display: <code>frontend/src/library/EndingsBadge.test.tsx</code>,
+  <code>frontend/src/library/RecommendationChip.test.tsx</code>,
+  <code>frontend/src/library/coverPalette.test.ts</code>,
+  <code>frontend/src/library/recommendationsApi.test.ts</code>,
+  <code>frontend/src/library/recommendationsUtils.test.ts</code></li>
+<li>Reader controls: <code>frontend/src/reader/EndingsProgress.test.tsx</code>,
+  <code>frontend/src/reader/TextSizeControl.test.tsx</code></li>
+<li>App shell / infrastructure: <code>frontend/src/AppErrorBoundary.test.tsx</code>,
+  <code>frontend/src/routeElements.test.tsx</code>, <code>frontend/src/lazyWithReload.test.ts</code>,
+  <code>frontend/src/observability.test.ts</code>,
+  <code>frontend/src/notifications/ToastProvider.test.tsx</code>,
+  <code>frontend/src/hooks/classifyApiError.test.ts</code>,
+  <code>frontend/src/hooks/logApiError.test.ts</code></li>
+</ul>
 <h2 id="keeping-this-matrix-current">Keeping this matrix current<a class="headerlink" href="#keeping-this-matrix-current" title="Permanent link">&para;</a></h2>
 <p><code>#ASSUME: data-integrity: this matrix is hand-maintained and will drift as
-new spec files are added. #VERIFY: add a CI check that greps new files under
-frontend/e2e/, frontend/e2e-real/, frontend/e2e-prod/, and frontend/src/**/*.test.{ts,tsx}
-against this document and fails if a new spec file isn't referenced anywhere,
-so drift is caught at PR time rather than discovered during an audit.</code></p>
+new spec files are added. #VERIFY: DONE. scripts/check_coverage_matrix.py greps
+every file under frontend/e2e/, frontend/e2e-real/, frontend/e2e-staging/,
+frontend/e2e-prod/, and frontend/src/**/*.test.{ts,tsx} against this document
+and fails if any is not referenced. It runs in the Frontend CI job, so drift is
+caught at PR time rather than discovered during an audit.</code></p>
 <p>When adding a new journey or page, add a section here in the same PR. When
 closing one of the gaps above, update its entry to reflect the new coverage
 rather than deleting the gap silently, so the audit trail of what was fixed
@@ -3488,7 +3677,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 22, 2026 06:06:54 UTC">July 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 23, 2026 15:42:58 UTC">July 23, 2026</span>
   </span>
 
     
