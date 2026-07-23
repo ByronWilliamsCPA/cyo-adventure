@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.29.0] - 2026-07-23
+
+### Features
+
+- **scripts**: Add idempotent series-catalog seed for staging and prod
+  ([#372](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/372),
+  [`4862373`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/4862373999886774572feef800d5af8e3e9229bb))
+
+
 ## [0.28.0] - 2026-07-23
 
 ### Features
@@ -2543,6 +2552,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.29.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.2...v0.28.0
 [0.27.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.1...v0.27.2
 [0.27.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.0...v0.27.1
