@@ -3082,6 +3082,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#scorecardyml-declares-write-permissions-at-workflow-level-which-the-openssf-publish-api-rejects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scorecard.yml declares write permissions at workflow level, which the OpenSSF publish API rejects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slsa-provenanceyml-calls-a-template-file-as-if-it-were-a-reusable-workflow-so-the-workflow-never-loads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        slsa-provenance.yml calls a template file as if it were a reusable workflow, so the workflow never loads
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3667,6 +3689,28 @@
     <span class="md-ellipsis">
       
         FIPS checker has no disposition mechanism for its info-level findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scorecardyml-declares-write-permissions-at-workflow-level-which-the-openssf-publish-api-rejects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scorecard.yml declares write permissions at workflow level, which the OpenSSF publish API rejects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slsa-provenanceyml-calls-a-template-file-as-if-it-were-a-reusable-workflow-so-the-workflow-never-loads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        slsa-provenance.yml calls a template file as if it were a reusable workflow, so the workflow never loads
       
     </span>
   </a>
@@ -4599,6 +4643,81 @@ rather than a paragraph. See <code>load_acknowledgments</code>, <code>apply_ackn
 <code>.github/workflows/fips-compatibility.yml</code>.</p>
 <p><strong>Affected Files</strong>: template <code>scripts/check_fips_compatibility.py</code>,
 <code>.github/workflows/fips-compatibility.yml</code></p>
+<h3 id="scorecardyml-declares-write-permissions-at-workflow-level-which-the-openssf-publish-api-rejects"><code>scorecard.yml</code> declares write permissions at workflow level, which the OpenSSF publish API rejects<a class="headerlink" href="#scorecardyml-declares-write-permissions-at-workflow-level-which-the-openssf-publish-api-rejects" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: High</li>
+<li><strong>Category</strong>: CI/CD</li>
+<li><strong>Discovered</strong>: 2026-07-23</li>
+</ul>
+<p><strong>Issue</strong>: The generated <code>.github/workflows/scorecard.yml</code> declares a workflow-level (global)
+<code>permissions:</code> block granting <code>security-events: write</code> and <code>id-token: write</code>, and then repeats
+the identical block at job level. The OpenSSF Scorecard action verifies the calling workflow
+before publishing results and refuses to run when any write permission is granted globally;
+write scopes are only allowed on the job. The duplicated global block therefore fails the run
+every time. Because the job-level block already grants exactly what the steps need, the global
+block is pure breakage: deleting it costs nothing.</p>
+<p><strong>Context</strong>: Found while investigating three GitHub Actions workflows that were red on this
+repo. <code>scorecard.yml</code> had <strong>295 runs and zero successes</strong> since the repository was created on
+2026-06-21, tracing back to the initial commit, so it has never once worked in a
+template-generated project. It went unnoticed because the workflow is not a required status
+check and does not run on <code>pull_request</code>, so it is invisible at review time and cannot block a
+merge. An initial hypothesis that this was a private-repo/no-GHAS <code>upload-sarif</code> problem was
+checked and refuted: the repository is public.</p>
+<p><strong>Suggested Fix</strong>: In the template, set the workflow-level block to <code>permissions: read-all</code>
+and keep the write scopes only on the <code>scorecard</code> job. Add a comment at the global block
+explaining that hoisting job permissions up to workflow level is what breaks publishing, since
+the change looks like hardening and will otherwise be "helpfully" reintroduced by a future
+permissions sweep. Reference:
+<a href="https://github.com/ossf/scorecard-action#workflow-restrictions">https://github.com/ossf/scorecard-action#workflow-restrictions</a>.</p>
+<p><strong>Affected Files</strong>: <code>.github/workflows/scorecard.yml</code></p>
+<h3 id="slsa-provenanceyml-calls-a-template-file-as-if-it-were-a-reusable-workflow-so-the-workflow-never-loads"><code>slsa-provenance.yml</code> calls a template file as if it were a reusable workflow, so the workflow never loads<a class="headerlink" href="#slsa-provenanceyml-calls-a-template-file-as-if-it-were-a-reusable-workflow-so-the-workflow-never-loads" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: High</li>
+<li><strong>Category</strong>: CI/CD</li>
+<li><strong>Discovered</strong>: 2026-07-23</li>
+</ul>
+<p><strong>Issue</strong>: The generated <code>.github/workflows/slsa-provenance.yml</code> has its <code>slsa</code> job call
+<code>uses: ByronWilliamsCPA/.github/.github/workflows/python-slsa.yml@&lt;sha&gt;</code>. That file is not a
+reusable workflow: it has no <code>on: workflow_call</code>, and its own header says so explicitly
+("IMPORTANT: This is a TEMPLATE, not a reusable workflow! GitHub Actions does not support
+nested reusable workflow calls. You must copy the 'provenance' job directly into your release
+workflow."). Calling it makes the whole workflow fail to parse, so no job runs at all,
+including the <code>build</code> job that was supposed to produce the artifacts.</p>
+<p>Three further defects sit behind the first and are only reachable once it is fixed:</p>
+<ol>
+<li>The org template's own copy-paste example pins the generator by commit SHA
+   (<code>generator_generic_slsa3.yml@f7dd8c5...</code>). The SLSA generator explicitly rejects this: "the
+   generator <strong>MUST</strong> be referenced by a tag of the form <code>@vX.Y.Z</code> ... the build will fail if
+   you reference it via a shorter tag like <code>@vX.Y</code> or <code>@vX</code> or if you reference it by a hash",
+   because slsa-verifier derives the trusted builder identity from the tag. Copying the org
+   example verbatim swaps one guaranteed failure for another.</li>
+<li><code>upload-assets: true</code> with no <code>upload-tag-name</code> uploads to a release named <code>github.ref_name</code>,
+   which under this workflow's <code>workflow_run</code> trigger resolves to the branch (<code>main</code>), not a
+   release tag, so the upload targets a release that does not exist.</li>
+<li>The <code>workflow_run</code> trigger fires on every "Semantic Release" completion, but that workflow
+   runs twice per release (<code>propose</code>, which opens the release PR before any tag exists, and
+   <code>publish</code>, which creates the tag). The propose-triggered run has nothing to attach
+   provenance to and fails.</li>
+</ol>
+<p><strong>Context</strong>: Found alongside the <code>scorecard.yml</code> defect above. <code>slsa-provenance.yml</code> had <strong>290
+runs and zero successes</strong> since repository creation, also from the initial commit. The
+signature of a workflow that fails to load is distinctive and worth documenting: the run
+concludes <code>failure</code> but <code>gh run view --log-failed</code> reports "log not found", because no job ever
+started. As with Scorecard, it is not a required check and does not run on <code>pull_request</code>, so
+it never blocked anything and stayed invisible. Note also that <code>uv build</code> in the <code>build</code> job had
+therefore never executed in CI; it was verified locally to work before repairing the caller.</p>
+<p><strong>Suggested Fix</strong>: In the template, call the generator directly from the project workflow per
+the org template's instructions, referencing it by <code>@vX.Y.Z</code> tag with a comment recording that
+this is a deliberate, required exception to the pin-actions-to-SHA convention (otherwise a
+pinning sweep will silently re-break it). Pass <code>upload-tag-name</code> derived from the built version
+rather than relying on <code>github.ref_name</code>, and gate the provenance job on the target release
+actually existing so the propose-phase trigger is a clean no-op. Separately, fix the
+SHA-pinned example in <code>ByronWilliamsCPA/.github</code>'s <code>python-slsa.yml</code>, which currently teaches
+the broken form. Consider whether the template should ship this workflow at all for generated
+applications that are never published as packages, since <code>actions/attest-build-provenance</code> in
+the same <code>build</code> job already provides GitHub-native attestation.</p>
+<p><strong>Affected Files</strong>: <code>.github/workflows/slsa-provenance.yml</code>, and in the org repo
+<code>ByronWilliamsCPA/.github</code>: <code>.github/workflows/python-slsa.yml</code></p>
 
 
 
@@ -4621,7 +4740,7 @@ rather than a paragraph. See <code>load_acknowledgments</code>, <code>apply_ackn
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 15:55:12 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 23, 2026 21:05:20 UTC">July 23, 2026</span>
   </span>
 
     
