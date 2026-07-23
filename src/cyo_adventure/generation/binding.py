@@ -41,7 +41,7 @@ from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.slots import SlotViolation, validate_slot_bindings
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Mapping
+    from collections.abc import Iterable, Iterator, Mapping
     from pathlib import Path
 
     from cyo_adventure.generation.pii import PiiContext
@@ -75,6 +75,38 @@ _FILL_RE = re.compile(r"^<<FILL role=(\w+) words=(\d+) beats='(.*)'>>$", re.DOTA
 _MAX_TOKENS_BIND = 4096
 
 
+def _as_list_object(value: object) -> list[object] | None:
+    """Narrow ``value`` to ``list[object]``, or ``None`` when it is not a list.
+
+    Centralizing this narrow-and-cast in one place (instead of repeating the
+    ``isinstance``/``cast("list[object]", ...)`` pair at every raw-JSON walk
+    site below) is what keeps the ``"list[object]"`` cast literal from
+    piling up as a duplicated string across this module.
+
+    Args:
+        value: Any raw-JSON value.
+
+    Returns:
+        ``value`` cast to ``list[object]``, or ``None``.
+    """
+    return cast("list[object]", value) if isinstance(value, list) else None
+
+
+def _as_dict_str_object(value: object) -> dict[str, object] | None:
+    """Narrow ``value`` to ``dict[str, object]``, or ``None`` when not a dict.
+
+    Same rationale as :func:`_as_list_object`, for the ``"dict[str, object]"``
+    cast shape.
+
+    Args:
+        value: Any raw-JSON value.
+
+    Returns:
+        ``value`` cast to ``dict[str, object]``, or ``None``.
+    """
+    return cast("dict[str, object]", value) if isinstance(value, dict) else None
+
+
 # ---------------------------------------------------------------------------
 # Skeleton walking helpers (shared by contract loading and rendering)
 # ---------------------------------------------------------------------------
@@ -91,11 +123,75 @@ def _iter_nodes(skeleton: Mapping[str, object]) -> Iterator[dict[str, object]]:
         ``nodes`` list are silently skipped; schema validity is the gate's
         job, not this walker's.
     """
-    nodes = skeleton.get("nodes")
-    if isinstance(nodes, list):
-        for raw_node in cast("list[object]", nodes):
-            if isinstance(raw_node, dict):
-                yield cast("dict[str, object]", raw_node)
+    nodes = _as_list_object(skeleton.get("nodes"))
+    if nodes is None:
+        return
+    for raw_node in nodes:
+        node = _as_dict_str_object(raw_node)
+        if node is not None:
+            yield node
+
+
+def _body_slot_tokens(node: dict[str, object]) -> Iterable[str]:
+    """Return the ``{SLOT}`` tokens in a node's ``beats='...'`` FILL segment.
+
+    Args:
+        node: One raw node dict.
+
+    Returns:
+        The slot tokens found; empty when the body is not a ``<<FILL ...>>``
+        directive.
+    """
+    body = node.get("body")
+    if not isinstance(body, str):
+        return ()
+    match = _FILL_RE.match(body)
+    if match is None:
+        return ()
+    return SLOT_TOKEN_RE.findall(match.group(3))
+
+
+def _ending_slot_tokens(node: dict[str, object]) -> Iterable[str]:
+    """Return the ``{SLOT}`` tokens in a node's ending ``title``.
+
+    Args:
+        node: One raw node dict.
+
+    Returns:
+        The slot tokens found; empty when there is no ending or its
+        ``title`` is not a string.
+    """
+    ending = _as_dict_str_object(node.get("ending"))
+    if ending is None:
+        return ()
+    title = ending.get("title")
+    if not isinstance(title, str):
+        return ()
+    return SLOT_TOKEN_RE.findall(title)
+
+
+def _choice_slot_tokens(node: dict[str, object]) -> Iterable[str]:
+    """Return the ``{SLOT}`` tokens across a node's choice ``label`` fields.
+
+    Args:
+        node: One raw node dict.
+
+    Returns:
+        The slot tokens found across every choice label; empty when the
+        node has no ``choices`` list.
+    """
+    choices = _as_list_object(node.get("choices"))
+    if choices is None:
+        return ()
+    tokens: list[str] = []
+    for raw_choice in choices:
+        choice = _as_dict_str_object(raw_choice)
+        if choice is None:
+            continue
+        label = choice.get("label")
+        if isinstance(label, str):
+            tokens.extend(SLOT_TOKEN_RE.findall(label))
+    return tokens
 
 
 def _slotted_surface_tokens(skeleton: Mapping[str, object]) -> frozenset[str]:
@@ -113,23 +209,9 @@ def _slotted_surface_tokens(skeleton: Mapping[str, object]) -> frozenset[str]:
     """
     tokens: set[str] = set()
     for node in _iter_nodes(skeleton):
-        body = node.get("body")
-        if isinstance(body, str):
-            match = _FILL_RE.match(body)
-            if match is not None:
-                tokens.update(SLOT_TOKEN_RE.findall(match.group(3)))
-        ending = node.get("ending")
-        if isinstance(ending, dict):
-            title = cast("dict[str, object]", ending).get("title")
-            if isinstance(title, str):
-                tokens.update(SLOT_TOKEN_RE.findall(title))
-        choices = node.get("choices")
-        if isinstance(choices, list):
-            for raw_choice in cast("list[object]", choices):
-                if isinstance(raw_choice, dict):
-                    label = cast("dict[str, object]", raw_choice).get("label")
-                    if isinstance(label, str):
-                        tokens.update(SLOT_TOKEN_RE.findall(label))
+        tokens.update(_body_slot_tokens(node))
+        tokens.update(_ending_slot_tokens(node))
+        tokens.update(_choice_slot_tokens(node))
     return frozenset(tokens)
 
 
@@ -299,6 +381,62 @@ def _substitute_tokens(text: str, bindings: Mapping[str, str]) -> str:
     return result
 
 
+def _substitute_body(node: dict[str, object], bindings: Mapping[str, str]) -> None:
+    """Substitute bound values into a node's ``beats='...'`` FILL segment, in place.
+
+    Args:
+        node: One raw node dict (mutated in place).
+        bindings: The proposed/validated slot-value map.
+    """
+    body = node.get("body")
+    if not isinstance(body, str):
+        return
+    match = _FILL_RE.match(body)
+    if match is None:
+        return
+    role, words, beats = match.group(1), match.group(2), match.group(3)
+    new_beats = _substitute_tokens(beats, bindings)
+    node["body"] = f"<<FILL role={role} words={words} beats='{new_beats}'>>"
+
+
+def _substitute_ending_title(
+    node: dict[str, object], bindings: Mapping[str, str]
+) -> None:
+    """Substitute bound values into a node's ending ``title``, in place.
+
+    Args:
+        node: One raw node dict (mutated in place).
+        bindings: The proposed/validated slot-value map.
+    """
+    ending = _as_dict_str_object(node.get("ending"))
+    if ending is None:
+        return
+    title = ending.get("title")
+    if isinstance(title, str):
+        ending["title"] = _substitute_tokens(title, bindings)
+
+
+def _substitute_choice_labels(
+    node: dict[str, object], bindings: Mapping[str, str]
+) -> None:
+    """Substitute bound values into every choice ``label`` of a node, in place.
+
+    Args:
+        node: One raw node dict (mutated in place).
+        bindings: The proposed/validated slot-value map.
+    """
+    choices = _as_list_object(node.get("choices"))
+    if choices is None:
+        return
+    for raw_choice in choices:
+        choice = _as_dict_str_object(raw_choice)
+        if choice is None:
+            continue
+        label = choice.get("label")
+        if isinstance(label, str):
+            choice["label"] = _substitute_tokens(label, bindings)
+
+
 def _substitute_slotted_surfaces(
     bound: dict[str, object], bindings: Mapping[str, str]
 ) -> None:
@@ -310,27 +448,9 @@ def _substitute_slotted_surfaces(
         bindings: The proposed/validated slot-value map.
     """
     for node in _iter_nodes(bound):
-        body = node.get("body")
-        if isinstance(body, str):
-            match = _FILL_RE.match(body)
-            if match is not None:
-                role, words, beats = match.group(1), match.group(2), match.group(3)
-                new_beats = _substitute_tokens(beats, bindings)
-                node["body"] = f"<<FILL role={role} words={words} beats='{new_beats}'>>"
-        ending = node.get("ending")
-        if isinstance(ending, dict):
-            ending_map = cast("dict[str, object]", ending)
-            title = ending_map.get("title")
-            if isinstance(title, str):
-                ending_map["title"] = _substitute_tokens(title, bindings)
-        choices = node.get("choices")
-        if isinstance(choices, list):
-            for raw_choice in cast("list[object]", choices):
-                if isinstance(raw_choice, dict):
-                    choice = cast("dict[str, object]", raw_choice)
-                    label = choice.get("label")
-                    if isinstance(label, str):
-                        choice["label"] = _substitute_tokens(label, bindings)
+        _substitute_body(node, bindings)
+        _substitute_ending_title(node, bindings)
+        _substitute_choice_labels(node, bindings)
 
 
 def _assert_no_residual_tokens(bound: Mapping[str, object]) -> None:
@@ -521,9 +641,9 @@ def _parse_bind_response(raw: str) -> dict[str, str] | None:
         parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
     except json.JSONDecodeError:
         return None
-    if not isinstance(parsed, dict):
+    parsed_map = _as_dict_str_object(parsed)
+    if parsed_map is None:
         return None
-    parsed_map = cast("dict[str, object]", parsed)
     if not all(isinstance(value, str) for value in parsed_map.values()):
         return None
     return cast("dict[str, str]", parsed_map)
@@ -667,16 +787,17 @@ def _sanitize_elements(
         The sanitized, capped list of :class:`RawElement`; ``[]`` when the value
         is malformed or missing.
     """
-    if not isinstance(raw_elements, list):
+    elements = _as_list_object(raw_elements)
+    if elements is None:
         return []
     declared = slot_ids(contract)
     sanitized: list[RawElement] = []
-    for raw_entry in cast("list[object]", raw_elements):
+    for raw_entry in elements:
         if len(sanitized) >= _MAX_INTERPRET_ELEMENTS:
             break
-        if not isinstance(raw_entry, dict):
+        entry = _as_dict_str_object(raw_entry)
+        if entry is None:
             continue
-        entry = cast("dict[str, object]", raw_entry)
         phrase = entry.get("phrase")
         if not isinstance(phrase, str) or not phrase:
             continue
@@ -717,16 +838,15 @@ def _parse_interpret_bind_response(
         parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
     except json.JSONDecodeError:
         return None
-    if not isinstance(parsed, dict):
+    parsed_map = _as_dict_str_object(parsed)
+    if parsed_map is None:
         return None
-    parsed_map = cast("dict[str, object]", parsed)
 
     # `bindings` is load-bearing: same flat dict[str, str] check as
     # _parse_bind_response; any failure here is a failed attempt (None).
-    raw_bindings = parsed_map.get("bindings")
-    if not isinstance(raw_bindings, dict):
+    bindings_map = _as_dict_str_object(parsed_map.get("bindings"))
+    if bindings_map is None:
         return None
-    bindings_map = cast("dict[str, object]", raw_bindings)
     if not all(isinstance(value, str) for value in bindings_map.values()):
         return None
     bindings = cast("dict[str, str]", bindings_map)

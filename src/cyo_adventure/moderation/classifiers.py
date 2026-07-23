@@ -45,7 +45,9 @@ _ADVISORY_SCORE_FLOOR = 0.01
 _DEGRADED_CATEGORY = "classifier_degraded"
 
 
-class ClassifierUnavailable(Exception):  # noqa: N818 -- not an error state, a signal
+# Not an error state, a control-flow signal: N818 (error-suffix naming) does
+# not apply to this exception, so its bare name is intentional.
+class ClassifierUnavailable(Exception):  # noqa: N818
     """A classifier call failed (HTTP/parse error) so the run is degraded.
 
     Raised by an individual classifier so :func:`run_classifiers` can record one
@@ -86,7 +88,50 @@ _OPENAI_BRIGHTLINE: frozenset[str] = frozenset(
 )
 
 
-async def run_classifiers(  # noqa: PLR0913 -- all keyword-only, one cohesive call
+async def _screen_all_nodes(
+    nodes: Sequence[tuple[str, str]],
+    *,
+    openai_key: str | None,
+    perspective_key: str | None,
+    client: httpx.AsyncClient,
+) -> tuple[list[Finding], str | None, str | None]:
+    """Run OpenAI and Perspective over every node, one call per classifier.
+
+    Extracted from :func:`run_classifiers` (S3776): isolates the per-node
+    double try/except loop, the function's single biggest nesting
+    contributor, behind one call.
+
+    Args:
+        nodes: ``(node_id, prose)`` pairs to screen.
+        openai_key: OpenAI Moderation key, or ``None`` to skip OpenAI.
+        perspective_key: Perspective key, or ``None`` to skip Perspective.
+        client: An httpx async client (injected for testability).
+
+    Returns:
+        tuple[list[Finding], str | None, str | None]: Findings collected
+            before either classifier failed, plus the OpenAI and Perspective
+            failure reasons (``None`` when that classifier never failed).
+    """
+    findings: list[Finding] = []
+    openai_reason: str | None = None
+    perspective_reason: str | None = None
+    for node_id, prose in nodes:
+        if openai_key and openai_reason is None:
+            try:
+                findings.extend(await _run_openai(node_id, prose, openai_key, client))
+            except ClassifierUnavailable as exc:
+                openai_reason = exc.reason
+        if perspective_key and perspective_reason is None:
+            try:
+                findings.extend(
+                    await _run_perspective(node_id, prose, perspective_key, client)
+                )
+            except ClassifierUnavailable as exc:
+                perspective_reason = exc.reason
+    return findings, openai_reason, perspective_reason
+
+
+async def run_classifiers(  # noqa: PLR0913
     *,
     nodes: Sequence[tuple[str, str]],
     openai_key: str | None,
@@ -121,22 +166,12 @@ async def run_classifiers(  # noqa: PLR0913 -- all keyword-only, one cohesive ca
     # #VERIFY: test_openai_http_error_yields_degraded_advisory,
     # test_perspective_http_error_yields_degraded_advisory,
     # test_require_classifiers_flags_unset_keys.
-    findings: list[Finding] = []
-    openai_reason: str | None = None
-    perspective_reason: str | None = None
-    for node_id, prose in nodes:
-        if openai_key and openai_reason is None:
-            try:
-                findings.extend(await _run_openai(node_id, prose, openai_key, client))
-            except ClassifierUnavailable as exc:
-                openai_reason = exc.reason
-        if perspective_key and perspective_reason is None:
-            try:
-                findings.extend(
-                    await _run_perspective(node_id, prose, perspective_key, client)
-                )
-            except ClassifierUnavailable as exc:
-                perspective_reason = exc.reason
+    findings, openai_reason, perspective_reason = await _screen_all_nodes(
+        nodes,
+        openai_key=openai_key,
+        perspective_key=perspective_key,
+        client=client,
+    )
 
     if openai_reason is None and require_classifiers and openai_key is None:
         openai_reason = "not configured"

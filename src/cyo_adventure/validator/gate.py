@@ -180,15 +180,18 @@ def _parse_storybook(
         # Pydantic model definitions (review whenever models.py changes).
         story_id_raw = data.get("id")
         story_id = story_id_raw if isinstance(story_id_raw, str) else "<unknown>"
+        # Built as two single-line f-strings (rather than one
+        # continuation-paren-wrapped literal) so the enclosing parens, which
+        # fold away to nothing once adjacent string literals are joined, are
+        # never introduced (S1110).
+        detail = f"(schema drift?): {exc}"
+        message = f"L1-1 schema: document failed Pydantic parse after L1 {detail}"
         merged.add(
             ValidationFinding(
                 rule_id="L1-1",
                 severity=Severity.ERROR,
                 story_id=story_id,
-                message=(
-                    f"L1-1 schema: document failed Pydantic parse after L1 "
-                    f"(schema drift?): {exc}"
-                ),
+                message=message,
             )
         )
         return None

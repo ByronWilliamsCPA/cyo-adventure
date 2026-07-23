@@ -164,65 +164,18 @@ async def run_moderation_pipeline(
 
     # Soft gate: one bounded auto-repair, then re-moderate once.
     if report.has_soft_flag and not report.has_hard_block:
-        revised = await attempt_repair(
-            blob=version_row.blob,
+        report = await _attempt_and_adopt_repair(
+            session=session,
+            story_id=story_id,
+            version=version,
+            version_row=version_row,
             report=report,
             generation_provider=generation_provider,
+            settings=settings,
+            guarded_review=guarded_review,
             pii=pii,
-            max_tokens=_MAX_REPAIR_TOKENS,
+            independent=independent,
         )
-        if revised is not None:
-            # Re-moderate into a separate report; only adopt it (and persist the
-            # revised blob) if the repair is schema-valid AND passes the
-            # deterministic validation gate. A malformed or gate-failing repair
-            # is discarded so the original soft-flagged report drives routing.
-            repaired_report = ModerationReport(reviewer_independent=independent)
-            try:
-                await _run_all_stages(
-                    report=repaired_report,
-                    blob=revised,
-                    settings=settings,
-                    review_provider=guarded_review,
-                    pii=pii,
-                )
-            except ValidationError:
-                # #ASSUME: data-integrity: attempt_repair guarantees only a JSON
-                # object, not a schema-valid story; an invalid revision is dropped.
-                # #VERIFY: report and version_row.blob are left unchanged here.
-                _logger.warning("moderation.repair_invalid_blob", story_id=story_id)
-            else:
-                # A repair is adopted only if it re-proves its structure on the
-                # deterministic gate AND preserves the story's identity; both
-                # checks (and their rejection logging) live in
-                # _repair_is_adoptable. A rejected repair is discarded exactly
-                # like a schema-invalid one: report and version_row.blob stay at
-                # their pre-repair values, so routing falls through to the
-                # pre-repair report's own verdict. Never silently accepts a
-                # broken or swapped repair, never auto-publishes.
-                if _repair_is_adoptable(
-                    revised=revised,
-                    original=version_row.blob,
-                    story_id=story_id,
-                ):
-                    repaired_report.repaired = True
-                    report = repaired_report
-                    version_row.blob = revised
-                    # #ASSUME: data-integrity: the event log must record a repair
-                    # the moment the revised blob is adopted, before
-                    # moderation_report is overwritten below, so repair_applied
-                    # always precedes moderation_completed in occurred_at order
-                    # for this version.
-                    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
-                    # test_repaired_moderation_writes_repair_applied_then_completed
-                    # asserts exactly one repair_applied row when repair occurs.
-                    await record_event(
-                        session,
-                        Actor.system(),
-                        entity_type="storybook_version",
-                        entity_id=f"{story_id}:{version}",
-                        event_type=EventType.REPAIR_APPLIED,
-                        payload={"stage": "moderation"},
-                    )
 
     version_row.moderation_report = report.to_dict()
 
@@ -257,6 +210,106 @@ async def run_moderation_pipeline(
             "counts": _verdict_counts(report),
         },
     )
+
+
+async def _attempt_and_adopt_repair(
+    *,
+    session: AsyncSession,
+    story_id: str,
+    version: int,
+    version_row: StorybookVersion,
+    report: ModerationReport,
+    generation_provider: GenerationProvider,
+    settings: Settings,
+    guarded_review: ReviewProvider,
+    pii: PiiContext,
+    independent: bool,
+) -> ModerationReport:
+    """Attempt one bounded auto-repair and adopt it if it re-passes moderation.
+
+    Extracted from :func:`run_moderation_pipeline` (S3776): isolates the
+    nested repair-attempt / re-moderate / adopt-if-valid branch, the
+    function's deepest nesting, behind one call.
+
+    Args:
+        session: The request session (caller owns the transaction).
+        story_id: The persisted storybook id.
+        version: The persisted version number.
+        version_row: The version row; ``blob`` is updated in place on adoption.
+        report: The original (soft-flagged) report.
+        generation_provider: Provider used for the bounded auto-repair re-prompt.
+        settings: Application settings (review provider and classifier keys).
+        guarded_review: The PII-guarded review provider for re-moderation.
+        pii: PII context for the egress guard on repair and review prompts.
+        independent: Whether the review backend is independent of the generator.
+
+    Returns:
+        ModerationReport: ``report`` unchanged when no repair was produced,
+            the repair was invalid, or the repair was not adoptable; a new
+            report (``repaired = True``) when adopted, in which case
+            ``version_row.blob`` is updated in place and a
+            ``REPAIR_APPLIED`` event is recorded.
+    """
+    revised = await attempt_repair(
+        blob=version_row.blob,
+        report=report,
+        generation_provider=generation_provider,
+        pii=pii,
+        max_tokens=_MAX_REPAIR_TOKENS,
+    )
+    if revised is None:
+        return report
+
+    # Re-moderate into a separate report; only adopt it (and persist the
+    # revised blob) if the repair is schema-valid AND passes the deterministic
+    # validation gate. A malformed or gate-failing repair is discarded so the
+    # original soft-flagged report drives routing.
+    repaired_report = ModerationReport(reviewer_independent=independent)
+    try:
+        await _run_all_stages(
+            report=repaired_report,
+            blob=revised,
+            settings=settings,
+            review_provider=guarded_review,
+            pii=pii,
+        )
+    except ValidationError:
+        # #ASSUME: data-integrity: attempt_repair guarantees only a JSON
+        # object, not a schema-valid story; an invalid revision is dropped.
+        # #VERIFY: report and version_row.blob are left unchanged here.
+        _logger.warning("moderation.repair_invalid_blob", story_id=story_id)
+        return report
+
+    # A repair is adopted only if it re-proves its structure on the
+    # deterministic gate AND preserves the story's identity; both checks (and
+    # their rejection logging) live in _repair_is_adoptable. A rejected repair
+    # is discarded exactly like a schema-invalid one: report and
+    # version_row.blob stay at their pre-repair values, so routing falls
+    # through to the pre-repair report's own verdict. Never silently accepts a
+    # broken or swapped repair, never auto-publishes.
+    if not _repair_is_adoptable(
+        revised=revised, original=version_row.blob, story_id=story_id
+    ):
+        return report
+
+    repaired_report.repaired = True
+    version_row.blob = revised
+    # #ASSUME: data-integrity: the event log must record a repair the moment
+    # the revised blob is adopted, before moderation_report is overwritten by
+    # the caller, so repair_applied always precedes moderation_completed in
+    # occurred_at order for this version.
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_repaired_moderation_writes_repair_applied_then_completed asserts
+    # exactly one repair_applied row when repair occurs.
+    await record_event(
+        session,
+        Actor.system(),
+        entity_type="storybook_version",
+        entity_id=f"{story_id}:{version}",
+        event_type=EventType.REPAIR_APPLIED,
+        payload={"stage": "moderation"},
+    )
+    return repaired_report
 
 
 async def _apply_leaf_diversity_findings(

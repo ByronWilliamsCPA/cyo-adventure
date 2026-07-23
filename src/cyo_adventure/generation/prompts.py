@@ -74,6 +74,10 @@ _USER_MARKER = "<!-- @user -->"
 _SCHEMA_RULES_PLACEHOLDER = "{schema_rules}"
 _DRAFTING_GUIDE_PLACEHOLDER = "{drafting_guide}"
 
+# The theme-brief placeholder recurs across the fill, bind, interpret-and-bind,
+# and bound-fill templates; named once for the same reason as the two above.
+_THEME_BRIEF_PLACEHOLDER = "{theme_brief}"
+
 
 @dataclass(frozen=True, slots=True)
 class StagePrompt:
@@ -386,7 +390,7 @@ def build_fill_prompt(skeleton_json: str, theme_brief: str) -> StagePrompt:
         .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", skeleton_json)
-        .replace("{theme_brief}", theme_brief)
+        .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
     )
     return _split_stage_prompt(text)
 
@@ -505,7 +509,7 @@ def build_bind_prompt(
     text = (
         _load_template("bind.md")
         .replace("{slot_table}", _slot_table(contract))
-        .replace("{theme_brief}", json.dumps(dict(theme_brief), indent=2))
+        .replace(_THEME_BRIEF_PLACEHOLDER, json.dumps(dict(theme_brief), indent=2))
         .replace("{violations_block}", _violations_block(violations))
     )
     return _split_stage_prompt(text)
@@ -549,7 +553,7 @@ def build_interpret_bind_prompt(
     text = (
         _load_template("interpret_bind.md")
         .replace("{slot_table}", _slot_table(contract))
-        .replace("{theme_brief}", json.dumps(dict(theme_brief), indent=2))
+        .replace(_THEME_BRIEF_PLACEHOLDER, json.dumps(dict(theme_brief), indent=2))
         .replace("{violations_block}", _violations_block(violations))
     )
     return _split_stage_prompt(text)
@@ -604,7 +608,7 @@ def build_bound_fill_prompt(
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", skeleton_json)
         .replace("{slot_bindings}", slot_bindings_json)
-        .replace("{theme_brief}", theme_brief)
+        .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
     )
     return _split_stage_prompt(text)
 
