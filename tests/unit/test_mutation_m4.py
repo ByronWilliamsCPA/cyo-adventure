@@ -436,8 +436,10 @@ def test_m4_requires_a_known_mode() -> None:
     report = M4.preconditions(cave, OpParams.of())
     assert report.satisfied is False
     assert any("mode" in reason for reason in report.failures)
+    params = OpParams.of(mode="nonsense")
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M4.apply(cave, OpParams.of(mode="nonsense"), random.Random(0))
+        M4.apply(cave, params, rng)
 
 
 # --- Per-path decision counting (exact on acyclic fixtures) ---
@@ -490,8 +492,9 @@ def test_m4_insert_decision_pushing_a_path_to_nine_is_discarded() -> None:
     assert any(
         "9 decisions" in reason and "window" in reason for reason in report.failures
     )
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M4.apply(story, params, random.Random(0))
+        M4.apply(story, params, rng)
 
 
 @pytest.mark.unit
@@ -508,8 +511,9 @@ def test_m4_insert_decision_micro_stub_below_four_is_discarded() -> None:
     assert any(
         "2 decisions" in reason and "window" in reason for reason in report.failures
     )
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M4.apply(cave, params, random.Random(0))
+        M4.apply(cave, params, rng)
 
 
 # --- insert-linear ---
@@ -644,11 +648,13 @@ def test_m4_remove_linear_below_pl20_floor_is_discarded() -> None:
     can lower the fastest-finish, so it is pre-checked against the arc floor.
     """
     story = _remove_below_floor_fixture()
-    report = M4.preconditions(story, OpParams.of(mode="remove-linear", node="p2"))
+    params = OpParams.of(mode="remove-linear", node="p2")
+    report = M4.preconditions(story, params)
     assert report.satisfied is False
     assert any("PL-20" in reason and "below" in reason for reason in report.failures)
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M4.apply(story, OpParams.of(mode="remove-linear", node="p2"), random.Random(0))
+        M4.apply(story, params, rng)
 
 
 @pytest.mark.unit

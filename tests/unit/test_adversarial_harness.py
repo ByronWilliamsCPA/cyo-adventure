@@ -197,5 +197,6 @@ class TestObserveItemTargetStageGuard:
             "age_band": "6-8",
             "nodes": [{"id": "n1", "body": "hello"}],
         }
+        provider = MockProvider(responses=[])
         with pytest.raises(ValidationError, match="unrecognized target_stage"):
-            _ = await _observe_item(item, MockProvider(responses=[]))
+            _ = await _observe_item(item, provider)

@@ -175,8 +175,9 @@ def test_main_check_fails_on_duplicate_svgs(
 
 
 def test_main_check_and_all_are_mutually_exclusive(tmp_path: Path) -> None:
+    args = ["--check", "--all", "--diagrams-dir", str(tmp_path)]
     with pytest.raises(SystemExit) as exc:
-        main(["--check", "--all", "--diagrams-dir", str(tmp_path)])
+        main(args)
     assert exc.value.code == 2
 
 

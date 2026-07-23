@@ -670,8 +670,11 @@ async def test_assign_book_index_reraises_non_unique_constraint_integrity_error(
         family, _user = await _seed_family_and_user(session)
         book = await _bare_storybook(session, family_id=family.id)
 
+        random_series_id = uuid.uuid4()
         with pytest.raises(IntegrityError) as exc_info:
-            await assign_book_index(session, story_id=book.id, series_id=uuid.uuid4())
+            await assign_book_index(
+                session, story_id=book.id, series_id=random_series_id
+            )
 
         assert "uq_storybook_series_book_index" not in str(exc_info.value.orig)
 

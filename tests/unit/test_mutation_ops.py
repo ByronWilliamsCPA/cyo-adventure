@@ -126,8 +126,9 @@ def test_registry_rejects_duplicate_op_id() -> None:
     """Registering the same op_id twice raises rather than shadowing."""
     registry = OpRegistry()
     registry.register(_NoOp())
+    duplicate = _NoOp()
     with pytest.raises(ValidationError):
-        registry.register(_NoOp())
+        registry.register(duplicate)
 
 
 @pytest.mark.unit
@@ -158,8 +159,9 @@ def test_registry_rejects_blank_op_id() -> None:
             _ = (params, rng)
             return MutationResult(candidate=dict(parent))
 
+    blank = _Blank()
     with pytest.raises(ValidationError):
-        registry.register(_Blank())
+        registry.register(blank)
 
 
 @pytest.mark.unit

@@ -308,9 +308,10 @@ async def test_child_cannot_read_another_profile_history() -> None:
     other_profile = uuid.uuid4()
     session = _FakeSession([])
     principal = _child_principal(family_id, my_profile)
+    other_profile_str = str(other_profile)
 
     with pytest.raises(AuthorizationError):
-        await get_reading_history(str(other_profile), principal, session)
+        await get_reading_history(other_profile_str, principal, session)
 
 
 @pytest.mark.unit
@@ -337,9 +338,10 @@ async def test_cross_family_guardian_is_rejected() -> None:
     # A guardian principal scoped to none of the requested profiles (mirrors
     # a guardian from a different family, per _resolve_profiles in deps.py).
     principal = _guardian_principal(my_family, frozenset())
+    other_profile_str = str(other_profile)
 
     with pytest.raises(AuthorizationError):
-        await get_reading_history(str(other_profile), principal, session)
+        await get_reading_history(other_profile_str, principal, session)
 
 
 @pytest.mark.unit

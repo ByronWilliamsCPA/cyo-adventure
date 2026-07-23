@@ -80,11 +80,12 @@ def test_structural_floor_accepts_start_state_without_choice_path() -> None:
 
 @pytest.mark.unit
 def test_unknown_current_node_rejected() -> None:
+    blob = _blob()
     with pytest.raises(
         ValidationError, match=r"current_node is not a node in this story version"
     ):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_ghost",
             var_state={"courage": 0},
             path=["n_start"],
@@ -95,11 +96,12 @@ def test_unknown_current_node_rejected() -> None:
 
 @pytest.mark.unit
 def test_unknown_path_node_rejected() -> None:
+    blob = _blob()
     with pytest.raises(
         ValidationError, match=r"path references a node not in this story version"
     ):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_start",
             var_state={"courage": 0},
             path=["n_start", "n_ghost"],
@@ -110,11 +112,12 @@ def test_unknown_path_node_rejected() -> None:
 
 @pytest.mark.unit
 def test_undeclared_var_key_rejected() -> None:
+    blob = _blob()
     with pytest.raises(
         ValidationError, match=r"var_state contains an undeclared variable"
     ):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_start",
             var_state={"courage": 0, "sneaky": 1},
             path=["n_start"],
@@ -125,9 +128,10 @@ def test_undeclared_var_key_rejected() -> None:
 
 @pytest.mark.unit
 def test_out_of_bounds_int_rejected() -> None:
+    blob = _blob()
     with pytest.raises(ValidationError, match=r"is out of declared bounds"):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_start",
             var_state={"courage": 99},
             path=["n_start"],
@@ -151,12 +155,13 @@ def test_replay_accepts_genuine_state() -> None:
 
 @pytest.mark.unit
 def test_replay_rejects_forged_var_state() -> None:
+    blob = _blob()
     with pytest.raises(
         ValidationError,
         match=r"submitted reading state does not match a replay of choice_path",
     ):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_end",
             var_state={"courage": 5},  # replay yields 2, not 5
             path=["n_start", "n_end"],
@@ -167,11 +172,12 @@ def test_replay_rejects_forged_var_state() -> None:
 
 @pytest.mark.unit
 def test_replay_rejects_illegal_choice_id() -> None:
+    blob = _blob()
     with pytest.raises(
         ValidationError, match=r"choice_path contains an illegal choice"
     ):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_end",
             var_state={"courage": 2},
             path=["n_start", "n_end"],
@@ -225,11 +231,12 @@ def test_corrupt_blob_error_does_not_leak_schema_detail() -> None:
 @pytest.mark.unit
 def test_current_node_path_mismatch_rejected() -> None:
     """A forged current_node that is a real node id but not path[-1] must 422."""
+    blob = _blob()
     with pytest.raises(
         ValidationError, match=r"current_node must be the last entry of path"
     ):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_start",
             var_state={"courage": 0},
             path=["n_start", "n_end"],
@@ -241,11 +248,12 @@ def test_current_node_path_mismatch_rejected() -> None:
 @pytest.mark.unit
 def test_missing_declared_variable_rejected() -> None:
     """Omitting a declared variable must not fall back to its implicit default."""
+    blob = _blob()
     with pytest.raises(
         ValidationError, match=r"var_state is missing a declared variable"
     ):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_start",
             var_state={},
             path=["n_start"],
@@ -298,12 +306,13 @@ def test_visit_set_only_forgery_rejected() -> None:
     """A visit_set entry that is a real node id but was never actually visited
     can only be caught by full replay, not the id-membership check alone.
     """
+    blob = _blob()
     with pytest.raises(
         ValidationError,
         match=r"submitted reading state does not match a replay of choice_path",
     ):
         validate_reading_state(
-            _blob(),
+            blob,
             current_node="n_start",
             var_state={"courage": 0},
             path=["n_start"],
@@ -355,9 +364,10 @@ def test_bool_variable_accepts_boolean_value() -> None:
 
 @pytest.mark.unit
 def test_bool_variable_rejects_non_boolean_value() -> None:
+    blob = _bool_blob()
     with pytest.raises(ValidationError, match=r"requires a boolean value"):
         validate_reading_state(
-            _bool_blob(),
+            blob,
             current_node="n_start",
             var_state={"has_key": 1},
             path=["n_start"],

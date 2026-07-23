@@ -198,8 +198,9 @@ async def test_child_role_rejected() -> None:
     session = AsyncMock(spec=AsyncSession)
     ctx = _ctx("child", session)
 
+    body = NodeEditBody(body="x")
     with pytest.raises(AuthorizationError, match="admin or guardian role required"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, NodeEditBody(body="x"), ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
 
     session.execute.assert_not_awaited()
 
@@ -209,8 +210,9 @@ async def test_device_role_rejected() -> None:
     session = AsyncMock(spec=AsyncSession)
     ctx = _ctx("device", session)
 
+    body = NodeEditBody(body="x")
     with pytest.raises(AuthorizationError, match="admin or guardian role required"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, NodeEditBody(body="x"), ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
 
     session.execute.assert_not_awaited()
 
@@ -221,8 +223,9 @@ async def test_missing_story_raises_404() -> None:
     session.execute = AsyncMock(return_value=_execute_result(None))
     ctx = _ctx("admin", session)
 
+    body = NodeEditBody(body="x")
     with pytest.raises(ResourceNotFoundError, match="storybook 's1' not found"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, NodeEditBody(body="x"), ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
 
 
 @pytest.mark.asyncio
@@ -232,8 +235,9 @@ async def test_guardian_other_family_rejected() -> None:
     session.execute = AsyncMock(return_value=_execute_result(story))
     ctx = _ctx("guardian", session, family_id=_FAMILY_A)
 
+    body = NodeEditBody(body="x")
     with pytest.raises(AuthorizationError):
-        await node_edit.edit_node("s1", 1, _NODE_ID, NodeEditBody(body="x"), ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
 
 
 # ---------------------------------------------------------------------------
@@ -249,8 +253,9 @@ async def test_non_editable_status_rejected(status: str) -> None:
     _wire_session(session, story=story, version_row=_version_row())
     ctx = _ctx("admin", session)
 
+    body = NodeEditBody(body="x")
     with pytest.raises(StateTransitionError, match="in_review or needs_revision"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, NodeEditBody(body="x"), ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
 
 
 @pytest.mark.asyncio
@@ -276,8 +281,9 @@ async def test_not_latest_version_rejected() -> None:
     _wire_session(session, story=story, version_row=_version_row(), latest_version=2)
     ctx = _ctx("admin", session)
 
+    body = NodeEditBody(body="x")
     with pytest.raises(StateTransitionError, match="latest version"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, NodeEditBody(body="x"), ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
 
 
 # ---------------------------------------------------------------------------
@@ -292,10 +298,9 @@ async def test_unknown_node_id_raises_404() -> None:
     _wire_session(session, story=story, version_row=_version_row())
     ctx = _ctx("admin", session)
 
+    body = NodeEditBody(body="x")
     with pytest.raises(ResourceNotFoundError, match="node 'does-not-exist'"):
-        await node_edit.edit_node(
-            "s1", 1, "does-not-exist", NodeEditBody(body="x"), ctx
-        )
+        await node_edit.edit_node("s1", 1, "does-not-exist", body, ctx)
 
 
 @pytest.mark.asyncio
@@ -458,8 +463,9 @@ async def test_gate_failing_edit_rejected_with_unchanged_blob(
         ),
     )
 
+    body = NodeEditBody(body="x")
     with pytest.raises(ValidationError) as exc_info:
-        await node_edit.edit_node("s1", 1, _NODE_ID, NodeEditBody(body="x"), ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
 
     assert exc_info.value.details["findings"][0]["rule_id"] == "L1-7"
     # The stored blob is untouched: the mutation happened on a discarded copy.

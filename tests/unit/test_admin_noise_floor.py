@@ -24,7 +24,12 @@ _FLOOR = 0.05
 
 def test_admin_noise_floor_default_is_point_zero_five() -> None:
     """Lock the code default so it cannot drift silently from the seed row."""
-    assert pytest.approx(0.05) == ADMIN_NOISE_FLOOR_DEFAULT
+    # NOSONAR-adjacent tool conflict: ruff's SIM300 (no Yoda conditions) wants
+    # the literal-first form, but that is exactly what SonarCloud python:S3415
+    # flags (assert actual, expected order). S3415 is the semantic-correctness
+    # rule (a swapped pytest.approx(...) == actual reads misleadingly on
+    # failure), so it wins; noqa is scoped to this one line only.
+    assert ADMIN_NOISE_FLOOR_DEFAULT == pytest.approx(0.05)  # noqa: SIM300
 
 
 def test_admin_noise_floor_key_matches_migration_seed() -> None:

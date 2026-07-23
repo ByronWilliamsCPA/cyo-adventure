@@ -231,9 +231,10 @@ async def test_moderation_failure_records_failed_and_rolls_back(
     job_id = uuid.uuid4()
     provider = MockProvider(responses=[_CANNED_STORY_JSON] * 8)
 
+    session_factory = _factory_for(session)
     with pytest.raises(RuntimeError, match="review backend down"):
         await run_generation_job(
-            job_id, provider=provider, session_factory=_factory_for(session)
+            job_id, provider=provider, session_factory=session_factory
         )
 
     moderation.assert_awaited_once()
@@ -299,8 +300,10 @@ async def test_production_path_records_mock_model_not_none(
 async def test_missing_job_raises_not_found() -> None:
     """A missing GenerationJob row raises ResourceNotFoundError."""
     session = _FakeSession(job=None, concept=None)
+    job_id = uuid.uuid4()
+    session_factory = _factory_for(session)
     with pytest.raises(ResourceNotFoundError):
-        await run_generation_job(uuid.uuid4(), session_factory=_factory_for(session))
+        await run_generation_job(job_id, session_factory=session_factory)
 
 
 @pytest.mark.unit
@@ -309,9 +312,11 @@ async def test_missing_concept_records_failure_and_commits() -> None:
     """A missing Concept records a committed failure before raising."""
     job = GenerationJob(concept_id=uuid.uuid4(), status="queued")
     session = _FakeSession(job=job, concept=None)
+    job_id = uuid.uuid4()
+    session_factory = _factory_for(session)
 
     with pytest.raises(ResourceNotFoundError):
-        await run_generation_job(uuid.uuid4(), session_factory=_factory_for(session))
+        await run_generation_job(job_id, session_factory=session_factory)
 
     assert job.status == "failed"
     assert job.error is not None
@@ -366,12 +371,15 @@ async def test_pipeline_exception_records_failure_and_reraises(
         raise RuntimeError(msg)
 
     monkeypatch.setattr("cyo_adventure.generation.worker.generate_story", _boom)
+    job_id = uuid.uuid4()
+    provider = MockProvider(responses=[])
+    session_factory = _factory_for(session)
 
     with pytest.raises(RuntimeError, match="provider exploded"):
         await run_generation_job(
-            uuid.uuid4(),
-            provider=MockProvider(responses=[]),
-            session_factory=_factory_for(session),
+            job_id,
+            provider=provider,
+            session_factory=session_factory,
         )
 
     assert job.status == "failed"
@@ -399,10 +407,12 @@ async def test_interrupted_job_records_failed_in_finally(
         raise RuntimeError(msg)
 
     monkeypatch.setattr(ConceptBrief, "model_validate", _boom)
+    job_id = uuid.uuid4()
+    session_factory = _factory_for(session)
 
     with pytest.raises(RuntimeError, match="boom mid-pipeline"):
         await run_generation_job(
-            uuid.uuid4(), provider=provider, session_factory=_factory_for(session)
+            job_id, provider=provider, session_factory=session_factory
         )
 
     assert job.status == "failed"
@@ -442,10 +452,11 @@ async def test_late_interrupt_during_persist_records_failed_not_passed(
         raise RuntimeError(msg)
 
     monkeypatch.setattr("cyo_adventure.generation.worker.persist_storybook", _boom)
+    session_factory = _factory_for(session)
 
     with pytest.raises(RuntimeError, match="boom mid-persist"):
         await run_generation_job(
-            job_id, provider=provider, session_factory=_factory_for(session)
+            job_id, provider=provider, session_factory=session_factory
         )
 
     assert job.status == "failed"
@@ -464,9 +475,11 @@ async def test_late_interrupt_during_persist_records_failed_not_passed(
 async def test_missing_job_finally_is_a_noop() -> None:
     """When the job row never existed, the finally guard finds nothing to fail."""
     session = _FakeSession(job=None, concept=None)
+    job_id = uuid.uuid4()
+    session_factory = _factory_for(session)
 
     with pytest.raises(ResourceNotFoundError):
-        await run_generation_job(uuid.uuid4(), session_factory=_factory_for(session))
+        await run_generation_job(job_id, session_factory=session_factory)
 
     assert session.commit_count == 0
 

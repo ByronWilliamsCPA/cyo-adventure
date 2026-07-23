@@ -64,48 +64,38 @@ def test_schema_round_trip():
 
 
 def test_rejects_duplicate_slot_ids():
+    slots = [_slot("HERO"), _slot("HERO")]
     with pytest.raises(PydanticValidationError, match="duplicate slot id"):
-        _contract(
-            [_slot("HERO"), _slot("HERO")],
-            {"HERO": "Priya"},
-        )
+        _contract(slots, {"HERO": "Priya"})
 
 
 def test_rejects_undeclared_distinct_from_reference():
-    with pytest.raises(PydanticValidationError, match="undeclared slot id"):
-        _contract(
-            [
-                _slot(
-                    "HERO",
-                    constraints=SlotConstraints(distinct_from=["COMPANION"]),
-                )
-            ],
-            {"HERO": "Priya"},
+    slots = [
+        _slot(
+            "HERO",
+            constraints=SlotConstraints(distinct_from=["COMPANION"]),
         )
+    ]
+    with pytest.raises(PydanticValidationError, match="undeclared slot id"):
+        _contract(slots, {"HERO": "Priya"})
 
 
 def test_rejects_default_binding_missing_a_declared_key():
+    slots = [_slot("HERO"), _slot("COMPANION")]
     with pytest.raises(PydanticValidationError, match="missing"):
-        _contract(
-            [_slot("HERO"), _slot("COMPANION")],
-            {"HERO": "Priya"},
-        )
+        _contract(slots, {"HERO": "Priya"})
 
 
 def test_rejects_default_binding_with_an_extra_key():
+    slots = [_slot("HERO")]
     with pytest.raises(PydanticValidationError, match="extra"):
-        _contract(
-            [_slot("HERO")],
-            {"HERO": "Priya", "COMPANION": "Sam"},
-        )
+        _contract(slots, {"HERO": "Priya", "COMPANION": "Sam"})
 
 
 def test_rejects_blank_forbid_bundle_id():
+    slots = [_slot("HERO", constraints=SlotConstraints(forbid=["  "]))]
     with pytest.raises(PydanticValidationError, match="empty/blank forbid bundle id"):
-        _contract(
-            [_slot("HERO", constraints=SlotConstraints(forbid=["  "]))],
-            {"HERO": "Priya"},
-        )
+        _contract(slots, {"HERO": "Priya"})
 
 
 def test_slot_id_grammar_rejects_non_screaming_snake_case():
@@ -133,13 +123,14 @@ def test_extra_forbid_rejects_unknown_keys(model_factory):
 
 
 def test_theme_contract_extra_forbid_rejects_unknown_keys():
+    slots = [_slot("HERO")]
     with pytest.raises(PydanticValidationError):
         ThemeContract(
             contract_version=1,
             skeleton_slug="slug",
             age_band=AgeBand.BAND_8_11,
             default_binding={"HERO": "Priya"},
-            slots=[_slot("HERO")],
+            slots=slots,
             unknown_field=1,  # type: ignore[call-arg]
         )
 

@@ -431,11 +431,10 @@ async def test_non_admin_rejected_with_403_before_any_query(
 ) -> None:
     """A guardian (non-admin) caller is rejected before the session is touched."""
     ctx = _ctx(_GUARDIAN, mock_async_session)
+    request = rescreen_api.RescreenRequest(storybook_ids=None)
 
     with pytest.raises(AuthorizationError, match="admin role required"):
-        await rescreen_api.trigger_rescreen(
-            rescreen_api.RescreenRequest(storybook_ids=None), ctx
-        )
+        await rescreen_api.trigger_rescreen(request, ctx)
 
     mock_async_session.execute.assert_not_awaited()
 

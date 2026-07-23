@@ -188,10 +188,12 @@ async def test_admin_only_principal_is_rejected_from_consent() -> None:
     ctx = RequestContext(principal=principal, session=_FakeSession())
     with pytest.raises(AuthorizationError):
         await list_my_family_connections(ctx)
+    connection_id = str(uuid.uuid4())
     with pytest.raises(AuthorizationError):
-        await consent_family_connection(str(uuid.uuid4()), ctx)
+        await consent_family_connection(connection_id, ctx)
+    revoke_connection_id = str(uuid.uuid4())
     with pytest.raises(AuthorizationError):
-        await revoke_family_connection_consent(str(uuid.uuid4()), ctx)
+        await revoke_family_connection_consent(revoke_connection_id, ctx)
 
 
 @pytest.mark.unit
@@ -314,10 +316,11 @@ async def test_unrelated_family_gets_403_on_consent() -> None:
     stranger_principal = _principal(stranger_family)
     ctx = RequestContext(principal=stranger_principal, session=session)
 
+    row_id = str(row.id)
     with pytest.raises(AuthorizationError):
-        await consent_family_connection(str(row.id), ctx)
+        await consent_family_connection(row_id, ctx)
     with pytest.raises(AuthorizationError):
-        await revoke_family_connection_consent(str(row.id), ctx)
+        await revoke_family_connection_consent(row_id, ctx)
     # No mutation happened on either failed attempt.
     assert row.consented_by_viewer_user_id is None
     assert row.consented_by_sharer_user_id is None
@@ -332,7 +335,9 @@ async def test_consent_on_missing_connection_raises_404() -> None:
     session = _FakeSession()
     ctx = RequestContext(principal=principal, session=session)
 
+    missing_connection_id = str(uuid.uuid4())
     with pytest.raises(ResourceNotFoundError):
-        await consent_family_connection(str(uuid.uuid4()), ctx)
+        await consent_family_connection(missing_connection_id, ctx)
+    missing_revoke_id = str(uuid.uuid4())
     with pytest.raises(ResourceNotFoundError):
-        await revoke_family_connection_consent(str(uuid.uuid4()), ctx)
+        await revoke_family_connection_consent(missing_revoke_id, ctx)

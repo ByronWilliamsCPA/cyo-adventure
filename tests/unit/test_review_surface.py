@@ -219,12 +219,13 @@ def test_unrecognized_source_rejected() -> None:
         ],
         "summary": None,
     }
+    blob = _blob()
     with pytest.raises(ValidationError):
         build_review_surface(
             status="in_review",
             storybook_id="s1",
             version=1,
-            blob=_blob(),
+            blob=blob,
             moderation_report=report,
         )
 
@@ -246,12 +247,13 @@ def test_unrecognized_verdict_rejected() -> None:
         ],
         "summary": None,
     }
+    blob = _blob()
     with pytest.raises(ValidationError):
         build_review_surface(
             status="in_review",
             storybook_id="s1",
             version=1,
-            blob=_blob(),
+            blob=blob,
             moderation_report=report,
         )
 
@@ -301,12 +303,13 @@ def test_out_of_range_stage_rejected() -> None:
         ],
         "summary": None,
     }
+    blob = _blob()
     with pytest.raises(ValidationError):
         build_review_surface(
             status="in_review",
             storybook_id="s1",
             version=1,
-            blob=_blob(),
+            blob=blob,
             moderation_report=report,
         )
 
@@ -597,11 +600,12 @@ def test_content_summary_rejects_corrupt_report() -> None:
         ],
         "summary": {},
     }
+    blob = _blob()
     with pytest.raises(ValidationError):
         build_content_summary(
             storybook_id="s1",
             version=1,
-            blob=_blob(),
+            blob=blob,
             moderation_report=corrupt,
             age_band="",
             policy=_DEFAULT_POLICY,

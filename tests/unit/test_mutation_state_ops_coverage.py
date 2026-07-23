@@ -602,8 +602,10 @@ def test_relocate_failures_cover_each_branch() -> None:
 @pytest.mark.unit
 def test_apply_retune_raises_on_an_empty_change_and_skips_junk_vars() -> None:
     """A no-change retune raises; a junk variable entry is skipped during apply."""
+    parent = _flooded_quarter()
+    params = OpParams.of(variable="oil")
     with pytest.raises(ValidationError, match="ineligible"):
-        _apply_retune(_flooded_quarter(), OpParams.of(variable="oil"))
+        _apply_retune(parent, params)
     junk_parent = _flooded_quarter()
     cast("list[object]", junk_parent["variables"]).append(99)
     result = _apply_retune(junk_parent, OpParams.of(variable="oil", max=4))
@@ -613,11 +615,10 @@ def test_apply_retune_raises_on_an_empty_change_and_skips_junk_vars() -> None:
 @pytest.mark.unit
 def test_apply_gate_choice_raises_on_an_unassemblable_condition() -> None:
     """A gate-choice with an undeclared gate_var fails closed during apply."""
+    parent = _flooded_quarter()
+    params = OpParams.of(choice="c_n_hub_1", gate_var="not_declared")
     with pytest.raises(ValidationError, match="ineligible"):
-        _apply_gate_choice(
-            _flooded_quarter(),
-            OpParams.of(choice="c_n_hub_1", gate_var="not_declared"),
-        )
+        _apply_gate_choice(parent, params)
 
 
 @pytest.mark.unit
@@ -631,11 +632,10 @@ def test_set_choice_condition_raises_when_the_choice_vanished() -> None:
 @pytest.mark.unit
 def test_apply_add_route_raises_on_an_unassemblable_condition() -> None:
     """An add-route with an undeclared gate_var fails closed during apply."""
+    parent = _flooded_quarter()
+    params = OpParams.of(host="n_hub", target="e_steady", gate_var="not_declared")
     with pytest.raises(ValidationError, match="ineligible"):
-        _apply_add_route(
-            _flooded_quarter(),
-            OpParams.of(host="n_hub", target="e_steady", gate_var="not_declared"),
-        )
+        _apply_add_route(parent, params)
 
 
 @pytest.mark.unit
@@ -688,8 +688,11 @@ def test_move_on_enter_effect_covers_missing_source_and_dest() -> None:
 @pytest.mark.unit
 def test_m5_apply_raises_on_an_unknown_mode() -> None:
     """Dispatch fails closed when the mode is not one of the five sub-ops."""
+    parent = _flooded_quarter()
+    params = OpParams.of(mode="bogus")
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="mode"):
-        M5.apply(_flooded_quarter(), OpParams.of(mode="bogus"), random.Random(0))
+        M5.apply(parent, params, rng)
 
 
 # --- Walk-derived helpers on empty and non-satisfying walks ---

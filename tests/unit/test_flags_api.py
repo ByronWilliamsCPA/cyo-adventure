@@ -201,16 +201,14 @@ async def test_create_flag_wrong_profile_raises_authorization() -> None:
     # The principal may act on a different profile than the one in the body.
     ctx = RequestContext(principal=_child(family_id, uuid.uuid4()), session=session)
 
+    body = KidFlagCreateBody(
+        profile_id=str(uuid.uuid4()),
+        storybook_id="book-1",
+        version=1,
+        reason="confusing",
+    )
     with pytest.raises(AuthorizationError):
-        await create_flag(
-            KidFlagCreateBody(
-                profile_id=str(uuid.uuid4()),
-                storybook_id="book-1",
-                version=1,
-                reason="confusing",
-            ),
-            ctx,
-        )
+        await create_flag(body, ctx)
     assert session.added == []
 
 
@@ -226,16 +224,14 @@ async def test_create_flag_unassigned_book_raises_authorization() -> None:
     session = _FakeSession(profile=profile, assigned=False)
     ctx = RequestContext(principal=_child(family_id, profile_id), session=session)
 
+    body = KidFlagCreateBody(
+        profile_id=str(profile_id),
+        storybook_id="unassigned-book",
+        version=1,
+        reason="did_not_like",
+    )
     with pytest.raises(AuthorizationError):
-        await create_flag(
-            KidFlagCreateBody(
-                profile_id=str(profile_id),
-                storybook_id="unassigned-book",
-                version=1,
-                reason="did_not_like",
-            ),
-            ctx,
-        )
+        await create_flag(body, ctx)
     assert session.added == []
 
 
@@ -248,16 +244,14 @@ async def test_create_flag_missing_profile_raises_not_found() -> None:
     session = _FakeSession(profile=None)
     ctx = RequestContext(principal=_child(family_id, profile_id), session=session)
 
+    body = KidFlagCreateBody(
+        profile_id=str(profile_id),
+        storybook_id="book-1",
+        version=1,
+        reason="did_not_like",
+    )
     with pytest.raises(ResourceNotFoundError):
-        await create_flag(
-            KidFlagCreateBody(
-                profile_id=str(profile_id),
-                storybook_id="book-1",
-                version=1,
-                reason="did_not_like",
-            ),
-            ctx,
-        )
+        await create_flag(body, ctx)
 
 
 @pytest.mark.unit
@@ -274,16 +268,14 @@ async def test_create_flag_cap_returns_state_transition_error() -> None:
     )
     ctx = RequestContext(principal=_child(family_id, profile_id), session=session)
 
+    body = KidFlagCreateBody(
+        profile_id=str(profile_id),
+        storybook_id="book-1",
+        version=1,
+        reason="did_not_like",
+    )
     with pytest.raises(StateTransitionError):
-        await create_flag(
-            KidFlagCreateBody(
-                profile_id=str(profile_id),
-                storybook_id="book-1",
-                version=1,
-                reason="did_not_like",
-            ),
-            ctx,
-        )
+        await create_flag(body, ctx)
     assert session.added == []
 
 
@@ -423,10 +415,10 @@ async def test_resolve_flag_guardian_raises_authorization() -> None:
     session = _FakeSession()
     ctx = RequestContext(principal=_guardian(family_id, set()), session=session)
 
+    flag_id = str(uuid.uuid4())
+    body = KidFlagResolveBody(resolution="dismissed")
     with pytest.raises(AuthorizationError):
-        await resolve_flag(
-            str(uuid.uuid4()), KidFlagResolveBody(resolution="dismissed"), ctx
-        )
+        await resolve_flag(flag_id, body, ctx)
 
 
 @pytest.mark.unit
@@ -437,10 +429,10 @@ async def test_resolve_flag_device_raises_authorization() -> None:
     session = _FakeSession()
     ctx = RequestContext(principal=_device(family_id), session=session)
 
+    flag_id = str(uuid.uuid4())
+    body = KidFlagResolveBody(resolution="dismissed")
     with pytest.raises(AuthorizationError):
-        await resolve_flag(
-            str(uuid.uuid4()), KidFlagResolveBody(resolution="dismissed"), ctx
-        )
+        await resolve_flag(flag_id, body, ctx)
 
 
 @pytest.mark.unit
@@ -451,10 +443,10 @@ async def test_resolve_flag_not_found_raises() -> None:
     session = _FakeSession(flag=None)
     ctx = RequestContext(principal=_admin(family_id), session=session)
 
+    flag_id = str(uuid.uuid4())
+    body = KidFlagResolveBody(resolution="dismissed")
     with pytest.raises(ResourceNotFoundError):
-        await resolve_flag(
-            str(uuid.uuid4()), KidFlagResolveBody(resolution="dismissed"), ctx
-        )
+        await resolve_flag(flag_id, body, ctx)
 
 
 @pytest.mark.unit
@@ -478,10 +470,10 @@ async def test_resolve_flag_already_resolved_raises_state_transition() -> None:
     session = _FakeSession(flag=flag)
     ctx = RequestContext(principal=_admin(family_id), session=session)
 
+    flag_id = str(flag.id)
+    body = KidFlagResolveBody(resolution="dismissed")
     with pytest.raises(StateTransitionError):
-        await resolve_flag(
-            str(flag.id), KidFlagResolveBody(resolution="dismissed"), ctx
-        )
+        await resolve_flag(flag_id, body, ctx)
 
 
 @pytest.mark.unit
@@ -492,7 +484,6 @@ async def test_resolve_flag_invalid_uuid_raises_validation() -> None:
     session = _FakeSession()
     ctx = RequestContext(principal=_admin(family_id), session=session)
 
+    body = KidFlagResolveBody(resolution="dismissed")
     with pytest.raises(ValidationError):
-        await resolve_flag(
-            "not-a-uuid", KidFlagResolveBody(resolution="dismissed"), ctx
-        )
+        await resolve_flag("not-a-uuid", body, ctx)

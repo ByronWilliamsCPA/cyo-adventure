@@ -312,8 +312,10 @@ def test_m1_rejects_a_non_disjoint_cycle_creating_swap_at_preconditions() -> Non
     assert report.satisfied is False
     assert any("cycle" in reason or "disjoint" in reason for reason in report.failures)
     # And apply raises rather than emitting an ineligible candidate.
+    params = OpParams.of(choice1="c1", choice2="c2")
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M1.apply(story, OpParams.of(choice1="c1", choice2="c2"), random.Random(0))
+        M1.apply(story, params, rng)
 
 
 @pytest.mark.unit

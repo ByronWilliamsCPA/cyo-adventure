@@ -276,8 +276,9 @@ async def test_child_cannot_read_another_profiles_recommendations() -> None:
     other_profile = uuid.uuid4()
     principal = _child_principal(family_id, own_profile)
     session = _FakeSession()
+    other_profile_str = str(other_profile)
     with pytest.raises(AuthorizationError):
-        await get_recommendations(str(other_profile), principal, session)
+        await get_recommendations(other_profile_str, principal, session)
 
 
 @pytest.mark.unit
@@ -288,8 +289,9 @@ async def test_unknown_profile_raises_404() -> None:
     profile_id = uuid.uuid4()
     principal = _child_principal(family_id, profile_id)
     session = _FakeSession(profile=None)
+    profile_id_str = str(profile_id)
     with pytest.raises(ResourceNotFoundError):
-        await get_recommendations(str(profile_id), principal, session)
+        await get_recommendations(profile_id_str, principal, session)
 
 
 @pytest.mark.unit

@@ -99,8 +99,9 @@ def test_apply_chain_rejects_over_bound() -> None:
 @pytest.mark.unit
 def test_apply_chain_rejects_empty() -> None:
     """An empty chain is rejected."""
+    parent = _load(_CAVE)
     with pytest.raises(ValidationError, match="at least one"):
-        apply_chain(_load(_CAVE), [])
+        apply_chain(parent, [])
 
 
 @pytest.mark.unit
@@ -109,8 +110,9 @@ def test_apply_chain_aborts_on_precondition_failure() -> None:
     parent = _load(_CAVE)
     # M3 graft with a nonexistent host decision fails preconditions.
     bad = OpParams.of(mode="graft", subtree_root="nope", host_decision="nope")
+    steps = [ChainStep("M3", bad, 0)]
     with pytest.raises(ValidationError, match="ineligible"):
-        apply_chain(parent, [ChainStep("M3", bad, 0)], op_for=_op_for)
+        apply_chain(parent, steps, op_for=_op_for)
 
 
 @pytest.mark.unit

@@ -356,9 +356,11 @@ async def test_generate_story_deeply_nested_output_raises_recursion_error() -> N
     # landed: update this test to assert that outcome.
     nesting_bomb = "[" * 100_000 + "]" * 100_000
     provider = MockProvider(responses=[nesting_bomb])
+    brief = _make_brief()
+    pii = _empty_pii()
 
     with pytest.raises(RecursionError):
-        await generate_story(_make_brief(), provider, _empty_pii(), max_repairs=0)
+        await generate_story(brief, provider, pii, max_repairs=0)
 
 
 # ---------------------------------------------------------------------------

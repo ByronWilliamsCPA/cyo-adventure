@@ -409,12 +409,10 @@ def test_m2_identity_permutation_rejected_at_preconditions() -> None:
     )
     assert report.satisfied is False
     assert any("no-op" in reason or "identity" in reason for reason in report.failures)
+    params = OpParams.of(valence="positive", order="end_disc,end_win")
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M2.apply(
-            story,
-            OpParams.of(valence="positive", order="end_disc,end_win"),
-            random.Random(0),
-        )
+        M2.apply(story, params, rng)
 
 
 @pytest.mark.unit
@@ -443,12 +441,10 @@ def test_m2_moving_success_below_the_floor_is_discarded_pre_gate() -> None:
     )
     assert report.satisfied is False
     assert any("PL-20" in reason or "floor" in reason for reason in report.failures)
+    params = OpParams.of(valence="positive", order="end_win,end_disc")
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M2.apply(
-            story,
-            OpParams.of(valence="positive", order="end_win,end_disc"),
-            random.Random(0),
-        )
+        M2.apply(story, params, rng)
 
 
 @pytest.mark.unit

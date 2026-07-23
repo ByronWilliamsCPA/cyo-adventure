@@ -100,11 +100,13 @@ async def test_onboarding_non_unique_integrity_error_propagates() -> None:
     )
     session.flush = AsyncMock(side_effect=[fk_violation])
 
+    identity = OnboardingIdentity(subject="s", email=None)
+    response = Response()
     with pytest.raises(IntegrityError):
         await onboard(
-            identity=OnboardingIdentity(subject="s", email=None),
+            identity=identity,
             session=session,
-            response=Response(),
+            response=response,
             body=None,
         )
 

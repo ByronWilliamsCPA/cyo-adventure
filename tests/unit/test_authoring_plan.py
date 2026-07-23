@@ -222,16 +222,14 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
 async def test_unrecognized_skill_model_is_rejected() -> None:
     """prep_model must be a real Claude Code session model for mechanism='skill'."""
     session = _FakeSession()
+    request = _request()
+    concept = _concept()
+    plan = AuthoringPlanRequest(
+        method="skeleton_fill", mechanism="skill", prep_model="gpt-4o"
+    )
+    actor = _admin_actor()
     with pytest.raises(ValidationError):
-        await build_authoring_plan(
-            session,
-            _request(),
-            _concept(),
-            AuthoringPlanRequest(
-                method="skeleton_fill", mechanism="skill", prep_model="gpt-4o"
-            ),
-            actor=_admin_actor(),
-        )
+        await build_authoring_plan(session, request, concept, plan, actor=actor)
 
 
 @pytest.mark.asyncio
@@ -240,36 +238,31 @@ async def test_existing_job_for_concept_is_conflict() -> None:
     concept = _concept()
     existing = GenerationJob(id=uuid.uuid4(), concept_id=concept.id, status="queued")
     session = _FakeSession(existing_job=existing)
+    request = _request()
+    plan = AuthoringPlanRequest(
+        method="fresh_generation",
+        mechanism="automated_provider",
+        prep_model="openrouter/some-model",
+        provider="anthropic",
+        model="claude-sonnet-4-6",
+    )
+    actor = _admin_actor()
     with pytest.raises(StateTransitionError):
-        await build_authoring_plan(
-            session,
-            _request(),
-            concept,
-            AuthoringPlanRequest(
-                method="fresh_generation",
-                mechanism="automated_provider",
-                prep_model="openrouter/some-model",
-                provider="anthropic",
-                model="claude-sonnet-4-6",
-            ),
-            actor=_admin_actor(),
-        )
+        await build_authoring_plan(session, request, concept, plan, actor=actor)
 
 
 @pytest.mark.asyncio
 async def test_no_matching_skeleton_for_band_is_rejected() -> None:
     """A band with no skeleton directory at all yields a 422, not a crash."""
     session = _FakeSession()
+    request = _request()
+    concept = _concept("99-100")
+    plan = AuthoringPlanRequest(
+        method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+    )
+    actor = _admin_actor()
     with pytest.raises(ValidationError):
-        await build_authoring_plan(
-            session,
-            _request(),
-            _concept("99-100"),
-            AuthoringPlanRequest(
-                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
-            ),
-            actor=_admin_actor(),
-        )
+        await build_authoring_plan(session, request, concept, plan, actor=actor)
 
 
 def test_eligibility_warnings_flags_haiku_on_hard_band() -> None:
@@ -320,20 +313,18 @@ def test_provider_model_rejected_when_mechanism_not_automated_provider() -> None
 async def test_unallowlisted_provider_model_is_rejected() -> None:
     """A provider/model pair that is not an enabled allowlist row is a 422."""
     session = _FakeSession(allowlisted=False)
+    request = _request()
+    concept = _concept()
+    plan = AuthoringPlanRequest(
+        method="fresh_generation",
+        mechanism="automated_provider",
+        prep_model="openrouter/some-model",
+        provider="anthropic",
+        model="not-a-real-model",
+    )
+    actor = _admin_actor()
     with pytest.raises(ValidationError):
-        await build_authoring_plan(
-            session,
-            _request(),
-            _concept(),
-            AuthoringPlanRequest(
-                method="fresh_generation",
-                mechanism="automated_provider",
-                prep_model="openrouter/some-model",
-                provider="anthropic",
-                model="not-a-real-model",
-            ),
-            actor=_admin_actor(),
-        )
+        await build_authoring_plan(session, request, concept, plan, actor=actor)
 
 
 @pytest.mark.asyncio
@@ -460,19 +451,17 @@ async def test_skeleton_fill_weighted_pick_persists_request_band() -> None:
 @pytest.mark.asyncio
 async def test_skeleton_fill_override_unknown_slug_is_rejected() -> None:
     session = _FakeSession()
+    request = _request()
+    concept = _concept("8-11")
+    plan = AuthoringPlanRequest(
+        method="skeleton_fill",
+        mechanism="skill",
+        prep_model="sonnet",
+        skeleton_slug="does-not-exist-anywhere",
+    )
+    actor = _admin_actor()
     with pytest.raises(ValidationError):
-        await build_authoring_plan(
-            session,
-            _request(),
-            _concept("8-11"),
-            AuthoringPlanRequest(
-                method="skeleton_fill",
-                mechanism="skill",
-                prep_model="sonnet",
-                skeleton_slug="does-not-exist-anywhere",
-            ),
-            actor=_admin_actor(),
-        )
+        await build_authoring_plan(session, request, concept, plan, actor=actor)
 
 
 @pytest.mark.asyncio
@@ -555,15 +544,20 @@ async def test_skeleton_fill_empty_cell_override_succeeds() -> None:
     assert any("outside the request's cell" in w for w in result.warnings)
 
     # Same empty cell, NO override -> the empty-cell 422 still fires.
+    fake_session = _FakeSession()
+    empty_cell_request = _request()
+    empty_cell_concept = _concept("99-100")
+    empty_cell_plan = AuthoringPlanRequest(
+        method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+    )
+    empty_cell_actor = _admin_actor()
     with pytest.raises(ValidationError):
         await build_authoring_plan(
-            _FakeSession(),
-            _request(),
-            _concept("99-100"),
-            AuthoringPlanRequest(
-                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
-            ),
-            actor=_admin_actor(),
+            fake_session,
+            empty_cell_request,
+            empty_cell_concept,
+            empty_cell_plan,
+            actor=empty_cell_actor,
         )
 
 

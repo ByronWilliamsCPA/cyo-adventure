@@ -132,8 +132,9 @@ def test_choose_hidden_choice_raises() -> None:
 def test_choose_unknown_choice_raises() -> None:
     """Selecting a non-existent choice id is rejected."""
     engine = StoryEngine(_lantern())
+    start_state = engine.start()
     with pytest.raises(BusinessLogicError, match="does not exist"):
-        engine.choose(engine.start(), "c_nope")
+        engine.choose(start_state, "c_nope")
 
 
 @pytest.mark.unit
@@ -411,8 +412,9 @@ def test_choose_to_missing_target_raises() -> None:
     }
     story = _build([start, _end()], [], start="n_start", ending_count=1)
     engine = StoryEngine(story)
+    start_state = engine.start()
     with pytest.raises(BusinessLogicError, match="does not exist"):
-        engine.choose(engine.start(), "c_void")
+        engine.choose(start_state, "c_void")
 
 
 @pytest.mark.unit

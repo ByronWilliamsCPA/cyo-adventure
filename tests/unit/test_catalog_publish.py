@@ -95,9 +95,10 @@ async def test_load_admin_principal_rejects_non_admin_user() -> None:
     story under a non-admin's identity.
     """
     session = _FakeSession(user=_user(role="guardian", is_admin=False))
+    approved_by = uuid.uuid4()
 
     with pytest.raises(AuthorizationError, match="admin role required"):
-        await _load_admin_principal(session, uuid.uuid4())  # type: ignore[arg-type]
+        await _load_admin_principal(session, approved_by)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit
@@ -113,9 +114,10 @@ async def test_load_admin_principal_rejects_a_row_with_an_unmodeled_role() -> No
     ProjectBaseError subclass) instead.
     """
     session = _FakeSession(user=_user(role="rogue-role", is_admin=True))
+    approved_by = uuid.uuid4()
 
     with pytest.raises(AuthorizationError, match="unrecognized role"):
-        await _load_admin_principal(session, uuid.uuid4())  # type: ignore[arg-type]
+        await _load_admin_principal(session, approved_by)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

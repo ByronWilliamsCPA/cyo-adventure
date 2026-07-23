@@ -157,9 +157,10 @@ async def test_resume_gate_block_marks_job_failed(
     broken = copy.deepcopy(blob)
     broken["nodes"] = []  # an empty node list fails the gate's structural checks
 
+    job_uuid = uuid.UUID(job_id)
     async with sessions() as session:
         with pytest.raises(ValidationError):
-            await resume_manual_fill(session, uuid.UUID(job_id), broken)
+            await resume_manual_fill(session, job_uuid, broken)
 
     async with sessions() as session:
         job = await session.get(GenerationJob, uuid.UUID(job_id))

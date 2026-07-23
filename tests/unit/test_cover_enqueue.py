@@ -50,6 +50,7 @@ def test_enqueue_cover_broker_unreachable_propagates_connection_error() -> None:
     """A Redis outage during queue construction propagates to the caller."""
     # #ASSUME: external resources: api/covers.py relies on this raise to roll
     # cover_status off "generating"; swallowing it here would strand the row.
+    settings = _settings()
     with (
         patch(
             "cyo_adventure.covers.worker.get_queue",
@@ -57,7 +58,7 @@ def test_enqueue_cover_broker_unreachable_propagates_connection_error() -> None:
         ),
         pytest.raises(RedisConnectionError),
     ):
-        enqueue_cover("s1", 2, _settings())
+        enqueue_cover("s1", 2, settings)
 
 
 @pytest.mark.unit
@@ -65,8 +66,9 @@ def test_enqueue_cover_enqueue_call_failure_propagates_error() -> None:
     """A failure inside queue.enqueue itself propagates instead of returning an id."""
     queue = MagicMock()
     queue.enqueue.side_effect = RedisConnectionError("lost mid-enqueue")
+    settings = _settings()
     with (
         patch("cyo_adventure.covers.worker.get_queue", return_value=queue),
         pytest.raises(RedisConnectionError),
     ):
-        enqueue_cover("s1", 2, _settings())
+        enqueue_cover("s1", 2, settings)

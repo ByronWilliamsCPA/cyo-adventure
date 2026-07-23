@@ -111,8 +111,9 @@ class TestListNotificationsRoleGate:
             notifications, "list_guardian_notifications", fail_if_called
         )
 
+        ctx = _ctx("child")
         with pytest.raises(AuthorizationError):
-            await notifications.list_notifications(_ctx("child"))
+            await notifications.list_notifications(ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -126,8 +127,9 @@ class TestListNotificationsRoleGate:
             notifications, "list_guardian_notifications", fail_if_called
         )
 
+        ctx = _ctx("device")
         with pytest.raises(AuthorizationError):
-            await notifications.list_notifications(_ctx("device"))
+            await notifications.list_notifications(ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -144,8 +146,9 @@ class TestListNotificationsRoleGate:
             notifications, "list_guardian_notifications", fail_if_called
         )
 
+        ctx = _ctx("admin")
         with pytest.raises(AuthorizationError):
-            await notifications.list_notifications(_ctx("admin"))
+            await notifications.list_notifications(ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -186,8 +189,9 @@ class TestListNotificationsRoleGate:
             notifications, "list_guardian_notifications", fail_if_called
         )
 
+        ctx = _ctx("guardian")
         with pytest.raises(ValidationError):
-            await notifications.list_notifications(_ctx("guardian"), since="garbage")
+            await notifications.list_notifications(ctx, since="garbage")
 
 
 class TestListNotificationsResponseShape:

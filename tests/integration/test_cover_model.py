@@ -37,11 +37,10 @@ async def test_cover_status_rejects_unknown_value(
     sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
     async with sessions() as session:
+        statement = text(
+            "UPDATE storybook_version SET cover_status = 'bogus' "
+            "WHERE storybook_id = :sid AND version = :v"
+        )
+        params = {"sid": seed.storybook_id, "v": seed.version}
         with pytest.raises(IntegrityError):
-            await session.execute(
-                text(
-                    "UPDATE storybook_version SET cover_status = 'bogus' "
-                    "WHERE storybook_id = :sid AND version = :v"
-                ),
-                {"sid": seed.storybook_id, "v": seed.version},
-            )
+            await session.execute(statement, params)

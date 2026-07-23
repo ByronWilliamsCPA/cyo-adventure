@@ -435,8 +435,11 @@ def test_m1_preconditions_flag_a_parent_with_no_eligible_pair() -> None:
 @pytest.mark.unit
 def test_m1_apply_raises_on_bad_params_and_on_no_eligible_pair() -> None:
     """apply raises for non-string params and for a parent with no eligible swap."""
+    swap_story = _swap_story()
+    bad_params = OpParams.of(choice1="c1", choice2=7)
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="choice1"):
-        M1.apply(_swap_story(), OpParams.of(choice1="c1", choice2=7), random.Random(0))
+        M1.apply(swap_story, bad_params, rng)
     lonely = {
         "metadata": {"age_band": "8-11"},
         "start_node": "s",
@@ -445,8 +448,10 @@ def test_m1_apply_raises_on_bad_params_and_on_no_eligible_pair() -> None:
             {"id": "a", "is_ending": True, "ending": {"id": "ae", "kind": "success"}},
         ],
     }
+    no_eligible_params = OpParams.of()
+    no_eligible_rng = random.Random(0)
     with pytest.raises(ValidationError, match="no eligible"):
-        M1.apply(lonely, OpParams.of(), random.Random(0))
+        M1.apply(lonely, no_eligible_params, no_eligible_rng)
 
 
 # --------------------------------------------------------------------------- #
@@ -530,16 +535,21 @@ def test_m2_preconditions_accept_explicit_eligible_params() -> None:
 @pytest.mark.unit
 def test_m2_apply_raises_on_bad_params_and_no_remap() -> None:
     """apply raises for non-string params and for a parent with no eligible re-map."""
+    two_kind_story = _two_kind_story()
+    valence_params = OpParams.of(valence="positive")
+    valence_rng = random.Random(0)
     with pytest.raises(ValidationError, match="valence"):
-        M2.apply(_two_kind_story(), OpParams.of(valence="positive"), random.Random(0))
+        M2.apply(two_kind_story, valence_params, valence_rng)
     single_kind = _two_kind_story()
     # collapse both endings to the same kind so no class admits a re-map
     for node in cast("list[dict[str, object]]", single_kind["nodes"]):
         ending = node.get("ending")
         if isinstance(ending, dict):
             cast("dict[str, object]", ending)["kind"] = "success"
+    no_eligible_params = OpParams.of()
+    no_eligible_rng = random.Random(0)
     with pytest.raises(ValidationError, match="no eligible"):
-        M2.apply(single_kind, OpParams.of(), random.Random(0))
+        M2.apply(single_kind, no_eligible_params, no_eligible_rng)
 
 
 def _two_kind_story() -> dict[str, object]:
@@ -983,24 +993,43 @@ def test_m3_resolve_donor_reports_a_failed_resolver() -> None:
 @pytest.mark.unit
 def test_m3_apply_raises_across_the_mode_and_param_ladder() -> None:
     """apply raises for an unknown mode and for each ineligible sub-operation."""
+    story = _tier1_story()
+    bad_mode_params = OpParams.of(mode="nope")
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="mode"):
-        M3.apply(_tier1_story(), OpParams.of(mode="nope"), random.Random(0))
+        M3.apply(story, bad_mode_params, rng)
+
+    story = _tier1_story()
+    bad_choice_params = OpParams.of(mode="prune", choice=7)
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="choice id string"):
-        M3.apply(_tier1_story(), OpParams.of(mode="prune", choice=7), random.Random(0))
+        M3.apply(story, bad_choice_params, rng)
+
+    story = _tier1_story()
+    no_eligible_prune_params = OpParams.of(mode="prune")
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="no eligible prune"):
-        M3.apply(_tier1_story(), OpParams.of(mode="prune"), random.Random(0))
+        M3.apply(story, no_eligible_prune_params, rng)
+
+    story = _tier1_story()
+    bad_donor_params = OpParams.of(mode="graft", donor=7)
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M3.apply(_tier1_story(), OpParams.of(mode="graft", donor=7), random.Random(0))
+        M3.apply(story, bad_donor_params, rng)
+
+    story = _tier1_story()
+    bad_subtree_root_params = OpParams.of(mode="graft", subtree_root=7)
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="subtree_root"):
-        M3.apply(
-            _tier1_story(), OpParams.of(mode="graft", subtree_root=7), random.Random(0)
-        )
+        M3.apply(story, bad_subtree_root_params, rng)
+
+    story = _tier1_story()
+    ineligible_graft_params = OpParams.of(
+        mode="graft", subtree_root="a", host_decision="a"
+    )
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="ineligible"):
-        M3.apply(
-            _tier1_story(),
-            OpParams.of(mode="graft", subtree_root="a", host_decision="a"),
-            random.Random(0),
-        )
+        M3.apply(story, ineligible_graft_params, rng)
 
 
 # --------------------------------------------------------------------------- #
@@ -1368,40 +1397,53 @@ def test_select_insert_linear_raises_on_an_ineligible_explicit_choice() -> None:
         "start_node": "s",
         "nodes": [{"id": "s", "choices": [{"id": "c1", "target": "ghost"}]}],
     }
+    params = OpParams.of(mode="insert-linear", choice="c1")
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="ineligible"):
-        M4.apply(
-            ghost,
-            OpParams.of(mode="insert-linear", choice="c1"),
-            random.Random(0),
-        )
+        M4.apply(ghost, params, rng)
 
 
 @pytest.mark.unit
 def test_m4_apply_raises_across_modes_and_selection() -> None:
     """apply raises for an unknown mode and for empty seeded-selection candidates."""
+    story = _tier1_story()
+    bad_mode_params = OpParams.of(mode="nope")
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="mode"):
-        M4.apply(_tier1_story(), OpParams.of(mode="nope"), random.Random(0))
+        M4.apply(story, bad_mode_params, rng)
+
+    story = _tier1_story()
+    bad_choice_params = OpParams.of(mode="insert-linear", choice=7)
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="choice id string"):
-        M4.apply(
-            _tier1_story(),
-            OpParams.of(mode="insert-linear", choice=7),
-            random.Random(0),
-        )
+        M4.apply(story, bad_choice_params, rng)
+
+    story = _tier1_story()
+    no_eligible_insert_linear_params = OpParams.of(mode="insert-linear")
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="no eligible insert-linear"):
-        M4.apply(_tier1_story(), OpParams.of(mode="insert-linear"), random.Random(0))
+        M4.apply(story, no_eligible_insert_linear_params, rng)
+
+    story = _tier1_story()
+    bad_node_params = OpParams.of(mode="remove-linear", node=7)
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="node id string"):
-        M4.apply(
-            _tier1_story(),
-            OpParams.of(mode="remove-linear", node=7),
-            random.Random(0),
-        )
+        M4.apply(story, bad_node_params, rng)
+
+    story = _tier1_story()
+    no_eligible_remove_linear_params = OpParams.of(mode="remove-linear")
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="no eligible remove-linear"):
-        M4.apply(_tier1_story(), OpParams.of(mode="remove-linear"), random.Random(0))
+        M4.apply(story, no_eligible_remove_linear_params, rng)
+
+    story = _tier1_story()
+    insert_decision_bad_params = OpParams.of(mode="insert-decision", choice=7)
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="insert-decision requires"):
-        M4.apply(
-            _tier1_story(),
-            OpParams.of(mode="insert-decision", choice=7),
-            random.Random(0),
-        )
+        M4.apply(story, insert_decision_bad_params, rng)
+
+    story = _tier1_story()
+    no_eligible_insert_decision_params = OpParams.of(mode="insert-decision")
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="no eligible insert-decision"):
-        M4.apply(_tier1_story(), OpParams.of(mode="insert-decision"), random.Random(0))
+        M4.apply(story, no_eligible_insert_decision_params, rng)
