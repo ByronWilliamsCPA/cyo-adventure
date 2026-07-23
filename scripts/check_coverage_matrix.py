@@ -20,6 +20,7 @@ Exit codes: 0 = every test file is referenced; 1 = one or more orphans.
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -38,12 +39,26 @@ E2E_DIRS = (
 )
 
 # Component/unit tier: every Vitest test colocated under ``frontend/src``.
+# Vitest's ``include`` is ``src/**/*.{test,spec}.{ts,tsx}``
+# (frontend/vite.config.ts), so ``.spec`` files under ``src`` are real tests the
+# matrix must list too; omitting the ``.spec`` globs left an invisible hole.
 COMPONENT_ROOT = "frontend/src"
-COMPONENT_GLOBS = ("*.test.ts", "*.test.tsx")
+COMPONENT_GLOBS = ("*.test.ts", "*.test.tsx", "*.spec.ts", "*.spec.tsx")
+
+# A documented test-path token: a run of path characters ending in a
+# Vitest/Playwright test suffix. Used to pull the exact set of paths the matrix
+# references so the drift check matches whole tokens, not loose substrings.
+_TEST_PATH_TOKEN = re.compile(r"[\w./-]+\.(?:test|spec)\.tsx?")
 
 
 def _discover_test_files() -> list[Path]:
-    """Return all E2E specs and component tests as repo-relative paths."""
+    """Discover every frontend test file the matrix is expected to reference.
+
+    Returns:
+        Sorted repo-relative paths of every Playwright E2E spec (under
+        ``E2E_DIRS``) and every Vitest component/unit test (under
+        ``COMPONENT_ROOT``).
+    """
     found: set[Path] = set()
     for rel_dir in E2E_DIRS:
         base = REPO_ROOT / rel_dir
@@ -72,9 +87,14 @@ def main() -> int:
         )
         return 1
 
-    # Paths are referenced with forward slashes in the Markdown regardless of
-    # the host OS, so normalise before the substring check.
-    orphans = [p for p in test_files if p.as_posix() not in matrix_text]
+    # Pull the exact path tokens the matrix documents, then require each
+    # discovered test to appear as a whole token. A plain ``path in matrix_text``
+    # substring scan let a spec named only in a "removed"/"gap" prose note pass,
+    # and let a short path satisfy the guard by being a substring of a longer
+    # documented one. Paths use forward slashes in the Markdown regardless of
+    # host OS, so ``as_posix()`` compares directly.
+    referenced = set(_TEST_PATH_TOKEN.findall(matrix_text))
+    orphans = [p for p in test_files if p.as_posix() not in referenced]
 
     if orphans:
         print(
