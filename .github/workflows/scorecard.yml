@@ -17,11 +17,14 @@ on:
       - master
   workflow_dispatch:
 
-permissions:
-  contents: read
-  security-events: write
-  id-token: write
-  actions: read
+# #CRITICAL: security: the OpenSSF publishing API verifies the signed workflow
+# and REJECTS a run that declares ANY write permission at workflow (global)
+# level, with "workflow has global write permissions". Write scopes must be
+# declared only on the job below. Keep this read-all; never hoist the job's
+# write scopes up here. See https://github.com/ossf/scorecard-action#workflow-restrictions
+# #VERIFY: the "Run OpenSSF Scorecard" step completes and the dashboard entry
+# updates; a regression surfaces as the publish step failing on that message.
+permissions: read-all
 
 # Standalone OpenSSF Scorecard workflow
 jobs:

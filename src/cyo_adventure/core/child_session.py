@@ -154,9 +154,14 @@ def unverified_audience(token: str) -> str | None:
         # value is never trusted; the selected branch (verify_child_session_token
         # / _verify_oidc_jwt) re-decodes with signature + alg + iss + aud + exp
         # fully enforced before any principal is built. Suppressing an intentional
-        # unverified peek here does not weaken authorization. Mark Safe in the
-        # SonarCloud UI; do not add real verification (there is no key to select
-        # yet, that selection is this function's job).
+        # unverified peek here does not weaken authorization. Do not add real
+        # verification (there is no key to select yet, that selection is this
+        # function's job).
+        # Resolved in SonarCloud as Accepted (issue AZ9UaGUMldJHH9vRm8Sk). Note
+        # for anyone re-resolving it: SonarQube Cloud merged "False Positive"
+        # and "Won't Fix" into a single "Accept" action on the issue's status
+        # dropdown, and "Mark Safe" is Security Hotspot wording for a surface
+        # that is now deprecated, so neither of those labels exists to click.
         payload = jwt.decode(token, options={"verify_signature": False})
     except jwt.PyJWTError:
         return None

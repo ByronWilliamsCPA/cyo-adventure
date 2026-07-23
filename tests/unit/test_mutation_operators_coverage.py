@@ -731,7 +731,7 @@ def test_apply_prune_skips_malformed_nodes_and_choiceless_parent() -> None:
 @pytest.mark.unit
 def test_ending_ratio_advisory_edge_cases() -> None:
     """An empty story and an in-band ratio both produce no advisory."""
-    assert _ending_ratio_advisory({"nodes": []}) == ()
+    assert _ending_ratio_advisory({"nodes": []}) is None
     # 2 endings of 10 nodes = 0.20, inside the 0.15-0.22 band -> no advisory
     in_band = {
         "nodes": [
@@ -740,7 +740,27 @@ def test_ending_ratio_advisory_edge_cases() -> None:
             {"id": "e2", "is_ending": True},
         ]
     }
-    assert _ending_ratio_advisory(in_band) == ()
+    assert _ending_ratio_advisory(in_band) is None
+
+
+@pytest.mark.unit
+def test_ending_ratio_advisory_out_of_band_returns_one_note_string() -> None:
+    """An out-of-band ratio yields a single note, not a variable-length tuple.
+
+    The helper reports at most one advisory, so its return arity is fixed:
+    exactly one ``str`` or ``None``. Encoding "zero or one" as a tuple made the
+    returned arity vary per code path (SonarCloud python:S8495).
+    """
+    # 3 endings of 6 nodes = 0.50, above the 0.15-0.22 band -> one advisory
+    out_of_band = {
+        "nodes": [
+            *[{"id": f"n{i}"} for i in range(3)],
+            *[{"id": f"e{i}", "is_ending": True} for i in range(3)],
+        ]
+    }
+    advisory = _ending_ratio_advisory(out_of_band)
+    assert isinstance(advisory, str)
+    assert advisory.startswith("advisory: post-prune ending ratio 0.50")
 
 
 @pytest.mark.unit

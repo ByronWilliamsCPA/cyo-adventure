@@ -167,7 +167,12 @@ def test_deterministic_replay_reproduces_state() -> None:
         state = engine.choose(state, "c_dark_passage")
         return state.to_dict()
 
-    assert play() == play()
+    # Bound to names rather than compared inline so pytest can report which
+    # playthrough diverged; inline, the two independent calls read as a
+    # tautology to static analysis (SonarCloud python:S5863).
+    first_playthrough = play()
+    second_playthrough = play()
+    assert first_playthrough == second_playthrough
 
 
 # --- Synthetic stories: once, bounds, transition order -------------------------

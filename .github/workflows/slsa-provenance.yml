@@ -39,6 +39,7 @@ jobs:
     outputs:
       hashes: ${{ steps.hashes.outputs.hashes }}
       version: ${{ steps.version.outputs.version }}
+      released: ${{ steps.release.outputs.exists }}
 
     steps:
       - name: Harden the runner
@@ -63,13 +64,48 @@ jobs:
 
       - name: Determine version
         id: version
+        env:
+          # #CRITICAL security: never interpolate a dispatch input directly into
+          # a run: script with ${{ }}; GitHub substitutes it before bash parses
+          # the line, so a crafted value executes as shell. Passing it through
+          # env keeps it inert data. The semver check below is a second gate: it
+          # bounds what can flow on into the tag name and release lookup.
+          # #VERIFY: no ${{ github.event.* }} expression appears inside any run:
+          # block in this workflow.
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            VERSION="${{ github.event.inputs.version }}"
+          set -euo pipefail
+          if [ -n "${INPUT_VERSION:-}" ]; then
+            VERSION="${INPUT_VERSION}"
           else
-            VERSION=$(grep -Po '(?<=^version = ")[^"]*' pyproject.toml)
+            VERSION="$(grep -Po '(?<=^version = ")[^"]*' pyproject.toml)"
           fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if ! printf '%s' "${VERSION}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$'; then
+            echo "::error::Refusing to build provenance for non-semver version '${VERSION}'."
+            exit 1
+          fi
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check the matching GitHub Release exists
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        # #ASSUME: timing: this workflow fires on EVERY "Semantic Release"
+        # completion, and that workflow runs twice per release: `propose` (opens
+        # the release PR, no tag yet) and `publish` (creates tag vX.Y.Z). Only
+        # the publish run has a release to attach provenance to, so probe for it
+        # rather than assuming, and let the propose run finish as a clean no-op.
+        # #VERIFY: propose-triggered runs end green with the notice below and no
+        # slsa job; publish-triggered runs attach multiple.intoto.jsonl.
+        run: |
+          set -euo pipefail
+          if gh release view "v${VERSION}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "exists=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "exists=false" >> "${GITHUB_OUTPUT}"
+            echo "::notice::No GitHub Release v${VERSION} yet, so provenance upload is skipped. Expected for the release.yml 'propose' run, which completes before the tag exists."
+          fi
 
       - name: Build package
         run: uv build
@@ -77,9 +113,14 @@ jobs:
       - name: Generate SHA256 hashes
         id: hashes
         run: |
+          set -euo pipefail
           cd dist
-          HASHES=$(sha256sum * | base64 -w0)
-          echo "hashes=$HASHES" >> $GITHUB_OUTPUT
+          # `--` keeps a filename that starts with a dash from being read as an
+          # option. Deliberately NOT `./*`, which shellcheck also suggests: that
+          # form would prefix every name with `./` inside the sha256sum output,
+          # and those names become the SLSA provenance subject names.
+          HASHES="$(sha256sum -- * | base64 -w0)"
+          echo "hashes=${HASHES}" >> "${GITHUB_OUTPUT}"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -94,16 +135,43 @@ jobs:
           subject-path: 'dist/*'
 
   # ==========================================================================
-  # SLSA Level 3 Provenance (Org-Level Reusable Workflow)
+  # SLSA Level 3 Provenance
   # ==========================================================================
+  # This job previously called ByronWilliamsCPA/.github/.../python-slsa.yml.
+  # That file is a copy-paste TEMPLATE, not a reusable workflow: it has no
+  # `on: workflow_call`, and its own header says so ("GitHub Actions does not
+  # support nested reusable workflow calls"). Calling it made this workflow
+  # fail to load at all, so no job ever started (the tell: runs conclude
+  # `failure` with no logs). Per the template's instructions, the generator is
+  # now called directly.
   slsa:
     name: SLSA Level 3
     needs: [build]
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-slsa.yml@7d12f5486ab5c856397ebaa4acd3c99ca385227c  # main
+    # Only the release.yml `publish` run has a tag to attach assets to; see the
+    # "Check the matching GitHub Release exists" step above.
+    if: ${{ needs.build.outputs.released == 'true' }}
+    permissions:
+      actions: read      # detect the GitHub Actions environment
+      id-token: write    # sign the provenance via Sigstore
+      contents: write    # upload provenance to the release
+    # #CRITICAL security: this reference MUST stay a full `vX.Y.Z` tag. The
+    # generator refuses to run when referenced by commit SHA or by a truncated
+    # tag (`@v2` / `@v2.1`), because slsa-verifier derives the trusted builder
+    # ID from the tag. This is a documented, deliberate exception to the
+    # pin-actions-to-SHA convention used everywhere else in this repo, NOT an
+    # oversight; the org template's SHA-pinned example is itself broken here.
+    # See https://github.com/slsa-framework/slsa-github-generator#referencing-slsa-builders-and-generators
+    # #VERIFY: if a future pinning sweep rewrites this to a SHA, the job fails
+    # with "the workflow is not referenced by a tag"; restore the tag form.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
     with:
       base64-subjects: ${{ needs.build.outputs.hashes }}
       upload-assets: true
-    permissions:
-      id-token: write
-      contents: write
-      actions: read
+      # #ASSUME: external resources: without this, the generator uploads to a
+      # release named `github.ref_name`, which under `workflow_run` resolves to
+      # the BRANCH (`main`), not the release tag, so the upload targets a
+      # release that does not exist. Pin it to the version the build resolved.
+      # #VERIFY: provenance lands on the vX.Y.Z release, never on one named
+      # "main".
+      upload-tag-name: v${{ needs.build.outputs.version }}
+      provenance-name: multiple.intoto.jsonl

@@ -101,7 +101,12 @@ def test_extract_subtree_is_deterministic(story: dict[str, object]) -> None:
     """Extraction from a fixed root is reproducible."""
     root = story["start_node"]
     assert isinstance(root, str)
-    assert extract_subtree(story, root) == extract_subtree(story, root)
+    # Bound to names rather than compared inline so pytest can report which
+    # extraction diverged; inline, the two independent calls read as a
+    # tautology to static analysis (SonarCloud python:S5863).
+    first = extract_subtree(story, root)
+    second = extract_subtree(story, root)
+    assert first == second
 
 
 @pytest.mark.unit

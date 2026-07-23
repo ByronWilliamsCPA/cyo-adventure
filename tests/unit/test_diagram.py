@@ -274,7 +274,14 @@ def test_output_never_leaks_fill_or_beats() -> None:
 @pytest.mark.unit
 def test_transform_is_deterministic() -> None:
     skel = _tiny_skeleton()
-    assert skeleton_to_plantuml(skel) == skeleton_to_plantuml(skel)
+    # Two separate renders, bound to names rather than compared inline: the
+    # point is that repeated calls agree, and naming them makes that intent
+    # explicit and lets pytest report which render diverged. Comparing the
+    # calls inline reads as a tautology to static analysis (SonarCloud
+    # python:S5863) even though the calls are independent.
+    first = skeleton_to_plantuml(skel)
+    second = skeleton_to_plantuml(skel)
+    assert first == second
 
 
 @pytest.mark.unit
