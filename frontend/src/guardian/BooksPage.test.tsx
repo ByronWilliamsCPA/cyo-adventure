@@ -148,6 +148,20 @@ describe('BooksPage', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
+  it('omits themes from the dialog when a book carries none', async () => {
+    const user = userEvent.setup()
+    routeGet({
+      '/v1/guardian/books': {
+        books: [{ ...BOOKS.books[0], themes: undefined, content_flags: undefined }],
+      },
+    })
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /View details for The Lantern/ }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).queryByText('Themes')).not.toBeInTheDocument()
+    expect(within(dialog).queryByText('Content flags')).not.toBeInTheDocument()
+  })
+
   it('opens the assign dialog and assigns a sibling', async () => {
     const user = userEvent.setup()
     routeGet()

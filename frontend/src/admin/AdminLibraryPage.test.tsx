@@ -113,5 +113,16 @@ describe('AdminLibraryPage', () => {
     // The master library's list item carries no screened/flagged_count, so
     // the dialog omits the Moderation row rather than showing a placeholder.
     expect(within(dialog).queryByText('Moderation')).not.toBeInTheDocument()
+    await user.click(within(dialog).getByRole('button', { name: /^Close$/ }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('omits age band and themes from the dialog when a story carries neither', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /View details for Old Tale/ }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).queryByText('Age band')).not.toBeInTheDocument()
+    expect(within(dialog).queryByText('Themes')).not.toBeInTheDocument()
   })
 })

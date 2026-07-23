@@ -55,6 +55,10 @@ class TestBookDetailHelpers:
         assert assignments._book_themes({}) == []
 
     @pytest.mark.unit
+    def test_book_themes_metadata_without_themes_key_returns_empty_list(self) -> None:
+        assert assignments._book_themes({"metadata": {}}) == []
+
+    @pytest.mark.unit
     def test_book_content_flags_reads_from_metadata(self) -> None:
         blob: dict[str, object] = {
             "metadata": {"content_flags": {"violence": "mild", "peril": "moderate"}}
@@ -73,6 +77,10 @@ class TestBookDetailHelpers:
             "metadata": {"content_flags": {"violence": "catastrophic"}}
         }
         assert assignments._book_content_flags(blob) is None
+
+    @pytest.mark.unit
+    def test_book_content_flags_metadata_without_flags_key_returns_none(self) -> None:
+        assert assignments._book_content_flags({"metadata": {}}) is None
 
 
 class _FakeScalars:

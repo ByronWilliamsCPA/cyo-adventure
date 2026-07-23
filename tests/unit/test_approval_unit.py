@@ -765,3 +765,27 @@ def test_summary_themes_filters_non_string_entries() -> None:
     """A themes list with a non-string entry keeps only the string values."""
     blob = {"metadata": {"themes": ["friendship", 42, "courage"]}}
     assert approval._summary_themes(blob) == ["friendship", "courage"]
+
+
+@pytest.mark.unit
+def test_summary_themes_non_dict_blob_returns_empty_list() -> None:
+    """A non-dict blob (e.g. None) degrades to [] rather than raising."""
+    assert approval._summary_themes(None) == []
+
+
+@pytest.mark.unit
+def test_summary_themes_metadata_without_themes_key_returns_empty_list() -> None:
+    """Metadata present but with no themes key still returns []."""
+    assert approval._summary_themes({"metadata": {}}) == []
+
+
+@pytest.mark.unit
+def test_summary_content_flags_non_dict_blob_returns_none() -> None:
+    """A non-dict blob (e.g. None) degrades to None rather than raising."""
+    assert approval._summary_content_flags(None) is None
+
+
+@pytest.mark.unit
+def test_summary_content_flags_metadata_without_flags_key_returns_none() -> None:
+    """Metadata present but with no content_flags key still returns None."""
+    assert approval._summary_content_flags({"metadata": {}}) is None

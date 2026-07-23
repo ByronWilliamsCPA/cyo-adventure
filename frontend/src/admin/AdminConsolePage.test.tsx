@@ -121,6 +121,17 @@ describe('AdminConsolePage', () => {
     // The dialog's moderation slot reuses the same SeverityBadges the queue
     // row already shows: "2 flags", not a duplicated/independent computation.
     expect(within(dialog).getByText('2 flags')).toBeInTheDocument()
+    await user.click(within(dialog).getByRole('button', { name: /^Close$/ }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('omits age band and themes from the dialog when a queue item carries neither', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /View details for Gentle Tale/ }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).queryByText('Age band')).not.toBeInTheDocument()
+    expect(within(dialog).queryByText('Themes')).not.toBeInTheDocument()
   })
 
   it('shows a Hard block badge (not a flag count) on a hard-blocked row', async () => {

@@ -55,6 +55,21 @@ describe('BookDetailsDialog', () => {
     expect(screen.getByText('None reported')).toBeInTheDocument()
   })
 
+  it('defaults a missing content-flag key to "none"', () => {
+    render(
+      <BookDetailsDialog
+        title="Partial Flags"
+        ageBand={null}
+        themes={[]}
+        contentFlags={{ violence: 'mild' }}
+        onClose={() => {}}
+      />
+    )
+    expect(screen.getByText(/Violence: mild/)).toBeInTheDocument()
+    expect(screen.getByText(/Scariness: none/)).toBeInTheDocument()
+    expect(screen.getByText(/Peril: none/)).toBeInTheDocument()
+  })
+
   it('calls onClose when Close is clicked', async () => {
     const user = userEvent.setup()
     const onClose = vi.fn()
