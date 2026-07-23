@@ -83,6 +83,8 @@ function renderLogin(initialEntries?: InitialEntry[]) {
   return render(loginUi(initialEntries))
 }
 
+// deepcode ignore NoHardcodedPasswords: test-only helper parameter; callers
+// pass dummy credentials for a mocked signInWithPassword flow, never real ones.
 function fillCredentials(email: string, password: string) {
   fireEvent.change(screen.getByLabelText('Email'), { target: { value: email } })
   fireEvent.change(screen.getByLabelText('Password'), { target: { value: password } })
@@ -118,6 +120,8 @@ describe('LoginPage password form', () => {
     await waitFor(() =>
       expect(mockSignInWithPassword).toHaveBeenCalledWith({
         email: 'parent@example.com',
+        // deepcode ignore NoHardcodedPasswords: dummy test credential asserted
+        // against a mocked signInWithPassword call, not a real secret.
         password: 'test-password',
       })
     )
@@ -170,6 +174,8 @@ describe('LoginPage password form', () => {
     await waitFor(() =>
       expect(mockSignInWithPassword).toHaveBeenCalledWith({
         email: 'parent@example.com',
+        // deepcode ignore NoHardcodedPasswords: dummy test credential asserted
+        // against a mocked signInWithPassword call, not a real secret.
         password: 'test-password',
       })
     )

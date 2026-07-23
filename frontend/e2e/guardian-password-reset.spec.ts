@@ -57,6 +57,8 @@ const RECOVERY_USER = {
  */
 function recoveryHash(): string {
   const params = new URLSearchParams({
+    // deepcode ignore HardcodedNonCryptoSecret: fabricated GoTrue implicit-grant
+    // recovery hash for this E2E test; dummy token values, not real secrets.
     access_token: 'e2e-recovery-access-token',
     refresh_token: 'e2e-recovery-refresh-token',
     expires_in: '3600',
@@ -155,6 +157,8 @@ test('a recovery link lands on the set-new-password form, and submitting it sign
   // no flowType override), so code_challenge/code_challenge_method are always
   // null here; only a 'pkce' client with an email change would populate them.
   expect(updateBody()).toEqual({
+    // deepcode ignore NoHardcodedPasswords: dummy test password asserted
+    // against a mocked GoTrue updateUser call, not a real credential.
     password: 'new-password-123',
     code_challenge: null,
     code_challenge_method: null,
