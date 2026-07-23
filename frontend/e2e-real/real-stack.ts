@@ -42,6 +42,11 @@ export function resetRealState(): void {
     execFileSync('uv', ['run', 'python', 'scripts/reset_e2e_real_state.py'], {
       cwd: REPO_ROOT,
       stdio: 'inherit',
+      // The reset is a handful of SQL statements (sub-second normally); cap it
+      // so a hung DB connection surfaces as a failed run instead of stalling
+      // the whole suite indefinitely. On timeout execFileSync throws and the
+      // catch below rethrows with remediation guidance.
+      timeout: 60_000,
     })
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error)

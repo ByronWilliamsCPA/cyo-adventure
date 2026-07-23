@@ -23,6 +23,10 @@ import {
  * a choice (submitting a flag does not touch reading_state), so it never
  * changes the row's position for whichever spec reads this story next; see
  * kid-go-back-real.spec.ts's file header for the fuller shared-story note.
+ * #VERIFY: FlagButton.tsx (the only control this spec drives) POSTs to
+ * POST /api/v1/flags and renders no choice/advance affordance, so it never
+ * calls a /reading state-write endpoint; the per-file resetRealState() below
+ * is the backstop should that ever change.
  *
  * The flag this test creates is resolved via the real admin
  * `POST /api/v1/admin/flags/{id}/resolve` in a best-effort afterEach: flags.py's

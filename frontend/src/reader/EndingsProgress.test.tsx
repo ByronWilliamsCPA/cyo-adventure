@@ -73,12 +73,13 @@ describe('EndingsProgress (K6, ending screen)', () => {
   })
 
   it('discards a stale fetch from a previous storybook so it cannot over-report on the current one', async () => {
-    // Guards the #ASSUME race in EndingsProgress.tsx: under-reporting (a slow
-    // fetch that beats the completion POST) is accepted, but a stale response
-    // must never overwrite the current book's count with a higher one. Here
-    // the first (s1) fetch is slow and would be numerically impossible for
-    // s2's total_endings if it were allowed through; the cancelled-guard in
-    // the effect cleanup must drop it.
+    // #ASSUME: timing dependencies: a stale fetch from a previously-viewed
+    // storybook must never overwrite the current book's ending count with a
+    // higher (numerically impossible) value; under-reporting (a slow fetch that
+    // beats the completion POST) is the accepted failure mode, over-reporting is
+    // not. EndingsProgress.tsx's effect-cleanup cancelled-guard enforces this.
+    // #VERIFY: this test asserts the slow s1 fetch resolves only after the s2
+    // rerender and is dropped, so the rendered count never rises to s1's total.
     let resolveFirst: (books: ReadingHistoryItem[]) => void = () => {}
     const firstFetch = new Promise<ReadingHistoryItem[]>((resolve) => {
       resolveFirst = resolve

@@ -29,9 +29,12 @@ import { mockEmptyConsole, mockMe, mockOnboarding } from './support/auth'
  * establishment) and the PUT (the actual password change) on the same
  * `**auth/v1/user**` pattern, keyed on HTTP method.
  *
- * `expires_at` is intentionally omitted from the recovery hash: GoTrue
- * derives it from `expires_in` plus its own `Date.now()` read inside the
- * page, so there is nothing to keep in sync with the test's clock.
+ * #ASSUME: external-resource: GoTrue (supabase-js) derives `expires_at` from
+ * `expires_in` plus its own `Date.now()` read inside the page, so `expires_at`
+ * is intentionally omitted from the recovery hash and there is nothing to keep
+ * in sync with the test's clock.
+ * #VERIFY: pinned by reading @supabase/auth-js's `_getSessionFromURL` (the
+ * source note above); re-check on any @supabase/auth-js version bump.
  */
 
 const RECOVERY_USER = {
