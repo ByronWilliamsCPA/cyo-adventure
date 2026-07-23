@@ -1960,19 +1960,31 @@ def _apply_prune(parent: Mapping[str, object], plan: _PrunePlan) -> dict[str, ob
     return candidate
 
 
-def _ending_ratio_advisory(candidate: Mapping[str, object]) -> tuple[str, ...]:
-    """Return an advisory note when the ending ratio leaves the ADR-011 band."""
+def _ending_ratio_advisory(candidate: Mapping[str, object]) -> str | None:
+    """Return an advisory note when the ending ratio leaves the ADR-011 band.
+
+    The helper reports at most one advisory, so it returns that note directly
+    rather than a 0- or 1-length tuple: a variadic tuple made the returned arity
+    depend on the code path (SonarCloud python:S8495) while conveying nothing a
+    plain optional does not.
+
+    Args:
+        candidate: The post-prune candidate story document.
+
+    Returns:
+        str | None: The advisory note, or ``None`` when the candidate has no
+            nodes or its ending ratio sits inside the ADR-011 band.
+    """
     total = len(_nodes_of(candidate))
     if total == 0:
-        return ()
+        return None
     ratio = len(_ending_node_ids(candidate)) / total
     if _ENDING_RATIO_LO <= ratio <= _ENDING_RATIO_HI:
-        return ()
-    note = (
+        return None
+    return (
         f"advisory: post-prune ending ratio {ratio:.2f} is outside the ADR-011 "
         f"~0.15-0.22 band (non-blocking)"
     )
-    return (note,)
 
 
 # --- M3 graft ---
@@ -2713,7 +2725,8 @@ class M3PruneGraft:
             f"M3 prune: removed subtree '{plan.root}' ({len(plan.region_ids)} "
             f"node(s)) and choice '{plan.choice_id}' on '{plan.parent_node_id}'"
         )
-        notes = (note, *_ending_ratio_advisory(candidate))
+        advisory = _ending_ratio_advisory(candidate)
+        notes = (note,) if advisory is None else (note, advisory)
         return MutationResult(candidate=candidate, reguide=(), notes=notes)
 
     @staticmethod

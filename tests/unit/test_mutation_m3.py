@@ -433,6 +433,25 @@ def test_m3_prune_accepted_output_passes_gate_and_recounts() -> None:
 
 
 @pytest.mark.unit
+def test_m3_prune_notes_are_the_prune_note_plus_the_ratio_advisory() -> None:
+    """The prune note is always emitted; the ratio advisory rides along when out of band.
+
+    ``MutationResult.notes`` is ``tuple[str, ...]``, so every entry must be a
+    real note string: a padded ``None`` placeholder would corrupt the audit
+    trail. This pins the caller's note composition against changes to the
+    ending-ratio advisory helper's return shape.
+    """
+    result = M3.apply(
+        _host(), OpParams.of(mode="prune", choice=_PRUNE_CHOICE), random.Random(0)
+    )
+    assert all(isinstance(note, str) for note in result.notes)
+    assert len(result.notes) == 2
+    assert result.notes[0].startswith("M3 prune: removed subtree 'la_crystal_take'")
+    # The host fixture's post-prune ratio (0.24) sits above the ADR-011 band.
+    assert result.notes[1].startswith("advisory: post-prune ending ratio 0.24")
+
+
+@pytest.mark.unit
 def test_m3_prune_leaves_the_surviving_region_byte_identical() -> None:
     """Everything outside the pruned region is byte-identical (parent loses one choice)."""
     host = _host()
