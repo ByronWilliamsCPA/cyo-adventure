@@ -52,8 +52,8 @@ relate to the Supabase project constraints.
   dialog), and admin console/requests/moderation-thresholds/moderation-
   dashboard (`visual.spec.ts-snapshots/`). Same remaining-gap caveat as
   accessibility above: one state per surface, not every variant.
-- **API contract pinning (G2, Phase 7.2)**: `frontend/e2e-real/contract-smoke-real.spec.ts`
-  — a real-backend contract smoke that pins the real API response shape for
+- **API contract pinning (G2, Phase 7.2)**: `frontend/e2e-real/contract-smoke-real.spec.ts`:
+  a real-backend contract smoke that pins the real API response shape for
   the four highest-drift endpoints the mocked `page.route` tier only assumes:
   `GET /api/v1/library` (the `BookCard`/`LibraryPage` fields), `PUT
   /api/v1/reading-state/{profile}/{story}` (the player/offline-sync
@@ -65,7 +65,7 @@ relate to the Supabase project constraints.
   offline-resync 422, where a real backend field changed while every mocked
   fixture kept passing.
 - **Full generation pipeline, end to end (G1, Phase 7.1)**:
-  `frontend/e2e-real/full-pipeline-real.spec.ts` — the one spec that drives a
+  `frontend/e2e-real/full-pipeline-real.spec.ts`: the one spec that drives a
   story through the *real* RQ generation worker rather than seeded data:
   a guardian `POST /api/v1/concepts` + `/generate`, a real `generation_job`
   polled until the worker (mock provider, but the full staged validator +
