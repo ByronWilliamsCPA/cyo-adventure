@@ -217,6 +217,51 @@ def _variable_names_from_blob(blob: Mapping[str, object]) -> list[str]:
     return names
 
 
+_UNTITLED_STORY = "Untitled story"
+
+
+def _safe_title(blob: Mapping[str, object]) -> str:
+    """Return the blob's title, or the untitled-story placeholder."""
+    title = blob.get("title")
+    return title if isinstance(title, str) and title else _UNTITLED_STORY
+
+
+def _ending_excerpt(node: Mapping[str, object]) -> str:
+    """Build one ending node's excerpt piece, or "" if it has no text.
+
+    Prefers ``"{ending title}: {body}"`` when the ending has a title;
+    falls back to the bare body text otherwise.
+    """
+    ending = node.get("ending")
+    label = ending.get("title") if isinstance(ending, dict) else None
+    body = node.get("body")
+    body_text = body if isinstance(body, str) else ""
+    if isinstance(label, str) and label:
+        return f"{label}: {body_text}"
+    return body_text
+
+
+def _ending_excerpts_from_blob(blob: Mapping[str, object]) -> list[str]:
+    """Collect up to ``_MAX_ENDING_EXCERPTS`` excerpts from ending nodes.
+
+    Same defensive contract as the rest of this module: a malformed ``nodes``
+    array, or a malformed entry within it, is skipped rather than raising.
+    """
+    excerpts: list[str] = []
+    nodes = blob.get("nodes")
+    if not isinstance(nodes, list):
+        return excerpts
+    for node in nodes:
+        if len(excerpts) >= _MAX_ENDING_EXCERPTS:
+            break
+        if not isinstance(node, dict) or not node.get("is_ending"):
+            continue
+        piece = _ending_excerpt(node)
+        if piece:
+            excerpts.append(piece[:_EXCERPT_CHARS])
+    return excerpts
+
+
 def anchor_context_from_blob(
     blob: Mapping[str, object], *, character_names: list[str]
 ) -> AnchorContext:
@@ -226,38 +271,18 @@ def anchor_context_from_blob(
     a malformed value, including a non-mapping ``blob``, degrades to a safe
     default rather than raising.
     """
+    names = character_names[:_MAX_CHARACTER_NAMES]
     if not isinstance(blob, dict):
         return AnchorContext(
-            title="Untitled story",
-            character_names=character_names[:_MAX_CHARACTER_NAMES],
+            title=_UNTITLED_STORY,
+            character_names=names,
             ending_summary="",
             variable_names=[],
         )
-    title = blob.get("title")
-    safe_title = title if isinstance(title, str) and title else "Untitled story"
-    excerpts: list[str] = []
-    nodes = blob.get("nodes")
-    if isinstance(nodes, list):
-        for node in nodes:
-            if len(excerpts) >= _MAX_ENDING_EXCERPTS:
-                break
-            if not isinstance(node, dict) or not node.get("is_ending"):
-                continue
-            ending = node.get("ending")
-            label = ending.get("title") if isinstance(ending, dict) else None
-            body = node.get("body")
-            body_text = body if isinstance(body, str) else ""
-            piece = (
-                f"{label}: {body_text}"
-                if isinstance(label, str) and label
-                else body_text
-            )
-            if piece:
-                excerpts.append(piece[:_EXCERPT_CHARS])
-    summary = " | ".join(excerpts)[:_SUMMARY_CHARS]
+    summary = " | ".join(_ending_excerpts_from_blob(blob))[:_SUMMARY_CHARS]
     return AnchorContext(
-        title=safe_title[:_TITLE_CHARS],
-        character_names=character_names[:_MAX_CHARACTER_NAMES],
+        title=_safe_title(blob)[:_TITLE_CHARS],
+        character_names=names,
         ending_summary=summary,
         variable_names=_variable_names_from_blob(blob),
     )

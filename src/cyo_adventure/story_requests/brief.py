@@ -183,6 +183,16 @@ def brief_from_request(
         else _BAND_FK_TARGET[age_band]
     )
     content_nogo, content_flag_constraints = _content_controls(profile, age_band)
+    # #ASSUME: data integrity: the ORM column default ("prose") only applies
+    # at flush/INSERT time, not at Python object construction, so an
+    # in-memory request built without an explicit narrative_style (the common
+    # unit-test shape, and any pre-flush caller) still needs the same
+    # fallback here.
+    # #VERIFY: covered by the unit tests for band/protagonist derivation in
+    # tests/unit/test_story_requests.py. The ``Mapped[str]`` annotation on
+    # the ORM column is only true post-flush, so the value is cast to
+    # ``str | None`` here to match the real pre-flush runtime shape.
+    narrative_style_value = cast("str | None", request.narrative_style)
     return ConceptBrief(
         premise=request.request_text,
         protagonist=Protagonist(
@@ -200,19 +210,9 @@ def brief_from_request(
         content_nogo=content_nogo,
         special_constraints=content_flag_constraints,
         length=Length(request.length) if request.length is not None else None,
-        # #ASSUME: data integrity: the ORM column default ("prose") only
-        # applies at flush/INSERT time, not at Python object construction, so
-        # an in-memory request built without an explicit narrative_style (the
-        # common unit-test shape, and any pre-flush caller) still needs the
-        # same fallback here.
-        # #VERIFY: covered by the unit tests for band/protagonist derivation
-        # in tests/unit/test_story_requests.py. The ``Mapped[str]`` annotation
-        # on the ORM column is only true post-flush, so the value is cast to
-        # ``str | None`` here to match the real pre-flush runtime shape.
         narrative_style=(
             NarrativeStyle(narrative_style_value)
-            if (narrative_style_value := cast("str | None", request.narrative_style))
-            is not None
+            if narrative_style_value is not None
             else NarrativeStyle.PROSE
         ),
         anchor_context=anchor_context,
