@@ -216,7 +216,16 @@ export async function resolveConflict(
   opts: SaveOptions = {}
 ): Promise<SaveResult> {
   if (resolution === 'use_newer_progress') {
-    await putReadingState(profileId, storybookId, serverRow)
+    // Mirror saveProgress's local-write contract: a failed IndexedDB write must
+    // surface as LocalWriteError so the caller treats it as lost, not as a
+    // remote-save hiccup. Without the wrapper a raw storage error escapes, the
+    // reader misclassifies it as a transient remote failure, never adopts the
+    // server row, and re-409s on the next choice in a loop.
+    try {
+      await putReadingState(profileId, storybookId, serverRow)
+    } catch (cause) {
+      throw new LocalWriteError('failed to adopt the server row into the local cache', cause)
+    }
     return { kind: 'saved', row: serverRow }
   }
   const rebased: ReadingState = {

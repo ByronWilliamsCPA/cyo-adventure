@@ -271,6 +271,19 @@ describe('resolveConflict', () => {
     expect((await getReadingState('p1', 's1'))?.current_node).toBe('server')
   })
 
+  it('throws LocalWriteError when adopting the server row fails (use_newer_progress)', async () => {
+    // Regression: the use_newer_progress local write must surface as
+    // LocalWriteError, the same contract saveProgress upholds. Without the
+    // wrapper a raw storage error escaped, ReaderPage's LocalWriteError branch
+    // missed it, the failure was misclassified as a transient remote hiccup, the
+    // server row was never adopted, and the reader re-409'd on the next choice.
+    const api = fakeApi(() => ({ status: 200, row: rowAt('x', 9) }))
+    vi.spyOn(db, 'putReadingState').mockRejectedValueOnce(new Error('quota exceeded'))
+    await expect(
+      resolveConflict(api, 'p1', 's1', makeState('local', 0), rowAt('server', 7), 'use_newer_progress')
+    ).rejects.toBeInstanceOf(LocalWriteError)
+  })
+
   it('rebases local state onto the server revision for continue_from_this_device', async () => {
     const seen: number[] = []
     const api: SyncApi = {
