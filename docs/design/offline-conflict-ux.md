@@ -23,13 +23,31 @@ the [tech spec](../planning/tech-spec.md).
 
 ## Principles
 
-- The server is canonical; IndexedDB is a cache. Progress is never silently lost.
+- The server is canonical; IndexedDB is a cache. On adult surfaces, progress is
+  never silently lost. On the child reader path this principle was deliberately
+  relaxed: see the Section 1 supersession note below.
 - Children see plain, reassuring language. No technical terms (no "revision",
   "409", "sync token").
 - Every choice the reader makes is saved immediately when online, and queued when
   offline and replayed on reconnect.
 
 ## 1. Multi-device save conflict (HTTP 409)
+
+> **Superseded for the child reader (2026-07-22).** The conflict dialog, wireframe,
+> and "modal, blocks play, no silent default" behaviour specified in this section
+> were the original Phase 1 design. They have been replaced on the child reading
+> path by silent newest-write-wins: a 409 adopts the server's current row without
+> ever showing a dialog, because a 5-10 year old cannot reason about a "which place
+> do you want to keep?" prompt and reading must never block on a conflict. This can
+> discard the local position (deliberate, bounded data loss). The decision is
+> recorded in
+> [handoff-e2e-workflow-logic-review-2026-07-22.md](../planning/handoff-e2e-workflow-logic-review-2026-07-22.md)
+> and implemented in `frontend/src/offline/sync.ts` (`resolveConflict`,
+> `use_newer_progress` branch) and the 409 handler in
+> `frontend/src/reader/ReaderPage.tsx`. The `continue_from_this_device` /
+> `use_newer_progress` server contract below is unchanged; only the client no
+> longer prompts. The copy and wireframe here are retained for historical context
+> and would apply only if an adult-facing conflict surface is ever built.
 
 Triggered when a `PUT /reading-state/{profile}/{story}` returns 409 because
 another device advanced the same story since this device last synced. The server
