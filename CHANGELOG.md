@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.28.0] - 2026-07-23
+
+### Features
+
+- **admin,guardian**: Show age bands and add book-detail popovers
+  ([#368](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/368),
+  [`60aa93d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/60aa93deab77f12fc0f690b8623f218337a5b285))
+
+
 ## [0.27.2] - 2026-07-22
 
 ### Bug Fixes
@@ -2534,6 +2543,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.28.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.2...v0.28.0
 [0.27.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.1...v0.27.2
 [0.27.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.0...v0.27.1
 [0.27.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.26.0...v0.27.0
