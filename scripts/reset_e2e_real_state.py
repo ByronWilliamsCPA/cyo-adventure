@@ -156,6 +156,17 @@ _GENERATED_STORYBOOK_ID_PATTERN = (
 
 _LOCAL_HOSTS = frozenset({"localhost", "127.0.0.1"})
 
+# Substrings that unmistakably identify a hosted (staging/production) Supabase
+# database host, e.g. ``db.<ref>.supabase.co`` or
+# ``aws-0-<region>.pooler.supabase.com``. The localhost allowlist below already
+# default-denies these, so this denylist is redundant defense-in-depth: it
+# fails louder and, unlike the allowlist, keeps rejecting a real Supabase DSN
+# even if ``_LOCAL_HOSTS`` is ever accidentally widened. It does not (and
+# cannot) catch a localhost port-forward tunnel to a remote database, whose
+# host is literally ``localhost``; that vector stays gated by the
+# ``environment == "local"`` check alone.
+_REMOTE_HOST_MARKERS = ("supabase.co", "supabase.com")
+
 
 def _require_local_database() -> None:
     """Refuse to run unless this is unmistakably a disposable local database.
@@ -165,12 +176,15 @@ def _require_local_database() -> None:
     outside the ``publishing/service.py`` state machine; running either
     against a shared or production database would silently destroy real
     reading progress or unpublish a real book, with no undo.
-    #VERIFY: test_reset_e2e_real_state_refuses_non_local_environment,
-    test_reset_e2e_real_state_refuses_non_local_host.
+    #VERIFY: test_require_local_database_refuses_non_local_environment,
+    test_require_local_database_refuses_non_local_host,
+    test_require_local_database_refuses_hosted_supabase_host,
+    test_require_local_database_accepts_local (tests/unit/test_reset_e2e_real_state.py).
 
     Raises:
-        ConfigurationError: If ``settings.environment`` is not ``"local"``,
-            or the configured database host is not localhost/127.0.0.1.
+        ConfigurationError: If ``settings.environment`` is not ``"local"``, if
+            the configured database host looks like a hosted Supabase project,
+            or if the host is not localhost/127.0.0.1.
     """
     if settings.environment != "local":
         msg = (
@@ -179,6 +193,13 @@ def _require_local_database() -> None:
         )
         raise ConfigurationError(msg)
     host = urlsplit(settings.database_url).hostname
+    if host is not None and any(m in host for m in _REMOTE_HOST_MARKERS):
+        msg = (
+            "refusing to reset e2e-real fixture state: database host "
+            f"{host!r} looks like a hosted Supabase (staging/production) "
+            "database, not a disposable local one"
+        )
+        raise ConfigurationError(msg)
     if host not in _LOCAL_HOSTS:
         msg = (
             "refusing to reset e2e-real fixture state: database host "
@@ -188,7 +209,14 @@ def _require_local_database() -> None:
 
 
 async def reset_e2e_real_state() -> None:
-    """Revert seeded/worker-mutated fixture state for a clean e2e-real run."""
+    """Revert seeded/worker-mutated fixture state for a clean e2e-real run.
+
+    Raises:
+        ConfigurationError: Propagated from :func:`_require_local_database` when
+            the configured database is not an unmistakably local one (guards
+            against running the destructive statements below against a shared
+            or production database).
+    """
     _require_local_database()
     engine = get_engine()
     async with engine.begin() as conn:
