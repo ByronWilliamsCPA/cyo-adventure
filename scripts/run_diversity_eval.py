@@ -664,9 +664,25 @@ def main(argv: list[str] | None = None) -> int:
     except SystemExit as exc:
         return exc.code if isinstance(exc.code, int) else 2
 
+    # ASSUME: security: --panel/--baseline/--judge-cache/--json are
+    # canonicalized with .resolve() (CWE-23 hardening, Snyk python/PT), but
+    # deliberately NOT contained to a fixed base (the
+    # generation/import_cli.py::_load_blob idiom):
+    # tests/unit/test_diversity_panel.py exercises --baseline against a
+    # pytest tmp_path fixture well outside the repo tree with no chdir,
+    # proving arbitrary-location paths are legitimate, exercised behavior
+    # that containment would reject. The CI invocation (ci.yml) only ever
+    # passes --check with no path args, so the repo-relative defaults are
+    # the only path this gate needs to keep working there. No privilege
+    # boundary is crossed either way: the operator invoking this dev-only
+    # harness already has full filesystem access, per the path-traversal
+    # verification report (scratchpad/pt-verification-report.md).
+    # VERIFY: any future change adding a fixed base must re-run
+    # test_diversity_panel.py first; a rejection there means real behavior
+    # broke.
     repo_root = Path.cwd()
-    panel_path = Path(args.panel)
-    baseline_path = Path(args.baseline)
+    panel_path = Path(args.panel).resolve()
+    baseline_path = Path(args.baseline).resolve()
 
     try:
         manifest = load_panel(panel_path)
@@ -681,15 +697,15 @@ def main(argv: list[str] | None = None) -> int:
                 manifest,
                 result,
                 repo_root,
-                Path(args.judge_cache),
-                Path(_DEFAULT_CALIBRATION),
+                Path(args.judge_cache).resolve(),
+                Path(_DEFAULT_CALIBRATION).resolve(),
             )
         except ValidationError as exc:
             sys.stderr.write(f"error: {exc}\n")
             return 1
 
     if args.json_path:
-        Path(args.json_path).write_text(
+        Path(args.json_path).resolve().write_text(
             json.dumps(baseline_payload(result), sort_keys=True, indent=2) + "\n",
             encoding="utf-8",
         )

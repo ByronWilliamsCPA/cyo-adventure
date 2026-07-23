@@ -192,7 +192,23 @@ def main(argv: list[str] | None = None) -> int:
     # argparse.Namespace attribute access is untyped (Any) in the stdlib
     # stubs regardless of the parser's declared arguments; this is the
     # standard, unavoidable boundary, not a loosened check on our own code.
-    skeleton_path = Path(args.skeleton)  # pyright: ignore[reportAny]
+    # ASSUME: security: skeleton/--fingerprint-manifest are canonicalized
+    # with .resolve() (CWE-23 hardening, Snyk python/PT), but deliberately
+    # NOT contained to a fixed base (the generation/import_cli.py::
+    # _load_blob idiom): tests/unit/test_check_theme_contract.py exercises
+    # both against pytest tmp_path fixtures well outside the repo tree with
+    # no chdir, proving arbitrary-location paths are legitimate, exercised
+    # behavior that containment would reject. This module is also invoked
+    # in-process by parameterize_promotion.py and check_promotion_bundle.py
+    # with paths under their own worktrees/out dirs, another reason a fixed
+    # base would be wrong here. No privilege boundary is crossed either way:
+    # the operator (or the in-process caller acting on the operator's own
+    # machine) already has full filesystem access, per the path-traversal
+    # verification report (scratchpad/pt-verification-report.md).
+    # VERIFY: any future change adding a fixed base must re-run
+    # test_check_theme_contract.py first; a rejection there means real
+    # behavior broke.
+    skeleton_path = Path(args.skeleton).resolve()  # pyright: ignore[reportAny]
     fingerprint_manifest_arg: str | None = args.fingerprint_manifest  # pyright: ignore[reportAny]
     try:
         skeleton = _load_json_object(skeleton_path)
@@ -213,7 +229,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # --- Optional manifest fingerprint comparison (not a pass/fail check) --
     if fingerprint_manifest_arg:
-        manifest_path = Path(fingerprint_manifest_arg)
+        manifest_path = Path(fingerprint_manifest_arg).resolve()
         try:
             manifest = _load_json_object(manifest_path)
         except (OSError, json.JSONDecodeError, ValueError) as exc:

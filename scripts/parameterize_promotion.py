@@ -454,6 +454,20 @@ def main(
         sys.stderr.write(branch_msg)
         return 1
 
+    # ASSUME: security: skeleton/plan/contract/out_dir are already
+    # canonicalized with .resolve() below (CWE-23 hardening, Snyk python/PT),
+    # but deliberately NOT contained to a fixed base (the
+    # generation/import_cli.py::_load_blob idiom): tests/unit/
+    # test_parameterize_promotion.py exercises every one of them against
+    # pytest tmp_path fixtures well outside the repo tree with no chdir,
+    # proving arbitrary-location paths are legitimate, exercised behavior
+    # that containment would reject. No privilege boundary is crossed either
+    # way: the operator invoking this dev-only glue already has full
+    # filesystem access, per the path-traversal verification report
+    # (scratchpad/pt-verification-report.md).
+    # VERIFY: any future change adding a fixed base must re-run
+    # test_parameterize_promotion.py first; a rejection there means real
+    # behavior broke.
     input_path = Path(cast("str", args.skeleton)).resolve()
     plan_path = Path(cast("str", args.plan)).resolve()
     contract_path = Path(cast("str", args.contract)).resolve()

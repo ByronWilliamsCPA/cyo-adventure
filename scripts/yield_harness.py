@@ -539,7 +539,18 @@ def main() -> None:
     args = _parse_args()
     # argparse attributes are typed Any by the stdlib stubs; narrow them here.
     provider_name: str = str(args.provider)  # pyright: ignore[reportAny]
-    briefs_path: Path = Path(str(args.briefs))  # pyright: ignore[reportAny]
+    # ASSUME: security: briefs/out/env-file are canonicalized with .resolve()
+    # (CWE-23 hardening, Snyk python/PT), but deliberately NOT contained to a
+    # fixed base (the generation/import_cli.py::_load_blob idiom): the
+    # module docstring's own third usage example writes an arbitrary
+    # `<name>.json` with no repo-relative prefix, and `_write_results`
+    # already `mkdir(parents=True)`s any destination directory, both signs
+    # that an operator-chosen location anywhere on disk is intended, not
+    # just a repo-relative one. No privilege boundary is crossed either way:
+    # the operator running this dev-only harness already has full
+    # filesystem access, per the path-traversal verification report
+    # (scratchpad/pt-verification-report.md).
+    briefs_path: Path = Path(str(args.briefs)).resolve()  # pyright: ignore[reportAny]
     threshold_val: float = float(args.threshold)  # pyright: ignore[reportAny]
     model_override: str | None = (
         str(args.model) if args.model is not None else None  # pyright: ignore[reportAny]
@@ -548,9 +559,9 @@ def main() -> None:
     limit: int | None = int(args.limit) if args.limit is not None else None  # pyright: ignore[reportAny]
     throttle: float = float(args.throttle)  # pyright: ignore[reportAny]
     out_path: Path | None = (
-        Path(str(args.out)) if args.out is not None else None  # pyright: ignore[reportAny]
+        Path(str(args.out)).resolve() if args.out is not None else None  # pyright: ignore[reportAny]
     )
-    env_path: Path = Path(str(args.env_file))  # pyright: ignore[reportAny]
+    env_path: Path = Path(str(args.env_file)).resolve()  # pyright: ignore[reportAny]
     # argparse choices guarantee one of the two literals; narrow without cast.
     scale_val: Scale = (
         "compact" if str(args.scale) == "compact" else "standard"  # pyright: ignore[reportAny]

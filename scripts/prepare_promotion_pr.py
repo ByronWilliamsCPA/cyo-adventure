@@ -688,6 +688,22 @@ def main(
         )
         return 1
 
+    # ASSUME: security: bundle/skeletons_root/worktrees_root are already
+    # canonicalized with .resolve() (CWE-23 hardening, Snyk python/PT), but
+    # deliberately NOT contained to a fixed base (the
+    # generation/import_cli.py::_load_blob idiom): tests/unit/
+    # test_ws8_promotion.py and test_flywheel_cycle.py exercise these against
+    # pytest tmp_path fixtures well outside the repo tree with no chdir,
+    # proving arbitrary-location paths are legitimate, exercised behavior
+    # that containment would reject. Writes are separately hard-contained to
+    # worktree_dir by _assert_within regardless (see below); this comment
+    # covers only the read-side bundle_dir/skeletons_root args. No privilege
+    # boundary is crossed either way: the operator invoking this dev-only
+    # glue already has full filesystem access, per the path-traversal
+    # verification report (scratchpad/pt-verification-report.md).
+    # VERIFY: any future change adding a fixed base to these two must re-run
+    # test_ws8_promotion.py and test_flywheel_cycle.py first; a rejection
+    # there means real behavior broke.
     bundle_dir = Path(cast("str", args.bundle)).resolve()
     skeletons_root = Path(cast("str", args.skeletons_root)).resolve()
     try:
