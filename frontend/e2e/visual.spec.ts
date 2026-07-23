@@ -20,6 +20,20 @@ import { loadLanternStory } from './support/fixtures'
  * with `npx playwright test visual.spec.ts --update-snapshots` whenever a
  * deliberate visual change lands; a diff here on an unrelated change is a
  * regression signal, not noise to suppress.
+ *
+ * CI-only (P4-1): the committed baselines are generated on the Linux CI
+ * runner. A developer's host (macOS/Windows/WSL) renders fonts with a
+ * different rasterizer, so every screenshot drifts by a few sub-pixel anti-
+ * aliased edges on a local run. That is host noise, not a UI regression, and
+ * it drowned out real signal in `npm run test:e2e` (all 18 "failed" locally,
+ * 0 in CI). The chromium project's `testIgnore` therefore skips this file when
+ * `process.env.CI` is unset (see playwright.config.ts), so a local
+ * `npm run test:e2e` never runs it, while CI (GitHub Actions always sets
+ * `CI=true`) still runs and enforces the baselines on the platform they were
+ * captured on, and the update-visual-snapshots workflow still regenerates
+ * them. Run locally on demand with `CI=1 npm run test:e2e -- visual.spec.ts`
+ * after regenerating snapshots for your platform. The gating is structural, in
+ * the config, not a per-test skip marker that would silence a real failure.
  */
 
 test('the landing page matches its visual baseline', async ({ page }) => {
@@ -343,7 +357,12 @@ test('the admin requests page matches its visual baseline', async ({ page, conte
 
 const EMPTY_THRESHOLDS = {
   default_min_verdict: 'flag',
-  rows: [] as { age_band: string; category: string; min_verdict: string; min_score: number | null }[],
+  rows: [] as {
+    age_band: string
+    category: string
+    min_verdict: string
+    min_score: number | null
+  }[],
   known_categories: ['violence', 'language'],
 }
 

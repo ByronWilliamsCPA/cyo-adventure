@@ -229,6 +229,25 @@ describe('ModerationThresholdsPage', () => {
     expect(dialog).toHaveTextContent(/will hide most advisory findings/i)
   })
 
+  it('does not warn inside the noise-floor confirm when the value is exactly the 0.3 boundary', async () => {
+    const user = userEvent.setup()
+    render(<ModerationThresholdsPage />)
+    await screen.findByText(/surface to families at/i)
+
+    const floorInput = screen.getByLabelText(/Noise floor/i)
+    await user.clear(floorInput)
+    await user.type(floorInput, '0.3')
+    await user.click(screen.getByRole('button', { name: /Save noise floor/i }))
+
+    // The warning gate is a strict "> 0.3", so the boundary value itself
+    // must not trip it.
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveTextContent(
+      'Advisory findings scoring below 0.3 will be hidden from reviewers on the review surface.'
+    )
+    expect(dialog).not.toHaveTextContent(/will hide most advisory findings/i)
+  })
+
   it('cancelling the noise-floor confirm fires no PUT', async () => {
     const user = userEvent.setup()
     render(<ModerationThresholdsPage />)

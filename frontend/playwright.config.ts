@@ -55,18 +55,96 @@ export default defineConfig({
     },
   },
   projects: [
-    { name: 'chromium', testDir: './e2e', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'chromium',
+      testDir: './e2e',
+      // P4-1: visual.spec.ts asserts pixel-exact screenshot baselines that are
+      // captured on the Linux CI runner. A developer host (macOS/Windows/WSL)
+      // renders fonts differently, so those baselines drift by sub-pixel anti-
+      // aliasing noise off-CI and every visual test "fails" locally for no real
+      // reason. Ignore them when CI is unset so a local `npm run test:e2e` is
+      // clean; CI (GitHub Actions sets CI=true) still runs and enforces them,
+      // and update-visual-snapshots.yml still regenerates them. Structural
+      // gating, not a per-test skip marker. Run locally with
+      // `CI=1 npm run test:e2e -- visual.spec.ts`.
+      testIgnore: process.env.CI ? [] : ['visual.spec.ts'],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Runs scripts/reset_e2e_real_state.py (via e2e-real/_reset.setup.ts)
+      // before the real-backend project's specs, so a second consecutive
+      // `npm run test:e2e:real` is deterministic (Phase 4.2): it reverts the
+      // seeded review story's real approval and clears reading_state rows a
+      // prior run pinned at an ending. Matched by testMatch, not the default
+      // spec/test glob, so `real-backend` below never picks this file up as
+      // an ordinary test; `chromium` has no backend to reset and does not
+      // depend on either project.
+      name: 'real-backend-setup',
+      testDir: './e2e-real',
+      testMatch: /_reset\.setup\.ts/,
+    },
     {
       // Real-backend smoke tier: zero route mocks; requires the local stack
       // (Postgres + seeded uvicorn on :8000). Run via npm run test:e2e:real.
       name: 'real-backend',
       testDir: './e2e-real',
+      dependencies: ['real-backend-setup'],
+      // full-pipeline-real.spec.ts drives a real RQ worker end-to-end; it runs
+      // in its own `real-backend-pipeline` project (npm run test:e2e:real:pipeline)
+      // that additionally requires a running generation worker, so this project
+      // must not pick it up. Every other e2e-real spec has no such dependency
+      // and stays here.
+      testIgnore: ['full-pipeline-real.spec.ts'],
       fullyParallel: false,
       // #EDGE: data-integrity: the approve test mutates the database, so a CI
       // retry after a post-mutation failure re-enters an already-approved
       // state and fails with a different symptom; read the FIRST attempt's
       // error when diagnosing.
       // #VERIFY: approval-flow.spec.ts asserts persisted state after reload.
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Full-pipeline tier: drives a story from a guardian concept through a
+      // REAL RQ generation worker (mock provider) to in_review, then admin
+      // approve/publish, then a kid read. Kept in its own project because it
+      // is the only e2e-real spec that requires the generation worker
+      // (`python -m cyo_adventure.generation.worker_main`) running alongside
+      // the seeded uvicorn; the worker is not part of the default local stack,
+      // so bundling this into `real-backend` would make that whole tier fail
+      // wherever no worker is up. Same deterministic reset dependency as
+      // `real-backend` (the reset also purges worker-generated storybooks so
+      // consecutive runs stay clean). Run via npm run test:e2e:real:pipeline.
+      // #CRITICAL: external-resources: this project is meaningless without a
+      // live worker consuming the "generation" queue; the spec's poll deadline
+      // fails with an explicit "worker not running" message if none is up.
+      // #VERIFY: the nightly job must start the worker before invoking this.
+      name: 'real-backend-pipeline',
+      testDir: './e2e-real',
+      testMatch: /full-pipeline-real\.spec\.ts/,
+      dependencies: ['real-backend-setup'],
+      fullyParallel: false,
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // PR-path smoke tier (G4, Phase 7.4): the ONE fast, seeded, happy-path
+      // real-backend spec promoted to run per-PR (npm run test:e2e:real:pr-smoke)
+      // so developers get a full-stack signal without the whole `real-backend`
+      // tier's cost. A dedicated project (not a `playwright test <file>`
+      // positional filter) is deliberate: a filename filter can also filter the
+      // `real-backend-setup` dependency out, silently skipping the deterministic
+      // reset, whereas testMatch selects exactly this spec while keeping the
+      // reset. kid-reads is a pure read happy-path: no state mutation, no
+      // generation worker, no live LLM, so it stays fast and deterministic.
+      // Run informational (non-blocking) in CI via e2e-real-pr-smoke.yml; this
+      // same spec also runs under `real-backend` in the nightly (a spec may be
+      // matched by more than one project).
+      name: 'real-backend-pr-smoke',
+      testDir: './e2e-real',
+      testMatch: /kid-reads\.spec\.ts/,
+      dependencies: ['real-backend-setup'],
+      fullyParallel: false,
       retries: process.env.CI ? 1 : 0,
       use: { ...devices['Desktop Chrome'] },
     },

@@ -1,8 +1,64 @@
+import { execFileSync } from 'node:child_process'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { type BrowserContext, expect } from '@playwright/test'
 
 import type { DeviceGrant } from '../src/auth/deviceGrant'
 
 export const BACKEND = process.env.E2E_BACKEND_URL || 'http://localhost:8000'
+
+// Repo root: two directories up from this file (frontend/e2e-real/ -> repo root).
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
+
+/**
+ * Reset real-backend e2e fixture state to a clean, idempotent baseline by
+ * shelling out to ``scripts/reset_e2e_real_state.py`` (the single source of
+ * truth for which tables/fields get reverted; see that script's module
+ * docstring for the exact list). Shared by `_reset.setup.ts` (the
+ * once-per-invocation baseline the `real-backend-setup` project runs before
+ * any spec) and by any individual spec file's own `test.beforeAll`, so a file
+ * that assumes the pristine seeded baseline (a specific story's status, an
+ * empty review queue, zero open kid flags) stays correct regardless of what
+ * ran earlier in the same full-suite invocation (Playwright fixtures/hooks
+ * have no file-ordering guarantee across `real-backend`'s
+ * `fullyParallel: false` but still shared-DB run).
+ *
+ * `execFileSync` (not `exec`) avoids shell interpolation of the fixed
+ * argument list; `stdio: 'inherit'` surfaces the Python script's own
+ * print/traceback directly in the Playwright run's console instead of
+ * swallowing it into a buffer only shown on failure.
+ *
+ * #CRITICAL: external-resources: this assumes `uv` is on PATH and
+ * `CYO_ADVENTURE_DATABASE_URL` (or the script's own settings default) points
+ * at the disposable local Postgres; the Python script's own
+ * `_require_local_database` guard is the actual safety net (refuses to run
+ * against anything but `environment == "local"` on a localhost/127.0.0.1
+ * host), not this wrapper.
+ * #VERIFY: scripts/reset_e2e_real_state.py's `_require_local_database`.
+ */
+export function resetRealState(): void {
+  try {
+    execFileSync('uv', ['run', 'python', 'scripts/reset_e2e_real_state.py'], {
+      cwd: REPO_ROOT,
+      stdio: 'inherit',
+      // The reset is a handful of SQL statements (sub-second normally); cap it
+      // so a hung DB connection surfaces as a failed run instead of stalling
+      // the whole suite indefinitely. On timeout execFileSync throws and the
+      // catch below rethrows with remediation guidance.
+      timeout: 60_000,
+    })
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error)
+    throw new Error(
+      'scripts/reset_e2e_real_state.py failed (see output above). Re-run it ' +
+        'manually from the repo root (uv run python ' +
+        'scripts/reset_e2e_real_state.py) with CYO_ADVENTURE_DATABASE_URL set ' +
+        `to the local Postgres DSN to diagnose: ${reason}`,
+      { cause: error }
+    )
+  }
+}
 
 // localStorage key the app reads the device grant from; mirrors GRANT_KEY in
 // src/auth/deviceGrant.ts (not exported there). Kept in sync manually, exactly

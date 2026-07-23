@@ -156,4 +156,34 @@ describe('useReadAloud', () => {
     expect(result.current.available).toBe(false)
     expect(result.current.speaking).toBe(false)
   })
+
+  it('kid-safe failure: the broken latch persists so a later speak() call does not retry', () => {
+    // `broken` is never reset anywhere in the hook, so once it latches the
+    // toggle must stay hidden for the rest of this hook instance's life, not
+    // just in the render right after the throw. A second speak() call (e.g. a
+    // child tapping a control that has not yet re-rendered away) must be a
+    // true no-op: it should not touch the broken speechSynthesis API again.
+    const cancelSpy = vi.fn(() => {
+      throw new Error('boom')
+    })
+    vi.stubGlobal('speechSynthesis', { speak: speakMock, cancel: cancelSpy })
+    vi.stubGlobal('SpeechSynthesisUtterance', MockUtterance)
+    const { result } = renderHook(() => useReadAloud(true))
+
+    act(() => {
+      result.current.speak('Once upon a time.', [])
+    })
+    expect(result.current.available).toBe(false)
+    expect(cancelSpy).toHaveBeenCalledTimes(1)
+
+    act(() => {
+      result.current.speak('Try again.', [])
+    })
+    expect(result.current.available).toBe(false)
+    expect(result.current.speaking).toBe(false)
+    // The latch's `if (!available) return` guard means neither cancel nor
+    // speak is invoked a second time; the API is never poked again.
+    expect(cancelSpy).toHaveBeenCalledTimes(1)
+    expect(speakMock).not.toHaveBeenCalled()
+  })
 })

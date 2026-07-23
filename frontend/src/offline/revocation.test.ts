@@ -102,7 +102,7 @@ describe('reconcileOfflineCache', () => {
     expect(await listQueue()).toHaveLength(1)
   })
 
-  it("keeps the shared storybook blob cached while a sibling profile still has it assigned", async () => {
+  it('keeps the shared storybook blob cached while a sibling profile still has it assigned', async () => {
     await cacheStorybook(makeStory('s_shared'))
     // p2 reconciled earlier and still has s_shared on its shelf.
     await reconcileOfflineCache('p2', ['s_shared'])
@@ -161,5 +161,35 @@ describe('reconcileOfflineCache', () => {
     await cacheStorybook(makeStory('s_new'))
     await reconcileOfflineCache('p1', ['s_new'])
     expect(await getCachedStorybook('s_new', 1)).toBeDefined()
+  })
+
+  // #EDGE: timing dependencies: the documented mid-read latency window (see the
+  // revocation.ts module docstring). A book pulled server-side (unassigned,
+  // archived, unpublished, or pulled for an incident) is NOT purged from the
+  // device the instant it is revoked: reconcileOfflineCache is shelf-fetch
+  // triggered, so an already-downloaded blob stays readable until the next
+  // successful /v1/library fetch drives a reconcile with the fresh (shorter)
+  // shelf. This test pins that known, intentional gap so a future change that
+  // closes it (a revocation push channel, or the reader route re-validating
+  // against the shelf mid-session) trips here and gets documented rather than
+  // shipping as a silent behaviour change.
+  // #VERIFY: closing the window would require a backend/routing change that is
+  // out of scope for the client-side reconcile; tracked as the sole residual
+  // hole for register G8/A5 offline revocation.
+  it('leaves an already-downloaded book readable until the next reconcile runs (mid-read latency window)', async () => {
+    await cacheStorybook(makeStory('s_revoked'))
+    await putReadingState('p1', 's_revoked', state)
+
+    // Server-side revocation has happened, but no library fetch has run yet, so
+    // reconcileOfflineCache has not been called with the fresh shelf. The
+    // device still holds the blob and reading state: the gap, by design.
+    expect(await getCachedStorybook('s_revoked', 1)).toBeDefined()
+    expect(await getReadingState('p1', 's_revoked')).toEqual(state)
+
+    // The next successful library fetch (which no longer lists the book) is the
+    // only trigger that closes the window and purges the local copy.
+    await reconcileOfflineCache('p1', [])
+    expect(await getCachedStorybook('s_revoked', 1)).toBeUndefined()
+    expect(await getReadingState('p1', 's_revoked')).toBeUndefined()
   })
 })

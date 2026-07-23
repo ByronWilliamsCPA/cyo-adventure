@@ -143,6 +143,59 @@ coverage. From the verdict doc's "suspected micro-holes":
 - **6.4 USER-decision, dev Playwright tier.** None exists (no frontend deploy
   pipeline this repo owns). Decide whether to add one or keep dev as manual smoke.
 
+## Phase 7, structural test-design gaps (second-team review, 2026-07-22)
+
+A second team reviewed `main` (before this work order's changes landed) and
+surfaced structural gaps that Phases 1 to 6 do not cover. Deduplicated against
+the phases above; only the genuinely-new items are listed. Their G5
+(performance/load) is out of this order's scope and already owned by roadmap
+Phase 9 (P9-13 capacity baseline), so it is not added here.
+
+- **7.1 TODO (G1, highest), full-pipeline E2E through the real RQ worker.** The
+  request to generate to gate to moderate to approve to publish to read pipeline
+  is only asserted in fragments; `e2e-real` seeds data rather than generating
+  it, and the RQ generation/cover workers are never in a browser E2E loop. Not
+  covered by Phase 3.1 (which submits a request but does not drive real
+  generation). Done when one nightly E2E submits a real story request, lets the
+  real RQ worker process it through the real validator gate + moderation, has a
+  guardian/admin approve via the real approval API, publishes, and drives a kid
+  to read the published book to a valid ending. Redis + worker must run in-loop.
+  Needs a dedicated nightly job with its own infra (see decision below); heavier
+  than the rest of Phase 3.
+- **7.2 TODO (G2), pin the mocked tier to the real contract.** The ~35
+  hand-written `page.route` fulfilments in `frontend/e2e/` can drift from the
+  real backend with no link to the OpenAPI schema; this is the same failure
+  class as the audit's P0-1 (the mocked tier did not enforce `extra=forbid`, so
+  the offline-resync defect was invisible until the real backend caught it).
+  Done when either the mocked-tier bodies are validated against the OpenAPI
+  component schemas, OR a few real-backend "contract smoke" specs cover the
+  highest-drift endpoints (library, reading-state PUT, intake, review).
+  Recommended: the contract-smoke route (lighter, and the real backend already
+  enforces `extra=forbid`).
+- **7.3 TODO (G3), offline-vs-online branching parity.** `back()`/`canGoBack()`
+  replay and `startContinuation()` are the client-engine paths most likely to
+  diverge from a server-side recompute, and no E2E asserts equivalence. Phase
+  3.2 adds a go-back (K5) spec, but not a parity assertion. Done when an E2E
+  reads a branching story offline (go back, re-choose, continue a series) and
+  asserts the resulting current node, variable state, and ending match the
+  online/server path for the same choice sequence.
+- **7.4 TODO (G4), promote one real-stack smoke to the PR path.** The real tier
+  is nightly-only, so developers get no full-stack signal per PR. Unblocked now
+  that Phase 4.2 made the tier deterministic. Done when one fast happy-path
+  real-stack spec (e.g. `kid-reads` or `approval-flow`) runs on PRs.
+
+### Phase 7 open questions (answered)
+
+- **G1 infra:** run the full-pipeline test as a DEDICATED nightly job with its
+  own Redis + RQ worker services, not on the per-PR path. The per-PR full-stack
+  signal is 7.4 (a fast seeded happy-path), which needs neither the worker nor
+  live generation.
+- **G2 approach:** prefer a few real-backend contract smokes over
+  OpenAPI-example fixture generation; the real backend's `extra=forbid` is the
+  exact check that catches shape drift, and example-driven fixtures are brittle.
+- **G5 performance/load:** out of this order's scope; owned by roadmap Phase 9.
+  Confirm with the product owner rather than folding it in here.
+
 ## Do-not-re-derive facts
 
 - Deep specs are LOCAL only (mocked 34 + real 9). Staging (2) + prod (3) are

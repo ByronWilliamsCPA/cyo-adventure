@@ -177,6 +177,19 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      - name: Set up Python (coverage drift-guard)
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.14"
+
+      - name: Coverage matrix drift-guard
+        # Fails if any Playwright spec or Vitest test is missing from
+        # docs/testing/coverage-matrix.md. Stdlib-only Python (no deps), run on
+        # the pinned interpreter above rather than the runner's ambient python3.
+        # The script resolves the repo root from its own location, so running it
+        # from this job's ./frontend working directory via ../ is fine.
+        run: python ../scripts/check_coverage_matrix.py
+
       - name: Test
         run: npm run test:run -- --coverage
 

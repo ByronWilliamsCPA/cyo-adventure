@@ -193,6 +193,13 @@ jobs:
           CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
           CYO_ADVENTURE_REDIS_URL: redis://localhost:6379/0
           DEVICE_GRANT_SECRET: nightly-e2e-real-device-grant-secret
+          # Every kid spec here picks a profile, which mints a child-session
+          # token (POST /api/v1/child-sessions). That endpoint 400s
+          # (ConfigurationError) without a secret to sign it, even in local,
+          # so the kid library call 401s and the shelf never renders. Must be
+          # non-empty and distinct from DEVICE_GRANT_SECRET (config.py enforces
+          # distinctness in every environment; issue #251 audience separation).
+          CHILD_SESSION_SECRET: nightly-e2e-real-child-session-secret
         run: |
           uv run uvicorn cyo_adventure.app:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
           echo $! > backend.pid
@@ -219,7 +226,63 @@ jobs:
         working-directory: ./frontend
         env:
           E2E_BACKEND_URL: http://localhost:8000
+          # real-backend-setup (the reset dependency) shells out to
+          # scripts/reset_e2e_real_state.py, which needs the DSN in this step's
+          # own env (execFileSync inherits it); without it the script falls
+          # back to the credential-less localhost default and asyncpg fails
+          # auth as OS user "runner". See the same note on e2e-real-pr-smoke.yml.
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
         run: npm run test:e2e:real
+
+      # Full-pipeline tier (G1, Phase 7.1): the ONLY real-backend spec that
+      # drives the real RQ generation worker, so the worker is started here,
+      # not at job setup. It must be started immediately before this step, not
+      # earlier: the worker's Redis connection uses socket_timeout=2
+      # (generation/queue.py) and the blocking dequeue idle-dies after roughly
+      # the worker TTL (~7 min) with "Redis connection timeout, quitting", so a
+      # worker started before the multi-minute `real-backend` run above would
+      # be dead by the time this step enqueues. The pipeline project rebuilds
+      # its own preview under CI (reuseExistingServer is false when CI is set),
+      # but that ~1-2 min build fits well inside the idle budget, so a worker
+      # started right here survives to consume the enqueued job (validated:
+      # the mock pipeline resolves a job in ~2s once picked up).
+      # #CRITICAL: external-resources: full-pipeline-real.spec.ts's poll
+      # deadline fails with an explicit worker-not-running message if this
+      # worker is absent or already dead; that is the intended signal, not a
+      # bare Playwright timeout.
+      # #VERIFY: if the socket_timeout=2 worker fragility is ever fixed at the
+      # source (a longer timeout, or burst-mode), this ordering constraint can
+      # relax; until then, keep the worker start adjacent to the pipeline step.
+      - name: Start generation worker (background)
+        env:
+          ENVIRONMENT: local
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+          CYO_ADVENTURE_REDIS_URL: redis://localhost:6379/0
+        run: |
+          uv run python -m cyo_adventure.generation.worker_main > worker.log 2>&1 &
+          echo $! > worker.pid
+          # Give the reclaim sweep + worker startup a moment to attach to the
+          # queue before Playwright begins its build; the spec's own 30s poll
+          # then absorbs any residual startup slack.
+          sleep 3
+
+      - name: E2E (Playwright, full-pipeline tier)
+        working-directory: ./frontend
+        env:
+          E2E_BACKEND_URL: http://localhost:8000
+          # real-backend-pipeline also depends on real-backend-setup, so its
+          # reset shell-out needs the DSN in this step's env too (see the note
+          # on the real-backend tier step above).
+          CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: npm run test:e2e:real:pipeline
+
+      - name: Upload worker log
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-real-nightly-worker-log
+          path: worker.log
+          retention-days: 7
 
       - name: Upload backend log
         if: ${{ !cancelled() }}
