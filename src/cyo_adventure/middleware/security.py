@@ -320,6 +320,10 @@ redis.call('EXPIRE', key, minute_window)
 return {0, minute_count + 1}
 """
 
+# Shared 429 response title for both the memory and Redis rate-limit checks
+# below (minute-window and burst-window variants of each).
+_RATE_LIMIT_ERROR_TITLE: Final = "Too Many Requests"
+
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """Rate limiting middleware: Redis-backed, with an in-memory fail-open fallback.
@@ -459,10 +463,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             )
             self.requests = defaultdict(
                 list,
-                {
-                    ip: timestamps
-                    for ip, timestamps in sorted_ips[: self.max_tracked_ips]
-                },
+                dict(sorted_ips[: self.max_tracked_ips]),
             )
 
     def _check_memory(self, client_ip: str, current_time: float) -> Response | None:
@@ -488,7 +489,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return JSONResponse(
                 status_code=429,
                 content={
-                    "error": "Too Many Requests",
+                    "error": _RATE_LIMIT_ERROR_TITLE,
                     "message": f"Rate limit exceeded: {self.requests_per_minute} requests per minute",
                     "retry_after": 60,
                 },
@@ -503,7 +504,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return JSONResponse(
                 status_code=429,
                 content={
-                    "error": "Too Many Requests",
+                    "error": _RATE_LIMIT_ERROR_TITLE,
                     "message": f"Burst limit exceeded: {self.burst_size} requests per second",
                     "retry_after": 1,
                 },
@@ -514,8 +515,14 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.requests[client_ip].append(current_time)
         return None
 
-    async def _get_script(self) -> AsyncScript:
+    def _get_script(self) -> AsyncScript:
         """Lazily construct the Redis client and register the Lua script.
+
+        Synchronous: ``Redis.from_url`` and ``register_script`` only build
+        client/script objects, they open no connection and await nothing.
+        The actual network I/O (and the connection error it can raise)
+        happens later, when the returned script is awaited in
+        ``_check_redis``.
 
         #CRITICAL: external-resources: this is the first point of contact
         with Redis on the request path; a connection error surfaces either
@@ -552,7 +559,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         anything itself, so the fallback decision stays centralized in one
         place.
         """
-        script = await self._get_script()
+        script = self._get_script()
         # #ASSUME: data-integrity: pairing the float timestamp with a uuid4
         # suffix keeps the sorted-set member unique even for two requests
         # landing on the same float tick, so a second ZADD in the same tick
@@ -577,7 +584,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return JSONResponse(
                 status_code=429,
                 content={
-                    "error": "Too Many Requests",
+                    "error": _RATE_LIMIT_ERROR_TITLE,
                     "message": f"Rate limit exceeded: {self.requests_per_minute} requests per minute",
                     "retry_after": 60,
                 },
@@ -587,7 +594,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return JSONResponse(
                 status_code=429,
                 content={
-                    "error": "Too Many Requests",
+                    "error": _RATE_LIMIT_ERROR_TITLE,
                     "message": f"Burst limit exceeded: {self.burst_size} requests per second",
                     "retry_after": 1,
                 },
@@ -610,7 +617,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if self.backend == "redis" and current_time >= self._redis_unavailable_until:
             try:
                 decision = await self._check_redis(client_ip, current_time)
-            except (RedisError, OSError, TimeoutError) as exc:
+            except (RedisError, OSError) as exc:
                 # #CRITICAL: concurrency/security: fail OPEN, not closed --
                 # see the class docstring for the full trade-off. Arm the
                 # circuit-breaker cooldown so a sustained outage costs one
@@ -618,14 +625,13 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 # not one per request.
                 # #VERIFY: see TestRedisBackedRateLimitMiddleware in
                 # test_security.py (the circuit-breaker cooldown tests).
-                self._redis_unavailable_until = (
-                    current_time + self._redis_retry_cooldown_seconds
-                )
+                cooldown_seconds = self._redis_retry_cooldown_seconds
+                self._redis_unavailable_until = current_time + cooldown_seconds
                 _struct_logger.warning(
                     "rate_limit_redis_unavailable",
                     error=str(exc),
                     client_ip=client_ip,
-                    cooldown_seconds=self._redis_retry_cooldown_seconds,
+                    cooldown_seconds=cooldown_seconds,
                 )
                 decision = self._check_memory(client_ip, current_time)
         else:
@@ -635,6 +641,19 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return decision
 
         return await call_next(request)
+
+
+# AWS/Azure cloud-metadata endpoint (shared IP across both providers). This
+# is an SSRF denylist entry, not a config value: hardcoding it is
+# intentional, it is the literal address every SSRF guard for this class of
+# attack must block.
+_CLOUD_METADATA_IPV4: Final = (
+    "169.254.169.254"  # NOSONAR: SSRF denylist entry, hardcoding is intentional
+)
+# IPv6 equivalent of the AWS metadata endpoint above; same rationale.
+_CLOUD_METADATA_IPV6: Final = (
+    "fd00:ec2::254"  # NOSONAR: SSRF denylist entry, hardcoding is intentional
+)
 
 
 class SSRFPreventionMiddleware(BaseHTTPMiddleware):
@@ -662,8 +681,8 @@ class SSRFPreventionMiddleware(BaseHTTPMiddleware):
         "127.0.0.1",
         "0.0.0.0",
         # AWS/Azure metadata endpoints (shared IP)
-        "169.254.169.254",
-        "fd00:ec2::254",
+        _CLOUD_METADATA_IPV4,
+        _CLOUD_METADATA_IPV6,
         # GCP metadata endpoints
         "metadata.google.internal",
         "metadata.goog",
@@ -896,26 +915,6 @@ def add_security_middleware(
             allowed_hosts=allowed_hosts,
         )
 
-    # CORS configuration (OWASP A05)
-    # Explicit allowlist: wildcard allow_headers with allow_credentials=True
-    # violates the CORS spec and enables header-escalation attacks.
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=allowed_origins or [],
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-        allow_headers=[
-            "Authorization",
-            "Content-Type",
-            "X-Correlation-ID",
-            "X-Request-ID",
-            "X-Trace-ID",
-            "X-Span-ID",
-        ],
-        expose_headers=["X-Request-ID"],
-        max_age=3600,
-    )
-
     # Security headers (OWASP A05, A03, A09)
     app.add_middleware(SecurityHeadersMiddleware)
 
@@ -951,38 +950,34 @@ def add_security_middleware(
         app.add_middleware(SSRFPreventionMiddleware)
 
     # Request body size guard (audit Finding 8: unbounded body -> resource
-    # exhaustion). Added last so it wraps every other middleware added here,
-    # rejecting an oversized body before anything else (rate limiting, CORS,
-    # SSRF checks) does any work on the request.
+    # exhaustion). Added before CORS (see below) so it wraps every other
+    # non-CORS middleware added here, rejecting an oversized body before
+    # anything else (rate limiting, SSRF checks) does any work on the request.
     if enable_body_size_limit:
         app.add_middleware(BodySizeLimitMiddleware, max_body_bytes=max_body_bytes)
 
-
-# Example usage in main.py:
-"""
-from fastapi import FastAPI
-from cyo_adventure.middleware.security import add_security_middleware
-
-app = FastAPI()
-
-# Add all security middleware
-add_security_middleware(
-    app,
-    enable_https_redirect=True,  # Production only
-    enable_rate_limiting=True,
-    allowed_origins=[
-        "https://example.com",
-        "https://app.example.com",
-    ],
-    allowed_hosts=[
-        "api.example.com",
-        "localhost",  # Development only
-    ],
-    rate_limit_rpm=100,
-)
-
-# Your routes here
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-"""
+    # CORS configuration (OWASP A05), added LAST so it is the OUTERMOST
+    # middleware in this function's stack (Starlette/FastAPI applies the
+    # most-recently-added middleware first). CORS headers must reach every
+    # response, including a 429 from RateLimitMiddleware, a 400 from
+    # SSRFPreventionMiddleware, or a 413 from BodySizeLimitMiddleware:
+    # otherwise a browser cannot read those error responses cross-origin and
+    # reports a CORS failure instead of the real error (S8414).
+    # Explicit allowlist: wildcard allow_headers with allow_credentials=True
+    # violates the CORS spec and enables header-escalation attacks.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_origins or [],
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+        allow_headers=[
+            "Authorization",
+            "Content-Type",
+            "X-Correlation-ID",
+            "X-Request-ID",
+            "X-Trace-ID",
+            "X-Span-ID",
+        ],
+        expose_headers=["X-Request-ID"],
+        max_age=3600,
+    )

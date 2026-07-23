@@ -38,6 +38,14 @@ _DEV_DATABASE_URL = "postgresql+asyncpg://localhost/cyo_adventure"
 # detected this way, so this only covers the documented Supavisor case.
 _SUPAVISOR_TRANSACTION_POOLER_PORT = 6543
 
+# Default FORWARDED_ALLOW_IPS trust boundary: the RFC 1918 172.16.0.0/12
+# block backing the production reverse-proxy path (see the field's docstring
+# below for the full trust-boundary rationale and why it cannot yet be
+# narrowed). Not a target address or secret: it is the legitimate default
+# CIDR uvicorn's --forwarded-allow-ips trusts, hardcoding it here is
+# intentional.
+_DEFAULT_FORWARDED_ALLOW_IPS_CIDR = "172.16.0.0/12"  # NOSONAR: legitimate default trusted-proxy CIDR (RFC 1918), not a sensitive literal
+
 
 def _check_pooler_port_requires_disabled_cache(
     *, label: str, url: str, disable_prepared_cache: bool
@@ -721,7 +729,8 @@ class Settings(BaseSettings):
     # visibility at the proxy boundary, it does not change how RateLimitMiddleware
     # keys or stores requests.
     forwarded_allow_ips: str = Field(
-        default="172.16.0.0/12", validation_alias="FORWARDED_ALLOW_IPS"
+        default=_DEFAULT_FORWARDED_ALLOW_IPS_CIDR,
+        validation_alias="FORWARDED_ALLOW_IPS",
     )
 
     # --- Cover generation (nano banana) + Cloudflare R2 storage ---
