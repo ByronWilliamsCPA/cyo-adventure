@@ -12,13 +12,9 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-009-supabase-platform/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-022-tiered-rls-scoping/">
       
       
-        <link rel="prev" href="../adr-008-public-app-store-launch/">
-      
-      
-        <link rel="next" href="../adr-010-modal-review-and-gated-generation/">
       
       
         
@@ -29,7 +25,7 @@
     
     
       
-        <title>ADR-009: Supabase as the managed platform for auth, database, and storage - CYO Adventure</title>
+        <title>ADR-022: Tiered RLS scoping (flat per-family enforcement on the high-sensitivity tables) - CYO Adventure</title>
       
     
     
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-009-supabase-as-the-managed-platform-for-auth-database-and-storage" class="md-skip">
+        <a href="#adr-022-tiered-rls-scoping-flat-per-family-enforcement-on-the-high-sensitivity-tables" class="md-skip">
           Skip to content
         </a>
       
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-009: Supabase as the managed platform for auth, database, and storage
+              ADR-022: Tiered RLS scoping (flat per-family enforcement on the high-sensitivity tables)
             
           </span>
         </div>
@@ -388,12 +384,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../../" class="md-tabs__link">
           
   
@@ -1693,8 +1687,6 @@
       
   
   
-    
-  
   
   
     
@@ -1718,19 +1710,18 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -1759,13 +1750,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1922,8 +1913,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1961,17 +1950,16 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -2000,13 +1988,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2303,44 +2291,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ADR-009
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--accepted"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2363,315 +2317,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TL;DR
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Context
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Context">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Problem
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#constraints" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Constraints
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#significance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Significance
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Decision">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#rationale" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rationale
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#options-considered" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Options Considered
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Options Considered">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-1-supabase-platform-auth-postgres-storage-queue-evaluation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 1: Supabase platform (Auth + Postgres + Storage + queue evaluation) ✓
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-2-firebase-auth-separately-managed-postgresstoragequeue" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 2: Firebase Auth + separately managed Postgres/storage/queue
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-3-keep-adr-008-baseline-self-hosted-authentik-azure-services" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 3: Keep ADR-008 baseline (self-hosted Authentik + Azure services)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-4-aws-cognito-aws-backend" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 4: AWS Cognito + AWS backend
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Consequences
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Consequences">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#positive" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Positive
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#trade-offs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Trade-offs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#technical-debt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Debt
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Implementation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#components-affected" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Components Affected
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#testing-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Testing Strategy
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Validation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#success-criteria" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Success Criteria
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#review-schedule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Review Schedule
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3189,10 +2834,9 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Decision">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rationale" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3200,11 +2844,6 @@
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3221,10 +2860,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#option-1-supabase-platform-auth-postgres-storage-queue-evaluation" class="md-nav__link">
+  <a href="#option-1-tiered-scoping-flat-per-family-on-high-sensitivity-tables" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 1: Supabase platform (Auth + Postgres + Storage + queue evaluation) ✓
+        Option 1: Tiered scoping (flat per-family on high-sensitivity tables) ✓
       
     </span>
   </a>
@@ -3232,10 +2871,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#option-2-firebase-auth-separately-managed-postgresstoragequeue" class="md-nav__link">
+  <a href="#option-2-keep-blanket-usingtrue-on-all-tables-adr-021-as-written" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 2: Firebase Auth + separately managed Postgres/storage/queue
+        Option 2: Keep blanket USING(true) on all tables (ADR-021 as written) ✗
       
     </span>
   </a>
@@ -3243,21 +2882,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#option-3-keep-adr-008-baseline-self-hosted-authentik-azure-services" class="md-nav__link">
+  <a href="#option-3-full-scoped-rls-on-all-tables-including-the-three-ring-graph-and-admin-logic-in-sql" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 3: Keep ADR-008 baseline (self-hosted Authentik + Azure services)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-4-aws-cognito-aws-backend" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 4: AWS Cognito + AWS backend
+        Option 3: Full scoped RLS on all tables, including the three-ring graph and admin logic in SQL ✗
       
     </span>
   </a>
@@ -3428,302 +3056,290 @@
   
 
 
-<h1 id="adr-009-supabase-as-the-managed-platform-for-auth-database-and-storage">ADR-009: Supabase as the managed platform for auth, database, and storage<a class="headerlink" href="#adr-009-supabase-as-the-managed-platform-for-auth-database-and-storage" title="Permanent link">&para;</a></h1>
+<h1 id="adr-022-tiered-rls-scoping-flat-per-family-enforcement-on-the-high-sensitivity-tables">ADR-022: Tiered RLS scoping (flat per-family enforcement on the high-sensitivity tables)<a class="headerlink" href="#adr-022-tiered-rls-scoping-flat-per-family-enforcement-on-the-high-sensitivity-tables" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted (2026-07-03; auth decision ratified and implemented. Decision 2 (Supabase Postgres) was implemented for the R1 family instance on 2026-07-05 via session-mode pooling, pulled forward from Phase 9 for durability (R1 gap-closure plan Task 1.7, doc archived; homelab-infra #576); explicit pool sizing (P9-03) and the P6/P7/P9 items (native Apple sign-in, Supabase Storage, pgmq queue) remain outstanding)
-<strong>Date</strong>: 2026-07-02
-<strong>Amends</strong>: <a href="../adr-008-public-app-store-launch/">ADR-008</a> (auth broker and public-tier
-hosting; the distribution, monetization, and compliance decisions in ADR-008 stand)</p>
+<p><strong>Status</strong>: Proposed
+<strong>Date</strong>: 2026-07-24
+<strong>Amends</strong>: <a href="../adr-009-supabase-platform/">ADR-009</a> (Decision point 7: "Row Level
+Security is optional defense-in-depth later, never the primary model." The "never the
+primary model" clause stands; the implicit "blanket <code>USING(true)</code> indefinitely" posture
+does not) and <a href="../adr-021-service-account-rls-and-worker-deployment/">ADR-021</a> (Decision
+point 2 and Implementation item 2, which specify blanket <code>USING(true)</code> policies for both
+service roles; the high-sensitivity tables get a scoped <code>cyo_api</code> policy instead)</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>Adopt Supabase as the public tier's managed platform: Supabase Auth for guardian sign-in
-(native Sign in with Apple and Google), Supabase Postgres as the database (async
-SQLAlchemy and Alembic unchanged; story blobs stay inline JSONB at launch, with Supabase
-Storage adopted later via <code>blob_ref</code> when catalog size warrants), and Supabase Queues
-(pgmq) evaluated as the Redis/RQ replacement, with FastAPI and the generation worker
-remaining our own code on a single small container host. This replaces
-ADR-008's self-hosted Authentik broker and multi-service Azure deployment because a solo
-operator's scarcest resource is operational attention, and this consolidates roughly five
-self-managed or separately-purchased services into one platform plus one container host.</p>
+<p>Once the ADR-021 least-privilege cutover lands (the app connects as the non-owner <code>cyo_api</code>
+role instead of the <code>BYPASSRLS</code> <code>postgres</code> owner), attach a deliberately flat per-family
+<code>USING</code> predicate to the RLS policies on the small set of tables that hold children's PII
+and must never legitimately cross a family boundary (Tier 1). Every other table, and every
+<code>cyo_worker</code> policy, keeps the blanket <code>USING(true)</code> shape (Tier 2). The predicate reads a
+request-scoped <code>set_config('app.family_id', ..., is_local =&gt; true)</code> set from the resolved
+<code>Principal</code> inside <code>get_session()</code>'s transaction, and is fail-closed: an unset context
+returns zero rows (an outage, not a cross-family leak). The three-ring sharing graph
+(ADR-016) and admin cross-family reach stay entirely in the FastAPI layer; RLS is a
+second, dumb backstop, not a re-implementation of the authorization rules. The policies are
+verified as a live control by running the integration/IDOR suite against a <code>cyo_api</code>
+connection in CI, so they cannot silently rot into untested scaffolding.</p>
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
 <h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
-<p>ADR-008 chose Authentik (self-hosted, made highly available) as the public OIDC broker
-and Azure Container Apps hosting Postgres, Redis, object storage, and Authentik. For a
-solo developer running a commercial kids' app, that plan carries two concentrated risks
-already named in the project risk register: operating a public, always-on identity
-service, and the Sign in with Apple operational traps (a client-secret JWT that expires
-every 6 months, one-time name/email capture, revocation wiring).</p>
-<p>A pricing and capability review of consumer auth options (Firebase / Google Identity
-Platform, Supabase Auth, AWS Cognito, Clerk, Auth0, Stytch, Descope, hosted Authentik,
-2026-07-01 list prices) narrowed the field. Two facts specific to this architecture
-drove the read:</p>
-<ul>
-<li><strong>MAU equals guardians, not readers.</strong> Children never touch the identity provider
-  (ADR-008 decision 2, unchanged here), so a family of four kids is one MAU. Every
-  viable option costs between $0 and ~$25/month until far past 10,000 paying families;
-  auth list price cannot be the deciding variable.</li>
-<li><strong>The backend needs a managed home regardless.</strong> The plan must buy managed Postgres,
-  object storage, and a queue no matter which auth vendor is chosen, so the deciding
-  variable is how much of that bill and operational surface the auth platform also
-  covers.</li>
-</ul>
+<p>The RLS audit of 2026-07-24 established four facts about the live system (prod
+<code>cvrnaydpzijtszfbsraq</code> and staging):</p>
+<ol>
+<li>The application connects to Postgres as <code>postgres</code> (table owner, <code>BYPASSRLS</code>) via the
+   Supavisor session-mode pooler (<code>:5432</code>), so RLS never affects backend queries today.</li>
+<li>All 22 public tables have RLS enabled with a single <code>service_rw FOR ALL TO
+   {cyo_api, cyo_worker} USING (true) WITH CHECK (true)</code> policy each (per ADR-021's plan).</li>
+<li><code>anon</code>/<code>authenticated</code> have no grants and no policies (default-deny); there is no
+   PostgREST path anywhere, and the frontend uses supabase-js for auth only.</li>
+<li>All cross-family isolation is therefore enforced solely by the FastAPI <code>Principal</code>
+   layer (<code>authorize_family()</code> in <code>api/deps.py</code>, per-query <code>family_id</code> scoping), backed by
+   the IDOR suite. It is the only control: a single missed <code>WHERE family_id ==</code> clause is
+   an immediate cross-family exposure of another family's children's data, with nothing
+   underneath it.</li>
+</ol>
+<p>ADR-009 point 7 made the app layer the sole authority deliberately, and ADR-021 (Proposed)
+plans to keep RLS as a blanket <code>USING(true)</code> placeholder even after the role cutover. This
+ADR revisits that specific posture for the highest-sensitivity subset of tables, on the
+grounds that the app being solo-maintained with heavy AI-assisted PR throughput makes "one
+person's per-query discipline is the only thing standing between a routine defect and a
+COPPA-covered breach of kids' data" the exact single-point-of-failure that a cheap,
+fail-closed database backstop exists to remove.</p>
+<p>The decision was reached through a structured adversarial debate (two advocates arguing to
+keep vs. revise ADR-009 point 7, two rebuttal rounds, and a senior-architecture review that
+verified the pooling mode against the repo). Its material conclusions are recorded in the
+Rationale below.</p>
 <h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Technical</strong>: the Python safety pipeline (validation gate, moderation, staged
-  generation, publish state machine) and the <code>Principal</code> authorization layer stay our
-  code; any platform must host plain Postgres (SQLAlchemy 2.x async + Alembic) and
-  S3-compatible storage (the seam ADR-004 deliberately preserved). asyncpg's own
-  prepared-statement cache collides under a transaction-mode pooler (a reused or
-  renamed server-side statement once the pooler reassigns a backend mid-session);
-  Task 1.7 mitigates this with <code>CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE</code> (disables
-  both asyncpg's and the SQLAlchemy dialect's caches, unique-names every prepared
-  statement, and switches to <code>NullPool</code>), so a Supavisor transaction-pooler connection
-  (<code>:6543</code>) is viable alongside the direct/session-mode DSN Alembic still uses.</li>
-<li><strong>Business</strong>: solo operation; minimize vendor count and pager surface. Login
-  availability is the one failure a subscription product cannot tolerate.</li>
-<li><strong>Regulatory</strong>: guardian-only IdP identities, kid-context SDK bans, and the deletion
-  obligations (including Apple token revocation) from ADR-008 and Phase 7 are invariant.</li>
+<li><strong>Technical</strong>: RLS is inert until the ADR-021 cutover makes the app connect as a
+  non-owner role, so this ADR is strictly downstream of ADR-021 and cannot ship before it.
+  Supabase CLI migrations are forward-only (ADR-012); policy changes must be additive.
+  The predicate mechanism (<code>set_config</code>) must be transaction-scoped so it resets on
+  <code>COMMIT</code>/<code>ROLLBACK</code> and cannot leak across pooled requests.</li>
+<li><strong>Business</strong>: solo operator (ADR-009). This must not become a second authorization
+  system to maintain. The scoped tier is deliberately kept flat and small so there is
+  almost nothing to co-evolve with the application rules.</li>
+<li><strong>Regulatory</strong>: children's PII under COPPA/GDPR-K/AADC (ADR-018). "The database enforces
+  per-family isolation of children's data, exercised on every CI run" is a materially
+  stronger incident and disclosure posture than "we have tests," and RLS enabled but
+  disarmed (<code>USING(true)</code>) is a worse artifact to explain post-incident than a real policy.</li>
 </ul>
 <h3 id="significance">Significance<a class="headerlink" href="#significance" title="Permanent link">&para;</a></h3>
-<p>This decision sets the public tier's vendor topology. It is cheaper to change now, on
-paper, than after Phase 6 builds against an issuer.</p>
+<p>This decision is cheap to make now (it rides the ADR-021 migration that is happening
+regardless) and more expensive to retrofit after a cross-family incident. It does not
+change the primary authorization model; it adds a bounded structural backstop where the
+data is most sensitive.</p>
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<p><strong>We will build the public tier on Supabase: Auth and Postgres adopted now, the
-Storage seam reserved (adoption deferred until blobs externalize via <code>blob_ref</code>),
-Queues (pgmq) evaluated as the Redis/RQ replacement, with FastAPI and the generation
-worker deployed as our own containers on a single small host.</strong></p>
-<p>The decision decomposes as follows:</p>
+<p><strong>On the tables that hold children's PII and never legitimately cross a family boundary,
+the RLS policy for the <code>cyo_api</code> role will carry a flat, fail-closed per-family predicate
+instead of <code>USING(true)</code>. Everything else stays blanket. The FastAPI <code>Principal</code> layer
+remains the primary authorization authority; RLS is a second, deliberately dumb backstop,
+never a re-implementation of the sharing or admin rules.</strong></p>
 <ol>
-<li><strong>Auth: Supabase Auth, guardians only.</strong> Apple and Google configured as providers.
-   On iOS the native flow uses <code>signInWithIdToken</code> with the identity token from the
-   native Apple sign-in sheet, which keeps the Apple Services-ID client secret out of
-   the native path entirely; the web OAuth path still uses a client secret rotated at
-   most every 6 months. The backend validates Supabase-issued JWTs only (enable
-   asymmetric JWT signing keys; verify issuer, audience, expiry, signature via cached
-   JWKS). <code>User.authn_subject</code> keys on the Supabase user id (<code>sub</code> claim), never email.
-   Children remain backend-minted scoped sessions exactly as in ADR-008; Supabase's
-   anonymous users are not used.</li>
-<li><strong>Database: Supabase Postgres.</strong> Async SQLAlchemy and Alembic migrations unchanged;
-   connect via a direct connection or session-mode pooling (asyncpg constraint above).
-   <strong>Superseded in part (2026-07-10):</strong> the Alembic clause of this point is replaced by
-   <a href="../adr-012-supabase-cli-migrations/">ADR-012</a>; schema migrations now ship as plain
-   SQL under <code>supabase/migrations/</code>, applied by the Supabase CLI, with Alembic retired.
-   The Postgres-hosting decision in this point is otherwise unchanged.
-   Automated backups/PITR on the Pro plan; the restore drill remains ours to run.</li>
-<li><strong>Storage: deferred adoption of Supabase Storage.</strong> Story blobs are currently
-   stored inline in Postgres (<code>storybook_version.blob</code> JSONB; the <code>blob_ref</code> column
-   is reserved but no object-storage code exists yet). They stay inline at launch,
-   which is well within Supabase database limits at the 500 KB/story cap. When
-   catalog size warrants externalizing blobs, implement <code>blob_ref</code> against Supabase
-   Storage's S3-compatible API (the portability posture ADR-004 intended, applied at
-   that point rather than ported now).</li>
-<li><strong>Queue: evaluate Supabase Queues (pgmq) at Phase 9 start.</strong> If the worker's RQ
-   usage ports cleanly, Redis disappears from the topology; if not, the fallback is
-   managed Redis (e.g., Upstash) with RQ unchanged. The evaluation is time-boxed; the
-   fallback is pre-approved so it cannot stall the phase.</li>
-<li><strong>Scheduled jobs: pg_cron</strong> for the ADR-007 raw-output retention purge and similar
-   maintenance.</li>
-<li><strong>Compute: FastAPI + worker on one container host</strong> (Fly.io, Railway, or Azure
-   Container Apps; decide at Phase 9 start, P9-03). The safety pipeline never moves
-   into Edge Functions.</li>
-<li><strong>Authorization stays in FastAPI.</strong> The service connects with the service-role key;
-   the <code>Principal</code> layer and IDOR suite remain the sole authority. Row Level Security
-   is optional defense-in-depth later, never the primary model.
-   <strong>Amended in part (2026-07-24):</strong> <a href="../adr-022-tiered-rls-scoping/">ADR-022</a> revises
-   this point. The "never the primary model" clause stands (the <code>Principal</code> layer remains
-   the primary authority, and the three-ring sharing graph and admin cross-family logic
-   stay in FastAPI), but the implicit "blanket <code>USING(true)</code> indefinitely" posture does
-   not: once the ADR-021 role cutover lands, the children's-PII tables that never cross a
-   family boundary get a flat, fail-closed per-family RLS predicate for the <code>cyo_api</code> role
-   as a real defense-in-depth backstop.</li>
-<li><strong>Account deletion</strong> uses the Supabase Auth admin API to remove the guardian
-   identity; calling Apple's token-revocation endpoint remains our code (P7-04).</li>
-<li><strong>Environments and plan tiers</strong>: local dev keeps the existing auth stub
-   (<code>environment == "local"</code>); integration/staging runs on a <strong>free-plan</strong> Supabase
-   project (limits as of 2026-07: 50,000 MAU, 500 MB database, 1 GB file storage,
-   5 GB egress; ample for Phases 6-8 and for the starter library at the 500 KB/story
-   blob cap). The <strong>production project upgrades to Pro (~$25/month) at TestFlight
-   start (P9-09)</strong>: free projects pause when inactive and lack daily backups, both
-   unacceptable in production. The homelab remains the dev/family-staging environment;
-   homelab Authentik keeps its existing internal roles but is no longer on the public
-   product's path.</li>
+<li><strong>Tier 1 (scoped, <code>cyo_api</code> only).</strong> Candidate tables: <code>child_profile</code>, <code>reading_state</code>,
+   <code>completion</code>, <code>story_request</code>, <code>rating</code>, <code>device_grant</code> (the tables an IDOR bug would
+   leak and that carry, or can cheaply carry, a <code>family_id</code>). Policy shape:</li>
 </ol>
-<h3 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h3>
-<p>At guardian-only MAU counts every candidate's auth line item is noise, so leverage
-decides. Firebase's adjacent products (Firestore, Cloud Functions, Firebase Analytics)
-fit neither a relational SQLAlchemy backend, a long-running Python worker, nor a
-no-third-party-SDKs kids app; picking Firebase means still buying Postgres, storage, and
-a queue elsewhere. Supabase's adjacent products are exactly that missing list. Cognito
-prices similarly but has the highest configuration friction on the list; Clerk, Stytch,
-Descope, and Auth0 charge CIAM prices for B2B features this consumer app never uses;
-hosted Authentik starts at $20k/year and targets workforce identity; and self-hosting
-Authentik publicly is the operational burden this ADR exists to remove. Consolidating to
-Supabase plus one container host takes the vendor count from roughly five to two and
-deletes the two riskiest non-product workstreams (public IdP operation, Apple
-client-secret plumbing in the native path).</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">family_scoped</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="o">&lt;</span><span class="k">table</span><span class="o">&gt;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">cyo_api</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">family_id</span><span class="p">::</span><span class="nb">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_setting</span><span class="p">(</span><span class="s1">&#39;app.family_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="k">OR</span><span class="w"> </span><span class="n">current_setting</span><span class="p">(</span><span class="s1">&#39;app.is_admin&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;true&#39;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="n">family_id</span><span class="p">::</span><span class="nb">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_setting</span><span class="p">(</span><span class="s1">&#39;app.family_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="k">OR</span><span class="w"> </span><span class="n">current_setting</span><span class="p">(</span><span class="s1">&#39;app.is_admin&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;true&#39;</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="p">);</span>
+</span></code></pre></div>
+<p>The <code>current_setting(..., true)</code> form returns <code>NULL</code> when the GUC is unset, so a request
+   that never set context matches no row: <strong>fail-closed</strong> (a zero-row outage, not a leak).
+   The <code>app.is_admin</code> clause is the explicit escape hatch for the legitimately cross-family
+   admin/moderation path (see point 4); without it, admin review would break on day one.</p>
+<ol>
+<li>
+<p><strong>Tier 2 (blanket <code>USING(true)</code>).</strong> Every other table keeps the ADR-021 blanket policy.
+   This explicitly includes <code>family_connection</code> and any recommendation-adjacent tables,
+   which cross families <em>by design</em> (ADR-016) and must not carry a single-family predicate,
+   and all low-sensitivity catalog/reference tables (<code>series</code>, <code>concept</code>,
+   <code>provider_model_allowlist</code>, etc.).</p>
+</li>
+<li>
+<p><strong>The <code>cyo_worker</code> role keeps blanket <code>USING(true)</code> on all tables.</strong> The worker operates
+   across the pipeline without a single-family request context and never needs to set one.
+   This role split is what keeps the mechanism cheap: only the FastAPI request path (one
+   code path, <code>get_session()</code>) carries the context-setting obligation; the worker path
+   (<code>generation/worker.py</code>, <code>covers/worker.py</code>) is untouched.</p>
+</li>
+<li>
+<p><strong>Mechanism.</strong> In <code>get_session()</code>'s request-scoped transaction, issue
+   <code>SELECT set_config('app.family_id', &lt;principal.family_id&gt;, true)</code> and
+   <code>SELECT set_config('app.is_admin', &lt;'true'|'false'&gt;, true)</code> from the resolved
+   <code>Principal</code> before handing the session to the route. <code>is_local =&gt; true</code> scopes both GUCs
+   to the current transaction. No session-level <code>SET</code> is used anywhere.</p>
+</li>
+<li>
+<p><strong>Scope boundary (what stays in the app layer).</strong> The three-ring sharing graph
+   (directional, revocable, dual-consent <code>family_connection</code> edges, ADR-016) and the full
+   admin authorization logic remain in FastAPI. RLS never encodes graph traversal or
+   revocation state. Offline reading (IndexedDB) is out of RLS's reach by construction and
+   is unchanged; RLS protects the server query that populates the device, nothing after.</p>
+</li>
+<li>
+<p><strong>Verification is part of the decision, not an afterthought.</strong> The integration/IDOR
+   suite runs against a connection authenticated as <code>cyo_api</code> (not the bypassing owner), so
+   every test exercises the live policies and a too-tight policy fails closed and loudly in
+   CI. A dedicated negative test asserts that a session with no <code>app.family_id</code> set returns
+   zero rows from every Tier 1 table.</p>
+</li>
+</ol>
+<h2 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h2>
+<p>The debate turned on six points; the review's weighting:</p>
+<ul>
+<li><strong>Threat model (decisive).</strong> The relevant adversary is not an external SQL client (there
+  is none) but the maintainer's own future code: a new endpoint with a forgotten filter, an
+  ORM refactor that drops a <code>.filter()</code>, an AI-assisted PR. The IDOR suite tests known
+  endpoints; a new endpoint ships with no test for its own missing filter. RLS fails closed
+  when that discipline lapses once.</li>
+<li><strong>Verification defeats the "untested policy = false confidence" objection.</strong> Pointing the
+  suite at the <code>cyo_api</code> role converts the policies from assumed-correct scaffolding into a
+  control proven on every commit, for the cost of a test-fixture role swap.</li>
+<li><strong>The pooling footgun is defused by construction.</strong> The deployment uses session-mode
+  pooling (<code>:5432</code>), and transaction-scoped <code>set_config(..., true)</code> resets at commit under
+  both pooling modes, so the stale-session-variable leak that would make scoped RLS
+  <em>introduce</em> the risk it removes is avoidable, not inherent. This must still be proven by a
+  spike before committing (see Validation).</li>
+<li><strong>Drift is bounded because Tier 1 is deliberately dumb.</strong> A flat <code>family_id =</code> predicate
+  encodes none of the evolving three-ring/admin rules, so there is almost nothing to
+  co-evolve, and any drift fails closed (a broken cross-family read is an empty result in
+  CI, not a leak). The drift hazard the "keep it blanket" side raised is real for <em>rich</em>
+  RLS and does not apply to this tier.</li>
+<li><strong>Marginal cost rides a cutover already scheduled.</strong> ADR-021 already creates the roles,
+  grants, and per-table policies; this changes the predicate on ~5-6 of them and adds two
+  <code>set_config</code> calls on one code path.</li>
+<li><strong>Compliance asymmetry is a tiebreaker, not a driver.</strong> COPPA does not mandate RLS, but a
+  DB-enforced isolation story is materially stronger, and a disarmed RLS layer is worse to
+  explain than a real one.</li>
+</ul>
 <h2 id="options-considered">Options Considered<a class="headerlink" href="#options-considered" title="Permanent link">&para;</a></h2>
-<h3 id="option-1-supabase-platform-auth-postgres-storage-queue-evaluation">Option 1: Supabase platform (Auth + Postgres + Storage + queue evaluation) ✓<a class="headerlink" href="#option-1-supabase-platform-auth-postgres-storage-queue-evaluation" title="Permanent link">&para;</a></h3>
+<h3 id="option-1-tiered-scoping-flat-per-family-on-high-sensitivity-tables">Option 1: Tiered scoping (flat per-family on high-sensitivity tables) ✓<a class="headerlink" href="#option-1-tiered-scoping-flat-per-family-on-high-sensitivity-tables" title="Permanent link">&para;</a></h3>
 <p><strong>Pros</strong>:</p>
 <ul>
-<li>✅ One platform covers auth, database, storage, queue candidate, cron, and backups;
-  $25/month Pro tier covers 100k guardian MAU.</li>
-<li>✅ Native <code>signInWithIdToken</code> keeps the Apple client secret out of the iOS app path.</li>
-<li>✅ Plain Postgres + S3 API + open-source auth server underneath: ejection is a
-  migration, not a rewrite.</li>
+<li>✅ Converts "one app-layer bug = cross-family breach of kids' PII" into "one bug + one
+  policy hole = breach," where the data is most sensitive.</li>
+<li>✅ Fail-closed: a context-propagation bug is an outage, not a leak.</li>
+<li>✅ Near-zero marginal cost on top of the ADR-021 cutover; verified live in CI.</li>
 </ul>
 <p><strong>Cons</strong>:</p>
 <ul>
-<li>❌ Single platform dependency: a Supabase incident is our login and data-plane outage.</li>
-<li>❌ pgmq is the least-proven element (mitigated by the pre-approved Redis fallback).</li>
+<li>❌ Adds a per-request context-setting obligation on the API path (one code path).</li>
+<li>❌ Requires proving the <code>set_config</code>/pooler semantics before commit.</li>
 </ul>
-<h3 id="option-2-firebase-auth-separately-managed-postgresstoragequeue">Option 2: Firebase Auth + separately managed Postgres/storage/queue<a class="headerlink" href="#option-2-firebase-auth-separately-managed-postgresstoragequeue" title="Permanent link">&para;</a></h3>
+<h3 id="option-2-keep-blanket-usingtrue-on-all-tables-adr-021-as-written">Option 2: Keep blanket <code>USING(true)</code> on all tables (ADR-021 as written) ✗<a class="headerlink" href="#option-2-keep-blanket-usingtrue-on-all-tables-adr-021-as-written" title="Permanent link">&para;</a></h3>
 <p><strong>Pros</strong>:</p>
 <ul>
-<li>✅ Most battle-tested consumer mobile auth SDKs; generous free tier.</li>
+<li>✅ Zero new mechanism; one authorization layer to reason about.</li>
 </ul>
 <p><strong>Cons</strong>:</p>
 <ul>
-<li>❌ Zero leverage beyond auth for this stack; still requires buying and operating
-  Postgres, storage, and a queue from other vendors (vendor count stays ~5).</li>
-<li>❌ Firebase's wider ecosystem (Firestore, Analytics) is unusable here, inviting
-  accidental kid-context SDK drift.</li>
+<li>❌ Leaves the FastAPI layer as the sole control over children's PII with no backstop.</li>
+<li>❌ Ships RLS enabled-but-disarmed, the weakest post-incident posture.</li>
 </ul>
-<h3 id="option-3-keep-adr-008-baseline-self-hosted-authentik-azure-services">Option 3: Keep ADR-008 baseline (self-hosted Authentik + Azure services)<a class="headerlink" href="#option-3-keep-adr-008-baseline-self-hosted-authentik-azure-services" title="Permanent link">&para;</a></h3>
+<h3 id="option-3-full-scoped-rls-on-all-tables-including-the-three-ring-graph-and-admin-logic-in-sql">Option 3: Full scoped RLS on all tables, including the three-ring graph and admin logic in SQL ✗<a class="headerlink" href="#option-3-full-scoped-rls-on-all-tables-including-the-three-ring-graph-and-admin-logic-in-sql" title="Permanent link">&para;</a></h3>
 <p><strong>Pros</strong>:</p>
 <ul>
-<li>✅ Maximum control; no new platform dependency; reuses owner's Authentik experience.</li>
+<li>✅ Maximal database-enforced isolation.</li>
 </ul>
 <p><strong>Cons</strong>:</p>
 <ul>
-<li>❌ Solo operator runs a public IdP with HA, upgrades, and on-call; the risk register's
-  "login SPOF" row stays open.</li>
-<li>❌ Full Apple federation plumbing (client-secret JWT rotation, source configuration)
-  is ours in every path, not just web.</li>
-</ul>
-<h3 id="option-4-aws-cognito-aws-backend">Option 4: AWS Cognito + AWS backend<a class="headerlink" href="#option-4-aws-cognito-aws-backend" title="Permanent link">&para;</a></h3>
-<p><strong>Pros</strong>:</p>
-<ul>
-<li>✅ Cheap at scale; deep AWS integration if the backend moved there.</li>
-</ul>
-<p><strong>Cons</strong>:</p>
-<ul>
-<li>❌ Highest setup and debugging friction of the shortlist; nothing else in the plan
-  argues for AWS.</li>
+<li>❌ Re-implements directional/revocable/consent-gated sharing and admin cross-family reach
+  in SQL predicates, a second copy of complex, evolving logic that will drift silently at
+  exactly the edge cases that matter.</li>
+<li>❌ Unaffordable maintenance surface for a solo operator; the review explicitly rejected it.</li>
 </ul>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ul>
-<li>✅ The "Authentik becomes a public login SPOF" risk is retired; login availability is
-  a platform SLA, not a homelab pager.</li>
-<li>✅ Phase 6 (P6-05, P6-06) and Phase 9 (P9-03, P9-06) shrink; roughly a week of
-  infrastructure work each, plus the HA-Authentik workstream, disappear.</li>
-<li>✅ Backups/PITR, staging branches, and cron come with the platform.</li>
+<li>✅ Children's-PII tables gain a fail-closed, DB-enforced per-family boundary behind the
+  app layer, verified on every CI run.</li>
+<li>✅ The primary authorization model (ADR-009 point 7's core) is unchanged; no logic is
+  duplicated for the hard cases.</li>
+<li>✅ Stronger, defensible COPPA/incident narrative.</li>
 </ul>
 <h3 id="trade-offs">Trade-offs<a class="headerlink" href="#trade-offs" title="Permanent link">&para;</a></h3>
 <ul>
-<li>⚠️ Platform concentration risk. Mitigation: components are open (Postgres, S3 API,
-  GoTrue) and the FastAPI issuer validation is config, so a forced migration is
-  bounded; export drills piggyback on the P9-06 restore drill.</li>
-<li>⚠️ Child-linked rows live in Supabase-managed Postgres (a US processor). Posture is
-  equivalent to ADR-008's Azure decision: DPA and SOC 2 available; guardian-only
-  identities and the privacy-model classification are unchanged. Verify the DPA and
-  data-region selection during P7-08.</li>
-<li>⚠️ asyncpg + pooling: connections must use direct or session mode; document in
-  <code>TECHNICAL_BASELINE.md</code> when Phase 6 lands.</li>
+<li>⚠️ The API request path must reliably set <code>app.family_id</code>/<code>app.is_admin</code> per request.
+  Mitigation: single choke point (<code>get_session()</code>), fail-closed on omission, negative test.</li>
+<li>⚠️ Admin cross-family reads depend on the <code>app.is_admin</code> escape hatch being set correctly
+  from the verified <code>Principal</code>. Mitigation: set it in the same place as <code>app.family_id</code>;
+  test both the admin-allowed and non-admin-denied paths.</li>
 </ul>
 <h3 id="technical-debt">Technical Debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
 <ul>
-<li>The web-path Apple client secret still expires every 6 months; the rotation runbook
-  survives in reduced form (one dashboard credential).</li>
-<li>If the pgmq evaluation fails, Redis returns as a third vendor (accepted fallback).</li>
+<li>Tables scoped in the ORM by <code>child_profile_id</code> rather than a direct <code>family_id</code> column
+  need either a denormalized <code>family_id</code> (preferred, keeps the predicate flat) or a
+  join-based predicate (reintroduces per-row cost and is discouraged). Confirm each Tier 1
+  candidate's column during implementation; demote any table that cannot carry a flat
+  <code>family_id</code> to Tier 2 pending a denormalization migration rather than adding a subquery
+  predicate.</li>
+<li>Per-role grant tightening remains deferred to ADR-021's existing debt item.</li>
 </ul>
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
 <h3 id="components-affected">Components Affected<a class="headerlink" href="#components-affected" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong><code>api/deps.py</code></strong> (P6-01): validate Supabase-issued JWTs (asymmetric signing keys,
-   cached JWKS); the dev stub remains for <code>environment == "local"</code>. ✅ <strong>Implemented</strong>
-   (pulled forward into C4a-1, 2026-07-02): <code>_verify_oidc_jwt()</code> uses
-   <code>jwt.PyJWKClient</code> against <code>oidc_jwks_url</code>, allowlists <code>RS256</code>/<code>ES256</code> only
-   (defeats <code>alg=none</code>/algorithm-confusion), and checks issuer, audience, and
-   expiry. <strong>Deviation from the P6-01 spec</strong>: the spec calls for deleting the
-   import-time environment guard outright; instead the guard was kept but made
-   conditional (<code>environment != "local" and not (oidc_issuer and oidc_jwks_url)</code>
-   raises <code>ConfigurationError</code> at import time). Rationale: a process that starts
-   in a non-local environment with no way to verify any bearer token should fail
-   at startup, not on the first request.</li>
-<li><strong><code>core/config.py</code></strong> (P6-02): <code>oidc_issuer</code>, <code>oidc_audience</code>, <code>oidc_jwks_url</code> point
-   at the Supabase project; provider-agnostic names are deliberate (ejection path).
-   ✅ <strong>Implemented</strong> (2026-07-02), including a <code>_require_oidc_config_outside_local</code>
-   model_validator mirroring the existing <code>_reject_dev_database_url_outside_local</code>
-   pattern, so <code>Settings()</code> itself refuses to construct outside <code>local</code> without
-   both values set (defense in depth alongside the deps.py guard above, since
-   deps.py's own tests mock <code>settings</code> directly and bypass Pydantic validation).</li>
-<li><strong>Onboarding</strong> (P6-03): JIT provisioning keys on the Supabase <code>sub</code>. Not started;
-   <code>GET /api/v1/me</code> (added 2026-07-02) returns the verified subject and resolved
-   <code>Principal</code>, but does not yet provision a <code>User</code>/<code>family_id</code> row on first sign-in.</li>
-<li><strong>Frontend</strong> (P6-06): supabase-js manages sessions, refresh, and Capacitor deep-link
-   callbacks; native Apple sign-in via <code>signInWithIdToken</code>. <strong>Partially implemented</strong>
-   (2026-07-02): <code>AuthContext</code> wraps <code>supabase.auth.getSession()</code> /
-   <code>onAuthStateChange()</code>, calls <code>GET /api/v1/me</code> to resolve a <code>Principal</code>, and syncs
-   the access token into the existing <code>useApi()</code> localStorage-based interceptor.
-   Native Apple <code>signInWithIdToken</code>, Capacitor deep-link callbacks, 401-triggered
-   token refresh in <code>useApi.ts</code>/<code>offline/sync.ts</code>, and the CSP <code>connect-src</code> update
-   are <strong>not yet built</strong> and remain scoped to a future P6-06 pass.</li>
-<li><strong>Deletion</strong> (P7-04): Supabase Auth admin API + our Apple revocation call.</li>
-<li><strong>Infra</strong> (P9-03): Supabase project (prod) + Supabase project (staging) + one
-   container host for API and worker; queue decision executed here. The RQ surface
-   is already thin by design: <code>generation/worker.py</code> keeps the async core
-   Redis/RQ-free and <code>generation/queue.py</code> (~75 lines) is the only RQ-coupled
-   module, so the pgmq port replaces one module plus a polling loop.</li>
-<li><strong><code>core/database.py</code></strong> (P9-03): set explicit <code>pool_size</code>/<code>max_overflow</code> for the
-   direct/session-mode connection branch (the module's existing <code>#CRITICAL</code> marker
-   already requires this before production; Supabase session-mode connections are a
-   bounded resource, so defaults are not acceptable there). Does not apply to the
-   Task 1.7 transaction-pooler branch, which uses <code>NullPool</code> and has no pool size of
-   its own. ⚠️ <strong>Now live and unsized</strong>: the R1 cutover (2026-07-05) runs the
-   session-mode branch on SQLAlchemy pool defaults (<code>pool_size=5</code>, <code>max_overflow=10</code>)
-   plus <code>pool_pre_ping</code>, so this item is no longer hypothetical; set explicit sizes
-   before the TestFlight/production upgrade.</li>
-<li><strong>Retention</strong> (ADR-007): purge job moves to pg_cron.</li>
+<li><strong><code>supabase/migrations/&lt;ts&gt;_scoped_rls_tier1.sql</code></strong>: replace the Tier 1 tables'
+   <code>cyo_api</code> policy with the <code>family_scoped</code> shape above (additive: <code>DROP POLICY IF EXISTS</code>
+   then <code>CREATE POLICY</code>, per the existing <code>add_service_role_policies.sql</code> idempotent
+   pattern). <code>cyo_worker</code> policies unchanged.</li>
+<li><strong><code>core/database.py</code> / <code>api/deps.py</code></strong>: set <code>app.family_id</code> and <code>app.is_admin</code> via
+   <code>set_config(..., true)</code> in the request-scoped session from the resolved <code>Principal</code>.
+   Preserve the existing transaction-pooler / prepared-cache branch untouched.</li>
+<li><strong><code>tests/integration/conftest.py</code></strong>: add a <code>cyo_api</code>-role connection fixture (see
+   deliverable C) so the IDOR/integration suite exercises the policies.</li>
+<li><strong><code>tests/integration/test_rls_service_roles.py</code></strong> (or a new module): the unset-context
+   zero-rows negative test, plus admin-escape-hatch allow/deny tests.</li>
+<li><strong><code>docs/operations/runbook.md</code></strong>: the future-table checklist gains a "decide Tier 1 vs
+   Tier 2" step for every new table.</li>
 </ol>
 <h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
 <ul>
-<li>The Phase 6 negative-token suite (expired, wrong issuer, wrong audience, algorithm
-  confusion, tampered signature) runs against Supabase-shaped JWTs. ✅ <strong>Implemented</strong>
-  (<code>tests/unit/test_oidc_verification.py</code>, 2026-07-02) using real RSA keypairs and a
-  fake JWKS client; covers <code>alg=none</code> forgery, wrong signing key, missing subject
-  claim, and JWKS fetch failure in addition to the criteria above.</li>
-<li>Queue evaluation: run the existing generation integration tests against pgmq before
-  committing; fall back to Redis on any failure or time-box expiry.</li>
-<li>Restore drill (P9-06) includes a full export from Supabase (schema + data + storage)
-  to prove the ejection path.</li>
+<li>Unit: <code>set_config</code> values are derived correctly from <code>Principal</code> (including the
+  no-family / admin cases).</li>
+<li>Integration (the load-bearing guard): suite runs as <code>cyo_api</code>; cross-family fixtures must
+  return zero rows; unset context returns zero rows; admin context reads across families.</li>
+<li>Spike (prerequisite, deliverable B): prove <code>set_config(..., is_local =&gt; true)</code> through
+  asyncpg + the session-mode pooler + <code>pool_pre_ping</code> resets across sequential requests on a
+  reused connection, including the rollback path, with no cross-request bleed.</li>
 </ul>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
 <h3 id="success-criteria">Success Criteria<a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Guardian signs in with native Apple and with Google on iOS; backend accepts only
-      Supabase-issued JWTs; stranger-family IDOR suite green.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Queue decision (pgmq or Redis fallback) made and recorded by end of the P9-03
-      evaluation time-box.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Restore/export drill from Supabase succeeds.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> DPA and data-region verified in the P7-08 compliance checklist.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> ADR-021 cutover complete (app connects as <code>cyo_api</code>), the hard prerequisite.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Spike proves per-request <code>set_config</code> isolation under the deployed pooler (no bleed).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Tier 1 tables enforce per-family isolation for <code>cyo_api</code>; cross-family reads return
+      zero rows; unset context returns zero rows; admin context reads across families.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The integration/IDOR suite runs as <code>cyo_api</code> in CI and is green.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>family_connection</code>/recommendation tables confirmed still blanket (Tier 2).</li>
 </ul>
 <h3 id="review-schedule">Review Schedule<a class="headerlink" href="#review-schedule" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Initial: Phase 6 exit (M6).</li>
-<li>Pre-submission: P7-08 checklist (DPA, privacy labels reflect Supabase as processor).</li>
-<li>Ongoing: revisit if Supabase pricing/terms change materially or MAU approaches plan
-  limits.</li>
+<li>Initial: alongside the ADR-021 cutover review (M4.1/M5 hardening).</li>
+<li>Ongoing: revisit if a Tier 1 table's cross-family semantics change, or if a second,
+  less-trusted DB consumer (analytics replica, support tool, Data API) is ever introduced.</li>
 </ul>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../adr-008-public-app-store-launch/">ADR-008</a>: the launch decision this amends
-  (distribution, monetization, and compliance portions unchanged).</li>
-<li><a href="../adr-004-homelab-first-deployment/">ADR-004</a>: homelab remains dev/family staging;
-  the S3 portability it preserved is what makes the storage swap cheap.</li>
-<li><a href="../adr-007-raw-output-retention/">ADR-007</a>: retention purge moves to pg_cron.</li>
-<li><a href="../../PROJECT-PLAN/">PROJECT-PLAN.md</a>: Phases 6, 7, and 9 items updated to this
-  topology (plan v2.1).</li>
+<li><a href="../adr-009-supabase-platform/">ADR-009</a>: the authorization-model decision this amends
+  (point 7; the "never the primary model" clause stands).</li>
+<li><a href="../adr-021-service-account-rls-and-worker-deployment/">ADR-021</a>: the least-privilege
+  role cutover this decision rides on and is downstream of; its blanket-policy clause is
+  narrowed here for the Tier 1 tables.</li>
+<li><a href="../adr-016-recommendation-sharing-social-boundary/">ADR-016</a>: the three-ring sharing
+  boundary that stays in the app layer and keeps <code>family_connection</code> at Tier 2.</li>
+<li><a href="../adr-014-device-authorized-kid-access/">ADR-014</a>: device grants and child sessions,
+  Tier 1 candidates scoped by <code>family_id</code>.</li>
+<li><a href="../adr-018-childrens-privacy-compliance/">ADR-018</a>: the children's-privacy posture that
+  raises the value of a DB-enforced backstop.</li>
+<li><a href="../adr-012-supabase-cli-migrations/">ADR-012</a>: forward-only migration mechanics the new
+  policy migration follows.</li>
 </ul>
 
 
@@ -3757,7 +3373,7 @@ client-secret plumbing in the native path).</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 04:22:00 UTC">July 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 24, 2026 23:39:21 UTC">July 24, 2026</span>
   </span>
 
     

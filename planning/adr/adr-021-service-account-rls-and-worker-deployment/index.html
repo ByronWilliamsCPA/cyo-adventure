@@ -3101,7 +3101,7 @@ flagged in code comments but never resolved:</p>
    cyo_adventure.generation.worker_main</code> is not defined in <code>docker-compose.yml</code> or
    <code>docker-compose.prod.yml</code>; the live deployment runs it as <code>cyo-worker</code> in the separate
    <code>ByronWilliamsCPA/homelab-infra</code> repository. The worker's own stranded-job reclaim sweep
-   (<code>_DEFAULT_STALE_AFTER</code>, 30 minutes) only runs <em>when a worker process starts</em> — so an
+   (<code>_DEFAULT_STALE_AFTER</code>, 30 minutes) only runs <em>when a worker process starts</em>, so an
    environment where the worker container silently isn't running has no self-healing and
    no alarm; <code>GenerationJob</code> rows sit <code>queued</code> forever with nothing surfacing that fact.</li>
 </ol>
@@ -3149,7 +3149,13 @@ and a staleness check into this repository.</strong></p>
    in the RLS-enable migration, so enforcement is a named grant instead of incidental table
    ownership. The existing deny-by-default posture for <code>anon</code>/<code>authenticated</code> (no
    PostgREST usage anywhere in the codebase, verified in that migration's own comment) is
-   unchanged.</li>
+   unchanged. <strong>Refined by <a href="../adr-022-tiered-rls-scoping/">ADR-022</a> (2026-07-24):</strong> the
+   initial policies are blanket <code>USING(true)</code> as described here, but the children's-PII
+   tables that never legitimately cross a family boundary (Tier 1) take a flat, fail-closed
+   per-family predicate for <code>cyo_api</code> instead of <code>USING(true)</code>. <code>cyo_worker</code> keeps blanket
+   <code>USING(true)</code> on all tables, and <code>family_connection</code>/recommendation tables stay blanket
+   because they cross families by design (ADR-016). This narrowing is downstream of the
+   role cutover below (RLS is inert until the app connects as the non-owner role).</li>
 <li><strong>Config/code split</strong>: <code>core/config.py</code> gains <code>worker_database_url</code> (same
    <code>AliasChoices</code>/env-prefix pattern as <code>database_url</code>), defaulting to <code>database_url</code> when
    unset so any environment that hasn't split credentials yet keeps working unchanged.
@@ -3256,7 +3262,9 @@ the roadmap already puts it.</p>
 <li><strong><code>supabase/migrations/&lt;ts&gt;_add_service_role_policies.sql</code></strong>: <code>CREATE POLICY</code> per table
    for <code>cyo_api</code>/<code>cyo_worker</code> (e.g. <code>FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK
    (true)</code>, matching the app-owns-authorization posture ADR-009 decision point 7 already
-   established).</li>
+   established). The Tier 1 <code>cyo_api</code> policies are subsequently scoped per
+   <a href="../adr-022-tiered-rls-scoping/">ADR-022</a> in a separate additive migration
+   (<code>&lt;ts&gt;_scoped_rls_tier1.sql</code>); this migration ships the blanket baseline.</li>
 <li><strong><code>core/config.py</code></strong>: add <code>worker_database_url</code> (defaults to <code>database_url</code>),
    <code>database_pool_size</code>, <code>database_max_overflow</code>.</li>
 <li><strong><code>core/database.py</code></strong>: add <code>get_worker_engine()</code> / <code>get_worker_session()</code>; pass the new
@@ -3273,7 +3281,7 @@ the roadmap already puts it.</p>
    point at the new in-repo service and staleness check.</li>
 <li><strong>Passwords</strong>: set once per environment (staging, production) via the Supabase dashboard
    SQL editor or CLI <code>--var</code> substitution, stored in the existing GitHub Actions
-   secrets / <code>homelab-infra</code> secret store — never in a migration file or this repo's <code>.env*</code>
+   secrets / <code>homelab-infra</code> secret store, never in a migration file or this repo's <code>.env*</code>
    examples beyond a placeholder.</li>
 </ol>
 <h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
@@ -3281,7 +3289,7 @@ the roadmap already puts it.</p>
 <li>Unit: extend <code>tests/unit/test_database.py</code> to cover the second engine/session factory and
   pool-setting plumbing.</li>
 <li>Integration: a new test proving <code>cyo_api</code>/<code>cyo_worker</code> can perform the exact CRUD the
-  pipeline needs under RLS, and that <code>anon</code>/<code>authenticated</code> remain denied — the regression
+  pipeline needs under RLS, and that <code>anon</code>/<code>authenticated</code> remain denied, the regression
   guard against the "policies missing" landmine this ADR closes.</li>
 <li>CI: <code>supabase-ci.yml</code> already applies the full migration chain to a fresh local stack on
   every PR touching <code>supabase/</code>, catching ordering/syntax errors in the new migrations.</li>
@@ -3303,7 +3311,7 @@ the roadmap already puts it.</p>
 </ul>
 <h3 id="review-schedule">Review Schedule<a class="headerlink" href="#review-schedule" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Initial: M4.1 (R1-alpha sign-off) — this affects whether the core loop is trustworthy in
+<li>Initial: M4.1 (R1-alpha sign-off): this affects whether the core loop is trustworthy in
   the environment M4.1 is signing off on.</li>
 <li>Ongoing: revisit at Phase 9 start, when P9-03 makes the final hosted-infra call; the
   role/RLS model here should persist, just reparented onto whatever container host and
@@ -3346,7 +3354,7 @@ the roadmap already puts it.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 20, 2026 14:58:07 UTC">July 20, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 24, 2026 23:39:21 UTC">July 24, 2026</span>
   </span>
 
     
