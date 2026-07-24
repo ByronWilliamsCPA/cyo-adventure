@@ -52,6 +52,38 @@ relate to the Supabase project constraints.
   dialog), and admin console/requests/moderation-thresholds/moderation-
   dashboard (`visual.spec.ts-snapshots/`). Same remaining-gap caveat as
   accessibility above: one state per surface, not every variant.
+- **Cross-device/cross-browser responsiveness (2026-07-24)**:
+  `frontend/e2e/responsive.spec.ts` and `frontend/e2e/cross-device.spec.ts`
+  (shared checks factored into `frontend/e2e/support/responsiveChecks.ts`) —
+  structural (not pixel-diff) checks across landing, kid picker, library,
+  reader, guardian console, admin console, and the admin user-management
+  table: zero page-level horizontal overflow, plus a regression guard that a
+  single-item library shelf fills its row instead of leaving a dead empty
+  grid track. `responsive.spec.ts` sweeps three viewport widths (desktop/
+  tablet/mobile) on the `chromium` project; `cross-device.spec.ts` runs the
+  same checks once per real device/browser project (`cross-device-mobile`:
+  Pixel 7, `cross-device-tablet`: iPad (gen 7)/webkit, `cross-browser-
+  mobile-safari`: iPhone 14/webkit, `cross-browser-firefox`: Desktop
+  Firefox — `npm run test:e2e:cross-device`, wired into its own
+  `cross-device-e2e.yml` workflow rather than `ci.yml`'s `frontend` job:
+  `playwright install --with-deps firefox webkit` apt-installs a much larger
+  dependency set than chromium alone, which pushed `frontend`'s 15-minute
+  timeout the first time this ran inline. `cross-device-e2e.yml` is
+  informational (not a merge gate), same posture as `e2e-real-pr-smoke.yml`,
+  until its per-PR reliability is established. Found and fixed three real
+  bugs neither the existing Desktop-Chrome-only suite nor visual.spec.ts's
+  single-viewport baselines caught: `library.css`'s shelf grid used
+  `auto-fill` (reserves empty tracks) instead of `auto-fit` (collapses
+  them); `guardian.css`'s admin/guardian table `overflow-x: auto` escape
+  valve was scoped to a `max-width: 640px` breakpoint, leaving
+  tablet-portrait widths (641-900px) with no scroll fallback for a table
+  wider than the viewport; and (found after rebasing onto the newly-merged
+  ThemeToggle feature) `.guardian-shell__header` had no wrap behavior, so
+  its three action buttons (theme toggle, notification bell, sign-out)
+  overflowed the header at phone widths. Remaining gap: only the `chromium`
+  project's Desktop Chrome run is verified in every environment;
+  firefox/webkit device projects need `playwright install firefox webkit`
+  and are exercised in CI, not in every local dev sandbox.
 - **API contract pinning (G2, Phase 7.2)**: `frontend/e2e-real/contract-smoke-real.spec.ts`:
   a real-backend contract smoke that pins the real API response shape for
   the four highest-drift endpoints the mocked `page.route` tier only assumes:

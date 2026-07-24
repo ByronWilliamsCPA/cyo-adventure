@@ -1415,8 +1415,21 @@
    if a future specificity conflict ever needs it; no existing markup is
    renamed to use it.
    ============================================================================ */
+/* #ASSUME: layout: display:block + overflow-x:auto applies at every
+   viewport, not just the phone breakpoint below. A table's column widths
+   grow with cell content (default table-layout: auto), so a table that
+   fits at 640px and at desktop widths can still overflow a mid-size
+   tablet portrait viewport (e.g. 768-834px) if its content is wide
+   enough; scoping the scroll behavior to phone-only left that tablet
+   range with no escape valve; a table that already fits is unaffected,
+   since overflow-x: auto only activates once content exceeds the
+   container.
+   #VERIFY: e2e/responsive.spec.ts asserts zero page-level horizontal
+   overflow on an admin table at iPad-width viewports. */
 .guardian-shell__main table,
 .guardian-table {
+  display: block;
+  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   font-size: var(--text-sm, 0.9375rem);
@@ -1809,6 +1822,26 @@
    only relaxes the row/action layouts that would otherwise overflow or
    crush controls on a narrow screen. */
 @media (max-width: 640px) {
+  /* #ASSUME: layout: the header's three action controls (ThemeToggle,
+     NotificationBell, sign-out) plus the brand no longer fit on one row at
+     phone widths now that ThemeToggle is a third icon button here; wrap
+     onto two rows instead of overflowing the page. .guardian-shell__header
+     keeps justify-content: space-between from the base rule, which only
+     right-aligns a wrapped line when it has more than one item to
+     distribute space between, so .guardian-shell__header-actions is forced
+     to its own full-width row (rather than relying on that) to keep the
+     actions right-aligned on line two, matching their unwrapped position.
+     #VERIFY: e2e/responsive.spec.ts asserts zero horizontal overflow on the
+     guardian/admin console at mobile viewports. */
+  .guardian-shell__header {
+    flex-wrap: wrap;
+  }
+
+  .guardian-shell__header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
   .console-row__actions {
     flex-direction: column;
     align-items: stretch;
@@ -1831,12 +1864,6 @@
 
   .profiles__card {
     align-items: flex-start;
-  }
-
-  .guardian-shell__main table,
-  .guardian-table {
-    display: block;
-    overflow-x: auto;
   }
 
   /* Device actions (ConsolePage.tsx): each action's width is otherwise

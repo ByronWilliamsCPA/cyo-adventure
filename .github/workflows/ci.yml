@@ -228,10 +228,17 @@ jobs:
       - name: Install Playwright browsers (mocked e2e tier)
         run: npx playwright install --with-deps chromium
 
-      # Only the mocked `test:e2e` (chromium) project runs in CI; it mocks the
-      # API per test and needs no backend. The real-backend `test:e2e:real`
-      # tier stays local-only (it needs Postgres + a seeded uvicorn); run it
-      # per frontend/README.md before opening a PR.
+      # Only the mocked `test:e2e` (chromium) project runs in this job; it
+      # mocks the API per test and needs no backend. The real-backend
+      # `test:e2e:real` tier stays local-only (it needs Postgres + a seeded
+      # uvicorn); run it per frontend/README.md before opening a PR. The new
+      # cross-device/cross-browser tier (firefox + webkit device profiles,
+      # e2e/cross-device.spec.ts) runs in its own dedicated, non-blocking
+      # workflow (cross-device-e2e.yml) rather than here: `playwright install
+      # --with-deps firefox webkit` apt-installs a much larger dependency set
+      # (gstreamer, libavcodec, etc.) than chromium alone, which pushed this
+      # job's 15-minute timeout -- it was killed mid-apt-install, before a
+      # single test ran, the first time this was tried inline.
       - name: E2E (Playwright, mocked tier)
         run: npm run test:e2e
 
