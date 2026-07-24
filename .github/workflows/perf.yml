@@ -1,0 +1,106 @@
+# Performance Regression Tests for CYO Adventure
+# Runs the in-process perf tier (tests/perf/, the `perf` marker) which pins the
+# complexity class of algorithmic hot paths with generous budgets. This is NOT
+# the deployment load test: the capacity baseline against hosted infra is P9-13
+# (docs/planning/PROJECT-PLAN.md), recorded in docs/planning/capacity-baseline.md.
+#
+# Cadence: weekly + manual only, never per PR. The tests are opt-in via
+# CYO_RUN_PERF=1 (they skip everywhere else), so the PR gate never runs them and
+# never flakes on runner jitter. A schedule-only failure files/updates one
+# tracking issue since no PR turns red.
+name: Performance
+
+on:
+  schedule:
+    # Weekly, Sundays at 06:00 UTC (offset from mutation 02:00 and safety 04:00).
+    - cron: '0 6 * * 0'
+  workflow_dispatch:
+
+concurrency:
+  group: perf-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  perf:
+    name: Performance Regression Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write  # failure-notification step files a tracking issue
+
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.14'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+
+      - name: Install dependencies
+        run: uv sync --all-extras --locked
+
+      - name: Run performance regression tests
+        env:
+          # Opt in to the perf tier; run without the repo's default
+          # --cov/--cov-fail-under addopts (which would fail on this selection).
+          CYO_RUN_PERF: '1'
+        run: |
+          set -o pipefail
+          uv run pytest -m perf -o addopts="--import-mode=importlib" -v -ra \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: File tracking issue on scheduled failure
+        # Schedule-only workflows fail invisibly: no PR turns red and nobody is
+        # notified. Keep exactly one open tracking issue up to date.
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const title = 'Weekly performance regression run is failing';
+            const body = [
+              'The scheduled Performance workflow failed.',
+              '',
+              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              'A failure here means a hot path exceeded its generous complexity',
+              'budget: likely a super-linear regression, since the budgets have a',
+              'wide margin over normal runner jitter. This issue is filed',
+              'automatically because schedule-only workflows never surface',
+              'failures on a pull request. Close it once a weekly run succeeds.',
+            ].join('\n');
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+            });
+            const existing = issues.find((issue) => issue.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['ci-failure'],
+              });
+            }
