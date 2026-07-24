@@ -39,6 +39,7 @@
   justify-content: space-between;
   gap: var(--space-4, 1rem);
   padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
+  padding-top: max(var(--space-3, 0.75rem), env(safe-area-inset-top));
   background: var(--color-parchment-dark, #ede6d0);
   border-bottom: 2px solid var(--color-parchment-deeper, #e0d5b8);
   position: sticky;
@@ -1018,6 +1019,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   margin-top: 1.5rem;
   background: var(--color-parchment-dark, #ede6d0);
   border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));

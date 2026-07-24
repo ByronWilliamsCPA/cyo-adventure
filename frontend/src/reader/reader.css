@@ -23,7 +23,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) 0;
+  padding: max(var(--space-2), env(safe-area-inset-top)) 0 var(--space-2);
   background: var(--color-parchment);
 }
 
