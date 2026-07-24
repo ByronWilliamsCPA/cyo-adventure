@@ -18,6 +18,9 @@
 // stale from a previous session, which getChildSession would accept as a valid
 // session for the WRONG profile. One setItem/removeItem makes a stored session
 // all-or-nothing.
+// deepcode ignore HardcodedNonCryptoSecret: this is a localStorage key name,
+// not a credential; see the design comment above for the atomic JSON-blob
+// rationale.
 const SESSION_KEY = 'child_session'
 
 // The pre-blob triple keys. No longer read (a stale triple from before this

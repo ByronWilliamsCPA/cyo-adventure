@@ -252,7 +252,18 @@ def _build_steps(args: argparse.Namespace) -> list[ChainStep]:
     """Build the chain steps from either --chain or the single --op form."""
     chain_path: str | None = args.chain  # pyright: ignore[reportAny]
     if chain_path is not None:
-        return _parse_chain_file(Path(chain_path))
+        # #ASSUME: security: canonicalized with .resolve() (CWE-23 hardening,
+        # Snyk python/PT), but deliberately NOT contained to a fixed base:
+        # tests/unit/test_mutation_compose.py::test_cli_chain_writes_bundle
+        # exercises --chain against a pytest tmp_path fixture well outside
+        # the repo tree with no chdir, proving arbitrary-location paths are
+        # legitimate, exercised behavior that containment would reject. No
+        # privilege boundary is crossed either way: the operator invoking
+        # this dev-only mutation CLI already has full filesystem access.
+        # #VERIFY: any future change adding a fixed base must re-run
+        # test_mutation_compose.py first; a rejection there means real
+        # behavior broke.
+        return _parse_chain_file(Path(chain_path).resolve())
     op_id: str = args.op  # pyright: ignore[reportAny]
     param_tokens: list[str] = list(args.params)  # pyright: ignore[reportAny]
     seed: int = args.seed  # pyright: ignore[reportAny]
@@ -376,9 +387,24 @@ def main(argv: list[str] | None = None) -> int:
     """Mutate one skeleton (single op or chain), run acceptance, write a bundle."""
     args = _build_parser().parse_args(argv)
 
+    # #ASSUME: security: --verify-bundle/parent/--resolve are canonicalized
+    # with .resolve() below (CWE-23 hardening, Snyk python/PT), but
+    # deliberately NOT contained to a fixed base (the containment approach of
+    # generation/import_cli.py::_load_blob). --out-dir is NOT .resolve()'d in
+    # this flow; it is guarded separately by the pre-existing, more targeted
+    # ``_refuses_under_skeletons`` denylist (design CR-1). Every one of these
+    # is exercised in tests/unit/test_mutation_acceptance.py and
+    # tests/unit/test_mutation_compose.py against pytest tmp_path fixtures
+    # well outside the repo tree with no chdir, proving arbitrary-location
+    # paths are legitimate, exercised behavior that containment would
+    # reject. No privilege boundary is crossed either way: the operator
+    # invoking this dev-only mutation CLI already has full filesystem
+    # access.
+    # #VERIFY: any future change adding a fixed base must re-run both test
+    # files first; a rejection there means real behavior broke.
     verify_dir: str | None = args.verify_bundle  # pyright: ignore[reportAny]
     if verify_dir is not None:
-        return _run_verify(Path(verify_dir))
+        return _run_verify(Path(verify_dir).resolve())
 
     parent_arg: str | None = args.parent  # pyright: ignore[reportAny]
     out_dir_arg: str | None = args.out_dir  # pyright: ignore[reportAny]
@@ -398,7 +424,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write(head + tail)
         return 1
 
-    parent_path = Path(parent_arg)
+    parent_path = Path(parent_arg).resolve()
     try:
         parent = _load_json_doc(parent_path)
         steps = _build_steps(args)
@@ -412,7 +438,7 @@ def main(argv: list[str] | None = None) -> int:
     resolve_path: str | None = args.resolve  # pyright: ignore[reportAny]
     try:
         resolutions = (
-            load_resolutions(Path(resolve_path))
+            load_resolutions(Path(resolve_path).resolve())
             if resolve_path is not None
             else ReguideResolutions(resolutions=[])
         )

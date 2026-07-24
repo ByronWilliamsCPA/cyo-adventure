@@ -453,6 +453,42 @@ def run_cycle(
     return lines
 
 
+# #ASSUME: security: --out-dir/--skeletons-root default to repo-relative
+# paths (out/mutations, ./skeletons) and no test in test_flywheel_cycle.py
+# exercises main()'s own argparse against an out-of-repo tmp_path fixture
+# (the tests that use tmp_path call the injected cell_runner/pr_preparer
+# helpers directly, bypassing main()'s parsing); containing them to the
+# repo root closes the CWE-23 gap (Snyk python/PT) without rejecting any
+# documented or tested invocation.
+# #VERIFY: if a future cycle needs a bundle root or catalog outside the repo
+# tree, this containment must be relaxed deliberately (and the rationale
+# above updated), not silently bypassed.
+def _resolve_within_repo(path_arg: str, *, label: str) -> Path:
+    """Resolve a CLI-supplied path and require it stay within the repo root.
+
+    Args:
+        path_arg: The raw path string from argparse.
+        label: The flag name, for the error message.
+
+    Returns:
+        Path: The resolved, canonical path.
+
+    Raises:
+        SystemExit: If the resolved path falls outside the repo root.
+    """
+    resolved = Path(path_arg).resolve()
+    try:
+        resolved.relative_to(_REPO_ROOT)
+    except ValueError:
+        msg = (
+            f"error: {label} {path_arg!r} resolves to {resolved}, which is "
+            f"outside the repo root {_REPO_ROOT}\n"
+        )
+        sys.stderr.write(msg)
+        raise SystemExit(2) from None
+    return resolved
+
+
 def _build_parser() -> argparse.ArgumentParser:
     """Return the configured argument parser."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -540,8 +576,10 @@ def main(
         if as_of_arg is not None
         else datetime.now(UTC).date()
     )
-    out_root = Path(cast("str", args.out_dir)).resolve()
-    skeletons_root = Path(cast("str", args.skeletons_root)).resolve()
+    out_root = _resolve_within_repo(cast("str", args.out_dir), label="--out-dir")
+    skeletons_root = _resolve_within_repo(
+        cast("str", args.skeletons_root), label="--skeletons-root"
+    )
     dry_run = not cast("bool", args.run)
 
     lines = run_cycle(

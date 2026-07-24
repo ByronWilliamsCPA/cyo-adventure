@@ -47,7 +47,20 @@ def _load(path: str) -> dict[str, Any] | None:
         The decoded object, or None on any load failure.
     """
     try:
-        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        # #ASSUME: security: canonicalized with .resolve() (CWE-23 hardening,
+        # Snyk python/PT), but deliberately NOT contained to a fixed base
+        # (the generation/import_cli.py::_load_blob idiom):
+        # tests/unit/test_check_fill_integrity.py exercises both the
+        # skeleton and filled paths against pytest tmp_path fixtures well
+        # outside the repo tree with no chdir, proving arbitrary-location
+        # paths are legitimate, exercised behavior that containment would
+        # reject. No privilege boundary is crossed either way: the operator
+        # (or authoring agent acting on the operator's own machine) invoking
+        # this dev-only checker already has full filesystem access.
+        # #VERIFY: any future change adding a fixed base must re-run
+        # test_check_fill_integrity.py first; a rejection there means real
+        # behavior broke.
+        data = json.loads(Path(path).resolve().read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         sys.stderr.write(f"error: cannot load {path}: {exc}\n")
         return None

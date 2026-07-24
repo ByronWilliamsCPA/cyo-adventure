@@ -76,6 +76,8 @@ export function makeGuardianSession(accessToken: string) {
   // the fuller GoTrueClient user object (role/app_metadata/user_metadata/
   // created_at) that spec seeds beyond this helper's minimum fields.
   return {
+    // deepcode ignore HardcodedNonCryptoSecret: fabricated E2E GoTrue session
+    // fixture, not a real credential; refresh_token below is a dummy value too.
     access_token: accessToken,
     refresh_token: 'e2e-refresh-token',
     token_type: 'bearer',

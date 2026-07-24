@@ -50,6 +50,8 @@ from cyo_adventure.moderation.review_provider import (
 )
 from cyo_adventure.moderation.stages import run_readability_stage, run_safety_stage
 
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
@@ -526,6 +528,48 @@ def _has_misses(report: CorpusReport) -> bool:
     )
 
 
+# #ASSUME: security: --corpus/--out/--env-file are documented (module
+# docstring above, docs/planning/safety/adversarial-safety-evaluation.md) as
+# always repo-relative (docs/planning/safety/*.json, .env), and this script
+# has no test that exercises them against an out-of-repo tmp_path fixture
+# (test_adversarial_harness.py only covers the pure scoring core); containing
+# them to the repo root closes the CWE-23 gap (Snyk python/PT) without
+# rejecting any documented or tested invocation.
+# #VERIFY: if a future evaluation needs a corpus or output location outside
+# the repo tree, this containment must be relaxed deliberately (and the
+# rationale above updated), not silently bypassed.
+def _resolve_within(path_arg: Path, *, label: str) -> Path:
+    """Resolve a CLI-supplied path and require it stay within the repo root.
+
+    Matches the containment idiom in ``generation/import_cli.py::_load_blob``:
+    canonicalize with ``.resolve()``, then reject anything that escapes
+    ``_REPO_ROOT`` via ``.relative_to()``.
+
+    Args:
+        path_arg: The raw ``Path`` from an argparse argument (``type=Path``).
+        label: Human-readable argument name for the error message.
+
+    Returns:
+        The resolved, canonicalized Path, guaranteed to be under
+        ``_REPO_ROOT``.
+
+    Raises:
+        SystemExit: If the resolved path escapes ``_REPO_ROOT``, exit code 2
+            (matching this script's own load-error convention).
+    """
+    resolved = path_arg.resolve()
+    try:
+        resolved.relative_to(_REPO_ROOT)
+    except ValueError:
+        msg = (
+            f"Error: {label} path {str(path_arg)!r} resolves to {resolved}, "
+            f"which is outside the repo root {_REPO_ROOT}"
+        )
+        print(msg, file=sys.stderr)
+        sys.exit(2)
+    return resolved
+
+
 def _parse_args() -> argparse.Namespace:
     """Build the argument parser and parse argv."""
     parser = argparse.ArgumentParser(
@@ -577,12 +621,13 @@ def main() -> None:
     exits 3 for a non-evidence mock run.
     """
     args = _parse_args()
-    corpus_path: Path = Path(str(args.corpus))  # pyright: ignore[reportAny]
+    corpus_path = _resolve_within(cast("Path", args.corpus), label="--corpus")
     provider_name: str = str(args.review_provider)  # pyright: ignore[reportAny]
+    out_arg = cast("Path | None", args.out)
     out_path: Path | None = (
-        Path(str(args.out)) if args.out is not None else None  # pyright: ignore[reportAny]
+        _resolve_within(out_arg, label="--out") if out_arg is not None else None
     )
-    env_path: Path = Path(str(args.env_file))  # pyright: ignore[reportAny]
+    env_path = _resolve_within(cast("Path", args.env_file), label="--env-file")
 
     items = _load_items(corpus_path)
 

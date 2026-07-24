@@ -33,6 +33,24 @@ from cyo_adventure.generation.binding import (
 )
 from cyo_adventure.validator.slots import validate_slot_bindings
 
+# #ASSUME: security: bind_theme.py is invoked by the cyo-author LLM skill
+# (.claude/skills/cyo-author/SKILL.md) as well as directly by a human curating
+# a migration sample fill (module docstring above); a fixed containment base
+# (repo root or cwd, the generation/import_cli.py::_load_blob idiom) is
+# deliberately NOT applied to its path args: tests/unit/test_bind_theme.py
+# exercises every one of skeleton/--bindings/--out-bound/--out-binding
+# against pytest tmp_path fixtures well outside the repo tree with no chdir,
+# proving arbitrary-location paths are legitimate, exercised behavior that
+# containment would reject. No privilege boundary is crossed either way: the
+# operator (or an LLM agent acting on the operator's own machine) already has
+# full filesystem access. `.resolve()` is applied to every path arg in
+# main() regardless, so symlinks and `..`/`.` segments are normalized before
+# any read or write; this canonicalization removes path ambiguity but does
+# not by itself constrain where a path resolves to (that is the deliberate
+# no-containment tradeoff above), so it is not on its own a CWE-23 defense.
+# #VERIFY: any future change reintroducing a fixed base must re-run
+# test_bind_theme.py first; a rejection there means real behavior broke.
+
 
 def _load_json_object(path: Path) -> dict[str, object]:
     """Load and return a JSON object from ``path``.
@@ -107,10 +125,19 @@ def main(argv: list[str] | None = None) -> int:
     # argparse.Namespace attribute access is untyped (Any) in the stdlib
     # stubs regardless of the parser's declared arguments; this is the
     # standard, unavoidable boundary, not a loosened check on our own code.
-    skeleton_path = Path(args.skeleton)  # pyright: ignore[reportAny]
+    skeleton_arg: str = args.skeleton  # pyright: ignore[reportAny]
     bindings_arg: str | None = args.bindings  # pyright: ignore[reportAny]
     out_bound_arg: str = args.out_bound  # pyright: ignore[reportAny]
     out_binding_arg: str | None = args.out_binding  # pyright: ignore[reportAny]
+
+    # CWE-23 hardening (Snyk python/PT): canonicalize every path arg with
+    # .resolve() before it touches the filesystem. See the module-level
+    # ASSUME comment above for why containment is not applied here.
+    skeleton_path = Path(skeleton_arg).resolve()
+    out_bound_path = Path(out_bound_arg).resolve()
+    out_binding_path = (
+        Path(out_binding_arg).resolve() if out_binding_arg is not None else None
+    )
 
     try:
         skeleton = _load_json_object(skeleton_path)
@@ -133,7 +160,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if bindings_arg is not None:
-        bindings_path = Path(bindings_arg)
+        bindings_path = Path(bindings_arg).resolve()
         try:
             bindings = _load_bindings(bindings_path)
         except (OSError, json.JSONDecodeError, ValueError) as exc:
@@ -170,13 +197,11 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write(f"error: render_bound_skeleton failed: {exc}\n")
         return 1
 
-    out_bound_path = Path(out_bound_arg)
     out_bound_path.write_text(json.dumps(bound, indent=2) + "\n", encoding="utf-8")
     print(f"bound {skeleton_path} using bindings from {source}")
     print(f"wrote bound skeleton to {out_bound_path}")
 
-    if out_binding_arg is not None:
-        out_binding_path = Path(out_binding_arg)
+    if out_binding_path is not None:
         out_binding_path.write_text(
             json.dumps(bindings, indent=2) + "\n", encoding="utf-8"
         )
