@@ -24,6 +24,7 @@ interface EditState {
   readingLevelCap: string
   avatar: string
   ttsEnabled: boolean
+  reduceMotion: boolean
   pinInput: string
 }
 
@@ -86,6 +87,7 @@ export function KidsTab({ api, families, profiles, onChanged }: KidsTabProps) {
       readingLevelCap: String(profile.reading_level_cap),
       avatar: profile.avatar ?? '',
       ttsEnabled: profile.tts_enabled,
+      reduceMotion: profile.reduce_motion,
       pinInput: '',
     })
   }
@@ -113,6 +115,7 @@ export function KidsTab({ api, families, profiles, onChanged }: KidsTabProps) {
         // be one of AvatarValue or ''.
         avatar: edit.avatar === '' ? null : (edit.avatar as AvatarValue),
         tts_enabled: edit.ttsEnabled,
+        reduce_motion: edit.reduceMotion,
         ...(edit.pinInput !== '' ? { pin: edit.pinInput } : {}),
       })
       setEditingId(null)

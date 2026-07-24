@@ -178,7 +178,7 @@ Supabase endpoints rather than `/api/v1`.
 - E2E-mocked: `frontend/e2e/guardian-profiles.spec.ts`, `frontend/e2e/naive-user/naive-guardian-misuse.spec.ts` (empty state), `frontend/e2e/story-requests-authored.spec.ts` (child selector)
 - E2E-real: `frontend/e2e-real/guardian-profile-crud-real.spec.ts` (a guardian creates and edits a child profile through the real `POST`/`PATCH /v1/profiles` endpoints, both states persisting across reload; `ProfilesPage.tsx` has no delete control by design, so the erasure path, `DELETE /v1/profiles/{id}`, GDPR Article 17 / COPPA 312.10, is exercised via a direct authenticated fetch and confirmed gone from the console on reload)
 - E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only)
-- Component: `frontend/src/guardian/ProfilesPage.test.tsx`, `frontend/src/guardian/ProfileFormDialog.test.tsx`, `frontend/src/profiles/AvatarCircle.test.tsx`, `frontend/src/profiles/profilesApi.test.ts`
+- Component: `frontend/src/guardian/ProfilesPage.test.tsx`, `frontend/src/guardian/ProfileFormDialog.test.tsx`, `frontend/src/profiles/AvatarCircle.test.tsx`, `frontend/src/profiles/profilesApi.test.ts`, `frontend/src/guardian/PreviewAsChildPage.test.tsx` (guardian preview-as-child: read-only `LibraryPage` render for a family profile, `data-age-band`/`data-reduce-motion` propagation, and the generic-banner fallback when the profile lookup fails)
 
 ## Guardian: assign children to books
 

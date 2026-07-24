@@ -26,6 +26,7 @@ import {
   ModerationDashboardPage,
   ModerationThresholdsPage,
   NotFoundPage,
+  PreviewAsChildPage,
   ProfilePickerPage,
   ProfilesPage,
   ProviderAllowlistPage,
@@ -184,6 +185,15 @@ export const routes = [
                   { path: 'books', element: suspended(<BooksPage />) },
                   { path: 'profiles', element: suspended(<ProfilesPage />) },
                   { path: 'connections', element: suspended(<ConnectionsPage />) },
+                  {
+                    // Guardian preview-as-child (read-only): deliberately a
+                    // sibling of the other guardian-console pages, NOT nested
+                    // under KidShell/DeviceAuthorizedRoute above -- see
+                    // PreviewAsChildPage's docstring for why it must stay
+                    // outside the kid-token-gated /library/*, /read/* paths.
+                    path: 'preview/:profileId',
+                    element: suspended(<PreviewAsChildPage />),
+                  },
                 ],
               },
             ],

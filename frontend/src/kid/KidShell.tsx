@@ -2,6 +2,7 @@ import { matchPath, Outlet, useLocation } from 'react-router'
 
 import { ThemeToggle } from '../theme/ThemeToggle'
 import { KidNav } from './KidNav'
+import { useKidProfile } from './useKidProfile'
 import './kid.css'
 
 /**
@@ -17,15 +18,34 @@ import './kid.css'
  * route, reader included: it's the only door into this surface with no
  * shared header of its own to carry it, and a corner icon is unobtrusive
  * enough not to compete with the in-story controls.
+ *
+ * `data-age-band`/`data-reduce-motion` on the shell root drive band-tokens.css
+ * for every descendant (library, reader): resolved from either the library or
+ * reader route's profileId, since band-aware motion/typography should apply
+ * while reading, not just while browsing. Absent (profile picker, a lookup
+ * still in flight, or a failed lookup) leaves both attributes unset, which
+ * band-tokens.css treats as the neutral tier -- never a stale prior child's
+ * band.
  */
 export function KidShell() {
   const location = useLocation()
   const libraryMatch = matchPath('/library/:profileId', location.pathname)
-  const profileId = libraryMatch?.params.profileId
+  const readMatch = matchPath('/read/:profileId/:storybookId/:version', location.pathname)
+  const navProfileId = libraryMatch?.params.profileId
+  const profile = useKidProfile(navProfileId ?? readMatch?.params.profileId)?.profile ?? null
 
+  // #EDGE: accessibility: while the profile lookup is in flight or has failed,
+  // data-reduce-motion is unset and the guardian-set app-level reduce_motion
+  // preference fails open to full motion. Accepted bound: band-tokens.css's
+  // `@media (prefers-reduced-motion: reduce)` fail-safe is independent of this
+  // attribute and still applies for any device with the OS-level preference.
   return (
-    <div className="kid-shell">
-      {profileId ? <KidNav profileId={profileId} /> : null}
+    <div
+      className="kid-shell"
+      data-age-band={profile?.age_band}
+      data-reduce-motion={profile?.reduce_motion ? 'true' : undefined}
+    >
+      {navProfileId ? <KidNav profileId={navProfileId} /> : null}
       <ThemeToggle className="kid-shell__theme-toggle" />
       <main className="kid-shell__main">
         <Outlet />

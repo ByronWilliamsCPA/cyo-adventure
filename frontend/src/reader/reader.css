@@ -436,10 +436,17 @@
   gap: var(--space-3);
 }
 
+/* Mirrors PassageText.css's own 640px bump (max() against the age band's
+   default so a bigger band default is never shrunk back down), scaled by
+   --reader-font-scale so the A/A+/A++ picker still has an effect at this
+   width instead of being silently overridden by the fixed size below. */
 @media (min-width: 40rem) {
   .reader .cyo-passage,
   .reader-ending .cyo-passage {
-    font-size: var(--text-xl);
+    font-size: calc(
+      max(var(--text-xl), var(--band-reader-text, var(--text-base))) *
+        var(--reader-font-scale, 1)
+    );
   }
 }
 

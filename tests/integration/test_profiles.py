@@ -258,6 +258,44 @@ async def test_update_omitting_avatar_keeps_it(client: AsyncClient, seed: Seed) 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+async def test_create_defaults_reduce_motion_to_false(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A profile created with no reduce_motion field defaults to off."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    assert resp.json()["reduce_motion"] is False
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_guardian_sets_and_clears_reduce_motion(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A guardian can set reduce_motion on create and flip it via PATCH."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8", "reduce_motion": True},
+        headers=guardian,
+    )
+    assert created.status_code == 201, created.text
+    assert created.json()["reduce_motion"] is True
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}", json={"reduce_motion": False}, headers=guardian
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["reduce_motion"] is False
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
 async def test_guardian_cannot_update_other_familys_profile(
     client: AsyncClient, seed: Seed
 ) -> None:
