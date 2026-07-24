@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ToastProvider } from '../notifications/ToastProvider'
+import { ThemeProvider } from '../theme/ThemeProvider'
 import { GuardianShell } from './GuardianShell'
 import { STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 
@@ -63,16 +64,19 @@ function renderShell() {
     // ToastProvider; every other guardian route already sits under the real
     // ToastProvider (App.tsx), so this wrapper keeps the shell's own tests
     // faithful to that tree instead of mocking the toast channel away.
-    <ToastProvider>
-      <MemoryRouter initialEntries={['/guardian']}>
-        <Routes>
-          <Route path="/guardian" element={<GuardianShell />}>
-            <Route index element={<div>console content</div>} />
-            <Route path="intake" element={<div>intake content</div>} />
-          </Route>
-        </Routes>
-      </MemoryRouter>
-    </ToastProvider>
+    // ThemeProvider is the same story for the header's ThemeToggle.
+    <ThemeProvider>
+      <ToastProvider>
+        <MemoryRouter initialEntries={['/guardian']}>
+          <Routes>
+            <Route path="/guardian" element={<GuardianShell />}>
+              <Route index element={<div>console content</div>} />
+              <Route path="intake" element={<div>intake content</div>} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </ToastProvider>
+    </ThemeProvider>
   )
 }
 

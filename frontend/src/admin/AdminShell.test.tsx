@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { ThemeProvider } from '../theme/ThemeProvider'
 import { AdminShell } from './AdminShell'
 
 const mockUseAuth = vi.fn()
@@ -16,13 +17,17 @@ function principal(role: 'guardian' | 'admin', isAdmin = true) {
 
 function renderShell() {
   return render(
-    <MemoryRouter initialEntries={['/admin']}>
-      <Routes>
-        <Route path="/admin" element={<AdminShell />}>
-          <Route index element={<div>admin content</div>} />
-        </Route>
-      </Routes>
-    </MemoryRouter>
+    // ThemeProvider: the header's ThemeToggle calls useTheme(), which throws
+    // outside one; every real route already sits under it (App.tsx).
+    <ThemeProvider>
+      <MemoryRouter initialEntries={['/admin']}>
+        <Routes>
+          <Route path="/admin" element={<AdminShell />}>
+            <Route index element={<div>admin content</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </ThemeProvider>
   )
 }
 

@@ -11,6 +11,17 @@
   padding: 1.5rem;
 }
 
+/* Floats above every kid route (including the reader, which has no shared
+   header of its own): fixed so it stays put through KidNav's sticky bar and
+   any in-story scrolling, above KidNav's z-index so it's never covered. */
+.kid-shell__theme-toggle {
+  position: fixed;
+  top: var(--space-3, 0.75rem);
+  right: var(--space-3, 0.75rem);
+  z-index: 20;
+  background: var(--color-parchment-dark, #ede6d0);
+}
+
 /* ── Persistent kid navigation bar ─────────────────────────── */
 .kid-nav {
   display: flex;
@@ -165,7 +176,7 @@
 }
 
 .picker-tile--add .picker-tile__name {
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-muted, #806048);
 }
 
 .picker-loading {

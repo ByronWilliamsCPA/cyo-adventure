@@ -7,13 +7,18 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { setDeviceGrant } from '../auth/deviceGrant'
 import { _resetDbHandle } from '../offline/db'
+import { ThemeProvider } from '../theme/ThemeProvider'
 import { LandingPage } from './LandingPage'
 
 function renderLanding() {
   return render(
-    <MemoryRouter>
-      <LandingPage />
-    </MemoryRouter>
+    // ThemeProvider: the page's ThemeToggle calls useTheme(), which throws
+    // outside one; every real route already sits under it (App.tsx).
+    <ThemeProvider>
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>
+    </ThemeProvider>
   )
 }
 

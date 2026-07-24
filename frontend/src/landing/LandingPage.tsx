@@ -10,6 +10,7 @@ import {
   GUARDIAN_LOGIN_PATH,
   KID_PICKER_PATH,
 } from '../routes'
+import { ThemeToggle } from '../theme/ThemeToggle'
 
 import './landing.css'
 
@@ -83,6 +84,7 @@ export function LandingPage() {
 
   return (
     <main className="landing">
+      <ThemeToggle className="landing__theme-toggle" />
       <div className="landing__hero">
         <Mascot size={128} />
         <h1 className="landing__title">CYO Adventure</h1>

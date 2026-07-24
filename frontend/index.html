@@ -8,10 +8,36 @@
     <meta name="description" content="A choose-your-own-adventure reading app for kids" />
     <!-- Matches manifest theme_color (vite.config.ts). -->
     <meta name="theme-color" content="#1d3557" />
-    <!-- Follows the OS prefers-color-scheme (see design-system/src/tokens.css'
-         dark media block); native form controls should follow suit too. -->
+    <!-- Default before the theme script below runs (and the no-JS/no-storage
+         fallback): native form controls follow the OS. Once data-theme is
+         stamped, tokens.css's :root[data-theme] blocks pin color-scheme to
+         match the resolved theme (see design-system/src/tokens.css). -->
     <meta name="color-scheme" content="light dark" />
     <title>CYO Adventure</title>
+    <!-- Stamps the resolved theme (stored preference, or the OS's if the
+         preference is 'system'/unset) onto <html> before first paint, so
+         there is no flash of the wrong theme while src/main.tsx's bundle
+         loads. Mirrors src/theme/theme.ts's readStoredMode/resolveTheme
+         exactly; ThemeProvider re-applies the same result once it mounts, so
+         this is belt-and-suspenders, not a second source of truth. Kept
+         inline (not a module) so it runs synchronously, and wrapped in
+         try/catch since localStorage can throw in private-mode Safari. -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('cyo-theme')
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+          document.documentElement.setAttribute('data-theme', theme)
+        } catch (e) {
+          // Storage unavailable; :root's light defaults in tokens.css apply until ThemeProvider mounts.
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

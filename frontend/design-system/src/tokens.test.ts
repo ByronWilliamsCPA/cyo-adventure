@@ -15,17 +15,17 @@ function customPropertyNames(css: string): Set<string> {
 }
 
 describe('tokens.css dark mode', () => {
-  it('defines a prefers-color-scheme: dark override block', () => {
-    expect(tokensCss).toMatch(/@media \(prefers-color-scheme: dark\)\s*\{\s*:root\s*\{/)
+  it('defines a data-theme="dark" override block', () => {
+    expect(tokensCss).toMatch(/:root\[data-theme=['"]dark['"]\]\s*\{/)
   })
 
   it('overrides every color custom property :root defines', () => {
     const rootBlock = tokensCss.match(/^:root\s*\{([\s\S]*?)\n\}/m)?.[1]
     const darkBlock = tokensCss.match(
-      /@media \(prefers-color-scheme: dark\)\s*\{\s*:root\s*\{([\s\S]*?)\n\s*\}\n\s*\}/,
+      /:root\[data-theme=['"]dark['"]\]\s*\{([\s\S]*?)\n\}/,
     )?.[1]
     expect(rootBlock, ':root block not found in tokens.css').toBeTruthy()
-    expect(darkBlock, 'dark-mode :root block not found in tokens.css').toBeTruthy()
+    expect(darkBlock, 'dark-mode :root[data-theme] block not found in tokens.css').toBeTruthy()
 
     const rootProps = customPropertyNames(rootBlock ?? '')
     const darkProps = customPropertyNames(darkBlock ?? '')
