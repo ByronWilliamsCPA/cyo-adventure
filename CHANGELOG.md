@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.32.2] - 2026-07-24
+
+### Bug Fixes
+
+- **deps**: Bump brace-expansion to 5.0.8 for CVE-2026-14257
+  ([#399](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/399),
+  [`f8bfff5`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/f8bfff5db49e67734242c1023ca0c903baf007cf))
+
+
 ## [0.32.1] - 2026-07-24
 
 ### Bug Fixes
@@ -2619,6 +2628,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.32.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.32.1...v0.32.2
 [0.32.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.32.0...v0.32.1
 [0.32.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.31.1...v0.32.0
 [0.31.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.31.0...v0.31.1
