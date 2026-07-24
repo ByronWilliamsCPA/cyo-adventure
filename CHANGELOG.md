@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.29.1] - 2026-07-24
+
+### Bug Fixes
+
+- **backend**: Resolve 124 SonarCloud issues including CORS middleware ordering
+  ([#375](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/375),
+  [`f03d77a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/f03d77accd5dd3b9cb3616547a7a67ce4508f121))
+
+
 ## [0.29.0] - 2026-07-23
 
 ### Features
@@ -2552,6 +2561,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.29.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.0...v0.29.1
 [0.29.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.2...v0.28.0
 [0.27.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.1...v0.27.2
