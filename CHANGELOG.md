@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.30.0] - 2026-07-24
+
+### Chores
+
+- **deps**: Update dependency @testing-library/jest-dom to v7
+  ([#380](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/380),
+  [`74a7d9d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/74a7d9d81de6654e33c5d443405a91590ffc1669))
+
+- **deps**: Update GitHub Actions to v7
+  ([#381](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/381),
+  [`1d5672c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/1d5672c74651ba6c6bcbd0dd78b08594f19de6c2))
+
+
 ## [0.29.2] - 2026-07-24
 
 ### Bug Fixes
@@ -2570,6 +2583,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.30.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.2...v0.30.0
 [0.29.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.1...v0.29.2
 [0.29.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.0...v0.29.1
 [0.29.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.28.0...v0.29.0
