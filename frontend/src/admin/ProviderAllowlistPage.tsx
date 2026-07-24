@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
+import { Button } from '@ds/components/Button'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeProviderAllowlistApi } from './providerAllowlistApi'
@@ -190,16 +191,16 @@ export function ProviderAllowlistPage() {
                 <td>{row.display_name ?? '-'}</td>
                 <td>{row.enabled ? 'Enabled' : 'Disabled'}</td>
                 <td>
-                  <button
-                    type="button"
+                  <Button
+                    variant={row.enabled ? 'danger' : 'ghost'}
                     disabled={submitting}
                     onClick={() => void toggleEnabled(row.id, row.enabled, row.display_name)}
                   >
                     {row.enabled ? `Disable ${row.model_id}` : `Enable ${row.model_id}`}
-                  </button>
-                  <button type="button" disabled={submitting} onClick={() => void remove(row.id)}>
+                  </Button>
+                  <Button variant="danger" disabled={submitting} onClick={() => void remove(row.id)}>
                     Remove {row.model_id}
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -242,9 +243,9 @@ export function ProviderAllowlistPage() {
             onChange={(e) => setDisplayName(e.target.value)}
           />
         </label>
-        <button type="submit" disabled={!canAdd}>
+        <Button type="submit" variant="primary" disabled={!canAdd}>
           Add to allowlist
-        </button>
+        </Button>
       </form>
     </main>
   )

@@ -249,13 +249,13 @@ export function ModerationThresholdsPage() {
           #VERIFY: ModerationThresholdsPage.test.tsx noise-floor confirm and
           cancel tests (cancel fires no PUT; confirm fires exactly one).
         */}
-        <button
-          type="button"
+        <Button
+          variant="primary"
           disabled={!canSaveFloor}
           onClick={() => setPendingConfirm({ kind: 'noise-floor', value: Number(noiseFloorInput) })}
         >
           Save noise floor
-        </button>
+        </Button>
       </section>
       {data.rows.length === 0 ? (
         <p className="console__muted cyo-text-muted">
@@ -289,13 +289,13 @@ export function ModerationThresholdsPage() {
                     and cancel tests (cancel fires no DELETE; confirm fires
                     exactly one).
                   */}
-                  <button
-                    type="button"
+                  <Button
+                    variant="danger"
                     disabled={submitting}
                     onClick={() => setPendingConfirm({ kind: 'remove', row })}
                   >
                     Remove {row.category} override for {row.age_band}
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -366,9 +366,9 @@ export function ModerationThresholdsPage() {
         <p id="threshold-score-help" className="console__muted cyo-text-muted">
           Leave blank for no score floor.
         </p>
-        <button type="submit" disabled={!canSave}>
+        <Button type="submit" variant="primary" disabled={!canSave}>
           Save override
-        </button>
+        </Button>
       </form>
 
       {pendingConfirm?.kind === 'remove' ? (

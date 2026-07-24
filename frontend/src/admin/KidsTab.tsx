@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { Button } from '@ds/components/Button'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { AVATARS } from '../profiles/avatars'
 import { AGE_BANDS, type AgeBandValue } from '../profiles/profilesApi'
@@ -276,15 +277,15 @@ export function KidsTab({ api, families, profiles, onChanged }: KidsTabProps) {
                           aria-label={`New PIN for ${profile.display_name}`}
                         />
                       </label>
-                      <button
-                        type="button"
+                      <Button
+                        variant="primary"
                         disabled={busy || !editValid}
                         onClick={() => void saveEdit(profile.id)}
                       >
                         Save
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
+                        variant="ghost"
                         disabled={busy}
                         onClick={() => {
                           setEditingId(null)
@@ -292,29 +293,29 @@ export function KidsTab({ api, families, profiles, onChanged }: KidsTabProps) {
                         }}
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </>
                   ) : (
                     <>
-                      <button type="button" disabled={busy} onClick={() => startEdit(profile)}>
+                      <Button variant="ghost" disabled={busy} onClick={() => startEdit(profile)}>
                         Edit
-                      </button>
+                      </Button>
                       {profile.has_pin ? (
-                        <button
-                          type="button"
+                        <Button
+                          variant="danger"
                           disabled={busy}
                           onClick={() => void clearPin(profile.id)}
                         >
                           Remove PIN
-                        </button>
+                        </Button>
                       ) : null}
-                      <button
-                        type="button"
+                      <Button
+                        variant={profile.status === 'active' ? 'danger' : 'ghost'}
                         disabled={busy}
                         onClick={() => void toggleStatus(profile)}
                       >
                         {profile.status === 'active' ? 'Deactivate' : 'Reactivate'}
-                      </button>
+                      </Button>
                     </>
                   )}
                 </td>
@@ -360,9 +361,9 @@ export function KidsTab({ api, families, profiles, onChanged }: KidsTabProps) {
             ))}
           </select>
         </label>
-        <button type="submit" disabled={!canCreate}>
+        <Button type="submit" variant="primary" disabled={!canCreate}>
           Create profile
-        </button>
+        </Button>
       </form>
       <p className="console__muted cyo-text-muted">
         Set an avatar or picker PIN from the Edit control after creating the profile.
