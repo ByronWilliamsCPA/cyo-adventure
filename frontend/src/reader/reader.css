@@ -64,9 +64,14 @@
   cursor: pointer;
 }
 
-.reader-textsize__button:hover,
 .reader-textsize__button:focus-visible {
   border-color: var(--color-amber, #e07f2e);
+}
+
+@media (hover: hover) {
+  .reader-textsize__button:hover {
+    border-color: var(--color-amber, #e07f2e);
+  }
 }
 
 .reader-textsize__button--active {
@@ -93,10 +98,16 @@
   cursor: pointer;
 }
 
-.reader-leave:hover,
 .reader-leave:focus-visible {
   border-color: var(--color-amber);
   background: var(--color-amber-subtle);
+}
+
+@media (hover: hover) {
+  .reader-leave:hover {
+    border-color: var(--color-amber);
+    background: var(--color-amber-subtle);
+  }
 }
 
 /* Read-aloud toggle (K7): same pill shape as the Leave control so the two
@@ -120,10 +131,16 @@
   cursor: pointer;
 }
 
-.reader-tts-toggle:hover,
 .reader-tts-toggle:focus-visible {
   border-color: var(--color-amber);
   background: var(--color-amber-subtle);
+}
+
+@media (hover: hover) {
+  .reader-tts-toggle:hover {
+    border-color: var(--color-amber);
+    background: var(--color-amber-subtle);
+  }
 }
 
 .reader-tts-toggle--speaking {
@@ -132,10 +149,16 @@
   color: var(--color-parchment);
 }
 
-.reader-tts-toggle--speaking:hover,
 .reader-tts-toggle--speaking:focus-visible {
   border-color: var(--color-amber-deep);
   background: var(--color-amber-deep);
+}
+
+@media (hover: hover) {
+  .reader-tts-toggle--speaking:hover {
+    border-color: var(--color-amber-deep);
+    background: var(--color-amber-deep);
+  }
 }
 
 /* Tell a grown-up (K15): same pill shape as the Leave/Listen controls so it
@@ -159,10 +182,16 @@
   cursor: pointer;
 }
 
-.reader-flag-toggle:hover,
 .reader-flag-toggle:focus-visible {
   border-color: var(--color-amber);
   background: var(--color-amber-subtle);
+}
+
+@media (hover: hover) {
+  .reader-flag-toggle:hover {
+    border-color: var(--color-amber);
+    background: var(--color-amber-subtle);
+  }
 }
 
 .reader-flag-prompt {
@@ -224,9 +253,14 @@
   cursor: pointer;
 }
 
-.replay-failed-banner__ok:hover,
 .replay-failed-banner__ok:focus-visible {
   background: var(--color-parchment);
+}
+
+@media (hover: hover) {
+  .replay-failed-banner__ok:hover {
+    background: var(--color-parchment);
+  }
 }
 
 /* Branded loading state while a story is fetched (Pip + short reassurance),

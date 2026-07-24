@@ -99,10 +99,16 @@
   text-decoration: none;
 }
 
-.kid-nav__switch:hover,
 .kid-nav__switch:focus-visible {
   border-color: var(--color-amber, #e07f2e);
   background: var(--color-amber-subtle, #fdf3e6);
+}
+
+@media (hover: hover) {
+  .kid-nav__switch:hover {
+    border-color: var(--color-amber, #e07f2e);
+    background: var(--color-amber-subtle, #fdf3e6);
+  }
 }
 
 /* ── Profile picker ────────────────────────────────────────── */
@@ -156,11 +162,18 @@
     box-shadow var(--duration-fast, 120ms) var(--easing-default, ease-in-out);
 }
 
-.picker-tile:hover,
 .picker-tile:focus-visible {
   transform: translateY(-3px);
   border-color: var(--color-amber, #e07f2e);
   box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+}
+
+@media (hover: hover) {
+  .picker-tile:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-amber, #e07f2e);
+    box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+  }
 }
 
 .picker-tile__name {
@@ -252,9 +265,14 @@
   min-height: 44px;
 }
 
-.picker-retry:hover,
 .picker-retry:focus-visible {
   background: var(--color-amber-subtle, #fdf3e6);
+}
+
+@media (hover: hover) {
+  .picker-retry:hover {
+    background: var(--color-amber-subtle, #fdf3e6);
+  }
 }
 
 /*
@@ -280,9 +298,14 @@
   text-decoration: none;
 }
 
-.picker-tile__add-link:hover,
 .picker-tile__add-link:focus-visible {
   background: var(--color-amber-subtle, #fdf3e6);
+}
+
+@media (hover: hover) {
+  .picker-tile__add-link:hover {
+    background: var(--color-amber-subtle, #fdf3e6);
+  }
 }
 
 /* UX-K6: "Forgot your PIN? Ask a grown-up" escape after repeated failures. */
