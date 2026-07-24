@@ -134,13 +134,24 @@ jobs:
   frontend:
     name: Frontend (Node 22)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     # merge_group re-runs the identical tree the pull_request run already
     # validated (frontend build/lint/typecheck/tests are file-content-only,
     # not merged-state-sensitive); skip here and rely on the PR run plus the
     # post-merge push-to-main run. See docs/planning/PROJECT-PLAN.md CI notes.
     # Also skipped for release-automation PRs (see detect-release-pr): they
     # never touch frontend/.
+    #
+    # The mocked-tier E2E run (Playwright browser install + `npm run
+    # test:e2e`) used to be the last two steps of this job. Measured on a
+    # real PR run it added ~154s (28s install + 126s run) after ~154s of
+    # lint/typecheck/vitest/build/nginx-validate, making this the single
+    # longest job in the whole CI gate at ~340s. It is split into the
+    # `frontend-e2e` job below instead: since Playwright's webServer builds
+    # and serves the app itself (playwright.config.ts), that job has no
+    # dependency on this one's Build step, so the two now run concurrently
+    # -- cutting the blocking wall-clock to roughly the slower of the two
+    # (~180s) instead of their sum, with no test removed or demoted.
     needs: detect-release-pr
     if: github.event_name != 'merge_group' && needs.detect-release-pr.outputs.release_pr != 'true'
     defaults:
@@ -225,23 +236,6 @@ jobs:
             ghcr.io/byronwilliamscpa/dhi-nginx:1.26-debian13@sha256:6b0137dc31dcff3c86854e3d9bbafb33201a6b0b83c44ecb0f4f6f092d68a7f4 \
             -t
 
-      - name: Install Playwright browsers (mocked e2e tier)
-        run: npx playwright install --with-deps chromium
-
-      # Only the mocked `test:e2e` (chromium) project runs in this job; it
-      # mocks the API per test and needs no backend. The real-backend
-      # `test:e2e:real` tier stays local-only (it needs Postgres + a seeded
-      # uvicorn); run it per frontend/README.md before opening a PR. The new
-      # cross-device/cross-browser tier (firefox + webkit device profiles,
-      # e2e/cross-device.spec.ts) runs in its own dedicated, non-blocking
-      # workflow (cross-device-e2e.yml) rather than here: `playwright install
-      # --with-deps firefox webkit` apt-installs a much larger dependency set
-      # (gstreamer, libavcodec, etc.) than chromium alone, which pushed this
-      # job's 15-minute timeout -- it was killed mid-apt-install, before a
-      # single test ran, the first time this was tried inline.
-      - name: E2E (Playwright, mocked tier)
-        run: npm run test:e2e
-
       # Vitest writes lcov SF: paths relative to the package root (src/App.tsx),
       # but Codecov matches against the repo tree where the file is
       # frontend/src/App.tsx. Rewrite the paths to repo-root-relative so they
@@ -276,6 +270,74 @@ jobs:
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: frontend/coverage/lcov.info
+
+  frontend-e2e:
+    name: Frontend E2E (Playwright, mocked tier)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Split out of the `frontend` job (see the note on that job's `needs:`)
+    # so this runs concurrently with it instead of after it. Only the mocked
+    # `test:e2e` (chromium) project runs here; it mocks the API per test and
+    # needs no backend. The real-backend `test:e2e:real` tier stays
+    # local-only (needs Postgres + a seeded uvicorn); run it per
+    # frontend/README.md before opening a PR. The cross-device/cross-browser
+    # tier (firefox + webkit device profiles, e2e/cross-device.spec.ts) runs
+    # in its own dedicated, non-blocking workflow (cross-device-e2e.yml)
+    # rather than here: `playwright install --with-deps firefox webkit`
+    # apt-installs a much larger dependency set (gstreamer, libavcodec, etc.)
+    # than chromium alone, which pushed the old combined job's 15-minute
+    # timeout -- it was killed mid-apt-install, before a single test ran, the
+    # first time this was tried inline.
+    needs: detect-release-pr
+    if: github.event_name != 'merge_group' && needs.detect-release-pr.outputs.release_pr != 'true'
+    defaults:
+      run:
+        working-directory: ./frontend
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Caches the downloaded chromium browser binary keyed on the lockfile
+      # (bump when the pinned @playwright/test version changes). The
+      # `--with-deps` apt-get layer below still runs every time -- system
+      # libraries aren't preserved across ephemeral runners -- but on a cache
+      # hit `playwright install-deps` is a fast no-op apt check instead of
+      # paying for a ~28s browser download too.
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install Playwright browsers (mocked e2e tier)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS dependencies (browser cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: E2E (Playwright, mocked tier)
+        run: npm run test:e2e
 
   design-system:
     name: Design System (Node 22)
@@ -802,7 +864,7 @@ jobs:
     name: CI Gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [detect-release-pr, ci, frontend, design-system, contract]
+    needs: [detect-release-pr, ci, frontend, frontend-e2e, design-system, contract]
     if: always()
     permissions:
       contents: read
@@ -818,23 +880,25 @@ jobs:
           RELEASE_PR: ${{ needs.detect-release-pr.outputs.release_pr }}
           CI_RESULT: ${{ needs.ci.result }}
           FRONTEND_RESULT: ${{ needs.frontend.result }}
+          FRONTEND_E2E_RESULT: ${{ needs.frontend-e2e.result }}
           DESIGN_SYSTEM_RESULT: ${{ needs.design-system.result }}
           CONTRACT_RESULT: ${{ needs.contract.result }}
         run: |
           # A release-automation PR (see detect-release-pr) intentionally
-          # skips ci/frontend/design-system/contract entirely -- there is
-          # nothing else to check here.
+          # skips ci/frontend/frontend-e2e/design-system/contract entirely --
+          # there is nothing else to check here.
           if [ "$RELEASE_PR" = "true" ]; then
             echo "CI Gate passed (release-automation PR; full suite intentionally skipped)"
             exit 0
           fi
-          # frontend/design-system/contract intentionally report "skipped" on
-          # merge_group (see their job-level `if:`); ci never skips outside
-          # the release-automation case above, so a skipped ci result still
-          # fails the gate.
+          # frontend/frontend-e2e/design-system/contract intentionally report
+          # "skipped" on merge_group (see their job-level `if:`); ci never
+          # skips outside the release-automation case above, so a skipped ci
+          # result still fails the gate.
           FAILED=false
           [ "$CI_RESULT" != "success" ] && FAILED=true
           [ "$FRONTEND_RESULT" != "success" ] && [ "$FRONTEND_RESULT" != "skipped" ] && FAILED=true
+          [ "$FRONTEND_E2E_RESULT" != "success" ] && [ "$FRONTEND_E2E_RESULT" != "skipped" ] && FAILED=true
           [ "$DESIGN_SYSTEM_RESULT" != "success" ] && [ "$DESIGN_SYSTEM_RESULT" != "skipped" ] && FAILED=true
           [ "$CONTRACT_RESULT" != "success" ] && [ "$CONTRACT_RESULT" != "skipped" ] && FAILED=true
           if [ "$FAILED" = "true" ]; then
