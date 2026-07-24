@@ -21,6 +21,8 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+import pytest  # noqa: E402
+
 from cyo_adventure.flywheel.strategy import (  # noqa: E402
     cell_of_entry,
     load_catalog,
@@ -35,8 +37,6 @@ from scripts import flywheel_cycle as cyc  # noqa: E402
 from scripts import prepare_promotion_pr as ppr  # noqa: E402
 
 if TYPE_CHECKING:
-    import pytest
-
     from cyo_adventure.flywheel.strategy import Catalog
     from cyo_adventure.flywheel.trigger import SaturationReading
 
@@ -373,3 +373,30 @@ def test_main_dry_run_exits_zero_and_prints_plan(
     out = capsys.readouterr().out
     assert "scheduled flywheel cycle" in out
     assert "mode: DRY RUN" in out
+
+
+class TestResolveWithinRepo:
+    """CWE-23 containment gate: reject CLI paths that escape the repo root."""
+
+    def test_resolve_within_repo_in_repo_path_returns_resolved(self) -> None:
+        """A path under the repo root is accepted and stays within it."""
+        result = cyc._resolve_within_repo(
+            str(cyc._REPO_ROOT / "skeletons" / "x.json"), label="--out-dir"
+        )
+        assert result.is_relative_to(cyc._REPO_ROOT)
+
+    def test_resolve_within_repo_parent_escape_exits_2(self) -> None:
+        """A ``..`` path climbing above the repo root exits with code 2."""
+        with pytest.raises(SystemExit) as exc:
+            _ = cyc._resolve_within_repo(
+                str(cyc._REPO_ROOT / ".." / "escape.json"), label="--out-dir"
+            )
+        assert exc.value.code == 2
+
+    def test_resolve_within_repo_out_of_repo_absolute_exits_2(
+        self, tmp_path: Path
+    ) -> None:
+        """An absolute path outside the repo tree exits with code 2."""
+        with pytest.raises(SystemExit) as exc:
+            _ = cyc._resolve_within_repo(str(tmp_path / "x.json"), label="--out-dir")
+        assert exc.value.code == 2

@@ -9,17 +9,24 @@ credentials and is documented in
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.provider import MockProvider
 from scripts.adversarial_harness import (
+    _REPO_ROOT,
     _catch_rate,
     _observe_item,
+    _resolve_within,
     classify_item,
     is_caught,
     verdict_rank,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class TestVerdictRank:
@@ -200,3 +207,24 @@ class TestObserveItemTargetStageGuard:
         provider = MockProvider(responses=[])
         with pytest.raises(ValidationError, match="unrecognized target_stage"):
             _ = await _observe_item(item, provider)
+
+
+class TestResolveWithin:
+    """CWE-23 containment gate: reject CLI paths that escape the repo root."""
+
+    def test_resolve_within_in_repo_path_returns_resolved(self) -> None:
+        """A path under the repo root is accepted and stays within it."""
+        result = _resolve_within(_REPO_ROOT / "skeletons" / "x.json", label="--corpus")
+        assert result.is_relative_to(_REPO_ROOT)
+
+    def test_resolve_within_parent_escape_exits_2(self) -> None:
+        """A ``..`` path climbing above the repo root exits with code 2."""
+        with pytest.raises(SystemExit) as exc:
+            _ = _resolve_within(_REPO_ROOT / ".." / "escape.json", label="--corpus")
+        assert exc.value.code == 2
+
+    def test_resolve_within_out_of_repo_absolute_exits_2(self, tmp_path: Path) -> None:
+        """An absolute path outside the repo tree exits with code 2."""
+        with pytest.raises(SystemExit) as exc:
+            _ = _resolve_within(tmp_path / "corpus.json", label="--corpus")
+        assert exc.value.code == 2
