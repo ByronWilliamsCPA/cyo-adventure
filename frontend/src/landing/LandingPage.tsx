@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 import { hasValidDeviceGrant, hydrateDeviceGrant } from '../auth/deviceGrant'
 import { Mascot } from '../kid/Mascot'

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'

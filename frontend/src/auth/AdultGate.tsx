@@ -1,7 +1,7 @@
 import { isAuthApiError } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router'
 
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import '../guardian/guardian.css'

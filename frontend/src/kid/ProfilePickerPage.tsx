@@ -1,6 +1,6 @@
 import { isAxiosError } from 'axios'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router'
 
 import { EmptyState } from '@ds/components/EmptyState'
 import { LoadingStatus } from '@ds/components/LoadingStatus'

@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useMemo, useRef, type CSSProperties } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 import { Button } from '@ds/components/Button'
 import { ChoiceButton } from '@ds/components/ChoiceButton'

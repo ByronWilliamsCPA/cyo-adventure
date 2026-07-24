@@ -1,7 +1,8 @@
 import 'fake-indexeddb/auto'
 
 import { render, screen } from '@testing-library/react'
-import { RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { createMemoryRouter } from 'react-router'
+import { RouterProvider } from 'react-router/dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import App from '../App'

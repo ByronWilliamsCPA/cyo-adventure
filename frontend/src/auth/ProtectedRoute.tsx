@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router'
 
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { GUARDIAN_AWAITING_APPROVAL_PATH, GUARDIAN_CONSENT_PATH, KID_PICKER_PATH } from '../routes'

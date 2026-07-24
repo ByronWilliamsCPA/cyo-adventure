@@ -1,7 +1,7 @@
 import { AuthApiError } from '@supabase/supabase-js'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import type { InitialEntry } from 'react-router-dom'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import type { InitialEntry } from 'react-router'
+import { MemoryRouter, Route, Routes } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { AuthContextValue } from '../auth/authContext'

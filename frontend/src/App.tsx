@@ -1,4 +1,4 @@
-import { RouterProvider } from 'react-router-dom'
+import { RouterProvider } from 'react-router/dom'
 
 import { AppErrorBoundary } from './AppErrorBoundary'
 import { ToastProvider } from './notifications/ToastProvider'

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router'
 
 import { EmptyState } from '@ds/components/EmptyState'
 import { Button } from '@ds/components/Button'

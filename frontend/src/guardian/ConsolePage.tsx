@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
