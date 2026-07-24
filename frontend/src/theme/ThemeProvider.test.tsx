@@ -137,6 +137,33 @@ describe('ThemeProvider', () => {
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('system')
   })
 
+  it('exposes a per-mode accessible label naming the current mode and the next one', () => {
+    // The only ThemeToggle behavior the cycle test above does not assert: the
+    // aria-label is the sole affordance a screen-reader user has (the icon is
+    // aria-hidden), so it must name the CURRENT mode, not just the target.
+    stubMatchMedia(false)
+    render(
+      <ThemeProvider>
+        <ThemeToggle />
+      </ThemeProvider>
+    )
+    const button = screen.getByRole('button')
+
+    expect(button).toHaveAttribute(
+      'aria-label',
+      'Theme: Match device. Switch to Light.'
+    )
+
+    act(() => button.click())
+    expect(button).toHaveAttribute('aria-label', 'Theme: Light. Switch to Dark.')
+
+    act(() => button.click())
+    expect(button).toHaveAttribute(
+      'aria-label',
+      'Theme: Dark. Switch to Match device.'
+    )
+  })
+
   it('picks up a theme change made in another tab via the storage event', () => {
     stubMatchMedia(false)
     render(
