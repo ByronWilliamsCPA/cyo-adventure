@@ -48,7 +48,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
@@ -163,7 +163,7 @@ jobs:
     # See https://github.com/slsa-framework/slsa-github-generator#referencing-slsa-builders-and-generators
     # #VERIFY: if a future pinning sweep rewrites this to a SHA, the job fails
     # with "the workflow is not referenced by a tag"; restore the tag form.
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@f7dd8c54c2067bafc12ca7a55595d5ee9b75204a # v2.1.0
     with:
       base64-subjects: ${{ needs.build.outputs.hashes }}
       upload-assets: true
