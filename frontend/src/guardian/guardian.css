@@ -1822,8 +1822,9 @@
 /* ============================================================================
    Mobile breakpoint (~640px): guardian surfaces are managed from a phone as
    often as a desktop. Desktop layouts above are left untouched; this block
-   only relaxes the row/action layouts that would otherwise overflow or
-   crush controls on a narrow screen. */
+   adjusts layouts for narrow screens: relaxing row/action/table layouts that
+   would otherwise overflow (various surfaces), reading cards (G9), and
+   notification panel positioning (G10). */
 @media (max-width: 640px) {
   /* #ASSUME: layout: the header's three action controls (ThemeToggle,
      NotificationBell, sign-out) plus the brand no longer fit on one row at
