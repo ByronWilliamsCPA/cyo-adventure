@@ -243,7 +243,7 @@
 }
 
 .guardian-stub {
-  border: 1px dashed var(--color-ink-muted, #8c6f56);
+  border: 1px dashed var(--color-ink-muted, #806048);
   border-radius: 12px;
   padding: 2rem;
   color: var(--color-ink-secondary, #5a3e28);
@@ -409,7 +409,7 @@
 }
 
 .profiles__caps {
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-muted, #806048);
   font-size: 0.875rem;
 }
 
@@ -619,8 +619,8 @@
 
 .flag-badge--block,
 .flag-badge--unscreened {
-  background: rgb(179 38 30 / 12%);
-  color: var(--color-error, #b3261e);
+  background: var(--color-error-light, #fde8e8);
+  color: var(--color-error, #9b2c2c);
 }
 
 /* Same small-text contrast constraint as .intake-request__assign above: a
@@ -635,18 +635,18 @@
 }
 
 .flag-badge--advisory {
-  background: rgb(90 62 40 / 10%);
+  background: var(--color-ink-wash, rgb(44 26 14 / 6%));
   color: var(--color-ink-secondary, #5a3e28);
 }
 
 .flag-badge--clean {
-  background: rgb(45 90 61 / 12%);
+  background: var(--color-forest-light, #d4e8da);
   color: var(--color-forest, #2d5a3d);
 }
 
 .flag-badge--processing {
-  background: rgb(140 111 86 / 12%);
-  color: var(--color-ink-muted, #8c6f56);
+  background: var(--color-ink-wash, rgb(44 26 14 / 6%));
+  color: var(--color-ink-muted, #806048);
 }
 
 .console-group {
@@ -833,14 +833,14 @@
 .review-node--flagged {
   border-left: 3px solid var(--color-amber, #e07f2e);
   padding-left: 0.75rem;
-  background: rgb(193 123 42 / 8%);
+  background: var(--color-amber-subtle, #fdf3e6);
 }
 
 /* Brief landing tint after a jump; stronger than the flagged tint so the
    target passage stands out even when it is itself flagged. Declared after
    --flagged so it wins their shared specificity. */
 .review-node--highlight {
-  background: rgb(224 127 46 / 22%);
+  background: var(--color-amber-light, #f7e2c4);
 }
 
 .review-node__badges {
@@ -861,7 +861,7 @@
 }
 
 .review-node__badge--start {
-  background: rgb(45 90 61 / 12%);
+  background: var(--color-forest-light, #d4e8da);
   color: var(--color-forest, #2d5a3d);
 }
 
@@ -1385,7 +1385,7 @@
 
 .books__assigned {
   margin: 0;
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-muted, #806048);
   font-size: 0.9rem;
 }
 
@@ -1433,7 +1433,7 @@
    row at or above the suggestion gate reuses the .review-node--flagged amber
    wash so gate-crossing evidence stands out at a glance. */
 .moderation-insight--at-gate {
-  background: rgb(193 123 42 / 8%);
+  background: var(--color-amber-subtle, #fdf3e6);
 }
 
 /* ============================================================================
@@ -1520,7 +1520,7 @@
 
 .reading-card__stat dt {
   font-size: 0.75rem;
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-muted, #806048);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -1581,7 +1581,7 @@
 .reading-book__progress {
   padding: 0.15rem 0.6rem;
   border-radius: 999px;
-  background: rgb(193 123 42 / 12%);
+  background: var(--color-amber-subtle, #fdf3e6);
   color: var(--color-amber-deep, #c17b2a);
   font-size: 0.8125rem;
   font-weight: var(--weight-semibold, 600);
@@ -1793,7 +1793,7 @@
 
 .connections-chip--inactive {
   background: var(--color-border-soft, rgb(44 26 14 / 12%));
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-muted, #806048);
 }
 
 /* ============================================================================

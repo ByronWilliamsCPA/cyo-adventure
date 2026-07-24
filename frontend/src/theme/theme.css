@@ -1,0 +1,25 @@
+/* Theme toggle button, shared by every surface's chrome (landing, kid,
+   guardian, admin). Sized and styled like NotificationBell's icon button
+   (44px minimum touch target, transparent-until-hover, amber focus ring) so
+   it reads as a sibling control wherever it's dropped in. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: var(--radius-full, 999px);
+  border: 2px solid transparent;
+  background: transparent;
+  color: var(--color-ink-secondary, #5a3e28);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background: var(--color-amber-subtle, #fdf3e6);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}

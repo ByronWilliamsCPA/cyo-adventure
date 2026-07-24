@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { KidShell } from './KidShell'
 import { KID_PICKER_PATH } from '../routes'
+import { ThemeProvider } from '../theme/ThemeProvider'
 
 /**
  * Route-gating coverage for KidShell (mirrors ReaderLeave.test.tsx's
@@ -33,15 +34,23 @@ const PROFILES = [
 
 function renderShellAt(path: string) {
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route element={<KidShell />}>
-          <Route path={KID_PICKER_PATH.slice(1)} element={<div>Picker Page</div>} />
-          <Route path="library/:profileId" element={<div>Library Page</div>} />
-          <Route path="read/:profileId/:storybookId/:version" element={<div>Reader Page</div>} />
-        </Route>
-      </Routes>
-    </MemoryRouter>
+    // ThemeProvider: KidShell's always-on ThemeToggle calls useTheme(),
+    // which throws outside one; every real route already sits under it
+    // (App.tsx).
+    <ThemeProvider>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route element={<KidShell />}>
+            <Route path={KID_PICKER_PATH.slice(1)} element={<div>Picker Page</div>} />
+            <Route path="library/:profileId" element={<div>Library Page</div>} />
+            <Route
+              path="read/:profileId/:storybookId/:version"
+              element={<div>Reader Page</div>}
+            />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </ThemeProvider>
   )
 }
 

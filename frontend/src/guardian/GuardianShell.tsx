@@ -5,6 +5,7 @@ import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { useAuth } from '../auth/useAuth'
 import { useApi } from '../hooks/useApi'
 import { ADMIN_CONSOLE_PATH } from '../routes'
+import { ThemeToggle } from '../theme/ThemeToggle'
 import { NotificationBell } from './NotificationBell'
 import { makeStoryRequestQueueApi, STORY_REQUESTS_CHANGED_EVENT } from './storyRequestQueueApi'
 import './guardian.css'
@@ -97,22 +98,28 @@ export function GuardianShell() {
           <span className="guardian-shell__title">CYO Adventure</span>
           {roleHint ? <span className="guardian-shell__role">{roleHint}</span> : null}
         </span>
-        {principal ? (
-          <div className="guardian-shell__header-actions">
-            {/* G10: near the pending-count badge below, not merged with it.
-                The nav badge tracks pending story requests; this tracks the
-                separate guardian notification feed (safety alerts, requests
-                awaiting consent, stories ready to read). */}
-            <NotificationBell />
-            <button
-              type="button"
-              className="guardian-shell__sign-out"
-              onClick={() => void startSignOut()}
-            >
-              Sign out
-            </button>
-          </div>
-        ) : null}
+        <div className="guardian-shell__header-actions">
+          {/* Visible whether or not a principal is signed in yet (unlike the
+              notification bell/sign-out below, which need one): the
+              preference is reachable from the login screen too. */}
+          <ThemeToggle />
+          {principal ? (
+            <>
+              {/* G10: near the pending-count badge below, not merged with it.
+                  The nav badge tracks pending story requests; this tracks the
+                  separate guardian notification feed (safety alerts, requests
+                  awaiting consent, stories ready to read). */}
+              <NotificationBell />
+              <button
+                type="button"
+                className="guardian-shell__sign-out"
+                onClick={() => void startSignOut()}
+              >
+                Sign out
+              </button>
+            </>
+          ) : null}
+        </div>
       </header>
       <nav className="guardian-shell__nav" aria-label="Guardian">
         <NavLink to="/guardian" end>

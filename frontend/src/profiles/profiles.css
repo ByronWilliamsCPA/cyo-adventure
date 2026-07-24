@@ -20,7 +20,7 @@
 
 .avatar-circle--fallback {
   border-style: dashed;
-  color: var(--color-ink-muted, #8c6f56);
+  color: var(--color-ink-muted, #806048);
   font-family: var(--font-sans, 'Segoe UI', sans-serif);
   font-weight: 600;
 }

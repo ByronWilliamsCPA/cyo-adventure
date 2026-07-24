@@ -4,6 +4,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { useAuth } from '../auth/useAuth'
 import { GUARDIAN_CONSOLE_PATH } from '../routes'
+import { ThemeToggle } from '../theme/ThemeToggle'
 import '../guardian/guardian.css'
 import './admin.css'
 
@@ -39,15 +40,18 @@ export function AdminShell() {
           <span className="guardian-shell__title">CYO Adventure</span>
           <span className="guardian-shell__role">Admin</span>
         </span>
-        {principal ? (
-          <button
-            type="button"
-            className="guardian-shell__sign-out"
-            onClick={() => void startSignOut()}
-          >
-            Sign out
-          </button>
-        ) : null}
+        <div className="guardian-shell__header-actions">
+          <ThemeToggle />
+          {principal ? (
+            <button
+              type="button"
+              className="guardian-shell__sign-out"
+              onClick={() => void startSignOut()}
+            >
+              Sign out
+            </button>
+          ) : null}
+        </div>
       </header>
       <nav className="guardian-shell__nav" aria-label="Admin">
         <NavLink to="/admin" end>
