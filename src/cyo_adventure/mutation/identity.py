@@ -61,7 +61,7 @@ _FILL_WORDS_RE = re.compile(r"words\s*=\s*(\d+)")
 # a single module-level source. If ADR-011 retunes these numbers, this table
 # must follow (design risk 6); single-sourcing from band_profile.py is the
 # preferred follow-up if a pace table is ever added there.
-# #VERIFY: tests/unit/test_mutation_identity.py pins every band's anchor and
+# #VERIFY: tests/unit/test_skeleton_mutation_identity.py pins every band's anchor and
 # asserts resync of every catalog skeleton yields estimated_minutes >= 1.
 _READING_PACE_WPM: dict[str, int] = {
     "3-5": 100,
@@ -92,7 +92,7 @@ _DEFAULT_PACE_WPM = 120
 # it, and the parent's declared topology is preserved whenever it stays
 # admissible. The 16+ open_map gap is flagged for the reviewer to fold back
 # into ADR-011 section 7.
-# #VERIFY: tests/unit/test_mutation_identity.py asserts every catalog
+# #VERIFY: tests/unit/test_skeleton_mutation_identity.py asserts every catalog
 # skeleton's own declared topology is preserved by redeclare_topology, and that
 # redeclare output is always in both the band row and
 # admissible_topologies(graph).
@@ -256,7 +256,7 @@ def rename_region(
     # namespace AND for intra-region uniqueness before anything is returned, so
     # the constructive path can never emit a collision; the schema's
     # _check_unique_ids is the fail-closed backstop (design CR-3).
-    # #VERIFY: tests/unit/test_mutation_identity.py proves, over the catalog,
+    # #VERIFY: tests/unit/test_skeleton_mutation_identity.py proves, over the catalog,
     # that renamed ids are disjoint from the host namespace and that a seeded
     # host-id collision raises.
     if k < 0:

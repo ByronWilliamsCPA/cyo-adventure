@@ -163,7 +163,7 @@ def test_resolving_all_reguide_items_makes_the_candidate_promotable(
     still-valid mechanic in isolation -- that resolving every re-guidance item is
     what flips a held candidate to promotable -- the structural floor is stubbed to
     pass here. The floor's own clone-rejection behaviour is covered by
-    test_structural_floor_discards_a_near_isomorphic_swap and test_mutation_floors.
+    test_structural_floor_discards_a_near_isomorphic_swap and test_skeleton_mutation_floors.
     """
     monkeypatch.setattr(
         "cyo_adventure.mutation.acceptance.structural_floor_reason",

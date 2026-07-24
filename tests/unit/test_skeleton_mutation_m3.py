@@ -547,7 +547,7 @@ def test_m3_prune_is_promotable_through_the_harness(
     the stage-3 structural anti-clone floor. This test pins the ORIGINAL mechanic
     -- a prune emits no re-guidance, so the promotable path is reached without a
     hold -- so the anti-clone floor is stubbed to pass, isolating the re-guidance
-    behaviour from the diversity floor (covered by test_mutation_floors.py). No
+    behaviour from the diversity floor (covered by test_skeleton_mutation_floors.py). No
     safety assertion is weakened: the gate and cell stages run unchanged.
     """
     monkeypatch.setattr(

@@ -2,7 +2,7 @@
 
 Targets the malformed-candidate skips in the surviving-re-guidance scan and the
 ``walk_cap`` delegation branch of ``run_chain_acceptance`` that the primary
-suite in ``test_mutation_compose.py`` does not reach.
+suite in ``test_skeleton_mutation_compose.py`` does not reach.
 """
 
 from __future__ import annotations

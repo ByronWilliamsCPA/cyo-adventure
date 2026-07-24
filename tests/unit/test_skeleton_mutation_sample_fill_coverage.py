@@ -1,7 +1,7 @@
 """Branch-coverage tests for the stage-5 sample fill (WS-5 D8 follow-up).
 
 Targets the branches of ``mutation/sample_fill.py`` that
-``test_mutation_sample_fill.py`` does not reach: the ``_mock_fill_document``
+``test_skeleton_mutation_sample_fill.py`` does not reach: the ``_mock_fill_document``
 skips (non-list nodes, junk node entries, and non-FILL bodies), the
 contract-less fill path, and the two non-clean note branches (a structural
 block versus a fidelity-only downgrade). The two note branches are driven by

@@ -423,7 +423,7 @@ def _build_disjoint_pair(
     # and close a cycle. Rejecting overlap here is the primary cycle guard; the
     # acyclicity check in _post_swap_reason is the belt-and-braces backstop, and
     # the full gate (stage 1) is the fail-closed authority.
-    # #VERIFY: tests/unit/test_mutation_m1.py pins that an overlapping pair is
+    # #VERIFY: tests/unit/test_skeleton_mutation_m1.py pins that an overlapping pair is
     # rejected at preconditions and that the accepted output is never gate-blocked.
     if subtree1.node_ids & subtree2.node_ids:
         return (
@@ -462,7 +462,7 @@ def _post_swap_reason(story: Mapping[str, object], pair: _SwapPair) -> str | Non
     # this cannot happen (a closed region has no out-edges), but the explicit
     # post-swap DAG check is retained as defense in depth and is what a future
     # non-closed extension will rely on.
-    # #VERIFY: test_mutation_m1.py exercises _post_swap_is_acyclic directly on a
+    # #VERIFY: test_skeleton_mutation_m1.py exercises _post_swap_is_acyclic directly on a
     # crafted cycle and asserts the acyclic-parent branch rejects it.
     if not _post_swap_is_acyclic(story, pair):
         return "the swap would create a cycle in an otherwise acyclic story"
@@ -1066,7 +1066,7 @@ def _pl20_remap_reason(story: Mapping[str, object], plan: _RemapPlan) -> str | N
     # inherited floor, discarding PRE-GATE when it drops below (direction:
     # shortest < floor is the failure). The unchanged gate re-proves PL-20 at
     # stage 1 regardless; this pre-check only avoids a wasted gate run.
-    # #VERIFY: tests/unit/test_mutation_m2.py pins a crafted parent where moving a
+    # #VERIFY: tests/unit/test_skeleton_mutation_m2.py pins a crafted parent where moving a
     # success ending onto a shallow leaf is rejected at preconditions with a
     # PL-20 reason, and the multiset-invariance property proves the gate never
     # blocks an accepted M2 output.
@@ -1304,7 +1304,7 @@ def _apply_remap(parent: Mapping[str, object], plan: _RemapPlan) -> dict[str, ob
     # valence class, so ending ids stay unique (a bijection over existing ids) and
     # every leaf keeps its valence. The unchanged gate re-proves PL-15/16/17 at
     # stage 1 regardless.
-    # #VERIFY: tests/unit/test_mutation_m2.py proves, over the catalog, that the
+    # #VERIFY: tests/unit/test_skeleton_mutation_m2.py proves, over the catalog, that the
     # (kind, valence) multiset is invariant, that no candidate introduces a kind
     # absent from the parent, and that run_gate never blocks an accepted output.
     candidate = copy.deepcopy(dict(parent))
@@ -1643,7 +1643,7 @@ def _region_cleanliness_reason(
     # defers stateful grafts to the composer. The gate's L1-6 is the fail-closed
     # backstop (an effect on an undeclared variable blocks), but the operator must
     # never attempt the move.
-    # #VERIFY: tests/unit/test_mutation_m3.py pins that a region carrying an
+    # #VERIFY: tests/unit/test_skeleton_mutation_m3.py pins that a region carrying an
     # on_enter effect, a choice effect, or a choice condition is rejected.
     for node in _nodes_of(story):
         node_id = _str_field(node, "id")
@@ -1898,7 +1898,7 @@ def _prune_floor_reason(
     # budgets. Exiting the declared cell would misrepresent the story's scale to
     # selection and the reader-facing clocks; the operator rejects it here rather
     # than emit a mutant that silently changes cell.
-    # #VERIFY: tests/unit/test_mutation_m3.py pins that a prune dropping below the
+    # #VERIFY: tests/unit/test_skeleton_mutation_m3.py pins that a prune dropping below the
     # cell minimum is discarded at preconditions.
     bounds = _cell_node_bounds(story)
     if bounds is not None and post_count < bounds[0]:
@@ -1918,7 +1918,7 @@ def _prune_floor_reason(
     # reader can never win; PL-17 requires a satisfying ending, and this operator
     # never proposes a candidate that would strip it (the gate re-proves PL-17 at
     # stage 1 regardless).
-    # #VERIFY: tests/unit/test_mutation_m3.py pins that pruning the last
+    # #VERIFY: tests/unit/test_skeleton_mutation_m3.py pins that pruning the last
     # success/completion ending is discarded.
     if not (_satisfying_ending_ids(story) - region):
         return "prune would remove the last success/completion ending (PL-17)"
@@ -2193,7 +2193,7 @@ def _evaluate_graft(  # noqa: PLR0911, PLR0913
         # (design 4.8), so the operator self-enforces the ADR-011 2-3 window: a
         # graft that would push a decision to 4+ choices is a grammar violation a
         # hand author would not make, rejected belt-and-braces before the gate.
-        # #VERIFY: test_mutation_m3.py pins that grafting onto a 3-choice decision
+        # #VERIFY: test_skeleton_mutation_m3.py pins that grafting onto a 3-choice decision
         # is discarded at preconditions.
         return None, (
             f"grafting a choice onto '{host_decision}' yields {post_choices} "
@@ -2205,7 +2205,7 @@ def _evaluate_graft(  # noqa: PLR0911, PLR0913
     # out-of-band content can cross into the host (the K13 age guarantee, design
     # section 10). A cross-band donor is rejected here and PL-15 re-runs at the
     # gate regardless.
-    # #VERIFY: test_mutation_m3.py pins that a different-band donor is rejected.
+    # #VERIFY: test_skeleton_mutation_m3.py pins that a different-band donor is rejected.
     host_band = _str_field(_metadata_of(host), "age_band")
     donor_band = _str_field(_metadata_of(donor), "age_band")
     if host_band is None or donor_band is None or host_band != donor_band:
@@ -2269,7 +2269,7 @@ def _build_graft_plan(  # noqa: PLR0913 -- the validated facts a graft plan need
     # rename_region, so a graft can never emit a duplicate id that would let one
     # graph position shadow another; the schema's uniqueness rule is the
     # fail-closed backstop (design CR-3).
-    # #VERIFY: test_mutation_m3.py asserts renamed ids are disjoint from the host
+    # #VERIFY: test_skeleton_mutation_m3.py asserts renamed ids are disjoint from the host
     # namespace over real catalog donors.
     renamed, node_id_map = rename_region(region_nodes, k, host_namespace)
     _rename_region_slot_tokens(renamed, k)
@@ -2297,7 +2297,7 @@ def _build_graft_plan(  # noqa: PLR0913 -- the validated facts a graft plan need
     # operator pre-computes the post-graft shortest satisfying path over the host
     # and grafted satisfying endings and rejects below-floor. The gate re-proves
     # PL-20 at stage 1 regardless; this avoids a wasted gate run.
-    # #VERIFY: test_mutation_m3.py accepts only grafts that hold the arc floor.
+    # #VERIFY: test_skeleton_mutation_m3.py accepts only grafts that hold the arc floor.
     floor = _pl20_floor(host)
     if floor is not None:
         targets = _satisfying_ending_ids(host) | _satisfying_in_nodes(renamed)
@@ -2416,7 +2416,7 @@ def _load_catalog_donor(slug: str) -> dict[str, object]:
     # discovered exactly the way selection discovers skeletons (design 4.4); this
     # is a deterministic read of trusted catalog data, never untrusted request
     # input (CR-5). Resolved cwd-relative like every skeleton tool.
-    # #VERIFY: test_mutation_m3.py grafts real same-band donors through this
+    # #VERIFY: test_skeleton_mutation_m3.py grafts real same-band donors through this
     # resolver and pins that a different-band donor is rejected at preconditions.
     import json  # noqa: PLC0415 -- lazy so mutation import stays db/generation-free
 
@@ -3048,7 +3048,7 @@ def _decision_window_reason(
     # decisions (a hollow shortcut) is discarded PRE-GATE. The rule is monotonic
     # so it never rejects a legitimate move toward the window on a parent the
     # catalog authored slightly outside it; it rejects only a NEW breach.
-    # #VERIFY: tests/unit/test_mutation_m4.py pins the exact counter on acyclic
+    # #VERIFY: tests/unit/test_skeleton_mutation_m4.py pins the exact counter on acyclic
     # fixtures and that an op pushing a path to 9, or dropping one below 4, is
     # discarded at preconditions.
     parent_counts, _parent_truncated = path_decision_counts(parent)
@@ -3127,7 +3127,7 @@ def _pl20_reason(
     # pre-checked here against the inherited floor and discarded PRE-GATE when the
     # post-removal shortest satisfying path drops below it; the unchanged gate
     # re-proves PL-20 at stage 1 regardless.
-    # #VERIFY: tests/unit/test_mutation_m4.py pins that a remove-linear dropping
+    # #VERIFY: tests/unit/test_skeleton_mutation_m4.py pins that a remove-linear dropping
     # the shortest satisfying path below the floor is discarded, and proves the
     # insert-linear PL-20 monotonicity property over real Tier-1 skeletons.
     floor = _pl20_floor(parent)
@@ -3160,7 +3160,7 @@ def _acyclicity_reason(
     # non-terminating for a reader. The post-op DAG check rejects it PRE-GATE for
     # an acyclic parent; the gate's L1-5 trap-loop rule is the fail-closed
     # backstop.
-    # #VERIFY: tests/unit/test_mutation_m4.py pins that a reconvergence to an
+    # #VERIFY: tests/unit/test_skeleton_mutation_m4.py pins that a reconvergence to an
     # ancestor is rejected on an acyclic parent.
     if not nx.is_directed_acyclic_graph(_parent_graph(parent)):
         return None
@@ -3370,7 +3370,7 @@ def _apply_insert_linear(
     # never add a variable, effect, or condition to a Tier-1 story (design 4.5,
     # "v1 inserts effect-free nodes only"). The tier is recomputed from variable
     # presence at resync and stays 1.
-    # #VERIFY: tests/unit/test_mutation_m4.py asserts no M4 output introduces any
+    # #VERIFY: tests/unit/test_skeleton_mutation_m4.py asserts no M4 output introduces any
     # variable, effect, or condition.
     candidate = copy.deepcopy(dict(parent))
     nodes = _candidate_nodes(candidate)
@@ -3681,7 +3681,7 @@ def _apply_insert_decision(
     # never add a variable, effect, or condition to a Tier-1 story (design 4.5).
     # The micro-stub ending's (kind, valence) is a band-legal discovery/neutral
     # by construction, so PL-15 is untouched.
-    # #VERIFY: tests/unit/test_mutation_m4.py asserts no M4 output introduces any
+    # #VERIFY: tests/unit/test_skeleton_mutation_m4.py asserts no M4 output introduces any
     # variable, effect, or condition, and that the micro-stub ending is band-legal.
     candidate = copy.deepcopy(dict(parent))
     nodes = _candidate_nodes(candidate)
