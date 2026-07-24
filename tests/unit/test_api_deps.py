@@ -69,6 +69,10 @@ class _FakeDepSession:
     async def scalars(self, stmt: object) -> _FakeScalarsResult:
         return _FakeScalarsResult(self._scalars_items)
 
+    async def execute(self, _stmt: object, _params: object = None) -> None:
+        """No-op for the require_principal RLS-context tail (apply_family_rls_context)."""
+        return
+
 
 def _principal(role: str, profiles: frozenset[uuid.UUID]) -> Principal:
     """Build a Principal for tests."""

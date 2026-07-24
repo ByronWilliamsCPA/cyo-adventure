@@ -6,8 +6,10 @@ as ``cyo_api`` or ``cyo_worker`` (the two roles created by
 CRUD chain against every RLS-enabled table, while a connection with no
 ADR-021 grant (``anon``/``authenticated``, the Supabase/PostgREST roles) is
 denied. It also enforces a coverage invariant: every table where
-``20260711200745_enable_rls_all_tables.sql`` turned RLS on must carry a
-``service_rw`` policy naming both roles, and both roles must hold the actual
+``20260711200745_enable_rls_all_tables.sql`` turned RLS on must be covered by
+policies that together name both roles (either the single blanket
+``service_rw``, or, on the ADR-022 Tier 1 tables, the ``worker_rw`` +
+``family_scoped`` split), and both roles must hold the actual
 SELECT/INSERT/UPDATE/DELETE privilege (a policy with no underlying GRANT is
 inert, and a GRANT with no policy is blocked by RLS; both halves are needed).
 
@@ -33,6 +35,7 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
+from cyo_adventure.core.database import apply_family_rls_context
 from cyo_adventure.db.models import (
     ChildProfile as ChildProfileModel,
 )
@@ -276,6 +279,13 @@ async def test_service_roles_full_pipeline_crud_under_rls(pg_url: str) -> None:
         profile_id = uuid.uuid4()
         request_id = uuid.uuid4()
         async with api_sessions() as session:
+            # ADR-022: cyo_api is family-scoped on the Tier 1 tables
+            # (child_profile, story_request), so the request context must be set
+            # before writing them, exactly as api/deps.py::require_principal does
+            # per request. Family/user are Tier 2 (blanket) and need no context,
+            # but setting it up front scopes the whole transaction. Dogfoods the
+            # production helper against real migrations as the cyo_api role.
+            await apply_family_rls_context(session, family_id=family_id, is_admin=False)
             session.add(Family(id=family_id, name="ADR-021 RLS test family"))
             await session.flush()
             session.add(
@@ -436,9 +446,12 @@ async def test_every_rls_table_grants_both_service_roles(pg_url: str) -> None:
     """Coverage invariant: every RLS-enabled table grants both service roles full CRUD.
 
     Two independent checks per table, since either alone can silently regress:
-    a ``service_rw`` policy naming both roles (the RLS-layer allow), and
-    ``has_table_privilege`` confirming SELECT/INSERT/UPDATE/DELETE for both
-    roles (the GRANT-layer allow; a policy with no underlying GRANT is inert).
+    the table's policies together name both roles (a single blanket
+    ``service_rw``, or the ADR-022 Tier 1 ``worker_rw`` + ``family_scoped``
+    split; ``_policy_role_names`` unions roles across every policy on the
+    table), plus ``has_table_privilege`` confirming SELECT/INSERT/UPDATE/DELETE
+    for both roles (the GRANT-layer allow; a policy with no underlying GRANT is
+    inert).
     A future migration that enables RLS on a new table without updating
     ``20260720170100_create_service_roles.sql`` /
     ``20260720170200_add_service_role_policies.sql`` fails this test, which is

@@ -293,6 +293,11 @@ class _ExplodingSession:
         msg = "verification must reject before the revocation lookup"
         raise AssertionError(msg)
 
+    async def execute(self, _stmt: object, _params: object = None) -> None:
+        """Also guarded: reject paths return before the RLS-context tail runs."""
+        msg = "verification must reject before the RLS-context tail"
+        raise AssertionError(msg)
+
 
 class _GrantRow:
     """Minimal DeviceGrant stand-in; only ``revoked_at`` is read downstream."""
@@ -314,6 +319,10 @@ class _GrantSession:
 
     async def scalar(self, _stmt: object) -> object | None:
         return self._grant
+
+    async def execute(self, _stmt: object, _params: object = None) -> None:
+        """No-op for the require_principal RLS-context tail (apply_family_rls_context)."""
+        return
 
 
 @pytest.mark.unit

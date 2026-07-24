@@ -11,10 +11,11 @@ hand-duplicated copies.
 from __future__ import annotations
 
 import re
+import secrets
 from pathlib import Path
 
 import asyncpg
-from sqlalchemy import text
+from sqlalchemy import make_url, text
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import NullPool
 
@@ -104,3 +105,63 @@ async def create_migrated_database(pg_url: str, db_name: str) -> str:
         await raw.close()
 
     return pg_url.rsplit("/", 1)[0] + f"/{db_name}"
+
+
+async def migrate_and_connect_as(
+    pg_url: str, db_name: str, role: str
+) -> tuple[str, str]:
+    """Build a migrated sibling database and promote a NOLOGIN role to LOGIN.
+
+    Applies the full migration chain (so the ADR-021 service roles and the
+    ADR-022 Tier 1 policies both exist), then flips ``role`` -- created NOLOGIN
+    by ``20260720170100_create_service_roles.sql`` -- to LOGIN with a fresh
+    random password so a caller can authenticate as it and be subject to its
+    RLS policies. The role is neither the table owner nor BYPASSRLS, which is
+    exactly why connecting as it makes policies observable (the owner-connected
+    default fixtures never see a policy filter a row).
+
+    Args:
+        pg_url: Admin ``postgresql+asyncpg://`` URL for the testcontainers
+            server (the session-scoped ``pg_url`` fixture).
+        db_name: Fresh database name; must match ``_SAFE_IDENTIFIER_RE``.
+        role: The migrated-schema role to promote. Interpolated into
+            ``ALTER ROLE`` DDL (role identifiers cannot be bound), so it is
+            validated against the same safe-identifier pattern as ``db_name``.
+
+    Returns:
+        tuple[str, str]: ``(admin_url, role_url)`` -- the RLS-bypassing owner
+        DSN for the new database (seed baseline rows through it) and a DSN
+        authenticated as ``role`` (run RLS-subject assertions through it).
+
+    Raises:
+        ValueError: If ``role`` is not a safe Postgres identifier.
+    """
+    if not _SAFE_IDENTIFIER_RE.match(role):
+        msg = f"role {role!r} is not a safe Postgres identifier"
+        raise ValueError(msg)
+
+    admin_url = await create_migrated_database(pg_url, db_name)
+    # secrets.token_urlsafe emits the URL-safe base64 alphabet only (no
+    # quotes), so it is safe to interpolate into the string-literal password
+    # position, which ALTER ROLE does not accept as a bind parameter. A fresh
+    # value per call means a stale connection can never reuse a prior password.
+    password = secrets.token_urlsafe(16)
+    admin = create_async_engine(
+        admin_url, poolclass=NullPool, isolation_level="AUTOCOMMIT"
+    )
+    try:
+        async with admin.connect() as conn:
+            await conn.execute(
+                text(f"ALTER ROLE \"{role}\" LOGIN PASSWORD '{password}'")
+            )
+    finally:
+        await admin.dispose()
+
+    # render_as_string(hide_password=False): str(URL) masks the password as
+    # "***", which would then be sent verbatim and fail auth.
+    role_url = (
+        make_url(admin_url)
+        .set(username=role, password=password)
+        .render_as_string(hide_password=False)
+    )
+    return admin_url, role_url
