@@ -82,20 +82,15 @@ export default defineConfig({
       // viewport, so fluid layouts and the no-breakpoint stylesheets are
       // exercised at a real narrow width. Run: npm run test:e2e:mobile.
       //
-      // browserName is forced to chromium: devices['iPhone 13'] defaults to
-      // WebKit, but WebKit's Linux build needs system libraries (libgtk-4,
-      // several libgst* GStreamer plugins, libflite, libavif, libsecret,
-      // etc.) that are not installed here and cannot be added without
-      // passwordless sudo (`npx playwright install-deps webkit` needs root).
-      // What this tier verifies is the iPhone 13 viewport/UA dimensions
-      // (320-414px fluid-layout overflow), not WebKit-specific rendering, so
-      // forcing chromium keeps the sweep runnable everywhere the existing
-      // chromium tier already runs, at the cost of not exercising the real
-      // WebKit engine.
+      // Runs on real WebKit: devices['iPhone 13'] defaults to WebKit, the
+      // engine iOS Safari and the R2 Capacitor WKWebView actually use, and
+      // WebKit's Linux system libraries are now installed here. This tier
+      // still does not emulate env(safe-area-inset-*) (A8); that needs a
+      // real device.
       name: 'mobile-safari',
       testDir: './e2e',
       testMatch: /mobile-viewport\.spec\.ts/,
-      use: { ...devices['iPhone 13'], browserName: 'chromium' },
+      use: { ...devices['iPhone 13'] },
     },
     {
       // Runs scripts/reset_e2e_real_state.py (via e2e-real/_reset.setup.ts)
