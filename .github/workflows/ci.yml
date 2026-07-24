@@ -225,15 +225,26 @@ jobs:
             ghcr.io/byronwilliamscpa/dhi-nginx:1.26-debian13@sha256:6b0137dc31dcff3c86854e3d9bbafb33201a6b0b83c44ecb0f4f6f092d68a7f4 \
             -t
 
-      - name: Install Playwright browsers (mocked e2e tier)
-        run: npx playwright install --with-deps chromium
+      # firefox + webkit are for the cross-device/cross-browser tier below
+      # (e2e/cross-device.spec.ts); the mocked chromium tier only needs
+      # chromium.
+      - name: Install Playwright browsers (mocked + cross-device e2e tiers)
+        run: npx playwright install --with-deps chromium firefox webkit
 
-      # Only the mocked `test:e2e` (chromium) project runs in CI; it mocks the
-      # API per test and needs no backend. The real-backend `test:e2e:real`
-      # tier stays local-only (it needs Postgres + a seeded uvicorn); run it
-      # per frontend/README.md before opening a PR.
+      # Only the mocked `test:e2e` (chromium) and `test:e2e:cross-device`
+      # (chromium/firefox/webkit device profiles) projects run in CI; both
+      # mock the API per test and need no backend. The real-backend
+      # `test:e2e:real` tier stays local-only (it needs Postgres + a seeded
+      # uvicorn); run it per frontend/README.md before opening a PR.
       - name: E2E (Playwright, mocked tier)
         run: npm run test:e2e
+
+      # Structural (no-pixel-diff) checks across real device/browser engines:
+      # Pixel 7 + iPad (gen 7) + iPhone 14 (webkit) + Desktop Firefox. See
+      # e2e/cross-device.spec.ts and the cross-device-*/cross-browser-*
+      # projects in playwright.config.ts.
+      - name: E2E (Playwright, cross-device/cross-browser tier)
+        run: npm run test:e2e:cross-device
 
       # Vitest writes lcov SF: paths relative to the package root (src/App.tsx),
       # but Codecov matches against the repo tree where the file is

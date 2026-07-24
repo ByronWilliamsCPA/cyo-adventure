@@ -20,6 +20,7 @@
     "test:e2e:real": "playwright test --project=real-backend --workers=1",
     "test:e2e:real:pipeline": "playwright test --project=real-backend-pipeline --workers=1",
     "test:e2e:real:pr-smoke": "playwright test --project=real-backend-pr-smoke --workers=1",
+    "test:e2e:cross-device": "playwright test --project=cross-device-mobile --project=cross-device-tablet --project=cross-browser-mobile-safari --project=cross-browser-firefox",
     "test:e2e:staging": "playwright test --config=playwright.e2e-staging.config.ts",
     "test:e2e:prod": "playwright test --config=playwright.e2e-prod.config.ts"
   },
