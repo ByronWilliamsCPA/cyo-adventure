@@ -95,6 +95,10 @@ def _apply_simple_fields(row: ChildProfile, body: ProfileUpdateBody) -> None:
         row: The profile row being updated (mutated in place).
         body: The PATCH body.
     """
+    # #ASSUME: data integrity: an explicit null on any of these five non-avatar
+    # scalar fields is a deliberate no-op, not a clear; only a present, non-null
+    # value is written to the ORM row.
+    # #VERIFY: test_profiles.py::test_update_ignores_explicit_null_on_non_avatar_fields
     if body.display_name is not None:
         row.display_name = body.display_name
     if body.age_band is not None:

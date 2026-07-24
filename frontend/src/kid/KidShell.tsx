@@ -34,6 +34,11 @@ export function KidShell() {
   const navProfileId = libraryMatch?.params.profileId
   const profile = useKidProfile(navProfileId ?? readMatch?.params.profileId)?.profile ?? null
 
+  // #EDGE: accessibility: while the profile lookup is in flight or has failed,
+  // data-reduce-motion is unset and the guardian-set app-level reduce_motion
+  // preference fails open to full motion. Accepted bound: band-tokens.css's
+  // `@media (prefers-reduced-motion: reduce)` fail-safe is independent of this
+  // attribute and still applies for any device with the OS-level preference.
   return (
     <div
       className="kid-shell"

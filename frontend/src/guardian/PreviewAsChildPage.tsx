@@ -41,6 +41,14 @@ export function PreviewAsChildPage() {
   // preview still renders LibraryPage underneath (neutral band/motion) rather
   // than blocking on this best-effort lookup, which only supplies the
   // data-age-band/data-reduce-motion attributes and the banner's child name.
+  // #EDGE: accessibility: on a failed/slow lookup data-reduce-motion is unset,
+  // so the guardian-set app-level reduce_motion preference fails open to full
+  // motion for the preview. This is an accepted bound, not a silent gap: the
+  // accessibility fail-safe is band-tokens.css's `@media (prefers-reduced-motion:
+  // reduce)` block, which is independent of this attribute and still zeroes
+  // motion for any device with the OS-level preference set. Persisting the
+  // per-profile flag for offline/failure survival is deliberately out of scope
+  // here (would belong in the offline profile mirror, not this best-effort view).
   useEffect(() => {
     if (profileId === undefined) return undefined
     let cancelled = false
