@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { Button } from '@ds/components/Button'
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { classifyApiError } from '../hooks/classifyApiError'
@@ -120,14 +121,14 @@ export function UserManagementPage() {
       <h1>User management</h1>
       <nav aria-label="User management sections">
         {TABS.map((key) => (
-          <button
+          <Button
             key={key}
-            type="button"
+            variant={tab === key ? 'primary' : 'ghost'}
             aria-current={tab === key ? 'page' : undefined}
             onClick={() => setTab(key)}
           >
             {TAB_LABELS[key]}
-          </button>
+          </Button>
         ))}
       </nav>
       {tab === 'users' ? (
