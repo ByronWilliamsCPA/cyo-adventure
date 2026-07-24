@@ -13,6 +13,12 @@
   color: var(--color-ink, #2c1a0e);
 }
 
+.landing__theme-toggle {
+  position: fixed;
+  top: var(--space-3, 0.75rem);
+  right: var(--space-3, 0.75rem);
+}
+
 .landing__hero {
   display: flex;
   flex-direction: column;

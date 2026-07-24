@@ -1,4 +1,8 @@
 :root {
+  /* Default: follow the OS unless a specific theme is stamped onto
+     data-theme below (see the ThemeProvider-driven blocks further down). */
+  color-scheme: light dark;
+
   /* ── Colors: storybook palette ───────────────────── */
 
   /* Parchment: warm cream backgrounds */
@@ -23,6 +27,13 @@
      the parchment wash. Consolidates 4 former inline
      rgb(255 255 255 / 55%) declarations in the guardian surface. */
   --surface-raised:        rgb(255 255 255 / 55%);
+
+  /* Ink wash: neutral ink-tinted badge/highlight background, for a
+     status-badge fill that isn't one of the semantic colors below (advisory,
+     processing). Consolidates former inline rgb(90 62 40 / 10%) and
+     rgb(140 111 86 / 12%) declarations in the guardian surface, both of
+     which were untethered from any token and so did not adapt in dark mode. */
+  --color-ink-wash:        rgb(44 26 14 / 6%);
 
   /* Amber: primary interactive accent (brightened to a sunnier tangerine for
      the kid surface; still warm enough to sit on parchment) */
@@ -135,7 +146,14 @@
   --easing-default:  ease-in-out;
 }
 
-/* ── Dark mode: follows the OS `prefers-color-scheme`, no manual toggle ──
+/* ── Dark mode: chosen via src/theme (ThemeProvider), OS by default ──
+   ThemeProvider resolves the light/dark/system preference (localStorage,
+   falling back to the OS prefers-color-scheme when 'system' or unset) and
+   stamps the result onto <html data-theme="dark"|"light">; index.html's
+   inline script stamps the same value before first paint so there is no
+   flash. This block matches that attribute, not the media feature directly,
+   so an explicit choice can override the OS regardless of which way it goes.
+
    Same custom property names as :root above; only the values change, so no
    component needs to change. Warm dark palette (deep browns, not pure
    black/gray) to keep the parchment/storybook feel at night.
@@ -152,91 +170,100 @@
    (reserved, not yet consumed by any component) and the --cover-* gradients
    (book-spine art; a "picture" element like a cover image, not re-themed by
    dark mode any more than an <img> would be). */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Parchment: deep warm brown-black backgrounds, ascending lightness
-       (parchment < parchment-dark < parchment-deeper) so parchment-deeper
-       still reads as a border against either background tier. */
-    --color-parchment:       #1a130d;
-    --color-parchment-dark:  #20180f;
-    --color-parchment-deeper: #8a6d4c;
+:root[data-theme='light'] {
+  color-scheme: light;
+}
 
-    /* Ink: warm cream/tan text, brightest tier first.
-       ink on parchment: 14.93:1. ink on parchment-dark: 14.23:1.
-       ink-secondary on parchment: 9.72:1. ink-muted on parchment: 5.65:1
-       (an improvement on the light palette's own ~4.20:1, which the
-       utilities.css comment already documents as below AA). */
-    --color-ink:             #f3e6d2;
-    --color-ink-secondary:   #d3b98f;
-    --color-ink-muted:       #a68a67;
+:root[data-theme='dark'] {
+  color-scheme: dark;
 
-    /* Border: same ink-tinted hairline, lightened relative to the new dark
-       background (was a low-opacity darkening tint on light parchment). */
-    --color-border-soft:     rgb(243 230 210 / 16%);
+  /* Parchment: deep warm brown-black backgrounds, ascending lightness
+     (parchment < parchment-dark < parchment-deeper) so parchment-deeper
+     still reads as a border against either background tier. */
+  --color-parchment:       #1a130d;
+  --color-parchment-dark:  #20180f;
+  --color-parchment-deeper: #8a6d4c;
 
-    /* Surface: a faint lightening wash for a card raised off the dark
-       parchment (was a faint white wash raising a card off light
-       parchment; full 55% white would wash out the dark aesthetic, so the
-       tint stays warm and the opacity drops). */
-    --surface-raised:        rgb(255 244 224 / 8%);
+  /* Ink: warm cream/tan text, brightest tier first.
+     ink on parchment: 14.93:1. ink on parchment-dark: 14.23:1.
+     ink-secondary on parchment: 9.72:1. ink-muted on parchment: 5.65:1
+     (an improvement on the light palette's own ~4.20:1, which the
+     utilities.css comment already documents as below AA). */
+  --color-ink:             #f3e6d2;
+  --color-ink-secondary:   #d3b98f;
+  --color-ink-muted:       #a68a67;
 
-    /* Amber: primary interactive accent.
-       amber (border/decorative only, never a text fill) on parchment:
-       8.16:1; on parchment-dark: 7.78:1.
-       amber-deep, amber-hover, and amber-light all sit under
-       --color-ink text on their solid-fill states (primary button, hover,
-       ChoiceButton selected) AND serve as text/border color elsewhere, so
-       each is tuned to a narrow band that clears both roles:
-       ink-on-amber-deep 4.57:1, ink-on-amber-hover 4.53:1,
-       ink-on-amber-light 4.58:1 (all >= the 4.5:1 AA normal-text
-       minimum: the primary button's headline pairing named in the design
-       review); amber-deep on parchment 3.27:1, on parchment-dark 3.12:1,
-       on amber-subtle 3.04:1 (>= the 3:1 non-text/large-text minimum, the
-       same threshold the light palette's own amber-deep relies on). */
-    --color-amber:           #eb9b4c;
-    --color-amber-hover:     #8f5d27;
-    --color-amber-light:     #86602d;
-    --color-amber-subtle:    #241a10;
-    --color-amber-deep:      #905c1f;
-    /* amber-text on amber-subtle: 8.51:1; on parchment: 9.17:1 (both clear
-       the 4.5:1 AA normal-text minimum the light palette documents). */
-    --color-amber-text:      #f0a860;
+  /* Border: same ink-tinted hairline, lightened relative to the new dark
+     background (was a low-opacity darkening tint on light parchment). */
+  --color-border-soft:     rgb(243 230 210 / 16%);
 
-    /* Forest: secondary (success, connected). Reads as text (guardian
-       console "connected" labels) on parchment (5.25:1) and, in one place
-       (the landing page's guardian door icon), as a solid fill under a
-       hardcoded white icon glyph (3.50:1, clears the 3:1 non-text
-       minimum); tuned to a mid-tone that satisfies both. */
-    --color-forest:          #4c9867;
-    --color-forest-light:    #1a2f20;
+  /* Surface: a faint lightening wash for a card raised off the dark
+     parchment (was a faint white wash raising a card off light
+     parchment; full 55% white would wash out the dark aesthetic, so the
+     tint stays warm and the opacity drops). */
+  --surface-raised:        rgb(255 244 224 / 8%);
 
-    /* Sky: tertiary (informational). sky on parchment: 7.23:1; ink on
-       sky-light (toast--info body text): 12.04:1. */
-    --color-sky:             #6fa8d8;
-    --color-sky-light:       #17293b;
+  /* Ink wash: same neutral badge wash, lightened relative to the dark
+     background (was a low-opacity darkening tint on light parchment, same
+     relationship as --color-border-soft above). */
+  --color-ink-wash:        rgb(243 230 210 / 8%);
 
-    /* Semantic: error and success are read as TEXT on their own "-light"
-       wash (StatusBadge), the pairing called out for verification.
-       error on error-light: 6.18:1. error on parchment: 7.29:1.
-       success on success-light: 6.97:1. success on parchment: 9.33:1.
-       warning on warning-light: 6.77:1. warning on parchment: 9.17:1.
-       (Button.css's danger fill, background: error / color: parchment,
-       stays >= 4.5:1 too: 7.29:1, since dark-mode parchment is near-black
-       and error is kept light enough to read as text elsewhere.) */
-    --color-error:           #e58a8a;
-    --color-error-light:     #3b1a1a;
-    --color-success:         #7bc99a;
-    --color-success-light:   #17331f;
-    --color-warning:         #e0b04c;
-    --color-warning-light:   #3a2c10;
+  /* Amber: primary interactive accent.
+     amber (border/decorative only, never a text fill) on parchment:
+     8.16:1; on parchment-dark: 7.78:1.
+     amber-deep, amber-hover, and amber-light all sit under
+     --color-ink text on their solid-fill states (primary button, hover,
+     ChoiceButton selected) AND serve as text/border color elsewhere, so
+     each is tuned to a narrow band that clears both roles:
+     ink-on-amber-deep 4.57:1, ink-on-amber-hover 4.53:1,
+     ink-on-amber-light 4.58:1 (all >= the 4.5:1 AA normal-text
+     minimum: the primary button's headline pairing named in the design
+     review); amber-deep on parchment 3.27:1, on parchment-dark 3.12:1,
+     on amber-subtle 3.04:1 (>= the 3:1 non-text/large-text minimum, the
+     same threshold the light palette's own amber-deep relies on). */
+  --color-amber:           #eb9b4c;
+  --color-amber-hover:     #8f5d27;
+  --color-amber-light:     #86602d;
+  --color-amber-subtle:    #241a10;
+  --color-amber-deep:      #905c1f;
+  /* amber-text on amber-subtle: 8.51:1; on parchment: 9.17:1 (both clear
+     the 4.5:1 AA normal-text minimum the light palette documents). */
+  --color-amber-text:      #f0a860;
 
-    /* Shadows bake in a color, not just alpha: the light palette tints them
-       with ink so they read on a pale background. On a near-black
-       background that same warm-brown tint would barely register, so dark
-       mode switches to a plain black tint at higher opacity for the same
-       visible depth. */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.40);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.50);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.60);
-  }
+  /* Forest: secondary (success, connected). Reads as text (guardian
+     console "connected" labels) on parchment (5.25:1) and, in one place
+     (the landing page's guardian door icon), as a solid fill under a
+     hardcoded white icon glyph (3.50:1, clears the 3:1 non-text
+     minimum); tuned to a mid-tone that satisfies both. */
+  --color-forest:          #4c9867;
+  --color-forest-light:    #1a2f20;
+
+  /* Sky: tertiary (informational). sky on parchment: 7.23:1; ink on
+     sky-light (toast--info body text): 12.04:1. */
+  --color-sky:             #6fa8d8;
+  --color-sky-light:       #17293b;
+
+  /* Semantic: error and success are read as TEXT on their own "-light"
+     wash (StatusBadge), the pairing called out for verification.
+     error on error-light: 6.18:1. error on parchment: 7.29:1.
+     success on success-light: 6.97:1. success on parchment: 9.33:1.
+     warning on warning-light: 6.77:1. warning on parchment: 9.17:1.
+     (Button.css's danger fill, background: error / color: parchment,
+     stays >= 4.5:1 too: 7.29:1, since dark-mode parchment is near-black
+     and error is kept light enough to read as text elsewhere.) */
+  --color-error:           #e58a8a;
+  --color-error-light:     #3b1a1a;
+  --color-success:         #7bc99a;
+  --color-success-light:   #17331f;
+  --color-warning:         #e0b04c;
+  --color-warning-light:   #3a2c10;
+
+  /* Shadows bake in a color, not just alpha: the light palette tints them
+     with ink so they read on a pale background. On a near-black
+     background that same warm-brown tint would barely register, so dark
+     mode switches to a plain black tint at higher opacity for the same
+     visible depth. */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.40);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.50);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.60);
 }

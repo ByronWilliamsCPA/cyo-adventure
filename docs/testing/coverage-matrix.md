@@ -468,6 +468,13 @@ in their journey sections instead.
   `frontend/src/notifications/ToastProvider.test.tsx`,
   `frontend/src/hooks/classifyApiError.test.ts`,
   `frontend/src/hooks/logApiError.test.ts`
+- Theme system (light/dark/system, mounted app-wide at the root via
+  ThemeProvider; every surface's chrome renders a ThemeToggle):
+  `frontend/src/theme/theme.test.ts` (mode validation, stored-preference
+  round-trip, and the localStorage/matchMedia fallbacks) and
+  `frontend/src/theme/ThemeProvider.test.tsx` (provider state, `<html
+  data-theme>` sync, OS-preference and cross-tab `storage` re-resolution, and
+  the ThemeToggle three-way cycle plus its per-mode accessible label)
 
 ## Keeping this matrix current
 

@@ -10,6 +10,7 @@ import { clearAdultGate, warmAdultGate } from '../auth/parentalGateState'
 import { ToastProvider } from '../notifications/ToastProvider'
 import { _resetDbHandle } from '../offline/db'
 import { routes } from '../router'
+import { ThemeProvider } from '../theme/ThemeProvider'
 
 // Mock the API adapters so the reader route mounts deterministically without a backend.
 vi.mock('../api/readerApi', () => ({
@@ -114,17 +115,20 @@ vi.mock('../auth/supabaseClient', () => ({
 function renderAt(initialPath: string) {
   // No <AuthProvider> wrapper here: it is scoped to the guardian subtree via
   // the lazy GuardianAuthLayout in `routes`, mirroring production (App.tsx
-  // renders <ToastProvider> around <RouterProvider>, nothing else). The
-  // kid-surface tests below therefore exercise routes that never mount
-  // AuthProvider, which is the point of scoping it; the guardian tests get it
-  // through the route tree. ToastProvider IS here for the same
+  // renders <ThemeProvider><ToastProvider> around <RouterProvider>, nothing
+  // else). The kid-surface tests below therefore exercise routes that never
+  // mount AuthProvider, which is the point of scoping it; the guardian tests
+  // get it through the route tree. ToastProvider IS here for the same
   // mirror-production reason: it wraps the router in App.tsx, and ReaderRoute
-  // calls useToast() unconditionally.
+  // calls useToast() unconditionally. ThemeProvider IS here too: every
+  // shell's chrome mounts a ThemeToggle, which calls useTheme() unconditionally.
   const router = createMemoryRouter(routes, { initialEntries: [initialPath] })
   return render(
-    <ToastProvider>
-      <RouterProvider router={router} />
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </ThemeProvider>
   )
 }
 
@@ -524,9 +528,11 @@ describe('router: guardian surface', () => {
     })
     const router = createMemoryRouter(routes, { initialEntries: ['/guardian'] })
     render(
-      <ToastProvider>
-        <RouterProvider router={router} />
-      </ToastProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <RouterProvider router={router} />
+        </ToastProvider>
+      </ThemeProvider>
     )
     expect(await screen.findByText(/Family console/)).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Grown-ups only' })).not.toBeInTheDocument()
