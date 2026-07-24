@@ -37,8 +37,10 @@
   }
 }
 
+/* The progress bar takes the remaining row width, but keeps a sane floor so it
+   never collapses to nothing when the controls wrap onto their own line. */
 .reader-chrome .cyo-progress {
-  flex: 1;
+  flex: 1 1 12rem;
 }
 
 /* UX-K2: A / A+ / A++ text-size picker in the reader top bar. */
