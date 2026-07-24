@@ -171,26 +171,6 @@ test.describe('guardian profiles (/guardian/profiles)', () => {
 
   for (const width of WIDTHS) {
     test(`has no horizontal overflow at ${width}px`, async ({ page }) => {
-      // #EDGE: real bug this sweep discovered, not a test bug: at 320px
-      // `.guardian-shell__header` (guardian.css) overflows because it has no
-      // flex-wrap fallback, unlike `.guardian-shell__nav` just below it in
-      // the same file. The `justify-content: space-between` header packs the
-      // brand text on the left against `.guardian-shell__header-actions`
-      // (NotificationBell + Sign out button) on the right; at 320px the two
-      // sides do not fit and `.guardian-shell__header-actions` is pushed to
-      // right=342px in a 320px viewport instead of wrapping to a second row.
-      // Fixing GuardianShell/guardian.css is out of scope for Task A12 (test
-      // infrastructure only, three named files); flagging via test.fail so a
-      // future header fix (a natural follow-up alongside A1's reader-chrome
-      // wrap and A2's shell-height work) turns this into an "unexpectedly
-      // passed" signal instead of silently staying green forever.
-      // #VERIFY: file a follow-up task to add flex-wrap to
-      // .guardian-shell__header (and re-check the brand/actions min-width)
-      // then delete this test.fail() call.
-      test.fail(
-        width === 320,
-        'known bug: GuardianShell header overflows at 320px, out of scope for A12'
-      )
       await page.setViewportSize({ width, height: 800 })
       await page.goto('/guardian/profiles')
       await expect(page.getByText('Reader A')).toBeVisible()

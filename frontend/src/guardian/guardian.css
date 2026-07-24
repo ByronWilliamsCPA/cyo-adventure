@@ -37,6 +37,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: var(--space-4, 1rem);
   padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
   padding-top: max(var(--space-3, 0.75rem), env(safe-area-inset-top));
