@@ -101,4 +101,21 @@ describe('PreviewAsChildPage', () => {
     renderPreview()
     expect(await screen.findByText('Previewing (read-only)')).toBeInTheDocument()
   })
+
+  it('leaks no child data for a profileId outside the guardian family', async () => {
+    // The server-scoped /v1/profiles list only ever returns the guardian's own
+    // family, so a profileId belonging to another family is simply absent:
+    // find() yields undefined and the preview must fall back to the generic
+    // banner with no foreign display name or age band. This is the client-side
+    // half of the IDOR boundary the backend enforces via
+    // api/deps.py::_resolve_profiles (family-scoped profile_ids); it locks in
+    // that an out-of-family :profileId in the URL cannot surface another
+    // child's identity or band-driven styling.
+    const { container } = renderPreview('p-other-family')
+    expect(await screen.findByText('Previewing (read-only)')).toBeInTheDocument()
+    expect(screen.queryByText(/Mia/)).not.toBeInTheDocument()
+    const root = container.querySelector('.preview-as-child')
+    expect(root).not.toHaveAttribute('data-age-band')
+    expect(root).not.toHaveAttribute('data-reduce-motion')
+  })
 })

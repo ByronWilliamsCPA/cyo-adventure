@@ -192,6 +192,49 @@ describe('ProfileFormDialog', () => {
     )
   })
 
+  // Per-profile reduce-motion (ChildProfile.reduce_motion): the guardian-set
+  // accessibility preference that KidShell/PreviewAsChildPage project onto
+  // data-reduce-motion. It travels in the payload the same way tts_enabled
+  // does (unchecked/false on create by default, the stored value preselected
+  // on edit and toggleable).
+  it('renders an unchecked reduce-animations checkbox and defaults reduce_motion to false on create', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+
+    expect(screen.getByRole('checkbox', { name: /reduce animations/i })).not.toBeChecked()
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ reduce_motion: false }))
+    )
+  })
+
+  it('preselects an edited profile reduce_motion value and lets it be toggled', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={{ ...existingProfile(false), reduce_motion: true }}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    const checkbox = screen.getByRole('checkbox', { name: /reduce animations/i })
+    expect(checkbox).toBeChecked()
+    await user.click(checkbox)
+    expect(checkbox).not.toBeChecked()
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ reduce_motion: false }))
+    )
+  })
+
   it('selects an avatar via its radio input', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockResolvedValue(undefined)
