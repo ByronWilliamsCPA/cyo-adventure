@@ -129,7 +129,7 @@ _MAX_CHOICES_PER_DECISION = 3
 # identity module's _BAND_TOPOLOGIES intent. A Tier-2 skeleton in a stateless
 # band would already fail its own hand-authoring review; this predicate keeps M5
 # from ever attempting one.
-# #VERIFY: tests/unit/test_mutation_m5.py asserts M5 rejects a stateless-band or
+# #VERIFY: tests/unit/test_skeleton_mutation_m5.py asserts M5 rejects a stateless-band or
 # Tier-1 parent at preconditions, and accepts the-flooded-quarter (10-13).
 _STATE_PERMITTED_BANDS: frozenset[str] = frozenset({"8-11", "10-13", "13-16", "16+"})
 
@@ -145,9 +145,9 @@ _STATE_PERMITTED_BANDS: frozenset[str] = frozenset({"8-11", "10-13", "13-16", "1
 # have distance 0) and far below any distinct-tree pair. It is wired reject-only,
 # so the value can only over- or under-reject a non-safety diversity floor, never
 # admit an unsafe mutant (design CR-2).
-# #VERIFY: tests/unit/test_mutation_m5.py pins that a no-op retune, a
+# #VERIFY: tests/unit/test_skeleton_mutation_m5.py pins that a no-op retune, a
 # description-only edit, and an alpha-rename all fall below _TAU_STATE, and that a
-# real retune / gate-choice / relocate clear it; test_mutation_floors.py pins the
+# real retune / gate-choice / relocate clear it; test_skeleton_mutation_floors.py pins the
 # value equals the committed baseline.
 _TAU_STATE: float = TAU_STATE
 _TAU_STATE_IS_PROVISIONAL = False  # calibrated in D7 from the committed baseline.
@@ -331,7 +331,7 @@ def _assert_endings_untouched(
     # construction (design section 10, 5). This assertion is the type-level
     # guarantee: any M5 apply path that changed an ending is a programming error
     # and is rejected here before the candidate is returned.
-    # #VERIFY: tests/unit/test_mutation_m5.py asserts every M5 mode leaves the
+    # #VERIFY: tests/unit/test_skeleton_mutation_m5.py asserts every M5 mode leaves the
     # ending multiset byte-identical and that a hand-tampered ending trips this.
     if _ending_multiset(parent) != _ending_multiset(candidate):
         msg = "M5 must not change any ending block, kind, valence, or the multiset"
@@ -964,7 +964,7 @@ def state_signature_floor_reason(
     # cosmetic retune, a description-only edit, or an alpha-rename is not a
     # distinct tree) but never raise it, so the provisional _TAU_STATE carries no
     # safety risk (design CR-2, floors reject-only). D7 calibrates _TAU_STATE.
-    # #VERIFY: tests/unit/test_mutation_m5.py pins that a no-op / description-only
+    # #VERIFY: tests/unit/test_skeleton_mutation_m5.py pins that a no-op / description-only
     # / alpha-rename mutant is below the floor and a real retune clears it.
     parent_walk = walk_configurations(parent)
     parent_sig = state_signature(parent, parent_walk)
@@ -1161,7 +1161,7 @@ def _stranding_precondition(
     # surviving unconditioned sibling OR an explicit justification; the gate's
     # L2-9/L2-10 over the configuration walk is the authority that actually proves
     # no reader is trapped (design 5.2, "the walk is the authority").
-    # #VERIFY: tests/unit/test_mutation_m5.py pins that gating a lone-exit choice
+    # #VERIFY: tests/unit/test_skeleton_mutation_m5.py pins that gating a lone-exit choice
     # is refused at preconditions, and that a gate-choice which strands a config is
     # discarded at the gate (L2-9).
     node = _node_by_id(parent, node_id)

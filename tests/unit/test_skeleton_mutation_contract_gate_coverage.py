@@ -1,7 +1,7 @@
 """Branch-coverage tests for stage-4 contract acceptance (WS-5 D7 follow-up).
 
 Targets the error, mismatch, and probe-selection branches of
-``mutation/contract_gate.py`` that ``test_mutation_floors.py`` does not reach:
+``mutation/contract_gate.py`` that ``test_skeleton_mutation_floors.py`` does not reach:
 the three-surface token scanner on malformed skeletons, ``_pick_probe``'s
 declared-forbid and unconstrained-mature paths, and every reject branch of
 ``contract_acceptance_reason`` (gate-blocked candidate, unknown forbid bundle, a

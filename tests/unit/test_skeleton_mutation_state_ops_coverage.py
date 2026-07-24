@@ -2,7 +2,7 @@
 
 These tests target the defensive, error, and edge branches of
 ``mutation/state_ops.py`` that the behavioral M5 suite in
-``test_mutation_m5.py`` does not reach: the malformed-input dict accessors, the
+``test_skeleton_mutation_m5.py`` does not reach: the malformed-input dict accessors, the
 ``_assemble_condition`` whitelist ladder, the retune/rename/gate/add-route/
 relocate precondition failures, the in-place clamp and rename helpers on crafted
 condition trees, the "vanished during apply" fail-closed raises, and the

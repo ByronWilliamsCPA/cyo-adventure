@@ -343,7 +343,7 @@ class MutationOp(Protocol):
 # duplicated entry point and the moved region would be reachable from a stale
 # position. The check must enumerate in-edges over the WHOLE graph, not the
 # candidate region.
-# #VERIFY: tests/unit/test_mutation_subtree.py property test: for every node r
+# #VERIFY: tests/unit/test_skeleton_mutation_subtree.py property test: for every node r
 # in every catalog skeleton, extract_subtree(r) either fails self-containment
 # or the returned node set has in-edges only at r (asserted by exhaustive edge
 # scan), and the gate on a swap using it is never L1-2/L1-3 blocked.
@@ -659,7 +659,7 @@ acceptance harness (section 6) adds them for Tier-2 mutants, stricter-only:
 # reached.
 # #VERIFY: acceptance.py runs walk_configurations once, feeds both the L2
 # re-check and the coverage set from that single result;
-# tests/unit/test_mutation_acceptance.py pins a fixture where an oil retune
+# tests/unit/test_skeleton_mutation_acceptance.py pins a fixture where an oil retune
 # makes exactly one ending config-unreachable and asserts discard.
 ```
 

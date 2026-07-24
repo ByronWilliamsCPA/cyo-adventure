@@ -1,7 +1,7 @@
 """Branch-coverage tests for defensive paths in ``mutation/acceptance.py`` (WS-5).
 
 Targets the reject-only helper branches the primary stage-table suite in
-``test_mutation_acceptance.py`` does not reach: the Tier-2 parse guard, the two
+``test_skeleton_mutation_acceptance.py`` does not reach: the Tier-2 parse guard, the two
 clock-reproof early exits, the unparseable-parent state-floor skip, the stage-4
 contract discard, and the apply-after-preconditions failure path.
 """

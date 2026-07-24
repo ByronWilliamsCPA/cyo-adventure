@@ -191,7 +191,7 @@ def is_self_contained(
     # reachable from a stale position. The check MUST enumerate in-edges over
     # the WHOLE graph, not the candidate region, so external predecessors are
     # never overlooked.
-    # #VERIFY: tests/unit/test_mutation_subtree.py exhaustively scans, for
+    # #VERIFY: tests/unit/test_skeleton_mutation_subtree.py exhaustively scans, for
     # every node r in every catalog skeleton, that a self_contained result has
     # in-edges only at r (asserted by a full edge scan over all_edges).
     region_set = frozenset(region)

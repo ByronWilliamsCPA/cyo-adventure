@@ -228,7 +228,7 @@ def load_in_cell_catalog(
     # ``skeletons/<band>/*.json`` under the same repository-root convention the
     # selector uses (skeleton_match._SKELETON_ROOT). The acceptance harness runs
     # catalog-time from the repository root (design section 6 #ASSUME).
-    # #VERIFY: tests/unit/test_mutation_floors.py loads a real in-cell cohort and
+    # #VERIFY: tests/unit/test_skeleton_mutation_floors.py loads a real in-cell cohort and
     # asserts the parent and MVP seeds are excluded.
     cell = _cell_from_candidate(candidate)
     if cell is None:
@@ -309,7 +309,7 @@ def structural_floor_reason(
     # story approval (ADR-005); this floor is a catalog-curation bar, not a safety
     # gate. The parent is compared as an in-cell tree so a near-parent clone is
     # rejected without the retired cross-tree TAU_STRUCT parent-distance clause.
-    # #VERIFY: tests/unit/test_mutation_floors.py pins that a fingerprint-equal
+    # #VERIFY: tests/unit/test_skeleton_mutation_floors.py pins that a fingerprint-equal
     # candidate is rejected by clause 1; an M2-only re-map and any near-parent or
     # near-sibling clone (< TAU_CELL) by clause 2; and that a genuine structural
     # mutant at or above TAU_CELL from the parent and every sibling passes.

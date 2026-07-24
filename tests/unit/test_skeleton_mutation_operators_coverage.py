@@ -1,6 +1,6 @@
 """Branch-coverage tests for defensive paths in ``mutation/operators.py`` (WS-5).
 
-The M1-M4 primary suites (``test_mutation_m1..m4.py``) exercise the happy paths
+The M1-M4 primary suites (``test_skeleton_mutation_m1..m4.py``) exercise the happy paths
 and the headline precondition rejections over the real catalog. This module
 targets the remaining defensive branches: the malformed-document skips in the raw
 helpers, the parameter-type guards on every operator, the ineligibility reasons,

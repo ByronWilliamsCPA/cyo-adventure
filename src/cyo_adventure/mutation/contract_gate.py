@@ -199,7 +199,7 @@ def contract_acceptance_reason(  # noqa: PLR0911
     # regardless of contract content, so an emptied/weakened ``forbid`` list still
     # fails a floor-violating binding (design CR-4). This is the load-bearing
     # children's-safety check for parameterized mutants.
-    # #VERIFY: tests/unit/test_mutation_floors.py pins that a mutated contract with
+    # #VERIFY: tests/unit/test_skeleton_mutation_floors.py pins that a mutated contract with
     # a stripped ``forbid`` list still fails a floor-violating binding.
     if run_gate(candidate).blocked:
         return "stage 4: the mutated skeleton itself is gate-blocked"

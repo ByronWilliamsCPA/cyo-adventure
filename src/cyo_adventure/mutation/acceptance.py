@@ -90,7 +90,7 @@ _DEFAULT_WALK_CAP = 100_000
 # ``(age_band, length, narrative_style)`` plus ``tier`` (a mutant must not change
 # tier); topology honesty is enforced by redeclare_topology's band-row check and
 # PL-18, not by this assertion.
-# #VERIFY: tests/unit/test_mutation_acceptance.py asserts a band-legal topology
+# #VERIFY: tests/unit/test_skeleton_mutation_acceptance.py asserts a band-legal topology
 # re-declaration is NOT discarded at stage 2 while tier/band/length/style drift
 # IS, and that a topology outside the band row is rejected (redeclare raises /
 # the gate blocks).
@@ -381,7 +381,7 @@ def _tier2_state_stage(  # noqa: PLR0911
     # with the gate's L2 verdict: a capped walk here means the state space is
     # unproven, an acceptance failure for a Tier-2 mutant even though the gate
     # reports the cap as its own L2-12 finding.
-    # #VERIFY: test_mutation_acceptance.py forces a tiny walk_cap and asserts a
+    # #VERIFY: test_skeleton_mutation_acceptance.py forces a tiny walk_cap and asserts a
     # capped-walk discard at the Tier-2 stage on a gate-passing candidate.
     walk = walk_configurations(story, cap=walk_cap)
     if walk.capped:
@@ -526,7 +526,7 @@ def _would_be_promotable(
     """
     # #CRITICAL: security: promotability is the single gate between a machine
     # transform and a child-facing catalog (design section 6, CR-2).
-    # #VERIFY: test_mutation_acceptance.py monkeypatches run_gate to always
+    # #VERIFY: test_skeleton_mutation_acceptance.py monkeypatches run_gate to always
     # block and asserts the result is never promotable.
     return (not gate_blocked) and cell_ok and len(outstanding) == 0
 
@@ -740,8 +740,8 @@ def run_acceptance(  # noqa: PLR0913, PLR0911
     # Tier-2 stage above; running both would double-count. So the floor runs only
     # for a would-be-promotable, graph-shape-CHANGED candidate, and it can only
     # turn that promotion into a discard, never admit anything (CR-2).
-    # #VERIFY: test_mutation_acceptance.py asserts a resolved-reguide M1 swap that
-    # genuinely re-shapes the tree stays promotable, and test_mutation_floors.py
+    # #VERIFY: test_skeleton_mutation_acceptance.py asserts a resolved-reguide M1 swap that
+    # genuinely re-shapes the tree stays promotable, and test_skeleton_mutation_floors.py
     # pins the clone-rejection clauses on the floor function directly.
     structural_stage_applies = would_be_promotable and not _graph_shape_unchanged(
         parent, candidate

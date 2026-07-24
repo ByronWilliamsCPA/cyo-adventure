@@ -2,7 +2,7 @@
 
 These target the malformed-document skips, the collision raises, and the
 fastest-finish fallbacks that the primary catalog-driven suite in
-``test_mutation_identity.py`` does not reach. Every test drives a real code path
+``test_skeleton_mutation_identity.py`` does not reach. Every test drives a real code path
 with a crafted minimal raw document and asserts the observable behavior.
 """
 

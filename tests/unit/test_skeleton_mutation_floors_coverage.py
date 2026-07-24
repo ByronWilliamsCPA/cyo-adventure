@@ -1,6 +1,6 @@
 """Branch-coverage tests for the anti-clone floors module (WS-5 D7 follow-up).
 
-Targets the branches of ``mutation/floors.py`` that ``test_mutation_floors.py``
+Targets the branches of ``mutation/floors.py`` that ``test_skeleton_mutation_floors.py``
 does not reach: the missing-baseline conservative fallback in
 ``_load_thresholds``, the ``_matches_cell`` band-mismatch short-circuit, and the
 ``load_in_cell_catalog`` skip branches (no metadata, incomplete cell, absent band

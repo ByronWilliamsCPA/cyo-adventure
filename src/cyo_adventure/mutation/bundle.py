@@ -84,7 +84,7 @@ def content_sha256(document: Mapping[str, object]) -> str:
     # detect a bundle derived from a since-changed parent (design 9.2 #EDGE). It
     # must be a pure function of content only. SHA-256 is FIPS-approved, so this is
     # safe on FIPS-enabled deployments.
-    # #VERIFY: tests/unit/test_mutation_bundle.py asserts identical documents hash
+    # #VERIFY: tests/unit/test_skeleton_mutation_bundle.py asserts identical documents hash
     # identically and any content edit changes the digest, and that verify_bundle
     # hard-fails on a parent hash mismatch.
     canonical = json.dumps(document, sort_keys=True, ensure_ascii=False)
@@ -182,7 +182,7 @@ class LineageV2(BaseModel):
 
     The ``origin`` value is provenance metadata only. It never keys an acceptance
     stage, a floor, or an in-cell clone decision (design 7.2 safety property, and
-    the safety-pin test in ``tests/unit/test_mutation_bundle.py``): every
+    the safety-pin test in ``tests/unit/test_skeleton_mutation_bundle.py``): every
     acceptance stage that applies to a tree applies regardless of its origin.
 
     Attributes:
@@ -751,7 +751,7 @@ def _verify_mutation_bundle(skeletons_root: Path, lineage: LineageV2) -> VerifyR
     # hard gate the design's D8 promotion runbook step 1 relies on (design 9.2).
     # A missing parent file is also a failure: an unverifiable bundle must not
     # promote.
-    # #VERIFY: tests/unit/test_mutation_bundle.py asserts a matching parent
+    # #VERIFY: tests/unit/test_skeleton_mutation_bundle.py asserts a matching parent
     # verifies ok and an edited parent hard-fails with a mismatch message.
     parent_slug = lineage.parent_slug
     expected = lineage.parent_sha256

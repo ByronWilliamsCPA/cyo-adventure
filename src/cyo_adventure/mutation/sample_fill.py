@@ -187,7 +187,7 @@ def run_mock_sample_fill(
     # provider is a pure in-memory MockProvider, so no network or live model is
     # touched. The mock returns a valid filled document, so the fill runs one
     # stage and does not exhaust the response queue.
-    # #VERIFY: tests/unit/test_mutation_sample_fill.py asserts a mock fill of a
+    # #VERIFY: tests/unit/test_skeleton_mutation_sample_fill.py asserts a mock fill of a
     # real skeleton produces a non-blocked gate and a "passed"/"needs_review"
     # status, and that a structurally-blocking fill is flagged structurally_blocked.
     pii = PiiContext(child_names=frozenset())
