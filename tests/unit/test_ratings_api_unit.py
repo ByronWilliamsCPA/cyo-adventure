@@ -150,11 +150,9 @@ async def test_record_rating_unknown_storybook_raises_not_found() -> None:
     session = _FakeSession(storybook=None)
     ctx = RequestContext(principal=_principal(family_id, profile_id), session=session)
 
+    body = RatingBody(profile_id=str(profile_id), storybook_id="missing", value=3)
     with pytest.raises(ResourceNotFoundError):
-        await record_rating(
-            RatingBody(profile_id=str(profile_id), storybook_id="missing", value=3),
-            ctx,
-        )
+        await record_rating(body, ctx)
 
 
 @pytest.mark.unit
@@ -166,10 +164,9 @@ async def test_record_rating_invalid_uuid_raises_validation() -> None:
         principal=_principal(uuid.uuid4(), uuid.uuid4()), session=session
     )
 
+    body = RatingBody(profile_id="not-a-uuid", storybook_id="book-1", value=3)
     with pytest.raises(ValidationError):
-        await record_rating(
-            RatingBody(profile_id="not-a-uuid", storybook_id="book-1", value=3), ctx
-        )
+        await record_rating(body, ctx)
 
 
 @pytest.mark.unit
@@ -181,11 +178,9 @@ async def test_record_rating_wrong_profile_raises_authorization() -> None:
     # principal may act on a different profile than the one in the body.
     ctx = RequestContext(principal=_principal(family_id, uuid.uuid4()), session=session)
 
+    body = RatingBody(profile_id=str(uuid.uuid4()), storybook_id="book-1", value=3)
     with pytest.raises(AuthorizationError):
-        await record_rating(
-            RatingBody(profile_id=str(uuid.uuid4()), storybook_id="book-1", value=3),
-            ctx,
-        )
+        await record_rating(body, ctx)
 
 
 @pytest.mark.unit
@@ -199,11 +194,9 @@ async def test_record_rating_foreign_family_raises_authorization() -> None:
         principal=_principal(uuid.uuid4(), profile_id), session=session
     )
 
+    body = RatingBody(profile_id=str(profile_id), storybook_id="book-1", value=3)
     with pytest.raises(AuthorizationError):
-        await record_rating(
-            RatingBody(profile_id=str(profile_id), storybook_id="book-1", value=3),
-            ctx,
-        )
+        await record_rating(body, ctx)
 
 
 @pytest.mark.unit
@@ -249,5 +242,6 @@ async def test_list_ratings_wrong_profile_raises_authorization() -> None:
         principal=_principal(uuid.uuid4(), uuid.uuid4()), session=session
     )
 
+    foreign_profile_id = str(uuid.uuid4())
     with pytest.raises(AuthorizationError):
-        await list_ratings(str(uuid.uuid4()), ctx)
+        await list_ratings(foreign_profile_id, ctx)

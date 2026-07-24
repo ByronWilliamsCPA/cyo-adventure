@@ -185,8 +185,9 @@ async def test_create_concept_child_token_forbidden() -> None:
     ctx = RequestContext(
         principal=_principal("child", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    request = _request()
     with pytest.raises(AuthorizationError):
-        await create_concept(_request(), ctx)
+        await create_concept(request, ctx)
 
 
 @pytest.mark.unit
@@ -197,8 +198,9 @@ async def test_create_concept_pii_in_brief_rejected() -> None:
     ctx = RequestContext(
         principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    request = _request()
     with pytest.raises(ValidationError):
-        await create_concept(_request(), ctx)
+        await create_concept(request, ctx)
 
 
 @pytest.mark.unit
@@ -230,8 +232,10 @@ async def test_enqueue_cross_family_forbidden() -> None:
     ctx = RequestContext(
         principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    concept_id = str(uuid.uuid4())
+    background = BackgroundTasks()
     with pytest.raises(AuthorizationError):
-        await enqueue_concept_generation(str(uuid.uuid4()), ctx, BackgroundTasks())
+        await enqueue_concept_generation(concept_id, ctx, background)
 
 
 @pytest.mark.unit
@@ -245,8 +249,10 @@ async def test_enqueue_family_at_cap_rejected() -> None:
         principal=_principal("guardian", family_id, uuid.uuid4()), session=session
     )
 
+    concept_id = str(uuid.uuid4())
+    background = BackgroundTasks()
     with pytest.raises(StateTransitionError):
-        await enqueue_concept_generation(str(uuid.uuid4()), ctx, BackgroundTasks())
+        await enqueue_concept_generation(concept_id, ctx, background)
     assert not any(isinstance(obj, GenerationJob) for obj in session.added)
 
 
@@ -277,8 +283,10 @@ async def test_enqueue_missing_concept_not_found() -> None:
     ctx = RequestContext(
         principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    concept_id = str(uuid.uuid4())
+    background = BackgroundTasks()
     with pytest.raises(ResourceNotFoundError):
-        await enqueue_concept_generation(str(uuid.uuid4()), ctx, BackgroundTasks())
+        await enqueue_concept_generation(concept_id, ctx, background)
 
 
 @pytest.mark.unit
@@ -289,8 +297,9 @@ async def test_enqueue_bad_uuid_is_validation_error() -> None:
     ctx = RequestContext(
         principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    background = BackgroundTasks()
     with pytest.raises(ValidationError):
-        await enqueue_concept_generation("not-a-uuid", ctx, BackgroundTasks())
+        await enqueue_concept_generation("not-a-uuid", ctx, background)
 
 
 @pytest.mark.unit
@@ -313,8 +322,9 @@ async def test_get_generation_job_child_token_forbidden() -> None:
     ctx = RequestContext(
         principal=_principal("child", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    job_id = str(uuid.uuid4())
     with pytest.raises(AuthorizationError):
-        await get_generation_job(str(uuid.uuid4()), ctx)
+        await get_generation_job(job_id, ctx)
 
 
 @pytest.mark.unit
@@ -398,8 +408,9 @@ async def test_get_generation_job_admin_role_only_still_forbidden() -> None:
     ctx = RequestContext(
         principal=_principal("admin", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    job_id = str(uuid.uuid4())
     with pytest.raises(AuthorizationError):
-        await get_generation_job(str(uuid.uuid4()), ctx)
+        await get_generation_job(job_id, ctx)
 
 
 @pytest.mark.unit
@@ -411,8 +422,9 @@ async def test_get_generation_job_missing_job_not_found() -> None:
         principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
     )
 
+    job_id = str(uuid.uuid4())
     with pytest.raises(ResourceNotFoundError, match="not found"):
-        await get_generation_job(str(uuid.uuid4()), ctx)
+        await get_generation_job(job_id, ctx)
 
 
 @pytest.mark.unit
@@ -429,8 +441,9 @@ async def test_get_generation_job_missing_concept_not_found() -> None:
         principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
     )
 
+    job_id = str(uuid.uuid4())
     with pytest.raises(ResourceNotFoundError, match="not found"):
-        await get_generation_job(str(uuid.uuid4()), ctx)
+        await get_generation_job(job_id, ctx)
 
 
 @pytest.mark.unit
@@ -587,8 +600,9 @@ async def test_force_fail_requires_admin() -> None:
     ctx = RequestContext(
         principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    job_id = str(uuid.uuid4())
     with pytest.raises(AuthorizationError):
-        await force_fail_generation_job(str(uuid.uuid4()), ctx)
+        await force_fail_generation_job(job_id, ctx)
 
 
 @pytest.mark.unit
@@ -599,8 +613,9 @@ async def test_force_fail_missing_job_not_found() -> None:
     ctx = RequestContext(
         principal=_principal("admin", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    job_id = str(uuid.uuid4())
     with pytest.raises(ResourceNotFoundError):
-        await force_fail_generation_job(str(uuid.uuid4()), ctx)
+        await force_fail_generation_job(job_id, ctx)
 
 
 @pytest.mark.unit
@@ -613,8 +628,9 @@ async def test_force_fail_rejects_terminal_job() -> None:
     ctx = RequestContext(
         principal=_principal("admin", uuid.uuid4(), uuid.uuid4()), session=session
     )
+    job_id = str(job.id)
     with pytest.raises(StateTransitionError):
-        await force_fail_generation_job(str(job.id), ctx)
+        await force_fail_generation_job(job_id, ctx)
 
 
 @pytest.mark.unit
@@ -661,6 +677,8 @@ async def test_enqueue_over_quota_creates_no_job(
         principal=_principal("guardian", family_id, uuid.uuid4()), session=session
     )
 
+    concept_id = str(uuid.uuid4())
+    background = BackgroundTasks()
     with pytest.raises(StateTransitionError):
-        await enqueue_concept_generation(str(uuid.uuid4()), ctx, BackgroundTasks())
+        await enqueue_concept_generation(concept_id, ctx, background)
     assert not any(isinstance(obj, GenerationJob) for obj in session.added)

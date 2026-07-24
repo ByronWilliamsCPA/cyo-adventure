@@ -511,10 +511,11 @@ async def test_backfill_live_unconfigured_r2_raises_before_any_io() -> None:
     get = AsyncMock()
     upload = AsyncMock()
 
+    settings = _fake_settings(r2_account_id=None)
     with _patch_httpx_client(get), pytest.raises(CoverGenerationError):
         await backfill_covers_r2.backfill(
             dry_run=False,
-            settings=_fake_settings(r2_account_id=None),
+            settings=settings,
             session_factory=session_factory,
             upload=upload,
         )

@@ -119,8 +119,9 @@ def test_path_at_max_length_accepted() -> None:
 
 def test_path_over_max_length_rejected() -> None:
     """A path one entry over the cap is rejected (422 at the API boundary)."""
+    kwargs = _reading_state(path=["n"] * (PATH_MAX_LENGTH + 1))
     with pytest.raises(PydanticValidationError):
-        ReadingStateBody(**_reading_state(path=["n"] * (PATH_MAX_LENGTH + 1)))
+        ReadingStateBody(**kwargs)
 
 
 def test_visit_set_at_max_length_accepted() -> None:
@@ -133,12 +134,11 @@ def test_visit_set_at_max_length_accepted() -> None:
 
 def test_visit_set_over_max_length_rejected() -> None:
     """A visit_set one entry over the cap is rejected."""
+    kwargs = _reading_state(
+        visit_set=[f"n{i}" for i in range(VISIT_SET_MAX_LENGTH + 1)]
+    )
     with pytest.raises(PydanticValidationError):
-        ReadingStateBody(
-            **_reading_state(
-                visit_set=[f"n{i}" for i in range(VISIT_SET_MAX_LENGTH + 1)]
-            )
-        )
+        ReadingStateBody(**kwargs)
 
 
 def test_save_slots_at_byte_budget_accepted() -> None:
@@ -153,8 +153,9 @@ def test_save_slots_at_byte_budget_accepted() -> None:
 
 def test_save_slots_over_byte_budget_rejected() -> None:
     """A save_slots payload over the 64_000-byte cap is rejected."""
+    kwargs = _reading_state(save_slots={"pad": "x" * 64_001})
     with pytest.raises(PydanticValidationError):
-        ReadingStateBody(**_reading_state(save_slots={"pad": "x" * 64_001}))
+        ReadingStateBody(**kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -194,11 +195,12 @@ def test_guardian_book_item_unscreened_with_zero_flags_accepted() -> None:
 
 def test_guardian_book_item_unscreened_with_flags_rejected() -> None:
     """An unscreened badge that also reports flagged passages is contradictory."""
+    kwargs = _guardian_book_item(screened=False, flagged_count=1)
     with pytest.raises(
         PydanticValidationError,
         match="an unscreened book cannot report flagged passages",
     ):
-        GuardianBookItem(**_guardian_book_item(screened=False, flagged_count=1))
+        GuardianBookItem(**kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -261,23 +263,20 @@ def test_review_surface_view_pass_verdict_in_passage_rejected() -> None:
         prose="Once upon a time.",
         findings=[FindingView(**_finding_view(verdict=Verdict.PASS))],
     )
+    kwargs = _review_surface_view(flagged_passages=[passage])
     with pytest.raises(
         PydanticValidationError,
         match="review surface must not contain a pass-verdict finding",
     ):
-        ReviewSurfaceView(**_review_surface_view(flagged_passages=[passage]))
+        ReviewSurfaceView(**kwargs)
 
 
 def test_review_surface_view_pass_verdict_in_story_level_rejected() -> None:
     """A pass-verdict story-level finding must not leak through either."""
+    finding = FindingView(**_finding_view(verdict=Verdict.PASS))
+    kwargs = _review_surface_view(story_level_findings=[finding])
     with pytest.raises(
         PydanticValidationError,
         match="review surface must not contain a pass-verdict finding",
     ):
-        ReviewSurfaceView(
-            **_review_surface_view(
-                story_level_findings=[
-                    FindingView(**_finding_view(verdict=Verdict.PASS))
-                ]
-            )
-        )
+        ReviewSurfaceView(**kwargs)

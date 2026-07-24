@@ -166,8 +166,9 @@ async def test_approve_without_moderation_report_raises() -> None:
     session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=version_row)
 
+    principal = _principal("admin")
     with pytest.raises(BusinessLogicError):
-        await service.approve(session, _principal("admin"), story, 1)
+        await service.approve(session, principal, story, 1)
 
     assert story.status == "in_review"
     session.flush.assert_not_awaited()
@@ -187,8 +188,9 @@ async def test_approve_rejects_a_non_admin_principal() -> None:
     story = _story("in_review")
     session = AsyncMock(spec=AsyncSession)
 
+    principal = _principal("guardian")
     with pytest.raises(AuthorizationError, match="admin role required"):
-        await service.approve(session, _principal("guardian"), story, 1)
+        await service.approve(session, principal, story, 1)
 
     assert story.status == "in_review"
     session.get.assert_not_awaited()
@@ -202,8 +204,9 @@ async def test_approve_missing_version_raises() -> None:
     session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=None)
 
+    principal = _principal("admin")
     with pytest.raises(ResourceNotFoundError):
-        await service.approve(session, _principal("admin"), story, 1)
+        await service.approve(session, principal, story, 1)
 
 
 @pytest.mark.unit
@@ -213,8 +216,9 @@ async def test_approve_illegal_status_raises() -> None:
     session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock()
 
+    principal = _principal("admin")
     with pytest.raises(StateTransitionError):
-        await service.approve(session, _principal("admin"), story, 1)
+        await service.approve(session, principal, story, 1)
 
     session.get.assert_not_awaited()
 
@@ -237,8 +241,9 @@ async def test_send_back_illegal_status_raises() -> None:
     story = _story("draft")
     session = AsyncMock(spec=AsyncSession)
 
+    principal = _principal("admin")
     with pytest.raises(StateTransitionError):
-        await service.send_back(session, _principal("admin"), story, "reason")
+        await service.send_back(session, principal, story, "reason")
 
     session.flush.assert_not_awaited()
 
@@ -261,8 +266,9 @@ async def test_archive_illegal_status_raises() -> None:
     story = _story("draft")
     session = AsyncMock(spec=AsyncSession)
 
+    principal = _principal("admin")
     with pytest.raises(StateTransitionError):
-        await service.archive(session, _principal("admin"), story)
+        await service.archive(session, principal, story)
 
     session.flush.assert_not_awaited()
 

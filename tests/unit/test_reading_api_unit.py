@@ -486,11 +486,12 @@ class TestGetReadingState:
             }
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
+        profile_id_str = str(profile_id)
 
         with pytest.raises(
             ResourceNotFoundError, match=r"no reading state for profile"
         ):
-            await get_reading_state(str(profile_id), "story-1", ctx)
+            await get_reading_state(profile_id_str, "story-1", ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -512,11 +513,12 @@ class TestGetReadingState:
         other_profile = uuid.uuid4()
         session = _FakeSession()
         ctx = _ctx(_child_principal(family_id, my_profile), session)
+        other_profile_str = str(other_profile)
 
         with pytest.raises(
             AuthorizationError, match=r"profile is not accessible to this principal"
         ):
-            await get_reading_state(str(other_profile), "story-1", ctx)
+            await get_reading_state(other_profile_str, "story-1", ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -526,11 +528,12 @@ class TestGetReadingState:
         profile_id = uuid.uuid4()
         session = _FakeSession(get_map={})
         ctx = _ctx(_child_principal(family_id, profile_id), session)
+        profile_id_str = str(profile_id)
 
         with pytest.raises(
             ResourceNotFoundError, match=r"storybook 'no-book' not found"
         ):
-            await get_reading_state(str(profile_id), "no-book", ctx)
+            await get_reading_state(profile_id_str, "no-book", ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -542,11 +545,12 @@ class TestGetReadingState:
         book = _published_book("story-1", other_family)
         session = _FakeSession(get_map={(Storybook, "story-1"): book})
         ctx = _ctx(_child_principal(my_family, profile_id), session)
+        profile_id_str = str(profile_id)
 
         with pytest.raises(
             AuthorizationError, match=r"resource belongs to another family"
         ):
-            await get_reading_state(str(profile_id), "story-1", ctx)
+            await get_reading_state(profile_id_str, "story-1", ctx)
 
 
 # ---------------------------------------------------------------------------
@@ -657,12 +661,13 @@ class TestPutReadingState:
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
         body = _body(state_revision=5)  # Should be 0 for first save
+        profile_id_str = str(profile_id)
 
         with pytest.raises(
             ValidationError,
             match=r"first reading-state save must start at state_revision 0",
         ):
-            await put_reading_state(str(profile_id), "story-1", body, ctx)
+            await put_reading_state(profile_id_str, "story-1", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -821,8 +826,9 @@ class TestPutReadingState:
         session = _FakeSession()
         ctx = _ctx(_guardian_principal(family_id), session)
 
+        body = _body()
         with pytest.raises(ValidationError, match=r"profile_id must be a UUID"):
-            await put_reading_state("not-uuid", "story-1", _body(), ctx)
+            await put_reading_state("not-uuid", "story-1", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -834,10 +840,12 @@ class TestPutReadingState:
         session = _FakeSession()
         ctx = _ctx(_child_principal(family_id, my_profile), session)
 
+        other_profile_str = str(other_profile)
+        body = _body()
         with pytest.raises(
             AuthorizationError, match=r"profile is not accessible to this principal"
         ):
-            await put_reading_state(str(other_profile), "story-1", _body(), ctx)
+            await put_reading_state(other_profile_str, "story-1", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -891,10 +899,11 @@ class TestPutReadingState:
             visit_set=["n_start"],
             state_revision=0,
         )
+        profile_id_str = str(profile_id)
         with pytest.raises(
             ValidationError, match=r"current_node is not a node in this story version"
         ):
-            await put_reading_state(str(profile_id), "s_syn", body, ctx)
+            await put_reading_state(profile_id_str, "s_syn", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -916,10 +925,11 @@ class TestPutReadingState:
             visit_set=["n_start"],
             state_revision=0,
         )
+        profile_id_str = str(profile_id)
         with pytest.raises(
             ResourceNotFoundError, match=r"version 7 of 's_syn' not found"
         ):
-            await put_reading_state(str(profile_id), "s_syn", body, ctx)
+            await put_reading_state(profile_id_str, "s_syn", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -1007,11 +1017,12 @@ class TestPutReadingState:
             choice_path=["c_go"],
             state_revision=0,
         )
+        profile_id_str = str(profile_id)
         with pytest.raises(
             ValidationError,
             match=r"submitted reading state does not match a replay of choice_path",
         ):
-            await put_reading_state(str(profile_id), "s_syn", body, ctx)
+            await put_reading_state(profile_id_str, "s_syn", body, ctx)
 
 
 # ---------------------------------------------------------------------------

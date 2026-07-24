@@ -172,10 +172,11 @@ async def test_bind_exhaustion_on_persistent_violation_raises() -> None:
         responses=[_WEAPON_VIOLATING_RESPONSE, _WEAPON_VIOLATING_RESPONSE]
     )
 
+    contract = _contract()
+    brief = _brief()
+    pii = _empty_pii()
     with pytest.raises(ValidationError) as exc_info:
-        await bind_theme_to_contract(
-            _contract(), _brief(), provider, _empty_pii(), max_attempts=2
-        )
+        await bind_theme_to_contract(contract, brief, provider, pii, max_attempts=2)
 
     assert len(provider.calls) == 2
     violations = exc_info.value.details["violations"]
@@ -187,10 +188,11 @@ async def test_bind_exhaustion_on_persistent_parse_failure_raises() -> None:
     """Persistently unparseable output raises ValidationError, not a crash."""
     provider = MockProvider(responses=["nope", "still nope"])
 
+    contract = _contract()
+    brief = _brief()
+    pii = _empty_pii()
     with pytest.raises(ValidationError):
-        await bind_theme_to_contract(
-            _contract(), _brief(), provider, _empty_pii(), max_attempts=2
-        )
+        await bind_theme_to_contract(contract, brief, provider, pii, max_attempts=2)
 
     assert len(provider.calls) == 2
 
@@ -200,10 +202,11 @@ async def test_bind_max_attempts_one_fails_fast() -> None:
     """max_attempts=1 makes exactly one call before raising."""
     provider = MockProvider(responses=[_WEAPON_VIOLATING_RESPONSE])
 
+    contract = _contract()
+    brief = _brief()
+    pii = _empty_pii()
     with pytest.raises(ValidationError):
-        await bind_theme_to_contract(
-            _contract(), _brief(), provider, _empty_pii(), max_attempts=1
-        )
+        await bind_theme_to_contract(contract, brief, provider, pii, max_attempts=1)
 
     assert len(provider.calls) == 1
 
@@ -223,8 +226,9 @@ async def test_bind_pii_guard_fires_and_provider_never_called() -> None:
     brief = {"premise": f"A story created for {real_child_name} the brave."}
     pii = PiiContext(child_names=frozenset({real_child_name}))
     provider = MockProvider(responses=[_VALID_RESPONSE])
+    contract = _contract()
 
     with pytest.raises(ValidationError):
-        await bind_theme_to_contract(_contract(), brief, provider, pii)
+        await bind_theme_to_contract(contract, brief, provider, pii)
 
     assert provider.calls == []

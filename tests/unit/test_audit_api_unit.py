@@ -166,23 +166,26 @@ class TestListAuditEventsRoleGate:
     @pytest.mark.asyncio
     async def test_guardian_token_gets_403(self) -> None:
         ctx = _ctx(_guardian_principal())
+        filters = audit.AuditFilters()
         with pytest.raises(AuthorizationError):
-            await audit.list_audit_events(ctx, audit.AuditFilters())
+            await audit.list_audit_events(ctx, filters)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_child_token_gets_403(self) -> None:
         ctx = _ctx(_child_principal())
+        filters = audit.AuditFilters()
         with pytest.raises(AuthorizationError):
-            await audit.list_audit_events(ctx, audit.AuditFilters())
+            await audit.list_audit_events(ctx, filters)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_rejected_role_never_reaches_the_query(self) -> None:
         session = _FakeSession([[]])
         ctx = RequestContext(principal=_guardian_principal(), session=session)
+        filters = audit.AuditFilters()
         with pytest.raises(AuthorizationError):
-            await audit.list_audit_events(ctx, audit.AuditFilters())
+            await audit.list_audit_events(ctx, filters)
         assert session.scalars_calls == []
 
 
@@ -277,10 +280,9 @@ class TestFilterParsingAndValidation:
     async def test_invalid_kind_raises_before_any_query(self) -> None:
         session = _FakeSession([[]])
         ctx = RequestContext(principal=_admin_principal(), session=session)
+        filters = audit.AuditFilters(kind="not_a_real_event_type")
         with pytest.raises(ValidationError, match="kind"):
-            await audit.list_audit_events(
-                ctx, audit.AuditFilters(kind="not_a_real_event_type")
-            )
+            await audit.list_audit_events(ctx, filters)
         assert session.scalars_calls == []
 
     @pytest.mark.unit
@@ -288,10 +290,9 @@ class TestFilterParsingAndValidation:
     async def test_invalid_actor_id_raises_before_any_query(self) -> None:
         session = _FakeSession([[]])
         ctx = RequestContext(principal=_admin_principal(), session=session)
+        filters = audit.AuditFilters(actor_id="not-a-uuid")
         with pytest.raises(ValidationError, match="actor_id"):
-            await audit.list_audit_events(
-                ctx, audit.AuditFilters(actor_id="not-a-uuid")
-            )
+            await audit.list_audit_events(ctx, filters)
         assert session.scalars_calls == []
 
     @pytest.mark.unit
@@ -299,10 +300,9 @@ class TestFilterParsingAndValidation:
     async def test_invalid_profile_id_raises_before_any_query(self) -> None:
         session = _FakeSession([[]])
         ctx = RequestContext(principal=_admin_principal(), session=session)
+        filters = audit.AuditFilters(profile_id="not-a-uuid")
         with pytest.raises(ValidationError, match="profile_id"):
-            await audit.list_audit_events(
-                ctx, audit.AuditFilters(profile_id="not-a-uuid")
-            )
+            await audit.list_audit_events(ctx, filters)
         assert session.scalars_calls == []
 
     @pytest.mark.unit
@@ -310,8 +310,9 @@ class TestFilterParsingAndValidation:
     async def test_invalid_since_raises_before_any_query(self) -> None:
         session = _FakeSession([[]])
         ctx = RequestContext(principal=_admin_principal(), session=session)
+        filters = audit.AuditFilters(since="garbage")
         with pytest.raises(ValidationError, match="since"):
-            await audit.list_audit_events(ctx, audit.AuditFilters(since="garbage"))
+            await audit.list_audit_events(ctx, filters)
         assert session.scalars_calls == []
 
     @pytest.mark.unit
@@ -319,8 +320,9 @@ class TestFilterParsingAndValidation:
     async def test_invalid_until_raises_before_any_query(self) -> None:
         session = _FakeSession([[]])
         ctx = RequestContext(principal=_admin_principal(), session=session)
+        filters = audit.AuditFilters(until="garbage")
         with pytest.raises(ValidationError, match="until"):
-            await audit.list_audit_events(ctx, audit.AuditFilters(until="garbage"))
+            await audit.list_audit_events(ctx, filters)
         assert session.scalars_calls == []
 
     @pytest.mark.unit

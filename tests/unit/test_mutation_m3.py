@@ -407,8 +407,10 @@ def test_m3_requires_a_known_mode() -> None:
     report = M3.preconditions(host, OpParams.of())
     assert report.satisfied is False
     assert any("mode" in reason for reason in report.failures)
+    params = OpParams.of(mode="nonsense")
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M3.apply(host, OpParams.of(mode="nonsense"), random.Random(0))
+        M3.apply(host, params, rng)
 
 
 # --- Prune ---
@@ -491,8 +493,10 @@ def test_m3_prune_below_envelope_minimum_is_discarded() -> None:
     assert any(
         "envelope" in reason or "minimum" in reason for reason in report.failures
     )
+    params = OpParams.of(mode="prune", choice="c_a")
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M3.apply(story, OpParams.of(mode="prune", choice="c_a"), random.Random(0))
+        M3.apply(story, params, rng)
 
 
 @pytest.mark.unit
@@ -508,8 +512,10 @@ def test_m3_prune_removing_last_satisfying_ending_is_discarded() -> None:
     assert any(
         "success/completion" in reason or "last" in reason for reason in report.failures
     )
+    params = OpParams.of(mode="prune", choice="c_s")
+    rng = random.Random(0)
     with pytest.raises(ValidationError):
-        M3.apply(story, OpParams.of(mode="prune", choice="c_s"), random.Random(0))
+        M3.apply(story, params, rng)
 
 
 @pytest.mark.unit

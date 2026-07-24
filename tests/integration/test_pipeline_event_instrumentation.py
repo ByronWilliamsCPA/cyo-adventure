@@ -590,11 +590,13 @@ async def test_generation_finished_event_precedes_failure_commit(
         "cyo_adventure.generation.worker.generate_story", _boom_generate
     )
 
+    provider = MockProvider(responses=[])
+    session_factory = _make_session_factory(sessions)
     with pytest.raises(RuntimeError, match="pipeline exploded"):
         await run_generation_job(
             job_id,
-            provider=MockProvider(responses=[]),
-            session_factory=_make_session_factory(sessions),
+            provider=provider,
+            session_factory=session_factory,
         )
 
     async with sessions() as session:
@@ -648,11 +650,13 @@ async def test_generation_finished_event_and_failed_status_share_one_commit(
 
     monkeypatch.setattr(AsyncSession, "commit", _boom_commit)
 
+    provider = MockProvider(responses=[])
+    session_factory = _make_session_factory(sessions)
     with pytest.raises(RuntimeError, match="commit interrupted"):
         await run_generation_job(
             job_id,
-            provider=MockProvider(responses=[]),
-            session_factory=_make_session_factory(sessions),
+            provider=provider,
+            session_factory=session_factory,
         )
 
     async with sessions() as session:

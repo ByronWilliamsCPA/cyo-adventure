@@ -523,15 +523,14 @@ async def test_run_skeleton_fill_missing_slug_raises() -> None:
     constructed outside build_authoring_plan (no skeleton_slug) fails as a
     handled ProjectBaseError rather than crashing deeper in the fill pipeline.
     """
+    fill_context = _SkeletonFillContext(
+        authoring={"theme_brief": {}},  # no skeleton_slug key
+        brief=cast("ConceptBrief", object()),
+        effective_provider=cast("GenerationProvider", object()),
+        pii=PiiContext(child_names=frozenset()),
+    )
     with pytest.raises(ResourceNotFoundError):
-        await _run_skeleton_fill(
-            _SkeletonFillContext(
-                authoring={"theme_brief": {}},  # no skeleton_slug key
-                brief=cast("ConceptBrief", object()),
-                effective_provider=cast("GenerationProvider", object()),
-                pii=PiiContext(child_names=frozenset()),
-            )
-        )
+        await _run_skeleton_fill(fill_context)
 
 
 @pytest.mark.asyncio
@@ -1065,8 +1064,9 @@ async def test_run_generation_job_default_session_factory_is_get_worker_session(
 
     monkeypatch.setattr(worker_module, "get_worker_session", _fake_get_worker_session)
 
+    job_id = uuid_mod.uuid4()
     with pytest.raises(_SentinelFromWorkerSessionError):
-        await worker_module.run_generation_job(uuid_mod.uuid4())
+        await worker_module.run_generation_job(job_id)
 
 
 @pytest.mark.asyncio
@@ -1420,15 +1420,14 @@ async def test_run_skeleton_fill_half_migrated_fails_closed_no_fill_call(
     monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
     monkeypatch.setattr(worker_module, "fill_skeleton", _fail_if_fill_called)
 
+    fill_context = _SkeletonFillContext(
+        authoring={"skeleton_slug": "half-migrated", "theme_brief": {}},
+        brief=_dispatch_brief(),
+        effective_provider=cast("GenerationProvider", object()),
+        pii=_dispatch_pii(),
+    )
     with pytest.raises(ValidationError):
-        await _run_skeleton_fill(
-            _SkeletonFillContext(
-                authoring={"skeleton_slug": "half-migrated", "theme_brief": {}},
-                brief=_dispatch_brief(),
-                effective_provider=cast("GenerationProvider", object()),
-                pii=_dispatch_pii(),
-            )
-        )
+        await _run_skeleton_fill(fill_context)
 
 
 @pytest.mark.asyncio
@@ -1558,19 +1557,18 @@ async def test_run_skeleton_fill_bind_failure_fails_closed_no_fill_call(
         }
     )
     provider = MockProvider(responses=[violating_response, violating_response])
+    fill_context = _SkeletonFillContext(
+        authoring={
+            "skeleton_slug": "themed-slug",
+            "theme_brief": {"premise": "a fox"},
+        },
+        brief=_dispatch_brief(),
+        effective_provider=provider,
+        pii=_dispatch_pii(),
+    )
 
     with pytest.raises(ValidationError) as exc_info:
-        await _run_skeleton_fill(
-            _SkeletonFillContext(
-                authoring={
-                    "skeleton_slug": "themed-slug",
-                    "theme_brief": {"premise": "a fox"},
-                },
-                brief=_dispatch_brief(),
-                effective_provider=provider,
-                pii=_dispatch_pii(),
-            )
-        )
+        await _run_skeleton_fill(fill_context)
 
     # Exactly the two bind attempts; no additional (fill/repair) call.
     assert len(provider.calls) == 2
@@ -2179,9 +2177,10 @@ async def test_run_skeleton_fill_reroute_respects_limit_third_alternate_untried(
     # never tried, so 6 responses is exactly enough; a 7th call would over-run
     # the mock and raise a different error, proving alt3 stays untouched.
     provider = MockProvider(responses=[_VIOLATING_RESPONSE] * 6)
+    fill_context = _reroute_ctx(provider, ["alt1", "alt2", "alt3"])
 
     with pytest.raises(ValidationError) as exc_info:
-        await _run_skeleton_fill(_reroute_ctx(provider, ["alt1", "alt2", "alt3"]))
+        await _run_skeleton_fill(fill_context)
 
     assert resolved == ["planned", "alt1", "alt2"]  # alt3 never resolved
     assert len(provider.calls) == 6

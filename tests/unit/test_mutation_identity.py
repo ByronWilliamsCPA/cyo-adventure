@@ -343,15 +343,17 @@ def test_rename_region_is_deterministic() -> None:
 @pytest.mark.unit
 def test_rename_region_rejects_host_namespace_collision() -> None:
     """A renamed id that already exists in the host raises rather than duplicate."""
+    region = _sample_region()
     with pytest.raises(ValidationError):
-        rename_region(_sample_region(), 1, host_namespace={"m1_r"})
+        rename_region(region, 1, host_namespace={"m1_r"})
 
 
 @pytest.mark.unit
 def test_rename_region_rejects_negative_index() -> None:
     """A negative mutation index is rejected."""
+    region = _sample_region()
     with pytest.raises(ValidationError):
-        rename_region(_sample_region(), -1, host_namespace=set())
+        rename_region(region, -1, host_namespace=set())
 
 
 @pytest.mark.unit

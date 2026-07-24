@@ -39,16 +39,18 @@ def test_refusal_raises():
     fake_client = SimpleNamespace(
         models=SimpleNamespace(generate_content=lambda **kw: empty)
     )
+    settings = _settings()
     with (
         patch("cyo_adventure.covers.provider.genai.Client", return_value=fake_client),
         pytest.raises(CoverGenerationError),
     ):
-        generate_cover_image("prompt", _settings())
+        generate_cover_image("prompt", settings)
 
 
 def test_missing_key_raises():
+    settings = _settings(key=None)
     with pytest.raises(CoverGenerationError):
-        generate_cover_image("prompt", _settings(key=None))
+        generate_cover_image("prompt", settings)
 
 
 def _client_returning(response: SimpleNamespace) -> SimpleNamespace:
@@ -61,11 +63,12 @@ def _client_returning(response: SimpleNamespace) -> SimpleNamespace:
 @pytest.mark.unit
 def test_generate_cover_image_empty_api_key_raises_without_client() -> None:
     """An empty-string API key fails fast and never constructs a client."""
+    settings = _settings(key="")
     with (
         patch("cyo_adventure.covers.provider.genai.Client") as client_cls,
         pytest.raises(CoverGenerationError, match="GEMINI_API_KEY"),
     ):
-        generate_cover_image("prompt", _settings(key=""))
+        generate_cover_image("prompt", settings)
     client_cls.assert_not_called()
 
 
@@ -73,6 +76,7 @@ def test_generate_cover_image_empty_api_key_raises_without_client() -> None:
 def test_generate_cover_image_none_candidates_raises_generation_error() -> None:
     """A response whose candidates attribute is None raises, not iterates."""
     response = SimpleNamespace(candidates=None, prompt_feedback=None)
+    settings = _settings()
     with (
         patch(
             "cyo_adventure.covers.provider.genai.Client",
@@ -80,7 +84,7 @@ def test_generate_cover_image_none_candidates_raises_generation_error() -> None:
         ),
         pytest.raises(CoverGenerationError),
     ):
-        generate_cover_image("prompt", _settings())
+        generate_cover_image("prompt", settings)
 
 
 @pytest.mark.unit
@@ -89,6 +93,7 @@ def test_generate_cover_image_candidate_without_content_raises_error() -> None:
     response = SimpleNamespace(
         candidates=[SimpleNamespace(content=None)], prompt_feedback=None
     )
+    settings = _settings()
     with (
         patch(
             "cyo_adventure.covers.provider.genai.Client",
@@ -96,7 +101,7 @@ def test_generate_cover_image_candidate_without_content_raises_error() -> None:
         ),
         pytest.raises(CoverGenerationError),
     ):
-        generate_cover_image("prompt", _settings())
+        generate_cover_image("prompt", settings)
 
 
 @pytest.mark.unit
@@ -107,6 +112,7 @@ def test_generate_cover_image_text_only_parts_raises_generation_error() -> None:
         candidates=[SimpleNamespace(content=SimpleNamespace(parts=[part]))],
         prompt_feedback=None,
     )
+    settings = _settings()
     with (
         patch(
             "cyo_adventure.covers.provider.genai.Client",
@@ -114,13 +120,14 @@ def test_generate_cover_image_text_only_parts_raises_generation_error() -> None:
         ),
         pytest.raises(CoverGenerationError),
     ):
-        generate_cover_image("prompt", _settings())
+        generate_cover_image("prompt", settings)
 
 
 @pytest.mark.unit
 def test_generate_cover_image_empty_inline_data_raises_generation_error() -> None:
     """An inline image part with empty bytes is treated as no image."""
     response = _response_with_image(data=b"")
+    settings = _settings()
     with (
         patch(
             "cyo_adventure.covers.provider.genai.Client",
@@ -128,13 +135,14 @@ def test_generate_cover_image_empty_inline_data_raises_generation_error() -> Non
         ),
         pytest.raises(CoverGenerationError),
     ):
-        generate_cover_image("prompt", _settings())
+        generate_cover_image("prompt", settings)
 
 
 @pytest.mark.unit
 def test_generate_cover_image_refusal_message_includes_prompt_feedback() -> None:
     """The raised error carries prompt_feedback so refusals are diagnosable."""
     response = SimpleNamespace(candidates=[], prompt_feedback="SAFETY_BLOCK")
+    settings = _settings()
     with (
         patch(
             "cyo_adventure.covers.provider.genai.Client",
@@ -142,7 +150,7 @@ def test_generate_cover_image_refusal_message_includes_prompt_feedback() -> None
         ),
         pytest.raises(CoverGenerationError, match="SAFETY_BLOCK"),
     ):
-        generate_cover_image("prompt", _settings())
+        generate_cover_image("prompt", settings)
 
 
 @pytest.mark.unit
@@ -154,8 +162,9 @@ def test_generate_cover_image_sdk_failure_propagates_unwrapped() -> None:
         raise ConnectionError(msg)
 
     client = SimpleNamespace(models=SimpleNamespace(generate_content=_boom))
+    settings = _settings()
     with (
         patch("cyo_adventure.covers.provider.genai.Client", return_value=client),
         pytest.raises(ConnectionError, match="gemini transport failure"),
     ):
-        generate_cover_image("prompt", _settings())
+        generate_cover_image("prompt", settings)

@@ -149,5 +149,6 @@ def test_optimize_cover_zero_max_width_raises_value_error() -> None:
     # Documents that an invalid COVER_MAX_WIDTH is surfaced as a job failure
     # (via the service's failed-status handler) rather than producing a
     # degenerate zero-width image.
+    source = _png(400, 600)
     with pytest.raises(ValueError, match="width must be > 0"):
-        optimize_cover(_png(400, 600), max_width=0)
+        optimize_cover(source, max_width=0)

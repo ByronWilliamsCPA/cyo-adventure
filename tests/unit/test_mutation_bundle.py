@@ -352,13 +352,14 @@ def test_load_lineage_upgrades_v1_to_v2_mutation() -> None:
 @pytest.mark.unit
 def test_v2_mutation_without_parent_fails() -> None:
     """A v2 mutation record without a parent fails cross-field validation."""
+    op_chain = [OpChainEntry(op_id="M1")]
     with pytest.raises(PydanticValidationError):
         LineageV2(
             origin="mutation",
             mutant_slug="m",
             parent_slug=None,
             parent_sha256=None,
-            op_chain=[OpChainEntry(op_id="M1")],
+            op_chain=op_chain,
             created_at="2026-07-20T00:00:00+00:00",
             tool_version="9.9.9",
             acceptance_digest="abc123",

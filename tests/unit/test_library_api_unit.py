@@ -528,8 +528,9 @@ class TestListLibrary:
         session = _FakeSession()
         principal = _child_principal(family_id, my_profile)
 
+        other_profile_str = str(other_profile)
         with pytest.raises(AuthorizationError):
-            await list_library(str(other_profile), principal, session)
+            await list_library(other_profile_str, principal, session)
 
     @pytest.mark.unit
     @pytest.mark.asyncio

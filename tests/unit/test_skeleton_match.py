@@ -449,8 +449,9 @@ def test_select_skeleton_for_cell_raises_on_empty_candidates() -> None:
 
     Raises the project ValidationError (built-in exceptions are disallowed in
     this service module per src/CLAUDE.md)."""
+    rng = random.Random(0)
     with pytest.raises(ValidationError, match="at least one candidate"):
-        skeleton_match.select_skeleton_for_cell([], {}, random.Random(0))
+        skeleton_match.select_skeleton_for_cell([], {}, rng)
 
 
 def test_selection_rejects_empty_alternatives() -> None:

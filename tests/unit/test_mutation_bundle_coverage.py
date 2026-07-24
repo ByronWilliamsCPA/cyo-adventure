@@ -74,10 +74,9 @@ def test_derive_mutant_contract_raises_on_an_unresolvable_graft_token() -> None:
             {"id": "n", "is_ending": True, "ending": {"title": "{M1_FOO} triumphs"}}
         ],
     }
+    host_contract = _host_contract()
     with pytest.raises(ValidationError, match="matches no host slot and no donor slot"):
-        derive_mutant_contract(
-            candidate, mutant_slug="m", host_contract=_host_contract()
-        )
+        derive_mutant_contract(candidate, mutant_slug="m", host_contract=host_contract)
 
 
 @pytest.mark.unit

@@ -75,25 +75,28 @@ async def test_upload_failure_propagates() -> None:
     mock_client.put_object.side_effect = ClientError(
         {"Error": {"Code": "500", "Message": "boom"}}, "PutObject"
     )
+    settings = _settings()
     with (
         patch("cyo_adventure.covers.storage.boto3.client", return_value=mock_client),
         pytest.raises(ClientError),
     ):
-        await upload_cover(b"WEBP", "s1/2.webp", _settings())
+        await upload_cover(b"WEBP", "s1/2.webp", settings)
 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_upload_cover_blank_config_value_raises_generation_error() -> None:
     """An empty-string R2 credential counts as unconfigured, same as None."""
+    unconfigured = _settings(r2_account_id="")
     with pytest.raises(CoverGenerationError, match="not configured"):
-        await upload_cover(b"x", "k.webp", _settings(r2_account_id=""))
+        await upload_cover(b"x", "k.webp", unconfigured)
 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_upload_cover_client_construction_failure_propagates() -> None:
     """A boto3 client construction failure propagates instead of returning a URL."""
+    settings = _settings()
     with (
         patch(
             "cyo_adventure.covers.storage.boto3.client",
@@ -101,7 +104,7 @@ async def test_upload_cover_client_construction_failure_propagates() -> None:
         ),
         pytest.raises(BotoCoreError),
     ):
-        await upload_cover(b"WEBP", "s1/2.webp", _settings())
+        await upload_cover(b"WEBP", "s1/2.webp", settings)
 
 
 def test_cover_object_key_format() -> None:

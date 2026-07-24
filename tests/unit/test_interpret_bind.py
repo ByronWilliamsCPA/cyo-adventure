@@ -191,10 +191,11 @@ async def test_interpret_bind_malformed_bindings_exhaustion_raises() -> None:
         ]
     )
 
+    contract = _contract()
+    brief = _brief()
+    pii = _empty_pii()
     with pytest.raises(ValidationError):
-        await interpret_and_bind(
-            _contract(), _brief(), provider, _empty_pii(), max_attempts=2
-        )
+        await interpret_and_bind(contract, brief, provider, pii, max_attempts=2)
 
     assert len(provider.calls) == 2
 
@@ -288,10 +289,11 @@ async def test_interpret_bind_exhaustion_on_persistent_violation_raises() -> Non
         ]
     )
 
+    contract = _contract()
+    brief = _brief()
+    pii = _empty_pii()
     with pytest.raises(ValidationError) as exc_info:
-        await interpret_and_bind(
-            _contract(), _brief(), provider, _empty_pii(), max_attempts=2
-        )
+        await interpret_and_bind(contract, brief, provider, pii, max_attempts=2)
 
     assert len(provider.calls) == 2
     violations = cast("list[dict[str, str]]", exc_info.value.details["violations"])
@@ -365,9 +367,10 @@ async def test_interpret_bind_pii_guard_fires_on_child_name_before_any_call() ->
     brief = {"premise": f"A story created for {real_child_name} the brave."}
     pii = PiiContext(child_names=frozenset({real_child_name}))
     provider = MockProvider(responses=[_VALID_RESPONSE])
+    contract = _contract()
 
     with pytest.raises(ValidationError):
-        await interpret_and_bind(_contract(), brief, provider, pii)
+        await interpret_and_bind(contract, brief, provider, pii)
 
     assert provider.calls == []
 
@@ -382,9 +385,11 @@ async def test_interpret_bind_pii_guard_fires_on_pattern_hit_before_any_call() -
     """
     brief = {"premise": "Please email me at kid@example.com about my dragon story."}
     provider = MockProvider(responses=[_VALID_RESPONSE])
+    contract = _contract()
+    pii = _empty_pii()
 
     with pytest.raises(ValidationError):
-        await interpret_and_bind(_contract(), brief, provider, _empty_pii())
+        await interpret_and_bind(contract, brief, provider, pii)
 
     assert provider.calls == []
 

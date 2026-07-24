@@ -111,8 +111,9 @@ def test_actor_from_principal_copies_id_and_role() -> None:
 def test_actor_rejects_system_role_with_user_id() -> None:
     # Spec D2: a system actor must not carry a user id (enforced in __post_init__,
     # backstopped by the ck_pipeline_event_system_actor_null DB CHECK).
+    actor_id = uuid.uuid4()
     with pytest.raises(ValidationError):
-        Actor(actor_id=uuid.uuid4(), actor_role=SYSTEM_ACTOR_ROLE)
+        Actor(actor_id=actor_id, actor_role=SYSTEM_ACTOR_ROLE)
 
 
 def test_actor_rejects_user_role_with_null_id() -> None:

@@ -68,16 +68,17 @@ async def test_approve_anchored_request_band_mismatch_raises(
             anchor_storybook_id=storybook.id,
         )
 
+        confirmation = ApprovalConfirmation(
+            age_band=AgeBand.BAND_13_16,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        )
         with pytest.raises(ValidationError, match="age band"):
             await service.approve_story_request(
                 session,
                 principal,
                 request,
-                confirmation=ApprovalConfirmation(
-                    age_band=AgeBand.BAND_13_16,
-                    length=Length.MEDIUM,
-                    narrative_style=NarrativeStyle.PROSE,
-                ),
+                confirmation=confirmation,
             )
 
 

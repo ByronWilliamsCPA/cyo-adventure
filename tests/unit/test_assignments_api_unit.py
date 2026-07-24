@@ -232,10 +232,11 @@ class TestAssignStorybook:
         p1 = uuid.uuid4()
         session = _FakeSession(book=_book("s1", fam))
         body = AssignmentCreateBody(profile_ids=[str(p1)])
+        ctx = _ctx(_child(fam, p1), session)
         with pytest.raises(
             AuthorizationError, match=r"only a guardian may manage assignments"
         ):
-            await assign_storybook("s1", body, _ctx(_child(fam, p1), session))
+            await assign_storybook("s1", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -248,10 +249,11 @@ class TestAssignStorybook:
         p1 = uuid.uuid4()
         session = _FakeSession(book=_book("s1", fam))
         body = AssignmentCreateBody(profile_ids=[str(p1)])
+        ctx = _ctx(_admin(fam, {p1}), session)
         with pytest.raises(
             AuthorizationError, match=r"only a guardian may manage assignments"
         ):
-            await assign_storybook("s1", body, _ctx(_admin(fam, {p1}), session))
+            await assign_storybook("s1", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -263,8 +265,9 @@ class TestAssignStorybook:
         p1 = uuid.uuid4()
         session = _FakeSession(book=None)
         body = AssignmentCreateBody(profile_ids=[str(p1)])
+        ctx = _ctx(_guardian(fam, {p1}), session)
         with pytest.raises(ResourceNotFoundError, match=r"storybook 'nope' not found"):
-            await assign_storybook("nope", body, _ctx(_guardian(fam, {p1}), session))
+            await assign_storybook("nope", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -277,10 +280,11 @@ class TestAssignStorybook:
         p1 = uuid.uuid4()
         session = _FakeSession(book=_book("s1", other))
         body = AssignmentCreateBody(profile_ids=[str(p1)])
+        ctx = _ctx(_guardian(fam, {p1}), session)
         with pytest.raises(
             AuthorizationError, match=r"storybook is not visible to this family"
         ):
-            await assign_storybook("s1", body, _ctx(_guardian(fam, {p1}), session))
+            await assign_storybook("s1", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -292,10 +296,11 @@ class TestAssignStorybook:
         p1 = uuid.uuid4()
         session = _FakeSession(book=_book("s1", fam, status="draft"))
         body = AssignmentCreateBody(profile_ids=[str(p1)])
+        ctx = _ctx(_guardian(fam, {p1}), session)
         with pytest.raises(
             BusinessLogicError, match=r"only a published story can be assigned"
         ):
-            await assign_storybook("s1", body, _ctx(_guardian(fam, {p1}), session))
+            await assign_storybook("s1", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -307,10 +312,11 @@ class TestAssignStorybook:
         mine, foreign = uuid.uuid4(), uuid.uuid4()
         session = _FakeSession(book=_book("s1", fam))
         body = AssignmentCreateBody(profile_ids=[str(mine), str(foreign)])
+        ctx = _ctx(_guardian(fam, {mine}), session)
         with pytest.raises(
             AuthorizationError, match=r"profile is not accessible to this principal"
         ):
-            await assign_storybook("s1", body, _ctx(_guardian(fam, {mine}), session))
+            await assign_storybook("s1", body, ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -321,8 +327,9 @@ class TestAssignStorybook:
         fam = uuid.uuid4()
         session = _FakeSession(book=_book("s1", fam))
         body = AssignmentCreateBody(profile_ids=["not-a-uuid"])
+        ctx = _ctx(_guardian(fam, set()), session)
         with pytest.raises(ValidationError, match=r"profile_ids must be a UUID"):
-            await assign_storybook("s1", body, _ctx(_guardian(fam, set()), session))
+            await assign_storybook("s1", body, ctx)
 
 
 class TestListAssignments:
@@ -346,10 +353,11 @@ class TestListAssignments:
         fam = uuid.uuid4()
         p1 = uuid.uuid4()
         session = _FakeSession(book=_book("s1", fam))
+        ctx = _ctx(_child(fam, p1), session)
         with pytest.raises(
             AuthorizationError, match=r"only a guardian may manage assignments"
         ):
-            await list_assignments("s1", _ctx(_child(fam, p1), session))
+            await list_assignments("s1", ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -360,10 +368,11 @@ class TestListAssignments:
 
         fam = uuid.uuid4()
         session = _FakeSession(book=_book("s1", fam))
+        ctx = _ctx(_admin(fam, set()), session)
         with pytest.raises(
             AuthorizationError, match=r"only a guardian may manage assignments"
         ):
-            await list_assignments("s1", _ctx(_admin(fam, set()), session))
+            await list_assignments("s1", ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -374,10 +383,11 @@ class TestListAssignments:
 
         fam, other = uuid.uuid4(), uuid.uuid4()
         session = _FakeSession(book=_book("s1", other))
+        ctx = _ctx(_guardian(fam, set()), session)
         with pytest.raises(
             AuthorizationError, match=r"storybook is not visible to this family"
         ):
-            await list_assignments("s1", _ctx(_guardian(fam, set()), session))
+            await list_assignments("s1", ctx)
 
 
 class TestContentSummary:
@@ -447,11 +457,12 @@ class TestContentSummary:
         session = _FakeSession(
             book=self._pub_book("s1", fam), version=self._version_row("s1")
         )
+        ctx = _ctx(_child(fam, uuid.uuid4()), session)
         with pytest.raises(
             AuthorizationError,
             match=r"only a guardian or admin may read a content summary",
         ):
-            await get_content_summary("s1", _ctx(_child(fam, uuid.uuid4()), session))
+            await get_content_summary("s1", ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -463,10 +474,11 @@ class TestContentSummary:
         session = _FakeSession(
             book=self._pub_book("s1", owner_fam), version=self._version_row("s1")
         )
+        ctx = _ctx(_guardian(other_fam, set()), session)
         with pytest.raises(
             AuthorizationError, match=r"resource belongs to another family"
         ):
-            await get_content_summary("s1", _ctx(_guardian(other_fam, set()), session))
+            await get_content_summary("s1", ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -488,8 +500,9 @@ class TestContentSummary:
 
         fam = uuid.uuid4()
         session = _FakeSession(book=None)
+        ctx = _ctx(_guardian(fam, set()), session)
         with pytest.raises(ResourceNotFoundError, match=r"storybook 's1' not found"):
-            await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
+            await get_content_summary("s1", ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -499,8 +512,9 @@ class TestContentSummary:
         fam = uuid.uuid4()
         draft = _book("s1", fam, status="in_review")
         session = _FakeSession(book=draft)
+        ctx = _ctx(_guardian(fam, set()), session)
         with pytest.raises(ResourceNotFoundError, match=r"storybook 's1' not found"):
-            await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
+            await get_content_summary("s1", ctx)
 
     @pytest.mark.unit
     @pytest.mark.asyncio
@@ -515,7 +529,8 @@ class TestContentSummary:
             book=self._pub_book("s1", fam),
             version=self._version_row("s1", approved=False),
         )
+        ctx = _ctx(_guardian(fam, set()), session)
         with pytest.raises(
             ResourceNotFoundError, match=r"storybook 's1' has no published version"
         ):
-            await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
+            await get_content_summary("s1", ctx)

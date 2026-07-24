@@ -559,17 +559,18 @@ async def test_approve_story_request_pii_backstop_trips() -> None:
         age_band="8-11",
     )
     session = _FakeSession(get_result=profile, child_names=["Amelia"])
+    confirmation = ApprovalConfirmation(
+        age_band=AgeBand.BAND_8_11,
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
+    )
 
     with pytest.raises(ValidationError):
         await service.approve_story_request(
             session,
             principal,
             request,
-            confirmation=ApprovalConfirmation(
-                age_band=AgeBand.BAND_8_11,
-                length=Length.MEDIUM,
-                narrative_style=NarrativeStyle.PROSE,
-            ),
+            confirmation=confirmation,
         )
 
 
@@ -586,17 +587,18 @@ async def test_approve_story_request_missing_profile_is_not_found() -> None:
         age_band="8-11",
     )
     session = _FakeSession(get_result=None, child_names=[])
+    confirmation = ApprovalConfirmation(
+        age_band=AgeBand.BAND_8_11,
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
+    )
 
     with pytest.raises(ResourceNotFoundError):
         await service.approve_story_request(
             session,
             principal,
             request,
-            confirmation=ApprovalConfirmation(
-                age_band=AgeBand.BAND_8_11,
-                length=Length.MEDIUM,
-                narrative_style=NarrativeStyle.PROSE,
-            ),
+            confirmation=confirmation,
         )
 
 
@@ -751,17 +753,18 @@ async def test_approve_anchored_request_with_series_title_raises() -> None:
         anchor_storybook_id="s_anchor123",
     )
     session = _FakeSession(get_result=None, child_names=[])
+    confirmation = ApprovalConfirmation(
+        age_band=AgeBand.BAND_8_11,
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
+    )
 
     with pytest.raises(ValidationError):
         await service.approve_story_request(
             session,
             principal,
             request,
-            confirmation=ApprovalConfirmation(
-                age_band=AgeBand.BAND_8_11,
-                length=Length.MEDIUM,
-                narrative_style=NarrativeStyle.PROSE,
-            ),
+            confirmation=confirmation,
             series_title="A New Series",
         )
 
@@ -1077,8 +1080,9 @@ class TestEnforceFamilyQuota:
         family_id = uuid.uuid4()
         family = Family(id=family_id, name="Fam", monthly_story_quota=2)
         session = _FakeSession(family_result=family, approved_count=2)
+        guardian = _guardian(family_id)
         with pytest.raises(StateTransitionError, match="monthly story budget reached"):
-            await service.enforce_family_quota(session, _guardian(family_id), family_id)
+            await service.enforce_family_quota(session, guardian, family_id)
 
     async def test_passes_when_under_quota(self) -> None:
         family_id = uuid.uuid4()
@@ -1098,8 +1102,9 @@ class TestEnforceFamilyQuota:
     async def test_missing_family_is_not_found(self) -> None:
         family_id = uuid.uuid4()
         session = _FakeSession(family_result=None)
+        guardian = _guardian(family_id)
         with pytest.raises(ResourceNotFoundError):
-            await service.enforce_family_quota(session, _guardian(family_id), family_id)
+            await service.enforce_family_quota(session, guardian, family_id)
 
 
 @pytest.mark.asyncio
@@ -1119,17 +1124,18 @@ class TestApproveStoryRequestQuotaGate:
         session = _FakeSession(
             get_result=None, child_names=[], family_result=family, approved_count=1
         )
+        confirmation = ApprovalConfirmation(
+            age_band=AgeBand.BAND_8_11,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        )
 
         with pytest.raises(StateTransitionError, match="monthly story budget reached"):
             await service.approve_story_request(
                 session,
                 principal,
                 request,
-                confirmation=ApprovalConfirmation(
-                    age_band=AgeBand.BAND_8_11,
-                    length=Length.MEDIUM,
-                    narrative_style=NarrativeStyle.PROSE,
-                ),
+                confirmation=confirmation,
             )
 
         assert request.status == "pending"

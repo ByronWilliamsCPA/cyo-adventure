@@ -538,11 +538,12 @@ async def test_reroute_exhausted_persists_cannot_carry(
         responses=[_violating_bind_response(), _violating_bind_response()]
     )
 
+    session_factory = _make_session_factory(sessions)
     with pytest.raises(ValidationError):  # fail-closed re-raise
         await run_generation_job(
             job_id,
             provider=provider,
-            session_factory=_make_session_factory(sessions),
+            session_factory=session_factory,
         )
 
     async with sessions() as session:

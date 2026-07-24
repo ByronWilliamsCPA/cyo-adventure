@@ -145,8 +145,9 @@ async def test_get_db_session_rolls_back_on_error(
     monkeypatch.setattr(deps, "get_session", lambda: fake)
     agen = deps.get_db_session()
     await agen.__anext__()
+    boom = ValueError("boom")
     with pytest.raises(ValueError, match="boom"):
-        await agen.athrow(ValueError("boom"))
+        await agen.athrow(boom)
     assert fake.rolled_back
     assert fake.closed
     assert not fake.committed
@@ -444,21 +445,20 @@ class TestAuthStubGuard:
 
     @pytest.mark.unit
     def test_guard_does_not_raise_in_local_env(self) -> None:
-        """deps imports cleanly when environment == 'local' (the default)."""
-        from cyo_adventure.core.exceptions import ConfigurationError
+        """deps imports cleanly when environment == 'local' (the default).
 
+        No try/except here by design (S8714): if the dev-stub guard were to
+        raise ConfigurationError for environment='local', the test should
+        fail naturally with that exception rather than a synthetic
+        pytest.fail message.
+        """
         # See test_guard_raises_when_non_local_and_no_oidc_config above for why
         # this stays a patched-singleton (now spec'd) instead of an env-var reload.
         with patch(
             "cyo_adventure.core.config.settings", spec=list(Settings.model_fields)
         ) as mock_settings:
             mock_settings.environment = "local"
-            try:
-                importlib.reload(deps)
-            except ConfigurationError:
-                pytest.fail(
-                    "ConfigurationError raised unexpectedly for environment='local'"
-                )
+            importlib.reload(deps)
 
         importlib.reload(deps)
 

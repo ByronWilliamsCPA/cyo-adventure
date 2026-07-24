@@ -133,8 +133,9 @@ def test_mint_expiry_reflects_configured_ttl(monkeypatch: pytest.MonkeyPatch) ->
 def test_expired_token_rejected() -> None:
     """A token whose exp is in the past fails verification."""
     stale = datetime.now(UTC) - timedelta(days=1)
+    stale_token = _mint(now=stale)
     with pytest.raises(AuthenticationError):
-        verify_child_session_token(_mint(now=stale))
+        verify_child_session_token(stale_token)
 
 
 @pytest.mark.unit
@@ -206,8 +207,9 @@ async def test_child_token_rejected_by_guardian_oidc_path(
     monkeypatch.setattr(deps.settings, "oidc_audience", "authenticated")
     monkeypatch.setattr(deps.settings, "oidc_jwks_url", "https://example/jwks")
     monkeypatch.setattr(deps, "_jwks_client", _FakeJwksClient)
+    child_token = _mint()
     with pytest.raises(AuthenticationError):
-        await deps._verify_oidc_jwt(_mint())
+        await deps._verify_oidc_jwt(child_token)
 
 
 def _b64url(data: bytes) -> str:
@@ -235,8 +237,9 @@ def test_missing_id_claim_rejected(missing: str) -> None:
     """A validly-signed token missing an id claim is rejected."""
     claims = _claims()
     del claims[missing]
+    token = _encode(claims)
     with pytest.raises(AuthenticationError):
-        verify_child_session_token(_encode(claims))
+        verify_child_session_token(token)
 
 
 @pytest.mark.unit
@@ -250,22 +253,25 @@ def test_missing_required_standard_claim_rejected(missing: str) -> None:
     """
     claims = _claims()
     del claims[missing]
+    token = _encode(claims)
     with pytest.raises(AuthenticationError):
-        verify_child_session_token(_encode(claims))
+        verify_child_session_token(token)
 
 
 @pytest.mark.unit
 def test_malformed_uuid_claim_rejected() -> None:
     """A non-UUID profile_id claim is rejected even when validly signed."""
+    token = _encode(_claims(profile_id="not-a-uuid"))
     with pytest.raises(AuthenticationError):
-        verify_child_session_token(_encode(_claims(profile_id="not-a-uuid")))
+        verify_child_session_token(token)
 
 
 @pytest.mark.unit
 def test_non_child_role_claim_rejected() -> None:
     """A validly-signed token carrying a non-child role is refused."""
+    token = _encode(_claims(role="guardian"))
     with pytest.raises(AuthenticationError):
-        verify_child_session_token(_encode(_claims(role="guardian")))
+        verify_child_session_token(token)
 
 
 @pytest.mark.unit
@@ -328,9 +334,10 @@ async def test_require_principal_child_branch_scopes_to_single_profile() -> None
 async def test_require_principal_rejects_forged_child_token() -> None:
     """A child-audience token signed with the wrong secret is rejected."""
     forged = _encode(_claims(), secret=_OTHER_SECRET)
+    session = _ExplodingSession()
     with pytest.raises(AuthenticationError):
         await deps.require_principal(
-            _ExplodingSession(),  # pyright: ignore[reportArgumentType]
+            session,  # pyright: ignore[reportArgumentType]
             authorization=f"Bearer {forged}",
         )
 
@@ -357,8 +364,9 @@ def _base_nonlocal_kwargs() -> dict[str, Any]:
 @pytest.mark.unit
 def test_missing_child_secret_outside_local_rejected() -> None:
     """A non-local Settings with no child-session secret refuses to construct."""
+    kwargs = _base_nonlocal_kwargs()
     with pytest.raises(ConfigurationError, match="CHILD_SESSION_SECRET"):
-        Settings(**_base_nonlocal_kwargs(), child_session_secret=None)
+        Settings(**kwargs, child_session_secret=None)
 
 
 @pytest.mark.unit

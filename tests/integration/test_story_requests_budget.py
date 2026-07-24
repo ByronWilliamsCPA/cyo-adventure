@@ -157,17 +157,19 @@ async def test_enforce_family_quota_blocks_and_creates_nothing(
     async with sessions() as session:
         pending = await session.get(StoryRequest, request.id)
         assert pending is not None
+        confirmation = ApprovalConfirmation(
+            age_band=AgeBand.BAND_10_13,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        )
+        approved_now = datetime(2026, 7, 15, tzinfo=UTC)
         with pytest.raises(StateTransitionError, match="monthly story budget reached"):
             await service.approve_story_request(
                 session,
                 principal,
                 pending,
-                confirmation=ApprovalConfirmation(
-                    age_band=AgeBand.BAND_10_13,
-                    length=Length.MEDIUM,
-                    narrative_style=NarrativeStyle.PROSE,
-                ),
-                now=datetime(2026, 7, 15, tzinfo=UTC),
+                confirmation=confirmation,
+                now=approved_now,
             )
         await session.rollback()
 

@@ -45,8 +45,9 @@ class _FakeSession:
 async def test_resume_missing_job_is_not_found() -> None:
     """Resuming an unknown job id raises 404, not a crash."""
     session = _FakeSession(job=None, concept=None)
+    job_id = uuid.uuid4()
     with pytest.raises(ResourceNotFoundError):
-        await resume_manual_fill(session, uuid.uuid4(), {"id": "s_x"})
+        await resume_manual_fill(session, job_id, {"id": "s_x"})
 
 
 async def test_resume_wrong_status_is_conflict() -> None:
