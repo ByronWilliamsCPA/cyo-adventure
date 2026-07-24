@@ -12,7 +12,7 @@
 ci:
   autoupdate_schedule: monthly
   autofix_prs: true
-  skip: [validate-front-matter, qlty-check, qlty-full, trufflehog, bandit, bandit-full]  # Skip local-only hooks
+  skip: [validate-front-matter, qlty-check, qlty-full, trufflehog, bandit, bandit-full, frontend-eslint, frontend-prettier, frontend-typecheck]  # Skip local-only hooks
 
 repos:
   # ============================================================================
@@ -168,6 +168,36 @@ repos:
         stages: [pre-commit]
 
   # ============================================================================
+  # Frontend Fast Checks (ESLint + Prettier, pre-commit stage)
+  # ============================================================================
+  # Mirrors the Ruff section above: fast, staged-files-only checks so a
+  # frontend lint/format error is caught locally instead of surfacing 5+
+  # minutes later in the `frontend` CI job. Local system hooks (needs the
+  # frontend/node_modules toolchain, not a pre-commit-managed Python venv);
+  # both are in the pre-commit.ci `skip:` list above since Node isn't
+  # available in that hosted sandbox. Paths passed by pre-commit are
+  # repo-root-relative (frontend/src/...); each is rewritten relative to
+  # frontend/ before being handed to the tool, since both run with
+  # `cwd=frontend`.
+  - repo: local
+    hooks:
+      - id: frontend-eslint
+        name: ESLint (frontend, staged files)
+        entry: >-
+          bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx eslint --max-warnings=0 "${files[@]}"' --
+        language: system
+        files: ^frontend/(src|e2e|e2e-real|e2e-staging|e2e-prod)/.*\.tsx?$
+        stages: [pre-commit]
+
+      - id: frontend-prettier
+        name: Prettier format check (frontend, staged files)
+        entry: >-
+          bash -c 'cd frontend && files=(); for f in "$@"; do files+=("${f#frontend/}"); done; npx prettier --check "${files[@]}"' --
+        language: system
+        files: ^frontend/src/.*\.(ts|tsx|css|json)$
+        stages: [pre-commit]
+
+  # ============================================================================
   # Type Checking with BasedPyright (Strict Mode)
   # ============================================================================
   # BasedPyright: faster, stricter type checker (replaces mypy)
@@ -182,6 +212,24 @@ repos:
         # pre-push: matches the repo's heavy-lint-at-pre-push design (qlty-full
         # also runs BasedPyright). Pre-existing middleware type debt is deferred
         # to pre-push and CI rather than gating every commit.
+        stages: [pre-push]
+
+  # ============================================================================
+  # Frontend TypeScript Type Checking (tsc -b, pre-push stage)
+  # ============================================================================
+  # Mirrors BasedPyright's placement immediately above: type checking is
+  # slower than lint/format, so it is deferred to pre-push rather than
+  # gating every commit. `tsc -b` is incremental (frontend/tsconfig*.tsbuildinfo),
+  # so repeat local runs after the first are fast. Local system hook (needs
+  # the frontend/node_modules toolchain); in the pre-commit.ci `skip:` list
+  # above since Node isn't available in that hosted sandbox.
+  - repo: local
+    hooks:
+      - id: frontend-typecheck
+        name: Frontend TypeScript type checker (tsc -b)
+        entry: bash -c 'cd frontend && npx tsc -b'
+        language: system
+        pass_filenames: false
         stages: [pre-push]
 
   # ============================================================================
