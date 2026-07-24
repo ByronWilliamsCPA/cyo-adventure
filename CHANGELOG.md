@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.33.1] - 2026-07-24
+
+### Performance Improvements
+
+- **ci**: Parallelize frontend E2E and add frontend pre-commit/pre-push hooks
+  ([#400](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/400),
+  [`4dda47a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/4dda47a053c2ca29a1b6df4eacc6558fd6a440ca))
+
+
 ## [0.33.0] - 2026-07-24
 
 ### Features
@@ -2637,6 +2646,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.33.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.33.0...v0.33.1
 [0.33.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.32.2...v0.33.0
 [0.32.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.32.1...v0.32.2
 [0.32.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.32.0...v0.32.1
