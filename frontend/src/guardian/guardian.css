@@ -25,6 +25,7 @@
 
 .guardian-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(120% 80% at 12% 0%, var(--color-amber-subtle) 0%, transparent 55%),
     var(--color-parchment, #f8f3e8);
