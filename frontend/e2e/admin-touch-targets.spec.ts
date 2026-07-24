@@ -10,13 +10,13 @@ import { mockMe, seedGuardianSession } from './support/auth'
  * the `@ds` `Button` component, which guarantees a 44px minimum height
  * (WCAG 2.5.5). This spec asserts that floor holds at a phone viewport.
  *
- * The assertion is scoped per-container rather than page-wide:
- * UserManagementPage.tsx's own tab-nav buttons (the "Users / Kids / Families
- * / Family connections" switcher) are a bare native `<button>` outside this
- * task's file list and were intentionally left unmigrated; a page-wide
- * `button:visible` sweep would fail on a button this task never touched.
- * Scoping to `main section` (the tab-content wrapper each migrated component
- * renders into) excludes the nav, which sits outside any `<section>`.
+ * The assertion is scoped per-container rather than page-wide. The
+ * UserManagementPage.tsx tab-nav switcher (the "Users / Kids / Families /
+ * Family connections" buttons) was migrated to the `@ds` `Button` in a later
+ * follow-up, so it now clears the 44px floor too; scoping to `main section`
+ * (the tab-content wrapper each migrated component renders into) is therefore
+ * defensive rather than required. It keeps this regression pinned to the
+ * buttons Task A7 migrated, independent of chrome outside the content area.
  */
 
 const FAMILY_A = {

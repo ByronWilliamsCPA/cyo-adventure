@@ -20,12 +20,11 @@ import { mockEmptyConsole, mockMe, seedDeviceGrant, seedGuardianSession } from '
  *   - kid profile picker (`/kids`, seedDeviceGrant + mocked /api/v1/profiles)
  *   - kid library (`/library/p1`, seedDeviceGrant + mocked profiles/library)
  *   - guardian profiles (`/guardian/profiles`, seedGuardianSession + mockMe
- *     + mocked /api/v1/profiles). The 320px case documents a genuine,
- *     pre-existing bug this sweep found (GuardianShell's header has no
- *     flex-wrap fallback and overflows at 320px, unlike its nav just below
- *     it); marked with `test.fail()` and a full explanation inline rather
- *     than silently dropped, since fixing guardian.css is out of scope for
- *     this test-infrastructure-only task.
+ *     + mocked /api/v1/profiles). This sweep originally found a genuine
+ *     overflow at 320px: GuardianShell's header had no flex-wrap fallback,
+ *     unlike its nav just below it. That bug was fixed by adding
+ *     `flex-wrap: wrap` to `.guardian-shell__header` (guardian.css), so the
+ *     320px case now passes as a plain assertion like every other width.
  *   - admin console (`/admin`, seedGuardianSession + mockMe admin +
  *     mockEmptyConsole)
  * - Deferred (not covered here, to avoid inventing new brittle seeding
