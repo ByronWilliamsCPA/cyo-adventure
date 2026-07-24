@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.32.0] - 2026-07-24
+
+### Features
+
+- Add age-band tokens, per-profile reduce-motion, and guardian preview-as-child
+  ([#389](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/389),
+  [`11bfd33`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/11bfd33503d8c528e16fae7e4bd147ec2c468342))
+
+
 ## [0.31.1] - 2026-07-24
 
 ### Bug Fixes
@@ -2601,6 +2610,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.32.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.31.1...v0.32.0
 [0.31.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.31.0...v0.31.1
 [0.31.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.2...v0.30.0
