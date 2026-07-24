@@ -17,6 +17,11 @@ describe('probeConnectivity', () => {
     await expect(probeConnectivity('/health', 2000)).resolves.toBe(false)
   })
 
+  it('assumes reachable when fetch is unavailable (no-fetch runtime)', async () => {
+    vi.stubGlobal('fetch', undefined)
+    await expect(probeConnectivity('/health', 2000)).resolves.toBe(true)
+  })
+
   it('returns false when the probe aborts on timeout', async () => {
     vi.stubGlobal(
       'fetch',
