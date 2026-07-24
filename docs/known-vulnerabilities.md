@@ -371,6 +371,73 @@ around 2026-06-28 with no fix currently in flight there.
 - Discovered by the Container Security workflow (Trivy) on
   [PR #299](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/299)
 
+---
+
+## CVE-2026-53089 and 7 further kernel-header CVEs (2 with an upstream fix) | linux-libc-dev | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | No-fix (6): CVE-2026-53089, CVE-2026-53109, CVE-2026-53118, CVE-2026-53330, CVE-2026-63970, CVE-2026-64017. Fix-available-but-not-yet-shipped (2): CVE-2026-53399, CVE-2026-64600 |
+| **Package** | linux-libc-dev (Debian binary package from the `linux` kernel source package) |
+| **Affected Version** | 6.12.95-1+dhi0 (Debian 13 "trixie", DHI mirror build) |
+| **Fixed Version** | 6 report no fix available; CVE-2026-53399 and CVE-2026-64600 are fixed in `linux-libc-dev` 6.12.96-1, which the `dhi-python:3.14-debian13` base does not yet ship |
+| **Severity** | High (all 8, per Trivy/Aqua feed) |
+| **CVSS Score** | Not individually catalogued here; see per-CVE Aqua/NVD links below |
+| **Discovered** | 2026-07-24 |
+| **Reassessment Due** | 2026-08-24 (the 2 fixable); 2026-09-24 (the 6 no-fix) |
+| **Blocking Release** | No |
+
+### Description
+
+Eight further kernel defects reported against `linux-libc-dev`'s tracked kernel
+source version, newly surfaced after the 34-CVE set documented in the block
+above. Like that set they span unrelated kernel subsystems and follow the same
+`linux-libc-dev` false-positive class (kernel UAPI headers, not a running
+kernel binary). Six report an empty Fixed Version with status `affected`. Two
+(CVE-2026-53399, CVE-2026-64600) now have an upstream fix in `linux-libc-dev`
+6.12.96-1 that the base image has not yet picked up.
+
+### Impact on This Project
+
+Identical to the 34-CVE `linux-libc-dev` entry above: the package ships kernel
+UAPI headers used at compile time, contains no kernel binary, and executes no
+kernel code at runtime. The container serves a FastAPI web application under
+whatever kernel the Docker host provides, not the kernel version recorded in
+this package's metadata. Exposure through the application surface is negligible.
+
+### Remediation Plan
+
+- [ ] **CVE-2026-53399, CVE-2026-64600 (tracked, fix exists):** these are a
+  tracked suppression, not a permanent dismissal. The fix is in
+  `linux-libc-dev` 6.12.96-1; the blocker is that
+  `ghcr.io/byronwilliamscpa/dhi-python:3.14-debian13` still ships
+  6.12.95-1+dhi0 and the DHI runtime image has no package manager to upgrade
+  itself. Remove both `.trivyignore` entries as soon as a Renovate digest bump
+  advances the `dhi-python` base to a build carrying 6.12.96-1, then re-run the
+  Container Security scan to confirm. Reassess by 2026-08-24.
+- [ ] **The 6 no-fix CVEs:** monitor the
+  [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/linux)
+  for the DHI mirror to rebuild against a newer kernel-headers snapshot; remove
+  the entries once a fixed digest is published. Reassess by 2026-09-24.
+
+### Why Not Fixed Yet
+
+For the 6 no-fix CVEs: same reason as the 34-CVE block above; Debian has not
+released a patched `linux-libc-dev` for the DHI mirror snapshot, and the base
+image is not managed by this project's dependency set. For the 2 fixable CVEs:
+an upstream fix exists (6.12.96-1) but has not propagated into the
+`dhi-python:3.14-debian13` digest this project pins; the DHI runtime image
+ships no shell or package manager, so the fix can only arrive via a base-image
+digest refresh from the `ByronWilliamsCPA/container-images` mirror pipeline,
+which this project consumes rather than controls.
+
+### References
+
+- [Aqua AVD CVE-2026-53399](https://avd.aquasec.com/nvd/cve-2026-53399) and [Aqua AVD CVE-2026-64600](https://avd.aquasec.com/nvd/cve-2026-64600) (the fixable pair; the 6 no-fix CVEs follow the same `avd.aquasec.com/nvd/<cve-id>` URL pattern)
+- [Debian security tracker: linux](https://security-tracker.debian.org/tracker/source-package/linux)
+- Discovered by the Container Security workflow (Trivy) on
+  [PR #394](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/394)
+
 ## Resolved Entries
 
 | CVE | Package | Resolved Date | Resolution |
@@ -385,3 +452,4 @@ around 2026-06-28 with no fix currently in flight there.
 | 2026-07-14  | Byron Williams | Added gawk CVE-2026-40467/40468/40469/40553 (runtime base image; no upstream fix). |
 | 2026-07-19  | Byron Williams | Added libexpat1/libexpat1-dev CVE-2025-59375/2026-25210/45186/56131/56407/56408 (runtime base image; no upstream fix; same mirror regression independently found via PR #296). |
 | 2026-07-19  | Byron Williams | Added linux-libc-dev CVE-2026-43185 (Critical) plus 33 further kernel CVEs (runtime base image; kernel UAPI headers only, no running kernel code; no upstream fix). |
+| 2026-07-24  | Byron Williams | Added 8 further linux-libc-dev kernel-header CVEs from PR #394 Trivy: 6 no-fix (53089/53109/53118/53330/63970/64017) plus 2 tracked-with-fix in 6.12.96-1 not yet in the dhi-python base (53399/64600). |

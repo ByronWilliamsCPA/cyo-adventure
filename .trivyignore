@@ -15,9 +15,10 @@
 #   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
 #   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
 #
-# Last reviewed: 2026-07-14 (gawk block only; see each block's own "Confirmed
-# via" comment below for when it was individually last re-verified against a
-# live Trivy run).
+# Last reviewed: 2026-07-24 (linux-libc-dev new-CVE additions from the PR #394
+# Container Security run; gawk block 2026-07-14). See each block's own
+# "Confirmed via" comment below for when it was individually last re-verified
+# against a live Trivy run.
 
 # --- perl-base (Perl + bundled Archive::Tar / IO-Compress); no Debian fix yet ---
 CVE-2026-42496
@@ -105,3 +106,27 @@ CVE-2026-53000
 CVE-2026-53010
 CVE-2026-53091
 CVE-2026-53277
+
+# linux-libc-dev newly-disclosed CVEs, confirmed via the PR #394 Container
+# Security run against dhi-python:3.14-debian13 (linux-libc-dev 6.12.95-1+dhi0):
+# these six report an empty Fixed Version with status "affected". Same
+# kernel-UAPI-headers non-applicability rationale as the block above (compile-
+# time headers, no running kernel binary in this image). Documented in
+# docs/known-vulnerabilities.md; reassess 2026-09-24.
+CVE-2026-53089
+CVE-2026-53109
+CVE-2026-53118
+CVE-2026-53330
+CVE-2026-63970
+CVE-2026-64017
+
+# --- linux-libc-dev CVEs that DO have an upstream fix (linux-libc-dev
+# 6.12.96-1) which the dhi-python:3.14-debian13 base does not yet ship (it still
+# carries 6.12.95-1+dhi0, and the runtime-stage apt-get upgrade does not pull
+# the newer package). Ignored meanwhile under the same kernel-UAPI-headers
+# non-applicability rationale, and TRACKED for removal when the dhi-python base
+# digest refreshes to include 6.12.96-1 (Renovate digest bump). This is a
+# tracked suppression with an expected proper fix, not a permanent dismissal.
+# See docs/known-vulnerabilities.md; reassess 2026-08-24. ---
+CVE-2026-53399
+CVE-2026-64600
