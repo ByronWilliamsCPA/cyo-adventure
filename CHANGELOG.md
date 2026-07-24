@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.31.1] - 2026-07-24
+
+### Bug Fixes
+
+- **deps**: Resolve gitpython, js-yaml, and react-router security advisories
+  ([#394](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/394),
+  [`bbb1754`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/bbb175431eaabf1e1722996c0d751905886158f9))
+
+
 ## [0.31.0] - 2026-07-24
 
 ### Features
@@ -2592,6 +2601,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.31.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.31.0...v0.31.1
 [0.31.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.2...v0.30.0
 [0.29.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.1...v0.29.2
