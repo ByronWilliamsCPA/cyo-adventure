@@ -55,7 +55,16 @@
 
 .library__shelf {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  /* #ASSUME: layout: auto-fit (not auto-fill) collapses empty tracks, so a
+     shelf with fewer books than fit at 16rem-per-card stretches its existing
+     cards to fill the row instead of leaving a dead empty track beside them.
+     auto-fill kept that track reserved-but-empty at any width between one
+     and two 16rem cards (tablet portrait and wider desktops both landed
+     there with a single "More to Explore" book), which read as a layout
+     bug rather than a deliberate one-item shelf.
+     #VERIFY: e2e/responsive.spec.ts asserts a single-book shelf fills the
+     container width at tablet and desktop viewports. */
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   gap: var(--space-4);
   list-style: none;
   margin: 0;

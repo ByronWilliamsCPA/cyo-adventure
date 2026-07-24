@@ -1408,8 +1408,21 @@
    if a future specificity conflict ever needs it; no existing markup is
    renamed to use it.
    ============================================================================ */
+/* #ASSUME: layout: display:block + overflow-x:auto applies at every
+   viewport, not just the phone breakpoint below. A table's column widths
+   grow with cell content (default table-layout: auto), so a table that
+   fits at 640px and at desktop widths can still overflow a mid-size
+   tablet portrait viewport (e.g. 768-834px) if its content is wide
+   enough; scoping the scroll behavior to phone-only left that tablet
+   range with no escape valve; a table that already fits is unaffected,
+   since overflow-x: auto only activates once content exceeds the
+   container.
+   #VERIFY: e2e/responsive.spec.ts asserts zero page-level horizontal
+   overflow on an admin table at iPad-width viewports. */
 .guardian-shell__main table,
 .guardian-table {
+  display: block;
+  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   font-size: var(--text-sm, 0.9375rem);
@@ -1824,12 +1837,6 @@
 
   .profiles__card {
     align-items: flex-start;
-  }
-
-  .guardian-shell__main table,
-  .guardian-table {
-    display: block;
-    overflow-x: auto;
   }
 
   /* Device actions (ConsolePage.tsx): each action's width is otherwise

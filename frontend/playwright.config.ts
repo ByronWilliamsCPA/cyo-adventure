@@ -67,7 +67,14 @@ export default defineConfig({
       // and update-visual-snapshots.yml still regenerates them. Structural
       // gating, not a per-test skip marker. Run locally with
       // `CI=1 npm run test:e2e -- visual.spec.ts`.
-      testIgnore: process.env.CI ? [] : ['visual.spec.ts'],
+      //
+      // cross-device.spec.ts is excluded too: it runs the same checks as
+      // responsive.spec.ts's "@ desktop" block, once per real device/browser
+      // project (see the cross-device-*/cross-browser-* projects below), and
+      // would just be a redundant third desktop-chrome pass here.
+      testIgnore: process.env.CI
+        ? ['cross-device.spec.ts']
+        : ['visual.spec.ts', 'cross-device.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
     {
@@ -147,6 +154,46 @@ export default defineConfig({
       fullyParallel: false,
       retries: process.env.CI ? 1 : 0,
       use: { ...devices['Desktop Chrome'] },
+    },
+    // Cross-device/cross-browser tier (npm run test:e2e:cross-device): every
+    // project below matches ONLY e2e/cross-device.spec.ts, not the full
+    // ./e2e suite. That spec asserts structural properties (no page-level
+    // horizontal overflow, a lone grid item filling its row) rather than
+    // pixel-exact screenshots, so it tolerates the font/rendering
+    // differences between engines; the full mocked suite above already
+    // covers Desktop Chrome behavior and isn't worth re-running under every
+    // engine. `devices[...]` picks each profile's real-world browser engine
+    // (iPad/iPhone default to webkit, matching actual Mobile Safari), so
+    // this is the only tier that exercises non-Chromium engines at all.
+    // #ASSUME: external-resources: requires `playwright install firefox
+    // webkit` in addition to chromium (see ci.yml); a host with only
+    // chromium installed fails these four projects with a clear
+    // "Executable doesn't exist" error, not a silent skip.
+    // #VERIFY: ci.yml's "Install Playwright browsers" step installs all
+    // three engines before this tier runs.
+    {
+      name: 'cross-device-mobile',
+      testDir: './e2e',
+      testMatch: /cross-device\.spec\.ts/,
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'cross-device-tablet',
+      testDir: './e2e',
+      testMatch: /cross-device\.spec\.ts/,
+      use: { ...devices['iPad (gen 7)'] },
+    },
+    {
+      name: 'cross-browser-mobile-safari',
+      testDir: './e2e',
+      testMatch: /cross-device\.spec\.ts/,
+      use: { ...devices['iPhone 14'] },
+    },
+    {
+      name: 'cross-browser-firefox',
+      testDir: './e2e',
+      testMatch: /cross-device\.spec\.ts/,
+      use: { ...devices['Desktop Firefox'] },
     },
   ],
 })
