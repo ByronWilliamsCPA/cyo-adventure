@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.32.1] - 2026-07-24
+
+### Bug Fixes
+
+- **frontend**: Fix responsive layout bugs and add cross-device e2e coverage
+  ([#390](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/390),
+  [`84b99e6`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/84b99e6be11bb93af73654b34465102f3473e8ee))
+
+
 ## [0.32.0] - 2026-07-24
 
 ### Features
@@ -2610,6 +2619,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.32.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.32.0...v0.32.1
 [0.32.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.31.1...v0.32.0
 [0.31.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.31.0...v0.31.1
 [0.31.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.30.0...v0.31.0
