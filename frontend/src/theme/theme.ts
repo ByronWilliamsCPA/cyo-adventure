@@ -37,7 +37,10 @@ export function writeStoredMode(mode: ThemeMode): void {
   try {
     localStorage.setItem(THEME_STORAGE_KEY, mode)
   } catch {
-    // Preference just won't survive a reload; the in-memory state still applies.
+    // Storage blocked: the in-memory state still applies for this tab, but the
+    // preference won't survive a reload and won't propagate to other tabs (the
+    // 'storage' event only fires on a successful write), so cross-tab sync is
+    // silently a no-op here. Acceptable degradation, not a failure to surface.
   }
 }
 

@@ -24,18 +24,24 @@
          try/catch since localStorage can throw in private-mode Safari. -->
     <script>
       (function () {
+        // Read the stored preference in its OWN try: if localStorage throws
+        // (private-mode Safari, disabled-storage policy), fall through to the
+        // OS preference below instead of skipping it and defaulting to light.
+        // This mirrors src/theme/theme.ts, where readStoredMode() returning
+        // 'system' on a storage throw still resolves via matchMedia.
+        var stored = null
         try {
-          var stored = localStorage.getItem('cyo-theme')
-          var theme =
-            stored === 'light' || stored === 'dark'
-              ? stored
-              : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'dark'
-                : 'light'
-          document.documentElement.setAttribute('data-theme', theme)
+          stored = localStorage.getItem('cyo-theme')
         } catch (e) {
-          // Storage unavailable; :root's light defaults in tokens.css apply until ThemeProvider mounts.
+          // Storage blocked; stored stays null and the OS preference wins.
         }
+        var theme =
+          stored === 'light' || stored === 'dark'
+            ? stored
+            : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+        document.documentElement.setAttribute('data-theme', theme)
       })()
     </script>
   </head>

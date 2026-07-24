@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { ThemeContext, type ThemeContextValue } from './themeContext'
@@ -53,17 +53,30 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [])
 
   // Syncs the DOM (an external system) with the resolved theme; no React
-  // state is set here, only <html data-theme>.
-  useEffect(() => {
+  // state is set here, only <html data-theme>. useLayoutEffect (not useEffect)
+  // so the attribute is written BEFORE the browser paints the committed
+  // render: on a toggle, a post-paint useEffect would let one frame paint with
+  // the outgoing theme's tokens before data-theme flips, a visible flash. The
+  // no-flash path on first load is index.html's inline script, not this; this
+  // just keeps toggles and OS-preference changes flash-free after mount.
+  useLayoutEffect(() => {
     applyResolvedTheme(resolvedTheme)
   }, [resolvedTheme])
 
   useEffect(() => {
+    // #EDGE: browser-compat: matchMedia is absent in jsdom and a
+    // MediaQueryList predating 2020 (Safari < 14) exposes only the deprecated
+    // addListener, not addEventListener. Feature-detect both so a missing API
+    // degrades to "no live OS-change tracking" (initial resolution still
+    // works) instead of throwing at mount, where this provider sits OUTSIDE
+    // AppErrorBoundary (App.tsx) and a throw would blank the whole app.
+    // #VERIFY: ThemeProvider.test.tsx system-change and matchMedia-absent cases.
     if (typeof window.matchMedia !== 'function') return undefined
     const query = window.matchMedia('(prefers-color-scheme: dark)')
     function onChange(event: MediaQueryListEvent) {
       setSystemPrefersDark(event.matches)
     }
+    if (typeof query.addEventListener !== 'function') return undefined
     query.addEventListener('change', onChange)
     return () => query.removeEventListener('change', onChange)
   }, [])
