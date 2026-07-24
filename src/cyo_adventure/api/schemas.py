@@ -1155,6 +1155,7 @@ class ProfileView(BaseModel):
     reading_level_cap: float
     avatar: str | None
     tts_enabled: bool
+    reduce_motion: bool
     has_pin: bool
     content_flag_caps: ContentFlagCaps
     banned_themes: list[str]
@@ -1184,6 +1185,7 @@ class ProfileCreateBody(BaseModel):
     reading_level_cap: float = Field(default=99.0, ge=0.0, le=99.0)
     avatar: AvatarId | None = None
     tts_enabled: bool = False
+    reduce_motion: bool = False
     content_flag_caps: ContentFlagCaps | None = None
     banned_themes: (
         Annotated[list[BannedTheme], Field(max_length=_BANNED_THEMES_MAX)] | None
@@ -1201,7 +1203,7 @@ class ProfileUpdateBody(BaseModel):
     null`` removes the profile's picker PIN (a 4-8 digit string sets or
     replaces it), and an explicit null on either G2 field clears it back to
     "no override" / "no exclusions" (a non-null value replaces the stored
-    value wholesale, it does not merge). The other four fields have no
+    value wholesale, it does not merge). The other five fields have no
     legitimate "clear" semantics, so an explicit ``null`` on them is a
     deliberate no-op (the router only applies non-null values); see
     ``update_profile`` and
@@ -1215,6 +1217,7 @@ class ProfileUpdateBody(BaseModel):
     reading_level_cap: float | None = Field(default=None, ge=0.0, le=99.0)
     avatar: AvatarId | None = None
     tts_enabled: bool | None = None
+    reduce_motion: bool | None = None
     pin: PinCode | None = None
     content_flag_caps: ContentFlagCaps | None = None
     banned_themes: (
@@ -2004,6 +2007,7 @@ class AdminProfileView(BaseModel):
     reading_level_cap: float
     avatar: str | None
     tts_enabled: bool
+    reduce_motion: bool
     has_pin: bool
     status: Literal["active", "deactivated"]
     created_at: datetime
@@ -2026,6 +2030,7 @@ class AdminProfileCreateBody(BaseModel):
     reading_level_cap: float = Field(default=99.0, ge=0.0, le=99.0)
     avatar: AvatarId | None = None
     tts_enabled: bool = False
+    reduce_motion: bool = False
 
 
 class AdminProfileUpdateBody(BaseModel):
@@ -2043,6 +2048,7 @@ class AdminProfileUpdateBody(BaseModel):
     reading_level_cap: float | None = Field(default=None, ge=0.0, le=99.0)
     avatar: AvatarId | None = None
     tts_enabled: bool | None = None
+    reduce_motion: bool | None = None
     pin: PinCode | None = None
     status: Literal["active", "deactivated"] | None = None
 

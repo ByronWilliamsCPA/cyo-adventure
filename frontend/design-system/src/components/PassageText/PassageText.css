@@ -3,10 +3,12 @@
 .cyo-passage,
 .cyo-passage--multi p {
   font-family: var(--font-serif);
-  /* --reader-font-scale (default 1) is set by the reader's A/A+/A++ control
-     (UX-K2); prose scales without affecting the surrounding chrome. */
-  font-size: calc(var(--text-base) * var(--reader-font-scale, 1));
-  line-height: var(--leading-relaxed);
+  /* --band-reader-text (band-tokens.css) sets the default base size per age
+     band; --reader-font-scale (default 1, the reader's A/A+/A++ control,
+     UX-K2) multiplies on top of that band default. Prose scales without
+     affecting the surrounding chrome. */
+  font-size: calc(var(--band-reader-text, var(--text-base)) * var(--reader-font-scale, 1));
+  line-height: var(--band-reader-leading, var(--leading-relaxed));
   color: var(--color-ink);
   margin: 0;
   /* Classic indent for first paragraph */
@@ -29,6 +31,9 @@
 @media (min-width: 640px) {
   .cyo-passage,
   .cyo-passage--multi p {
-    font-size: calc(var(--text-lg) * var(--reader-font-scale, 1));
+    font-size: calc(
+      max(var(--text-lg), var(--band-reader-text, var(--text-base))) *
+        var(--reader-font-scale, 1)
+    );
   }
 }

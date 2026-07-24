@@ -51,3 +51,13 @@ export const ADMIN_CONSOLE_PATH = '/admin'
  */
 export const AUTHORIZE_DEVICE_INTENT_PARAM = 'intent'
 export const AUTHORIZE_DEVICE_INTENT_VALUE = 'authorize-device'
+
+/**
+ * Guardian preview-as-child (read-only): mounted under the guardian console,
+ * deliberately NOT under `/library/*`/`/read/*` (those paths are
+ * kid-token-gated in `useApi.ts`'s `isKidTokenRoute` and would refuse the
+ * guardian's own bearer).
+ */
+export function previewAsChildPath(profileId: string): string {
+  return `${GUARDIAN_CONSOLE_PATH}/preview/${profileId}`
+}

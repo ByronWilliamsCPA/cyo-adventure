@@ -1,0 +1,75 @@
+/* Age-band CSS scoping (kid surface): a `data-age-band` attribute set once on
+   the kid shell drives these `--band-*` custom properties, which every
+   consuming component reads with a fallback to today's value. Components
+   never select on `[data-age-band]` themselves; only this file does.
+
+   Tiers (the six AgeBand literals collapse to three; see frontend/src/kid/
+   ageBand.ts's BAND_TIERS for the identical TS-side mapping):
+     explorer   -> "3-5", "5-8"     big, bouncy, ambient motion, larger print
+     adventurer -> "8-11", "10-13"  playful but quick, interaction-only motion
+     neutral    -> "13-16", "16+", or no [data-age-band] at all (today's values)
+
+   Precedence (strongest first): prefers-reduced-motion / a profile's
+   reduce_motion flag (data-reduce-motion) > age-band tier > this file's
+   :root defaults. A tier block may only set --band-* custom properties,
+   never a concrete CSS property directly -- that is what lets the two
+   motion overrides below win by simply zeroing the tokens once, instead of
+   every consumer needing its own reduced-motion rule. */
+
+:root {
+  /* Motion */
+  --band-motion-duration: var(--duration-normal);
+  --band-motion-distance: 3px;
+  --band-motion-ease: var(--easing-default);
+  --band-motion-idle: paused;
+
+  /* Ergonomics */
+  --band-tap-min: 44px;
+  --band-gap: var(--space-4);
+
+  /* Typography: the reader passage's default size/line-height (PassageText.css);
+     the A/A+/A++ picker's --reader-font-scale multiplies on top of this. */
+  --band-reader-text: var(--text-base);
+  --band-reader-leading: var(--leading-relaxed);
+}
+
+:where([data-age-band='3-5'], [data-age-band='5-8']) {
+  --band-motion-duration: var(--duration-slow);
+  --band-motion-distance: 6px;
+  --band-motion-ease: cubic-bezier(0.34, 1.56, 0.64, 1); /* overshoot "boing" */
+  --band-motion-idle: running;
+  --band-tap-min: 56px;
+  --band-reader-text: var(--text-lg);
+}
+
+:where([data-age-band='8-11'], [data-age-band='10-13']) {
+  --band-motion-duration: var(--duration-normal);
+  --band-motion-distance: 4px;
+  --band-motion-ease: cubic-bezier(0.22, 1.2, 0.36, 1); /* mild spring */
+}
+
+/* '13-16' and '16+' get no block: neutral tier IS the :root default above.
+   band-tokens.test.ts asserts this is deliberate, not a missed mapping. */
+
+/* Reduced motion, from either source, wins over any tier by being LAST:
+   both sources zero the same tokens, so every consumer collapses at once. */
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  :where([data-age-band]) {
+    --band-motion-duration: 0.01ms;
+    --band-motion-distance: 0px;
+    --band-motion-ease: linear;
+    --band-motion-idle: paused;
+  }
+}
+
+/* Guardian-set per-profile motion preference (ChildProfile.reduce_motion),
+   applied by KidShell/the guardian preview surface as data-reduce-motion on
+   the same element that carries data-age-band. */
+:where([data-reduce-motion='true']),
+:where([data-reduce-motion='true'] [data-age-band]) {
+  --band-motion-duration: 0.01ms;
+  --band-motion-distance: 0px;
+  --band-motion-ease: linear;
+  --band-motion-idle: paused;
+}

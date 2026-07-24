@@ -51,6 +51,10 @@ export type AdminProfileCreateBody = {
      * Tts Enabled
      */
     tts_enabled?: boolean;
+    /**
+     * Reduce Motion
+     */
+    reduce_motion?: boolean;
 };
 
 /**
@@ -93,6 +97,10 @@ export type AdminProfileUpdateBody = {
      */
     tts_enabled?: boolean | null;
     /**
+     * Reduce Motion
+     */
+    reduce_motion?: boolean | null;
+    /**
      * Pin
      */
     pin?: string | null;
@@ -133,6 +141,10 @@ export type AdminProfileView = {
      * Tts Enabled
      */
     tts_enabled: boolean;
+    /**
+     * Reduce Motion
+     */
+    reduce_motion: boolean;
     /**
      * Has Pin
      */
@@ -2310,6 +2322,10 @@ export type ProfileCreateBody = {
      * Tts Enabled
      */
     tts_enabled?: boolean;
+    /**
+     * Reduce Motion
+     */
+    reduce_motion?: boolean;
     content_flag_caps?: ContentFlagCaps | null;
     /**
      * Banned Themes
@@ -2348,7 +2364,7 @@ export type ProfileListView = {
  * null`` removes the profile's picker PIN (a 4-8 digit string sets or
  * replaces it), and an explicit null on either G2 field clears it back to
  * "no override" / "no exclusions" (a non-null value replaces the stored
- * value wholesale, it does not merge). The other four fields have no
+ * value wholesale, it does not merge). The other five fields have no
  * legitimate "clear" semantics, so an explicit ``null`` on them is a
  * deliberate no-op (the router only applies non-null values); see
  * ``update_profile`` and
@@ -2372,6 +2388,10 @@ export type ProfileUpdateBody = {
      * Tts Enabled
      */
     tts_enabled?: boolean | null;
+    /**
+     * Reduce Motion
+     */
+    reduce_motion?: boolean | null;
     /**
      * Pin
      */
@@ -2431,6 +2451,10 @@ export type ProfileView = {
      * Tts Enabled
      */
     tts_enabled: boolean;
+    /**
+     * Reduce Motion
+     */
+    reduce_motion: boolean;
     /**
      * Has Pin
      */

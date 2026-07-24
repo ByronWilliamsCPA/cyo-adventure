@@ -61,6 +61,12 @@ describe('ProfilesPage', () => {
     expect(screen.getByText(/Ages 10-13 · No reading limit/)).toBeInTheDocument()
   })
 
+  it('links each profile to its read-only preview route', async () => {
+    renderPage()
+    const link = await screen.findByRole('link', { name: /Preview as Reader A/i })
+    expect(link).toHaveAttribute('href', '/guardian/preview/p1')
+  })
+
   it('creates a profile through the dialog', async () => {
     const user = userEvent.setup()
     mockPost.mockResolvedValue({

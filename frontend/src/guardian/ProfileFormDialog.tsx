@@ -104,6 +104,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   const [cap, setCap] = useState(String(initial?.reading_level_cap ?? 99))
   const [avatar, setAvatar] = useState<string | null>(initial?.avatar ?? null)
   const [ttsEnabled, setTtsEnabled] = useState(initial?.tts_enabled ?? false)
+  const [reduceMotion, setReduceMotion] = useState(initial?.reduce_motion ?? false)
   // G2 content controls: '' means "no override" for a flag (defer to the
   // child's age-band ceiling); a set value can only ever tighten that
   // ceiling, never loosen it (enforced server-side in story_requests/brief.py).
@@ -192,6 +193,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
         reading_level_cap: Number(cap),
         avatar,
         tts_enabled: ttsEnabled,
+        reduce_motion: reduceMotion,
         content_flag_caps: contentFlagCaps,
         banned_themes: bannedThemes,
         ...(envelopeTouched
@@ -357,6 +359,19 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
           />
           Read-aloud
         </label>
+        <label className="cyo-field cyo-field--checkbox">
+          <input
+            type="checkbox"
+            checked={reduceMotion}
+            onChange={(e) => setReduceMotion(e.target.checked)}
+            aria-describedby="reduce-motion-help"
+          />
+          Reduce animations
+        </label>
+        <p id="reduce-motion-help" className="profile-form__hint">
+          Turns off bouncy/playful motion in this child&apos;s library and reader, matching a
+          device&apos;s own reduced-motion setting.
+        </p>
         <fieldset className="profile-form__budget">
           <legend>Story requests</legend>
           <label className="cyo-field cyo-field--checkbox">

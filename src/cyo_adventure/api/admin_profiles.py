@@ -76,6 +76,7 @@ def _view(row: ChildProfile) -> AdminProfileView:
         reading_level_cap=row.reading_level_cap,
         avatar=row.avatar,
         tts_enabled=row.tts_enabled,
+        reduce_motion=row.reduce_motion,
         has_pin=row.pin_hash is not None,
         status="deactivated" if row.deactivated_at is not None else "active",
         created_at=row.created_at,
@@ -165,6 +166,7 @@ async def create_admin_profile(
         reading_level_cap=body.reading_level_cap,
         avatar=body.avatar,
         tts_enabled=body.tts_enabled,
+        reduce_motion=body.reduce_motion,
     )
     ctx.session.add(row)
     await ctx.session.flush()
@@ -191,6 +193,8 @@ def _apply_non_pin_fields(row: ChildProfile, body: AdminProfileUpdateBody) -> No
         row.reading_level_cap = body.reading_level_cap
     if body.tts_enabled is not None:
         row.tts_enabled = body.tts_enabled
+    if body.reduce_motion is not None:
+        row.reduce_motion = body.reduce_motion
     if "avatar" in fields:
         row.avatar = body.avatar
     if body.status is not None:

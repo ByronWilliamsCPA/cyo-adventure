@@ -68,6 +68,33 @@ async def test_create_and_list_profile_in_any_family(
     assert "Admin-Made Kid" in names
 
 
+async def test_admin_sets_and_clears_reduce_motion(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An admin can set reduce_motion on create and flip it via PATCH."""
+    resp = await client.post(
+        _PROFILES,
+        headers=auth(seed.admin_token),
+        json={
+            "family_id": str(seed.family_id),
+            "display_name": "Admin-Made Kid",
+            "age_band": "5-8",
+            "reduce_motion": True,
+        },
+    )
+    assert resp.status_code == 201, resp.text
+    assert resp.json()["reduce_motion"] is True
+    pid = resp.json()["id"]
+
+    patched = await client.patch(
+        f"{_PROFILES}/{pid}",
+        headers=auth(seed.admin_token),
+        json={"reduce_motion": False},
+    )
+    assert patched.status_code == 200, patched.text
+    assert patched.json()["reduce_motion"] is False
+
+
 async def test_pin_hash_never_serialized_on_update(
     client: AsyncClient, seed: Seed
 ) -> None:

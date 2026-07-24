@@ -43,6 +43,16 @@ function renderLibrary() {
   )
 }
 
+function renderLibraryReadOnly() {
+  return render(
+    <MemoryRouter initialEntries={['/library/p1']}>
+      <Routes>
+        <Route path="/library/:profileId" element={<LibraryPage readOnly />} />
+      </Routes>
+    </MemoryRouter>
+  )
+}
+
 const IN_PROGRESS = {
   id: 's1',
   title: 'The Lantern',
@@ -429,6 +439,30 @@ describe('LibraryPage', () => {
         anchor_storybook_id: 's4',
       })
     )
+  })
+
+  describe('readOnly (guardian preview-as-child)', () => {
+    it('renders the shelf with no rating, request-a-story form, or Reader links', async () => {
+      mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, SERIES_BOOK] } })
+      const { container } = renderLibraryReadOnly()
+      await screen.findByRole('region', { name: /continue reading/i })
+
+      expect(screen.queryAllByRole('group', { name: /^rate /i })).toHaveLength(0)
+      expect(
+        screen.queryByRole('region', { name: /request a story/i })
+      ).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /ask for the next book/i })).not.toBeInTheDocument()
+      expect(container.querySelector('a[href^="/read/"]')).not.toBeInTheDocument()
+    })
+
+    it('does not render the request-story form on an empty shelf either', async () => {
+      mockGet.mockResolvedValue({ data: { stories: [] } })
+      renderLibraryReadOnly()
+      await screen.findByText(/no books yet/i)
+      expect(
+        screen.queryByRole('region', { name: /request a story/i })
+      ).not.toBeInTheDocument()
+    })
   })
 
   describe('K6 endings tracker', () => {

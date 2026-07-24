@@ -413,6 +413,13 @@
   font-size: 0.875rem;
 }
 
+/* Preview-as-child link (ProfilesPage), sitting beside the Edit button in
+   the same flex row as .profiles__card. */
+.profiles__preview-link {
+  flex-shrink: 0;
+  color: var(--color-amber-text, #87561d);
+}
+
 /* ADR-015 G3: "Auto-approve on" card badge (ProfilesPage). */
 .profiles__badge {
   align-self: flex-start;
@@ -1887,4 +1894,22 @@
     right: -0.5rem;
     width: min(20rem, calc(100vw - 1.5rem));
   }
+}
+
+/* Guardian preview-as-child (PreviewAsChildPage): a persistent banner over
+   the real kid LibraryPage so it never reads as an ordinary guardian page. */
+.preview-as-child__banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: var(--color-amber-subtle, #fdf3e6);
+  color: var(--color-amber-text, #87561d);
+  font-weight: var(--weight-semibold, 600);
+}
+
+.preview-as-child__exit {
+  flex-shrink: 0;
+  color: inherit;
 }

@@ -67,12 +67,23 @@ async function downloadedIds(items: LibraryItemView[]): Promise<Set<string>> {
   return new Set(results.filter((id): id is string => id !== null))
 }
 
+export interface LibraryPageProps {
+  /**
+   * Guardian preview-as-child mode (frontend/src/guardian/PreviewAsChildPage.tsx):
+   * suppresses every mutation affordance (rating, "ask for the next book",
+   * requesting a new story) and the book covers stop linking into the real
+   * kid-token-gated Reader route, so a guardian previewing a child's shelf can
+   * only look, never write data under that child's identity.
+   */
+  readOnly?: boolean
+}
+
 /**
  * Kid library home (wireframe 4.2): Continue Reading hero for the most
  * recently active book, then a More to Explore shelf grid for the rest.
  * The server already filters to published, approved, family-scoped books.
  */
-export function LibraryPage() {
+export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const { profileId } = useParams()
   const api = useApi()
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
@@ -365,7 +376,7 @@ export function LibraryPage() {
           description="Ask a grown-up to add one!"
           icon={<Mascot size={96} />}
         />
-        <RequestStory profileId={profileId} />
+        {readOnly ? null : <RequestStory profileId={profileId} />}
       </div>
     )
   }
@@ -388,8 +399,9 @@ export function LibraryPage() {
             profileId={profileId}
             hero
             onRate={rate}
-            onContinue={askForNextBook}
+            onContinue={readOnly ? undefined : askForNextBook}
             downloaded={isDownloaded(hero)}
+            readOnly={readOnly}
             endings={endingsFor(hero)}
             recommendation={recommendationFor(hero)}
           />
@@ -405,8 +417,9 @@ export function LibraryPage() {
                   item={item}
                   profileId={profileId}
                   onRate={rate}
-                  onContinue={askForNextBook}
+                  onContinue={readOnly ? undefined : askForNextBook}
                   downloaded={isDownloaded(item)}
+                  readOnly={readOnly}
                   endings={endingsFor(item)}
                   recommendation={recommendationFor(item)}
                 />
@@ -416,15 +429,21 @@ export function LibraryPage() {
         </section>
       ) : null}
       {/* Requesting a new story comes after the child's own books, not before
-          them: the shelf is the point of the page, the request box is secondary. */}
-      <div ref={requestStoryRef} tabIndex={-1} className="library__request">
-        <RequestStory
-          profileId={profileId}
-          anchor={continueAnchor}
-          onClearAnchor={clearContinueAnchor}
-          libraryTitles={items.map((item) => item.title)}
-        />
-      </div>
+          them: the shelf is the point of the page, the request box is secondary.
+          Omitted entirely in guardian preview mode (readOnly): a guardian
+          previewing their child's shelf has their own request flow already
+          (guardian console), and this form would otherwise submit a request
+          under the previewed child's identity. */}
+      {readOnly ? null : (
+        <div ref={requestStoryRef} tabIndex={-1} className="library__request">
+          <RequestStory
+            profileId={profileId}
+            anchor={continueAnchor}
+            onClearAnchor={clearContinueAnchor}
+            libraryTitles={items.map((item) => item.title)}
+          />
+        </div>
+      )}
     </div>
   )
 }

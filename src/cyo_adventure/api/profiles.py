@@ -70,6 +70,7 @@ def _view(row: ChildProfile) -> ProfileView:
         reading_level_cap=row.reading_level_cap,
         avatar=row.avatar,
         tts_enabled=row.tts_enabled,
+        reduce_motion=row.reduce_motion,
         has_pin=row.pin_hash is not None,
         content_flag_caps=ContentFlagCaps.model_validate(
             row.allowed_content_flags or {}
@@ -80,6 +81,30 @@ def _view(row: ChildProfile) -> ProfileView:
         processing_restricted=row.processing_restricted_at is not None,
         created_at=row.created_at,
     )
+
+
+def _apply_simple_fields(row: ChildProfile, body: ProfileUpdateBody) -> None:
+    """Apply the non-null-applies scalar fields of a PATCH (extracted for complexity).
+
+    display_name/age_band/reading_level_cap/tts_enabled/reduce_motion have no
+    legitimate "clear" semantics, so an explicit null on any of them is a
+    deliberate no-op; see ``ProfileUpdateBody``'s docstring and
+    ``test_update_ignores_explicit_null_on_non_avatar_fields``.
+
+    Args:
+        row: The profile row being updated (mutated in place).
+        body: The PATCH body.
+    """
+    if body.display_name is not None:
+        row.display_name = body.display_name
+    if body.age_band is not None:
+        row.age_band = body.age_band.value
+    if body.reading_level_cap is not None:
+        row.reading_level_cap = body.reading_level_cap
+    if body.tts_enabled is not None:
+        row.tts_enabled = body.tts_enabled
+    if body.reduce_motion is not None:
+        row.reduce_motion = body.reduce_motion
 
 
 def _apply_g2_content_controls(row: ChildProfile, body: ProfileUpdateBody) -> None:
@@ -259,6 +284,7 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
         reading_level_cap=body.reading_level_cap,
         avatar=body.avatar,
         tts_enabled=body.tts_enabled,
+        reduce_motion=body.reduce_motion,
         allowed_content_flags=(
             body.content_flag_caps.model_dump(exclude_none=True)
             if body.content_flag_caps is not None
@@ -318,20 +344,7 @@ async def update_profile(
         msg = f"profile '{profile_id}' not found"
         raise ResourceNotFoundError(msg)
     fields = body.model_fields_set
-    # #ASSUME: data integrity: an explicit null on the four non-avatar fields
-    # is a deliberate no-op, not a clear; none of them has a legitimate empty
-    # state (a profile always has a name, band, cap, and TTS setting), so the
-    # is-not-None gates below silently ignore null rather than 422-ing.
-    # #VERIFY: test_profiles.py::test_update_ignores_explicit_null_on_non_avatar_fields
-    # pins the no-op; revisit if any of these fields ever gains clear semantics.
-    if body.display_name is not None:
-        row.display_name = body.display_name
-    if body.age_band is not None:
-        row.age_band = body.age_band.value
-    if body.reading_level_cap is not None:
-        row.reading_level_cap = body.reading_level_cap
-    if body.tts_enabled is not None:
-        row.tts_enabled = body.tts_enabled
+    _apply_simple_fields(row, body)
     if "avatar" in fields:
         # Explicit null clears; omitted leaves unchanged (model_fields_set).
         row.avatar = body.avatar
