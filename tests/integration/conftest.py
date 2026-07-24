@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import create_engine, insert, make_url, text
+from sqlalchemy import create_engine, insert, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
@@ -230,97 +230,17 @@ async def sessions(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
     return async_sessionmaker(engine, expire_on_commit=False)
 
 
-# ADR-021/ADR-022 RLS-enforcement harness.
+# ADR-021/ADR-022 RLS-enforcement harness note.
 #
 # The fixtures above connect as the container's owner superuser, which holds
 # implicit BYPASSRLS: no RLS policy can ever be seen filtering rows through
 # them, so the IDOR sweeps prove only the app-layer authz, never the database
-# floor. Production connects as a least-privilege ``cyo_api`` role that does
-# NOT bypass RLS (ADR-021). The fixtures below provision exactly that role in
-# the test container so enforcement tests can exercise Tier 1 policies (ADR-022)
-# as the role production actually uses.
-_CYO_API_ROLE = "cyo_api"
-# Local throwaway container credential, never a real secret. The password only
-# ever authenticates against the ephemeral testcontainer created in this
-# process; it is not a production credential and is not reused anywhere.
-_CYO_API_PASSWORD = "cyo-api-integration-only"
-
-
-@pytest.fixture(scope="session")
-def cyo_api_url(pg_url: str) -> str:
-    """Provision a NOBYPASSRLS ``cyo_api`` login role and return its async DSN.
-
-    Creates the role once per session via a throwaway SYNC (psycopg) engine,
-    mirroring the schema-DDL approach in ``_pg_url``. A non-superuser role is
-    NOBYPASSRLS by default, and is not the table owner, so once a table has
-    ``ENABLE ROW LEVEL SECURITY`` its policies apply to this role, which is the
-    whole point of connecting as it. Role name and password are module
-    constants, never external input, so interpolating them into the DDL is not
-    an injection vector (there is no parameter-binding form for SQL
-    identifiers).
-
-    Idempotent: a session-scoped fixture can re-run against a container reused
-    across xdist workers, so it creates the role only when absent and re-grants
-    unconditionally (GRANT is idempotent).
-    """
-    url = make_url(pg_url)
-    sync_engine = create_engine(url.set(drivername="postgresql+psycopg"))
-    try:
-        with sync_engine.begin() as conn:
-            role_exists = conn.execute(
-                text("SELECT 1 FROM pg_roles WHERE rolname = :r"),
-                {"r": _CYO_API_ROLE},
-            ).scalar()
-            if not role_exists:
-                conn.execute(
-                    text(
-                        f"CREATE ROLE {_CYO_API_ROLE} LOGIN PASSWORD "
-                        f"'{_CYO_API_PASSWORD}' NOSUPERUSER NOBYPASSRLS"
-                    )
-                )
-            conn.execute(text(f"GRANT USAGE ON SCHEMA public TO {_CYO_API_ROLE}"))
-            conn.execute(
-                text(
-                    "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES "
-                    f"IN SCHEMA public TO {_CYO_API_ROLE}"
-                )
-            )
-            conn.execute(
-                text(
-                    "GRANT USAGE, SELECT ON ALL SEQUENCES "
-                    f"IN SCHEMA public TO {_CYO_API_ROLE}"
-                )
-            )
-    finally:
-        sync_engine.dispose()
-    # render_as_string(hide_password=False): str(URL) masks the password as
-    # "***", which would then be sent verbatim as the password and fail auth.
-    return url.set(username=_CYO_API_ROLE, password=_CYO_API_PASSWORD).render_as_string(
-        hide_password=False
-    )
-
-
-@pytest_asyncio.fixture
-async def cyo_api_engine(cyo_api_url: str) -> AsyncIterator[AsyncEngine]:
-    """Async engine connecting as the NOBYPASSRLS ``cyo_api`` role.
-
-    ``NullPool`` for the same event-loop-safety reason as the ``engine``
-    fixture: a fresh asyncpg connection per checkout, bound to the current
-    test's loop.
-    """
-    eng = create_async_engine(cyo_api_url, poolclass=NullPool)
-    try:
-        yield eng
-    finally:
-        await eng.dispose()
-
-
-@pytest_asyncio.fixture
-async def cyo_api_sessions(
-    cyo_api_engine: AsyncEngine,
-) -> async_sessionmaker[AsyncSession]:
-    """Session factory bound to the ``cyo_api`` (RLS-subject) engine."""
-    return async_sessionmaker(cyo_api_engine, expire_on_commit=False)
+# floor. The RLS-enforcement tests (``test_rls_service_roles.py``,
+# ``test_rls_tier1_enforcement.py``) instead build a fully migrated database
+# and connect as the least-privilege ``cyo_api`` role via
+# ``_migration_utils.migrate_and_connect_as`` -- policies live in
+# ``supabase/migrations``, never in ``Base.metadata``, so only a migrated
+# schema (not the ORM ``create_all`` fixtures here) can exercise them.
 
 
 def _reset_rate_limiter() -> None:

@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import uuid
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -240,3 +241,50 @@ def get_worker_session() -> AsyncSession:
     actually takes effect for background jobs.
     """
     return _worker_session_factory()
+
+
+async def apply_family_rls_context(
+    session: AsyncSession, *, family_id: uuid.UUID, is_admin: bool
+) -> None:
+    """Set the request-scoped RLS context the Tier 1 policies read (ADR-022).
+
+    Issues ``set_config('app.family_id', ..., is_local => true)`` and the
+    matching ``app.is_admin`` in a single round-trip. ``is_local => true``
+    scopes both GUCs to the CURRENT transaction, so they revert on the
+    request's ``COMMIT``/``ROLLBACK`` and can never bleed to the next request
+    that reuses the pooled backend (proven in
+    ``tests/integration/test_rls_set_config_spike.py``). The Tier 1
+    ``family_scoped`` policy (``supabase/migrations/
+    20260724120000_scoped_rls_tier1_family_scoping.sql``) matches
+    ``family_id::text = current_setting('app.family_id', true)`` OR
+    ``current_setting('app.is_admin', true) = 'true'``.
+
+    Called once per request from ``api/deps.py::require_principal`` after the
+    ``Principal`` resolves, on the same session the route handler then uses.
+    """
+    # #CRITICAL: security: pre-cutover (app connects as the postgres owner)
+    # this is a harmless no-op: it sets two GUCs no policy consults, because
+    # RLS never applies to a table's owner. Post-cutover (app connects as the
+    # non-owner cyo_api role) it is load-bearing: omitting it leaves
+    # app.family_id NULL and every Tier 1 read/write fails closed (zero rows /
+    # rejected WITH CHECK), an outage rather than a cross-family leak. Setting
+    # it wrong (a different family's id) would be a leak, so it is derived only
+    # from the verified Principal, never from request input.
+    # #VERIFY: tests/integration/test_rls_tier1_enforcement.py exercises the
+    # unset (fail-closed) and set (per-family) paths as the cyo_api role.
+    #
+    # #CRITICAL: concurrency: is_local => true is what makes this pooler-safe;
+    # a session-level SET (is_local false) would persist on the backend and
+    # leak into the next checkout. Never change this to a session-level SET.
+    # #VERIFY: the set_config spike asserts no cross-request bleed on a reused
+    # backend across both commit and rollback.
+    await session.execute(
+        text(
+            """
+            SELECT
+                set_config('app.family_id', :family_id, true),
+                set_config('app.is_admin', :is_admin, true)
+            """
+        ),
+        {"family_id": str(family_id), "is_admin": "true" if is_admin else "false"},
+    )
