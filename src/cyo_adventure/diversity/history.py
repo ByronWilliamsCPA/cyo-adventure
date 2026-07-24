@@ -58,6 +58,24 @@ class HistoryEntry:
     created_at: datetime
 
 
+def _as_mapping_str_object(value: object) -> Mapping[str, object] | None:
+    """Narrow ``value`` to ``Mapping[str, object]``, or ``None`` when not one.
+
+    Centralizing this narrow-and-cast in one place (instead of repeating the
+    ``isinstance``/``cast("Mapping[str, object]", ...)`` pair at every JSONB
+    read site below) is what keeps the ``"Mapping[str, object]"`` cast
+    literal from piling up as a duplicated string across this module.
+
+    Args:
+        value: Any loosely-typed JSONB value.
+
+    Returns:
+        Mapping[str, object] | None: ``value`` narrowed to a mapping, or
+            ``None`` when it is not one.
+    """
+    return cast("Mapping[str, object]", value) if isinstance(value, Mapping) else None
+
+
 def _themes_from_blob(blob: object) -> list[str]:
     """Extract ``metadata.themes`` from a StorybookVersion blob, defensively.
 
@@ -68,12 +86,13 @@ def _themes_from_blob(blob: object) -> list[str]:
         list[str]: The declared themes; empty for a missing, wrong-typed,
             or malformed ``metadata``/``themes`` path.
     """
-    if not isinstance(blob, Mapping):
+    metadata_owner = _as_mapping_str_object(blob)
+    if metadata_owner is None:
         return []
-    metadata = cast("Mapping[str, object]", blob).get("metadata")
-    if not isinstance(metadata, Mapping):
+    metadata = _as_mapping_str_object(metadata_owner.get("metadata"))
+    if metadata is None:
         return []
-    themes = cast("Mapping[str, object]", metadata).get("themes")
+    themes = metadata.get("themes")
     if not isinstance(themes, list):
         return []
     return [theme for theme in cast("list[object]", themes) if isinstance(theme, str)]
@@ -90,9 +109,7 @@ def _brief_mapping(brief: object) -> Mapping[str, object] | None:
         Mapping[str, object] | None: ``brief`` narrowed to a mapping, or
             None.
     """
-    if not isinstance(brief, Mapping):
-        return None
-    return cast("Mapping[str, object]", brief)
+    return _as_mapping_str_object(brief)
 
 
 async def load_family_history(

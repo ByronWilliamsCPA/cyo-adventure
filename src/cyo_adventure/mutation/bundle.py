@@ -223,31 +223,36 @@ class LineageV2(BaseModel):
     def _validate_origin_fields(self) -> LineageV2:
         """Enforce the origin-specific field contract (design 7.2)."""
         if self.origin == "mutation":
-            if not self.parent_slug or not self.parent_sha256:
-                msg = "a 'mutation' lineage must carry parent_slug and parent_sha256"
-                raise ValueError(msg)
-            if not self.op_chain:
-                msg = "a 'mutation' lineage must carry a non-empty op_chain"
-                raise ValueError(msg)
-            if self.generator is not None or self.generation_params_sha256 is not None:
-                msg = "a 'mutation' lineage must not carry generator provenance"
-                raise ValueError(msg)
+            self._require_mutation_fields()
         elif self.origin == "fresh":
-            if not self.generator or not self.generation_params_sha256:
-                msg = (
-                    "a 'fresh' lineage must carry generator and "
-                    "generation_params_sha256"
-                )
-                raise ValueError(msg)
-            if self.parent_slug is not None or self.parent_sha256 is not None:
-                msg = "a 'fresh' lineage must not carry a parent"
-                raise ValueError(msg)
-            if self.op_chain:
-                msg = "a 'fresh' lineage must carry an empty op_chain"
-                raise ValueError(msg)
+            self._require_fresh_fields()
         # origin == "composed": reserved for a future composer; validated only by
         # the required field definitions. No composer produces it yet.
         return self
+
+    def _require_mutation_fields(self) -> None:
+        """Raise if a 'mutation'-origin record is missing a required field."""
+        if not self.parent_slug or not self.parent_sha256:
+            msg = "a 'mutation' lineage must carry parent_slug and parent_sha256"
+            raise ValueError(msg)
+        if not self.op_chain:
+            msg = "a 'mutation' lineage must carry a non-empty op_chain"
+            raise ValueError(msg)
+        if self.generator is not None or self.generation_params_sha256 is not None:
+            msg = "a 'mutation' lineage must not carry generator provenance"
+            raise ValueError(msg)
+
+    def _require_fresh_fields(self) -> None:
+        """Raise if a 'fresh'-origin record is missing a required field."""
+        if not self.generator or not self.generation_params_sha256:
+            msg = "a 'fresh' lineage must carry generator and generation_params_sha256"
+            raise ValueError(msg)
+        if self.parent_slug is not None or self.parent_sha256 is not None:
+            msg = "a 'fresh' lineage must not carry a parent"
+            raise ValueError(msg)
+        if self.op_chain:
+            msg = "a 'fresh' lineage must carry an empty op_chain"
+            raise ValueError(msg)
 
 
 def _upgrade_v1_lineage(v1: Lineage) -> LineageV2:
@@ -298,7 +303,10 @@ def load_lineage(raw: str) -> LineageV2:
     data = cast("object", json.loads(raw))
     if (
         isinstance(data, dict)
-        and cast("dict[str, object]", data).get("lineage_version") == 1
+        # dict[str, object] has no forward reference to defer, so there is no
+        # runtime cost to not quoting it (see review_surface.py for the same
+        # pattern).
+        and cast(dict[str, object], data).get("lineage_version") == 1  # noqa: TC006
     ):
         return _upgrade_v1_lineage(Lineage.model_validate(data))
     # A v2 payload (or a non-object payload, which pydantic rejects with a
@@ -352,7 +360,71 @@ def build_lineage(  # noqa: PLR0913 -- one cohesive lineage-record constructor
     )
 
 
-def _candidate_slot_tokens(candidate: Mapping[str, object]) -> frozenset[str]:  # noqa: C901 -- one cohesive three-surface token scan
+# dict[str, object] / list[str] have no forward reference to defer, so there is
+# no runtime cost to not quoting them in these cast() calls (see
+# review_surface.py for the same pattern); left unquoted here so the type
+# expression is not a duplicated string literal (S1192) across the module.
+def _body_beats_tokens(node: Mapping[str, object]) -> frozenset[str]:
+    """Return the slot tokens in a node's ``<<FILL ...>>`` beats segment.
+
+    Args:
+        node: One story node to scan.
+
+    Returns:
+        frozenset[str]: The slot ids referenced in the beats segment, or an
+            empty set when the node has no matching body.
+    """
+    body = node.get("body")
+    if not isinstance(body, str):
+        return frozenset()
+    match = _FILL_RE.match(body)
+    if match is None:
+        return frozenset()
+    return frozenset(cast(list[str], SLOT_TOKEN_RE.findall(match.group(3))))  # noqa: TC006
+
+
+def _ending_title_tokens(node: Mapping[str, object]) -> frozenset[str]:
+    """Return the slot tokens in a node's ending title, when present.
+
+    Args:
+        node: One story node to scan.
+
+    Returns:
+        frozenset[str]: The slot ids referenced in the ending title, or an
+            empty set when the node has no ending title.
+    """
+    ending = node.get("ending")
+    if not isinstance(ending, dict):
+        return frozenset()
+    title = cast(dict[str, object], ending).get("title")  # noqa: TC006
+    if not isinstance(title, str):
+        return frozenset()
+    return frozenset(cast(list[str], SLOT_TOKEN_RE.findall(title)))  # noqa: TC006
+
+
+def _choice_label_tokens(node: Mapping[str, object]) -> frozenset[str]:
+    """Return the slot tokens in a node's choice labels.
+
+    Args:
+        node: One story node to scan.
+
+    Returns:
+        frozenset[str]: The slot ids referenced across the node's choices.
+    """
+    choices = node.get("choices")
+    if not isinstance(choices, list):
+        return frozenset()
+    tokens: set[str] = set()
+    for raw_choice in cast("list[object]", choices):
+        if not isinstance(raw_choice, dict):
+            continue
+        label = cast(dict[str, object], raw_choice).get("label")  # noqa: TC006
+        if isinstance(label, str):
+            tokens.update(cast(list[str], SLOT_TOKEN_RE.findall(label)))  # noqa: TC006
+    return frozenset(tokens)
+
+
+def _candidate_slot_tokens(candidate: Mapping[str, object]) -> frozenset[str]:
     """Return every ``{SLOT}`` token in a candidate's three slotted surfaces.
 
     The three ADR-019 slotted surfaces are the ``beats='...'`` segment of a
@@ -366,31 +438,17 @@ def _candidate_slot_tokens(candidate: Mapping[str, object]) -> frozenset[str]:  
     Returns:
         frozenset[str]: The slot ids the candidate references.
     """
-    tokens: set[str] = set()
     raw_nodes = candidate.get("nodes")
     if not isinstance(raw_nodes, list):
         return frozenset()
+    tokens: set[str] = set()
     for raw_node in cast("list[object]", raw_nodes):
         if not isinstance(raw_node, dict):
             continue
-        node = cast("dict[str, object]", raw_node)
-        body = node.get("body")
-        if isinstance(body, str):
-            match = _FILL_RE.match(body)
-            if match is not None:
-                tokens.update(cast("list[str]", SLOT_TOKEN_RE.findall(match.group(3))))
-        ending = node.get("ending")
-        if isinstance(ending, dict):
-            title = cast("dict[str, object]", ending).get("title")
-            if isinstance(title, str):
-                tokens.update(cast("list[str]", SLOT_TOKEN_RE.findall(title)))
-        choices = node.get("choices")
-        if isinstance(choices, list):
-            for raw_choice in cast("list[object]", choices):
-                if isinstance(raw_choice, dict):
-                    label = cast("dict[str, object]", raw_choice).get("label")
-                    if isinstance(label, str):
-                        tokens.update(cast("list[str]", SLOT_TOKEN_RE.findall(label)))
+        node = cast(dict[str, object], raw_node)  # noqa: TC006
+        tokens |= _body_beats_tokens(node)
+        tokens |= _ending_title_tokens(node)
+        tokens |= _choice_label_tokens(node)
     return frozenset(tokens)
 
 
@@ -573,10 +631,10 @@ def write_bundle(  # noqa: PLR0913 -- one cohesive bundle-directory writer
         _write_json(fill_dir / "result.json", sample_fill)
         filled = sample_fill.get("filled")
         if isinstance(filled, dict):
-            _write_json(fill_dir / "filled.json", cast("dict[str, object]", filled))
+            _write_json(fill_dir / "filled.json", cast(dict[str, object], filled))  # noqa: TC006
         gate = sample_fill.get("gate")
         if isinstance(gate, dict):
-            _write_json(fill_dir / "gate.json", cast("dict[str, object]", gate))
+            _write_json(fill_dir / "gate.json", cast(dict[str, object], gate))  # noqa: TC006
 
     if diagram_puml is not None:
         (bundle_dir / "diagram.puml").write_text(diagram_puml, encoding="utf-8")
@@ -718,7 +776,7 @@ def _verify_mutation_bundle(skeletons_root: Path, lineage: LineageV2) -> VerifyR
             actual_sha256=None,
         )
     parent_document = cast(
-        "dict[str, object]",
+        dict[str, object],  # noqa: TC006
         json.loads(parent_path.read_text(encoding="utf-8")),
     )
     actual = content_sha256(parent_document)
@@ -768,7 +826,7 @@ def _verify_fresh_bundle(bundle_dir: Path, lineage: LineageV2) -> VerifyResult:
             actual_sha256=None,
         )
     acceptance_document = cast(
-        "dict[str, object]",
+        dict[str, object],  # noqa: TC006
         json.loads(acceptance_path.read_text(encoding="utf-8")),
     )
     actual = acceptance_digest(acceptance_document)

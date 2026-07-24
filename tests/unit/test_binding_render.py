@@ -493,3 +493,89 @@ def test_render_end_to_end_on_pilot_parameterized_skeleton() -> None:
     assert structure_fingerprint(bound) == structure_fingerprint(skeleton)
     assert run_gate(bound).blocked is False
     assert binding._fill_role_words_map(bound) == before
+
+
+# ---------------------------------------------------------------------------
+# Node-level slot-scanning helpers (_iter_nodes, _body_slot_tokens,
+# _ending_slot_tokens, _choice_slot_tokens)
+# ---------------------------------------------------------------------------
+
+
+def test_iter_nodes_returns_nothing_when_nodes_key_is_absent() -> None:
+    """A mapping with no ``nodes`` key yields no nodes (not a crash)."""
+    assert list(binding._iter_nodes({})) == []
+
+
+def test_iter_nodes_skips_non_dict_entries_in_the_nodes_list() -> None:
+    """A malformed ``nodes`` list with a non-dict entry skips it, not raises."""
+    skeleton: Mapping[str, object] = {
+        "nodes": ["not a node", {"id": "n1", "body": "prose"}]
+    }
+    nodes = list(binding._iter_nodes(skeleton))
+    assert nodes == [{"id": "n1", "body": "prose"}]
+
+
+def test_body_slot_tokens_empty_when_body_is_not_a_string() -> None:
+    """A node whose ``body`` is not a string yields no slot tokens."""
+    assert tuple(binding._body_slot_tokens({"body": 123})) == ()
+
+
+def test_ending_slot_tokens_empty_when_ending_title_is_not_a_string() -> None:
+    """A node whose ending ``title`` is not a string yields no slot tokens."""
+    node: dict[str, object] = {"ending": {"id": "e_a", "title": 123}}
+    assert tuple(binding._ending_slot_tokens(node)) == ()
+
+
+def test_choice_slot_tokens_skips_non_dict_choices_and_non_string_labels() -> None:
+    """Non-dict choices and non-string labels contribute no tokens."""
+    node: dict[str, object] = {
+        "choices": [
+            "not a choice",
+            {"label": 123},
+            {"label": "Approach {A1_OFFER}."},
+        ]
+    }
+    assert list(binding._choice_slot_tokens(node)) == ["A1_OFFER"]
+
+
+# ---------------------------------------------------------------------------
+# Node-level substitution helpers (_substitute_body, _substitute_ending_title,
+# _substitute_choice_labels)
+# ---------------------------------------------------------------------------
+
+
+def test_substitute_body_no_op_when_body_is_not_a_string() -> None:
+    """A node whose ``body`` is not a string is left untouched."""
+    node: dict[str, object] = {"body": 123}
+    binding._substitute_body(node, {"HERO": "Priya"})
+    assert node["body"] == 123
+
+
+def test_substitute_body_no_op_when_body_is_not_a_fill_directive() -> None:
+    """A node whose ``body`` does not match the FILL pattern is left untouched."""
+    node: dict[str, object] = {"body": "Already-filled prose with {HERO}."}
+    binding._substitute_body(node, {"HERO": "Priya"})
+    assert node["body"] == "Already-filled prose with {HERO}."
+
+
+def test_substitute_ending_title_no_op_when_title_is_not_a_string() -> None:
+    """A node whose ending ``title`` is not a string is left untouched."""
+    node: dict[str, object] = {"ending": {"id": "e_a", "title": 123}}
+    binding._substitute_ending_title(node, {"PRIZE": "Glass Starfish"})
+    assert cast("dict[str, object]", node["ending"])["title"] == 123
+
+
+def test_substitute_choice_labels_skips_non_dict_and_non_string_labels() -> None:
+    """Non-dict choices and non-string labels are left untouched in place."""
+    choices: list[object] = [
+        "not a choice",
+        {"label": 123},
+        {"label": "Approach {A1_OFFER}."},
+    ]
+    node: dict[str, object] = {"choices": choices}
+    binding._substitute_choice_labels(node, {"A1_OFFER": "a glinting tide pool"})
+    assert choices[0] == "not a choice"
+    assert cast("dict[str, object]", choices[1])["label"] == 123
+    assert cast("dict[str, object]", choices[2])["label"] == (
+        "Approach a glinting tide pool."
+    )

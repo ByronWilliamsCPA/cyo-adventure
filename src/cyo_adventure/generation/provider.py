@@ -248,12 +248,17 @@ class MockProvider:
     responses: list[str | Callable[[str], str]]
     calls: list[str] = field(default_factory=list)
 
+    # NOSONAR(S7503): stays async to satisfy the GenerationProvider structural
+    # protocol (line 196 above); every real provider awaits network I/O here,
+    # and callers (orchestrator.py, worker.py) uniformly `await
+    # provider.complete(...)` regardless of concrete type, so a sync override
+    # on this one test double would break that uniform call contract.
     async def complete(
         self,
         *,
-        system: str,  # noqa: ARG002
+        system: str,  # noqa: ARG002  # NOSONAR(S1172): fixed protocol kwarg name
         prompt: str,
-        max_tokens: int,  # noqa: ARG002
+        max_tokens: int,  # noqa: ARG002  # NOSONAR(S1172): fixed protocol kwarg name
     ) -> str:
         """Return the next queued response, recording the prompt in ``calls``.
 
@@ -505,10 +510,12 @@ def build_ollama_leg(
             # misconfigured operator gets a named setting, not a raw traceback.
             ctx.load_verify_locations(settings.ollama_ca_bundle)
         except OSError as exc:
-            msg = (
-                "OLLAMA_CA_BUNDLE points at an unusable CA bundle "
-                f"({settings.ollama_ca_bundle!r}): {type(exc).__name__}"
-            )
+            # Built as two single-line f-strings (rather than one
+            # continuation-paren-wrapped literal) so the enclosing parens,
+            # which fold away to nothing once adjacent string literals are
+            # joined, are never introduced (S1110).
+            detail = f"({settings.ollama_ca_bundle!r}): {type(exc).__name__}"
+            msg = f"OLLAMA_CA_BUNDLE points at an unusable CA bundle {detail}"
             raise ConfigurationError(msg) from exc
         verify = ctx
     return OllamaProvider(

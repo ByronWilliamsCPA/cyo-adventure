@@ -172,9 +172,7 @@ async def create_admin_profile(
     return _view(row)
 
 
-async def _apply_non_pin_fields(
-    row: ChildProfile, body: AdminProfileUpdateBody
-) -> None:
+def _apply_non_pin_fields(row: ChildProfile, body: AdminProfileUpdateBody) -> None:
     """Apply every field except ``pin`` to the row (extracted for complexity).
 
     Args:
@@ -228,7 +226,7 @@ async def update_admin_profile(
     if row is None:
         msg = f"profile '{profile_id}' not found"
         raise ResourceNotFoundError(msg)
-    await _apply_non_pin_fields(row, body)
+    _apply_non_pin_fields(row, body)
     if "pin" in body.model_fields_set:
         # #CRITICAL: timing: hash_pin runs 600k PBKDF2 iterations (100-300ms
         # of pure CPU); offloaded to a worker thread, mirroring

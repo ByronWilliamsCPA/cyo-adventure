@@ -149,7 +149,12 @@ async def run_with_retries(
                 error=str(exc),
             )
             if index + 1 < max_retries:
-                await sleep(backoff_base_seconds * 2 ** (index + 1))
+                # 2 ** (index + 1) rewritten as 2 ** index * 2 (identical
+                # value: 2**(n+1) == 2**n * 2): `**` binds tighter than `*`
+                # here, so the parens the previous form needed to force
+                # `index + 1` to evaluate before `**` are no longer needed
+                # (S1110), and the exponential-backoff schedule is unchanged.
+                await sleep(backoff_base_seconds * 2**index * 2)
 
     logger.warning(
         "provider.retries_exhausted",

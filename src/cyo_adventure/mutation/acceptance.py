@@ -277,7 +277,8 @@ class _RunContext:
     stages: list[StageOutcome] = field(default_factory=list)
 
 
-def _discard(  # noqa: PLR0913 -- one cohesive discard-record builder, mostly keyword-only
+# One cohesive discard-record builder, mostly keyword-only (PLR0913).
+def _discard(  # noqa: PLR0913
     context: _RunContext,
     stage: Stage,
     reason: str,
@@ -339,7 +340,8 @@ def _graph_shape_unchanged(
     )
 
 
-def _tier2_state_stage(  # noqa: PLR0911 -- one cohesive reject-only precondition ladder, one reason each
+# One cohesive reject-only precondition ladder, one reason each (PLR0911).
+def _tier2_state_stage(  # noqa: PLR0911
     context: _RunContext,
     parent: Mapping[str, object],
     candidate: dict[str, object],
@@ -502,6 +504,33 @@ def _structural_floor_stage(
     return None
 
 
+def _would_be_promotable(
+    *, gate_blocked: bool, cell_ok: bool, outstanding: tuple[ReguideItem, ...]
+) -> bool:
+    """Return whether the candidate is provisionally promotable.
+
+    Computed only after the gate stage has already passed (a blocked result
+    returns earlier in ``run_acceptance``), and re-asserts ``not gate_blocked``
+    so no future refactor that reorders the returns can make a blocked
+    candidate promotable (design section 6, CR-2).
+
+    Args:
+        gate_blocked: Whether the stage-1 gate blocked the candidate.
+        cell_ok: Whether the stage-2 cell assertion passed.
+        outstanding: The re-guidance items still unresolved.
+
+    Returns:
+        bool: True only when the gate did not block, the cell matched, and no
+            re-guidance item is outstanding. The stage-3/4 floors below this
+            are reject-only: they can only lower this flag, never raise it.
+    """
+    # #CRITICAL: security: promotability is the single gate between a machine
+    # transform and a child-facing catalog (design section 6, CR-2).
+    # #VERIFY: test_mutation_acceptance.py monkeypatches run_gate to always
+    # block and asserts the result is never promotable.
+    return (not gate_blocked) and cell_ok and len(outstanding) == 0
+
+
 def _contract_stage(
     context: _RunContext,
     candidate: dict[str, object],
@@ -535,7 +564,8 @@ def _contract_stage(
     return None
 
 
-def run_acceptance(  # noqa: PLR0913, C901, PLR0911 -- one cohesive stage ladder, one discard return per stage
+# One cohesive stage ladder, one discard return per stage (PLR0913, PLR0911).
+def run_acceptance(  # noqa: PLR0913, PLR0911
     op: MutationOp,
     parent: Mapping[str, object],
     params: OpParams,
@@ -618,7 +648,8 @@ def run_acceptance(  # noqa: PLR0913, C901, PLR0911 -- one cohesive stage ladder
 
     # --- Apply the operator reproducibly from the seed ---
     try:
-        result = op.apply(parent, params, random.Random(seed))  # noqa: S311 -- deterministic replay rng, not a cryptographic use
+        # Deterministic replay rng, not a cryptographic use (S311).
+        result = op.apply(parent, params, random.Random(seed))  # noqa: S311
     except ValidationError as exc:
         # Preconditions passed, so this is unexpected; treat it as a stage-0
         # discard rather than letting it escape (a failed apply produces no
@@ -697,16 +728,9 @@ def run_acceptance(  # noqa: PLR0913, C901, PLR0911 -- one cohesive stage ladder
         item for item in result.reguide if item.target_id not in resolved_reguide_ids
     )
 
-    # #CRITICAL: security: promotability is the single gate between a machine
-    # transform and a child-facing catalog. It is computed here, only after the
-    # gate stage has already passed (a blocked result returned above), and it
-    # re-asserts ``not gate.blocked`` so no future refactor that reorders the
-    # returns can make a blocked candidate promotable (design section 6, CR-2).
-    # Floors (stage 3) and contracts (stage 4) below are reject-only: they can
-    # only lower this flag (by discarding), never raise it.
-    # #VERIFY: test_mutation_acceptance.py monkeypatches run_gate to always block
-    # and asserts the result is never promotable.
-    would_be_promotable = (not gate.blocked) and cell_ok and len(outstanding) == 0
+    would_be_promotable = _would_be_promotable(
+        gate_blocked=gate.blocked, cell_ok=cell_ok, outstanding=outstanding
+    )
 
     # --- Stage 3 (structural anti-clone floor): shape-changed candidates only ---
     # #CRITICAL: data-integrity: the structural floor is reject-only and gates
@@ -719,34 +743,43 @@ def run_acceptance(  # noqa: PLR0913, C901, PLR0911 -- one cohesive stage ladder
     # #VERIFY: test_mutation_acceptance.py asserts a resolved-reguide M1 swap that
     # genuinely re-shapes the tree stays promotable, and test_mutation_floors.py
     # pins the clone-rejection clauses on the floor function directly.
-    if would_be_promotable and not _graph_shape_unchanged(parent, candidate):
-        struct_reason = _structural_floor_stage(context, parent, candidate, parent_slug)
-        if struct_reason is not None:
-            _emit_discard(Stage.STRUCTURE, struct_reason, ())
-            return _discard(
-                context,
-                Stage.STRUCTURE,
-                struct_reason,
-                gate_summary=gate_summary,
-                candidate=candidate,
-            )
+    structural_stage_applies = would_be_promotable and not _graph_shape_unchanged(
+        parent, candidate
+    )
+    struct_reason = (
+        _structural_floor_stage(context, parent, candidate, parent_slug)
+        if structural_stage_applies
+        else None
+    )
+    if struct_reason is not None:
+        _emit_discard(Stage.STRUCTURE, struct_reason, ())
+        return _discard(
+            context,
+            Stage.STRUCTURE,
+            struct_reason,
+            gate_summary=gate_summary,
+            candidate=candidate,
+        )
 
     # --- Stage 4 (contract acceptance): parameterized parents only ---
     # Reject-only; runs whenever the caller supplied the mutant's contract (a
     # parameterized parent). A contract-less parent's mutant lands contract-less
     # at parity (design 4.7, OQ-2). CR-4: the band-mandatory floor is unioned
     # inside the contract check regardless of contract content.
-    if mutated_contract is not None:
-        contract_reason = _contract_stage(context, candidate, mutated_contract)
-        if contract_reason is not None:
-            _emit_discard(Stage.CONTRACT, contract_reason, ())
-            return _discard(
-                context,
-                Stage.CONTRACT,
-                contract_reason,
-                gate_summary=gate_summary,
-                candidate=candidate,
-            )
+    contract_reason = (
+        _contract_stage(context, candidate, mutated_contract)
+        if mutated_contract is not None
+        else None
+    )
+    if contract_reason is not None:
+        _emit_discard(Stage.CONTRACT, contract_reason, ())
+        return _discard(
+            context,
+            Stage.CONTRACT,
+            contract_reason,
+            gate_summary=gate_summary,
+            candidate=candidate,
+        )
 
     return AcceptanceResult(
         promotable=would_be_promotable,

@@ -132,17 +132,16 @@ def _mock_fill_document(bound_skeleton: Mapping[str, object]) -> dict[str, objec
     """
     filled = copy.deepcopy(dict(bound_skeleton))
     raw_nodes = filled.get("nodes")
-    if not isinstance(raw_nodes, list):
-        return filled
-    index = 0
-    for raw_node in cast("list[object]", raw_nodes):
-        if not isinstance(raw_node, dict):
-            continue
-        node = cast("dict[str, object]", raw_node)
-        body = node.get("body")
-        if isinstance(body, str) and FILL_MARKER in body:
-            node["body"] = _MOCK_SENTENCES[index % len(_MOCK_SENTENCES)]
-            index += 1
+    if isinstance(raw_nodes, list):
+        index = 0
+        for raw_node in cast("list[object]", raw_nodes):
+            if not isinstance(raw_node, dict):
+                continue
+            node = cast("dict[str, object]", raw_node)
+            body = node.get("body")
+            if isinstance(body, str) and FILL_MARKER in body:
+                node["body"] = _MOCK_SENTENCES[index % len(_MOCK_SENTENCES)]
+                index += 1
     return filled
 
 

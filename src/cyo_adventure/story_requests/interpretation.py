@@ -588,7 +588,7 @@ def _derive_one(  # noqa: PLR0911, PLR0913
     # precise forbid:<bundle> rule.
     band_hits = denylisted_bundles(phrase, band_mandatory_bundles(band))
     if band_hits:
-        bundle_id = sorted(band_hits)[0]
+        bundle_id = min(band_hits)
         return ElementDecision(
             None,
             ElementDisposition.SET_ASIDE,
@@ -720,6 +720,91 @@ def _register(  # noqa: PLR0913
     _CATALOG[disposition, reason, BandGroup.TEEN] = teen
 
 
+# Template strings reused across band groups (and, for several reasons, across
+# the with-element and without-element variants too, since guardian copy
+# never echoes untrusted element text and several kid-facing lines are
+# identical across bands). Named by (audience, reason[, disposition when the
+# reason spans more than one], with/without element when both exist) so each
+# occurrence's meaning stays traceable; grouped here instead of inlined below
+# to satisfy S1192 (no duplicated string literal).
+_GUARDIAN_BAND_PROMISE = (
+    "Band promise for {band}: content kept within the age-band guarantee."
+)
+_GUARDIAN_BAND_POLICY_WITH_ELEMENT = (
+    "'{element}' was set aside: it exceeds the {band} content policy ({rule})."
+)
+_GUARDIAN_BAND_POLICY_WITHOUT_ELEMENT = (
+    "An element was set aside: it exceeds the {band} content policy ({rule})."
+)
+_GUARDIAN_CONTROL_WITH_ELEMENT = (
+    "'{element}' was set aside by this profile's content controls (banned theme)."
+)
+_GUARDIAN_CONTROL_WITHOUT_ELEMENT = (
+    "An element was set aside by this profile's content controls (banned theme)."
+)
+_KID_GUARDIAN_CONTROL = (
+    "That part is on your family's not-right-now list, so we left it out."
+)
+_KID_STRUCTURE_FIXED = (
+    "Every adventure here ends a way that is fair and safe, so we picked the ending."
+)
+_GUARDIAN_STRUCTURE_FIXED_WITH_ELEMENT = (
+    "'{element}' conflicts with the story's fixed ending set; endings are "
+    "structural and not requestable (ADR-011/PL-15)."
+)
+_GUARDIAN_STRUCTURE_FIXED_WITHOUT_ELEMENT = (
+    "An element conflicts with the story's fixed ending set; endings are "
+    "structural and not requestable (ADR-011/PL-15)."
+)
+_GUARDIAN_NOT_THIS_STORY_KIND_WITH_ELEMENT = (
+    "'{element}' had no slot in skeleton '{skeleton_slug}'; it was not woven in."
+)
+_GUARDIAN_NOT_THIS_STORY_KIND_WITHOUT_ELEMENT = (
+    "An element had no slot in skeleton '{skeleton_slug}'; it was not woven in."
+)
+_KID_SAFETY_POLICY_SET_ASIDE = (
+    "One part of your idea is not something we can put in a story."
+)
+_GUARDIAN_SAFETY_POLICY_SET_ASIDE = (
+    "An element was withheld by the safety policy; the element text is not echoed."
+)
+_GUARDIAN_PERSONAL_DETAILS_SET_ASIDE = (
+    "An element contained personal details (a real name, email, phone, or "
+    "address); it was withheld and not echoed."
+)
+_KID_PERSONAL_DETAILS_SET_ASIDE = (
+    "Story wishes stay about made-up things, not real names or numbers."
+)
+_GUARDIAN_IDENTITY_PROTECTION = (
+    "The request asked to use the child's real name/self as the protagonist; "
+    "self-naming is disallowed by design (Route A). A fictional protagonist "
+    "was used."
+)
+_KID_NO_CONFORMING_BINDING = (
+    "We could not build this wish into any of our adventures yet. Try "
+    "changing it a little!"
+)
+_GUARDIAN_NO_CONFORMING_BINDING = (
+    "No skeleton in the request's cell could bind this theme; see the "
+    "recorded violations."
+)
+_KID_PERSONAL_DETAILS_CANNOT_CARRY = (
+    "Story wishes cannot include real names, phone numbers, or addresses. Ask a "
+    "grown-up to help you send it again without them."
+)
+_GUARDIAN_PERSONAL_DETAILS_CANNOT_CARRY = (
+    "The request contains personal details (a real name, email, phone, or "
+    "address). Please remove them and resubmit; this is a privacy block, not a "
+    "theme limitation."
+)
+_KID_SAFETY_POLICY_CANNOT_CARRY = (
+    "We could not use this story wish. Try a different idea!"
+)
+_GUARDIAN_SAFETY_POLICY_CANNOT_CARRY = (
+    "The request was blocked by the safety screen; no request text is echoed."
+)
+
+
 _register(
     ElementDisposition.BUILT_IN,
     ReasonCode.BOUND_TO_SLOT,
@@ -778,14 +863,14 @@ _register(
     middle=_forms(
         "This adventure fits stories made for readers your age.",
         "This adventure fits stories made for readers your age.",
-        "Band promise for {band}: content kept within the age-band guarantee.",
-        "Band promise for {band}: content kept within the age-band guarantee.",
+        _GUARDIAN_BAND_PROMISE,
+        _GUARDIAN_BAND_PROMISE,
     ),
     teen=_forms(
         "This adventure fits stories made for your reading level.",
         "This adventure fits stories made for your reading level.",
-        "Band promise for {band}: content kept within the age-band guarantee.",
-        "Band promise for {band}: content kept within the age-band guarantee.",
+        _GUARDIAN_BAND_PROMISE,
+        _GUARDIAN_BAND_PROMISE,
     ),
 )
 
@@ -795,20 +880,20 @@ _register(
     young=_forms(
         "We saved {element} for when you are older. This story stays friendly.",
         "We saved one idea for when you are older. This story stays friendly.",
-        "'{element}' was set aside: it exceeds the {band} content policy ({rule}).",
-        "An element was set aside: it exceeds the {band} content policy ({rule}).",
+        _GUARDIAN_BAND_POLICY_WITH_ELEMENT,
+        _GUARDIAN_BAND_POLICY_WITHOUT_ELEMENT,
     ),
     middle=_forms(
         "We saved {element} for when you are older. This story stays friendly.",
         "We saved one part of your idea for when you are older.",
-        "'{element}' was set aside: it exceeds the {band} content policy ({rule}).",
-        "An element was set aside: it exceeds the {band} content policy ({rule}).",
+        _GUARDIAN_BAND_POLICY_WITH_ELEMENT,
+        _GUARDIAN_BAND_POLICY_WITHOUT_ELEMENT,
     ),
     teen=_forms(
         "We kept {element} out to stay within this reading level.",
         "We kept one part of your idea out to stay within this reading level.",
-        "'{element}' was set aside: it exceeds the {band} content policy ({rule}).",
-        "An element was set aside: it exceeds the {band} content policy ({rule}).",
+        _GUARDIAN_BAND_POLICY_WITH_ELEMENT,
+        _GUARDIAN_BAND_POLICY_WITHOUT_ELEMENT,
     ),
 )
 
@@ -818,20 +903,20 @@ _register(
     young=_forms(
         "That part is on your family's not-right-now list.",
         "That part is on your family's not-right-now list.",
-        "'{element}' was set aside by this profile's content controls (banned theme).",
-        "An element was set aside by this profile's content controls (banned theme).",
+        _GUARDIAN_CONTROL_WITH_ELEMENT,
+        _GUARDIAN_CONTROL_WITHOUT_ELEMENT,
     ),
     middle=_forms(
-        "That part is on your family's not-right-now list, so we left it out.",
-        "That part is on your family's not-right-now list, so we left it out.",
-        "'{element}' was set aside by this profile's content controls (banned theme).",
-        "An element was set aside by this profile's content controls (banned theme).",
+        _KID_GUARDIAN_CONTROL,
+        _KID_GUARDIAN_CONTROL,
+        _GUARDIAN_CONTROL_WITH_ELEMENT,
+        _GUARDIAN_CONTROL_WITHOUT_ELEMENT,
     ),
     teen=_forms(
-        "That part is on your family's not-right-now list, so we left it out.",
-        "That part is on your family's not-right-now list, so we left it out.",
-        "'{element}' was set aside by this profile's content controls (banned theme).",
-        "An element was set aside by this profile's content controls (banned theme).",
+        _KID_GUARDIAN_CONTROL,
+        _KID_GUARDIAN_CONTROL,
+        _GUARDIAN_CONTROL_WITH_ELEMENT,
+        _GUARDIAN_CONTROL_WITHOUT_ELEMENT,
     ),
 )
 
@@ -839,40 +924,22 @@ _register(
     ElementDisposition.SET_ASIDE,
     ReasonCode.STRUCTURE_FIXED,
     young=_forms(
-        "Every adventure here ends a way that is fair and safe, so we picked the ending.",
-        "Every adventure here ends a way that is fair and safe, so we picked the ending.",
-        (
-            "'{element}' conflicts with the story's fixed ending set; endings are "
-            "structural and not requestable (ADR-011/PL-15)."
-        ),
-        (
-            "An element conflicts with the story's fixed ending set; endings are "
-            "structural and not requestable (ADR-011/PL-15)."
-        ),
+        _KID_STRUCTURE_FIXED,
+        _KID_STRUCTURE_FIXED,
+        _GUARDIAN_STRUCTURE_FIXED_WITH_ELEMENT,
+        _GUARDIAN_STRUCTURE_FIXED_WITHOUT_ELEMENT,
     ),
     middle=_forms(
-        "Every adventure here ends a way that is fair and safe, so we picked the ending.",
-        "Every adventure here ends a way that is fair and safe, so we picked the ending.",
-        (
-            "'{element}' conflicts with the story's fixed ending set; endings are "
-            "structural and not requestable (ADR-011/PL-15)."
-        ),
-        (
-            "An element conflicts with the story's fixed ending set; endings are "
-            "structural and not requestable (ADR-011/PL-15)."
-        ),
+        _KID_STRUCTURE_FIXED,
+        _KID_STRUCTURE_FIXED,
+        _GUARDIAN_STRUCTURE_FIXED_WITH_ELEMENT,
+        _GUARDIAN_STRUCTURE_FIXED_WITHOUT_ELEMENT,
     ),
     teen=_forms(
         "The endings here are fixed by the story's shape, so that part was set by us.",
         "The endings here are fixed by the story's shape, so that part was set by us.",
-        (
-            "'{element}' conflicts with the story's fixed ending set; endings are "
-            "structural and not requestable (ADR-011/PL-15)."
-        ),
-        (
-            "An element conflicts with the story's fixed ending set; endings are "
-            "structural and not requestable (ADR-011/PL-15)."
-        ),
+        _GUARDIAN_STRUCTURE_FIXED_WITH_ELEMENT,
+        _GUARDIAN_STRUCTURE_FIXED_WITHOUT_ELEMENT,
     ),
 )
 
@@ -882,20 +949,20 @@ _register(
     young=_forms(
         "This adventure did not have a spot for {element}, so we left it out.",
         "This adventure did not have a spot for that part, so we left it out.",
-        "'{element}' had no slot in skeleton '{skeleton_slug}'; it was not woven in.",
-        "An element had no slot in skeleton '{skeleton_slug}'; it was not woven in.",
+        _GUARDIAN_NOT_THIS_STORY_KIND_WITH_ELEMENT,
+        _GUARDIAN_NOT_THIS_STORY_KIND_WITHOUT_ELEMENT,
     ),
     middle=_forms(
         "This adventure did not have a spot for {element}, so we left it out.",
         "This adventure did not have a spot for that part, so we left it out.",
-        "'{element}' had no slot in skeleton '{skeleton_slug}'; it was not woven in.",
-        "An element had no slot in skeleton '{skeleton_slug}'; it was not woven in.",
+        _GUARDIAN_NOT_THIS_STORY_KIND_WITH_ELEMENT,
+        _GUARDIAN_NOT_THIS_STORY_KIND_WITHOUT_ELEMENT,
     ),
     teen=_forms(
         "This adventure did not have a place for {element}, so we left it out.",
         "This adventure did not have a place for that part, so we left it out.",
-        "'{element}' had no slot in skeleton '{skeleton_slug}'; it was not woven in.",
-        "An element had no slot in skeleton '{skeleton_slug}'; it was not woven in.",
+        _GUARDIAN_NOT_THIS_STORY_KIND_WITH_ELEMENT,
+        _GUARDIAN_NOT_THIS_STORY_KIND_WITHOUT_ELEMENT,
     ),
 )
 
@@ -903,22 +970,22 @@ _register(
     ElementDisposition.SET_ASIDE,
     ReasonCode.SAFETY_POLICY,
     young=_forms(
-        "One part of your idea is not something we can put in a story.",
-        "One part of your idea is not something we can put in a story.",
-        "An element was withheld by the safety policy; the element text is not echoed.",
-        "An element was withheld by the safety policy; the element text is not echoed.",
+        _KID_SAFETY_POLICY_SET_ASIDE,
+        _KID_SAFETY_POLICY_SET_ASIDE,
+        _GUARDIAN_SAFETY_POLICY_SET_ASIDE,
+        _GUARDIAN_SAFETY_POLICY_SET_ASIDE,
     ),
     middle=_forms(
-        "One part of your idea is not something we can put in a story.",
-        "One part of your idea is not something we can put in a story.",
-        "An element was withheld by the safety policy; the element text is not echoed.",
-        "An element was withheld by the safety policy; the element text is not echoed.",
+        _KID_SAFETY_POLICY_SET_ASIDE,
+        _KID_SAFETY_POLICY_SET_ASIDE,
+        _GUARDIAN_SAFETY_POLICY_SET_ASIDE,
+        _GUARDIAN_SAFETY_POLICY_SET_ASIDE,
     ),
     teen=_forms(
-        "One part of your idea is not something we can put in a story.",
-        "One part of your idea is not something we can put in a story.",
-        "An element was withheld by the safety policy; the element text is not echoed.",
-        "An element was withheld by the safety policy; the element text is not echoed.",
+        _KID_SAFETY_POLICY_SET_ASIDE,
+        _KID_SAFETY_POLICY_SET_ASIDE,
+        _GUARDIAN_SAFETY_POLICY_SET_ASIDE,
+        _GUARDIAN_SAFETY_POLICY_SET_ASIDE,
     ),
 )
 
@@ -928,38 +995,20 @@ _register(
     young=_forms(
         "Story wishes stay about made-up things, not real-life details.",
         "Story wishes stay about made-up things, not real-life details.",
-        (
-            "An element contained personal details (a real name, email, phone, or "
-            "address); it was withheld and not echoed."
-        ),
-        (
-            "An element contained personal details (a real name, email, phone, or "
-            "address); it was withheld and not echoed."
-        ),
+        _GUARDIAN_PERSONAL_DETAILS_SET_ASIDE,
+        _GUARDIAN_PERSONAL_DETAILS_SET_ASIDE,
     ),
     middle=_forms(
-        "Story wishes stay about made-up things, not real names or numbers.",
-        "Story wishes stay about made-up things, not real names or numbers.",
-        (
-            "An element contained personal details (a real name, email, phone, or "
-            "address); it was withheld and not echoed."
-        ),
-        (
-            "An element contained personal details (a real name, email, phone, or "
-            "address); it was withheld and not echoed."
-        ),
+        _KID_PERSONAL_DETAILS_SET_ASIDE,
+        _KID_PERSONAL_DETAILS_SET_ASIDE,
+        _GUARDIAN_PERSONAL_DETAILS_SET_ASIDE,
+        _GUARDIAN_PERSONAL_DETAILS_SET_ASIDE,
     ),
     teen=_forms(
-        "Story wishes stay about made-up things, not real names or numbers.",
-        "Story wishes stay about made-up things, not real names or numbers.",
-        (
-            "An element contained personal details (a real name, email, phone, or "
-            "address); it was withheld and not echoed."
-        ),
-        (
-            "An element contained personal details (a real name, email, phone, or "
-            "address); it was withheld and not echoed."
-        ),
+        _KID_PERSONAL_DETAILS_SET_ASIDE,
+        _KID_PERSONAL_DETAILS_SET_ASIDE,
+        _GUARDIAN_PERSONAL_DETAILS_SET_ASIDE,
+        _GUARDIAN_PERSONAL_DETAILS_SET_ASIDE,
     ),
 )
 
@@ -969,44 +1018,20 @@ _register(
     young=_forms(
         "Heroes in our stories always have made-up names, so we chose one for you!",
         "Heroes in our stories always have made-up names, so we chose one for you!",
-        (
-            "The request asked to use the child's real name/self as the protagonist; "
-            "self-naming is disallowed by design (Route A). A fictional protagonist "
-            "was used."
-        ),
-        (
-            "The request asked to use the child's real name/self as the protagonist; "
-            "self-naming is disallowed by design (Route A). A fictional protagonist "
-            "was used."
-        ),
+        _GUARDIAN_IDENTITY_PROTECTION,
+        _GUARDIAN_IDENTITY_PROTECTION,
     ),
     middle=_forms(
         "Heroes in our stories always have made-up names, so we chose one for this adventure!",
         "Heroes in our stories always have made-up names, so we chose one for this adventure!",
-        (
-            "The request asked to use the child's real name/self as the protagonist; "
-            "self-naming is disallowed by design (Route A). A fictional protagonist "
-            "was used."
-        ),
-        (
-            "The request asked to use the child's real name/self as the protagonist; "
-            "self-naming is disallowed by design (Route A). A fictional protagonist "
-            "was used."
-        ),
+        _GUARDIAN_IDENTITY_PROTECTION,
+        _GUARDIAN_IDENTITY_PROTECTION,
     ),
     teen=_forms(
         "Heroes in our stories always use made-up names, so we chose one for this adventure.",
         "Heroes in our stories always use made-up names, so we chose one for this adventure.",
-        (
-            "The request asked to use the child's real name/self as the protagonist; "
-            "self-naming is disallowed by design (Route A). A fictional protagonist "
-            "was used."
-        ),
-        (
-            "The request asked to use the child's real name/self as the protagonist; "
-            "self-naming is disallowed by design (Route A). A fictional protagonist "
-            "was used."
-        ),
+        _GUARDIAN_IDENTITY_PROTECTION,
+        _GUARDIAN_IDENTITY_PROTECTION,
     ),
 )
 
@@ -1014,22 +1039,22 @@ _register(
     ElementDisposition.CANNOT_CARRY,
     ReasonCode.NO_CONFORMING_BINDING,
     young=_forms(
-        "We could not build this wish into any of our adventures yet. Try changing it a little!",
-        "We could not build this wish into any of our adventures yet. Try changing it a little!",
-        "No skeleton in the request's cell could bind this theme; see the recorded violations.",
-        "No skeleton in the request's cell could bind this theme; see the recorded violations.",
+        _KID_NO_CONFORMING_BINDING,
+        _KID_NO_CONFORMING_BINDING,
+        _GUARDIAN_NO_CONFORMING_BINDING,
+        _GUARDIAN_NO_CONFORMING_BINDING,
     ),
     middle=_forms(
-        "We could not build this wish into any of our adventures yet. Try changing it a little!",
-        "We could not build this wish into any of our adventures yet. Try changing it a little!",
-        "No skeleton in the request's cell could bind this theme; see the recorded violations.",
-        "No skeleton in the request's cell could bind this theme; see the recorded violations.",
+        _KID_NO_CONFORMING_BINDING,
+        _KID_NO_CONFORMING_BINDING,
+        _GUARDIAN_NO_CONFORMING_BINDING,
+        _GUARDIAN_NO_CONFORMING_BINDING,
     ),
     teen=_forms(
         "We could not build this wish into any of our adventures yet. Try changing it a little.",
         "We could not build this wish into any of our adventures yet. Try changing it a little.",
-        "No skeleton in the request's cell could bind this theme; see the recorded violations.",
-        "No skeleton in the request's cell could bind this theme; see the recorded violations.",
+        _GUARDIAN_NO_CONFORMING_BINDING,
+        _GUARDIAN_NO_CONFORMING_BINDING,
     ),
 )
 
@@ -1037,44 +1062,16 @@ _register(
     ElementDisposition.CANNOT_CARRY,
     ReasonCode.PERSONAL_DETAILS,
     young=_forms(
-        (
-            "Story wishes cannot include real names, phone numbers, or addresses. Ask a "
-            "grown-up to help you send it again without them."
-        ),
-        (
-            "Story wishes cannot include real names, phone numbers, or addresses. Ask a "
-            "grown-up to help you send it again without them."
-        ),
-        (
-            "The request contains personal details (a real name, email, phone, or "
-            "address). Please remove them and resubmit; this is a privacy block, not a "
-            "theme limitation."
-        ),
-        (
-            "The request contains personal details (a real name, email, phone, or "
-            "address). Please remove them and resubmit; this is a privacy block, not a "
-            "theme limitation."
-        ),
+        _KID_PERSONAL_DETAILS_CANNOT_CARRY,
+        _KID_PERSONAL_DETAILS_CANNOT_CARRY,
+        _GUARDIAN_PERSONAL_DETAILS_CANNOT_CARRY,
+        _GUARDIAN_PERSONAL_DETAILS_CANNOT_CARRY,
     ),
     middle=_forms(
-        (
-            "Story wishes cannot include real names, phone numbers, or addresses. Ask a "
-            "grown-up to help you send it again without them."
-        ),
-        (
-            "Story wishes cannot include real names, phone numbers, or addresses. Ask a "
-            "grown-up to help you send it again without them."
-        ),
-        (
-            "The request contains personal details (a real name, email, phone, or "
-            "address). Please remove them and resubmit; this is a privacy block, not a "
-            "theme limitation."
-        ),
-        (
-            "The request contains personal details (a real name, email, phone, or "
-            "address). Please remove them and resubmit; this is a privacy block, not a "
-            "theme limitation."
-        ),
+        _KID_PERSONAL_DETAILS_CANNOT_CARRY,
+        _KID_PERSONAL_DETAILS_CANNOT_CARRY,
+        _GUARDIAN_PERSONAL_DETAILS_CANNOT_CARRY,
+        _GUARDIAN_PERSONAL_DETAILS_CANNOT_CARRY,
     ),
     teen=_forms(
         (
@@ -1085,16 +1082,8 @@ _register(
             "Story wishes cannot include real names, phone numbers, or addresses. Please "
             "remove them and send it again."
         ),
-        (
-            "The request contains personal details (a real name, email, phone, or "
-            "address). Please remove them and resubmit; this is a privacy block, not a "
-            "theme limitation."
-        ),
-        (
-            "The request contains personal details (a real name, email, phone, or "
-            "address). Please remove them and resubmit; this is a privacy block, not a "
-            "theme limitation."
-        ),
+        _GUARDIAN_PERSONAL_DETAILS_CANNOT_CARRY,
+        _GUARDIAN_PERSONAL_DETAILS_CANNOT_CARRY,
     ),
 )
 
@@ -1102,22 +1091,22 @@ _register(
     ElementDisposition.CANNOT_CARRY,
     ReasonCode.SAFETY_POLICY,
     young=_forms(
-        "We could not use this story wish. Try a different idea!",
-        "We could not use this story wish. Try a different idea!",
-        "The request was blocked by the safety screen; no request text is echoed.",
-        "The request was blocked by the safety screen; no request text is echoed.",
+        _KID_SAFETY_POLICY_CANNOT_CARRY,
+        _KID_SAFETY_POLICY_CANNOT_CARRY,
+        _GUARDIAN_SAFETY_POLICY_CANNOT_CARRY,
+        _GUARDIAN_SAFETY_POLICY_CANNOT_CARRY,
     ),
     middle=_forms(
-        "We could not use this story wish. Try a different idea!",
-        "We could not use this story wish. Try a different idea!",
-        "The request was blocked by the safety screen; no request text is echoed.",
-        "The request was blocked by the safety screen; no request text is echoed.",
+        _KID_SAFETY_POLICY_CANNOT_CARRY,
+        _KID_SAFETY_POLICY_CANNOT_CARRY,
+        _GUARDIAN_SAFETY_POLICY_CANNOT_CARRY,
+        _GUARDIAN_SAFETY_POLICY_CANNOT_CARRY,
     ),
     teen=_forms(
         "We could not use this story wish. Try a different idea.",
         "We could not use this story wish. Try a different idea.",
-        "The request was blocked by the safety screen; no request text is echoed.",
-        "The request was blocked by the safety screen; no request text is echoed.",
+        _GUARDIAN_SAFETY_POLICY_CANNOT_CARRY,
+        _GUARDIAN_SAFETY_POLICY_CANNOT_CARRY,
     ),
 )
 

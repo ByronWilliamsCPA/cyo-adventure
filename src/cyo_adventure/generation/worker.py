@@ -55,7 +55,11 @@ from cyo_adventure.generation.binding import (
     render_bound_skeleton,
 )
 from cyo_adventure.generation.concept import ConceptBrief
-from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
+from cyo_adventure.generation.orchestrator import (
+    GenerationOutcome,
+    fill_skeleton,
+    generate_story,
+)
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
@@ -89,7 +93,6 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from cyo_adventure.generation.orchestrator import GenerationOutcome
     from cyo_adventure.generation.provider import GenerationProvider
     from cyo_adventure.story_requests.interpretation import RequestInterpretation
     from cyo_adventure.storybook.theme_contract import ThemeContract
@@ -841,12 +844,20 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             ctx=ctx,
             created_at=datetime.now(UTC),
         )
-        return dataclasses.replace(
-            outcome,
+        # Built via the GenerationOutcome constructor directly (not
+        # dataclasses.replace): replace()'s generic TypeVar-bound return type
+        # resolves to the DataclassInstance protocol under some type-checker
+        # inference, not the concrete GenerationOutcome (S5886); constructing
+        # the instance directly keeps the return type unambiguous everywhere.
+        return GenerationOutcome(
+            status=outcome.status,
+            storybook=outcome.storybook,
             report={
                 **outcome.report,
                 "request_interpretation": degraded.model_dump(mode="json"),
             },
+            attempts=outcome.attempts,
+            stage_log=outcome.stage_log,
         )
 
     # #CRITICAL: security: interpret_and_bind's return value is derived from an
@@ -927,13 +938,21 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         ctx=ctx,
         created_at=datetime.now(UTC),
     )
-    return dataclasses.replace(
-        outcome,
+    # Built via the GenerationOutcome constructor directly (not
+    # dataclasses.replace): replace()'s generic TypeVar-bound return type
+    # resolves to the DataclassInstance protocol under some type-checker
+    # inference, not the concrete GenerationOutcome (S5886); constructing the
+    # instance directly keeps the return type unambiguous everywhere.
+    return GenerationOutcome(
+        status=outcome.status,
+        storybook=outcome.storybook,
         report={
             **outcome.report,
             "theme_contract": theme_contract_report,
             "request_interpretation": interpretation.model_dump(mode="json"),
         },
+        attempts=outcome.attempts,
+        stage_log=outcome.stage_log,
     )
 
 
@@ -1548,6 +1567,83 @@ async def _record_cannot_carry_if_bound_path(
     return {**(report or {}), "request_interpretation": serialized}
 
 
+async def _handle_pipeline_failure(
+    session: AsyncSession,
+    job_id: uuid.UUID,
+    job_row: GenerationJob,
+    exc: Exception,
+    *,
+    authoring: dict[str, object] | None,
+    brief: ConceptBrief,
+    pii: PiiContext,
+    effective_provider: GenerationProvider | None,
+) -> None:
+    """Record a failed pipeline run's violations, CANNOT_CARRY, and log entry.
+
+    Extracted from :func:`run_generation_job`'s pipeline ``except`` clause
+    (S3776): isolates the slot-binding-violation extraction, the WS-7 D7
+    CANNOT_CARRY stamping, and the failure recording/logging behind a single
+    call, so the caller's exception handler is one line plus a bare
+    ``raise`` instead of several nested conditionals.
+
+    Args:
+        session: The worker's owned session.
+        job_id: The job's id (for the log line).
+        job_row: The failed job row.
+        exc: The pipeline exception being recorded.
+        authoring: The job's ``authoring_metadata`` dict, or ``None``.
+        brief: The concept brief (supplies band fallback + ``content_nogo``).
+        pii: The PII context (supplies family child names for the echo floor).
+        effective_provider: The resolved provider (recorded on the failure).
+    """
+    # #CRITICAL: data-integrity: a WS-2 fail-closed slot-binding
+    # ValidationError (from generation.binding.bind_theme_to_contract or
+    # render_bound_skeleton) carries its violation list in
+    # exc.details["violations"], but job.error only stores the first 512
+    # chars of str(exc) (the message), which drops that structured detail.
+    # Surface it onto job.report so an operator can see exactly what the
+    # binder/renderer rejected instead of a job row pointing at nothing
+    # informative.
+    # #VERIFY: the bind-failure worker test asserts the violation detail
+    # lands in the persisted report/error.
+    violations: object | None = None
+    if isinstance(exc, ValidationError):
+        violations = exc.details.get("violations")
+    report: dict[str, object] | None = None
+    if violations is not None:
+        report = {"slot_binding_violations": violations}
+
+    # WS-7 D7 (design 6.1, 6.3): a bound-path skeleton-fill job that fails its
+    # bind gets an honest CANNOT_CARRY interpretation on BOTH the failed job
+    # report and the originating request row. The reason (PERSONAL_DETAILS vs
+    # NO_CONFORMING_BINDING) is chosen by exc.field provenance ONLY (CR-4); a
+    # fresh_generation, legacy, or half-migrated failure is a no-op here.
+    # This does not change job status/retry semantics: the caller still fails
+    # the job below.
+    report = await _record_cannot_carry_if_bound_path(
+        session,
+        job_row,
+        exc,
+        authoring=authoring,
+        brief=brief,
+        pii=pii,
+        report=report,
+    )
+    # Record failure; the caller re-raises so RQ marks the job failed.
+    await _record_failure(
+        session,
+        job_row,
+        exc,
+        provider=effective_provider,
+        report=report,
+    )
+    logger.exception(
+        "generation_job.pipeline_error",
+        job_id=str(job_id),
+        error=str(exc)[:512],
+    )
+
+
 async def run_generation_job(
     job_id: uuid.UUID,
     *,
@@ -1724,54 +1820,18 @@ async def run_generation_job(
                 else:
                     outcome = await generate_story(brief, effective_provider, pii)
             except Exception as exc:
-                # #CRITICAL: data-integrity: a WS-2 fail-closed slot-binding
-                # ValidationError (from generation.binding.bind_theme_to_contract
-                # or render_bound_skeleton) carries its violation list in
-                # exc.details["violations"], but job.error only stores the
-                # first 512 chars of str(exc) (the message), which drops that
-                # structured detail. Surface it onto job.report so an operator
-                # can see exactly what the binder/renderer rejected instead of
-                # a job row pointing at nothing informative.
-                # #VERIFY: the bind-failure worker test asserts the violation
-                # detail lands in the persisted report/error.
-                violations = (
-                    exc.details.get("violations")
-                    if isinstance(exc, ValidationError)
-                    else None
-                )
-                report: dict[str, object] | None = (
-                    {"slot_binding_violations": violations}
-                    if violations is not None
-                    else None
-                )
-                # WS-7 D7 (design 6.1, 6.3): a bound-path skeleton-fill job that
-                # fails its bind gets an honest CANNOT_CARRY interpretation on
-                # BOTH the failed job report and the originating request row. The
-                # reason (PERSONAL_DETAILS vs NO_CONFORMING_BINDING) is chosen by
-                # exc.field provenance ONLY (CR-4); a fresh_generation, legacy,
-                # or half-migrated failure is a no-op here. This does not change
-                # job status/retry semantics: the job still fails below.
-                report = await _record_cannot_carry_if_bound_path(
+                # Violation extraction, WS-7 D7 CANNOT_CARRY stamping, failure
+                # recording, and logging all live in _handle_pipeline_failure
+                # (S3776: keeps this handler a single call plus a bare raise).
+                await _handle_pipeline_failure(
                     session,
+                    job_id,
                     job_row,
                     exc,
                     authoring=authoring,
                     brief=brief,
                     pii=pii,
-                    report=report,
-                )
-                # Record failure and re-raise so RQ marks the job failed.
-                await _record_failure(
-                    session,
-                    job_row,
-                    exc,
-                    provider=effective_provider,
-                    report=report,
-                )
-                logger.exception(
-                    "generation_job.pipeline_error",
-                    job_id=str(job_id),
-                    error=str(exc)[:512],
+                    effective_provider=effective_provider,
                 )
                 raise
 

@@ -162,7 +162,14 @@ def _validate_comparison(operator: str, operand: object) -> None:
     if not isinstance(operand, list):
         msg = f"comparison '{operator}' requires a 2-item list operand"
         raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
-    operands = cast("list[object]", operand)
+    # #ASSUME: data-integrity: "list[object]" repeats across this module's
+    # cast() calls (Sonar S1192); a module-level constant would break
+    # basedpyright's cast() overload resolution (it narrows a type only from
+    # a literal string in source, not a variable), and dropping the quotes
+    # trips this project's own ruff TC006. See api/node_edit.py's identical
+    # rationale.
+    # #VERIFY: uv run basedpyright + uv run ruff check on this file.
+    operands = cast("list[object]", operand)  # NOSONAR
     expected_arity = 2
     if len(operands) != expected_arity:
         msg = f"comparison '{operator}' requires a 2-item list operand"

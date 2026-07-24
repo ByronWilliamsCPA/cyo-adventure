@@ -322,7 +322,12 @@ def _rename_choices(node: dict[str, object], state: _RenameState) -> None:
     for item in cast("list[object]", raw):
         if not isinstance(item, dict):
             continue
-        choice = cast("dict[str, object]", item)
+        # dict[str, object] has no forward reference to defer, so there is no
+        # runtime cost to not quoting it in these cast() calls (see
+        # review_surface.py for the same pattern); left unquoted here so the
+        # type expression is not a duplicated string literal (S1192) across
+        # the module.
+        choice = cast(dict[str, object], item)  # noqa: TC006
         old_choice_id = _str_field(choice, "id")
         if old_choice_id is not None:
             new_choice_id = _prefixed(old_choice_id, state.k)
@@ -340,7 +345,7 @@ def _rename_ending(node: dict[str, object], state: _RenameState) -> None:
     ending = node.get("ending")
     if not isinstance(ending, dict):
         return
-    ending_dict = cast("dict[str, object]", ending)
+    ending_dict = cast(dict[str, object], ending)  # noqa: TC006
     old_ending_id = _str_field(ending_dict, "id")
     if old_ending_id is not None:
         new_ending_id = _prefixed(old_ending_id, state.k)
@@ -566,7 +571,7 @@ def resync_metadata(story: Mapping[str, object]) -> dict[str, object]:
     if not isinstance(meta_raw, dict):
         msg = "story has no metadata object to resync"
         raise ValidationError(msg, field="metadata", value=None)
-    meta = cast("dict[str, object]", meta_raw)
+    meta = cast(dict[str, object], meta_raw)  # noqa: TC006
     meta["ending_count"] = recompute_ending_count(story)
     meta["tier"] = recompute_tier(story)
     meta["estimated_minutes"] = recompute_estimated_minutes(story)

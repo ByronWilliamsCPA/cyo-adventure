@@ -91,6 +91,47 @@ class ChainResult:
     notes: tuple[str, ...] = field(default_factory=tuple)
 
 
+# dict[str, object] has no forward reference to defer, so there is no runtime
+# cost to not quoting it in these cast() calls (see review_surface.py for the
+# same pattern); left unquoted here so the type expression is not a
+# duplicated string literal (S1192) across the module.
+def _ending_id(node: Mapping[str, object]) -> str | None:
+    """Return a node's ending id, or None when it has no ending.
+
+    Args:
+        node: One story node to scan.
+
+    Returns:
+        str | None: The ending id, or None.
+    """
+    ending = node.get("ending")
+    if not isinstance(ending, dict):
+        return None
+    ending_id = cast(dict[str, object], ending).get("id")  # noqa: TC006
+    return ending_id if isinstance(ending_id, str) else None
+
+
+def _choice_ids(node: Mapping[str, object]) -> set[str]:
+    """Return every choice id present on a node.
+
+    Args:
+        node: One story node to scan.
+
+    Returns:
+        set[str]: The node's choice ids.
+    """
+    choices = node.get("choices")
+    if not isinstance(choices, list):
+        return set()
+    ids: set[str] = set()
+    for raw_choice in cast("list[object]", choices):
+        if isinstance(raw_choice, dict):
+            choice_id = cast(dict[str, object], raw_choice).get("id")  # noqa: TC006
+            if isinstance(choice_id, str):
+                ids.add(choice_id)
+    return ids
+
+
 def _present_target_ids(candidate: Mapping[str, object]) -> set[str]:
     """Return every node, choice, and ending id present in the final candidate.
 
@@ -111,20 +152,11 @@ def _present_target_ids(candidate: Mapping[str, object]) -> set[str]:
     for raw_node in cast("list[object]", raw_nodes):
         if not isinstance(raw_node, dict):
             continue
-        node = cast("dict[str, object]", raw_node)
-        ending = node.get("ending")
-        if isinstance(ending, dict):
-            ending_id = cast("dict[str, object]", ending).get("id")
-            if isinstance(ending_id, str):
-                present.add(ending_id)
-        choices = node.get("choices")
-        if not isinstance(choices, list):
-            continue
-        for raw_choice in cast("list[object]", choices):
-            if isinstance(raw_choice, dict):
-                choice_id = cast("dict[str, object]", raw_choice).get("id")
-                if isinstance(choice_id, str):
-                    present.add(choice_id)
+        node = cast(dict[str, object], raw_node)  # noqa: TC006
+        ending_id = _ending_id(node)
+        if ending_id is not None:
+            present.add(ending_id)
+        present |= _choice_ids(node)
     return present
 
 
@@ -198,7 +230,8 @@ def apply_chain(
             reasons = "; ".join(report.failures) or "preconditions not satisfied"
             msg = f"chain step {index} ({step.op_id}) is ineligible: {reasons}"
             raise ValidationError(msg, field="steps", value=step.op_id)
-        result = op.apply(current, step.params, random.Random(step.seed))  # noqa: S311 -- deterministic replay rng, not cryptographic
+        # Deterministic replay rng, not a cryptographic use (S311).
+        result = op.apply(current, step.params, random.Random(step.seed))  # noqa: S311
         current = result.candidate
         emitted.extend(result.reguide)
         notes.extend(result.notes)
@@ -245,7 +278,12 @@ class _PrecomputedOp:
         parent: Mapping[str, object],  # noqa: ARG002 -- protocol signature
         params: OpParams,  # noqa: ARG002 -- protocol signature
     ) -> PreconditionReport:
-        """Return a satisfied report (the chain already validated each step)."""
+        """Return a satisfied report (the chain already validated each step).
+
+        ``parent`` and ``params`` are unused: this operator only replays a
+        precomputed candidate, but the signature must match the
+        ``MutationOp`` protocol so ``run_acceptance`` can call it uniformly.
+        """
         return PreconditionReport.passed()
 
     def apply(
@@ -254,7 +292,12 @@ class _PrecomputedOp:
         params: OpParams,  # noqa: ARG002 -- protocol signature
         rng: random.Random,  # noqa: ARG002 -- protocol signature
     ) -> MutationResult:
-        """Return the precomputed candidate and its surviving re-guidance."""
+        """Return the precomputed candidate and its surviving re-guidance.
+
+        ``parent``, ``params``, and ``rng`` are unused: this operator only
+        replays a precomputed candidate, but the signature must match the
+        ``MutationOp`` protocol so ``run_acceptance`` can call it uniformly.
+        """
         return MutationResult(candidate=self.candidate, reguide=self.reguide)
 
 

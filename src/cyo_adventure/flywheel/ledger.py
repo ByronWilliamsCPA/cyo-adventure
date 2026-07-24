@@ -202,7 +202,14 @@ def load_outcomes(path: Path) -> dict[str, str]:
             continue
         if not isinstance(record, dict):
             continue
-        row = cast("dict[str, object]", record)
+        # #ASSUME: data-integrity: "dict[str, object]" repeats across this
+        # module's cast() calls (Sonar S1192); a module-level constant would
+        # break basedpyright's cast() overload resolution (it narrows a type
+        # only from a literal string in source, not a variable), and dropping
+        # the quotes trips this project's own ruff TC006. See
+        # api/node_edit.py's identical rationale.
+        # #VERIFY: uv run basedpyright + uv run ruff check on this file.
+        row = cast("dict[str, object]", record)  # NOSONAR
         sig = row.get("attempt_sig")
         outcome = row.get("outcome")
         if isinstance(sig, str) and isinstance(outcome, str):

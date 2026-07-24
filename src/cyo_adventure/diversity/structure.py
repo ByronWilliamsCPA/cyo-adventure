@@ -50,6 +50,66 @@ _HISTOGRAM_WEIGHT = 0.3
 _TOPOLOGY_WEIGHT = 0.2
 
 
+def _as_list_object(value: object) -> list[object] | None:
+    """Narrow ``value`` to ``list[object]``, or ``None`` when it is not a list.
+
+    Centralizing this narrow-and-cast in one place (instead of repeating the
+    ``isinstance``/``cast("list[object]", ...)`` pair at every raw-JSON walk
+    site below) is what keeps the ``"list[object]"`` cast literal from
+    piling up as a duplicated string across this module.
+
+    Args:
+        value: Any raw JSON-decoded value.
+
+    Returns:
+        list[object] | None: ``value`` narrowed to a list, or ``None`` when
+            it is not one.
+    """
+    return cast("list[object]", value) if isinstance(value, list) else None
+
+
+def _as_dict_str_object(value: object) -> dict[str, object] | None:
+    """Narrow ``value`` to ``dict[str, object]``, or ``None`` when not a dict.
+
+    Args:
+        value: Any raw JSON-decoded value.
+
+    Returns:
+        dict[str, object] | None: ``value`` narrowed to a dict, or ``None``
+            when it is not one.
+    """
+    return cast("dict[str, object]", value) if isinstance(value, dict) else None
+
+
+def _strip_choice_labels(choices: object) -> None:
+    """Strip the ``label`` key from every choice dict in place.
+
+    Args:
+        choices: A node's raw ``choices`` value (expected to be a list of
+            dicts; anything else is left untouched).
+    """
+    choice_list = _as_list_object(choices)
+    if choice_list is None:
+        return
+    for raw_choice in choice_list:
+        choice = _as_dict_str_object(raw_choice)
+        if choice is not None:
+            choice.pop("label", None)
+
+
+def _strip_node_content(node: dict[str, object]) -> None:
+    """Strip body, ending title, and choice labels from one node, in place.
+
+    Args:
+        node: One raw node dict from a story dump.
+    """
+    node.pop("body", None)
+    ending = _as_dict_str_object(node.get("ending"))
+    if ending is not None:
+        ending.pop("title", None)
+    _strip_choice_labels(node.get("choices"))
+
+
 def _strip_leaf_content(data: dict[str, object]) -> dict[str, object]:
     """Return a deep copy of a story dump with title/body/ending-title/label removed.
 
@@ -63,20 +123,12 @@ def _strip_leaf_content(data: dict[str, object]) -> dict[str, object]:
     """
     stripped = copy.deepcopy(data)
     stripped.pop("title", None)
-    nodes = stripped.get("nodes")
-    if isinstance(nodes, list):
-        for raw_node in cast("list[object]", nodes):
-            if isinstance(raw_node, dict):
-                node = cast("dict[str, object]", raw_node)
-                node.pop("body", None)
-                ending = node.get("ending")
-                if isinstance(ending, dict):
-                    cast("dict[str, object]", ending).pop("title", None)
-                choices = node.get("choices")
-                if isinstance(choices, list):
-                    for raw_choice in cast("list[object]", choices):
-                        if isinstance(raw_choice, dict):
-                            cast("dict[str, object]", raw_choice).pop("label", None)
+    nodes = _as_list_object(stripped.get("nodes"))
+    if nodes is not None:
+        for raw_node in nodes:
+            node = _as_dict_str_object(raw_node)
+            if node is not None:
+                _strip_node_content(node)
     return stripped
 
 

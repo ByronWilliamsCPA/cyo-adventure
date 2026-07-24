@@ -31,7 +31,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast
 
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
@@ -853,12 +853,19 @@ async def fill_skeleton(
     # reach the real story; worker.py keys its persist decision on this exact
     # report field.
     if stage1_violations and outcome.status == "passed":
-        return replace(
-            outcome,
+        # Built via the GenerationOutcome constructor directly (not
+        # dataclasses.replace): replace()'s generic TypeVar-bound return type
+        # resolves to the DataclassInstance protocol under some type-checker
+        # inference, not the concrete GenerationOutcome (S5886); constructing
+        # the instance directly keeps the return type unambiguous everywhere.
+        return GenerationOutcome(
             status="needs_review",
+            storybook=outcome.storybook,
             report={
                 **outcome.report,
                 "stage1_fidelity_violations": stage1_violations,
             },
+            attempts=outcome.attempts,
+            stage_log=outcome.stage_log,
         )
     return outcome
