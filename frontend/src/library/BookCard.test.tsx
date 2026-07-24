@@ -93,6 +93,13 @@ describe('BookCard', () => {
     expect(img.src).toContain('https://cdn/x.webp')
   })
 
+  it('lazy-loads and async-decodes the cover', () => {
+    renderCard({ ...BASE_ITEM, cover_url: 'https://cdn/x.webp' })
+    const img = screen.getByRole<HTMLImageElement>('presentation', { hidden: true })
+    expect(img).toHaveAttribute('loading', 'lazy')
+    expect(img).toHaveAttribute('decoding', 'async')
+  })
+
   it('falls back to the first-letter tile when cover_url is null', () => {
     renderCard({ ...BASE_ITEM, title: 'Zephyr', cover_url: null })
     expect(screen.getByText('Z')).toBeInTheDocument()

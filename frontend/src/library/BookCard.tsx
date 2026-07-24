@@ -82,6 +82,8 @@ export function BookCard({
             className="book-card__cover"
             src={item.cover_url ?? undefined}
             alt=""
+            loading="lazy"
+            decoding="async"
             onError={() => setCoverError(true)}
           />
         ) : (
