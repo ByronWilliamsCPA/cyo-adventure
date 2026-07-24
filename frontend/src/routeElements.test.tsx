@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { Suspense } from 'react'
-import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { MemoryRouter, createMemoryRouter } from 'react-router'
+import { RouterProvider } from 'react-router/dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MockInstance } from 'vitest'
 

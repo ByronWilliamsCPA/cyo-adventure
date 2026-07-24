@@ -1,4 +1,4 @@
-import { matchPath, Outlet, useLocation } from 'react-router-dom'
+import { matchPath, Outlet, useLocation } from 'react-router'
 
 import { ThemeToggle } from '../theme/ThemeToggle'
 import { KidNav } from './KidNav'

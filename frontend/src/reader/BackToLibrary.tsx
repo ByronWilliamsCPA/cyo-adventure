@@ -1,5 +1,5 @@
 import { Button } from '@ds/components/Button'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 
 export interface BackToLibraryProps {
   /** Profile whose library to return to. */

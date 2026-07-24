@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { Button } from '@ds/components/Button'
 import { ProgressBar } from '@ds/components/ProgressBar'
 import { EndingsBadge } from './EndingsBadge'

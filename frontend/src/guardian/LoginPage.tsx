@@ -1,7 +1,7 @@
 import { isAuthApiError } from '@supabase/supabase-js'
 import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'

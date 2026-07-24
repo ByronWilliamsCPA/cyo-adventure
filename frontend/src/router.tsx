@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import type { ReactNode } from 'react'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router'
 
 import { DeviceAuthorizedRoute } from './auth/DeviceAuthorizedRoute'
 import { ProtectedRoute } from './auth/ProtectedRoute'

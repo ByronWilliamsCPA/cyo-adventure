@@ -1,6 +1,6 @@
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
-import { Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router'
 
 import '../guardian/guardian.css'
 import {

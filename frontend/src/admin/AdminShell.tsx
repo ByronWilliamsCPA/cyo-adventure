@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { useAuth } from '../auth/useAuth'

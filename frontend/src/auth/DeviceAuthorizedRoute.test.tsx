@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto'
 
 import { IDBFactory } from 'fake-indexeddb'
 import { render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AUTHORIZE_DEVICE_INTENT_PARAM, AUTHORIZE_DEVICE_INTENT_VALUE } from '../routes'

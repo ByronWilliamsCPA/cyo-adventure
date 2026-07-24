@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { useAuth } from '../auth/useAuth'
