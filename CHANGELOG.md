@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.31.0] - 2026-07-24
+
+### Features
+
+- **frontend**: Add light/dark/system theme toggle, fix dark-mode gaps
+  ([#388](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/388),
+  [`d535758`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d53575853627e45d95aca655a2b45723bf5c9ecd))
+
+
 ## [0.30.0] - 2026-07-24
 
 ### Chores
@@ -2583,6 +2592,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.31.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.2...v0.30.0
 [0.29.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.1...v0.29.2
 [0.29.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.0...v0.29.1
