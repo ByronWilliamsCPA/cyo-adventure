@@ -410,3 +410,61 @@ def test_interpret_and_bind_only_calls_complete_through_guarded_provider() -> No
     # The bare provider parameter is never awaited directly.
     assert "provider.complete(" not in source.replace("guarded_provider.complete(", "")
     assert "await provider.complete" not in source
+
+
+# ---------------------------------------------------------------------------
+# _sanitize_elements: malformed entries (design section 5.2)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_sanitize_elements_skips_non_dict_entries_and_bad_phrases() -> None:
+    """A non-dict entry, a non-string phrase, and an empty phrase are all dropped."""
+    raw_elements: list[object] = [
+        "not an element",
+        {"phrase": 123},
+        {"phrase": ""},
+        {"no_phrase_key": "x"},
+        {"phrase": "a curious fox", "slot_id": "HERO"},
+    ]
+
+    result = binding_module._sanitize_elements(raw_elements, _contract())
+
+    assert result == [RawElement(phrase="a curious fox", slot_id="HERO")]
+
+
+# ---------------------------------------------------------------------------
+# _parse_interpret_bind_response: malformed top-level JSON (bindings half)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_interpret_bind_invalid_json_then_valid_succeeds() -> None:
+    """A non-JSON first attempt is a failed attempt, not an exception; retry succeeds."""
+    provider = MockProvider(responses=["not json at all", _VALID_RESPONSE])
+
+    bindings, elements = await interpret_and_bind(
+        _contract(), _brief(), provider, _empty_pii(), max_attempts=2
+    )
+
+    assert bindings == _VALID_BINDING
+    assert elements == [
+        RawElement(phrase="a curious fox", slot_id="HERO"),
+        RawElement(phrase="a glowing cave", slot_id=None),
+    ]
+    assert len(provider.calls) == 2
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_interpret_bind_non_dict_top_level_json_then_valid_succeeds() -> None:
+    """A JSON array (valid JSON, wrong shape) is also a failed attempt, not a crash."""
+    provider = MockProvider(responses=[json.dumps([1, 2, 3]), _VALID_RESPONSE])
+
+    bindings, _elements = await interpret_and_bind(
+        _contract(), _brief(), provider, _empty_pii(), max_attempts=2
+    )
+
+    assert bindings == _VALID_BINDING
+    assert len(provider.calls) == 2
