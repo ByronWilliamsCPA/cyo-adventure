@@ -388,7 +388,7 @@ async def _rescreen_one(
     # _enqueue_safely and api/story_requests.py's screening call.
     # #VERIFY: tests/unit/test_rescreen_unit.py::
     # test_provider_error_on_one_book_does_not_abort_sweep.
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001 -- isolate one book's failure, see above
         _logger.warning(
             "rescreen.book_failed",
             storybook_id=book.id,
