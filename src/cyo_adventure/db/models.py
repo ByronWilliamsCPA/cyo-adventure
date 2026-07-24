@@ -443,6 +443,10 @@ class ChildProfile(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     # length-capped there before it reaches this column.
     banned_themes: Mapped[list[str] | None] = mapped_column(JSONB, default=None)
     tts_enabled: Mapped[bool] = mapped_column(default=False)
+    # Guardian-set per-child motion preference: when true, the reader/library
+    # frontend collapses age-band animation to the same reduced-motion state
+    # as the OS-level prefers-reduced-motion media query (see band-tokens.css).
+    reduce_motion: Mapped[bool] = mapped_column(default=False)
     avatar: Mapped[str | None] = mapped_column(String(255), default=None)
     # #CRITICAL: security: write-only PIN credential material (P6-07), encoded
     # as pbkdf2_sha256$iters$salt$hash by core/pin.py. No API response may ever

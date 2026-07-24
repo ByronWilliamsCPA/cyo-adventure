@@ -162,6 +162,42 @@ describe('BookCard', () => {
     })
   })
 
+  describe('readOnly (guardian preview-as-child)', () => {
+    it('does not link the cover into the Reader route', () => {
+      const { container } = render(
+        <MemoryRouter>
+          <BookCard item={BASE_ITEM} profileId="p1" onRate={vi.fn()} readOnly />
+        </MemoryRouter>
+      )
+      expect(container.querySelector('a[href^="/read/"]')).not.toBeInTheDocument()
+      expect(screen.getByText('Preview only')).toBeInTheDocument()
+    })
+
+    it('does not render the star rating control', () => {
+      render(
+        <MemoryRouter>
+          <BookCard item={BASE_ITEM} profileId="p1" onRate={vi.fn()} readOnly />
+        </MemoryRouter>
+      )
+      expect(screen.queryByRole('group', { name: /rate/i })).not.toBeInTheDocument()
+    })
+
+    it('does not render the ask-for-the-next-book button even for a series book with onContinue', () => {
+      render(
+        <MemoryRouter>
+          <BookCard
+            item={{ ...BASE_ITEM, series_id: 'ser1', book_index: 1 }}
+            profileId="p1"
+            onRate={vi.fn()}
+            onContinue={vi.fn()}
+            readOnly
+          />
+        </MemoryRouter>
+      )
+      expect(screen.queryByRole('button', { name: /ask for the next book/i })).not.toBeInTheDocument()
+    })
+  })
+
   describe('K17 recommendations feed (ADR-016 rings 1-2)', () => {
     function renderCardWithRecommendation(
       recommendation?: {

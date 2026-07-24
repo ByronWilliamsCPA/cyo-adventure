@@ -36,6 +36,12 @@ export interface ProfileView {
   avatar: string | null
   tts_enabled: boolean
   /**
+   * Guardian-set per-child motion preference: when true, the kid surface
+   * treats this child's session as if prefers-reduced-motion were set,
+   * regardless of the device's own OS-level preference (band-tokens.css).
+   */
+  reduce_motion: boolean
+  /**
    * Whether a picker PIN is set (P6-07). Derived server-side; the stored
    * hash itself is write-only and never appears in any response.
    */
@@ -86,6 +92,7 @@ export interface ProfileCreateBody extends ProfileEnvelopeFields {
   reading_level_cap?: number
   avatar?: string | null
   tts_enabled?: boolean
+  reduce_motion?: boolean
   content_flag_caps?: ContentFlagCaps | null
   banned_themes?: string[] | null
 }
@@ -103,6 +110,7 @@ export interface ProfileUpdateBody extends ProfileEnvelopeFields {
   reading_level_cap?: number
   avatar?: string | null
   tts_enabled?: boolean
+  reduce_motion?: boolean
   /**
    * Picker PIN (P6-07): a 4-8 digit string sets or replaces it, an explicit
    * null removes it, omitted leaves it unchanged. Never echoed back.

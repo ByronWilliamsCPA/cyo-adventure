@@ -125,6 +125,9 @@ export const ProfilePickerPage = lazyWithReload('ProfilePickerPage', () =>
 export const ProfilesPage = lazyWithReload('ProfilesPage', () =>
   import('./guardian/ProfilesPage').then((m) => ({ default: m.ProfilesPage }))
 )
+export const PreviewAsChildPage = lazyWithReload('PreviewAsChildPage', () =>
+  import('./guardian/PreviewAsChildPage').then((m) => ({ default: m.PreviewAsChildPage }))
+)
 export const ConnectionsPage = lazyWithReload('ConnectionsPage', () =>
   import('./guardian/ConnectionsPage').then((m) => ({ default: m.ConnectionsPage }))
 )

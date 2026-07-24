@@ -13,6 +13,7 @@ function existingProfile(hasPin: boolean): ProfileView {
     reading_level_cap: 99,
     avatar: null,
     tts_enabled: false,
+    reduce_motion: false,
     has_pin: hasPin,
     content_flag_caps: {},
     banned_themes: [],

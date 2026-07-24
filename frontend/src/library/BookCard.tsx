@@ -23,6 +23,14 @@ export interface BookCardProps {
    * "not downloaded" tile instead of a dead link.
    */
   downloaded?: boolean
+  /**
+   * Guardian preview-as-child mode (frontend/src/guardian/PreviewAsChildPage.tsx):
+   * the cover no longer links into the real kid-token-gated Reader route (a
+   * guardian bearer is refused there, see useApi.ts's isKidTokenRoute), and
+   * rating is hidden rather than wired to a no-op, so nothing here can write
+   * data under the previewed child's identity.
+   */
+  readOnly?: boolean
   /** K6 endings tracker: this book's reading-history row, when known. Absent
    * (undefined) whenever the profile's history fetch is still loading,
    * failed, or has no row for this book yet; EndingsBadge itself also
@@ -43,6 +51,7 @@ export function BookCard({
   onRate,
   onContinue,
   downloaded = true,
+  readOnly = false,
   endings,
   recommendation,
 }: BookCardProps) {
@@ -104,7 +113,12 @@ export function BookCard({
   )
   return (
     <div className={hero ? 'book-card book-card--hero' : 'book-card'}>
-      {downloaded ? (
+      {readOnly ? (
+        <div className="book-card__link book-card__link--offline" aria-disabled="true">
+          {inner}
+          <span className="book-card__offline-note">Preview only</span>
+        </div>
+      ) : downloaded ? (
         <Link className="book-card__link" to={readTo}>
           {inner}
         </Link>
@@ -121,12 +135,14 @@ export function BookCard({
         <EndingsBadge found={endings.found} total={endings.total} />
       ) : null}
       {recommendation ? <RecommendationChip summary={recommendation} /> : null}
-      <StarRating
-        value={item.rating}
-        onRate={(value) => onRate(item.id, value)}
-        bookTitle={item.title}
-      />
-      {item.series_id !== null && onContinue ? (
+      {readOnly ? null : (
+        <StarRating
+          value={item.rating}
+          onRate={(value) => onRate(item.id, value)}
+          bookTitle={item.title}
+        />
+      )}
+      {!readOnly && item.series_id !== null && onContinue ? (
         <Button
           variant="ghost"
           aria-label={`Ask for the next book: ${item.title}`}

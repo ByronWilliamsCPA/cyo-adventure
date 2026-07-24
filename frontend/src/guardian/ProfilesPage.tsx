@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
@@ -7,6 +8,7 @@ import { LoadingStatus } from '@ds/components/LoadingStatus'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
+import { previewAsChildPath } from '../routes'
 import { makeBudgetApi, type ChildEnvelopeUsage } from './budgetApi'
 import {
   ProfileFormDialog,
@@ -131,6 +133,13 @@ export function ProfilesPage() {
                   <span className="profiles__badge">Auto-approve on</span>
                 ) : null}
               </div>
+              <Link
+                className="profiles__preview-link"
+                aria-label={`Preview as ${profile.display_name}`}
+                to={previewAsChildPath(profile.id)}
+              >
+                Preview
+              </Link>
               <Button
                 variant="ghost"
                 aria-label={`Edit ${profile.display_name}`}

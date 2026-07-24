@@ -22,6 +22,7 @@ const PROFILE_A = {
   reading_level_cap: 10,
   avatar: null,
   tts_enabled: false,
+  reduce_motion: false,
   has_pin: false,
   status: 'active' as const,
   created_at: '2026-01-01T00:00:00Z',
@@ -136,6 +137,7 @@ describe('KidsTab', () => {
       reading_level_cap: 10,
       avatar: null,
       tts_enabled: false,
+      reduce_motion: false,
       pin: '1234',
     })
     expect(onChanged).toHaveBeenCalled()
