@@ -254,14 +254,14 @@ def _build_steps(args: argparse.Namespace) -> list[ChainStep]:
     if chain_path is not None:
         # #ASSUME: security: canonicalized with .resolve() (CWE-23 hardening,
         # Snyk python/PT), but deliberately NOT contained to a fixed base:
-        # tests/unit/test_mutation_compose.py::test_cli_chain_writes_bundle
+        # tests/unit/test_skeleton_mutation_compose.py::test_cli_chain_writes_bundle
         # exercises --chain against a pytest tmp_path fixture well outside
         # the repo tree with no chdir, proving arbitrary-location paths are
         # legitimate, exercised behavior that containment would reject. No
         # privilege boundary is crossed either way: the operator invoking
         # this dev-only mutation CLI already has full filesystem access.
         # #VERIFY: any future change adding a fixed base must re-run
-        # test_mutation_compose.py first; a rejection there means real
+        # test_skeleton_mutation_compose.py first; a rejection there means real
         # behavior broke.
         return _parse_chain_file(Path(chain_path).resolve())
     op_id: str = args.op  # pyright: ignore[reportAny]
@@ -393,8 +393,8 @@ def main(argv: list[str] | None = None) -> int:
     # generation/import_cli.py::_load_blob). --out-dir is NOT .resolve()'d in
     # this flow; it is guarded separately by the pre-existing, more targeted
     # ``_refuses_under_skeletons`` denylist (design CR-1). Every one of these
-    # is exercised in tests/unit/test_mutation_acceptance.py and
-    # tests/unit/test_mutation_compose.py against pytest tmp_path fixtures
+    # is exercised in tests/unit/test_skeleton_mutation_acceptance.py and
+    # tests/unit/test_skeleton_mutation_compose.py against pytest tmp_path fixtures
     # well outside the repo tree with no chdir, proving arbitrary-location
     # paths are legitimate, exercised behavior that containment would
     # reject. No privilege boundary is crossed either way: the operator

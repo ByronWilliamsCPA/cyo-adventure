@@ -96,7 +96,7 @@ _TAU_STATE_CROSS_FRACTION = 0.5
 # floor would admit a structural or state clone, defeating the anti-clone bar
 # (design 4.6, OQ-3). A calibrated value at or below these documented minima is
 # clamped up and the anomaly is recorded, never silently shipped.
-# #VERIFY: tests/unit/test_mutation_floors.py asserts a synthetic degenerate
+# #VERIFY: tests/unit/test_skeleton_mutation_floors.py asserts a synthetic degenerate
 # distribution clamps and records the anomaly, and that the shipped baseline
 # carries no un-guarded 0 floor.
 _MIN_STRUCT_FLOOR = 0.01
