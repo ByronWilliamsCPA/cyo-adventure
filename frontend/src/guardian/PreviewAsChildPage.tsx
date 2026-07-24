@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router'
 
 import { LibraryPage } from '../library/LibraryPage'
 import { useApi } from '../hooks/useApi'
