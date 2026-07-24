@@ -123,6 +123,13 @@ The decision decomposes as follows:
 7. **Authorization stays in FastAPI.** The service connects with the service-role key;
    the `Principal` layer and IDOR suite remain the sole authority. Row Level Security
    is optional defense-in-depth later, never the primary model.
+   **Amended in part (2026-07-24):** [ADR-022](./adr-022-tiered-rls-scoping.md) revises
+   this point. The "never the primary model" clause stands (the `Principal` layer remains
+   the primary authority, and the three-ring sharing graph and admin cross-family logic
+   stay in FastAPI), but the implicit "blanket `USING(true)` indefinitely" posture does
+   not: once the ADR-021 role cutover lands, the children's-PII tables that never cross a
+   family boundary get a flat, fail-closed per-family RLS predicate for the `cyo_api` role
+   as a real defense-in-depth backstop.
 8. **Account deletion** uses the Supabase Auth admin API to remove the guardian
    identity; calling Apple's token-revocation endpoint remains our code (P7-04).
 9. **Environments and plan tiers**: local dev keeps the existing auth stub

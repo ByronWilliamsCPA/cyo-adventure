@@ -58,7 +58,7 @@ flagged in code comments but never resolved:
    cyo_adventure.generation.worker_main` is not defined in `docker-compose.yml` or
    `docker-compose.prod.yml`; the live deployment runs it as `cyo-worker` in the separate
    `ByronWilliamsCPA/homelab-infra` repository. The worker's own stranded-job reclaim sweep
-   (`_DEFAULT_STALE_AFTER`, 30 minutes) only runs *when a worker process starts* — so an
+   (`_DEFAULT_STALE_AFTER`, 30 minutes) only runs *when a worker process starts*, so an
    environment where the worker container silently isn't running has no self-healing and
    no alarm; `GenerationJob` rows sit `queued` forever with nothing surfacing that fact.
 
@@ -110,7 +110,13 @@ and a staleness check into this repository.**
    in the RLS-enable migration, so enforcement is a named grant instead of incidental table
    ownership. The existing deny-by-default posture for `anon`/`authenticated` (no
    PostgREST usage anywhere in the codebase, verified in that migration's own comment) is
-   unchanged.
+   unchanged. **Refined by [ADR-022](./adr-022-tiered-rls-scoping.md) (2026-07-24):** the
+   initial policies are blanket `USING(true)` as described here, but the children's-PII
+   tables that never legitimately cross a family boundary (Tier 1) take a flat, fail-closed
+   per-family predicate for `cyo_api` instead of `USING(true)`. `cyo_worker` keeps blanket
+   `USING(true)` on all tables, and `family_connection`/recommendation tables stay blanket
+   because they cross families by design (ADR-016). This narrowing is downstream of the
+   role cutover below (RLS is inert until the app connects as the non-owner role).
 3. **Config/code split**: `core/config.py` gains `worker_database_url` (same
    `AliasChoices`/env-prefix pattern as `database_url`), defaulting to `database_url` when
    unset so any environment that hasn't split credentials yet keeps working unchanged.
@@ -225,7 +231,9 @@ the roadmap already puts it.
 2. **`supabase/migrations/<ts>_add_service_role_policies.sql`**: `CREATE POLICY` per table
    for `cyo_api`/`cyo_worker` (e.g. `FOR ALL TO cyo_api, cyo_worker USING (true) WITH CHECK
    (true)`, matching the app-owns-authorization posture ADR-009 decision point 7 already
-   established).
+   established). The Tier 1 `cyo_api` policies are subsequently scoped per
+   [ADR-022](./adr-022-tiered-rls-scoping.md) in a separate additive migration
+   (`<ts>_scoped_rls_tier1.sql`); this migration ships the blanket baseline.
 3. **`core/config.py`**: add `worker_database_url` (defaults to `database_url`),
    `database_pool_size`, `database_max_overflow`.
 4. **`core/database.py`**: add `get_worker_engine()` / `get_worker_session()`; pass the new
@@ -242,7 +250,7 @@ the roadmap already puts it.
    point at the new in-repo service and staleness check.
 9. **Passwords**: set once per environment (staging, production) via the Supabase dashboard
    SQL editor or CLI `--var` substitution, stored in the existing GitHub Actions
-   secrets / `homelab-infra` secret store — never in a migration file or this repo's `.env*`
+   secrets / `homelab-infra` secret store, never in a migration file or this repo's `.env*`
    examples beyond a placeholder.
 
 ### Testing Strategy
@@ -250,7 +258,7 @@ the roadmap already puts it.
 - Unit: extend `tests/unit/test_database.py` to cover the second engine/session factory and
   pool-setting plumbing.
 - Integration: a new test proving `cyo_api`/`cyo_worker` can perform the exact CRUD the
-  pipeline needs under RLS, and that `anon`/`authenticated` remain denied — the regression
+  pipeline needs under RLS, and that `anon`/`authenticated` remain denied, the regression
   guard against the "policies missing" landmine this ADR closes.
 - CI: `supabase-ci.yml` already applies the full migration chain to a fresh local stack on
   every PR touching `supabase/`, catching ordering/syntax errors in the new migrations.
@@ -273,7 +281,7 @@ the roadmap already puts it.
 
 ### Review Schedule
 
-- Initial: M4.1 (R1-alpha sign-off) — this affects whether the core loop is trustworthy in
+- Initial: M4.1 (R1-alpha sign-off): this affects whether the core loop is trustworthy in
   the environment M4.1 is signing off on.
 - Ongoing: revisit at Phase 9 start, when P9-03 makes the final hosted-infra call; the
   role/RLS model here should persist, just reparented onto whatever container host and

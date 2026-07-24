@@ -45,6 +45,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-018](./adr-018-childrens-privacy-compliance.md) | Children's-privacy compliance architecture (COPPA, GDPR-K, AADC) | Proposed | 2026-07-16 |
 | [ADR-019](./adr-019-parameterized-skeletons-theme-contracts.md) | Parameterized skeletons and machine-readable theme contracts | Accepted | 2026-07-19 |
 | [ADR-021](./adr-021-service-account-rls-and-worker-deployment.md) | Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment | Proposed | 2026-07-20 |
+| [ADR-022](./adr-022-tiered-rls-scoping.md) | Tiered RLS scoping (flat per-family enforcement on the high-sensitivity tables) | Proposed | 2026-07-24 |
 
 ## Creating ADRs
 

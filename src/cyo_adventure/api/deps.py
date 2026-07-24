@@ -32,7 +32,7 @@ from cyo_adventure.core.child_session import (
     verify_child_session_token,
 )
 from cyo_adventure.core.config import settings
-from cyo_adventure.core.database import get_session
+from cyo_adventure.core.database import apply_family_rls_context, get_session
 from cyo_adventure.core.device_grant import (
     DEVICE_GRANT_AUDIENCE,
     verify_device_grant_token,
@@ -478,43 +478,59 @@ async def require_principal(
     # token routed here and a device token routed to the child branch.
     aud = unverified_audience(token)
     if aud == CHILD_SESSION_AUDIENCE:
-        return _child_principal(token)
-    if aud == DEVICE_GRANT_AUDIENCE:
-        return await _device_principal(session, token)
-    subject = await _resolve_subject(token)
-    user = await session.scalar(select(User).where(User.authn_subject == subject))
-    if user is None:
-        msg = "unknown subject"
-        raise AuthenticationError(msg)
-    # #CRITICAL: security: a 'pending' row's authn_subject is a synthetic
-    # placeholder (api/admin_users.py) that no real verified subject can ever
-    # match, so this branch exists purely as defense in depth; 'deactivated'
-    # is the reachable case (WS-J admin user management), and it MUST be
-    # rejected with the same message as an unknown subject so status is never
-    # a distinguishable oracle for a caller probing authn_subject validity.
-    # #VERIFY: tests/integration/test_admin_users_api.py::
-    # test_deactivated_guardian_cannot_authenticate.
-    if user.status != "active":
-        msg = "unknown subject"
-        raise AuthenticationError(msg)
-    profile_ids = await _resolve_profiles(session, user)
-    # #CRITICAL: security: coerce the ORM role string to the closed Role enum at
-    # the auth boundary; an unmodeled DB role raises ValueError -> 500 rather
-    # than producing a principal with an unrecognized (and unauthorized) role.
-    # #VERIFY: the ck_user_role CHECK constraint keeps the column within the set,
-    # so this coercion only fails on a corrupted or hand-edited row.
-    return Principal(
-        subject=subject,
-        user_id=user.id,
-        role=Role(user.role),
-        family_id=user.family_id,
-        profile_ids=profile_ids,
-        # The stored capability flag; __post_init__ additionally derives it
-        # for the admin base role, so a legacy (role='admin', is_admin=false)
-        # row keeps its capability without a data backfill. bool() coerces an
-        # unflushed row's None (ORM column defaults apply at flush) to False.
-        is_admin=bool(user.is_admin),
+        principal = _child_principal(token)
+    elif aud == DEVICE_GRANT_AUDIENCE:
+        principal = await _device_principal(session, token)
+    else:
+        subject = await _resolve_subject(token)
+        user = await session.scalar(select(User).where(User.authn_subject == subject))
+        if user is None:
+            msg = "unknown subject"
+            raise AuthenticationError(msg)
+        # #CRITICAL: security: a 'pending' row's authn_subject is a synthetic
+        # placeholder (api/admin_users.py) that no real verified subject can ever
+        # match, so this branch exists purely as defense in depth; 'deactivated'
+        # is the reachable case (WS-J admin user management), and it MUST be
+        # rejected with the same message as an unknown subject so status is never
+        # a distinguishable oracle for a caller probing authn_subject validity.
+        # #VERIFY: tests/integration/test_admin_users_api.py::
+        # test_deactivated_guardian_cannot_authenticate.
+        if user.status != "active":
+            msg = "unknown subject"
+            raise AuthenticationError(msg)
+        profile_ids = await _resolve_profiles(session, user)
+        # #CRITICAL: security: coerce the ORM role string to the closed Role enum
+        # at the auth boundary; an unmodeled DB role raises ValueError -> 500
+        # rather than producing a principal with an unrecognized (and
+        # unauthorized) role.
+        # #VERIFY: the ck_user_role CHECK constraint keeps the column within the
+        # set, so this coercion only fails on a corrupted or hand-edited row.
+        principal = Principal(
+            subject=subject,
+            user_id=user.id,
+            role=Role(user.role),
+            family_id=user.family_id,
+            profile_ids=profile_ids,
+            # The stored capability flag; __post_init__ additionally derives it
+            # for the admin base role, so a legacy (role='admin', is_admin=false)
+            # row keeps its capability without a data backfill. bool() coerces an
+            # unflushed row's None (ORM column defaults apply at flush) to False.
+            is_admin=bool(user.is_admin),
+        )
+    # #CRITICAL: security: ADR-022 Tier 1 RLS context. Set the request-scoped
+    # app.family_id / app.is_admin GUCs from the VERIFIED principal (never from
+    # request input) on the same session the route will use, so the Tier 1
+    # family_scoped policies enforce per-family isolation post-cutover. Every
+    # principal branch above (guardian, admin, child, device) carries a
+    # family_id, so this one choke point covers them all; the guardian/admin
+    # user row was read just above as cyo_api under the Tier 2 blanket "user"
+    # policy, before any context is set, so there is no chicken-and-egg. A
+    # no-op pre-cutover (owner bypasses RLS); load-bearing and fail-closed after.
+    # #VERIFY: tests/integration/test_rls_tier1_enforcement.py.
+    await apply_family_rls_context(
+        session, family_id=principal.family_id, is_admin=principal.is_admin
     )
+    return principal
 
 
 def _child_principal(token: str) -> Principal:

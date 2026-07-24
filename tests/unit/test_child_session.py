@@ -303,15 +303,23 @@ def test_unverified_audience_none_for_opaque_token(opaque: str) -> None:
 
 
 class _ExplodingSession:
-    """A session double whose query methods must never be called.
+    """A session double whose resolution query (scalar) must never be called.
 
-    The child branch of require_principal is DB-free; if it ever queried, this
-    surfaces the regression instead of silently passing.
+    The child branch of require_principal resolves its principal WITHOUT a
+    database lookup; if scalar() ever fired, this surfaces the regression
+    instead of silently passing. execute() is exempt: the shared
+    require_principal tail issues one set_config round-trip
+    (apply_family_rls_context) on every successful branch, including CHILD, so
+    execute() is a benign no-op rather than a tripwire.
     """
 
     async def scalar(self, _stmt: object) -> object:
         msg = "child branch must not touch the database"
         raise AssertionError(msg)
+
+    async def execute(self, _stmt: object, _params: object = None) -> None:
+        """No-op: the RLS-context tail legitimately runs on the child path."""
+        return
 
 
 @pytest.mark.unit

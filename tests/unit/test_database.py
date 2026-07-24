@@ -499,3 +499,68 @@ class TestEngineWiring:
             assert str(db_module.get_worker_engine().url) == str(
                 db_module.get_engine().url
             )
+
+
+class TestApplyFamilyRlsContext:
+    """Tests for apply_family_rls_context (ADR-022 Tier 1 GUC derivation).
+
+    Unit-level guard on the values the helper derives from the Principal:
+    integration-level enforcement lives in test_rls_tier1_enforcement.py.
+    No live database; the session is a mock and only the emitted SQL text and
+    bind parameters are asserted.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_derives_family_id_and_is_admin_false_from_principal(self) -> None:
+        """A non-admin principal yields str(family_id) and is_admin='false'."""
+        import uuid
+        from unittest.mock import AsyncMock
+
+        from cyo_adventure.core.database import apply_family_rls_context
+
+        session = AsyncMock()
+        family_id = uuid.UUID("11111111-2222-3333-4444-555555555555")
+
+        await apply_family_rls_context(session, family_id=family_id, is_admin=False)
+
+        session.execute.assert_awaited_once()
+        _sql, params = session.execute.await_args.args
+        assert params == {
+            "family_id": "11111111-2222-3333-4444-555555555555",
+            "is_admin": "false",
+        }
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_admin_principal_sets_is_admin_true(self) -> None:
+        """An admin principal maps the bool to the string escape-hatch 'true'."""
+        import uuid
+        from unittest.mock import AsyncMock
+
+        from cyo_adventure.core.database import apply_family_rls_context
+
+        session = AsyncMock()
+
+        await apply_family_rls_context(session, family_id=uuid.uuid4(), is_admin=True)
+
+        _sql, params = session.execute.await_args.args
+        assert params["is_admin"] == "true"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_uses_transaction_local_set_config(self) -> None:
+        """The emitted SQL sets both GUCs is_local (the trailing ``, true``),
+        the pooler-safe invariant that prevents cross-request bleed."""
+        import uuid
+        from unittest.mock import AsyncMock
+
+        from cyo_adventure.core.database import apply_family_rls_context
+
+        session = AsyncMock()
+
+        await apply_family_rls_context(session, family_id=uuid.uuid4(), is_admin=False)
+
+        sql_text = str(session.execute.await_args.args[0])
+        assert "set_config('app.family_id', :family_id, true)" in sql_text
+        assert "set_config('app.is_admin', :is_admin, true)" in sql_text

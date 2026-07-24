@@ -230,6 +230,19 @@ async def sessions(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
     return async_sessionmaker(engine, expire_on_commit=False)
 
 
+# ADR-021/ADR-022 RLS-enforcement harness note.
+#
+# The fixtures above connect as the container's owner superuser, which holds
+# implicit BYPASSRLS: no RLS policy can ever be seen filtering rows through
+# them, so the IDOR sweeps prove only the app-layer authz, never the database
+# floor. The RLS-enforcement tests (``test_rls_service_roles.py``,
+# ``test_rls_tier1_enforcement.py``) instead build a fully migrated database
+# and connect as the least-privilege ``cyo_api`` role via
+# ``_migration_utils.migrate_and_connect_as`` -- policies live in
+# ``supabase/migrations``, never in ``Base.metadata``, so only a migrated
+# schema (not the ORM ``create_all`` fixtures here) can exercise them.
+
+
 def _reset_rate_limiter() -> None:
     """Clear the singleton app's in-memory rate-limiter bucket.
 
