@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.29.2] - 2026-07-24
+
+### Bug Fixes
+
+- **scripts**: Harden CLI path handling and suppress Snyk false positives
+  ([#377](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/377),
+  [`9bbeb91`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/9bbeb914eab9a97b2b320ab732728f576b27b450))
+
+
 ## [0.29.1] - 2026-07-24
 
 ### Bug Fixes
@@ -2561,6 +2570,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.29.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.1...v0.29.2
 [0.29.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.29.0...v0.29.1
 [0.29.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.27.2...v0.28.0
