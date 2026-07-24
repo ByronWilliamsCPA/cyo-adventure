@@ -33,7 +33,7 @@ from cyo_adventure.generation.binding import (
 )
 from cyo_adventure.validator.slots import validate_slot_bindings
 
-# ASSUME: security: bind_theme.py is invoked by the cyo-author LLM skill
+# #ASSUME: security: bind_theme.py is invoked by the cyo-author LLM skill
 # (.claude/skills/cyo-author/SKILL.md) as well as directly by a human curating
 # a migration sample fill (module docstring above); a fixed containment base
 # (repo root or cwd, the generation/import_cli.py::_load_blob idiom) is
@@ -43,12 +43,12 @@ from cyo_adventure.validator.slots import validate_slot_bindings
 # proving arbitrary-location paths are legitimate, exercised behavior that
 # containment would reject. No privilege boundary is crossed either way: the
 # operator (or an LLM agent acting on the operator's own machine) already has
-# full filesystem access, per the path-traversal verification report
-# (scratchpad/pt-verification-report.md). `.resolve()` is applied to every
-# path arg in main() regardless, so at least symlinks and `..`/`.` segments
-# are canonicalized before any read or write (the part of the CWE-23 gap
-# that IS closeable here without breaking real usage).
-# VERIFY: any future change reintroducing a fixed base must re-run
+# full filesystem access. `.resolve()` is applied to every path arg in
+# main() regardless, so symlinks and `..`/`.` segments are normalized before
+# any read or write; this canonicalization removes path ambiguity but does
+# not by itself constrain where a path resolves to (that is the deliberate
+# no-containment tradeoff above), so it is not on its own a CWE-23 defense.
+# #VERIFY: any future change reintroducing a fixed base must re-run
 # test_bind_theme.py first; a rejection there means real behavior broke.
 
 

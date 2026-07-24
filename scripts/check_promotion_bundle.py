@@ -379,7 +379,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     skeletons_root = Path(cast("str", args.skeletons_root)).resolve()
 
-    # ASSUME: security: every positional path, --bundle directory, and
+    # #ASSUME: security: every positional path, --bundle directory, and
     # --skeletons-root is canonicalized with .resolve() (CWE-23 hardening,
     # Snyk python/PT), but deliberately NOT contained to a fixed base (the
     # generation/import_cli.py::_load_blob idiom): tests/unit/
@@ -388,9 +388,8 @@ def main(argv: list[str] | None = None) -> int:
     # proving arbitrary-location paths are legitimate, exercised behavior
     # that containment would reject. No privilege boundary is crossed
     # either way: the operator (or CI job) invoking this dev-only prover
-    # already has full filesystem access, per the path-traversal
-    # verification report (scratchpad/pt-verification-report.md).
-    # VERIFY: any future change adding a fixed base must re-run
+    # already has full filesystem access.
+    # #VERIFY: any future change adding a fixed base must re-run
     # test_ws8_promotion.py first; a rejection there means real behavior
     # broke.
     shells, errors = _shells_from_paths([Path(p).resolve() for p in raw_paths])

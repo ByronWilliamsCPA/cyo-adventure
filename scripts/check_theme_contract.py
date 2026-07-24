@@ -192,7 +192,7 @@ def main(argv: list[str] | None = None) -> int:
     # argparse.Namespace attribute access is untyped (Any) in the stdlib
     # stubs regardless of the parser's declared arguments; this is the
     # standard, unavoidable boundary, not a loosened check on our own code.
-    # ASSUME: security: skeleton/--fingerprint-manifest are canonicalized
+    # #ASSUME: security: skeleton/--fingerprint-manifest are canonicalized
     # with .resolve() (CWE-23 hardening, Snyk python/PT), but deliberately
     # NOT contained to a fixed base (the generation/import_cli.py::
     # _load_blob idiom): tests/unit/test_check_theme_contract.py exercises
@@ -203,9 +203,8 @@ def main(argv: list[str] | None = None) -> int:
     # with paths under their own worktrees/out dirs, another reason a fixed
     # base would be wrong here. No privilege boundary is crossed either way:
     # the operator (or the in-process caller acting on the operator's own
-    # machine) already has full filesystem access, per the path-traversal
-    # verification report (scratchpad/pt-verification-report.md).
-    # VERIFY: any future change adding a fixed base must re-run
+    # machine) already has full filesystem access.
+    # #VERIFY: any future change adding a fixed base must re-run
     # test_check_theme_contract.py first; a rejection there means real
     # behavior broke.
     skeleton_path = Path(args.skeleton).resolve()  # pyright: ignore[reportAny]

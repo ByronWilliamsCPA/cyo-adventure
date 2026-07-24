@@ -539,7 +539,7 @@ def main() -> None:
     args = _parse_args()
     # argparse attributes are typed Any by the stdlib stubs; narrow them here.
     provider_name: str = str(args.provider)  # pyright: ignore[reportAny]
-    # ASSUME: security: briefs/out/env-file are canonicalized with .resolve()
+    # #ASSUME: security: briefs/out/env-file are canonicalized with .resolve()
     # (CWE-23 hardening, Snyk python/PT), but deliberately NOT contained to a
     # fixed base (the generation/import_cli.py::_load_blob idiom): the
     # module docstring's own third usage example writes an arbitrary
@@ -548,8 +548,10 @@ def main() -> None:
     # that an operator-chosen location anywhere on disk is intended, not
     # just a repo-relative one. No privilege boundary is crossed either way:
     # the operator running this dev-only harness already has full
-    # filesystem access, per the path-traversal verification report
-    # (scratchpad/pt-verification-report.md).
+    # filesystem access.
+    # #VERIFY: any future change adding a fixed containment base must keep the
+    # module docstring's out-of-repo `<name>.json` write example working; a
+    # rejection of that documented path means real behavior broke.
     briefs_path: Path = Path(str(args.briefs)).resolve()  # pyright: ignore[reportAny]
     threshold_val: float = float(args.threshold)  # pyright: ignore[reportAny]
     model_override: str | None = (

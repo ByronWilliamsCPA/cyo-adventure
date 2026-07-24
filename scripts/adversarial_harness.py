@@ -528,14 +528,14 @@ def _has_misses(report: CorpusReport) -> bool:
     )
 
 
-# ASSUME: security: --corpus/--out/--env-file are documented (module
+# #ASSUME: security: --corpus/--out/--env-file are documented (module
 # docstring above, docs/planning/safety/adversarial-safety-evaluation.md) as
 # always repo-relative (docs/planning/safety/*.json, .env), and this script
 # has no test that exercises them against an out-of-repo tmp_path fixture
 # (test_adversarial_harness.py only covers the pure scoring core); containing
 # them to the repo root closes the CWE-23 gap (Snyk python/PT) without
 # rejecting any documented or tested invocation.
-# VERIFY: if a future evaluation needs a corpus or output location outside
+# #VERIFY: if a future evaluation needs a corpus or output location outside
 # the repo tree, this containment must be relaxed deliberately (and the
 # rationale above updated), not silently bypassed.
 def _resolve_within(path_arg: Path, *, label: str) -> Path:

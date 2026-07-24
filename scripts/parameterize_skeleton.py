@@ -471,7 +471,7 @@ def main(argv: list[str] | None = None) -> int:
     # argparse.Namespace attribute access is untyped (Any) in the stdlib
     # stubs regardless of the parser's declared arguments; this is the
     # standard, unavoidable boundary, not a loosened check on our own code.
-    # ASSUME: security: skeleton/plan/out are canonicalized with .resolve()
+    # #ASSUME: security: skeleton/plan/out are canonicalized with .resolve()
     # (CWE-23 hardening, Snyk python/PT), but deliberately NOT contained to a
     # fixed base (the generation/import_cli.py::_load_blob idiom):
     # tests/unit/test_parameterize_skeleton.py exercises all three against
@@ -480,9 +480,8 @@ def main(argv: list[str] | None = None) -> int:
     # skeleton, the documented in-place migration mode) are legitimate,
     # exercised behavior that containment would reject. No privilege boundary
     # is crossed either way: the operator invoking this dev-only transform
-    # already has full filesystem access, per the path-traversal
-    # verification report (scratchpad/pt-verification-report.md).
-    # VERIFY: any future change adding a fixed base must re-run
+    # already has full filesystem access.
+    # #VERIFY: any future change adding a fixed base must re-run
     # test_parameterize_skeleton.py first; a rejection there means real
     # behavior broke.
     skeleton_path = Path(args.skeleton).resolve()  # pyright: ignore[reportAny]

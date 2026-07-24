@@ -21,14 +21,14 @@ from cyo_adventure.validator.gate import run_gate
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
-# ASSUME: security: the only documented invocation shape (docs/planning/
+# #ASSUME: security: the only documented invocation shape (docs/planning/
 # story-inventory-initial-run.md, ws0-phase2-harness-design.md,
 # ws2-parameterized-catalog-design.md) is a skeleton or filled-story JSON
 # living under the repo tree (skeletons/, an authoring working dir), and
 # this script has no test suite that exercises it against an out-of-repo
 # tmp_path fixture; containing it to the repo root closes the CWE-23 gap
 # (Snyk python/PT) without rejecting any documented or tested invocation.
-# VERIFY: if a future authoring workflow needs a story file outside the
+# #VERIFY: if a future authoring workflow needs a story file outside the
 # repo tree, this containment must be relaxed deliberately (and the
 # rationale above updated), not silently bypassed.
 def _resolve_within_repo(path_arg: str) -> Path:

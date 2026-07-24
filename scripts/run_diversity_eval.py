@@ -664,7 +664,7 @@ def main(argv: list[str] | None = None) -> int:
     except SystemExit as exc:
         return exc.code if isinstance(exc.code, int) else 2
 
-    # ASSUME: security: --panel/--baseline/--judge-cache/--json are
+    # #ASSUME: security: --panel/--baseline/--judge-cache/--json are
     # canonicalized with .resolve() (CWE-23 hardening, Snyk python/PT), but
     # deliberately NOT contained to a fixed base (the
     # generation/import_cli.py::_load_blob idiom):
@@ -675,9 +675,8 @@ def main(argv: list[str] | None = None) -> int:
     # passes --check with no path args, so the repo-relative defaults are
     # the only path this gate needs to keep working there. No privilege
     # boundary is crossed either way: the operator invoking this dev-only
-    # harness already has full filesystem access, per the path-traversal
-    # verification report (scratchpad/pt-verification-report.md).
-    # VERIFY: any future change adding a fixed base must re-run
+    # harness already has full filesystem access.
+    # #VERIFY: any future change adding a fixed base must re-run
     # test_diversity_panel.py first; a rejection there means real behavior
     # broke.
     repo_root = Path.cwd()

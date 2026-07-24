@@ -706,7 +706,7 @@ def main(argv: list[str] | None = None) -> int:
 
     as_of_label = str(args.as_of)
     out_arg = args.out
-    # ASSUME: security: --out is canonicalized with .resolve() (CWE-23
+    # #ASSUME: security: --out is canonicalized with .resolve() (CWE-23
     # hardening, Snyk python/PT), but deliberately NOT contained to a fixed
     # base (the generation/import_cli.py::_load_blob idiom):
     # tests/unit/test_flywheel_report.py::test_main_writes_only_the_out_file
@@ -715,9 +715,8 @@ def main(argv: list[str] | None = None) -> int:
     # legitimate, exercised behavior that containment would reject. No
     # privilege boundary is crossed either way: the operator (or scheduled
     # job) invoking this dev-only reporter already has full filesystem
-    # access, per the path-traversal verification report
-    # (scratchpad/pt-verification-report.md).
-    # VERIFY: any future change adding a fixed base must re-run
+    # access.
+    # #VERIFY: any future change adding a fixed base must re-run
     # test_flywheel_report.py first; a rejection there means real behavior
     # broke.
     out_path = (

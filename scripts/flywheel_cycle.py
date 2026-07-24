@@ -453,14 +453,14 @@ def run_cycle(
     return lines
 
 
-# ASSUME: security: --out-dir/--skeletons-root default to repo-relative
+# #ASSUME: security: --out-dir/--skeletons-root default to repo-relative
 # paths (out/mutations, ./skeletons) and no test in test_flywheel_cycle.py
 # exercises main()'s own argparse against an out-of-repo tmp_path fixture
 # (the tests that use tmp_path call the injected cell_runner/pr_preparer
 # helpers directly, bypassing main()'s parsing); containing them to the
 # repo root closes the CWE-23 gap (Snyk python/PT) without rejecting any
 # documented or tested invocation.
-# VERIFY: if a future cycle needs a bundle root or catalog outside the repo
+# #VERIFY: if a future cycle needs a bundle root or catalog outside the repo
 # tree, this containment must be relaxed deliberately (and the rationale
 # above updated), not silently bypassed.
 def _resolve_within_repo(path_arg: str, *, label: str) -> Path:
