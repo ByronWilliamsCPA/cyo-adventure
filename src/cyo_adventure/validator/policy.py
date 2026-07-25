@@ -18,13 +18,20 @@ import re
 
 import networkx as nx
 
-from cyo_adventure.storybook.models import EndingKind, Storybook, level_rank
+from cyo_adventure.storybook.models import (
+    EndingKind,
+    NarrativeStyle,
+    Storybook,
+    Valence,
+    level_rank,
+)
 from cyo_adventure.validator.band_profile import (
     BandProfile,
     breadth_scaled_floors,
     is_offered_cell,
     min_complete_floor,
     profile_for,
+    reading_pace_wpm,
     words_per_node_profile,
 )
 from cyo_adventure.validator.report import (
@@ -101,6 +108,8 @@ def validate_policy(story: Storybook) -> ValidationReport:
     _check_topology(story, report)
     _check_words_per_node(story, report)
     _check_min_to_complete(story, report)
+    _check_declared_read_time(story, report)
+    _check_ending_mix(story, report)
     _check_off_matrix_cell(story, report)
     return report
 
@@ -400,6 +409,184 @@ def _check_off_matrix_cell(story: Storybook, report: ValidationReport) -> None:
                     f"PL-21 scale: ({band}, {length.value}, {style}) is not an "
                     f"offered story-scale cell in story '{story.id}'; declare an "
                     f"offered cell or remove the length"
+                ),
+            )
+        )
+
+
+# How far a declared estimated_minutes may sit from the derived fastest-finish
+# clock before PL-23 warns. Generous: a deliberately rounded or padded editorial
+# figure is fine, a 3-6x mismatch is a broken promise to the reader.
+_READ_TIME_TOLERANCE = 0.25
+
+# Below this many words on the fastest-finish path the derived clock is noise: at
+# any band anchor it rounds to a minute or two, so a percentage drift against a
+# declared integer is meaningless. Mirrors RL-13's _MIN_WORDS_FOR_FK floor, which
+# exists for the same reason at passage scale.
+_MIN_PATH_WORDS_FOR_CLOCK = 200
+
+# Share of endings one kind may occupy before PL-24 warns. A gamebook is
+# deliberately "few wins and many fails" (ADR-011 section 5), so the bar is
+# loose; it exists so the number becomes visible to a reviewer instead of being
+# an unexamined consequence of how many failure leaves the author happened to
+# write.
+_ENDING_KIND_SHARE_CEILING = 0.60
+
+# The winnability floor is style-aware, because a single share threshold is not a
+# meaningful measure across both styles. Calibrated against all 23 committed
+# fills: every gamebook sits at 2.1-4.8% positive-valence endings and every prose
+# story at 15.2-70.0%, with no overlap. That is not nine defective gamebooks, it
+# is ADR-011 section 5's declared "few wins and many fails" shape, whose
+# denominator is inflated by failure leaves on purpose. So a share floor would
+# flag an entire style and signal nothing.
+#
+# Prose keeps a share floor. Gamebooks get an ABSOLUTE floor on distinct winnable
+# endings instead, which catches the real defect (a large branching book with one
+# or no way to win) without punishing the style. Every catalog gamebook currently
+# has 5, so the floor is set below that and the rule is exercised by unit test
+# rather than by the corpus.
+_POSITIVE_VALENCE_SHARE_FLOOR_PROSE = 0.10
+_POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK = 3
+
+
+def _words_on_shortest_satisfying_path(story: Storybook) -> int | None:
+    """Return the word count on the fewest-node satisfying path, or None.
+
+    Reuses the same satisfying-ending definition and graph as PL-20, so the two
+    rules can never disagree about which path is "the fastest finish".
+
+    Args:
+        story: The parsed story.
+
+    Returns:
+        int | None: Total words on that path, or ``None`` when no satisfying
+            ending is reachable.
+    """
+    satisfying = {
+        node.id
+        for node in story.nodes
+        if node.ending is not None and node.ending.kind in _SATISFYING_KINDS
+    }
+    if not satisfying:
+        return None
+    graph = _build_graph(story)
+    bodies = {node.id: node.body for node in story.nodes}
+    best: int | None = None
+    best_words = 0
+    for target in satisfying:
+        if target not in graph or story.start_node not in graph:
+            continue
+        if not nx.has_path(graph, story.start_node, target):
+            continue
+        path = list(nx.shortest_path(graph, story.start_node, target))
+        if best is None or len(path) < best:
+            best = len(path)
+            best_words = sum(node_word_count(bodies.get(nid, "")) for nid in path)
+    return best_words if best is not None else None
+
+
+def _check_declared_read_time(story: Storybook, report: ValidationReport) -> None:
+    """PL-23: declared ``estimated_minutes`` must match the derived clock.
+
+    ADR-011 section 4 defines ``estimated_minutes`` as the **fastest-finish**
+    clock: words on the shortest satisfying path divided by the band's pace
+    anchor. Nothing validated it, so on any hand-authored or imported story the
+    field was whatever the author typed, and it is the figure a child sees when
+    choosing a book. Advisory, because a rounded or deliberately padded editorial
+    number is a legitimate choice; a large mismatch is not.
+    """
+    words = _words_on_shortest_satisfying_path(story)
+    if words is None or words < _MIN_PATH_WORDS_FOR_CLOCK:
+        return
+    derived = max(1, round(words / reading_pace_wpm(story.metadata.age_band.value)))
+    declared = story.metadata.estimated_minutes
+    if declared <= 0:
+        return
+    drift = abs(declared - derived) / derived
+    if drift <= _READ_TIME_TOLERANCE:
+        return
+    report.add(
+        ValidationFinding(
+            rule_id="PL-23",
+            severity=Severity.WARNING,
+            story_id=story.id,
+            message=(
+                f"PL-23 clock: declared estimated_minutes {declared} differs from the "
+                f"derived fastest-finish clock {derived} min ({words} words on the "
+                f"shortest satisfying path at "
+                f"{reading_pace_wpm(story.metadata.age_band.value)} wpm) by "
+                f"{drift:.0%} in story '{story.id}' (advisory only)"
+            ),
+        )
+    )
+
+
+def _check_ending_mix(story: Storybook, report: ValidationReport) -> None:
+    """PL-24: no single ending kind may dominate the story's ending mix.
+
+    PL-15 forbids specific kinds per band and PL-17 enforces an ending count, but
+    nothing looked at the *mix*, so a 746-node gamebook that was 51% death
+    endings gated clean and a 95%-death one would too. Advisory: at 16+ "few wins
+    and many fails" is the declared intent, so this reports a shape a reviewer
+    should look at rather than a rule violation.
+    """
+    kinds = [node.ending.kind for node in story.nodes if node.ending is not None]
+    total = len(kinds)
+    if total == 0:
+        return
+    counts: dict[EndingKind, int] = {}
+    for kind in kinds:
+        counts[kind] = counts.get(kind, 0) + 1
+    dominant, count = max(counts.items(), key=lambda item: item[1])
+    share = count / total
+    if share > _ENDING_KIND_SHARE_CEILING:
+        report.add(
+            ValidationFinding(
+                rule_id="PL-24",
+                severity=Severity.WARNING,
+                story_id=story.id,
+                message=(
+                    f"PL-24 mix: ending kind '{dominant.value}' is {count} of {total} "
+                    f"endings ({share:.0%}), above the "
+                    f"{_ENDING_KIND_SHARE_CEILING:.0%} share ceiling in story "
+                    f"'{story.id}' (advisory only)"
+                ),
+            )
+        )
+
+    positive = sum(
+        1
+        for node in story.nodes
+        if node.ending is not None and node.ending.valence is Valence.POSITIVE
+    )
+    if story.metadata.narrative_style is NarrativeStyle.GAMEBOOK:
+        if positive < _POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK:
+            report.add(
+                ValidationFinding(
+                    rule_id="PL-24",
+                    severity=Severity.WARNING,
+                    story_id=story.id,
+                    message=(
+                        f"PL-24 mix: only {positive} positive-valence ending(s) in "
+                        f"{total} in story '{story.id}', below the gamebook floor of "
+                        f"{_POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK} distinct winnable "
+                        f"endings (advisory only)"
+                    ),
+                )
+            )
+        return
+    positive_share = positive / total
+    if positive_share < _POSITIVE_VALENCE_SHARE_FLOOR_PROSE:
+        report.add(
+            ValidationFinding(
+                rule_id="PL-24",
+                severity=Severity.WARNING,
+                story_id=story.id,
+                message=(
+                    f"PL-24 mix: only {positive} of {total} endings "
+                    f"({positive_share:.1%}) are positive-valence, below the prose "
+                    f"floor of {_POSITIVE_VALENCE_SHARE_FLOOR_PROSE:.0%} in story "
+                    f"'{story.id}' (advisory only)"
                 ),
             )
         )

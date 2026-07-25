@@ -58,6 +58,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal
 
+import anyio
 import httpx
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import select
@@ -393,7 +394,11 @@ async def _rescreen_one(
         # returns a blocked report instead of raising), so this call cannot
         # itself throw for corrupted content -- it will simply flag it.
         # #VERIFY: tests/unit/test_rescreen_unit.py::test_corrupted_blob_flags_via_gate.
-        gate_result = run_gate(version_row.blob)
+        # #CRITICAL: timing: the sweep runs run_gate per book back to back with
+        # no yield, so a multi-book rescreen blocked the loop for seconds at a
+        # time (AL-035).
+        # #VERIFY: rescreen tests; the gate is pure and session-free.
+        gate_result = await anyio.to_thread.run_sync(run_gate, version_row.blob)
         reasons = _gate_reasons(gate_result) if gate_result.blocked else []
 
         # The parsed model is needed for node text (classifiers) and the age

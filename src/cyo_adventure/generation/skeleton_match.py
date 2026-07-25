@@ -168,9 +168,41 @@ def skeleton_matches_cell(
     """
     if metadata.age_band != band:
         return False
+    if is_continuation_skeleton(metadata):
+        return False
     if metadata.length is not None and metadata.length != length:
         return False
     return band not in _STYLE_AWARE_BANDS or metadata.narrative_style == style
+
+
+def is_continuation_skeleton(metadata: StoryMetadata) -> bool:
+    """Return whether a skeleton is a mid-series book rather than an entry point.
+
+    A continuation book opens on state it did not earn: the Wyrmreach book 2
+    skeleton declares ``iron_key`` and ``knows_compact`` already true and
+    ``renown`` already at 2, and its opening beats name the artifact and the
+    conspiracy from book 1. Drawn for an ordinary themed request it delivers a
+    protagonist who owns things from a story the reader has never seen, and the
+    fill has to render those beats against an unrelated theme, so the Stage 1
+    fidelity check ends up fighting the skeleton instead of checking it.
+
+    Book 1 of a series stays selectable: it is a valid standalone entry point,
+    and its continuations are reached through the series flow
+    (``generation/series_link.py``), not through cell matching.
+
+    Args:
+        metadata: The skeleton's typed metadata.
+
+    Returns:
+        bool: True when the skeleton declares a series ``book_index`` above 1.
+    """
+    # #CRITICAL: data-integrity: without this, roughly 40% of
+    # (16+, medium, gamebook) requests drew a Wyrmreach book and about 20% drew
+    # book 2 specifically, pre-seeded with a previous book's outcome (AL-045).
+    # #VERIFY: test_continuation_book_is_not_a_cell_candidate and
+    # test_series_first_book_is_still_a_cell_candidate.
+    series = metadata.series
+    return series is not None and series.book_index > 1
 
 
 def candidates_for_cell(band: str, length: str, style: str) -> list[str]:

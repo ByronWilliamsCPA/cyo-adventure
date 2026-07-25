@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import random
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 import pytest
 
@@ -13,13 +13,11 @@ from cyo_adventure.generation import skeleton_match
 from cyo_adventure.generation.skeleton_match import (
     candidates_for_cell,
     find_skeleton_metadata,
+    is_continuation_skeleton,
     resolve_skeleton_path,
     skeleton_matches_cell,
 )
 from cyo_adventure.storybook.models import AgeBand, NarrativeStyle, StoryMetadata
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 def test_candidates_for_cell_matches_real_library_cell() -> None:
@@ -528,3 +526,80 @@ def test_select_skeleton_for_cell_similar_usage_all_saturated_still_picks() -> N
         candidates, recent_usage, random.Random(0), similar_usage=similar_usage
     )
     assert selection.slug in candidates
+
+
+# ---------------------------------------------------------------------------
+# Continuation books are not standalone candidates (AL-045)
+# ---------------------------------------------------------------------------
+
+
+def _series_metadata(book_index: int | None) -> StoryMetadata:
+    """Build 16+ gamebook metadata, optionally declaring a series position."""
+    payload: dict[str, object] = {
+        "age_band": "16+",
+        "reading_level": {"target": 9.5},
+        "tier": 2,
+        "estimated_minutes": 14,
+        "ending_count": 2,
+        "topology": "branch_and_bottleneck",
+        "length": "medium",
+        "narrative_style": "gamebook",
+    }
+    if book_index is not None:
+        payload["series"] = {
+            "series_id": "chain",
+            "book_index": book_index,
+            "series_entry_node": "n_start",
+            "is_final": False,
+            "carries_state": True,
+        }
+    return StoryMetadata.model_validate(payload)
+
+
+@pytest.mark.unit
+def test_is_continuation_skeleton_only_flags_book_two_and_later() -> None:
+    """book_index 1 and a series-less skeleton are both valid entry points."""
+    assert is_continuation_skeleton(_series_metadata(None)) is False
+    assert is_continuation_skeleton(_series_metadata(1)) is False
+    assert is_continuation_skeleton(_series_metadata(2)) is True
+    assert is_continuation_skeleton(_series_metadata(3)) is True
+
+
+@pytest.mark.unit
+def test_continuation_book_does_not_match_its_own_cell() -> None:
+    """A mid-series book must never be drawn for an ordinary themed request.
+
+    A continuation opens on state it did not earn (its variables declare the
+    previous book's artifacts already held, and its opening beats name them), so
+    serving it standalone hands the reader a protagonist from a story they have
+    never seen and makes the fill render those beats against an unrelated theme.
+    """
+    cell = {"band": "16+", "length": "medium", "style": "gamebook"}
+    assert skeleton_matches_cell(_series_metadata(1), **cell), (
+        "book 1 of a series is a legitimate standalone entry point"
+    )
+    assert not skeleton_matches_cell(_series_metadata(2), **cell)
+    assert not skeleton_matches_cell(_series_metadata(3), **cell)
+
+
+@pytest.mark.unit
+def test_no_catalog_continuation_book_is_offered_for_any_cell() -> None:
+    """Integration guard over the live catalog, active once series books exist."""
+    continuations = [
+        (band_dir.name, path.stem)
+        for band_dir in (Path(__file__).resolve().parents[2] / "skeletons").iterdir()
+        if band_dir.is_dir()
+        for path in sorted(band_dir.glob("*.json"))
+        if not path.name.endswith((".contract.json", ".lineage.json"))
+        and (meta := find_skeleton_metadata(path.stem)) is not None
+        and is_continuation_skeleton(meta)
+    ]
+    if not continuations:
+        pytest.skip("no continuation books in the catalog yet")
+    for band, slug in continuations:
+        for length in ("short", "medium", "long"):
+            for style in ("prose", "gamebook"):
+                assert slug not in candidates_for_cell(band, length, style), (
+                    f"{slug} is a continuation book but is offered for "
+                    f"({band}, {length}, {style})"
+                )
