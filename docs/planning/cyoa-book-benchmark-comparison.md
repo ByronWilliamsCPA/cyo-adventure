@@ -24,7 +24,16 @@ See also `docs/planning/pathfinder-structure-exploration.md`, an existing
 exploratory document (status: exploratory, not committed) that independently
 proposes a deterministic build/threshold/resource grammar for the teen
 gamebook cells; several findings below turn out to already be answered there,
-and are cross-referenced rather than re-litigated.
+and are cross-referenced rather than re-litigated. Also adjacent:
+`docs/planning/story-flexibility-plan.md` (status: active), which names
+"state/consequence" (Tier-2 variable semantics and condition-gated routes) as
+a named diversity axis and is the parent document the pathfinder exploration
+itself cites; and `docs/planning/ws5-structure-state-variation-design.md`
+(status: proposed), a skeleton-mutation design whose "M5b: condition-gated
+route add/rewire" operator explicitly targets `loop_and_grow`/`open_map`
+parents, directly adjacent to the UFO 54-40 loop discussion below. Neither
+resolves any specific finding outright, but both are directly on-topic and
+worth reading alongside this doc.
 
 ## Framework capabilities used as the comparison baseline
 
@@ -32,15 +41,20 @@ and are cross-referenced rather than re-litigated.
   only, `int` bounded to `[-1e9, 1e9]` with optional `min`/`max` (clamped at
   runtime by `player/engine.py`). No `str`/`float`/list/object state, no
   first-class inventory or stats subsystem, and no visited-node/history
-  predicate. Tier-1 stories may declare no variables at all (pure static
-  branching).
+  predicate. Tier-1 stories must declare no variables at all (pure static
+  branching; a Tier-1 story with any declared variable is a hard validation
+  failure, not merely disallowed by convention).
 - **Conditions**: a 10-operator whitelisted JSONLogic-shaped evaluator
   (`var`, `!`, `and`, `or`, `==`, `!=`, `<`, `<=`, `>`, `>=`), deliberately
-  hand-rolled (~40 lines) rather than a general expression language
-  (ADR-006), to keep untrusted LLM-authored conditions safe to execute.
-- **Effects**: `set`/`inc`/`dec` on a single declared variable by an
-  author-fixed, non-negative integer literal. No randomness primitive exists
-  anywhere in the schema.
+  hand-rolled and small (ADR-006 estimates roughly 40 lines for the core
+  evaluator; `condition.py` plus `evaluator.py` together are larger once
+  validation and docstrings are counted) rather than a general expression
+  language, to keep untrusted LLM-authored conditions safe to execute.
+- **Effects**: `set` to any author-fixed literal within the variable's
+  declared bounds (a `set` may be negative); `inc`/`dec` by an author-fixed,
+  non-negative integer literal only (the non-negative check applies solely to
+  `inc`/`dec`, per `Effect._check_value` in `models.py`). No randomness
+  primitive exists anywhere in the schema.
 - **Topology**: cycles are allowed (`loop_and_grow`, `open_map`), but any
   cycle that cannot reach an ending is a hard `L1-5`/`L2-10` failure. Every
   node and ending must be reachable from `start_node` (`L1-3`); an orphaned
@@ -54,9 +68,9 @@ and are cross-referenced rather than re-litigated.
 
 | Book | Mechanic under test | Maps onto |
 |---|---|---|
-| *The Cave of Time* (Packard, CYOA #1) | Pure branching tree, no state, ~40 endings, many bad-but-survivable endings | Tier-1, `time_cave`/`gauntlet` topology |
-| *Journey Under the Sea* (Montgomery, CYOA #2) | A piece of equipment bought early gates survival on a later branch | Tier-2, single bool `Variable` + `Condition` gate (already covered by the repo's own `03_tier2_lantern.json` fixture) |
-| *The Lost Jewels of Nabooti* (Montgomery, CYOA #4) | Jewels collected across independent branches; the *count* recovered by the end determines which of several endings is reached | Tier-2, int accumulator + threshold conditions at a reconvergence node: **new benchmark fixture 1** |
+| *The Cave of Time* (Packard, CYOA #1) | Pure branching tree, no state, on the order of dozens of endings (a commonly-cited figure, not independently sourced here), many bad-but-survivable endings | Tier-1, `time_cave` topology |
+| *Journey Under the Sea* (Montgomery, CYOA #2) | A piece of equipment bought early gates survival on a later branch (recalled from training data, not independently sourced in this session; treat as plausible, not confirmed) | Tier-2, single bool `Variable` + `Condition` gate (already covered by the repo's own `03_tier2_lantern.json` fixture) |
+| *The Lost Jewels of Nabooti* (Montgomery, CYOA #4) | Jewels collected across independent branches; the *count* recovered by the end determines which of several endings is reached (recalled from training data, not independently sourced in this session; this is the weakest-sourced claim in this table, since the fixture design leans on it directly) | Tier-2, int accumulator + threshold conditions at a reconvergence node: **new benchmark fixture 1** |
 | *Inside UFO 54-40* (Packard, CYOA #13) | A repeatable loop around the ship; a "secret" ending advertised on the back cover that is reachable only by disobeying the book's page-turn instructions, not through any listed choice | `loop_and_grow` topology; the secret ending itself is the interesting case: **new benchmark fixture 2**, with a caveat (see below) |
 | *The Warlock of Firetop Mountain* (Jackson & Livingstone, Fighting Fantasy #1) | Rolled stats (Skill/Stamina/Luck), dice-resolved combat, an inventory of items/gold/provisions | Stresses the framework's numeric-state ceiling and its total absence of randomness |
 | *Flight from the Dark* (Dever, Lone Wolf #1) | Player picks N "Kai Disciplines" from a list at character creation; a capacity-limited backpack; Combat-Skill-ratio combat via a Random Number Table | Stresses "player-authored initial state" and inventory-capacity constraints |
@@ -65,11 +79,17 @@ and are cross-referenced rather than re-litigated.
 
 ### Strengths confirmed by the comparison
 
-1. **The Cave of Time's shape is a non-issue.** A large acyclic tree with many
+1. **The Cave of Time's shape is a non-issue.** A pure branching tree with no
+   reconvergence (no node with more than one incoming choice) and many
    terminal endings of mixed valence is exactly what Tier-1 (no variables)
-   plus `time_cave`/`gauntlet` topology was built for; the existing catalog
-   already carries skeletons at this scale (e.g. *The Pale Road*, 498 nodes,
-   147 negative endings) without strain.
+   plus `time_cave` topology was built for. The largest genuine zero-
+   reconvergence skeleton actually in the catalog today is
+   `skeletons/8-11/the-river-of-small-boats.json` (127 nodes, 17/7/2
+   positive/neutral/negative endings), which handles the shape without
+   strain; a much larger story like *The Pale Road* (498 nodes) is tagged
+   `gauntlet`, not `time_cave`, precisely because it reconverges branches
+   (24 nodes with more than one incoming edge), so it is not evidence for a
+   pure-tree story at that scale, only for the branch-and-reconverge shape.
 2. **Journey Under the Sea's item-gate is already a solved case.** A single
    bool `Variable` set on pickup and checked with `==` at a later choice is
    precisely `tests/fixtures/storybook/valid/03_tier2_lantern.json` in this
@@ -103,10 +123,13 @@ and are cross-referenced rather than re-litigated.
    fixture 2 therefore models the closest *expressible* analogue (a
    loop-count-gated bonus room, reachable but not obvious on a first pass)
    rather than a literal port. This is worth naming explicitly: the framework
-   cannot and should not represent "content only reachable by breaking the
-   reader interface", which is consistent with ADR "mandatory human approval"
-   and the reachability guarantee, but it is a real, permanent expressiveness
-   ceiling relative to at least one well-known published mechanic.
+   cannot represent "content only reachable by breaking the reader
+   interface" because it would violate the `L1-3` reachability guarantee,
+   and that is a real, permanent expressiveness ceiling relative to at least
+   one well-known published mechanic. (An earlier draft of this finding tied
+   this to ADR-005, "mandatory human approval"; that ADR is about requiring a
+   safety-review step before publication and says nothing about graph
+   reachability, so the tie-in was unsupported and is dropped here.)
 2. **No randomness primitive at all, and this is permanent, not a v1 gap.**
    Fighting Fantasy and Lone Wolf combat is fundamentally dice-resolved; our
    `Effect` model only supports author-fixed literal `inc`/`dec` amounts,
@@ -136,22 +159,26 @@ and are cross-referenced rather than re-litigated.
    already use fragments of this pattern in production today.
 4. **Player-authored initial state (Lone Wolf's Kai Disciplines) is already
    answered, just not yet built.** `docs/planning/pathfinder-structure-exploration.md`
-   section 5.2 works through exactly this: one early "background choice" node
-   whose mutually-exclusive options each `set` a small stat package (and
-   optionally a gear flag), fully inside today's schema with zero validator
-   change, and it explicitly names this pattern "what makes builds real."
-   Despite its name the document has since been reframed away from
-   Pathfinder/OGL and toward the D&D SRD 5.1/5.2 and Kobold Press's Black
-   Flag Reference Document, both CC-BY-4.0 (section 7.4), specifically
-   because 5e's flatter math and BFRD's Luck/Doom metacurrencies fit the
-   dice-free model with less distortion, and because CC-BY-4.0 carries none
-   of the OGL 1.0a per-distribution notice/designation burden. Status is
-   Phase 0 of a four-phase, owner-gated rollout (section 8): not committed
-   to `roadmap.md`, `capability-register.md`, or an ADR yet, and gated on a
-   go/no-go plus (only if actual reference text is ever shipped) legal
-   review. My original framing of this as an unaddressed gap was wrong; it
-   is a scoped, gate-validated proposal awaiting a decision, not an open
-   question.
+   section 5.2 works through exactly this as a worked JSON example: one early
+   "background choice" node whose mutually-exclusive options each `set` a
+   small stat package (and optionally a gear flag), fully inside today's
+   schema with zero validator change. Section 3's mapping table is where the
+   pattern is named "what makes builds real" (the verdict cell for
+   "Character creation (ancestry/class/background)"). Despite its filename
+   the document has since been reframed away from Pathfinder/OGL and toward
+   the D&D SRD 5.1/5.2 and Kobold Press's Black Flag Reference Document,
+   both CC-BY-4.0 (section 7.4), specifically because 5e's flatter math and
+   BFRD's Luck/Doom metacurrencies fit the dice-free model with less
+   distortion, and because CC-BY-4.0 carries none of the OGL 1.0a
+   per-distribution notice/designation burden. Status is Phase 0 of a
+   four-phase, owner-gated rollout (section 8): not committed to
+   `roadmap.md`, `capability-register.md`, or an ADR yet. Legal review is a
+   hard gate on Phase 0 regardless (section 7.6, "in all cases: legal review
+   remains a hard gate", covering the inspiration-only/Option A posture);
+   only the second, CC-BY-attribution-specific review (Option B) is
+   conditional on ever shipping actual reference text. My original framing of
+   this as an unaddressed gap was wrong; it is a scoped, gate-validated
+   proposal awaiting a decision, not an open question.
 5. **No "visited node before" predicate.** None of the six books strictly
    required it to model here, but several gamebook traditions (and some of
    our own `open_map`/`sorting_hat` skeletons) would benefit from a condition
@@ -165,8 +192,14 @@ Two new schema-valid, non-production (`production_eligible: false`) skeleton
 shells were added under `tests/fixtures/storybook/benchmarks/` (deliberately
 kept out of `skeletons/`, which is `rglob`-scanned by
 `scripts/render_skeleton_diagrams.py` into the production catalog table; these
-are benchmark test cases, not catalog entries). Both validate cleanly through
-the full gate:
+are benchmark test cases, not catalog entries). No pytest fixture-corpus test
+globs this new subdirectory (each one lists `valid/`, `invalid/schema/`, or
+`invalid/graph/` explicitly and non-recursively), but `.clusterfuzzlite/build.sh`
+does `rglob("*.json")` over all of `tests/fixtures/storybook/` to seed the fuzz
+corpus, so both new fixtures are swept into the fuzz seed set. That is
+harmless (they are valid, schema-passing JSON, fine fuzz seeds) but worth
+knowing about if this directory is ever repurposed for something the fuzzer
+should not see. Both fixtures validate cleanly through the full gate:
 
 ```bash
 uv run python scripts/check_skeleton.py \
