@@ -23,6 +23,14 @@ source: "Read of generation/skeleton_match.py, story_requests/authoring_plan.py,
   skeletons/ library (2026-07-25)."
 ---
 
+> **Superseded in two places (2026-07-25).** Review challenge corrected this audit twice, and
+> [story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) section 1 carries the corrected
+> designs. **(a)** Section 3.1's fix as written is a privacy regression: the closed vocabulary is load-bearing
+> for the WS-7 echo surface, so the signature must be *split* into an echo signature (stays closed) and an
+> internal similarity signature (open, entity-masked, never rendered or persisted). Do not implement 3.1 as
+> drafted. **(b)** Section 2.4's ending-mix concern is real but mis-framed: the 98% negative share is ADR-011's
+> stated intent, and the genuine defect is expected reading depth. See that plan's section 1.2.
+>
 > **Scope.** This is a current-state audit, not a new plan. It assumes
 > [story-flexibility-plan.md](story-flexibility-plan.md) as the strategy of record and does not re-propose
 > WS-0, WS-1, WS-4, WS-5, WS-7, or WS-8. Everything below is either a measurement of the shipped system or a
@@ -118,6 +126,14 @@ paths. Topology differs, prose differs, and the reader's experience is still "th
 die." Outcome mix is a first-class perceived-diversity axis, it is already computed in `structure_features`,
 and selection ignores it entirely.
 
+**Corrected framing (see the banner at the top).** The 98% ratio is not a defect: ADR-011 section 6
+deliberately specifies gamebook endings as "few wins + many fails", and no validator rule constrains valence.
+The genuine defects are that "few wins" was never given a number (2 winning endings out of 209 on
+`the-tenfold-siege`), that the cell has zero outcome-mix *variance*, and above all that measured mean depth to
+any ending is 4 to 9 nodes against satisfying arcs 24 to 37 nodes long, so the reader never reaches the
+content that differentiates one tree from another. See
+[story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) section 1.2 and phase P4.
+
 Decision density is similarly wide (`decision_ratio` spans 0.13 to 0.99 across the catalog) and similarly
 unused by selection. In `the-skyrail-heist`, 168 of 246 nodes offer exactly one choice, so the handful of real
 decision points carry the entire felt-agency load, which amplifies any sense of "same decisions again."
@@ -157,12 +173,16 @@ Two compounding consequences:
   `selection.cell_theme_saturated` log, and no `CELL_SATURATED` trigger for the WS-8 flywheel. The entire
   escalation ladder and the catalog-growth trigger that depends on it are dark for out-of-vocabulary themes.
 
-**Fix.** Replace the closed tag map with an open-vocabulary signature: content-token Jaccard after the
-existing stopword and entity masking, with the tag map retained as a synonym-collapsing layer on top (so
-"dragon"/"wyvern" still merge) rather than as the gate. Keep `metadata.themes` as trusted signal. Separately,
-make empty-versus-empty return a distinct "unknown" rather than `0.0`, and have `score_history` treat unknown
-as *conservative* (assume similarity) rather than as dissimilar, so the failure mode is over-diversifying
-instead of silently disabling.
+**Fix (corrected, see the banner at the top).** Opening this vocabulary *in place* is a privacy regression:
+`worker.py::_degraded_set_aside_decisions` feeds these tags into the WS-7 kid echo and guardian caption, and
+the closed vocabulary is what guarantees no premise substring is rendered or persisted. The corrected design
+splits the function in two, keeping the echo path closed and adding an internal, entity-masked,
+never-persisted similarity signature. Full design and rationale in
+[story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) section 1.1, deliverables D1-D4.
+
+The half of the original fix that stands unchanged: make empty-versus-empty return a distinct "unknown"
+rather than `0.0`, and have `score_history` treat unknown as *conservative* (assume similarity) rather than as
+dissimilar, so the failure mode is over-diversifying instead of silently disabling.
 
 ### 3.2 A structural clone is live in the catalog, and the fingerprint check cannot see it
 
@@ -358,7 +378,7 @@ child experiences this quarter.
 
 | # | Change | Addresses | Effort | Why this order |
 |---|--------|-----------|--------|----------------|
-| 1 | Open-vocabulary `theme_signature`; unknown is not "dissimilar" | 3.1 | S | Turns WS-4, the saturation warning, and the WS-8 trigger on for the majority of real requests. Everything downstream of similarity is currently dark. |
+| 1 | Split echo vs similarity signature, then open-vocabulary the similarity half; unknown is not "dissimilar" | 3.1 | S-M | Turns WS-4, the saturation warning, and the WS-8 trigger on for the majority of real requests. Everything downstream of similarity is currently dark. **The split is mandatory and comes first: see the banner and the remediation plan section 1.1.** |
 | 2 | In-cell `structural_distance` audit in CI at `TAU_CELL`; resolve the clone pair | 3.2 | S | One cell is a tree short right now, and selection reports the swap as differentiation. Cheap, and it protects the catalog as automation grows it. |
 | 3 | Thread `DifferentiationLevel` + neighbors into `fill_skeleton` and `fill.md` | 3.3 | M | Completes WS-4's other half. Without it, escalation is a log line. |
 | 4 | Per-request variation directive from an authored axis library | 3.8 | S | Cheapest real leaf-diversity gain, orthogonal to reading level. |
