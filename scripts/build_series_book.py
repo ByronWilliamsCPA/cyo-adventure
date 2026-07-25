@@ -548,7 +548,11 @@ def _cmd_build(args: argparse.Namespace) -> int:
         sys.stdout.write(f"structure problems: {len(problems)}\n")
         return 1
     if args.skeleton:
-        _write_story(story, Path(args.skeleton))
+        # The skeleton is always the FILL form, even when --prose is also given,
+        # so one invocation can emit both artifacts without the prose leaking
+        # into the skeleton (which would defeat check_fill_integrity).
+        skeleton = story if prose is None else build_story(spec, None, spec_path.parent)
+        _write_story(skeleton, Path(args.skeleton))
     if args.filled:
         if prose is None:
             sys.stdout.write("error: --filled requires --prose\n")
