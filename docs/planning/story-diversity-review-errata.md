@@ -391,6 +391,11 @@ pre-submission half is unbuilt.
 
 ## 6. What a rebuild must carry forward
 
+> **The rebuild is [story-diversity-plan-v2.md](story-diversity-plan-v2.md)** (2026-07-25). It carries the seven
+> rules below as its own section 7, states what it does *not* claim as its section 2, and is materially smaller:
+> twelve near-term deliverables, six independent defects, eight deferred items each behind a named prerequisite,
+> and four decisions.
+
 1. **Survey the corpus before proposing.** Five defects trace to skipping it.
 2. **Separate measurement from inference explicitly.** The measurements held; the inferences did not. Any
    invented proxy must be stated as invented, with its free parameters and a sensitivity sweep, or not used to

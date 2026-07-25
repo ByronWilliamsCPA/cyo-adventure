@@ -42,9 +42,10 @@ source: "Design discussion 2026-07-18 following the initial story-inventory run;
 > the 0.05 `TAU_CELL` floor. Section 2 below should be read alongside it.
 >
 > The audit's gaps are planned in
-> [story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) (56 deliverables, with the
-> evidence and the twelve review corrections behind them) and scheduled in
-> [story-diversity-execution-plan.md](story-diversity-execution-plan.md) (seven milestones, branch per unit).
+> [story-diversity-plan-v2.md](story-diversity-plan-v2.md). Two earlier plans
+> (`story-diversity-remediation-plan.md`, `story-diversity-execution-plan.md`) are **superseded** after a
+> seven-reviewer adversarial pass; see
+> [story-diversity-review-errata.md](story-diversity-review-errata.md) for what was refuted.
 > Both post-date the workstream numbering below; WS-4's and WS-5's status notes in particular are superseded
 > where the audit measured them.
 

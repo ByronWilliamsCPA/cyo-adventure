@@ -26,14 +26,17 @@ source: "Read of generation/skeleton_match.py, story_requests/authoring_plan.py,
 > **Adversarially reviewed (2026-07-25).** A seven-reviewer pass and a 98-document corpus survey re-derived every
 > measurement in this document (all held, with four numeric corrections applied in place) and refuted a number of
 > the inferences drawn from them, including one misquoted source beat.
-> [story-diversity-review-errata.md](story-diversity-review-errata.md) is the correction of record. The two
-> downstream plans are superseded.
+> [story-diversity-review-errata.md](story-diversity-review-errata.md) is the correction of record, and
+> [story-diversity-plan-v2.md](story-diversity-plan-v2.md) is the rebuilt plan. The two earlier downstream plans
+> are superseded.
 >
 > **Superseded in three places (2026-07-25).** Review challenge corrected this audit three times, and
 > [story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) section 1 carries the corrected
 > designs. **(a)** Section 3.1's fix as written is a privacy regression: the closed vocabulary is load-bearing
-> for the WS-7 echo surface. Do not implement 3.1 as drafted; the plan's chosen path is instead to *expand* the
-> curated closed vocabulary, which keeps the echo guarantee and needs no privacy review at all. **(b)** Section
+> for the WS-7 echo surface. Do not implement 3.1 as drafted. Note also that the *second* proposal, expanding the
+> curated map, was itself refuted: `_THEME_TAG_MAP` **is** the echo vocabulary, so growing it changes what a child
+> sees, and 129 of 132 catalog themes clear the echo floor at band `3-5`. The surviving design is two separate
+> vocabularies; see [story-diversity-plan-v2.md](story-diversity-plan-v2.md) A1. **(b)** Section
 > 2.4's ending-mix concern is real but mis-framed: the 98% negative share is ADR-011's stated intent, PL-20
 > already guarantees age-appropriate depth on the winning path and passes everywhere, and the real gap is the
 > shallow fail-path tail PL-20 explicitly leaves out of scope. **(c)** 3.1 also *understated* the severity. The

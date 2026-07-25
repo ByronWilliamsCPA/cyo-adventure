@@ -33,7 +33,8 @@ source: "story-diversity-remediation-plan.md (deliverable inventory D1-D56 and s
 > compliance claim, a `PL-22` rule-ID collision across 37 references, and a fabricated source quotation.
 >
 > **[story-diversity-review-errata.md](story-diversity-review-errata.md) is the correction of record**, and its
-> section 6 states what a rebuild must carry forward. This document is retained for provenance only.
+> section 6 states what a rebuild must carry forward. The rebuild is
+> **[story-diversity-plan-v2.md](story-diversity-plan-v2.md)**. This document is retained for provenance only.
 >
 > Four defects this review surfaced are real and independent of the plan; see errata section 5.
 
