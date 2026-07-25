@@ -40,7 +40,8 @@ import re
 # (rather than imported) to keep this module dependency-light, since later
 # consumers (validator, generation, and eventually a frontend resolver) must
 # be able to import it without pulling in the theme-contract Pydantic models.
-_SLOT_ID_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
+# Used with fullmatch() to ensure exact end-to-end match (no trailing newlines).
+_SLOT_ID_RE = re.compile(r"[A-Z][A-Z0-9_]*")
 
 # Characters a sentinel value must never contain. `{`, `}`, and `~` would
 # produce an unparseable token; `<`, `>`, and `'` would corrupt a
@@ -71,7 +72,7 @@ def wrap(slot_id: str, value: str) -> str:
             ``value`` is empty, or if ``value`` contains any of
             ``{ } < > ' ~``.
     """
-    if not _SLOT_ID_RE.match(slot_id):
+    if not _SLOT_ID_RE.fullmatch(slot_id):
         msg = f"invalid slot id {slot_id!r}: must match [A-Z][A-Z0-9_]*"
         raise ValueError(msg)
     if not value:

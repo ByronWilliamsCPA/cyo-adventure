@@ -126,6 +126,44 @@ class TestWrap:
         with pytest.raises(ValueError, match="empty"):
             wrap("HERO", "")
 
+    def test_wrap_rejects_trailing_newline_slot_id(self) -> None:
+        """wrap raises ValueError for slot id with trailing newline.
+
+        Regression test for regex anchor bypass: Python's $ matches before a
+        trailing newline without re.MULTILINE, so .match("HERO\\n") would
+        previously succeed. This must be rejected to prevent unstripped
+        sentinels leaking to readers.
+        """
+        with pytest.raises(ValueError, match="slot"):
+            wrap("HERO\n", "Explorer")
+
+    def test_wrap_output_always_round_trips(self) -> None:
+        """wrap output is always recognizable and round-trips cleanly.
+
+        Asserts that for any valid (slot_id, value) pair, the output of
+        wrap() is parseable by SENTINEL_RE and round-trips through both
+        find_sentinels and strip_sentinels. This guards the core invariant
+        that every token wrap() can build is also recognizable by the
+        sentinel parser.
+        """
+        test_cases = [
+            ("HERO", "Explorer"),
+            ("PET_NAME", "Good Dog"),
+            ("H2O", "Water Drop"),
+        ]
+        for slot_id, value in test_cases:
+            token = wrap(slot_id, value)
+            # Round-trip through find_sentinels.
+            found = find_sentinels(token)
+            assert found == [(slot_id, value)], (
+                f"find_sentinels failed for {token!r}: got {found!r}"
+            )
+            # Round-trip through strip_sentinels.
+            stripped = strip_sentinels(token)
+            assert stripped == value, (
+                f"strip_sentinels failed for {token!r}: got {stripped!r}"
+            )
+
 
 class TestStripSentinels:
     """strip_sentinels replaces every sentinel with its inner value."""
