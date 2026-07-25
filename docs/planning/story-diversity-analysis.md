@@ -29,7 +29,8 @@ source: "Read of generation/skeleton_match.py, story_requests/authoring_plan.py,
 > for the WS-7 echo surface, so the signature must be *split* into an echo signature (stays closed) and an
 > internal similarity signature (open, entity-masked, never rendered or persisted). Do not implement 3.1 as
 > drafted. **(b)** Section 2.4's ending-mix concern is real but mis-framed: the 98% negative share is ADR-011's
-> stated intent, and the genuine defect is expected reading depth. See that plan's section 1.2.
+> stated intent, PL-20 already guarantees age-appropriate depth on the winning path and passes everywhere, and
+> the real gap is the shallow fail-path tail PL-20 explicitly leaves out of scope. See that plan's section 1.2.
 >
 > **Scope.** This is a current-state audit, not a new plan. It assumes
 > [story-flexibility-plan.md](story-flexibility-plan.md) as the strategy of record and does not re-propose
@@ -128,11 +129,14 @@ and selection ignores it entirely.
 
 **Corrected framing (see the banner at the top).** The 98% ratio is not a defect: ADR-011 section 6
 deliberately specifies gamebook endings as "few wins + many fails", and no validator rule constrains valence.
-The genuine defects are that "few wins" was never given a number (2 winning endings out of 209 on
-`the-tenfold-siege`), that the cell has zero outcome-mix *variance*, and above all that measured mean depth to
-any ending is 4 to 9 nodes against satisfying arcs 24 to 37 nodes long, so the reader never reaches the
-content that differentiates one tree from another. See
-[story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) section 1.2 and phase P4.
+Nor are the books shallow: PL-20 (`validator/policy.py::_check_min_to_complete`) enforces a floor on the
+shortest *winning* path and passes with margin everywhere (26 to 81 nodes against floors of 24 to 37), and
+median negative-ending depth is 16 to 43 nodes. The genuine gaps are narrower: PL-20's docstring declares
+"fail-fast negative endings are unaffected", so nothing floors the fail path, and 100 of 1,778 gamebook
+endings (5.6%) sit below 25% of their cell's `min_complete`, some as shallow as node 2. Separately, "few wins"
+was never given a number (2 winning endings of 209 on `the-tenfold-siege`), and the cell has zero outcome-mix
+variance. See [story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) section 1.2 and
+phase P4.
 
 Decision density is similarly wide (`decision_ratio` spans 0.13 to 0.99 across the catalog) and similarly
 unused by selection. In `the-skyrail-heist`, 168 of 246 nodes offer exactly one choice, so the handful of real
