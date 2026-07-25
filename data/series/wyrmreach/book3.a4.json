@@ -3,38 +3,38 @@
     "i": "a4_flank",
     "r": "choice",
     "w": 80,
-    "b": "TODO",
+    "b": "the wyrm-road, which is a dwarf gallery cut along Ashendrel's own flank for nine miles: the left wall is worked stone and the right wall is not a wall, and it moves once every nine minutes",
     "c": [
       [
-        "TODO",
+        "Take the scale-wall side and read as you go.",
         "a4_scalewall"
       ],
       [
-        "TODO",
+        "Fall in with the couriers on the road.",
         "a4_couriers"
       ],
       [
-        "TODO",
+        "Go by the bone galleries below the road.",
         "a4_bones"
       ],
       [
-        "TODO",
+        "Take the span across the flank's fold.",
         "a4_bridge"
       ],
       [
-        "TODO",
+        "Go to the eye, where the road passes its head.",
         "a4_eye"
       ],
       [
-        "TODO",
+        "Find the stewards who keep this stretch.",
         "a4_stewards"
       ],
       [
-        "TODO",
+        "Go by the wing-vault at the road's shoulder.",
         "a4_wing"
       ],
       [
-        "TODO",
+        "Turn round. Nine miles of this is not survivable.",
         "e_a4_flank_1"
       ]
     ]
@@ -43,29 +43,29 @@
     "i": "e_a4_flank_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|neutral|TODO"
+    "b": "nine miles of moving wall refused inside the first two hundred yards, which is not cowardice by any definition a Warden would use, and a company that goes back up to a counted city it cannot fix and a gate it cannot close",
+    "e": "setback|neutral|Two Hundred Yards"
   },
   {
     "i": "a4_scalewall",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the scale-wall stretch, where the right-hand wall is plated in overlapping scale the size of doors, warm, and where nine hundred years of dwarf inscriptions run along the joint between rock and hide",
     "c": [
       [
-        "TODO",
+        "Read the joint inscriptions as you walk.",
         "a4_scalewall_a"
       ],
       [
-        "TODO",
+        "Keep to the far wall and do not touch anything.",
         "a4_scalewall_b"
       ],
       [
-        "TODO",
+        "Put a hand flat on the scale and hold it there.",
         "a4_scalewall_c"
       ],
       [
-        "TODO",
+        "Cut a scale free and take it.",
         "e_a4_scalewall_1"
       ]
     ]
@@ -74,14 +74,14 @@
     "i": "a4_scalewall_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a mile of joint inscriptions read at walking pace: nine hundred years of maintenance notes on a living wall, in nine hands, the last of them noting that the ninth-minute movement has been increasing since autumn",
     "c": [
       [
-        "TODO 1",
+        "Go on to the vent.",
         "a4_vent"
       ],
       [
-        "TODO 2",
+        "Stop and copy the last hand's notes in full.",
         "e_a4_scalewall_2"
       ]
     ]
@@ -90,10 +90,10 @@
     "i": "a4_scalewall_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a mile walked with the whole company pressed to the worked wall, touching nothing, breathing shallow, and the right-hand wall moving twice in the course of it exactly on the count",
     "c": [
       [
-        "TODO 1",
+        "Go on to the vent.",
         "a4_vent"
       ]
     ]
@@ -102,10 +102,10 @@
     "i": "a4_scalewall_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a palm flat on warm scale for nine seconds, which is what a dwarf maintenance note says to do and gives a pulse, a temperature and a rhythm, and which Ilsabet says is a diagnosis and not a greeting",
     "c": [
       [
-        "TODO 1",
+        "Go on to the vent.",
         "a4_vent"
       ]
     ]
@@ -114,8 +114,8 @@
     "i": "e_a4_scalewall_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a scale cut free off the flank with a moor-iron pick for evidence, which comes away in eleven minutes of quiet work and leaves a gap the size of a shield in something nine miles long, and which the something notices",
+    "e": "death|negative|One Scale",
     "s": [
       "peril",
       "scary_imagery"
@@ -125,28 +125,28 @@
     "i": "e_a4_scalewall_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|negative|TODO"
+    "b": "a stop made in the middle of the scale-wall stretch to copy nine hundred years of notes properly, which takes an hour and forty minutes, which is eleven ninth-minute movements, and the eleventh does not stop where the others did",
+    "e": "setback|negative|The Eleventh Movement"
   },
   {
     "i": "a4_vent",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a breath-vent crossing the road: a fissure in the flank that exhales every ninth minute at a temperature that has glazed the gallery roof above it, with a dwarf shutter frame and no shutter",
     "s": [
       "peril"
     ],
     "c": [
       [
-        "TODO",
+        "Cross in the interval, one at a time.",
         "a4_vent_a"
       ],
       [
-        "TODO",
+        "Wedge the frame and cross under cover.",
         "a4_vent_b"
       ],
       [
-        "TODO",
+        "Cross now, together, and be done with it.",
         "e_a4_vent_1"
       ]
     ]
@@ -155,10 +155,10 @@
     "i": "a4_vent_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "five crossings in five intervals, counted by Ossa, each one taking eleven seconds and costing about nine years of anybody's composure",
     "c": [
       [
-        "TODO 1",
+        "Go on to the heat stretch.",
         "a4_heat"
       ]
     ]
@@ -167,11 +167,11 @@
     "i": "a4_vent_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the shutter frame wedged with a barrow plank and a wire line, which holds the worst of one exhalation off the road and is destroyed by it, and which buys the whole company one crossing",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the heat stretch.",
         "a4_heat"
       ]
     ]
@@ -180,8 +180,8 @@
     "i": "e_a4_vent_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a breath-vent crossed together to save four intervals, by five people who have counted the rhythm for a quarter of an hour and are confident in it, and the ninth minute arriving on the eighth",
+    "e": "death|negative|On the Eighth",
     "s": [
       "peril",
       "scary_imagery"
@@ -191,21 +191,21 @@
     "i": "a4_heat",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the heat stretch, four hundred yards where the flank runs close and the gallery's air is at the limit of what people can walk through, with dwarf water butts at each end and one in the middle",
     "s": [
       "peril"
     ],
     "c": [
       [
-        "TODO",
+        "Soak everything at the butts and walk it fast.",
         "a4_heat_a"
       ],
       [
-        "TODO",
+        "Wait for the flank to shift and go in the cool.",
         "a4_heat_b"
       ],
       [
-        "TODO",
+        "Walk it dry; it is four hundred yards.",
         "e_a4_heat_1"
       ]
     ]
@@ -214,10 +214,10 @@
     "i": "a4_heat_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "everything soaked at the butts and four hundred yards walked at a fast march, arriving at the far end steaming with the water gone out of every garment and everybody's lips split",
     "c": [
       [
-        "TODO 1",
+        "Go on to the shed skins.",
         "a4_shed"
       ]
     ]
@@ -226,11 +226,11 @@
     "i": "a4_heat_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "two hours waiting for the flank to shift off the gallery wall, which it does, and which drops the stretch to something survivable and costs the company a quarter of its remaining margin",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the shed skins.",
         "a4_shed"
       ]
     ]
@@ -239,8 +239,8 @@
     "i": "e_a4_heat_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "four hundred yards of the heat stretch walked dry because it is only four hundred yards, and the middle water butt turning out to be empty, and the last hundred yards being where people who did this before were found",
+    "e": "death|negative|Walked Dry",
     "s": [
       "peril",
       "scary_imagery"
@@ -250,22 +250,22 @@
     "i": "a4_shed",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a shed-skin bay off the road, where nine hundred years of Ashendrel's sheddings have been stacked by the city like cordwood, sorted by year, with a tally board at the door",
     "c": [
       [
-        "TODO",
+        "Take a plate of shed scale for evidence.",
         "a4_shed_a"
       ],
       [
-        "TODO",
+        "Read the tally board's years.",
         "a4_shed_b"
       ],
       [
-        "TODO",
+        "Leave the bay; it is a store, not a find.",
         "a4_crowndoor"
       ],
       [
-        "TODO",
+        "Go deep into the stack to the founding-year layers.",
         "e_a4_shed_1"
       ]
     ]
@@ -274,10 +274,10 @@
     "i": "a4_shed_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a plate of shed scale the size of a shield, light as horn and warm to the hand, wrapped and lashed to the barrow, which is the single best piece of physical evidence anybody has ever taken off this mountain",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ]
     ]
@@ -286,10 +286,10 @@
     "i": "a4_shed_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the tally board read: nine hundred years of shed years, one entry per nine, and the last three entries close together, and the last of the three dated this autumn with a query mark beside it",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ]
     ]
@@ -298,8 +298,8 @@
     "i": "e_a4_shed_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a dig back through nine hundred years of stacked shed scale to reach the founding layers, which are at the bottom, under everything, in a bay with one door and a stack that has been settling since the legion",
+    "e": "death|negative|To the Founding Layers",
     "s": [
       "peril",
       "scary_imagery"
@@ -309,18 +309,18 @@
     "i": "a4_couriers",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a courier post on the road: nine bunks, a lamp rack, a tally desk, and four couriers eating a meal who look up at a Warden company with the mild interest of civil servants",
     "c": [
       [
-        "TODO",
+        "Sit down and eat with them.",
         "a4_couriers_a"
       ],
       [
-        "TODO",
+        "Show the charter and ask for their schedule.",
         "a4_couriers_b"
       ],
       [
-        "TODO",
+        "Take them prisoner and get the schedule that way.",
         "e_a4_couriers_1"
       ]
     ]
@@ -329,10 +329,10 @@
     "i": "a4_couriers_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a meal shared with four couriers on the wyrm-road, which produces the schedule, the hours, the crown door's own routine and a piece of advice about the ninth minute that saves somebody's life within the hour",
     "c": [
       [
-        "TODO 1",
+        "Go on to the file.",
         "a4_file"
       ]
     ]
@@ -341,11 +341,11 @@
     "i": "a4_couriers_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a charter shown and a schedule handed over without argument by people who consider themselves entirely legitimate, along with a copy of the crown door's maintenance rota and an offer to walk the company down",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the file.",
         "a4_file"
       ]
     ]
@@ -354,33 +354,33 @@
     "i": "e_a4_couriers_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "four couriers taken prisoner on the wyrm-road for a schedule they would have handed over, and a courier post that fails to report at the hour, and a road whose whole arithmetic notices a missing report faster than it notices a missing person",
+    "e": "capture|negative|The Missing Report"
   },
   {
     "i": "a4_file",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ninth-hour file coming up the wyrm-road: nine lamps, nine carriers, four sealed cages on a trolley, and at the head of it a steward with a book who has the company's own number in it",
     "s": [
       "peril",
       "conflict"
     ],
     "c": [
       [
-        "TODO",
+        "Stop the file and open the cages.",
         "a4_file_a"
       ],
       [
-        "TODO",
+        "Stand aside and let it pass; count it.",
         "a4_file_b"
       ],
       [
-        "TODO",
+        "Fall in behind it and follow it down.",
         "a4_file_c"
       ],
       [
-        "TODO",
+        "Kill the steward and scatter the carriers.",
         "e_a4_file_1"
       ]
     ]
@@ -389,15 +389,15 @@
     "i": "a4_file_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a file stopped on the wyrm-road and four cages opened, and nine people who get out and stand in the gallery entirely unwilling to go either up or down, because both directions are somebody's arrears",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the relay.",
         "a4_relay"
       ],
       [
-        "TODO 2",
+        "Send them back up the road on their own.",
         "e_a4_file_2"
       ]
     ],
@@ -409,10 +409,10 @@
     "i": "a4_file_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the file counted past at eleven feet: nine lamps, nine carriers, four cages, one steward, and every one of the carriers a person the company saw in a ward market two days ago",
     "c": [
       [
-        "TODO 1",
+        "Go on to the relay.",
         "a4_relay"
       ]
     ]
@@ -421,10 +421,10 @@
     "i": "a4_file_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the file followed down at forty paces on its own rhythm, which teaches the company the door's approach, the steward's routine and the exact place on the road where the carriers stop being carriers",
     "c": [
       [
-        "TODO 1",
+        "Go on to the relay.",
         "a4_relay"
       ]
     ]
@@ -433,8 +433,8 @@
     "i": "e_a4_file_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a steward killed on the wyrm-road and nine carriers scattered into a nine-mile gallery with a living wall on one side of it, which is a rescue in intention and a dispersal in fact, and none of the nine reaches either end",
+    "e": "death|negative|Scattered Into the Gallery",
     "s": [
       "peril",
       "scary_imagery"
@@ -444,8 +444,8 @@
     "i": "e_a4_file_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "nine freed people sent back up the road alone, unescorted, with the city's own count due at the hour and the crown clerk's kennels between them and any street they know",
+    "e": "death|negative|Sent Back Alone",
     "s": [
       "peril",
       "scary_imagery"
@@ -455,18 +455,18 @@
     "i": "a4_relay",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a relay station cut into the worked wall: a lamp rack, a rota board, a water butt and a dwarf plaque listing the road's own maintenance standards in nine clauses",
     "c": [
       [
-        "TODO",
+        "Read the nine clauses on the plaque.",
         "a4_relay_a"
       ],
       [
-        "TODO",
+        "Sign the rota and go on.",
         "a4_lamps"
       ],
       [
-        "TODO",
+        "Take the rota board off the wall.",
         "e_a4_relay_1"
       ]
     ]
@@ -475,11 +475,11 @@
     "i": "a4_relay_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine maintenance clauses read off dwarf bronze: the road's temperature limits, the shutter schedule, the ninth-minute discipline, and clause nine, which specifies what must never be carried past this point and why",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the lamp store.",
         "a4_lamps"
       ]
     ]
@@ -488,29 +488,29 @@
     "i": "e_a4_relay_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|neutral|TODO"
+    "b": "a rota board taken off a relay wall on the wyrm-road, which is how the whole stretch knows which shutters are wedged and which butts are filled, and which the next shift needs in about four hours",
+    "e": "setback|neutral|The Next Shift"
   },
   {
     "i": "a4_lamps",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the road's lamp store: nine hundred reservoirs on dwarf shelving, filled and sealed, enough to light this gallery for a century, and nine of them on a separate shelf with names on their wax",
     "c": [
       [
-        "TODO",
+        "Take the nine named reservoirs.",
         "a4_lamps_a"
       ],
       [
-        "TODO",
+        "Take plain reservoirs for the company and go.",
         "a4_lamps_b"
       ],
       [
-        "TODO",
+        "Leave the store alone entirely.",
         "a4_crowndoor"
       ],
       [
-        "TODO",
+        "Break every reservoir on the shelves.",
         "e_a4_lamps_1"
       ]
     ]
@@ -519,10 +519,10 @@
     "i": "a4_lamps_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine named reservoirs taken off a separate shelf, each one sealed with a name in the wax, which Nyre reads aloud one at a time and then stops reading aloud after the fourth",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ]
     ]
@@ -531,10 +531,10 @@
     "i": "a4_lamps_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "four plain reservoirs taken and signed for in the store book, which is the correct procedure, and which puts the company's hand in a book that the crown clerk's household audits every ninth day",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ]
     ]
@@ -543,8 +543,8 @@
     "i": "e_a4_lamps_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "nine hundred sealed reservoirs broken on dwarf shelving to deny the road its light, which floods the store, and the store's floor draining, as dwarf floors do, toward the flank rather than away from it",
+    "e": "death|negative|Toward the Flank",
     "s": [
       "peril",
       "scary_imagery"
@@ -554,22 +554,22 @@
     "i": "a4_bones",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the bone galleries below the road: nine hundred years of what the arrangement has not digested, stacked and sorted by the city with a working ledger at the entrance",
     "c": [
       [
-        "TODO",
+        "Read the bone ledger's last nine pages.",
         "a4_bones_a"
       ],
       [
-        "TODO",
+        "Take a labelled bone for the inquiry.",
         "a4_bones_b"
       ],
       [
-        "TODO",
+        "Go straight through and up to the road.",
         "a4_gullet"
       ],
       [
-        "TODO",
+        "Go deeper, to where the stacks are still warm.",
         "e_a4_bones_1"
       ]
     ]
@@ -578,10 +578,10 @@
     "i": "a4_bones_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine pages of a bone ledger read, which is a mortality record kept to municipal standard for nine hundred years, and which includes, in this century, four Warden patrols and nine Reckoning couriers",
     "c": [
       [
-        "TODO 1",
+        "Go on to the gullet.",
         "a4_gullet"
       ]
     ]
@@ -590,10 +590,10 @@
     "i": "a4_bones_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "one labelled femur taken with its municipal tag still wired to it, which is an evidentiary object of a kind no Warden court has ever been offered and no inquiry will be able to set aside",
     "c": [
       [
-        "TODO 1",
+        "Go on to the gullet.",
         "a4_gullet"
       ]
     ]
@@ -602,8 +602,8 @@
     "i": "e_a4_bones_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a walk deeper into the bone galleries to where the stacks are still warm, which is where this season's are, and which is not a store at that depth but a working area with its own schedule",
+    "e": "death|negative|Still Warm",
     "s": [
       "peril",
       "scary_imagery"
@@ -613,21 +613,21 @@
     "i": "a4_gullet",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a place where the flank folds and the gallery has to pass through the fold, forty feet of dwarf tube with hide above and below it and a shutter at each end",
     "s": [
       "peril"
     ],
     "c": [
       [
-        "TODO",
+        "Go through in the interval with both shutters set.",
         "a4_gullet_a"
       ],
       [
-        "TODO",
+        "Go through fast with the shutters left open.",
         "a4_gullet_b"
       ],
       [
-        "TODO",
+        "Send the barrow through first and watch it.",
         "e_a4_gullet_1"
       ]
     ]
@@ -636,10 +636,10 @@
     "i": "a4_gullet_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "both shutters set by hand and forty feet crossed in one interval, which is how the road is designed to be used and which works exactly as designed for the first time in the company's experience",
     "c": [
       [
-        "TODO 1",
+        "Go on to the teeth.",
         "a4_teeth"
       ]
     ]
@@ -648,11 +648,11 @@
     "i": "a4_gullet_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "forty feet crossed at a run with both shutters open, which is nine seconds of the worst heat and pressure anybody has felt, and which everybody survives with their eyebrows gone",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the teeth.",
         "a4_teeth"
       ]
     ]
@@ -661,8 +661,8 @@
     "i": "e_a4_gullet_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "the barrow sent through the fold first as a test, which is sensible, and which the fold closes on at the fourth second, and which tells the company the interval has changed without telling them the new one",
+    "e": "death|negative|The Interval Has Changed",
     "s": [
       "peril",
       "scary_imagery"
@@ -672,26 +672,26 @@
     "i": "a4_teeth",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the tooth gallery, where the road passes a mouth-fold and nine of the teeth stand through the worked wall like pillars, polished by nine hundred years of hands touching them for luck",
     "s": [
       "peril",
       "conflict"
     ],
     "c": [
       [
-        "TODO",
+        "Walk it without touching anything.",
         "a4_teeth_a"
       ],
       [
-        "TODO",
+        "Touch the ninth tooth, as everybody does.",
         "a4_teeth_b"
       ],
       [
-        "TODO",
+        "Sound the teeth with a hammer and listen.",
         "a4_teeth_c"
       ],
       [
-        "TODO",
+        "Take a tooth chip for Ilsabet.",
         "e_a4_teeth_1"
       ]
     ]
@@ -700,15 +700,15 @@
     "i": "a4_teeth_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a gallery walked with everybody's hands in their armpits, which is the only sensible way to walk it and takes eleven minutes and feels considerably longer",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the nest.",
         "a4_nest"
       ],
       [
-        "TODO 2",
+        "Go back and touch it after all.",
         "e_a4_teeth_2"
       ]
     ],
@@ -720,10 +720,10 @@
     "i": "a4_teeth_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the ninth tooth touched the way nine hundred years of couriers have touched it, which produces nothing at all except a smooth patch under the palm and a very slight change in the road's air",
     "c": [
       [
-        "TODO 1",
+        "Go on to the nest.",
         "a4_nest"
       ]
     ]
@@ -732,10 +732,10 @@
     "i": "a4_teeth_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the teeth sounded with a hammer and listened to along the wall, which tells Vurma the fold's thickness, the flank's tension and one thing she will not say out loud until the company is past it",
     "c": [
       [
-        "TODO 1",
+        "Go on to the nest.",
         "a4_nest"
       ]
     ]
@@ -744,8 +744,8 @@
     "i": "e_a4_teeth_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a tooth chip taken with a hammer and a cold chisel in a gallery where nine hundred years of couriers have known better than to try, and the fold's response arriving before the second blow lands",
+    "e": "death|negative|The Second Blow",
     "s": [
       "peril",
       "scary_imagery"
@@ -755,8 +755,8 @@
     "i": "e_a4_teeth_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a return down the gallery to touch the ninth tooth after all, because the company has come nine miles and somebody wants the luck, and the tooth being warmer on the second visit than it was on the first",
+    "e": "death|negative|Warmer On the Second Visit",
     "s": [
       "peril",
       "scary_imagery"
@@ -766,26 +766,26 @@
     "i": "a4_nest",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a stewards' nest built into the flank's fold: nine bunks, a stove, a shrine, and nine of the crown clerk's household asleep in shifts between deliveries",
     "s": [
       "peril",
       "conflict"
     ],
     "c": [
       [
-        "TODO",
+        "Go past them in their sleep.",
         "a4_nest_a"
       ],
       [
-        "TODO",
+        "Wake the shift leader and talk to him.",
         "a4_nest_b"
       ],
       [
-        "TODO",
+        "Take the nest quietly, one bunk at a time.",
         "a4_nest_c"
       ],
       [
-        "TODO",
+        "Fire the nest and go on down.",
         "e_a4_nest_1"
       ]
     ]
@@ -794,15 +794,15 @@
     "i": "a4_nest_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine sleeping stewards passed at the pace of a minute hand, and the ninth of them awake the whole time with his eyes open watching the company go by and not moving at all",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ],
       [
-        "TODO 2",
+        "Go back and deal with the one who was awake.",
         "e_a4_nest_2"
       ]
     ],
@@ -814,10 +814,10 @@
     "i": "a4_nest_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a shift leader woken and spoken to, who is a working man of fifty with a family in the counted city, who answers every question, and who asks in return only that the company not make his shift late",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ]
     ]
@@ -826,10 +826,10 @@
     "i": "a4_nest_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a nest taken one bunk at a time, in silence, which works for eight of them and is the ugliest eleven minutes in three books, and which nobody in the company ever describes to anybody afterwards",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ]
     ]
@@ -838,8 +838,8 @@
     "i": "e_a4_nest_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a stewards' nest fired in a fold of the flank, which puts smoke into a gallery with a living wall and no ventilation except the flank's own breathing, and which the flank breathes in",
+    "e": "death|negative|Smoke in the Fold",
     "s": [
       "peril",
       "scary_imagery"
@@ -849,8 +849,8 @@
     "i": "e_a4_nest_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a return to deal with the steward who was awake, which is the correct tactical instinct, and which puts the company back inside a nest of nine with eight of them now awake as well",
+    "e": "death|negative|The One Who Was Awake",
     "s": [
       "peril",
       "scary_imagery"
@@ -860,21 +860,21 @@
     "i": "a4_bridge",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a dwarf bridge across a fissure in the flank where the road cannot follow the hide: two hundred feet of span over something that is not rock and is not still",
     "s": [
       "peril"
     ],
     "c": [
       [
-        "TODO",
+        "Cross two at a time as the road standard requires.",
         "a4_bridge_a"
       ],
       [
-        "TODO",
+        "Cross all together, quickly, and be over it.",
         "a4_bridge_b"
       ],
       [
-        "TODO",
+        "Go down into the fissure and across the bottom.",
         "e_a4_bridge_1"
       ]
     ]
@@ -883,10 +883,10 @@
     "i": "a4_bridge_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "three crossings of two on a dwarf span over a fissure that exhales twice while the company is on it, which everybody survives and nobody looks down during",
     "c": [
       [
-        "TODO 1",
+        "Go on to the span's far works.",
         "a4_span"
       ]
     ]
@@ -895,11 +895,11 @@
     "i": "a4_bridge_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the whole company on a dwarf span at once against the road's own standard, which the span carries because dwarves built it to carry a train, and which costs everybody a memory they did not want",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the span's far works.",
         "a4_span"
       ]
     ]
@@ -908,8 +908,8 @@
     "i": "e_a4_bridge_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a descent into the fissure to cross at the bottom, on the reasonable grounds that a bottom is more solid than a span, and the bottom of the fissure being the part of the flank that the fissure is in",
+    "e": "death|negative|The Bottom of It",
     "s": [
       "peril",
       "scary_imagery"
@@ -919,22 +919,22 @@
     "i": "a4_span",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the span's far works: a dwarf winch house, a stack of replacement timbers dated by century, and a maintenance crew's hut with a kettle still warm on its stove",
     "c": [
       [
-        "TODO",
+        "Search the hut and read the crew's log.",
         "a4_span_a"
       ],
       [
-        "TODO",
+        "Take the winch's wire rope; you will want it.",
         "a4_span_b"
       ],
       [
-        "TODO",
+        "Wait for the crew to come back to the kettle.",
         "a4_span_c"
       ],
       [
-        "TODO",
+        "Cut the span behind you and burn the timbers.",
         "e_a4_span_1"
       ]
     ]
@@ -943,14 +943,14 @@
     "i": "a4_span_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a maintenance crew's log read at their own table: nine hundred years of span repairs, the current entry mid-sentence, and the sentence being about a movement in the fissure that has no precedent in the book",
     "c": [
       [
-        "TODO 1",
+        "Go on to the pillars.",
         "a4_pillars"
       ],
       [
-        "TODO 2",
+        "Wait for whoever was writing it.",
         "e_a4_span_2"
       ]
     ]
@@ -959,10 +959,10 @@
     "i": "a4_span_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "ninety feet of dwarf wire rope taken off a winch drum, which is the single most useful object on the wyrm-road and weighs forty pounds, and which Vurma carries herself without being asked",
     "c": [
       [
-        "TODO 1",
+        "Go on to the pillars.",
         "a4_pillars"
       ]
     ]
@@ -971,10 +971,10 @@
     "i": "a4_span_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "two hours in a warm hut waiting for a maintenance crew that does not come back, and a kettle that goes cold, and a log entry that stays mid-sentence on the table under a lamp",
     "c": [
       [
-        "TODO 1",
+        "Go on to the pillars.",
         "a4_pillars"
       ]
     ]
@@ -983,8 +983,8 @@
     "i": "e_a4_span_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a dwarf span cut behind the company to close the road, and the timbers fired, which strands the company nine miles down a gallery with one exit and closes the only route by which anybody could come to it",
+    "e": "death|negative|The Only Route",
     "s": [
       "peril",
       "scary_imagery"
@@ -994,25 +994,25 @@
     "i": "e_a4_span_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|negative|TODO"
+    "b": "a wait for whoever was writing the log, which ends at the ninth minute when the fissure's movement arrives and the writer comes back up out of it to finish the sentence",
+    "e": "setback|negative|To Finish the Sentence"
   },
   {
     "i": "a4_pillars",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the pillar hall, where the dwarves have propped the gallery roof with nine hundred years of dwarf columns, each one carved with the year of its raising and the name of the crew",
     "c": [
       [
-        "TODO",
+        "Read the last nine columns' inscriptions.",
         "a4_pillars_a"
       ],
       [
-        "TODO",
+        "Walk the hall and touch nothing.",
         "a4_camp"
       ],
       [
-        "TODO",
+        "Cut a column's inscription out for the record.",
         "e_a4_pillars_1"
       ]
     ]
@@ -1021,10 +1021,10 @@
     "i": "a4_pillars_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine column inscriptions read, one per century, and the last one raised this spring by a crew of nine whose names are cut into it and whose ninth name has been chiselled out again",
     "c": [
       [
-        "TODO 1",
+        "Go on to the camp.",
         "a4_camp"
       ]
     ]
@@ -1033,21 +1033,21 @@
     "i": "e_a4_pillars_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|neutral|TODO"
+    "b": "an inscription cut out of a load-bearing dwarf column for the record, which removes eleven pounds of stone from a pillar holding a gallery roof under a mountain, and which the pillar accepts for about four hours",
+    "e": "setback|neutral|Eleven Pounds"
   },
   {
     "i": "a4_camp",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a dwarf way-camp in the pillar hall: benches, a flue that vents somewhere clever, water, and nine bunks with blankets folded on eight of them",
     "c": [
       [
-        "TODO",
+        "Take six hours and the flue.",
         "a4_camp_a"
       ],
       [
-        "TODO",
+        "Press on; the door is four miles down.",
         "a4_crowndoor"
       ]
     ]
@@ -1056,11 +1056,11 @@
     "i": "a4_camp_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "six hours in a dwarf way-camp with a working flue, taken by a company that has learned to take them, and which is the last sleep anybody in the Ninth Sword gets before the crown door",
     "x": "vigor+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ]
     ]
@@ -1069,18 +1069,18 @@
     "i": "a4_eye",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the place where the road passes the head: a worked gallery with one wall of dwarf stone and one wall that has an eye in it, nine feet across, lidded, and the lid has been open since autumn",
     "c": [
       [
-        "TODO",
+        "Stand in front of it and let it look at you.",
         "a4_eye_a"
       ],
       [
-        "TODO",
+        "Go past below the sight-line, on your belly.",
         "a4_eye_b"
       ],
       [
-        "TODO",
+        "Speak to it. It is awake and it is listening.",
         "e_a4_eye_1"
       ]
     ]
@@ -1089,10 +1089,10 @@
     "i": "a4_eye_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine minutes standing in front of a nine-foot eye, which does not blink and does not move and does not need to, and at the end of which everybody in the company knows they have been counted individually",
     "c": [
       [
-        "TODO 1",
+        "Go on to the dream gallery.",
         "a4_dream"
       ]
     ]
@@ -1101,11 +1101,11 @@
     "i": "a4_eye_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a hundred yards crossed on bellies below the sight-line with packs pushed ahead, which the dwarves cut a ledge for and which nine hundred years of couriers have used, and which works",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the dream gallery.",
         "a4_dream"
       ]
     ]
@@ -1114,25 +1114,25 @@
     "i": "e_a4_eye_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "a company captain speaking aloud to a nine-foot eye in a dwarf gallery, and being answered, not in sound but in arithmetic, and the answer being an offer with a term, a rate and a collateral",
+    "e": "capture|negative|Spoken To, In Numbers"
   },
   {
     "i": "a4_dream",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the dream gallery below the head, where nine hundred years of couriers have written on the walls what they heard here, in nine hands and eleven languages, all of it the same three sentences",
     "c": [
       [
-        "TODO",
+        "Read the walls properly with Ilsabet.",
         "a4_dream_a"
       ],
       [
-        "TODO",
+        "Walk it fast with your ears stopped.",
         "a4_whisper"
       ],
       [
-        "TODO",
+        "Add your own line to the wall.",
         "e_a4_dream_1"
       ]
     ]
@@ -1141,10 +1141,10 @@
     "i": "a4_dream_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a wall read properly: the same three sentences in eleven languages, which are an offer, a term and a price, and which every courier who has ever walked this gallery has heard in their own head in their own tongue",
     "c": [
       [
-        "TODO 1",
+        "Go on to the whisper stretch.",
         "a4_whisper"
       ]
     ]
@@ -1153,25 +1153,25 @@
     "i": "e_a4_dream_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|neutral|TODO"
+    "b": "a line added to nine hundred years of the dream gallery's wall by somebody in the company who wanted to answer, and the answer being read, and the reading being what the gallery is for",
+    "e": "setback|neutral|A Line Added"
   },
   {
     "i": "a4_whisper",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the whisper stretch, four hundred yards where the flank's breathing makes words out of the gallery's own echoes, and where the words are in the voices of people the company has buried",
     "c": [
       [
-        "TODO",
+        "Walk it with the count called aloud to drown it.",
         "a4_whisper_a"
       ],
       [
-        "TODO",
+        "Walk it in silence and let it say what it says.",
         "a4_whisper_b"
       ],
       [
-        "TODO",
+        "Answer the voice that sounds like Ferrin.",
         "e_a4_whisper_1"
       ]
     ]
@@ -1180,10 +1180,10 @@
     "i": "a4_whisper_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "four hundred yards walked with Kettle calling a marching count aloud the whole way, which drowns most of it and does not drown all of it, and which everybody afterwards pretends worked",
     "c": [
       [
-        "TODO 1",
+        "Go on to the pact ledge.",
         "a4_pact"
       ]
     ]
@@ -1192,11 +1192,11 @@
     "i": "a4_whisper_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "four hundred yards walked in silence, listening, and every person in the company hearing something different and none of them discussing it, and Nyre stopping once and then walking on",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the pact ledge.",
         "a4_pact"
       ]
     ]
@@ -1205,25 +1205,25 @@
     "i": "e_a4_whisper_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "a voice answered in the whisper stretch because it sounded like somebody's brother, and the answering being the transaction, and four hundred yards of gallery that the rest of the company walks alone",
+    "e": "capture|negative|It Sounded Like Him"
   },
   {
     "i": "a4_pact",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a dwarf ledge below the head where the road widens and the flank's own voice can be heard clearly, and where Ashendrel makes the company the offer it has made nine times before",
     "c": [
       [
-        "TODO",
+        "Hear the terms out in full and write them down.",
         "a4_pact_a"
       ],
       [
-        "TODO",
+        "Refuse to hear them and walk on down the road.",
         "a4_pact_b"
       ],
       [
-        "TODO",
+        "Accept the terms on the spot.",
         "e_a4_pact_1"
       ]
     ]
@@ -1232,11 +1232,11 @@
     "i": "a4_pact_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the terms heard out in full and written down by Ilsabet in a shorthand that shakes: the count ends, the doors open, the arrears are paid once, in one payment, and the frontier is free of it afterwards",
     "x": "wyrm_pact=true",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ]
     ]
@@ -1245,11 +1245,11 @@
     "i": "a4_pact_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the terms refused unheard, out loud, by a captain who has learned in three books what hearing an offer costs, and a flank that accepts the refusal without any apparent interest in it",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door road.",
         "a4_crowndoor"
       ]
     ]
@@ -1258,33 +1258,33 @@
     "i": "e_a4_pact_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "terms accepted on a dwarf ledge without being written down, by a company that has been nine miles inside a living thing and cannot be blamed for wanting it over, and a payment that begins immediately",
+    "e": "capture|negative|Accepted On the Spot"
   },
   {
     "i": "a4_stewards",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a steward station at the road's four-mile mark: nine of the crown clerk's household with a rota, a lamp rack and a ledger, entirely unarmed and entirely unafraid of a Warden company",
     "s": [
       "peril",
       "conflict"
     ],
     "c": [
       [
-        "TODO",
+        "Take the station by force and hold it.",
         "a4_stewards_a"
       ],
       [
-        "TODO",
+        "Go past on the charter and let them log it.",
         "a4_stewards_b"
       ],
       [
-        "TODO",
+        "Have Nyre put the Reckoning's own question to them.",
         "a4_stewards_c"
       ],
       [
-        "TODO",
+        "Kill them all; they are the arrangement.",
         "e_a4_stewards_1"
       ]
     ]
@@ -1293,15 +1293,15 @@
     "i": "a4_stewards_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a station taken by force from nine unarmed civil servants, which takes ninety seconds, and which the company finds harder afterwards than any fight it has had in three books",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the tithe hall.",
         "a4_tithe"
       ],
       [
-        "TODO 2",
+        "Make them sign the station over formally.",
         "e_a4_stewards_2"
       ]
     ],
@@ -1313,10 +1313,10 @@
     "i": "a4_stewards_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a charter presented at a steward station, logged, countersigned, and handed back with directions, a warning about the ninth minute and an offer of hot water",
     "c": [
       [
-        "TODO 1",
+        "Go on to the tithe hall.",
         "a4_tithe"
       ]
     ]
@@ -1325,10 +1325,10 @@
     "i": "a4_stewards_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the Reckoning's own question put to nine stewards by a sister of the order, which four of them cannot answer, and which one of them answers by resigning his post on the spot and walking up the road alone",
     "c": [
       [
-        "TODO 1",
+        "Go on to the tithe hall.",
         "a4_tithe"
       ]
     ]
@@ -1337,8 +1337,8 @@
     "i": "e_a4_stewards_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "nine unarmed stewards killed at a station four miles from the crown door because they are the arrangement, which is true, and which turns a Warden company into the thing the counted city has always said would come",
+    "e": "death|negative|The Thing They Warned About",
     "s": [
       "peril",
       "scary_imagery"
@@ -1348,8 +1348,8 @@
     "i": "e_a4_stewards_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a station signed over formally under duress by nine civil servants, in triplicate, with the company's names on it, which is a document that will be read at an inquiry with exactly the emphasis you would expect",
+    "e": "death|negative|Signed Under Duress",
     "s": [
       "peril",
       "scary_imagery"
@@ -1359,18 +1359,18 @@
     "i": "a4_tithe",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the tithe hall at the road's last widening: nine alcoves where the ninth-hour deliveries wait their turn, four of them occupied, and a steward with a book calling the order",
     "c": [
       [
-        "TODO",
+        "Stop the calling and empty the alcoves.",
         "a4_tithe_a"
       ],
       [
-        "TODO",
+        "Ask the steward how the order is decided.",
         "a4_tithe_b"
       ],
       [
-        "TODO",
+        "Take the book and read the whole delivery order.",
         "e_a4_tithe_1"
       ]
     ]
@@ -1379,10 +1379,10 @@
     "i": "a4_tithe_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a steward's answer about the order of calling: by arrears, oldest first, with households given nine days' notice and the notice served by the chapel, and he has served four hundred of them",
     "c": [
       [
-        "TODO 1",
+        "Go on to the shrine.",
         "a4_shrine"
       ]
     ]
@@ -1391,11 +1391,11 @@
     "i": "a4_tithe_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a delivery book taken and read: nine hundred years of order, and today's page with four names on it, and tomorrow's page with five, and five is not a number this book has used before",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the shrine.",
         "a4_shrine"
       ]
     ]
@@ -1404,25 +1404,25 @@
     "i": "e_a4_tithe_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "a tithe hall's calling stopped and four alcoves emptied by force, and four people who will not leave the hall, and a steward who simply enters the interruption in his book and calls the next four",
+    "e": "capture|negative|Calls the Next Four"
   },
   {
     "i": "a4_shrine",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the road's own shrine at the last bend: dwarf work, older than the Compact, with nine niches and eight founding tokens in them and a plate under the ninth reading in the founder's hand",
     "c": [
       [
-        "TODO",
+        "Read the plate under the ninth niche.",
         "a4_shrine_a"
       ],
       [
-        "TODO",
+        "Put one of your own irons in the ninth niche.",
         "a4_lamplighter"
       ],
       [
-        "TODO",
+        "Leave the shrine; you have read three of these.",
         "e_a4_shrine_1"
       ]
     ]
@@ -1431,10 +1431,10 @@
     "i": "a4_shrine_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the founder's plate read: not a dedication but an instruction, in dwarf, telling whoever holds the ninth hand what the office is actually for and what happens on the day nobody holds it",
     "c": [
       [
-        "TODO 1",
+        "Go on to the lamplighter.",
         "a4_lamplighter"
       ]
     ]
@@ -1443,25 +1443,25 @@
     "i": "e_a4_shrine_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|neutral|TODO"
+    "b": "one of the company's own carried irons set in the road shrine's ninth niche, which the niche accepts, and which the road's whole arithmetic accepts, and which is now somebody else's iron in somebody else's schedule",
+    "e": "setback|neutral|Given to the Niche"
   },
   {
     "i": "a4_lamplighter",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the road's last lamplighter, a woman of sixty who has walked this stretch every ninth day for forty years, who knows the interval, the fold, the eye and the door, and who is not afraid of any of them",
     "c": [
       [
-        "TODO",
+        "Ask her to walk the company down to the door.",
         "a4_lamplighter_a"
       ],
       [
-        "TODO",
+        "Ask her what she has seen at the door itself.",
         "a4_lamplighter_b"
       ],
       [
-        "TODO",
+        "Ask her to come down the mountain and testify.",
         "e_a4_lamplighter_1"
       ]
     ]
@@ -1470,10 +1470,10 @@
     "i": "a4_lamplighter_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "forty years of the wyrm-road's experience walking at the head of the company for the last four miles, which is worth more than the wire rope, the charter and both irons put together",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door.",
         "a4_crowndoor"
       ]
     ]
@@ -1482,11 +1482,11 @@
     "i": "a4_lamplighter_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "her account of the door: the ring, the hours, the crown clerk's household, the four deliveries a month, and the one time in forty years that the ring was opened and what came out of it as far as the tithe hall",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door.",
         "a4_crowndoor"
       ]
     ]
@@ -1495,29 +1495,29 @@
     "i": "e_a4_lamplighter_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "a lamplighter of forty years' standing asked to leave the road and testify, and refusing, and explaining why in one sentence about the ninth day and who lights the lamps if she is not there",
+    "e": "capture|negative|Who Lights Them"
   },
   {
     "i": "a4_wing",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the wing-vault at the road's shoulder, where the flank's forelimb folds against the rock and the dwarves have cut the gallery through the fold with nine props and a warning cut into the lintel",
     "c": [
       [
-        "TODO",
+        "Read the lintel warning and obey it.",
         "a4_wing_a"
       ],
       [
-        "TODO",
+        "Go through fast on the props' inside line.",
         "a4_wing_b"
       ],
       [
-        "TODO",
+        "Wait for the fold to open and go in the gap.",
         "a4_wing_c"
       ],
       [
-        "TODO",
+        "Cut a prop out; it is in the way of the barrow.",
         "e_a4_wing_1"
       ]
     ]
@@ -1526,14 +1526,14 @@
     "i": "a4_wing_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the lintel warning read and obeyed to the letter, which means going through in threes on the ninth minute with hands off the props, and which is the only way anybody has ever come out of this vault",
     "c": [
       [
-        "TODO 1",
+        "Go on to the claw gallery.",
         "a4_claw"
       ],
       [
-        "TODO 2",
+        "Go back for the barrow through the vault.",
         "e_a4_wing_2"
       ]
     ]
@@ -1542,10 +1542,10 @@
     "i": "a4_wing_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the props' inside line taken at speed, which is eleven feet from the fold and works, and which leaves everybody's ears ringing from a movement that happens a yard behind the last person through",
     "c": [
       [
-        "TODO 1",
+        "Go on to the claw gallery.",
         "a4_claw"
       ]
     ]
@@ -1554,10 +1554,10 @@
     "i": "a4_wing_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the fold's opening waited for and used, which takes forty minutes and gives the company a clean, wide, entirely undramatic crossing, and which Vurma calls the first competent thing anybody has done today",
     "c": [
       [
-        "TODO 1",
+        "Go on to the claw gallery.",
         "a4_claw"
       ]
     ]
@@ -1566,8 +1566,8 @@
     "i": "e_a4_wing_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a dwarf prop cut out of a wing-vault because a barrow will not fit past it, in a fold that moves on a nine-minute count, with eight remaining props that were cut for nine",
+    "e": "death|negative|Eight Props",
     "s": [
       "peril",
       "scary_imagery"
@@ -1577,28 +1577,28 @@
     "i": "e_a4_wing_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|negative|TODO"
+    "b": "a return through the wing-vault for the barrow, alone, on the ninth minute, by somebody who counted correctly on the way through the first time and counted from the wrong end on the way back",
+    "e": "setback|negative|From the Wrong End"
   },
   {
     "i": "a4_claw",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the claw gallery, where a foreclaw the size of a gatehouse comes through the worked wall and the dwarves have cut the road around it with nine feet of clearance",
     "s": [
       "peril"
     ],
     "c": [
       [
-        "TODO",
+        "Take the nine feet of clearance carefully.",
         "a4_claw_a"
       ],
       [
-        "TODO",
+        "Go over the claw where the road is widest.",
         "a4_claw_b"
       ],
       [
-        "TODO",
+        "Wait; it moved last week and may move again.",
         "e_a4_claw_1"
       ]
     ]
@@ -1607,10 +1607,10 @@
     "i": "a4_claw_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine feet of clearance taken one at a time with the barrow passed hand to hand, which is exactly as much clearance as the dwarves said it was and not one inch more",
     "c": [
       [
-        "TODO 1",
+        "Go on to the hoard.",
         "a4_hoard"
       ]
     ]
@@ -1619,11 +1619,11 @@
     "i": "a4_claw_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the claw climbed over at the road's widest point, which is quicker and puts five people's boots on something that has not been walked on since the founding and notices being walked on",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the hoard.",
         "a4_hoard"
       ]
     ]
@@ -1632,8 +1632,8 @@
     "i": "e_a4_claw_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "an hour spent waiting to see whether a foreclaw will move again, in a gallery whose only other feature is the claw, and the claw moving at the fifty-first minute in a direction the dwarves did not cut for",
+    "e": "death|negative|The Fifty-First Minute",
     "s": [
       "peril",
       "scary_imagery"
@@ -1643,22 +1643,22 @@
     "i": "a4_hoard",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the hoard bay, which is not treasure: nine hundred years of what the counted city has sent down and Ashendrel has not consumed, sorted, stacked and catalogued by the stewards",
     "c": [
       [
-        "TODO",
+        "Take the catalogue and nothing else.",
         "a4_hoard_a"
       ],
       [
-        "TODO",
+        "Take what is portable and valuable.",
         "a4_hoard_b"
       ],
       [
-        "TODO",
+        "Take nothing and go on to the door.",
         "a4_crowndoor"
       ],
       [
-        "TODO",
+        "Look for the two Warden patrols in the stacks.",
         "e_a4_hoard_1"
       ]
     ]
@@ -1667,10 +1667,10 @@
     "i": "a4_hoard_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a nine-hundred-year catalogue taken off a steward's desk in the hoard bay, four pounds of it, which is a receipt for everything the frontier has paid and the only document that names all of it",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door.",
         "a4_crowndoor"
       ]
     ]
@@ -1679,10 +1679,10 @@
     "i": "a4_hoard_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "forty pounds of portable value taken out of a hoard bay by people who have not been paid since Sarnhold, which is fair salvage by every free-company standard and will read very badly in a report",
     "c": [
       [
-        "TODO 1",
+        "Go on to the crown door.",
         "a4_crowndoor"
       ]
     ]
@@ -1691,8 +1691,8 @@
     "i": "e_a4_hoard_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a search of the hoard stacks for two lost Warden patrols, which finds them, catalogued, tagged and shelved by year, and which is where the company is standing when the ninth-hour delivery arrives to add to the shelves",
+    "e": "death|negative|Catalogued By Year",
     "s": [
       "peril",
       "scary_imagery"
@@ -1702,18 +1702,18 @@
     "i": "a4_crowndoor",
     "r": "climax",
     "w": 80,
-    "b": "TODO",
+    "b": "the last bend of the wyrm-road, and the crown door of Kar Ashen standing in a socket ring at the end of it: nine sockets, eight filled, the ninth worn bright, and the whole nine miles of flank behind you leading to whatever is on the far side of it",
     "c": [
       [
-        "TODO",
+        "Go up to the ring and look at the sockets.",
         "a5_ring"
       ],
       [
-        "TODO",
+        "Speak to it before you touch anything.",
         "a5_sockets"
       ],
       [
-        "TODO",
+        "Walk straight into the ring and get it done.",
         "a5_voice"
       ]
     ]

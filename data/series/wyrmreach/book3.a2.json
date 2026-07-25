@@ -3,34 +3,34 @@
     "i": "a2_ward",
     "r": "choice",
     "w": 80,
-    "b": "TODO",
+    "b": "the outer ward of Kar Ashen inside the crown gate, and it is inhabited: lamps lit on every corner, a tally-yard working, a market, and four hundred people going about a morning under a mountain",
     "c": [
       [
-        "TODO",
+        "Take the gatehouse stair and the wheelhouse.",
         "a2_gatehouse"
       ],
       [
-        "TODO",
+        "Cross to the tally-yard and its clerks.",
         "a2_tallyyard"
       ],
       [
-        "TODO",
+        "Follow the cistern channel under the ward.",
         "a2_cistern"
       ],
       [
-        "TODO",
+        "Try the garrison barracks on the wall.",
         "a2_barracks"
       ],
       [
-        "TODO",
+        "Walk into the ward market.",
         "a2_market"
       ],
       [
-        "TODO",
+        "Find the yardmaster and ask who runs this.",
         "a2_yardmaster"
       ],
       [
-        "TODO",
+        "Turn round and go back out through the gate.",
         "e_a2_ward_1"
       ]
     ]
@@ -39,29 +39,29 @@
     "i": "e_a2_ward_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|neutral|TODO"
+    "b": "the crown gate reached, the ward seen, and the road taken back down inside the hour, which is a decision Thane will accept and a company that will never afterwards be able to explain the four hundred people",
+    "e": "setback|neutral|Back Out Through the Gate"
   },
   {
     "i": "a2_gatehouse",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the gatehouse stair inside the crown gate, manned: two gate wardens in cloaks that fit them, a signing book, and a queue of ward children waiting to have their lamps refilled",
     "c": [
       [
-        "TODO",
+        "Sign the book like any traveller.",
         "a2_gatehouse_a"
       ],
       [
-        "TODO",
+        "Ask the wardens who signs the book above them.",
         "a2_gatehouse_b"
       ],
       [
-        "TODO",
+        "Ask the children what the lamps are for.",
         "a2_gatehouse_c"
       ],
       [
-        "TODO",
+        "Refuse to sign and go past them.",
         "e_a2_gatehouse_1"
       ]
     ]
@@ -70,14 +70,14 @@
     "i": "a2_gatehouse_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the book signed and countersigned by a gate warden who reads the entry twice, checks the pack, and enters a number against it that is not the number of people in the company",
     "c": [
       [
-        "TODO 1",
+        "Go up to the wheelhouse.",
         "a2_wheelhouse"
       ],
       [
-        "TODO 2",
+        "Ask him what the number against your entry means.",
         "e_a2_gatehouse_2"
       ]
     ]
@@ -86,10 +86,10 @@
     "i": "a2_gatehouse_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the question about who signs above them answered without hesitation: the yardmaster, and above him the chapel, and above the chapel the crown clerk, who has held the office since the warden's grandfather",
     "c": [
       [
-        "TODO 1",
+        "Go up to the wheelhouse.",
         "a2_wheelhouse"
       ]
     ]
@@ -98,10 +98,10 @@
     "i": "a2_gatehouse_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine ward children with nine lamps, explaining the refill rota to a stranger with the patience of people who have never once been asked, and one of them explaining what the ninth lamp is always kept for",
     "c": [
       [
-        "TODO 1",
+        "Go up to the wheelhouse.",
         "a2_wheelhouse"
       ]
     ]
@@ -110,8 +110,8 @@
     "i": "e_a2_gatehouse_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a refusal to sign a signing book inside a working city, in front of two gate wardens and thirty witnesses, and a ward that does not need violence because it has a gate and the company is now inside it",
+    "e": "death|negative|Inside, Unsigned",
     "s": [
       "peril",
       "scary_imagery"
@@ -121,28 +121,28 @@
     "i": "e_a2_gatehouse_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|negative|TODO"
+    "b": "a question asked about a number entered against the company's name, and answered honestly by a gate warden reading upside down: it is the number the crown clerk requires, and it is nine",
+    "e": "setback|negative|The Number Against Your Name"
   },
   {
     "i": "a2_wheelhouse",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the gate's wheelhouse: a dwarf capstan the size of a room that closes the crown gate, its ratchet oiled this week, and its pawl chained back with a Warden chain that has been cut and mended",
     "s": [
       "peril"
     ],
     "c": [
       [
-        "TODO",
+        "Jam the ratchet so the gate cannot be closed.",
         "a2_wheelhouse_a"
       ],
       [
-        "TODO",
+        "Leave the wheel alone and look at the chain.",
         "a2_wheelhouse_b"
       ],
       [
-        "TODO",
+        "Cut the chain and drop the pawl now.",
         "e_a2_wheelhouse_1"
       ]
     ]
@@ -151,10 +151,10 @@
     "i": "a2_wheelhouse_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the ratchet jammed with a moor-iron pick and a wedge of dwarf oak, quietly, in four minutes, which means the crown gate cannot be shut behind the company by anybody in the ward",
     "c": [
       [
-        "TODO 1",
+        "Go on to the foundry.",
         "a2_foundry"
       ]
     ]
@@ -163,11 +163,11 @@
     "i": "a2_wheelhouse_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the Warden chain examined: cut once with a cold chisel and mended with a Guild splice, which dates the cutting to this spring and the mending to the same week as a survey nobody came back from",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the foundry.",
         "a2_foundry"
       ]
     ]
@@ -176,8 +176,8 @@
     "i": "e_a2_wheelhouse_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a pawl dropped on a dwarf capstan the size of a room, which closes the crown gate with a noise the whole ward hears, and which announces to four hundred people that somebody has arrived who does not want the gate shut",
+    "e": "death|negative|The Pawl Dropped",
     "s": [
       "peril",
       "scary_imagery"
@@ -187,26 +187,26 @@
     "i": "a2_foundry",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the drowned foundry under the ward wall: eleven inches of water on the floor, four furnaces cold since the founding, and something living in the casting pit that the ward feeds on the ninth",
     "s": [
       "peril",
       "conflict"
     ],
     "c": [
       [
-        "TODO",
+        "Go through fast along the moulding floor.",
         "a2_foundry_a"
       ],
       [
-        "TODO",
+        "Go round by the pattern shop and the chimney.",
         "a2_foundry_b"
       ],
       [
-        "TODO",
+        "Put down what the ward puts down and walk.",
         "a2_foundry_c"
       ],
       [
-        "TODO",
+        "Empty the casting pit with the pumps and see.",
         "e_a2_foundry_1"
       ]
     ]
@@ -215,15 +215,15 @@
     "i": "a2_foundry_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a fast crossing of a flooded moulding floor with something coming out of the casting pit behind you at a pace that suggests it has done this before and expects to be outrun",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the slag heaps.",
         "a2_slag"
       ],
       [
-        "TODO 2",
+        "Turn and hold the doorway rather than run.",
         "e_a2_foundry_2"
       ]
     ],
@@ -235,10 +235,10 @@
     "i": "a2_foundry_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "round by the pattern shop, which is dry, full of nine-hundred-year-old casting patterns for key-irons in every gauge, and open at the far end onto the chimney's base",
     "c": [
       [
-        "TODO 1",
+        "Go on to the slag heaps.",
         "a2_slag"
       ]
     ]
@@ -247,10 +247,10 @@
     "i": "a2_foundry_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a ward offering put down at the pit's lip, the way the lamp-children do it, and eleven minutes of walking past a casting pit that accepts the arrangement without complaint",
     "c": [
       [
-        "TODO 1",
+        "Go on to the slag heaps.",
         "a2_slag"
       ]
     ]
@@ -259,8 +259,8 @@
     "i": "e_a2_foundry_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a casting pit emptied with the ward's own pumps to see what the ward has been feeding, which takes two hours, and which shows the company exactly what is in there in the last four inches",
+    "e": "death|negative|The Last Four Inches",
     "s": [
       "peril",
       "scary_imagery"
@@ -270,8 +270,8 @@
     "i": "e_a2_foundry_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a doorway held on a flooded moulding floor instead of running, which is the correct tactical choice against most things and is the wrong one against something that has been fed on schedule for nine hundred years",
+    "e": "death|negative|Holding the Doorway",
     "s": [
       "peril",
       "scary_imagery"
@@ -281,22 +281,22 @@
     "i": "a2_slag",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the slag heaps behind the foundry, warm, nine hundred years deep, with founding-gauge blanks tipped out among the slag where the mint has been discarding rejects since before the legion",
     "c": [
       [
-        "TODO",
+        "Dig the reject blanks out of the slag.",
         "a2_slag_a"
       ],
       [
-        "TODO",
+        "Take a slag sample for Ilsabet and go.",
         "a2_slag_b"
       ],
       [
-        "TODO",
+        "Leave the heaps; they are somebody's records.",
         "a2_deepstair"
       ],
       [
-        "TODO",
+        "Dig into the heap where it is warmest.",
         "e_a2_slag_1"
       ]
     ]
@@ -305,10 +305,10 @@
     "i": "a2_slag_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "four reject blanks dug out of warm slag, each one mis-struck in a different way, and each one still heavy enough and cold enough in the hand to be worth carrying up a mountain",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -317,10 +317,10 @@
     "i": "a2_slag_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a slag sample taken and read by a hedge-thaumaturge over a candle, which tells her the mint has been cutting irons continuously for nine hundred years and stopped, entirely, eleven days ago",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -329,8 +329,8 @@
     "i": "e_a2_slag_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a dig into the warmest part of a nine-hundred-year slag heap, which is warm because it is still working, and which has been working on the mint's other rejects, the ones that were not blanks",
+    "e": "death|negative|Where It Is Warmest",
     "s": [
       "peril",
       "scary_imagery"
@@ -340,18 +340,18 @@
     "i": "a2_tallyyard",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the tally-yard of the outer ward, working: eleven clerks at standing desks, a weighing floor, and a queue of ward families waiting to have their household counts entered for the month",
     "c": [
       [
-        "TODO",
+        "Join the queue and have the company counted.",
         "a2_tallyyard_a"
       ],
       [
-        "TODO",
+        "Go straight to the head clerk and show the charter.",
         "a2_tallyyard_b"
       ],
       [
-        "TODO",
+        "Tip a clerk's desk over and stop the queue.",
         "e_a2_tallyyard_1"
       ]
     ]
@@ -360,10 +360,10 @@
     "i": "a2_tallyyard_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the company entered in the ward's own count as five, which a clerk does without looking up, and then corrects to nine at the bottom of the entry without being asked and without explaining",
     "c": [
       [
-        "TODO 1",
+        "Go and look at the scales.",
         "a2_scales"
       ]
     ]
@@ -372,11 +372,11 @@
     "i": "a2_tallyyard_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a Warden charter presented to a head clerk who reads it, thanks the captain, files a copy, and continues the morning's counting, because a charter is a document and the count is the count",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go and look at the scales.",
         "a2_scales"
       ]
     ]
@@ -385,25 +385,25 @@
     "i": "e_a2_tallyyard_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "a clerk's desk tipped over in a working tally-yard in front of eleven clerks and forty families, and the queue simply reforming around it, and the ward's own constables arriving with a form already filled in",
+    "e": "capture|negative|The Queue Reforms"
   },
   {
     "i": "a2_scales",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the yard's weighing floor: a dwarf balance with nine pans, in daily use, weighing nothing that can be seen, with a clerk entering results in a book after each empty weighing",
     "c": [
       [
-        "TODO",
+        "Read over the clerk's shoulder.",
         "a2_scales_a"
       ],
       [
-        "TODO",
+        "Leave the scales; you will not like the answer.",
         "a2_clerks"
       ],
       [
-        "TODO",
+        "Stand on the ninth pan yourself.",
         "e_a2_scales_1"
       ]
     ]
@@ -412,10 +412,10 @@
     "i": "a2_scales_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the clerk's book read over his shoulder: nine columns, one per pan, and in each column a name and a weight, and today's ninth column blank with the pan sitting a quarter inch low",
     "c": [
       [
-        "TODO 1",
+        "Go on to the clerks' hall.",
         "a2_clerks"
       ]
     ]
@@ -424,25 +424,25 @@
     "i": "e_a2_scales_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|neutral|TODO"
+    "b": "a company captain standing on the ninth pan of a dwarf balance in a working tally-yard, which the clerk records without comment, and which produces a weight, and a name, and neither of them the captain's",
+    "e": "setback|neutral|On the Ninth Pan"
   },
   {
     "i": "a2_clerks",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the clerks' hall behind the yard, where eleven people keep the ward's arithmetic and one of them, an old woman at the end desk, has been keeping the crown ledger's copies for forty years",
     "c": [
       [
-        "TODO",
+        "Ask the old woman for the copies.",
         "a2_clerks_a"
       ],
       [
-        "TODO",
+        "Ask her what happens to a household that falls behind.",
         "a2_clerks_b"
       ],
       [
-        "TODO",
+        "Take the copies off her desk while she is at the yard.",
         "e_a2_clerks_1"
       ]
     ]
@@ -451,10 +451,10 @@
     "i": "a2_clerks_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the copies handed over without argument by a woman who has been waiting forty years for somebody to ask, and who wants a receipt, and who writes the receipt herself",
     "c": [
       [
-        "TODO 1",
+        "Go through to the cells.",
         "a2_cells"
       ]
     ]
@@ -463,11 +463,11 @@
     "i": "a2_clerks_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the answer given flatly across a desk: a household that falls behind is carried by the ward for three months, and then it is entered in the ninth column, and then it is not a household",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go through to the cells.",
         "a2_cells"
       ]
     ]
@@ -476,33 +476,33 @@
     "i": "e_a2_clerks_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "forty years of crown-ledger copies taken off an old clerk's desk while she was at the yard, and the theft noticed inside the hour, and the ward's constables holding the company in the clerks' hall until the crown clerk can come down",
+    "e": "capture|negative|Off Her Desk"
   },
   {
     "i": "a2_cells",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward cells under the clerks' hall: nine of them, eight occupied by people who have fallen behind and are waiting quietly, and the ninth standing open and swept",
     "s": [
       "peril",
       "conflict"
     ],
     "c": [
       [
-        "TODO",
+        "Open the eight and get them out.",
         "a2_cells_a"
       ],
       [
-        "TODO",
+        "Talk to the eight through the grilles first.",
         "a2_cells_b"
       ],
       [
-        "TODO",
+        "Look into the ninth cell.",
         "a2_cells_c"
       ],
       [
-        "TODO",
+        "Take the ninth cell's occupant's place and see what comes.",
         "e_a2_cells_1"
       ]
     ]
@@ -511,15 +511,15 @@
     "i": "a2_cells_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "eight cell doors opened with Kettle's picks, and eight people who do not come out, because the arrangement is that they are carried down on the ninth and their households are cleared, and they have families in the ward",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ],
       [
-        "TODO 2",
+        "Carry them out anyway, over the objections.",
         "e_a2_cells_2"
       ]
     ],
@@ -531,10 +531,10 @@
     "i": "a2_cells_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "eleven minutes of conversation through grilles with eight people who are entirely reconciled to the arrangement and are worried, specifically, about whether the company's arrival will disrupt the schedule",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -543,10 +543,10 @@
     "i": "a2_cells_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the ninth cell looked into: swept, warm, with nine tally-marks cut into the plaster at eye height and a fresh tenth begun, and the sweeping done from the inside",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -555,8 +555,8 @@
     "i": "e_a2_cells_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "the ninth cell entered deliberately and its door pulled to, because somebody in this company wanted to know what the swept cell is for, and the ninth hour arriving on schedule to collect what is in it",
+    "e": "death|negative|The Swept Cell",
     "s": [
       "peril",
       "scary_imagery"
@@ -566,8 +566,8 @@
     "i": "e_a2_cells_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "eight people carried out of ward cells over their own objections and their families' objections, and a ward that does not fight the company for them, and a schedule that appoints eight others by the ninth hour and adds the carriers to the list",
+    "e": "death|negative|Carried Out Anyway",
     "s": [
       "peril",
       "scary_imagery"
@@ -577,21 +577,21 @@
     "i": "a2_cistern",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the cistern channel under the outer ward: a dwarf conduit four feet high running full, with an inspection grating every hundred feet and warm water coming down it from somewhere above the city",
     "s": [
       "peril"
     ],
     "c": [
       [
-        "TODO",
+        "Wade it upstream to the ward gratings.",
         "a2_cistern_a"
       ],
       [
-        "TODO",
+        "Go along the maintenance ledge above the water.",
         "a2_cistern_b"
       ],
       [
-        "TODO",
+        "Follow the warm water down instead of up.",
         "e_a2_cistern_1"
       ]
     ]
@@ -600,10 +600,10 @@
     "i": "a2_cistern_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a quarter mile waded upstream in warm water against a current that has come off something the size of a mountain, arriving under the ward at a grating that lifts from below",
     "c": [
       [
-        "TODO 1",
+        "Go on to the drowned quarter.",
         "a2_drowned"
       ]
     ]
@@ -612,11 +612,11 @@
     "i": "a2_cistern_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the maintenance ledge above the water, eleven inches wide and slick with nine centuries of mineral, taken in the dark with the current going the other way underneath",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the drowned quarter.",
         "a2_drowned"
       ]
     ]
@@ -625,8 +625,8 @@
     "i": "e_a2_cistern_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "the warm water followed downstream instead of up, on the entirely reasonable grounds that the source is what matters, and the conduit's outfall being where the ward's ninth-hour deliveries go",
+    "e": "death|negative|Downstream",
     "s": [
       "peril",
       "scary_imagery"
@@ -636,22 +636,22 @@
     "i": "a2_drowned",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the drowned quarter under the ward: eleven streets of dwarf housing flooded to the lintels, lamps burning above the waterline in every ninth window, and a boat chained at the steps",
     "c": [
       [
-        "TODO",
+        "Take the chained boat and pole the streets.",
         "a2_drowned_a"
       ],
       [
-        "TODO",
+        "Wade the shallow street by the temple wall.",
         "a2_drowned_b"
       ],
       [
-        "TODO",
+        "Climb the roofs and cross the quarter above it.",
         "a2_drowned_c"
       ],
       [
-        "TODO",
+        "Break into a lit ninth-window house.",
         "e_a2_drowned_1"
       ]
     ]
@@ -660,14 +660,14 @@
     "i": "a2_drowned_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a chained boat cut loose and poled down eleven flooded streets, past lit ninth windows with nobody at any of them, in water that is warm and does not smell like water should",
     "c": [
       [
-        "TODO 1",
+        "Go on to the pump house.",
         "a2_pumps"
       ],
       [
-        "TODO 2",
+        "Put in at one of the lit houses on the way.",
         "e_a2_drowned_2"
       ]
     ]
@@ -676,10 +676,10 @@
     "i": "a2_drowned_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the shallow street by the temple wall, thigh-deep, with the temple's own east wall carrying a tally in groups of nine from the waterline to the roof",
     "c": [
       [
-        "TODO 1",
+        "Go on to the pump house.",
         "a2_pumps"
       ]
     ]
@@ -688,10 +688,10 @@
     "i": "a2_drowned_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the roofs of the drowned quarter crossed above the water in the dark, dwarf slate holding under boots, with the whole ward's lamplight underneath and nine of the windows lit",
     "c": [
       [
-        "TODO 1",
+        "Go on to the pump house.",
         "a2_pumps"
       ]
     ]
@@ -700,8 +700,8 @@
     "i": "e_a2_drowned_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a lit ninth-window house broken into above the waterline, which has a table laid for nine, and a ninth place set, and the eight occupied by the household that fell behind three months ago and has been carried since",
+    "e": "death|negative|Laid For Nine",
     "s": [
       "peril",
       "scary_imagery"
@@ -711,29 +711,29 @@
     "i": "e_a2_drowned_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|negative|TODO"
+    "b": "a boat put in at a lit house on the way past, because a lamp in a window at least means somebody, and the somebody turning out to be the arrangement rather than a household",
+    "e": "setback|negative|Put In At the Lit House"
   },
   {
     "i": "a2_pumps",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward pump house, still working, nine dwarf pumps in a row with three of them turning and a maintenance book that has been kept faithfully by hand for nine hundred years",
     "c": [
       [
-        "TODO",
+        "Read the maintenance book from the back.",
         "a2_pumps_a"
       ],
       [
-        "TODO",
+        "Start the other six pumps and drain the quarter.",
         "a2_pumps_b"
       ],
       [
-        "TODO",
+        "Take the pump house tools and go.",
         "a2_eels"
       ],
       [
-        "TODO",
+        "Stop the three that are turning.",
         "e_a2_pumps_1"
       ]
     ]
@@ -742,10 +742,10 @@
     "i": "a2_pumps_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the maintenance book read from the back: nine hundred years of entries, one hand per century, and the current hand starting eleven days ago in the middle of a page",
     "c": [
       [
-        "TODO 1",
+        "Go on to the eel channel.",
         "a2_eels"
       ]
     ]
@@ -754,10 +754,10 @@
     "i": "a2_pumps_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a dwarf toolkit taken out of a working pump house: spanners, a bearing puller, and a spool of the wire the dwarves used for gauge work, which Vurma values above everything else in the ward",
     "c": [
       [
-        "TODO 1",
+        "Go on to the eel channel.",
         "a2_eels"
       ]
     ]
@@ -766,8 +766,8 @@
     "i": "e_a2_pumps_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "three working pumps stopped in a pump house that has kept eleven streets from filling for nine hundred years, and the water coming up through the drowned quarter's roofs within the hour, and the ward's response being to send its constables to the pump house rather than the water",
+    "e": "death|negative|The Three That Were Turning",
     "s": [
       "peril",
       "scary_imagery"
@@ -777,26 +777,26 @@
     "i": "a2_eels",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the eel channel behind the pump house, a dwarf sluice full of pale eels nine feet long that the ward farms and feeds, and a farmer standing on the walkway with a bucket at the ninth hour",
     "s": [
       "peril",
       "conflict"
     ],
     "c": [
       [
-        "TODO",
+        "Take the walkway past the farmer.",
         "a2_eels_a"
       ],
       [
-        "TODO",
+        "Ask the farmer what he feeds them.",
         "a2_eels_b"
       ],
       [
-        "TODO",
+        "Wait for him to finish the ninth-hour feed.",
         "a2_eels_c"
       ],
       [
-        "TODO",
+        "Kill the eels and be done with it.",
         "e_a2_eels_1"
       ]
     ]
@@ -805,15 +805,15 @@
     "i": "a2_eels_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a walkway crossed with a farmer's bucket going into the channel beside you and eleven feet of pale eel coming up out of it for the contents, which are not fish and were not fish yesterday",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ],
       [
-        "TODO 2",
+        "Ask him whose turn the bucket was.",
         "e_a2_eels_2"
       ]
     ],
@@ -825,10 +825,10 @@
     "i": "a2_eels_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the farmer's answer, given as a man gives a trade answer: the eels take what the ward's ninth column allots, and he has farmed them for thirty years, and his father did",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -837,10 +837,10 @@
     "i": "a2_eels_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "an hour on the walkway waiting out the ninth-hour feed, watching the whole transaction from beginning to end, and understanding by the end of it what the ward's arithmetic actually is",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -849,8 +849,8 @@
     "i": "e_a2_eels_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "nine feet of pale eel attacked in its own sluice by a company that has had enough of the arrangement, in a channel with a walkway eleven inches wide, with eight more eels in the water",
+    "e": "death|negative|In Its Own Sluice",
     "s": [
       "peril",
       "scary_imagery"
@@ -860,8 +860,8 @@
     "i": "e_a2_eels_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a farmer asked whose turn the bucket was, and answering, and the name being one the company heard in a cell an hour ago, and the farmer waiting politely for the next question",
+    "e": "death|negative|Whose Turn It Was",
     "s": [
       "peril",
       "scary_imagery"
@@ -871,22 +871,22 @@
     "i": "a2_barracks",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward's garrison barracks on the wall: forty bunks, twenty occupied by ward militia who salute a Warden charter properly, and a sergeant who has been holding the wall for the crown clerk for nineteen years",
     "c": [
       [
-        "TODO",
+        "Ask the sergeant to put the ward under Warden orders.",
         "a2_barracks_a"
       ],
       [
-        "TODO",
+        "Ask him what the militia is holding the wall against.",
         "a2_barracks_b"
       ],
       [
-        "TODO",
+        "Rest the company here on the charter's authority.",
         "a2_wall"
       ],
       [
-        "TODO",
+        "Try to arrest the sergeant on the charter.",
         "e_a2_barracks_1"
       ]
     ]
@@ -895,10 +895,10 @@
     "i": "a2_barracks_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the ward under Warden orders on paper, which the sergeant accepts, salutes, files, and then explains cannot be executed, because the militia's own count is kept by the crown clerk and not by him",
     "c": [
       [
-        "TODO 1",
+        "Go up onto the wall.",
         "a2_wall"
       ]
     ]
@@ -907,10 +907,10 @@
     "i": "a2_barracks_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the answer given on the wall itself, pointing outward: not the road and not the spine, but the ninth-hour file coming up out of the city below, which the militia's whole standing order is to let through",
     "c": [
       [
-        "TODO 1",
+        "Go up onto the wall.",
         "a2_wall"
       ]
     ]
@@ -919,8 +919,8 @@
     "i": "e_a2_barracks_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a ward militia sergeant arrested on a Warden charter in his own barracks in front of twenty men, and twenty men who do not intervene, and a crown clerk's constables who arrive to take custody of everybody including the charter",
+    "e": "death|negative|Arrested on the Charter",
     "s": [
       "peril",
       "scary_imagery"
@@ -930,26 +930,26 @@
     "i": "a2_wall",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward wall's inner walk, where the city proper drops away below in lamplight, and where four things in Warden cloaks are coming up the stair toward the walk in step",
     "s": [
       "peril",
       "conflict"
     ],
     "c": [
       [
-        "TODO",
+        "Hold the stair head with shields.",
         "a2_wall_a"
       ],
       [
-        "TODO",
+        "Get off the walk into the barracks.",
         "a2_wall_b"
       ],
       [
-        "TODO",
+        "Give them the road and stand aside.",
         "a2_wall_c"
       ],
       [
-        "TODO",
+        "Go over the parapet onto the roofs.",
         "e_a2_wall_1"
       ]
     ]
@@ -958,15 +958,15 @@
     "i": "a2_wall_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a stair head held with shields against four things that fight like drilled men because they were drilled men, and which costs the company blood and buys the walk",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the bell tower.",
         "a2_bell"
       ],
       [
-        "TODO 2",
+        "Follow them back down the stair.",
         "e_a2_wall_2"
       ]
     ],
@@ -978,10 +978,10 @@
     "i": "a2_wall_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the barracks door taken at a run with twenty militia inside who close it behind the company and then stand at their posts as though nothing at all is passing on the walk",
     "c": [
       [
-        "TODO 1",
+        "Go on to the bell tower.",
         "a2_bell"
       ]
     ]
@@ -990,10 +990,10 @@
     "i": "a2_wall_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the road given and the company standing aside against the parapet while four of them go past in step, close enough to touch, and none of the four turning a head",
     "c": [
       [
-        "TODO 1",
+        "Go on to the bell tower.",
         "a2_bell"
       ]
     ]
@@ -1002,8 +1002,8 @@
     "i": "e_a2_wall_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a parapet gone over onto the drowned quarter's roofs in the dark, which is a nine-hundred-year-old slate roof over eleven feet of warm water, and which has been holding that water in the dark for a long time without being walked on",
+    "e": "death|negative|Over the Parapet",
     "s": [
       "peril",
       "scary_imagery"
@@ -1013,8 +1013,8 @@
     "i": "e_a2_wall_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "four of them followed back down the stair into the city proper, which is where they were going anyway, and which is where the rest of the shift is forming up for the ninth hour",
+    "e": "death|negative|Back Down the Stair",
     "s": [
       "peril",
       "scary_imagery"
@@ -1024,21 +1024,21 @@
     "i": "a2_bell",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward bell tower: a dwarf bell the height of a man, rung on the ninth hour every ninth day, with a rope that has been spliced by nine generations of ringers",
     "s": [
       "peril"
     ],
     "c": [
       [
-        "TODO",
+        "Cut the bell rope and take it with you.",
         "a2_bell_a"
       ],
       [
-        "TODO",
+        "Ring it now, off the hour, and see what happens.",
         "a2_bell_b"
       ],
       [
-        "TODO",
+        "Leave the bell; it is not the arrangement.",
         "e_a2_bell_1"
       ]
     ]
@@ -1047,10 +1047,10 @@
     "i": "a2_bell_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the bell rope cut and coiled, nine generations of splices in forty feet of hemp, which stops nothing at all because the ward's ringers keep a spare and have kept one since the founding",
     "c": [
       [
-        "TODO 1",
+        "Go and take a billet.",
         "a2_billet"
       ]
     ]
@@ -1059,11 +1059,11 @@
     "i": "a2_bell_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the bell rung off the hour, once, which empties the ward's streets in ninety seconds, and which brings the crown clerk's constables to the tower door with a form and no particular hurry",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go and take a billet.",
         "a2_billet"
       ]
     ]
@@ -1072,8 +1072,8 @@
     "i": "e_a2_bell_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "the bell left alone and the tower's own log read instead, which lists every ringing for nine hundred years, and which has tomorrow's ninth-hour ringing entered in it already with the company's number against it",
+    "e": "death|negative|Tomorrow's Ringing",
     "s": [
       "peril",
       "scary_imagery"
@@ -1083,14 +1083,14 @@
     "i": "a2_billet",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "a billet in the ward's travellers' house, clean, warm, with nine beds in the room and one of them made up and unoccupied and clearly kept that way",
     "c": [
       [
-        "TODO",
+        "Take four beds and leave the ninth alone.",
         "a2_billet_a"
       ],
       [
-        "TODO",
+        "Sleep in the ninth bed out of principle.",
         "a2_deepstair"
       ]
     ]
@@ -1099,11 +1099,11 @@
     "i": "a2_billet_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a night in a warm ward billet with four beds used and the ninth left made, and nothing at all happening, and everybody sleeping better than they will admit to in the morning",
     "x": "vigor+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -1112,18 +1112,18 @@
     "i": "a2_market",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward market at midday: bread, iron, rope, lamp oil by the ninth, and a stall selling tally-blanks to households the way a stall elsewhere would sell nails",
     "c": [
       [
-        "TODO",
+        "Ask the blank-seller who buys them.",
         "a2_market_a"
       ],
       [
-        "TODO",
+        "Buy nine blanks and ask for a receipt.",
         "a2_market_b"
       ],
       [
-        "TODO",
+        "Turn the blank stall over and scatter it.",
         "e_a2_market_1"
       ]
     ]
@@ -1132,10 +1132,10 @@
     "i": "a2_market_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the blank-seller's answer, given as trade: households buy them for the ninth-column entries, one per name, and he has sold four hundred this season and expects to sell nine more today",
     "c": [
       [
-        "TODO 1",
+        "Go and talk to the beggars.",
         "a2_beggars"
       ]
     ]
@@ -1144,11 +1144,11 @@
     "i": "a2_market_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine blanks bought at market price with a written receipt in the seller's own hand, which is now the plainest single piece of evidence anybody has ever taken off this mountain",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go and talk to the beggars.",
         "a2_beggars"
       ]
     ]
@@ -1157,25 +1157,25 @@
     "i": "e_a2_market_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "a blank stall turned over in a working ward market, and four hundred people who stop, and pick the blanks up, and hand them back to the seller one at a time, and then look at the company",
+    "e": "capture|negative|They Hand Them Back"
   },
   {
     "i": "a2_beggars",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward's uncounted, who sit at the market's edge and are not in any column: nine of them, fed by the market's leavings, and entirely willing to talk to strangers for bread",
     "c": [
       [
-        "TODO",
+        "Buy them bread and hear the whole ward's history.",
         "a2_beggars_a"
       ],
       [
-        "TODO",
+        "Ask specifically how somebody becomes uncounted.",
         "a2_gaol"
       ],
       [
-        "TODO",
+        "Ask nothing; you are being watched from the yard.",
         "e_a2_beggars_1"
       ]
     ]
@@ -1184,10 +1184,10 @@
     "i": "a2_beggars_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "bread bought and an hour given, and nine uncounted delivering the ward's own history from underneath: which families were cleared, in which years, and what the crown clerk's hand looks like",
     "c": [
       [
-        "TODO 1",
+        "Go on to the ward gaol.",
         "a2_gaol"
       ]
     ]
@@ -1196,25 +1196,25 @@
     "i": "e_a2_beggars_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|neutral|TODO"
+    "b": "a question about becoming uncounted, answered in one sentence by the oldest of the nine, and the sentence being that you are uncounted when your name has been entered and taken, and that all nine of them have been",
+    "e": "setback|neutral|All Nine of Them"
   },
   {
     "i": "a2_gaol",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward gaol, which is not the cells: a proper stone gaol with a gaoler, four prisoners for ordinary crimes, and one cell at the end with a Warden in it who has been there since autumn",
     "c": [
       [
-        "TODO",
+        "Get the Warden out of the end cell.",
         "a2_gaol_a"
       ],
       [
-        "TODO",
+        "Question him through the door first.",
         "a2_gaol_b"
       ],
       [
-        "TODO",
+        "Leave him; you cannot carry a prisoner up a mountain.",
         "e_a2_gaol_1"
       ]
     ]
@@ -1223,10 +1223,10 @@
     "i": "a2_gaol_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a Warden of Thane's own command taken out of a ward gaol on a charter, four months in, thin and lucid and able to name every officer of the crown clerk's household from memory",
     "c": [
       [
-        "TODO 1",
+        "Go and find the lamp-keeper.",
         "a2_keeper"
       ]
     ]
@@ -1235,11 +1235,11 @@
     "i": "a2_gaol_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "eleven minutes through a cell door with a man who has had four months to arrange what he would say if anybody came: the hours, the file, the crown clerk, and where the mint's die is kept",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go and find the lamp-keeper.",
         "a2_keeper"
       ]
     ]
@@ -1248,25 +1248,25 @@
     "i": "e_a2_gaol_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "a Warden left in a ward gaol because a prisoner is a burden on a mountain, which is defensible, and which the gaoler enters in his book as the company declining custody, and which the crown clerk reads that evening",
+    "e": "capture|negative|Declining Custody"
   },
   {
     "i": "a2_keeper",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward's lamp-keeper, who holds the oil rota and the hour book and is the only person in Kar Ashen who can say precisely when the ninth hour falls, and who is nine years old",
     "c": [
       [
-        "TODO",
+        "Ask her for the hour book.",
         "a2_keeper_a"
       ],
       [
-        "TODO",
+        "Ask who taught her the rota.",
         "a2_keeper_b"
       ],
       [
-        "TODO",
+        "Take the hour book and go.",
         "e_a2_keeper_1"
       ]
     ]
@@ -1275,10 +1275,10 @@
     "i": "a2_keeper_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the hour book handed over by a nine-year-old on the strength of a Warden charter she cannot read, with the rota for the next nine days in it and a note in an adult hand about the crown door",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -1287,11 +1287,11 @@
     "i": "a2_keeper_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the answer given by a child who does not understand that it is remarkable: her mother taught her, and her mother was taught by the crown clerk himself, who teaches every keeper and has taught nine of them",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -1300,25 +1300,25 @@
     "i": "e_a2_keeper_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "an hour book taken off a nine-year-old lamp-keeper without asking, which she reports, because reporting is her job, and which brings the crown clerk's own household to the ward stair in under an hour",
+    "e": "capture|negative|Reported, Because It Is Her Job"
   },
   {
     "i": "a2_yardmaster",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the yardmaster of the outer ward, who administers four hundred people and their counts, and who has been expecting a Warden company since the ninth station's book was signed and has tea ready",
     "c": [
       [
-        "TODO",
+        "Sit down and hear how he justifies it.",
         "a2_yardmaster_a"
       ],
       [
-        "TODO",
+        "Put the charter on his table and take the ward.",
         "a2_yardmaster_b"
       ],
       [
-        "TODO",
+        "Ask him what happens to him if the count fails.",
         "e_a2_yardmaster_1"
       ]
     ]
@@ -1327,10 +1327,10 @@
     "i": "a2_yardmaster_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "two hours of tea and justification from a man who is neither stupid nor cruel: the ward is fed, warm, lit and safe, nobody is taken who has not fallen behind, and the alternative is what happened at Hollowmarch",
     "c": [
       [
-        "TODO 1",
+        "Go and see the ward stores.",
         "a2_stores"
       ]
     ]
@@ -1339,11 +1339,11 @@
     "i": "a2_yardmaster_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the charter on the table and the ward formally under Warden authority, which the yardmaster accepts with visible relief, and which changes nothing at all about the ninth hour",
     "x": "renown+1",
     "c": [
       [
-        "TODO 1",
+        "Go and see the ward stores.",
         "a2_stores"
       ]
     ]
@@ -1352,29 +1352,29 @@
     "i": "e_a2_yardmaster_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "capture|negative|TODO"
+    "b": "the question asked of a yardmaster about his own position if the count fails, and answered honestly, and the answer being that he is the ninth column's first entry and has been for nineteen years",
+    "e": "capture|negative|The First Entry"
   },
   {
     "i": "a2_stores",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward stores: nine hundred years of grain, oil and salt in dwarf bins, better stocked than Sarnhold, with a written allocation for every household and nine bins that are not allocated at all",
     "c": [
       [
-        "TODO",
+        "Open the nine unallocated bins.",
         "a2_stores_a"
       ],
       [
-        "TODO",
+        "Take stores for the descent and sign for them.",
         "a2_stores_b"
       ],
       [
-        "TODO",
+        "Leave the stores; the ward will need them.",
         "a2_kiln"
       ],
       [
-        "TODO",
+        "Fire the oil bins and burn the ward's rota.",
         "e_a2_stores_1"
       ]
     ]
@@ -1383,10 +1383,10 @@
     "i": "a2_stores_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "nine unallocated bins opened: eight full of founding-gauge blanks packed in chaff, and the ninth full of household goods, boots and children's coats, sorted by size",
     "c": [
       [
-        "TODO 1",
+        "Go on to the kiln.",
         "a2_kiln"
       ]
     ]
@@ -1395,10 +1395,10 @@
     "i": "a2_stores_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a month of stores drawn and signed for at ward prices, which the storekeeper enters without comment, and which is the last honest transaction anybody in the company makes in Kar Ashen",
     "c": [
       [
-        "TODO 1",
+        "Go on to the kiln.",
         "a2_kiln"
       ]
     ]
@@ -1407,8 +1407,8 @@
     "i": "e_a2_stores_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "the oil bins fired to burn a rota, in a stone city with nine hundred years of oil in it, and a fire that does not spread because dwarf stores are cut to contain exactly this, and a ward that now knows what the company is",
+    "e": "death|negative|Nine Hundred Years of Oil",
     "s": [
       "peril",
       "scary_imagery"
@@ -1418,26 +1418,26 @@
     "i": "a2_kiln",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward kiln behind the stores, hot, tended, with a firing on: nine saggars in the chamber and a kiln-master who will not open it before the hour and cannot say what is in them",
     "s": [
       "peril",
       "conflict"
     ],
     "c": [
       [
-        "TODO",
+        "Open the kiln now and look in the saggars.",
         "a2_kiln_a"
       ],
       [
-        "TODO",
+        "Wait for the firing to finish with him.",
         "a2_kiln_b"
       ],
       [
-        "TODO",
+        "Take the kiln-master's book and go.",
         "a2_kiln_c"
       ],
       [
-        "TODO",
+        "Break the saggars where they stand.",
         "e_a2_kiln_1"
       ]
     ]
@@ -1446,15 +1446,15 @@
     "i": "a2_kiln_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "a kiln opened four hours early, which ruins the firing, and which shows the company nine saggars containing nine sets of tally-blanks bedded in sand, each one already cut with a name",
     "x": "vigor-1",
     "c": [
       [
-        "TODO 1",
+        "Go on to the ward watch.",
         "a2_watch"
       ],
       [
-        "TODO 2",
+        "Take a saggar's contents with you.",
         "e_a2_kiln_2"
       ]
     ],
@@ -1466,10 +1466,10 @@
     "i": "a2_kiln_b",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "two hours waiting with a kiln-master who talks the whole time about clay, and a firing drawn at the proper hour, and nine saggars opened in front of the company by a man who did not know",
     "c": [
       [
-        "TODO 1",
+        "Go on to the ward watch.",
         "a2_watch"
       ]
     ]
@@ -1478,10 +1478,10 @@
     "i": "a2_kiln_c",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "the kiln-master's book taken with his consent: nine firings a season, one per ninth day, and the same nine names entered as the customer every time for nineteen years",
     "c": [
       [
-        "TODO 1",
+        "Go on to the ward watch.",
         "a2_watch"
       ]
     ]
@@ -1490,8 +1490,8 @@
     "i": "e_a2_kiln_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "nine saggars broken in a hot kiln chamber with a moor-iron pick, which destroys nine sets of cut blanks, and which the ward's arithmetic treats as an arrears rather than a loss, and arrears fall on whoever is nearest",
+    "e": "death|negative|Broken Where They Stood",
     "s": [
       "peril",
       "scary_imagery"
@@ -1501,8 +1501,8 @@
     "i": "e_a2_kiln_2",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "death|negative|TODO",
+    "b": "a saggar's contents taken out of a working kiln, nine cut blanks in sand, and the ninth blank in the set turning out to be cut with a name the captain has been carrying in a pack since Gallowmere",
+    "e": "death|negative|The Ninth Blank",
     "s": [
       "peril",
       "scary_imagery"
@@ -1512,18 +1512,18 @@
     "i": "a2_watch",
     "r": "choice",
     "w": 62,
-    "b": "TODO",
+    "b": "the ward watch house at the head of the deep stair, where the militia keeps the city's own log, and where the log for tomorrow has already been written in the crown clerk's hand",
     "c": [
       [
-        "TODO",
+        "Read tomorrow's log entry.",
         "a2_watch_a"
       ],
       [
-        "TODO",
+        "Sign in for the deep stair and go down.",
         "a2_deepstair"
       ],
       [
-        "TODO",
+        "Take the log and carry it down with you.",
         "e_a2_watch_1"
       ]
     ]
@@ -1532,10 +1532,10 @@
     "i": "a2_watch_a",
     "r": "rising",
     "w": 55,
-    "b": "TODO",
+    "b": "tomorrow's entry read at a watch house desk: the ninth-hour file, its numbers, its route, and at the bottom of it a company of five entered as arriving at the crown door, with the hour left blank",
     "c": [
       [
-        "TODO 1",
+        "Go down the deep stair.",
         "a2_deepstair"
       ]
     ]
@@ -1544,25 +1544,25 @@
     "i": "e_a2_watch_1",
     "r": "failure",
     "w": 58,
-    "b": "TODO",
-    "e": "setback|neutral|TODO"
+    "b": "a city log taken off a watch house desk and carried down a deep stair, which the watch reports at once because the log is the city, and which means the company goes down into Kar Ashen with the city awake behind it",
+    "e": "setback|neutral|The Log Goes Down With You"
   },
   {
     "i": "a2_deepstair",
     "r": "climax",
     "w": 80,
-    "b": "TODO",
+    "b": "the deep stair at the ward's inner edge, nine feet wide, cut for traffic, going down in long flights into the counted city itself: lamplight all the way down, and warm air coming up smelling of forge and stone and something under both",
     "c": [
       [
-        "TODO",
+        "Go down in order with lamps lit.",
         "a3_plaza"
       ],
       [
-        "TODO",
+        "Go down at the ninth hour behind the file.",
         "a3_chapel"
       ],
       [
-        "TODO",
+        "Rope the stair and send Kettle a flight ahead.",
         "a3_mint"
       ]
     ]
