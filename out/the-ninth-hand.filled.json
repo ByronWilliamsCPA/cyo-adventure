@@ -20,7 +20,7 @@
       "sacrifice"
     ],
     "estimated_minutes": 14,
-    "ending_count": 232,
+    "ending_count": 187,
     "content_flags": {
       "violence": "moderate",
       "scariness": "intense",
@@ -51,9 +51,9 @@
       "name": "renown",
       "type": "int",
       "initial": 3,
-      "min": 3,
+      "min": 0,
       "max": 5,
-      "description": "Carried: the standing of the company that shut two of the Compact's doors."
+      "description": "Carried from book 2, which can end anywhere in 0-5: the range must contain the sender's or the client clamps low-reputation outcomes away."
     },
     {
       "name": "iron_key",
@@ -140,15 +140,22 @@
     },
     {
       "id": "e_n_start_1",
-      "body": "The company rides out of Sarnhold before anybody has laid eyes on it, west and downhill with two irons still in the pack. It is a defensible decision for about four hours. By evening a chartered company that has failed to report to a Commandant is simply five people with stolen Warden property, and it takes one afternoon to become that.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_n_start_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Nobody's Company"
-      }
+      "body": "The company is four hours west and downhill before Ilsabet says the word evidence out loud, and the arithmetic lands on all of them at once: a chartered company that has not reported is five people carrying stolen Warden property. They turn around in the dark and ride back up the way they came. The gate crew logs the hour of return, and that hour will be read out at every inquiry that follows.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_n_start_1_1",
+          "label": "Turn back and sign in properly.",
+          "target": "a0_gatehouse_a"
+        }
+      ]
     },
     {
       "id": "a0_gatehouse",
@@ -220,15 +227,22 @@
     },
     {
       "id": "e_a0_gatehouse_1",
-      "body": "A chartered company walks past a provost's inspection on its own authority, which the charter arguably permits. The gate crew has been drilled for exactly that eventuality since autumn. The pack is cut off a shoulder in the archway by somebody who knew where the irons were and did not have to look twice for them.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_gatehouse_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Taken at the Gate"
-      },
+      "body": "The pack is cut off a shoulder in the archway by somebody who knew exactly where the irons rode and did not have to look twice for them. Dellach has him against the wall in three steps and the pack back in four, which is fast enough to keep the irons and not nearly quiet enough. Every warden on the gate now knows what the Ninth Sword is carrying up the mountain.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_gatehouse_1_1",
+          "label": "Take the pack straight to Thane.",
+          "target": "a0_commandant"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -236,15 +250,22 @@
     },
     {
       "id": "e_a0_gatehouse_2",
-      "body": "The provost's seals are demanded back an hour after they were given, which is a confession of second thoughts made in front of eleven witnesses. The charter is suspended pending an inquiry. The inquiry will sit in the spring, and the crown door's nine days will have been over for two months by then.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_gatehouse_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "Second Thoughts, in Writing"
-      }
+      "body": "The provost's seals are demanded back an hour after they were given, in front of eleven witnesses, which is a confession of second thoughts entered permanently into the record. The provost returns them without comment and writes the hour down. Nothing is suspended and nothing is forgiven, and the company climbs to the map room holding a charter that is now a favour rather than a right.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_gatehouse_2_1",
+          "label": "Go up to the map room.",
+          "target": "a0_commandant_a"
+        }
+      ]
     },
     {
       "id": "a0_commandant",
@@ -301,15 +322,22 @@
     },
     {
       "id": "e_a0_commandant_1",
-      "body": "Thane decides, on reflection, that a company carrying two of the Compact's irons is evidence rather than a company. A fortress has cells for evidence and a procedure for holding it. The inquiry is scheduled for when the passes clear, which is nine weeks after the crown door's own schedule runs out.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_commandant_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "Evidence, Not a Company"
-      }
+      "body": "Thane decides, on reflection, that a company carrying two of the Compact's irons is evidence rather than a company. A fortress has a procedure for holding evidence. It takes Nyre two hours and a requisition citing her own order's interest to make that procedure inconvenient enough to abandon. Thane signs the orders instead, and signs them coldly, and the company rides out under a commander who has already tried once.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_commandant_1_1",
+          "label": "Take the orders and go.",
+          "target": "a0_orders"
+        }
+      ]
     },
     {
       "id": "a0_orders",
@@ -354,15 +382,22 @@
     },
     {
       "id": "e_a0_orders_1",
-      "body": "A Warden column is requested, refused, and minuted. Thane has four hundred men for two hundred miles of spine and a written reason for the placement of every one of them. The company stands in a map room being thanked for its service, which is what a refusal sounds like when it is delivered properly.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_orders_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "A Column, Refused"
-      }
+      "body": "The Warden column is requested, refused, and minuted. Thane has four hundred men for two hundred miles of spine and a written reason for the placement of every one of them, and he reads two of the reasons out. The company stands in a map room being thanked for its service, which is what a refusal sounds like when it is delivered properly.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_orders_1_1",
+          "label": "Go and draw what you can carry.",
+          "target": "a0_armoury_a"
+        }
+      ]
     },
     {
       "id": "a0_armoury",
@@ -417,15 +452,22 @@
     },
     {
       "id": "e_a0_armoury_1",
-      "body": "Everything is drawn and nothing is signed for, on the reasonable grounds that there is no time. The quartermaster swears his complaint before the provost within the hour. The charter survives the accusation and does not survive the delay, because the crown door is nine days off and the hearing is eleven.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_armoury_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Everything, Unsigned"
-      },
+      "body": "Everything is drawn and nothing is signed for, on the reasonable grounds that there is no time, and the quartermaster swears his complaint before the provost within the hour. The charter survives the accusation. It does not survive it cleanly, and every piece of kit the company carries up the road is kit that is already the subject of a charge.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_armoury_1_1",
+          "label": "Start the climb.",
+          "target": "a1_foot"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -486,15 +528,22 @@
     },
     {
       "id": "e_a0_legate_1",
-      "body": "The legate's escort is four novices and a receipt, which turns out to be enough. Two irons go into a coach with the Reckoning's seal on the door, properly signed for. The company stands in a fortress yard holding a piece of paper, three books of leverage lighter, watching southern horses turn out of the gate.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_legate_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "Into the Legate's Custody"
-      }
+      "body": "Two irons go into a coach with the Reckoning's seal on the door, properly signed for, receipted in a hand that has plainly done this before. It takes Nyre until dusk and a point of custody law her own order taught her to get them out again, and the legate yields with a smile that says the matter is only postponed. The company keeps the irons and loses any illusion that the Reckoning is a neutral party.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_legate_1_1",
+          "label": "Go with Nyre to the chapel.",
+          "target": "a0_chapel"
+        }
+      ]
     },
     {
       "id": "a0_chapel",
@@ -532,15 +581,22 @@
     },
     {
       "id": "e_a0_chapel_1",
-      "body": "The chaplain is asked the question he has spent six years not asking, in front of his own congregation, and he answers it. Then he rings the bell. It empties the chapel in ninety seconds and fills the provost's office instead, and the company spends the evening explaining a charter rather than reading a wall.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_chapel_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "The Question in the Chapel"
-      }
+      "body": "The chaplain answers the question he has spent six years not asking, in front of his own congregation, and then he rings the bell. It empties the chapel in ninety seconds and fills the provost's office instead. The company spends the evening explaining a charter rather than reading a wall, and comes back to the wall at midnight with nobody watching.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_chapel_1_1",
+          "label": "Come back to the relic wall later.",
+          "target": "a0_relics_a"
+        }
+      ]
     },
     {
       "id": "a0_relics",
@@ -595,15 +651,22 @@
     },
     {
       "id": "e_a0_relics_1",
-      "body": "The glass is broken in a Warden chapel to settle a question about a label. The answer arrives from the direction of the empty setting rather than from the glass, and it uses the captain's own name and the correct rank. Afterwards the fourth setting is no longer empty, and the label has been filled in.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_relics_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Fourth Setting"
-      },
+      "body": "The glass is broken in a Warden chapel to settle a question about a label, and the answer arrives from the direction of the empty setting rather than from the glass. It uses the captain's own name and the correct rank, once, and then stops. Nobody in the company sleeps properly again on this side of the spine, and the fourth setting is no longer empty when they look back from the door.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_relics_1_1",
+          "label": "Get out of the chapel.",
+          "target": "a0_novices_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -667,15 +730,22 @@
     },
     {
       "id": "e_a0_novices_1",
-      "body": "The jug goes out of a dormitory window in front of four novices of the mother house, which is satisfying for about nine seconds. Rell's complaint reaches the provost before the wine reaches the yard below. The charter is suspended for the length of an inquiry into conduct, and the inquiry is in no hurry.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_novices_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Out the Window"
-      },
+      "body": "The jug goes out of a dormitory window in front of four novices of the mother house, which is satisfying for about nine seconds. Rell's complaint reaches the provost before the wine reaches the yard below, and the provost, who has read the charter, files it without comment. The company goes up the road with the Reckoning's mother house now holding a grievance in writing.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_novices_1_1",
+          "label": "Get on the road.",
+          "target": "a0_road"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -736,15 +806,22 @@
     },
     {
       "id": "e_a0_guildhall_1",
-      "body": "The underwriting is signed and the Guild's money lands the same afternoon, which solves every practical problem the company has. A delving train is on the road inside the week with the company's own charts in its wagon-master's satchel. The charter's authority, from that morning on, belongs to whoever holds the paper.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_guildhall_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "Underwritten"
-      }
+      "body": "The underwriting is signed and the Guild's money lands the same afternoon, which solves every practical problem the company has and creates one whose edges nobody can see. Nyre reads the third clause twice on the stairs and stops walking. The charter's authority, from this morning on, belongs to whoever holds the paper, and the company has just handed the paper over for a season's wages.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_guildhall_1_1",
+          "label": "Go and copy the charts before the Guild does.",
+          "target": "a0_charts"
+        }
+      ]
     },
     {
       "id": "a0_charts",
@@ -789,15 +866,22 @@
     },
     {
       "id": "e_a0_charts_1",
-      "body": "The spring survey comes off the guildhall wall entire, which is faster than copying and leaves a rectangle of clean plaster. It is missed within the hour. The Guild's grievance at the provost's desk ends with the company's charts impounded as disputed property and the charter under review by supper.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_charts_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Off the Wall"
-      }
+      "body": "The spring survey comes off the guildhall wall entire, leaving a rectangle of clean plaster that is noticed inside the hour. The Guild's grievance reaches the provost's desk before supper and the charts are impounded as disputed property. Ilsabet has already copied the two sheets that matter onto the back of a kit list, which is the only reason the theft was worth anything at all.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_charts_1_1",
+          "label": "Take the copies to the forge.",
+          "target": "a0_forge_a"
+        }
+      ]
     },
     {
       "id": "a0_forge",
@@ -852,15 +936,22 @@
     },
     {
       "id": "e_a0_forge_1",
-      "body": "Two of the Compact's irons are handed to a Guild smith to be copied, and copies are made, and originals are handed back. Nobody in the company can say afterwards, with any certainty at all, which pair went into the pack and which pair stayed in Sarnhold. Neither can anybody else, which is the point.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_forge_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Copied, While You Wait"
-      },
+      "body": "Two of the Compact's irons are handed to a Guild smith to be copied, and copies are made, and the originals are handed back. Nobody in the company can say afterwards, with any certainty, which pair went into the pack. Ilsabet settles it at the second station with a gauge and four hours of quiet work, and the answer is that they were lucky, and that luck is not a method.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_forge_1_1",
+          "label": "Go and find out what the delvers know.",
+          "target": "a0_delvers_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -950,15 +1041,22 @@
     },
     {
       "id": "e_a0_delvers_1",
-      "body": "Steel drawn in a Guild yard inside a Warden fortress engages two jurisdictions at once, and both of them respond. The company is in the provost's cells by the ninth hour with its charter impounded and its irons in a strongbox, and the Guild's complaint and the provost's charge sheet arrive at Thane's desk together.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_delvers_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Two Jurisdictions"
-      },
+      "body": "Steel drawn in a Guild yard inside a Warden fortress engages two jurisdictions at once, and both of them respond inside the hour. The charter survives on the strength of who drew second and eleven witnesses who agree about it. The Guild's complaint and the provost's charge sheet reach Thane's desk together, and the company is on the road before either of them is answered.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_delvers_1_1",
+          "label": "Leave before the paperwork lands.",
+          "target": "a0_road"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -966,15 +1064,22 @@
     },
     {
       "id": "e_a0_delvers_2",
-      "body": "A yard fight pressed past the point where it was won turns four delvers into a Guild grievance, and a Guild grievance into a knife under a rib in a slush-filled yard that nobody was watching. It takes about four seconds. The Ninth Sword loses its captain forty miles from the road it came to walk.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_delvers_2",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Pressed Too Far"
-      },
+      "body": "A yard fight pressed past the point where it was already won turns four delvers into a Guild grievance, and the grievance into a knife that goes in under a rib in a slush-filled yard nobody was watching. It takes about four seconds. The captain of the Ninth Sword starts up the Ninefold Road nine days later with the stitches still in and a hand that will not close properly in the cold.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_delvers_2_1",
+          "label": "Start the climb anyway.",
+          "target": "a1_foot"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1033,15 +1138,22 @@
     },
     {
       "id": "e_a0_market_1",
-      "body": "The boy is asked who taught him to sell oil by the ninth, and he answers honestly, because he is nine and has no reason not to. The two men who have been standing behind his stall all morning decide the question is worth following up, and they follow it up in an alley off the market before dark.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_market_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Sold by the Ninth"
-      },
+      "body": "The boy answers honestly, because he is nine and has no reason not to, and names the clerk who taught him the measure. The two men who have been standing behind his stall all morning decide the answer is worth following up. Kettle spends the afternoon making sure they follow up the wrong five people, which works, and costs him a tooth and the use of a hand for a week.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_market_1_1",
+          "label": "Get off the market before dark.",
+          "target": "a0_taproom_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1102,15 +1214,22 @@
     },
     {
       "id": "e_a0_taproom_1",
-      "body": "An argument about Kar Duhn becomes an argument about the irons, in a room with a Rooks table in it and a pack on the floor under a bench. The company wakes in the provost's cells. The pack has been inventoried in somebody else's handwriting, and two entries on the list are ones nobody in the company recognises.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_taproom_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "The Hooked Lamp"
-      }
+      "body": "The company wakes in the provost's cells with the pack inventoried in somebody else's handwriting and two entries on the list that nobody in the company recognises. The irons are all still there, counted and countersigned, which is considerably worse than missing. Getting out takes the charter, an apology and most of the morning, and half the yard is waiting to watch them do it.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_taproom_1_1",
+          "label": "Out to the yard.",
+          "target": "a0_brawl"
+        }
+      ]
     },
     {
       "id": "a0_brawl",
@@ -1196,15 +1315,22 @@
     },
     {
       "id": "e_a0_brawl_1",
-      "body": "The grievance is sent up to Corrow rather than settled in the room, which is procedurally correct. Corrow arrives in Sarnhold two days later with a chartered company and a written complaint. The inquiry that follows keeps everybody off the spine until the passes close, which suits exactly one of the parties.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_brawl_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Take It to Your Captain"
-      },
+      "body": "The grievance is sent up to Corrow rather than settled in the room, which is procedurally correct and a good deal slower than the weather. Corrow's written complaint arrives two days later and is filed, and the inquiry it asks for is scheduled for after the passes close. The company keeps its charter and starts the climb knowing a chartered rival now holds a paper trail with their names in it.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_brawl_1_1",
+          "label": "Turn in for the night.",
+          "target": "a0_bunks"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1212,15 +1338,22 @@
     },
     {
       "id": "e_a0_brawl_2",
-      "body": "A yard fight is continued past the point of decision, in slush, in front of Wardens. The Rooks lieutenant does not get up the third time. A provost has no discretion at all in the matter of a killing inside a fortress, and the charter, the irons and the company's whole purpose end in the same hour.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_brawl_2",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Until He Stops Getting Up"
-      },
+      "body": "The yard fight is continued past the point of decision, in slush, in front of Wardens, and the Rooks lieutenant is slow getting up the third time. The provost arrives before there is a fourth. What the company keeps is its charter, and what it acquires is a reputation on the spine for not knowing when a thing is finished, which travels up the road considerably faster than the company does.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_brawl_2_1",
+          "label": "Get to the bunkroom.",
+          "target": "a0_bunks_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1317,15 +1450,22 @@
     },
     {
       "id": "e_a0_roster_1",
-      "body": "A hiring yard worked through carelessly at the end of a long day. One of the forty turns out to be a Reckoning novice under instruction with a writ folded in his boot. The company discovers the writ above the ice gallery rather than in the yard, which is nine days too late and four thousand feet too high.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_roster_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "One of the Forty"
-      }
+      "body": "The hiring yard is worked through at the end of a long day, and one of the forty turns out to be a Reckoning novice under instruction with a writ folded into his boot. Kettle finds it that night rather than above the ice gallery nine days later, which is the difference between a problem and a burial. The novice comes off the roster and goes straight back to Rell with everything he has already seen.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_roster_1_1",
+          "label": "Draw kit and go.",
+          "target": "a0_kit"
+        }
+      ]
     },
     {
       "id": "a0_kit",
@@ -1380,15 +1520,22 @@
     },
     {
       "id": "e_a0_kit_1",
-      "body": "One iron is left in the fortress strongbox for safekeeping, receipted properly, with two Wardens on the door. On the ninth night the strongbox is opened by two Wardens whose cloaks do not fit them. In the morning the receipt is the only iron the Ninth Sword owns, and receipts do not fit sockets.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_kit_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Left in the Strongbox"
-      },
+      "body": "One iron is left in the fortress strongbox for safekeeping, receipted properly, with two Wardens on the door. On the ninth night the strongbox is opened by two Wardens whose cloaks do not fit them, and Kettle, who has not trusted a strongbox since Kar Duhn, is asleep across the passage. He gets the iron back and one of the cloaks, and the man wearing it goes over the wall rather than answer for it.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_kit_1_1",
+          "label": "Get some sleep while you can.",
+          "target": "a0_night_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1500,15 +1647,22 @@
     },
     {
       "id": "e_a0_council_1",
-      "body": "The council runs until the Guild train has gone, the weather has turned, and the crown door's nine days have become four. Nobody makes a bad decision. Nobody makes any decision, which is worse, and the company is still arguing in a stable when the ninth station's lamps are lit for the last time that matters.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_council_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Still Arguing"
-      },
+      "body": "The council runs until the Guild train has gone, the weather has turned, and the crown door's nine days have quietly become six. Nobody makes a bad decision and nobody makes any decision at all, which is worse. They start the climb three days later than the road wanted them to, and every station above will be that much colder for it.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_council_1_1",
+          "label": "Get on the road.",
+          "target": "a0_road"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1516,15 +1670,22 @@
     },
     {
       "id": "e_a0_council_2",
-      "body": "Word is sent ahead to eleven counted stations that a chartered company is coming up on the charter, station by station, which is courteous and correct. It is read at the fourth station by exactly the wrong clerk. By the time the company reaches the third station, everything above it has had four days' notice.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_council_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "Word Sent Ahead"
-      }
+      "body": "Word is sent ahead to eleven counted stations that a chartered company is coming up on the charter, station by station, which is courteous and entirely correct. It is read at the fourth station by exactly the wrong clerk. By the time the company reaches the third station everything above it has had four days' notice, and the fourth station's book has a page torn out of it.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_council_2_1",
+          "label": "Start the climb.",
+          "target": "a1_foot"
+        }
+      ]
     },
     {
       "id": "a0_stables",
@@ -1579,15 +1740,22 @@
     },
     {
       "id": "e_a0_stables_1",
-      "body": "A place is taken on the Guild train, which is warm, fed and fast. At the second station the fourth wagon's load shifts and one crate's seal splits, and the company sees what it has been helping to haul up a mountain. The wagon-master's account of the discovery, given later, does not mention the company at all.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_stables_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Fourth Wagon"
-      },
+      "body": "At the second station the fourth wagon's load shifts and one crate's seal splits, and the company sees what it has been helping to haul up a mountain. The wagon-master's account of the discovery, given later, does not mention the company at all. They come off the train at the third station on their own feet, a day behind where they would have been, knowing exactly one thing more than they did.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_stables_1_1",
+          "label": "Get off the train and walk.",
+          "target": "a0_wagons_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1651,15 +1819,22 @@
     },
     {
       "id": "e_a0_wagons_1",
-      "body": "Guild business is left to the Guild, which is defensible, and the fourth wagon goes up the Ninefold Road a day ahead of the company. Everything that happens at the fourth station afterwards happens because of what was in it. The company reads about the first part of it in a station book and walks into the rest.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_wagons_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Guild's Business"
-      },
+      "body": "Guild business is left to the Guild, and the fourth wagon goes up the Ninefold Road a full day ahead of the company. Everything that happens at the fourth station afterwards happens because of what was inside it, and the company reads the first part of it in a station book. They will walk into the rest in four days, having chosen not to know.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_wagons_1_1",
+          "label": "Find the scouts who came down.",
+          "target": "a0_scouts"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1720,15 +1895,22 @@
     },
     {
       "id": "e_a0_scouts_1",
-      "body": "A scout is pressed for a route he has already refused twice, in front of his own officer, and he gives it up. The company gets the route. It also gets a Warden complaint that reaches the provost by evening, because a man who has been broken in front of his officer will find a way to be heard.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_scouts_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "Pressed a Third Time"
-      }
+      "body": "The scout gives up the route he has already refused twice, in front of his own officer, because he is pressed until refusing costs him more than telling. The company gets the route it came for. It also gets a Warden complaint that reaches the provost by evening, because a man broken in front of his officer will always find a way to be heard.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_scouts_1_1",
+          "label": "Say your goodbyes and go.",
+          "target": "a0_farewell"
+        }
+      ]
     },
     {
       "id": "a0_farewell",
@@ -1766,15 +1948,22 @@
     },
     {
       "id": "e_a0_farewell_1",
-      "body": "One letter is written and read aloud to the company in a fortress hall, which is not the custom and cannot be undone. It is well written, which makes it worse. Five people go up the Ninefold Road the following morning already grieving themselves, and morale does not survive the third station.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_farewell_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Read Aloud"
-      }
+      "body": "One letter is written and read aloud to the company in a fortress hall, which is not the custom and cannot be undone. It is well written, which makes it a good deal worse. Five people go up the Ninefold Road the following morning already grieving themselves, and the third station is where that begins to show in how they walk.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_farewell_1_1",
+          "label": "Start the climb.",
+          "target": "a1_foot"
+        }
+      ]
     },
     {
       "id": "a0_road",
@@ -1842,15 +2031,22 @@
     },
     {
       "id": "e_a1_foot_1",
-      "body": "The book is signed and the road is refused in the same movement, which is at least honest arithmetic. The company walks back into Sarnhold before noon to explain a charter it will not be keeping. Thane accepts the report without argument and files it, and files the charter with it, and that is the end of the Ninth Sword as a company of record.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_foot_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Signed, and Turned Round"
-      }
+      "body": "The book is signed and the road refused in the same movement, which is at least honest arithmetic, and the company gets four miles back down before it turns round again. What turns it is Nyre, and one sentence about what the count is actually for. They come back to the foot of the ice stair having lost half a day and any right to call the decision brave.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_foot_1_1",
+          "label": "Go back and take the ice stair.",
+          "target": "a1_ice_a"
+        }
+      ]
     },
     {
       "id": "a1_switch",
@@ -1922,15 +2118,22 @@
     },
     {
       "id": "e_a1_switch_1",
-      "body": "The switchbacks are run in the last of the light, with meltwater going to glass behind every boot as the temperature drops. The fourth turn has been refusing that pace since the legion cut it. It refuses it again, and the company hears the fall for a long time afterwards without being able to see any of it.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_switch_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Fourth Turn"
-      },
+      "body": "The switchbacks are run in the last of the light with meltwater going to glass behind every boot, and the fourth turn refuses that pace exactly as it has refused it since the legion cut the road. Ilsabet goes over the edge to the length of the rope and is hauled back up in the dark by four people who cannot see her. Her pack is somewhere below and nobody goes down for it.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_switch_1_1",
+          "label": "Go on across the scree.",
+          "target": "a1_scree"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1938,15 +2141,22 @@
     },
     {
       "id": "e_a1_switch_2",
-      "body": "The last corner is cut over the drop because the first four worked, which is how the road takes people. The scree there is scree over ice over nothing at all. The company hears it happen rather than sees it, and the sound stops before anybody has finished turning round.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_switch_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "One Corner Too Many"
-      }
+      "body": "The last corner is cut over the drop because the first four worked, which is exactly how this road takes people, and the scree there is scree over ice over nothing at all. Kettle goes with it as far as the ledge below and stops there, alone, without making any sound the others could have used to find him. It takes forty minutes to get him up and he is not right for the rest of the day.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_switch_2_1",
+          "label": "Cross the scree field.",
+          "target": "a1_scree_a"
+        }
+      ]
     },
     {
       "id": "a1_scree",
@@ -2006,15 +2216,22 @@
     },
     {
       "id": "e_a1_scree_1",
-      "body": "The drainage culvert under the scree field is four feet high, half full of meltwater, and entirely full of the reason the Guild train's wheel-track stops in the middle of the field above it. The company is nine feet inside before anybody's lamp reaches the far end of what is in there with them.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_scree_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Culvert"
-      },
+      "body": "The culvert under the scree field is four feet high, half full of meltwater, and entirely full of the reason the Guild train's wheel-track stops in the middle of the field above it. The company is nine feet inside before anybody's lamp reaches the far end. Getting out backwards through four feet of headroom is what the next eleven minutes are, and everybody's hands are cut raw by the end of them.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_scree_1_1",
+          "label": "Get out and go up to the cairn.",
+          "target": "a1_cairn"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2056,15 +2273,22 @@
     },
     {
       "id": "e_a1_cairn_1",
-      "body": "The cairn is taken apart properly to see what it was built over, which takes twenty minutes of careful work. Under the slab is a station book with four hundred pages in it, and under the book is a hand, and the hand is still holding the pen it was signing with when the slab went on.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_cairn_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Under the Stone"
-      }
+      "body": "The cairn is taken apart properly to see what it was built over, which takes twenty minutes of careful work. Under the slab is a station book with four hundred pages in it, and under the book is a hand, and the hand is still holding the pen it was signing with when the slab went on. The book comes with them, and nobody rebuilds the cairn, and nobody can say afterwards why not.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_cairn_1_1",
+          "label": "Go on into the wind gap.",
+          "target": "a1_wind_a"
+        }
+      ]
     },
     {
       "id": "a1_wind",
@@ -2220,15 +2444,22 @@
     },
     {
       "id": "e_a1_ice_1",
-      "body": "The rock beside the stair is taken instead of the stair, and it is sound rock with good holds. It also carries a nine-hundred-year glaze of black ice on every one of those holds, indistinguishable from wet stone until a gloved hand is already committed to it. The second hold is where the company finds that out.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_ice_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Black Ice"
-      },
+      "body": "The rock beside the stair is sound rock with good holds, and it carries a nine-hundred-year glaze of black ice on every one of them, indistinguishable from wet stone until a gloved hand is already committed. The second hold is where the company finds that out, and Dellach takes the weight of two people on one arm for as long as it takes. He will not use that arm properly again for a month.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_ice_1_1",
+          "label": "Get onto the glass gallery.",
+          "target": "a1_glass"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2304,15 +2535,22 @@
     },
     {
       "id": "e_a1_glass_1",
-      "body": "The wall ice is broken for a shortcut through a mile of gallery, which is nine inches of ice that has been holding the mountain's meltwater off this road since the founding. It stops holding it in the fourth minute. The company is halfway through the breach when the gallery starts filling behind them.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_glass_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Nine Inches of Ice"
-      },
+      "body": "The wall ice is broken for a shortcut through a mile of gallery, and those nine inches have been holding the mountain's meltwater off this road since the founding. It stops holding it in the fourth minute. The company is halfway through the breach when the gallery begins filling behind them, and they come out at the crevasse soaked to the skin at four thousand feet with the light already going.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_glass_1_1",
+          "label": "Get to the crevasse.",
+          "target": "a1_crevasse"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2320,15 +2558,22 @@
     },
     {
       "id": "e_a1_glass_2",
-      "body": "A lamp is taken out of a niche behind nine inches of ice, because it is a lamp and the company needs lamps; the nine niches of the gallery go dark in order behind them. The count that starts in the dark afterwards is not on the far side of the ice, and it is closer than the far wall.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_glass_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "Out of the Niche"
-      }
+      "body": "A lamp is taken out of a niche behind nine inches of ice, because it is a lamp and the company needs lamps, and the nine niches of the gallery go dark in order behind them. The count that starts in the dark afterwards is not on the far side of the ice, and it is closer than the far wall. They run the last two hundred yards, and the lamp is still in the pack, and nobody has suggested putting it back.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_glass_2_1",
+          "label": "Run for the crevasse.",
+          "target": "a1_crevasse_a"
+        }
+      ]
     },
     {
       "id": "a1_crevasse",
@@ -2510,15 +2755,22 @@
     },
     {
       "id": "e_a1_village_1",
-      "body": "Nine lamps are ordered out on Warden authority in a village that has kept them lit for nine generations. Forty people do not argue, and do not put them out, and do not let the company leave before the ninth hour. They are apologetic about all three of those things, and entirely immovable on the last one.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_village_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "The Rent"
-      }
+      "body": "Nine lamps are ordered out on Warden authority in a village that has kept them lit for nine generations. Forty people do not argue, and do not put them out, and do not let the company leave before the ninth hour. They are apologetic about all three of those things and entirely immovable on the last, and the company spends the hour on the green learning what the lamps are counting.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_village_1_1",
+          "label": "Go and look at the shrine.",
+          "target": "a1_shrine"
+        }
+      ]
     },
     {
       "id": "a1_shrine",
@@ -2556,15 +2808,22 @@
     },
     {
       "id": "e_a1_shrine_1",
-      "body": "A Reckoning cross is prised off a dwarf marker in front of a counted village, which manages to be sacrilege to two orders at once. Forty people watch it happen without moving. The company spends the ninth hour explaining itself on a village green, which is precisely where nobody in Highfold wants anybody standing at that hour.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_shrine_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Four Modern Nails"
-      }
+      "body": "A Reckoning cross is prised off a dwarf marker in front of a counted village, which manages to be sacrilege to two orders at once, and forty people watch it happen without moving. The company spends the ninth hour explaining itself on a village green, which is precisely where nobody in Highfold wants anybody standing at that hour. What they learn from standing there is worth more than the cross, and it costs the village something to teach them.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_shrine_1_1",
+          "label": "Go and look at the barn.",
+          "target": "a1_barn_a"
+        }
+      ]
     },
     {
       "id": "a1_barn",
@@ -2650,15 +2909,22 @@
     },
     {
       "id": "e_a1_barn_1",
-      "body": "The barn is fired where it stands with nine of them in the straw, and it goes up beautifully, and the straw makes it quick. Forty villagers watch from their doorways without any expression at all. Then they go back inside, and at the ninth hour the company understands what the barn was for and what it was holding.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_barn_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Fired Where It Stood"
-      },
+      "body": "The barn is fired where it stands with nine of them in the straw, and it goes up beautifully, and the straw makes it quick. Forty villagers watch from their doorways without any expression at all and then go back inside. At the ninth hour the company understands what the barn was for and what it was holding, and by then there is nothing to be done about it but find the headman.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_barn_1_1",
+          "label": "Go and find the headman.",
+          "target": "a1_headman"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2815,15 +3081,22 @@
     },
     {
       "id": "e_a1_adit_1",
-      "body": "A four-foot flooded dwarf bore is taken fast, because four stations is four days and the door is nine. The third roof-fall arrives at chest-deep water in the dark with the whole company already past the second one. There is no room to turn round in a four-foot bore, which everybody has known since the entrance.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_adit_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Four Stations, Four Days"
-      },
+      "body": "The third roof-fall arrives at chest-deep water in the dark with the whole company already past the second one, and there is no room at all to turn round in a four-foot bore. It takes eleven hours to move enough stone to pass, working by feel, in relays, in water. Everybody comes out of the far end, and nobody says anything for the first mile of the drift.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_adit_1_1",
+          "label": "Go on into the drift.",
+          "target": "a1_drift"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2831,15 +3104,22 @@
     },
     {
       "id": "e_a1_adit_2",
-      "body": "Somebody else's splice is trusted a second time, in the dark, over water, by people who have already got away with it once. The second splice is where the first rigger stopped, and the reason he stopped is on the far side of it and has been waiting for the rope to be trusted again.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_adit_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "The Second Splice"
-      }
+      "body": "Somebody else's splice is trusted a second time, in the dark, over water, by people who have already got away with it once. The second splice is where the first rigger stopped, and the reason he stopped is on the far side of it, and it has been waiting for the rope to be trusted again. What the company leaves in the water is two packs and the last of its lamp oil.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_adit_2_1",
+          "label": "Push on along the drift.",
+          "target": "a1_drift_a"
+        }
+      ]
     },
     {
       "id": "a1_drift",
@@ -2899,15 +3179,22 @@
     },
     {
       "id": "e_a1_drift_1",
-      "body": "The swept floor is followed downhill, which is the direction the sweeping was going. After eleven minutes it arrives at what is being swept toward, and at what has been doing the sweeping, and at how long it has been at the work. All three of those answers arrive at once and none of them can be used.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_drift_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Downhill, With the Sweeping"
-      },
+      "body": "The swept floor is followed downhill, which is the direction the sweeping was going, and after eleven minutes it arrives at what is being swept toward. It also arrives at what has been doing the sweeping, and at roughly how long it has been at the work. The company goes back up the drift a great deal faster than it came down, and it goes back up one lamp and one pack lighter.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_drift_1_1",
+          "label": "Get back up to the cache.",
+          "target": "a1_cache"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2966,15 +3253,22 @@
     },
     {
       "id": "e_a1_cache_1",
-      "body": "A lamp bracket is unscrewed from dwarf stone for the sake of a pint of oil, and it comes away with nine hundred years of the wall's own arrangement behind it. The bay's roof takes that personally and immediately. There is no warning at all, which is the thing dwarf stone is famous for and everybody forgets.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_cache_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "For a Pint of Oil"
-      },
+      "body": "A lamp bracket is unscrewed from dwarf stone for the sake of a pint of oil, and it comes away with nine hundred years of the wall's own arrangement behind it. The bay's roof takes that personally and immediately, with no warning at all, which is the thing dwarf stone is famous for and everybody forgets. Two packs are under it and the company is not, and that is the whole of the good news.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_cache_1_1",
+          "label": "Move on before the rest comes down.",
+          "target": "a1_beast_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -3152,15 +3446,22 @@
     },
     {
       "id": "e_a1_bridge_1",
-      "body": "The ford below the old span is a spine river in a thaw. It is crossable in late summer by people who know it. In the second week of a thaw it is crossable by nobody at all, which the company establishes with four people already committed and the fifth on the bank paying out a rope that is not long enough.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_bridge_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Ford in Thaw"
-      },
+      "body": "The ford below the old span is a spine river in a thaw, crossable in late summer by people who know it and in the second week of a thaw by nobody at all. The company establishes this with four people already committed and the fifth on the bank paying out a rope that is not long enough. They get everybody back to the near bank, and it costs them the afternoon and both spare coats.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_bridge_1_1",
+          "label": "Go up to the watchtower instead.",
+          "target": "a1_watchtower"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -3219,15 +3520,22 @@
     },
     {
       "id": "e_a1_watchtower_1",
-      "body": "A night is spent in a barred watchtower waiting for whoever writes tomorrow's page; the page is written at the ninth hour, from the inside, by a hand that comes up through the floor hatch to do it and goes back down afterwards. The company is in the room for all of it, and none of them can move.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_watchtower_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Whoever Writes Tomorrow"
-      },
+      "body": "The page is written at the ninth hour from the inside, by a hand that comes up through the floor hatch to do it and goes back down afterwards. The company is in the room for all of it and not one of them can move. In the morning the hatch is bolted from below, the page is signed in a hand Nyre recognises, and nobody suggests reading further back in the book.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_watchtower_1_1",
+          "label": "Get up to the pass.",
+          "target": "a1_pass_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -3423,15 +3731,22 @@
     },
     {
       "id": "e_a1_storm_1",
-      "body": "A run is made for the eighth station on the strength of it probably being manned. The eighth station is four hundred yards off the road on a spur, which is on the chart and not on anybody's memory of the chart. The company looks for it in whiteout for two hours, which is ninety minutes longer than the weather allows.",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_storm_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Probably Manned"
-      },
+      "body": "A run is made for the eighth station on the strength of it probably being manned, and the eighth station is four hundred yards off the road on a spur, which is on the chart and not in anybody's memory of the chart. The company looks for it in whiteout for two hours, which is ninety minutes longer than the weather allows. They find a rock shelter instead, and two of them cannot feel their feet by the time they are inside it.",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_storm_1_1",
+          "label": "Get into the shelter.",
+          "target": "a1_shelter"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"

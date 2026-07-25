@@ -20,7 +20,7 @@
       "sacrifice"
     ],
     "estimated_minutes": 14,
-    "ending_count": 232,
+    "ending_count": 187,
     "content_flags": {
       "violence": "moderate",
       "scariness": "intense",
@@ -51,9 +51,9 @@
       "name": "renown",
       "type": "int",
       "initial": 3,
-      "min": 3,
+      "min": 0,
       "max": 5,
-      "description": "Carried: the standing of the company that shut two of the Compact's doors."
+      "description": "Carried from book 2, which can end anywhere in 0-5: the range must contain the sender's or the client clamps low-reputation outcomes away."
     },
     {
       "name": "iron_key",
@@ -140,15 +140,22 @@
     },
     {
       "id": "e_n_start_1",
-      "body": "<<FILL role=failure words=58 beats='the company riding out of Sarnhold before anybody is seen, west and downhill with the irons still in the pack, which is a decision that unmakes a charter in a single afternoon'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_n_start_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Nobody's Company"
-      }
+      "body": "<<FILL role=rising words=58 beats='the company riding out of Sarnhold before anybody is seen, west and downhill with the irons still in the pack, which is a decision that unmakes a charter in a single afternoon'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_n_start_1_1",
+          "label": "Turn back and sign in properly.",
+          "target": "a0_gatehouse_a"
+        }
+      ]
     },
     {
       "id": "a0_gatehouse",
@@ -220,15 +227,22 @@
     },
     {
       "id": "e_a0_gatehouse_1",
-      "body": "<<FILL role=failure words=58 beats='a chartered company walking past a provost's inspection on its own authority, and a fortness gate crew that has been drilled for exactly that, and a pack cut off a shoulder in the archway by somebody who knew where the irons were'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_gatehouse_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Taken at the Gate"
-      },
+      "body": "<<FILL role=rising words=58 beats='a chartered company walking past a provost's inspection on its own authority, and a fortness gate crew that has been drilled for exactly that, and a pack cut off a shoulder in the archway by somebody who knew where the irons were'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_gatehouse_1_1",
+          "label": "Take the pack straight to Thane.",
+          "target": "a0_commandant"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -236,15 +250,22 @@
     },
     {
       "id": "e_a0_gatehouse_2",
-      "body": "<<FILL role=failure words=58 beats='the provost's seals demanded back an hour after they were given, which is a confession of second thoughts in front of witnesses, and a charter suspended pending an inquiry that will sit in the spring'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_gatehouse_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "Second Thoughts, in Writing"
-      }
+      "body": "<<FILL role=rising words=58 beats='the provost's seals demanded back an hour after they were given, which is a confession of second thoughts in front of witnesses, and a charter suspended pending an inquiry that will sit in the spring'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_gatehouse_2_1",
+          "label": "Go up to the map room.",
+          "target": "a0_commandant_a"
+        }
+      ]
     },
     {
       "id": "a0_commandant",
@@ -301,15 +322,22 @@
     },
     {
       "id": "e_a0_commandant_1",
-      "body": "<<FILL role=failure words=58 beats='a Commandant who decides that a company carrying two irons is evidence rather than a company, and a fortress that has cells for evidence, and a spring inquiry to be held once the passes clear'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_commandant_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "Evidence, Not a Company"
-      }
+      "body": "<<FILL role=rising words=58 beats='a Commandant who decides that a company carrying two irons is evidence rather than a company, and a fortress that has cells for evidence, and a spring inquiry to be held once the passes clear'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_commandant_1_1",
+          "label": "Take the orders and go.",
+          "target": "a0_orders"
+        }
+      ]
     },
     {
       "id": "a0_orders",
@@ -354,15 +382,22 @@
     },
     {
       "id": "e_a0_orders_1",
-      "body": "<<FILL role=failure words=58 beats='a Warden column requested, refused, and minuted, because Thane has four hundred men for two hundred miles of spine and a written reason for every one of them, and the company left standing in a map room being thanked'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_orders_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "A Column, Refused"
-      }
+      "body": "<<FILL role=rising words=58 beats='a Warden column requested, refused, and minuted, because Thane has four hundred men for two hundred miles of spine and a written reason for every one of them, and the company left standing in a map room being thanked'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_orders_1_1",
+          "label": "Go and draw what you can carry.",
+          "target": "a0_armoury_a"
+        }
+      ]
     },
     {
       "id": "a0_armoury",
@@ -417,15 +452,22 @@
     },
     {
       "id": "e_a0_armoury_1",
-      "body": "<<FILL role=failure words=58 beats='everything drawn and nothing signed for, a quartermaster's complaint sworn before the provost, and a charter that survives the accusation but not the delay, because the crown door is nine days off and the inquiry is eleven'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_armoury_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Everything, Unsigned"
-      },
+      "body": "<<FILL role=rising words=58 beats='everything drawn and nothing signed for, a quartermaster's complaint sworn before the provost, and a charter that survives the accusation but not the delay, because the crown door is nine days off and the inquiry is eleven'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_armoury_1_1",
+          "label": "Start the climb.",
+          "target": "a1_foot"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -486,15 +528,22 @@
     },
     {
       "id": "e_a0_legate_1",
-      "body": "<<FILL role=failure words=58 beats='a legate's escort, a receipt, and two irons in a coach with the Reckoning's seal on the door, and a company standing in a fortress yard holding a piece of paper and no leverage at all'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_legate_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "Into the Legate's Custody"
-      }
+      "body": "<<FILL role=rising words=58 beats='a legate's escort, a receipt, and two irons in a coach with the Reckoning's seal on the door, and a company standing in a fortress yard holding a piece of paper and no leverage at all'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_legate_1_1",
+          "label": "Go with Nyre to the chapel.",
+          "target": "a0_chapel"
+        }
+      ]
     },
     {
       "id": "a0_chapel",
@@ -532,15 +581,22 @@
     },
     {
       "id": "e_a0_chapel_1",
-      "body": "<<FILL role=failure words=58 beats='a chaplain asked the question he has spent six years not asking, and answering it in front of his own congregation, and a bell rung that empties the fortress chapel and fills the provost's office instead'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_chapel_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "The Question in the Chapel"
-      }
+      "body": "<<FILL role=rising words=58 beats='a chaplain asked the question he has spent six years not asking, and answering it in front of his own congregation, and a bell rung that empties the fortress chapel and fills the provost's office instead'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_chapel_1_1",
+          "label": "Come back to the relic wall later.",
+          "target": "a0_relics_a"
+        }
+      ]
     },
     {
       "id": "a0_relics",
@@ -595,15 +651,22 @@
     },
     {
       "id": "e_a0_relics_1",
-      "body": "<<FILL role=failure words=58 beats='glass broken in a Warden chapel to settle a question about a label, and the answer arriving from the direction of the empty setting rather than the glass, in a voice that uses the captain's own name and the correct rank'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_relics_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Fourth Setting"
-      },
+      "body": "<<FILL role=rising words=58 beats='glass broken in a Warden chapel to settle a question about a label, and the answer arriving from the direction of the empty setting rather than the glass, in a voice that uses the captain's own name and the correct rank'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_relics_1_1",
+          "label": "Get out of the chapel.",
+          "target": "a0_novices_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -667,15 +730,22 @@
     },
     {
       "id": "e_a0_novices_1",
-      "body": "<<FILL role=failure words=58 beats='the jug poured out of a dormitory window in front of four novices of the mother house, and Rell's complaint reaching the provost before the wine reaches the yard, and the company's charter suspended for the length of an inquiry'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_novices_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Out the Window"
-      },
+      "body": "<<FILL role=rising words=58 beats='the jug poured out of a dormitory window in front of four novices of the mother house, and Rell's complaint reaching the provost before the wine reaches the yard, and the company's charter suspended for the length of an inquiry'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_novices_1_1",
+          "label": "Get on the road.",
+          "target": "a0_road"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -736,15 +806,22 @@
     },
     {
       "id": "e_a0_guildhall_1",
-      "body": "<<FILL role=failure words=58 beats='a Guild contract signed for underwriting and shares, and a delving company on the road within the week with the company's own charts, and a Warden charter that now belongs to whoever holds the paper'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_guildhall_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "Underwritten"
-      }
+      "body": "<<FILL role=rising words=58 beats='a Guild contract signed for underwriting and shares, and a delving company on the road within the week with the company's own charts, and a Warden charter that now belongs to whoever holds the paper'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_guildhall_1_1",
+          "label": "Go and copy the charts before the Guild does.",
+          "target": "a0_charts"
+        }
+      ]
     },
     {
       "id": "a0_charts",
@@ -789,15 +866,22 @@
     },
     {
       "id": "e_a0_charts_1",
-      "body": "<<FILL role=failure words=58 beats='a spring survey taken off a guildhall wall, missed within the hour, and a Guild grievance sworn at the provost's desk that ends with the company's charts impounded and its charter under review'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_charts_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Off the Wall"
-      }
+      "body": "<<FILL role=rising words=58 beats='a spring survey taken off a guildhall wall, missed within the hour, and a Guild grievance sworn at the provost's desk that ends with the company's charts impounded and its charter under review'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_charts_1_1",
+          "label": "Take the copies to the forge.",
+          "target": "a0_forge_a"
+        }
+      ]
     },
     {
       "id": "a0_forge",
@@ -852,15 +936,22 @@
     },
     {
       "id": "e_a0_forge_1",
-      "body": "<<FILL role=failure words=58 beats='two of the Compact's irons handed to a Guild smith to be copied, and copies made, and originals returned, and nobody in the company able to say afterwards with any certainty which pair went back into the pack'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_forge_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Copied, While You Wait"
-      },
+      "body": "<<FILL role=rising words=58 beats='two of the Compact's irons handed to a Guild smith to be copied, and copies made, and originals returned, and nobody in the company able to say afterwards with any certainty which pair went back into the pack'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_forge_1_1",
+          "label": "Go and find out what the delvers know.",
+          "target": "a0_delvers_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -950,15 +1041,22 @@
     },
     {
       "id": "e_a0_delvers_1",
-      "body": "<<FILL role=failure words=58 beats='steel drawn in a Guild yard inside a Warden fortress, which is two jurisdictions at once, and a company in the provost's cells by the ninth hour with its charter and its irons both impounded'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_delvers_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Two Jurisdictions"
-      },
+      "body": "<<FILL role=rising words=58 beats='steel drawn in a Guild yard inside a Warden fortress, which is two jurisdictions at once, and a company in the provost's cells by the ninth hour with its charter and its irons both impounded'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_delvers_1_1",
+          "label": "Leave before the paperwork lands.",
+          "target": "a0_road"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -966,15 +1064,22 @@
     },
     {
       "id": "e_a0_delvers_2",
-      "body": "<<FILL role=failure words=58 beats='a yard fight pressed past the point where it was won, which turns four delvers into a Guild grievance and a Guild grievance into a knife under a rib in a slush-filled yard nobody was watching'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_delvers_2",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Pressed Too Far"
-      },
+      "body": "<<FILL role=rising words=58 beats='a yard fight pressed past the point where it was won, which turns four delvers into a Guild grievance and a Guild grievance into a knife under a rib in a slush-filled yard nobody was watching'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_delvers_2_1",
+          "label": "Start the climb anyway.",
+          "target": "a1_foot"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1033,15 +1138,22 @@
     },
     {
       "id": "e_a0_market_1",
-      "body": "<<FILL role=failure words=58 beats='a boy asked who taught him to sell oil by the ninth, and answering honestly, and the two men who have been standing behind his stall all morning deciding that the question is worth following up in an alley'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_market_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Sold by the Ninth"
-      },
+      "body": "<<FILL role=rising words=58 beats='a boy asked who taught him to sell oil by the ninth, and answering honestly, and the two men who have been standing behind his stall all morning deciding that the question is worth following up in an alley'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_market_1_1",
+          "label": "Get off the market before dark.",
+          "target": "a0_taproom_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1102,15 +1214,22 @@
     },
     {
       "id": "e_a0_taproom_1",
-      "body": "<<FILL role=failure words=58 beats='a taproom argument about Kar Duhn that becomes an argument about the irons, in a room with a Rooks table in it, and a company waking in a provost's cell with the pack inventoried by somebody else'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_taproom_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "The Hooked Lamp"
-      }
+      "body": "<<FILL role=rising words=58 beats='a taproom argument about Kar Duhn that becomes an argument about the irons, in a room with a Rooks table in it, and a company waking in a provost's cell with the pack inventoried by somebody else'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_taproom_1_1",
+          "label": "Out to the yard.",
+          "target": "a0_brawl"
+        }
+      ]
     },
     {
       "id": "a0_brawl",
@@ -1196,15 +1315,22 @@
     },
     {
       "id": "e_a0_brawl_1",
-      "body": "<<FILL role=failure words=58 beats='a grievance sent up to Corrow instead of settled, and Corrow arriving in Sarnhold two days later with a chartered company and a written complaint, and an inquiry that keeps everybody off the spine until the passes close'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_brawl_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Take It to Your Captain"
-      },
+      "body": "<<FILL role=rising words=58 beats='a grievance sent up to Corrow instead of settled, and Corrow arriving in Sarnhold two days later with a chartered company and a written complaint, and an inquiry that keeps everybody off the spine until the passes close'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_brawl_1_1",
+          "label": "Turn in for the night.",
+          "target": "a0_bunks"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1212,15 +1338,22 @@
     },
     {
       "id": "e_a0_brawl_2",
-      "body": "<<FILL role=failure words=58 beats='a yard fight continued past the point of decision, in slush, in front of Wardens, and a Rooks lieutenant who does not get up again, and a provost who has no discretion at all in the matter of killings inside a fortress'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_brawl_2",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Until He Stops Getting Up"
-      },
+      "body": "<<FILL role=rising words=58 beats='a yard fight continued past the point of decision, in slush, in front of Wardens, and a Rooks lieutenant who does not get up again, and a provost who has no discretion at all in the matter of killings inside a fortress'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_brawl_2_1",
+          "label": "Get to the bunkroom.",
+          "target": "a0_bunks_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1317,15 +1450,22 @@
     },
     {
       "id": "e_a0_roster_1",
-      "body": "<<FILL role=failure words=58 beats='a hiring yard worked through carelessly, and one of the forty turning out to be a Reckoning novice under instruction with a writ in his boot, and a company that discovers the writ in the ice gallery rather than the yard'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_roster_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "One of the Forty"
-      }
+      "body": "<<FILL role=rising words=58 beats='a hiring yard worked through carelessly, and one of the forty turning out to be a Reckoning novice under instruction with a writ in his boot, and a company that discovers the writ in the ice gallery rather than the yard'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_roster_1_1",
+          "label": "Draw kit and go.",
+          "target": "a0_kit"
+        }
+      ]
     },
     {
       "id": "a0_kit",
@@ -1380,15 +1520,22 @@
     },
     {
       "id": "e_a0_kit_1",
-      "body": "<<FILL role=failure words=58 beats='one iron left in a fortress strongbox for safekeeping, receipted properly, and a strongbox opened on the ninth night by two Wardens whose cloaks did not fit them, and a receipt that is now the only iron the company owns'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_kit_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Left in the Strongbox"
-      },
+      "body": "<<FILL role=rising words=58 beats='one iron left in a fortress strongbox for safekeeping, receipted properly, and a strongbox opened on the ninth night by two Wardens whose cloaks did not fit them, and a receipt that is now the only iron the company owns'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_kit_1_1",
+          "label": "Get some sleep while you can.",
+          "target": "a0_night_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1500,15 +1647,22 @@
     },
     {
       "id": "e_a0_council_1",
-      "body": "<<FILL role=failure words=58 beats='a council that runs until the Guild train has gone, the weather has turned and the crown door's nine days have become four, and a company still arguing in a stable about which way to walk'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_council_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Still Arguing"
-      },
+      "body": "<<FILL role=rising words=58 beats='a council that runs until the Guild train has gone, the weather has turned and the crown door's nine days have become four, and a company still arguing in a stable about which way to walk'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_council_1_1",
+          "label": "Get on the road.",
+          "target": "a0_road"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1516,15 +1670,22 @@
     },
     {
       "id": "e_a0_council_2",
-      "body": "<<FILL role=failure words=58 beats='word sent ahead to eleven counted stations that a chartered company is coming up on the charter, station by station, which is courteous, correct, and read by exactly the wrong clerk at the fourth station'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_council_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "Word Sent Ahead"
-      }
+      "body": "<<FILL role=rising words=58 beats='word sent ahead to eleven counted stations that a chartered company is coming up on the charter, station by station, which is courteous, correct, and read by exactly the wrong clerk at the fourth station'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_council_2_1",
+          "label": "Start the climb.",
+          "target": "a1_foot"
+        }
+      ]
     },
     {
       "id": "a0_stables",
@@ -1579,15 +1740,22 @@
     },
     {
       "id": "e_a0_stables_1",
-      "body": "<<FILL role=failure words=58 beats='a place taken on the Guild train, and the train's fourth wagon turning out to be loaded with sealed crates in the founding gauge, and the company discovering at the second station what it has been helping to haul'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_stables_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Fourth Wagon"
-      },
+      "body": "<<FILL role=rising words=58 beats='a place taken on the Guild train, and the train's fourth wagon turning out to be loaded with sealed crates in the founding gauge, and the company discovering at the second station what it has been helping to haul'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_stables_1_1",
+          "label": "Get off the train and walk.",
+          "target": "a0_wagons_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1651,15 +1819,22 @@
     },
     {
       "id": "e_a0_wagons_1",
-      "body": "<<FILL role=failure words=58 beats='Guild business left to the Guild, and the fourth wagon going up the Ninefold Road a day ahead of the company, and everything that happens at the fourth station afterwards happening because of what was in it'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_wagons_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Guild's Business"
-      },
+      "body": "<<FILL role=rising words=58 beats='Guild business left to the Guild, and the fourth wagon going up the Ninefold Road a day ahead of the company, and everything that happens at the fourth station afterwards happening because of what was in it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_wagons_1_1",
+          "label": "Find the scouts who came down.",
+          "target": "a0_scouts"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1720,15 +1895,22 @@
     },
     {
       "id": "e_a0_scouts_1",
-      "body": "<<FILL role=failure words=58 beats='a scout pressed for a route he has already refused twice, in front of his own officer, and a company that gets the route and also gets a Warden complaint that reaches the provost by evening'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_scouts_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "Pressed a Third Time"
-      }
+      "body": "<<FILL role=rising words=58 beats='a scout pressed for a route he has already refused twice, in front of his own officer, and a company that gets the route and also gets a Warden complaint that reaches the provost by evening'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_scouts_1_1",
+          "label": "Say your goodbyes and go.",
+          "target": "a0_farewell"
+        }
+      ]
     },
     {
       "id": "a0_farewell",
@@ -1766,15 +1948,22 @@
     },
     {
       "id": "e_a0_farewell_1",
-      "body": "<<FILL role=failure words=58 beats='one letter written and read aloud to the company in a fortress hall, which is not the custom and not survivable as morale, and a company that goes up the spine already grieving itself'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a0_farewell_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Read Aloud"
-      }
+      "body": "<<FILL role=rising words=58 beats='one letter written and read aloud to the company in a fortress hall, which is not the custom and not survivable as morale, and a company that goes up the spine already grieving itself'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a0_farewell_1_1",
+          "label": "Start the climb.",
+          "target": "a1_foot"
+        }
+      ]
     },
     {
       "id": "a0_road",
@@ -1842,15 +2031,22 @@
     },
     {
       "id": "e_a1_foot_1",
-      "body": "<<FILL role=failure words=58 beats='the station book signed and the road refused in the same movement, which is at least honest, and a company that walks back into Sarnhold to explain a charter it will not be keeping'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_foot_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Signed, and Turned Round"
-      }
+      "body": "<<FILL role=rising words=58 beats='the station book signed and the road refused in the same movement, which is at least honest, and a company that walks back into Sarnhold to explain a charter it will not be keeping'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_foot_1_1",
+          "label": "Go back and take the ice stair.",
+          "target": "a1_ice_a"
+        }
+      ]
     },
     {
       "id": "a1_switch",
@@ -1922,15 +2118,22 @@
     },
     {
       "id": "e_a1_switch_1",
-      "body": "<<FILL role=failure words=58 beats='the switchbacks run in the last of the light with the meltwater going to glass behind every boot, and the fourth turn taken at a pace that the fourth turn has been refusing to accept since the legion cut it'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_switch_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Fourth Turn"
-      },
+      "body": "<<FILL role=rising words=58 beats='the switchbacks run in the last of the light with the meltwater going to glass behind every boot, and the fourth turn taken at a pace that the fourth turn has been refusing to accept since the legion cut it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_switch_1_1",
+          "label": "Go on across the scree.",
+          "target": "a1_scree"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -1938,15 +2141,22 @@
     },
     {
       "id": "e_a1_switch_2",
-      "body": "<<FILL role=failure words=58 beats='the last corner cut over the drop because the first four worked, and the scree there turning out to be scree over ice over nothing, and the company hearing it happen rather than seeing it'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_switch_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "One Corner Too Many"
-      }
+      "body": "<<FILL role=rising words=58 beats='the last corner cut over the drop because the first four worked, and the scree there turning out to be scree over ice over nothing, and the company hearing it happen rather than seeing it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_switch_2_1",
+          "label": "Cross the scree field.",
+          "target": "a1_scree_a"
+        }
+      ]
     },
     {
       "id": "a1_scree",
@@ -2006,15 +2216,22 @@
     },
     {
       "id": "e_a1_scree_1",
-      "body": "<<FILL role=failure words=58 beats='the drainage culvert under the scree field, which is four feet high, half full of meltwater and completely full of the reason the Guild train's wheel-track stops in the middle of the field'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_scree_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Culvert"
-      },
+      "body": "<<FILL role=rising words=58 beats='the drainage culvert under the scree field, which is four feet high, half full of meltwater and completely full of the reason the Guild train's wheel-track stops in the middle of the field'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_scree_1_1",
+          "label": "Get out and go up to the cairn.",
+          "target": "a1_cairn"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2056,15 +2273,22 @@
     },
     {
       "id": "e_a1_cairn_1",
-      "body": "<<FILL role=failure words=58 beats='a cairn taken apart on the road to see what it was built over, which is a station book with four hundred pages in it and a hand at the bottom of the pile that is still holding the pen'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_cairn_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Under the Stone"
-      }
+      "body": "<<FILL role=rising words=58 beats='a cairn taken apart on the road to see what it was built over, which is a station book with four hundred pages in it and a hand at the bottom of the pile that is still holding the pen'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_cairn_1_1",
+          "label": "Go on into the wind gap.",
+          "target": "a1_wind_a"
+        }
+      ]
     },
     {
       "id": "a1_wind",
@@ -2220,15 +2444,22 @@
     },
     {
       "id": "e_a1_ice_1",
-      "body": "<<FILL role=failure words=58 beats='the rock beside the stair taken instead of the stair, which is sound rock, and which has a nine-hundred-year glaze of black ice on its handholds that is indistinguishable from wet stone until it is not'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_ice_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Black Ice"
-      },
+      "body": "<<FILL role=rising words=58 beats='the rock beside the stair taken instead of the stair, which is sound rock, and which has a nine-hundred-year glaze of black ice on its handholds that is indistinguishable from wet stone until it is not'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_ice_1_1",
+          "label": "Get onto the glass gallery.",
+          "target": "a1_glass"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2304,15 +2535,22 @@
     },
     {
       "id": "e_a1_glass_1",
-      "body": "<<FILL role=failure words=58 beats='the wall ice broken for a shortcut through a mile of gallery, which is nine inches of ice holding back the mountain's meltwater and has been holding it back since the founding, and which stops holding it in the fourth minute'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_glass_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Nine Inches of Ice"
-      },
+      "body": "<<FILL role=rising words=58 beats='the wall ice broken for a shortcut through a mile of gallery, which is nine inches of ice holding back the mountain's meltwater and has been holding it back since the founding, and which stops holding it in the fourth minute'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_glass_1_1",
+          "label": "Get to the crevasse.",
+          "target": "a1_crevasse"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2320,15 +2558,22 @@
     },
     {
       "id": "e_a1_glass_2",
-      "body": "<<FILL role=failure words=58 beats='a lamp taken out of a niche behind nine inches of ice, and the nine niches of the gallery all going dark in order behind the company, and the count in the dark starting from one much closer than the far wall'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_glass_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "Out of the Niche"
-      }
+      "body": "<<FILL role=rising words=58 beats='a lamp taken out of a niche behind nine inches of ice, and the nine niches of the gallery all going dark in order behind the company, and the count in the dark starting from one much closer than the far wall'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_glass_2_1",
+          "label": "Run for the crevasse.",
+          "target": "a1_crevasse_a"
+        }
+      ]
     },
     {
       "id": "a1_crevasse",
@@ -2510,15 +2755,22 @@
     },
     {
       "id": "e_a1_village_1",
-      "body": "<<FILL role=failure words=58 beats='nine lamps ordered out on Warden authority in a village that has kept them lit for nine generations, and forty people who do not argue, and do not put them out, and do not let the company leave before the ninth hour'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_village_1",
-        "kind": "capture",
-        "valence": "negative",
-        "title": "The Rent"
-      }
+      "body": "<<FILL role=rising words=58 beats='nine lamps ordered out on Warden authority in a village that has kept them lit for nine generations, and forty people who do not argue, and do not put them out, and do not let the company leave before the ninth hour'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_village_1_1",
+          "label": "Go and look at the shrine.",
+          "target": "a1_shrine"
+        }
+      ]
     },
     {
       "id": "a1_shrine",
@@ -2556,15 +2808,22 @@
     },
     {
       "id": "e_a1_shrine_1",
-      "body": "<<FILL role=failure words=58 beats='a Reckoning cross prised off a dwarf marker in front of a counted village, which is sacrilege to two orders at once, and a company that spends the ninth hour explaining itself to forty people on a green'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_shrine_1",
-        "kind": "setback",
-        "valence": "neutral",
-        "title": "Four Modern Nails"
-      }
+      "body": "<<FILL role=rising words=58 beats='a Reckoning cross prised off a dwarf marker in front of a counted village, which is sacrilege to two orders at once, and a company that spends the ninth hour explaining itself to forty people on a green'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_shrine_1_1",
+          "label": "Go and look at the barn.",
+          "target": "a1_barn_a"
+        }
+      ]
     },
     {
       "id": "a1_barn",
@@ -2650,15 +2909,22 @@
     },
     {
       "id": "e_a1_barn_1",
-      "body": "<<FILL role=failure words=58 beats='a barn fired in a counted village with nine of them standing in the straw, and a fire that goes up beautifully, and forty villagers watching the company from their doorways without any expression at all while it burns'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_barn_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Fired Where It Stood"
-      },
+      "body": "<<FILL role=rising words=58 beats='a barn fired in a counted village with nine of them standing in the straw, and a fire that goes up beautifully, and forty villagers watching the company from their doorways without any expression at all while it burns'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_barn_1_1",
+          "label": "Go and find the headman.",
+          "target": "a1_headman"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2815,15 +3081,22 @@
     },
     {
       "id": "e_a1_adit_1",
-      "body": "<<FILL role=failure words=58 beats='a four-foot flooded dwarf bore taken fast because four stations is four days, and the third roof-fall arriving at chest-deep water in the dark with the whole company already past the second'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_adit_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Four Stations, Four Days"
-      },
+      "body": "<<FILL role=rising words=58 beats='a four-foot flooded dwarf bore taken fast because four stations is four days, and the third roof-fall arriving at chest-deep water in the dark with the whole company already past the second'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_adit_1_1",
+          "label": "Go on into the drift.",
+          "target": "a1_drift"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2831,15 +3104,22 @@
     },
     {
       "id": "e_a1_adit_2",
-      "body": "<<FILL role=failure words=58 beats='somebody else's splice trusted a second time in the dark, over water, by people who have already got away with it once, and the second splice being where the first rigger stopped'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_adit_2",
-        "kind": "setback",
-        "valence": "negative",
-        "title": "The Second Splice"
-      }
+      "body": "<<FILL role=rising words=58 beats='somebody else's splice trusted a second time in the dark, over water, by people who have already got away with it once, and the second splice being where the first rigger stopped'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_adit_2_1",
+          "label": "Push on along the drift.",
+          "target": "a1_drift_a"
+        }
+      ]
     },
     {
       "id": "a1_drift",
@@ -2899,15 +3179,22 @@
     },
     {
       "id": "e_a1_drift_1",
-      "body": "<<FILL role=failure words=58 beats='the swept floor followed downhill, which is the direction the sweeping was going, and which arrives after eleven minutes at what is being swept toward, and what is doing the sweeping, and how long it has been at it'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_drift_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Downhill, With the Sweeping"
-      },
+      "body": "<<FILL role=rising words=58 beats='the swept floor followed downhill, which is the direction the sweeping was going, and which arrives after eleven minutes at what is being swept toward, and what is doing the sweeping, and how long it has been at it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_drift_1_1",
+          "label": "Get back up to the cache.",
+          "target": "a1_cache"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -2966,15 +3253,22 @@
     },
     {
       "id": "e_a1_cache_1",
-      "body": "<<FILL role=failure words=58 beats='a lamp bracket unscrewed from dwarf stone for the sake of a pint of oil, and the bracket coming away with nine hundred years of the wall's own arrangement behind it, and the bay's roof taking that personally'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_cache_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "For a Pint of Oil"
-      },
+      "body": "<<FILL role=rising words=58 beats='a lamp bracket unscrewed from dwarf stone for the sake of a pint of oil, and the bracket coming away with nine hundred years of the wall's own arrangement behind it, and the bay's roof taking that personally'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_cache_1_1",
+          "label": "Move on before the rest comes down.",
+          "target": "a1_beast_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -3152,15 +3446,22 @@
     },
     {
       "id": "e_a1_bridge_1",
-      "body": "<<FILL role=failure words=58 beats='the ford below the old span, which is a spine river in thaw, and which is crossable in late summer by people who know it and is not crossable at all in the second week of a thaw by anybody'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_bridge_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "The Ford in Thaw"
-      },
+      "body": "<<FILL role=rising words=58 beats='the ford below the old span, which is a spine river in thaw, and which is crossable in late summer by people who know it and is not crossable at all in the second week of a thaw by anybody'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_bridge_1_1",
+          "label": "Go up to the watchtower instead.",
+          "target": "a1_watchtower"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -3219,15 +3520,22 @@
     },
     {
       "id": "e_a1_watchtower_1",
-      "body": "<<FILL role=failure words=58 beats='a night spent in a barred watchtower waiting for whoever writes tomorrow's page, and the page being written at the ninth hour, from the inside, by a hand that comes up through the floor hatch to do it'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_watchtower_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Whoever Writes Tomorrow"
-      },
+      "body": "<<FILL role=rising words=58 beats='a night spent in a barred watchtower waiting for whoever writes tomorrow's page, and the page being written at the ninth hour, from the inside, by a hand that comes up through the floor hatch to do it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_watchtower_1_1",
+          "label": "Get up to the pass.",
+          "target": "a1_pass_a"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"
@@ -3423,15 +3731,22 @@
     },
     {
       "id": "e_a1_storm_1",
-      "body": "<<FILL role=failure words=58 beats='a run for the eighth station in whiteout on the strength of it probably being manned, and the eighth station turning out to be four hundred yards off the road on a spur, and the spur being where the company looks for it'>>",
-      "is_ending": true,
-      "choices": [],
-      "ending": {
-        "id": "end_e_a1_storm_1",
-        "kind": "death",
-        "valence": "negative",
-        "title": "Probably Manned"
-      },
+      "body": "<<FILL role=rising words=58 beats='a run for the eighth station in whiteout on the strength of it probably being manned, and the eighth station turning out to be four hundred yards off the road on a spur, and the spur being where the company looks for it'>>",
+      "is_ending": false,
+      "on_enter": [
+        {
+          "var": "vigor",
+          "op": "dec",
+          "value": 1
+        }
+      ],
+      "choices": [
+        {
+          "id": "c_e_a1_storm_1_1",
+          "label": "Get into the shelter.",
+          "target": "a1_shelter"
+        }
+      ],
       "safety_scope": [
         "peril",
         "scary_imagery"

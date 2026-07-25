@@ -23,14 +23,17 @@ largest cell in the matrix, at 746 of its 750 permitted nodes. All three are Tie
 | Skeleton | `skeletons/16+/the-vault-of-nine-iron.json` | `the-sunless-march.json` | `the-ninth-hand.json` |
 | Filled | `out/the-vault-of-nine-iron.filled.json` | `the-sunless-march.filled.json` | `the-ninth-hand.filled.json` |
 | Nodes | 305 (budget 300-475) | 305 | **746** (budget 475-750) |
-| Endings | 105 (PL-17 floor 77) | 105 | 232 (floor 187) |
+| Endings | 105 (PL-17 floor 77) | 105 | 187 (floor 187, exactly) |
 | Decision nodes | 131 (floor 25) | 131 | 231 (floor 60) |
-| Ending mix | 1 completion, 6 success, 2 discovery, 30 setback, 14 capture, 52 death | same shape, reauthored | 1 completion, 6 success, 2 discovery, 64 setback, 41 capture, 118 death |
+| Ending mix | 1 completion, 6 success, 2 discovery, 30 setback, 14 capture, 52 death | same shape, reauthored | 1 completion, 6 success, 2 discovery, 51 setback, 34 capture, 93 death |
+| Median read (3,000 engine walks) | 11 pages / 650 words | not measured | 20 pages / 1,154 words |
+| Choices ending the book | 22.3% | not measured | 17.4% |
+| Endings a random reader reaches | 65 of 105 (62%) | not measured | 104 of 187 (56%) |
 | Longest path | 71 hops (max 73) | 71 | 74 hops (max 93) |
 | Fastest satisfying finish | 29 nodes (PL-20 floor 29) | 29 | 52 nodes (floor 37) |
-| Words | 16,995 (mean 55.7/node) | 18,138 (mean 59.5/node) | **42,085** (mean 56.4/node) |
-| Reachable configurations | 30,416 (cap 100,000) | 56,739 | 36,781 |
-| Variables | vigor, renown, iron_key, knows_compact, door_state | + second_iron, deep_charts, oath_sworn | vigor, renown, iron_key, second_iron, knows_compact, crown_iron, wyrm_pact, door_state |
+| Words | 16,995 (mean 55.7/node) | 18,138 (mean 59.5/node) | **42,738** (mean 57.3/node) |
+| Reachable configurations | 30,416 (cap 100,000) | 56,739 | 38,272 |
+| Variables | vigor, renown, iron_key, knows_compact, door_state | + second_iron, deep_charts, oath_sworn | vigor, renown (0-5, widened), iron_key, second_iron, knows_compact, crown_iron, wyrm_pact, door_state |
 | `estimated_minutes` (fastest finish) | 8 | 8 | 14 |
 | Whole-world clock (derived) | 77 min | 82 min | 3.2 hr |
 | Gate result | **0 findings** | **0 findings** | **1 finding**: the expected L2-13 scale advisory |
@@ -42,6 +45,15 @@ Book 3 is at the ceiling in every dimension the matrix bounds except depth, whic
 ceiling-scale gamebook needs **breadth**, not length. Rooms hang as parallel chains off an act hub and
 reconverge on the act gate, so 746 nodes fit inside 74 hops of the 93 allowed, and a reader's route through
 the book is 52 nodes rather than 700.
+
+**Correction of 2026-07-25 (AL-026).** Breadth alone was not enough, and the first build of book 3 was
+worse for a typical reader than book 1 despite being 2.4x the size. Paying for breadth in terminal
+failure leaves kept the per-choice termination density at book 1's ~22.5%, which at 746 nodes produced a
+median read of 5 pages and 302 words, with 7 endings within two taps of the start. Converting the 45
+shallowest failure leaves into vigor-costing pass-through nodes (the authored consequence is still read,
+the route rejoins) moved the median to 20 pages and 1,154 words and lifted the share of endings a reader
+actually reaches from 39% to 56%, at the cost of spending all of the PL-17 endings headroom: book 3 now
+sits exactly on the 187 floor. Breadth has to reconverge, not terminate.
 
 ## 2. The story and the party progression
 
@@ -73,8 +85,10 @@ is expecting somebody to take it. The company arrives holding two of the nine ir
 only party on the frontier that can fill the vacancy, and therefore the only party the city has a use for.
 
 Book 3's progression is the carried state itself. `iron_key`, `second_iron` and `knows_compact` are read-only
-carried gates that open routes nothing else opens; `renown` is floored at its carried value, because a company
-that shut two doors cannot become unknown; and the new state (`crown_iron`, `wyrm_pact`, `door_state`) is what
+carried gates that open routes nothing else opens; `renown` carries across the full 0-5 range book 2 can end
+in (an earlier revision floored it at 3 on the reasoning that a company which shut two doors cannot become
+unknown, which was wrong on book 2's own terms and silently clamped every low-reputation outcome to the
+maximum, AL-038); and the new state (`crown_iron`, `wyrm_pact`, `door_state`) is what
 the act 6 endings read. The completion ending, *The Third of Nine*, requires the crown iron **and** the truth of
 the Compact, and closes on the crown ledger's tenth column, where somebody has written the six remaining doors
 in order with dates against each. The nearest is Sarnhold's own chapel. That is the book 4 hook.
@@ -93,11 +107,11 @@ All checks were run on this branch; every command is in the design doc section 6
    topology `branch_and_bottleneck`, tier 2.
 3. **Fill integrity** (`scripts/check_fill_integrity.py`): for all three books, only node bodies and
    choice labels differ from the skeleton, no `<<FILL` markers remain, and word stats are inside the band
-   envelope (book 3: mean 56.4 words/node over 746 nodes, max 136 against the 175 hard cap).
+   envelope (book 3: mean 57.3 words/node over 746 nodes, max 136 against the 175 hard cap).
 4. **Cross-book series validator** (`validator.series.validate_series`, SR-1..SR-7): **0 findings** over
    the three-book chain, both as skeletons and as filled books.
 5. **Layer-2 configuration walk**: 30,416 reachable configurations for book 1, 56,739 for book 2 and
-   36,781 for book 3, all inside the 100,000 cap; the full gate completes in about three seconds for a
+   38,272 for book 3, all inside the 100,000 cap; the full gate completes in about three seconds for a
    medium book and about ten for book 3.
 6. **Player smoke test** (`player.engine.StoryEngine`). Book 2: the story opens with the carried state
    (`iron_key=true`, `knows_compact=true`, `renown=2`), the carried-state-gated choice at `a4_out` is

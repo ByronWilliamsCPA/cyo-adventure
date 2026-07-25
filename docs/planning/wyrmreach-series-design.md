@@ -208,7 +208,21 @@ Rooms hang as parallel chains off an act hub and reconverge on the act gate, whi
 
 **Ending mix**: 1 `completion` per book (the true close that advances the campaign), a handful of `success`
 (wins that do not resolve the door correctly), plus `death`, `capture`, `setback`, and `discovery` leaves.
-Book 3 lands at 232 endings: 1 completion, 6 success, 2 discovery, 64 setback, 41 capture, 118 death. Lethal
+**Breadth must reconverge, not terminate** (the correction of 2026-07-25, AL-026). Book 3 was first
+built with breadth paid for in terminal failure leaves, at the same per-choice termination density as
+book 1 (~22.5%). Because it had 2.4x the nodes, that made the *typical* read shorter, not longer:
+a median of 5 pages and 302 words of a 42,085-word book, with 7 endings within two taps of the start.
+The fix was to convert the 45 shallowest failure leaves into **pass-through nodes**: the authored
+failure prose stays, the node costs `vigor` on entry, and the route rejoins the room's continuation.
+Median read went to 20 pages and 1,154 words, and the share of endings a reader actually reaches went
+from 39% to 56%. The rule for any future ceiling-scale book: a room should more often cost something
+and rejoin than end the run, and terminal leaves belong in the endgame acts where lethality is earned.
+
+Note the standing tension: PL-17's endings floor (`ceil(0.25 * nodes)` = 187 here) actively pushes a
+gamebook author toward terminal leaves, and book 3 now sits exactly on that floor with no headroom
+left. The floor's shape is worth revisiting (AL-026).
+
+Book 3 lands at 187 endings: 1 completion, 6 success, 2 discovery, 51 setback, 34 capture, 93 death. Lethal
 endings are allowed at 16+ and are earned by specific, telegraphed choices, never by a coin flip.
 
 ---

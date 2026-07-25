@@ -1,1737 +1,1737 @@
 [
-  {
-    "i": "a5_ring",
-    "r": "choice",
-    "w": 80,
-    "b": "the socket ring of the crown door: a dwarf chamber the size of a chapel with the door in one wall, nine sockets set in a ring around it, eight of them filled and warm, and the whole apparatus in daily working use by people with a rota",
-    "c": [
-      [
-        "Go to the sockets and read the ring.",
-        "a5_sockets"
-      ],
-      [
-        "Find the keeper's chair and whoever sits in it.",
-        "a5_chair"
-      ],
-      [
-        "Answer the voice that has started speaking.",
-        "a5_voice"
-      ],
-      [
-        "Deal with the stewards working the ring.",
-        "a5_stewards"
-      ],
-      [
-        "Look at the last works: the die, the forge, the wedge.",
-        "a5_die"
-      ],
-      [
-        "Go to the masons' scaffold on the door frame.",
-        "a5_masons"
-      ],
-      [
-        "Find the watchers in the gallery above.",
-        "a5_watchers"
-      ],
-      [
-        "Walk out. You have seen enough to report.",
-        "e_a5_ring_1"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_ring_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the socket ring seen, counted, and left, and a company that walks nine miles back up a living gallery with a complete description of the crown door and no crown iron and nothing done",
-    "e": "setback|neutral|Enough to Report"
-  },
-  {
-    "i": "a5_sockets",
-    "r": "choice",
-    "w": 62,
-    "b": "the ring itself at arm's length: eight founding irons seated in eight warm sockets, the ninth socket empty and worn bright, and a maintenance groove worn into the floor by nine hundred years of standing in one place",
-    "c": [
-      [
-        "Read the tallies on the eight seated irons.",
-        "a5_sockets_a"
-      ],
-      [
-        "Measure the ninth socket against your own two.",
-        "a5_sockets_b"
-      ],
-      [
-        "Test the eighth iron's seating with a hand.",
-        "a5_sockets_c"
-      ],
-      [
-        "Draw an iron now, while nobody is looking.",
-        "e_a5_sockets_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_sockets_a",
-    "r": "rising",
-    "w": 55,
-    "b": "eight tallies read at arm's length, one per iron, which are eight parts of one instruction, and which read in order tell you exactly what the ninth iron is required to say and why",
-    "c": [
-      [
-        "Go on to the eighth socket.",
-        "a5_eighth"
-      ],
-      [
-        "Read them again in the reverse order.",
-        "e_a5_sockets_2"
-      ]
-    ]
-  },
-  {
-    "i": "a5_sockets_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the ninth socket measured against Kar Duhn's iron and Hollowmarch's, which fit the socket's gauge and do not fit its tally, and which tells the company what the crown door will and will not accept",
-    "c": [
-      [
-        "Go on to the eighth socket.",
-        "a5_eighth"
-      ]
-    ]
-  },
-  {
-    "i": "a5_sockets_c",
-    "r": "rising",
-    "w": 55,
-    "b": "a hand laid on the eighth iron's seating, which is warm, and firm, and moves a sixteenth of an inch under the palm on the nine-count, which is what the maintenance notes call working properly",
-    "c": [
-      [
-        "Go on to the eighth socket.",
-        "a5_eighth"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_sockets_1",
-    "r": "failure",
-    "w": 58,
-    "b": "an iron drawn out of the crown ring on impulse while nobody appears to be looking, in a chamber that has been continuously staffed for nine hundred years, and where nobody has ever needed to look",
-    "e": "death|negative|While Nobody Was Looking",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a5_sockets_2",
-    "r": "failure",
-    "w": 58,
-    "b": "eight tallies read again in reverse order, which is not how they are meant to be read and is how the founder's plate says they must never be read, and which completes a sentence rather than a set of instructions",
-    "e": "setback|negative|In the Reverse Order"
-  },
-  {
-    "i": "a5_eighth",
-    "r": "choice",
-    "w": 62,
-    "b": "the eighth socket, which is the one the maintenance rota lists as due: its iron a sixteenth proud of the collar, its stone collar cracked in a curve, and a mason's chalk mark round the crack dated this week",
-    "s": [
-      "peril"
-    ],
-    "c": [
-      [
-        "Pack the crack with lead as the rota says.",
-        "a5_eighth_a"
-      ],
-      [
-        "Leave it; a chalk mark means somebody is coming.",
-        "a5_eighth_b"
-      ],
-      [
-        "Draw the eighth iron and look at the collar.",
-        "e_a5_eighth_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_eighth_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a cracked collar packed with lead off the barrow by a company that has read the rota and can follow instructions, which takes an hour and is the single most useful hour anybody spends in this chamber",
-    "c": [
-      [
-        "Go on to the ninth iron.",
-        "a5_ninth"
-      ]
-    ]
-  },
-  {
-    "i": "a5_eighth_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a chalk mark left alone and a mason's arrival waited for, which costs two hours and produces a mason, his apprentice, and a conversation about the crack that changes the company's plan entirely",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the ninth iron.",
-        "a5_ninth"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_eighth_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the eighth iron drawn to inspect a cracked collar, which is exactly the inspection the rota forbids for exactly this reason, and the collar going the rest of the way as the iron clears it",
-    "e": "death|negative|The Rest of the Way",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_ninth",
-    "r": "choice",
-    "w": 62,
-    "b": "the ninth iron itself, which is in the chamber and not in the door: cut, tallied, held in a rack under the keeper's own hand, waiting only for the appointment of a hand to seat it",
-    "c": [
-      [
-        "Take the ninth iron off the rack.",
-        "a5_ninth_a"
-      ],
-      [
-        "Read the appointment plate above the rack.",
-        "a5_ninth_b"
-      ],
-      [
-        "Leave it in the rack; it is not loose by accident.",
-        "a5_collar"
-      ],
-      [
-        "Take the rack, the plate and the iron together.",
-        "e_a5_ninth_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_ninth_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the crown iron off the rack and into a hand: founding gauge, cut with the crown tally, its flank blank where a name goes, and the whole chamber's arithmetic turning, quietly, toward whoever is holding it",
-    "c": [
-      [
-        "Go on to the collar plate.",
-        "a5_collar"
-      ]
-    ]
-  },
-  {
-    "i": "a5_ninth_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the appointment plate read: an office, a term of nine years, a set of duties in nine clauses, and a signature line with the word held written across it in a hand that has held it for nineteen",
-    "x": "crown_iron=true",
-    "c": [
-      [
-        "Go on to the collar plate.",
-        "a5_collar"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_ninth_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the rack, the plate and the iron all taken together, on the sound principle that evidence should be complete, which removes the appointment apparatus of a nine-hundred-year office in one movement and appoints the remover",
-    "e": "death|negative|Complete Evidence",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_collar",
-    "r": "choice",
-    "w": 62,
-    "b": "the door's collar plate above the ring: dwarf bronze, nine clauses, the founding specification of what this door is, what it holds, and what the nine hands are for",
-    "c": [
-      [
-        "Read all nine clauses with Ilsabet.",
-        "a5_collar_a"
-      ],
-      [
-        "Read only the ninth clause.",
-        "a5_decision"
-      ],
-      [
-        "Prise the plate off; it is the whole case.",
-        "e_a5_collar_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_collar_a",
-    "r": "rising",
-    "w": 55,
-    "b": "nine clauses read in full: containment, maintenance, the schedule, the hands, the arrears, and clause nine, which describes what the founders expected to happen on the day the count stopped and what they built into the door against it",
-    "c": [
-      [
-        "Go on to the decision.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_collar_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a founding collar plate prised off a door frame with a moor-iron pick because it is the whole case, and which is not a plaque but a fitting, and which is holding the frame's upper collar into the rock",
-    "e": "setback|neutral|Not a Plaque"
-  },
-  {
-    "i": "a5_chair",
-    "r": "choice",
-    "w": 62,
-    "b": "the keeper's chair, which is a clerk's chair at a clerk's desk beside the ring, occupied: the crown clerk of Kar Ashen, nineteen years in the office, working through a delivery ledger",
-    "c": [
-      [
-        "Sit down opposite him and let him talk.",
-        "a5_chair_a"
-      ],
-      [
-        "Show him the charter and take the desk.",
-        "a5_chair_b"
-      ],
-      [
-        "Put a knife in front of him and ask for the iron.",
-        "e_a5_chair_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_chair_a",
-    "r": "rising",
-    "w": 55,
-    "b": "two hours opposite a man who has kept a wyrm's accounts for nineteen years, who is courteous, exhausted, entirely lucid, and who has been waiting nine years for a Warden company to sit down and ask",
-    "c": [
-      [
-        "Go on to the signet.",
-        "a5_signet"
-      ]
-    ]
-  },
-  {
-    "i": "a5_chair_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a charter put on the crown clerk's desk, which he reads, initials, files, and then explains changes nothing, because the office is not a Warden appointment and never was and the ring does not read charters",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the signet.",
-        "a5_signet"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_chair_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a knife put down in front of the crown clerk of Kar Ashen, who looks at it, and then goes on writing, because the one thing nineteen years in this chair has taught him is exactly how little a knife matters here",
-    "e": "capture|negative|How Little It Matters"
-  },
-  {
-    "i": "a5_signet",
-    "r": "choice",
-    "w": 62,
-    "b": "the keeper's signet on the desk beside the ledger: nine-sided, warm, sized for whoever picks it up, with the last four holders' initials worn off the shank",
-    "c": [
-      [
-        "Take the signet off the desk.",
-        "a5_signet_a"
-      ],
-      [
-        "Read the shank's worn initials.",
-        "a5_signet_b"
-      ],
-      [
-        "Leave it; you have seen this twice.",
-        "a5_book"
-      ],
-      [
-        "Put it on to see whether it fits.",
-        "e_a5_signet_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_signet_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the signet taken off a working desk and put in a pocket rather than on a hand, which the crown clerk permits without comment and enters in his ledger as a transfer pending appointment",
-    "c": [
-      [
-        "Go on to the book.",
-        "a5_book"
-      ]
-    ]
-  },
-  {
-    "i": "a5_signet_b",
-    "r": "rising",
-    "w": 55,
-    "b": "four sets of initials read off a worn shank by lamplight, three of them meaningless and the fourth belonging to a Reckoning legate who came up to Sarnhold with a coach and a writ",
-    "c": [
-      [
-        "Go on to the book.",
-        "a5_book"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_signet_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a nine-sided signet put on a finger to see whether it fits, which it does, exactly, as it has for nineteen holders, and which is the entire appointment procedure and always has been",
-    "e": "death|negative|It Fits",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_book",
-    "r": "choice",
-    "w": 62,
-    "b": "the crown ledger on the desk: eleven hundred pages in nine hands, the current hand nineteen years old, four blank pages at the back and a ruled column at the end headed for a tenth",
-    "c": [
-      [
-        "Read the last nine pages.",
-        "a5_book_a"
-      ],
-      [
-        "Read the four blank pages' headings.",
-        "a5_office"
-      ],
-      [
-        "Take the ledger off the desk and carry it.",
-        "e_a5_book_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_book_a",
-    "r": "rising",
-    "w": 55,
-    "b": "nine pages read over a clerk's shoulder: this month's deliveries, next month's notices, and a standing entry for the crown door's own maintenance signed by the same hand every ninth day",
-    "c": [
-      [
-        "Go and see the office rota.",
-        "a5_office"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_book_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the crown ledger taken off the desk of a working clerk, which he allows, and which he notes, and which means the company is now carrying the only record that can appoint or discharge a ninth hand",
-    "e": "setback|neutral|Appoint or Discharge"
-  },
-  {
-    "i": "a5_office",
-    "r": "choice",
-    "w": 62,
-    "b": "the office itself, explained: nine years' term, nine duties, a house in the counted city, a stipend, and a clause about what happens to the holder's household if the count is not kept",
-    "c": [
-      [
-        "Ask what the household clause actually means.",
-        "a5_office_a"
-      ],
-      [
-        "Ask him why he took it in the first place.",
-        "a5_office_b"
-      ],
-      [
-        "Ask him whether he wants to be relieved.",
-        "e_a5_office_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_office_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the household clause explained without evasion: the holder's family stands as surety, is entered in the ninth column on appointment, and is removed from it only when the successor's family is entered",
-    "c": [
-      [
-        "Go on to the decision.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "a5_office_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the answer to why: he took it at twenty-six because the alternative was his sister taking it, and she had a child, and the appointment plate had been on the rack for a month with the family's name on it",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the decision.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_office_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the crown clerk asked whether he wants to be relieved of the office, and answering yes, and the answer being, procedurally, the beginning of the appointment of whoever asked the question",
-    "e": "capture|negative|Whoever Asked"
-  },
-  {
-    "i": "a5_voice",
-    "r": "choice",
-    "w": 62,
-    "b": "the door's own voice, which is not sound and arrives in the chamber as arithmetic laid directly into five heads at once, and which opens by naming the company's dead accurately and in order",
-    "c": [
-      [
-        "Hear it out to the end of the offer.",
-        "a5_voice_a"
-      ],
-      [
-        "Refuse to be addressed and turn your back.",
-        "a5_voice_b"
-      ],
-      [
-        "Answer it in kind, with the account you carry.",
-        "e_a5_voice_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_voice_a",
-    "r": "rising",
-    "w": 55,
-    "b": "an offer heard out to its end, complete with term, rate, security and a clause about the frontier's peace, delivered with the patience of something that has made this offer to nine hands before",
-    "c": [
-      [
-        "Go on to the terms.",
-        "a5_terms"
-      ]
-    ]
-  },
-  {
-    "i": "a5_voice_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a back turned on Ashendrel in its own socket chamber, which it accepts without any evident feeling, and which means the offer is now being made to whoever else in the company is listening",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the terms.",
-        "a5_terms"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_voice_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the account carried up from Gallowmere read aloud in the socket chamber to the thing the account is about, which is a form of address the founders' plate specifically describes, under clause nine, as an acknowledgement of the debt",
-    "e": "capture|negative|Acknowledgement of the Debt"
-  },
-  {
-    "i": "a5_terms",
-    "r": "choice",
-    "w": 62,
-    "b": "the terms, set out plainly: the count ends today, the ring opens, the arrears of nine hundred years are paid in one payment out of what is nearest, and the frontier is free of the Compact forever afterwards",
-    "c": [
-      [
-        "Write them down and say nothing else.",
-        "a5_terms_a"
-      ],
-      [
-        "Ask what nearest means in the terms.",
-        "a5_terms_b"
-      ],
-      [
-        "Agree to them, here, on the record.",
-        "e_a5_terms_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_terms_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the terms written down word for word by a hedge-thaumaturge whose hand shakes for the first time in three books, witnessed, dated and sealed with a Warden charter's own seal",
-    "x": "wyrm_pact=true",
-    "c": [
-      [
-        "Go on to the price.",
-        "a5_price"
-      ]
-    ]
-  },
-  {
-    "i": "a5_terms_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the question about nearest answered precisely, in figures: a counted city of eleven thousand, a fortress of four hundred, and a company of five, in that order of proximity and no other",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the price.",
-        "a5_price"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_terms_1",
-    "r": "failure",
-    "w": 58,
-    "b": "terms agreed on the record in a socket chamber, in front of the crown clerk, with a Warden seal on the agreement, and a payment schedule that begins with the word immediately",
-    "e": "capture|negative|Beginning Immediately"
-  },
-  {
-    "i": "a5_price",
-    "r": "choice",
-    "w": 62,
-    "b": "the price, which is where the offer stops being abstract: one payment, taken at once, from the nearest principal, and the door's own estimate of what that comes to written out in the crown ledger's tenth column",
-    "c": [
-      [
-        "Read the tenth column's figure.",
-        "a5_price_a"
-      ],
-      [
-        "Refuse to look at it and go to the ring.",
-        "a5_price_b"
-      ],
-      [
-        "Ask whether a smaller principal would serve.",
-        "e_a5_price_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_price_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a figure read in the tenth column of the crown ledger, in a clerk's hand, which is a number of people and a date, and which is the plainest sentence anybody has read in three books",
-    "c": [
-      [
-        "Go on to the oath.",
-        "a5_oath"
-      ]
-    ]
-  },
-  {
-    "i": "a5_price_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a question asked about whether a smaller principal would serve, and answered in the affirmative, with a figure, and the figure being five",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the oath.",
-        "a5_oath"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_price_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a refusal to read the figure, which is the only genuinely cowardly decision available in this chamber, and a company that walks into the ring not knowing what it has been offered and therefore unable to refuse it properly",
-    "e": "capture|negative|Not Knowing the Figure"
-  },
-  {
-    "i": "a5_oath",
-    "r": "choice",
-    "w": 62,
-    "b": "the last conversation before the ring: Ashendrel's own oath offered in the founders' form, which is binding on it in a way nothing else in the mountain is, and which requires a hand to swear on the other side",
-    "c": [
-      [
-        "Take the oath in the founders' form.",
-        "a5_oath_a"
-      ],
-      [
-        "Refuse the oath and hold to the charter.",
-        "a5_oath_b"
-      ],
-      [
-        "Have Nyre take it as a sister of the Reckoning.",
-        "e_a5_oath_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_oath_a",
-    "r": "rising",
-    "w": 55,
-    "b": "an oath taken in the founders' own form, which the collar plate describes and the crown ledger records, and which binds both parties to terms that neither of them can afterwards revise",
-    "c": [
-      [
-        "Go on to the decision.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "a5_oath_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the oath refused and a Warden charter held up instead, which is a legal instrument of a state that has existed for four hundred years addressing an arrangement that has existed for nine hundred",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the decision.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_oath_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the founders' oath taken by a sister of the Reckoning rather than by the captain, which is procedurally sound, which Nyre volunteers for, and which makes her the party bound and not the company",
-    "e": "capture|negative|She Volunteered"
-  },
-  {
-    "i": "a5_stewards",
-    "r": "choice",
-    "w": 62,
-    "b": "the ring's working stewards: nine of the crown clerk's household on the ninth-hour rota, who have been keeping the sockets, trimming the lamps and packing the collars here for their whole working lives",
-    "s": [
-      "peril",
-      "conflict"
-    ],
-    "c": [
-      [
-        "Put the charter to them and stand them down.",
-        "a5_stewards_a"
-      ],
-      [
-        "Work the rota alongside them for one hour.",
-        "a5_stewards_b"
-      ],
-      [
-        "Ask which of them knows the collar work.",
-        "a5_stewards_c",
-        "wyrm_pact"
-      ],
-      [
-        "Clear the chamber by force; they are the count.",
-        "e_a5_stewards_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_stewards_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a charter put to nine stewards who stand down, formally, in writing, and then stand in the gallery watching, because they have nowhere else to be and the rota is at the ninth hour regardless",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the legate.",
-        "a5_legate"
-      ],
-      [
-        "Send them out of the chamber entirely.",
-        "e_a5_stewards_2"
-      ]
-    ],
-    "s": [
-      "conflict"
-    ]
-  },
-  {
-    "i": "a5_stewards_b",
-    "r": "rising",
-    "w": 55,
-    "b": "one hour worked on the rota alongside nine stewards, trimming lamps and reading collars, which teaches the company more about the door than the whole of the archive did",
-    "c": [
-      [
-        "Go on to the legate.",
-        "a5_legate"
-      ]
-    ]
-  },
-  {
-    "i": "a5_stewards_c",
-    "r": "rising",
-    "w": 55,
-    "b": "the question asked, and the collar man identified: a mason of sixty who has packed these collars for forty years, who knows what clause nine means in practice, and who has never been asked before",
-    "c": [
-      [
-        "Go on to the legate.",
-        "a5_legate"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_stewards_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a socket chamber cleared by force of nine unarmed household stewards at the ninth hour, which leaves the ring unattended for the first time in nine hundred years for eleven minutes, which is two minutes too many",
-    "e": "death|negative|Eleven Minutes Unattended",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a5_stewards_2",
-    "r": "failure",
-    "w": 58,
-    "b": "nine stood-down stewards sent out of the chamber entirely, which is correct procedure and removes from the room the only nine people who know which collar is due, on the day the eighth collar is due",
-    "e": "death|negative|The Only Nine Who Knew",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_legate",
-    "r": "choice",
-    "w": 62,
-    "b": "Prior Absolon Rell, who is here, in the socket chamber, having come up the wyrm-road ahead of the company with his coach left at Sarnhold and an appointment plate in his own baggage",
-    "c": [
-      [
-        "Arrest him on the charter, in front of witnesses.",
-        "a5_legate_a"
-      ],
-      [
-        "Hear what he came up here to do.",
-        "a5_legate_b"
-      ],
-      [
-        "Let him proceed and watch what he does.",
-        "e_a5_legate_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_legate_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a mother-house legate arrested in a socket chamber by a chartered company, in front of nine stewards, the crown clerk and a mason, all of whom are entirely willing to witness it and one of whom writes it down",
-    "c": [
-      [
-        "Go on to the Guild.",
-        "a5_guild"
-      ]
-    ]
-  },
-  {
-    "i": "a5_legate_b",
-    "r": "rising",
-    "w": 55,
-    "b": "Rell's own account of his purpose, given without embarrassment: the office is vacant in nine days, the mother house has resolved to fill it from within the order, and he is here to be appointed",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the Guild.",
-        "a5_guild"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_legate_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a legate allowed to proceed and watched, which is the coldest decision in the book, and which ends with an appointment properly made, correctly witnessed, and the Reckoning holding the ninth hand of the crown door",
-    "e": "capture|negative|Correctly Witnessed"
-  },
-  {
-    "i": "a5_guild",
-    "r": "choice",
-    "w": 62,
-    "b": "Bruk Sunder of the Sable Guild, also here, with four delvers and a survey kit, entirely legally, on a Guild charter that predates the Warden charter by two hundred years",
-    "c": [
-      [
-        "Read his Guild charter properly.",
-        "a5_guild_a"
-      ],
-      [
-        "Order him out of the chamber.",
-        "a5_guild_b"
-      ],
-      [
-        "Ask what the Guild intends to do with a wyrm.",
-        "e_a5_guild_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_guild_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a Guild charter read in full by two people who understand documents, which is genuine, older than the Wardens, and grants mineral and salvage rights over precisely this chamber",
-    "c": [
-      [
-        "Go on to the Rooks.",
-        "a5_rooks"
-      ]
-    ]
-  },
-  {
-    "i": "a5_guild_b",
-    "r": "rising",
-    "w": 55,
-    "b": "an order to leave given to a Guild factor with an older charter than yours, which he declines, courteously, and which he has his delvers minute for the Guild's own record",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the Rooks.",
-        "a5_rooks"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_guild_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the question asked of what the Guild intends, and answered fully: the Guild intends to work the arrangement as a going concern, has costed it, and has a nine-year plan with the counted city as the labour supply",
-    "e": "capture|negative|A Nine-Year Plan"
-  },
-  {
-    "i": "a5_rooks",
-    "r": "choice",
-    "w": 62,
-    "b": "Corrow's Rooks, eleven of them, in the gallery above the ring, chartered, armed, and here on a Warden commission of their own that Thane did not mention because Thane did not issue it",
-    "s": [
-      "peril",
-      "conflict"
-    ],
-    "c": [
-      [
-        "Fight them for the chamber now.",
-        "a5_rooks_a"
-      ],
-      [
-        "Get above them by the masons' scaffold.",
-        "a5_rooks_b"
-      ],
-      [
-        "Ask to see the commission they are working under.",
-        "a5_rooks_c"
-      ],
-      [
-        "Hold the ring and let them come down to you.",
-        "e_a5_rooks_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_rooks_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a fight in a socket chamber against eleven chartered mercenaries, in a room with nine warm sockets and a cracked collar in it, which is the worst possible place any of the twenty-two of you could have chosen",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the last works.",
-        "a5_decision"
-      ],
-      [
-        "Push them back up the gallery stair.",
-        "e_a5_rooks_2"
-      ]
-    ],
-    "s": [
-      "conflict"
-    ]
-  },
-  {
-    "i": "a5_rooks_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the scaffold used to get above the gallery, which puts the company on the door frame looking down at eleven Rooks who have not thought about the roof",
-    "c": [
-      [
-        "Go on to the last works.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "a5_rooks_c",
-    "r": "rising",
-    "w": 55,
-    "b": "a commission produced and read: signed, sealed, and issued by the Reckoning's mother house under a Warden counter-seal that Rell carries, which makes the Rooks lawful and the company's charter contested",
-    "c": [
-      [
-        "Go on to the last works.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_rooks_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a ring held against eleven mercenaries coming down a gallery stair, which is good ground, and which the eighth socket's cracked collar is nine feet behind, and which somebody's weight goes into during the fourth minute",
-    "e": "death|negative|Nine Feet Behind",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a5_rooks_2",
-    "r": "failure",
-    "w": 58,
-    "b": "eleven Rooks pushed back up a gallery stair by a company that is winning, and the stair leading to the tithe hall, and the tithe hall being where the ninth-hour delivery is waiting to be called",
-    "e": "death|negative|Up the Gallery Stair",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_die",
-    "r": "choice",
-    "w": 62,
-    "b": "the last works: the crown die on a portable anvil in the chamber's corner, brought down from the mint for the appointment, with a striker's hammer beside it and a blank in the vice",
-    "c": [
-      [
-        "Take the die and break it here.",
-        "a5_die_a"
-      ],
-      [
-        "Read the blank in the vice.",
-        "a5_die_b"
-      ],
-      [
-        "Leave the works alone and go to the ring.",
-        "a5_forge"
-      ],
-      [
-        "Cut the blank yourself, now, and see.",
-        "e_a5_die_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_die_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the crown die off its anvil and broken with a striker's hammer in four blows, in front of the crown clerk, the legate and the Guild, which ends the cutting of irons in this mountain permanently",
-    "c": [
-      [
-        "Go on to the forge.",
-        "a5_forge"
-      ]
-    ]
-  },
-  {
-    "i": "a5_die_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the blank in the vice read: founding gauge, crown tally, and a name already cut into the flank, and the name being the one Rell has been carrying an appointment plate for",
-    "c": [
-      [
-        "Go on to the forge.",
-        "a5_forge"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_die_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a blank cut on the crown die by the captain's own hand to see what happens, which is what the die is for, and which produces a finished ninth iron with a name on its flank that the cutter did not choose",
-    "e": "death|negative|A Name You Did Not Choose",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_forge",
-    "r": "choice",
-    "w": 62,
-    "b": "the chamber's own small forge, kept for collar lead and iron work, hot, with a lead pot on it and a mason's tools laid out in order",
-    "s": [
-      "peril"
-    ],
-    "c": [
-      [
-        "Melt lead and pack the eighth collar properly.",
-        "a5_forge_a"
-      ],
-      [
-        "Use the forge to spoil the blank in the vice.",
-        "a5_forge_b"
-      ],
-      [
-        "Put the crown iron in the fire and see if it goes.",
-        "e_a5_forge_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_forge_a",
-    "r": "rising",
-    "w": 55,
-    "b": "an hour with a lead pot and a mason's tools, packing a cracked collar the way the rota specifies, which is not heroic and is the thing most likely to keep this door shut for another century",
-    "c": [
-      [
-        "Go on to the wedge.",
-        "a5_wedge"
-      ]
-    ]
-  },
-  {
-    "i": "a5_forge_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the blank in the vice spoiled with a hot iron, deliberately, which cannot be undone and which means no appointment can be made in this chamber until the mint cuts another, which takes nine days",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the wedge.",
-        "a5_wedge"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_forge_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a founding-gauge crown iron put into a working forge to see whether it will burn, which it does not, and which it takes considerable exception to in a chamber with eight of its fellows in the walls",
-    "e": "death|negative|It Does Not Burn",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_wedge",
-    "r": "choice",
-    "w": 62,
-    "b": "the wedge, which is Vurma's idea and has been since Hollowmarch: an iron driven crosswise through the ring's collars rather than into a socket, locking all nine into one piece that no hand can draw",
-    "c": [
-      [
-        "Have Vurma set the wedge properly.",
-        "a5_wedge_a"
-      ],
-      [
-        "Have the mason check the wedge's bearing first.",
-        "a5_wedge_b"
-      ],
-      [
-        "Set it yourself, fast, before anybody stops you.",
-        "a5_wedge_c"
-      ],
-      [
-        "Wedge it with the founding iron from the chapel.",
-        "e_a5_wedge_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_wedge_a",
-    "r": "rising",
-    "w": 55,
-    "b": "Vurma setting a wedge in the crown ring with forty years of Guild pathfinding behind the placement, which takes eleven minutes and is the best piece of work anybody does in this book",
-    "c": [
-      [
-        "Go on to the vigil.",
-        "a5_vigil"
-      ],
-      [
-        "Have her set a second wedge on the far side.",
-        "e_a5_wedge_2"
-      ]
-    ]
-  },
-  {
-    "i": "a5_wedge_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a mason of forty years' collar experience checking a wedge's bearing before it is driven, which finds two problems, fixes both, and moves the wedge four inches to the left",
-    "c": [
-      [
-        "Go on to the vigil.",
-        "a5_vigil"
-      ]
-    ]
-  },
-  {
-    "i": "a5_wedge_c",
-    "r": "rising",
-    "w": 55,
-    "b": "a wedge set fast by the captain's own hands before the legate can object, which holds, and which nobody in the chamber will certify as sound because nobody was allowed to look at it",
-    "c": [
-      [
-        "Go on to the vigil.",
-        "a5_vigil"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_wedge_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a chapel founding iron used as a wedge, which is a different alloy, cut in a different century, and which shears under the ring's nine-count load in the fourth minute with the whole company standing inside the ring",
-    "e": "death|negative|A Different Alloy",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a5_wedge_2",
-    "r": "failure",
-    "w": 58,
-    "b": "a second wedge set on the far side of the ring for redundancy, which is sound engineering, and which puts two hard points into a collar system designed to distribute its load across nine",
-    "e": "setback|negative|Two Hard Points"
-  },
-  {
-    "i": "a5_vigil",
-    "r": "choice",
-    "w": 62,
-    "b": "a dwarf watch-alcove off the socket chamber, where the stewards rest between rota hours, with a bench, a lamp and a view of the whole ring",
-    "c": [
-      [
-        "Take three hours before you do anything.",
-        "a5_vigil_a"
-      ],
-      [
-        "Do not sit down. Finish this now.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "a5_vigil_a",
-    "r": "rising",
-    "w": 55,
-    "b": "three hours on a steward's bench with the ring in front of you and the whole company asleep in shifts, which is the last quiet anybody in this story gets and which everybody knows it at the time",
-    "x": "vigor+1",
-    "c": [
-      [
-        "Go to the decision.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "a5_masons",
-    "r": "choice",
-    "w": 62,
-    "b": "the masons on the scaffold at the door frame: a master of sixty, two journeymen and an apprentice, working on the frame's upper collar as they have every ninth day for forty years",
-    "c": [
-      [
-        "Ask the master what the frame is doing.",
-        "a5_masons_a"
-      ],
-      [
-        "Order them off the scaffold on the charter.",
-        "a5_masons_b"
-      ],
-      [
-        "Ask him what clause nine means in stone.",
-        "e_a5_masons_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_masons_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a master mason's answer about the frame, given in trade terms with his hand on the stone: the frame is spreading, has been spreading since autumn, and will need more than lead within the year",
-    "c": [
-      [
-        "Go up the scaffold.",
-        "a5_scaffold"
-      ]
-    ]
-  },
-  {
-    "i": "a5_masons_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a mason of forty years asked what clause nine means in stone, and answering, and the answer being that the founders cut the frame so that it fails inward rather than outward, and that he has been maintaining that failure his whole life",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go up the scaffold.",
-        "a5_scaffold"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_masons_1",
-    "r": "failure",
-    "w": 58,
-    "b": "four masons ordered off a scaffold on a Warden charter in the middle of collar work, which they comply with, and which leaves a partly-packed upper collar open on the day the eighth socket was already due",
-    "e": "capture|negative|Partly Packed"
-  },
-  {
-    "i": "a5_scaffold",
-    "r": "choice",
-    "w": 62,
-    "b": "the masons' scaffold on the door frame: dwarf poles and planks, four levels of it, giving a hand's reach to the frame's upper collar and a view down into the socket ring",
-    "s": [
-      "peril"
-    ],
-    "c": [
-      [
-        "Climb it and look at the upper collar.",
-        "a5_scaffold_a"
-      ],
-      [
-        "Use it to get above the gallery and the Rooks.",
-        "a5_scaffold_b"
-      ],
-      [
-        "Take it down; it is a way in for other people.",
-        "e_a5_scaffold_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_scaffold_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the upper collar seen at a hand's reach: dwarf stone, spread a finger's width, packed and repacked with lead in nine hundred years of visible layers, and the newest layer eleven days old",
-    "c": [
-      [
-        "Go on to the crane.",
-        "a5_crane"
-      ]
-    ]
-  },
-  {
-    "i": "a5_scaffold_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the scaffold used as a route above the gallery, which nobody in the chamber expects, and which gives the company the only high ground in a room that has been fought over exactly once before",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the crane.",
-        "a5_crane"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_scaffold_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a masons' scaffold taken down to deny it to other people, which takes forty minutes, and which removes the only access to an upper collar that is spreading a finger's width and is due for packing today",
-    "e": "death|negative|Access Removed",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_crane",
-    "r": "choice",
-    "w": 62,
-    "b": "a dwarf crane over the ring, used for setting collar stone, with a hook, a wire fall and a counterweight, still greased and still turning on its bearing after nine hundred years",
-    "c": [
-      [
-        "Rig the crane to draw a collar stone.",
-        "a5_crane_a"
-      ],
-      [
-        "Rig it over the ninth socket for the seating.",
-        "a5_crane_b"
-      ],
-      [
-        "Leave the crane; it is not your equipment.",
-        "a5_seal"
-      ],
-      [
-        "Cut the counterweight and drop the fall.",
-        "e_a5_crane_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_crane_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the crane rigged to draw a collar stone under the mason's direction, which is what it is for, and which gives the company the ability to open or close the ring's stonework rather than only its irons",
-    "c": [
-      [
-        "Go on to the seal.",
-        "a5_seal"
-      ]
-    ]
-  },
-  {
-    "i": "a5_crane_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the crane rigged over the ninth socket, which is how the founders seated the first nine irons and how the ninth will be seated today by somebody, and which is now under the company's hand",
-    "c": [
-      [
-        "Go on to the seal.",
-        "a5_seal"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_crane_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a nine-hundred-year-old counterweight cut in a chamber with eight warm sockets and a scaffold in it, and eleven hundred pounds of dwarf stone arriving on the ring floor at the ninth minute",
-    "e": "death|negative|Eleven Hundred Pounds",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_seal",
-    "r": "choice",
-    "w": 62,
-    "b": "the founders' seal, cut into the chamber floor in front of the ring: nine hands in a circle around a door, and around them an inscription in the founders' own hand that the city has never translated",
-    "c": [
-      [
-        "Have Ilsabet translate the floor inscription.",
-        "a5_seal_a"
-      ],
-      [
-        "Stand on the seal and read the ring from it.",
-        "a5_decision"
-      ],
-      [
-        "Cut the seal out of the floor and carry it.",
-        "e_a5_seal_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_seal_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a founders' inscription translated on the chamber floor after nine hundred years: not a dedication and not a warning but an apology, addressed to whoever is standing on it, from the people who built the arrangement",
-    "c": [
-      [
-        "Go to the decision.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_seal_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a founders' seal cut out of the chamber floor and carried, which is nine hundred pounds of dwarf flagstone and the only apology anybody ever wrote for any of this, and which the company cannot get up the wyrm-road",
-    "e": "setback|neutral|Nine Hundred Pounds of Apology"
-  },
-  {
-    "i": "a5_watchers",
-    "r": "choice",
-    "w": 62,
-    "b": "the gallery above the ring, where nine of the counted stand at the rail in shifts and watch the door, and have watched it, in shifts, without instruction from anybody, for nine hundred years",
-    "s": [
-      "peril",
-      "conflict"
-    ],
-    "c": [
-      [
-        "Ask them what they are watching for.",
-        "a5_watchers_a"
-      ],
-      [
-        "Get them out of the gallery before the hour.",
-        "a5_watchers_b"
-      ],
-      [
-        "Stand with them at the rail for one shift.",
-        "a5_watchers_c"
-      ],
-      [
-        "Clear them out; the gallery is a firing position.",
-        "e_a5_watchers_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_watchers_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the answer given by nine people at a rail: they are watching for the day the count stops, because the founders told the first nine to watch, and each nine has told the next, and nobody has ever stood down",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the hollow.",
-        "a5_hollow"
-      ],
-      [
-        "Ask them what they were told to do if it stops.",
-        "e_a5_watchers_2"
-      ]
-    ],
-    "s": [
-      "conflict"
-    ]
-  },
-  {
-    "i": "a5_watchers_b",
-    "r": "rising",
-    "w": 55,
-    "b": "nine watchers got out of the gallery before the ninth hour with some difficulty, which is a kindness, and which means nobody is at the rail when the hour comes for the first time in nine hundred years",
-    "c": [
-      [
-        "Go on to the hollow.",
-        "a5_hollow"
-      ]
-    ]
-  },
-  {
-    "i": "a5_watchers_c",
-    "r": "rising",
-    "w": 55,
-    "b": "one full shift stood at the rail with nine of the counted, in silence, watching a door breathe on a nine-count, which is the single most useful hour of preparation the company could have had",
-    "c": [
-      [
-        "Go on to the hollow.",
-        "a5_hollow"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_watchers_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a gallery cleared by force because it is a firing position, and nine watchers put out of a place they have held in shifts for nine hundred years, and the ninth of them explaining on the way out what they were watching for",
-    "e": "death|negative|What They Were Watching For",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a5_watchers_2",
-    "r": "failure",
-    "w": 58,
-    "b": "the watchers asked what they were told to do if the count stopped, and answering, all nine at once, in the founders' own words, and the words being an instruction that the company is now standing inside of",
-    "e": "death|negative|All Nine At Once",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_hollow",
-    "r": "choice",
-    "w": 62,
-    "b": "a hollow behind the ring wall, found by Vurma's hammer: a void the founders left between the door frame and the rock, with a dwarf ladder in it and nine hundred years of dust undisturbed",
-    "c": [
-      [
-        "Go down the founders' ladder.",
-        "a5_hollow_a"
-      ],
-      [
-        "Sound the void and map it from outside.",
-        "a5_hollow_b"
-      ],
-      [
-        "Wall the hollow up before anybody else finds it.",
-        "a5_hollow_c"
-      ],
-      [
-        "Send Kettle down alone to see.",
-        "e_a5_hollow_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_hollow_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a founders' ladder descended into a void nobody has entered since the founding, which has a bench at the bottom, a tool rack, and a set of written instructions for dismantling the door",
-    "c": [
-      [
-        "Go on to the bellows.",
-        "a5_bellows"
-      ],
-      [
-        "Take the dismantling instructions off the wall.",
-        "e_a5_hollow_2"
-      ]
-    ]
-  },
-  {
-    "i": "a5_hollow_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a void sounded and mapped from outside with a hammer and a wire, which tells Vurma its size, its shape and the fact that the door's frame is not attached to the rock in the way the whole city believes",
-    "c": [
-      [
-        "Go on to the bellows.",
-        "a5_bellows"
-      ]
-    ]
-  },
-  {
-    "i": "a5_hollow_c",
-    "r": "rising",
-    "w": 55,
-    "b": "Kettle down the founders' ladder alone with a lamp and back in eleven minutes, white, with a description of a bench, a tool rack, and a set of instructions in dwarf that she cannot read and Ilsabet can",
-    "c": [
-      [
-        "Go on to the bellows.",
-        "a5_bellows"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_hollow_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a founders' hollow walled up to keep it from other people, with the company on the outside of it, which seals the only route by which the door could be dismantled and the only apparatus for doing it",
-    "e": "death|negative|Walled Up",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a5_hollow_2",
-    "r": "failure",
-    "w": 58,
-    "b": "a set of nine-hundred-year-old dismantling instructions taken off a founders' wall and carried up a ladder, which are inscribed on nine bronze plates, and which are the wall's own bracing",
-    "e": "setback|negative|The Wall's Own Bracing"
-  },
-  {
-    "i": "a5_bellows",
-    "r": "choice",
-    "w": 62,
-    "b": "a dwarf bellows apparatus in the hollow, connected through the rock to the door's own frame, built by the founders for a purpose the crown clerk has never known about and the masons have",
-    "s": [
-      "peril"
-    ],
-    "c": [
-      [
-        "Have the mason explain the bellows.",
-        "a5_bellows_a"
-      ],
-      [
-        "Work the bellows and see what it does.",
-        "a5_bellows_b"
-      ],
-      [
-        "Leave it; the founders left it for a reason.",
-        "e_a5_bellows_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_bellows_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the mason's explanation, given with real pleasure at being asked: the bellows cools the frame's upper collar, it has not been worked in ninety years, and working it would buy the frame a decade",
-    "c": [
-      [
-        "Go on to the tithe box.",
-        "a5_tithebox"
-      ]
-    ]
-  },
-  {
-    "i": "a5_bellows_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the bellows worked by two people for an hour, which drops the upper collar's temperature by a measurable amount, tightens the frame's spread by a hair, and is the most boring heroism in three books",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the tithe box.",
-        "a5_tithebox"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_bellows_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a founders' bellows left alone on the principle that the founders left it for a reason, which is true, and the reason being that it must be worked every ninth decade, and the ninetieth year being this one",
-    "e": "death|negative|The Ninetieth Year",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_tithebox",
-    "r": "choice",
-    "w": 62,
-    "b": "the tithe box beside the ring: a dwarf strongbox where the counted city's tokens are collected after each delivery, full, with nine hundred years of tokens in it and a tally slate on the lid",
-    "c": [
-      [
-        "Read the tally slate on the lid.",
-        "a5_tithebox_a"
-      ],
-      [
-        "Take the box; it is nine hundred years of evidence.",
-        "a5_tithebox_b"
-      ],
-      [
-        "Leave it and go to the ring.",
-        "a5_decision"
-      ],
-      [
-        "Empty it into the hollow and lose the tokens.",
-        "e_a5_tithebox_1"
-      ]
-    ]
-  },
-  {
-    "i": "a5_tithebox_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a tally slate read off a strongbox lid: this month's tokens, next month's requirement, and a note in the crown clerk's hand that the requirement has doubled since Kar Duhn shut",
-    "c": [
-      [
-        "Go to the decision.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "a5_tithebox_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a dwarf strongbox of nine hundred years of household tokens taken and lashed to the barrow, which is ninety pounds, and which is the counted city's entire history of who paid what and when",
-    "c": [
-      [
-        "Go to the decision.",
-        "a5_decision"
-      ]
-    ]
-  },
-  {
-    "i": "e_a5_tithebox_1",
-    "r": "failure",
-    "w": 58,
-    "b": "nine hundred years of household tokens emptied into a founders' hollow to destroy the record, and the record being the only proof that any of the eleven thousand ever paid anything, and the city's own arithmetic simply starting again from one",
-    "e": "death|negative|Starting Again From One",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a5_decision",
-    "r": "climax",
-    "w": 80,
-    "b": "the ring at the ninth hour, everything now known: eight irons warm, one socket bright and empty, a crown iron somewhere in the room, a legate with an appointment plate, a Guild with an older charter, eleven Rooks on the stair, and a door breathing on a nine-count in front of five people",
-    "c": [
-      [
-        "Go to the door and settle it.",
-        "a6_resolve"
-      ]
-    ]
-  }
+ {
+  "i": "a5_ring",
+  "r": "choice",
+  "w": 80,
+  "b": "the socket ring of the crown door: a dwarf chamber the size of a chapel with the door in one wall, nine sockets set in a ring around it, eight of them filled and warm, and the whole apparatus in daily working use by people with a rota",
+  "c": [
+   [
+    "Go to the sockets and read the ring.",
+    "a5_sockets"
+   ],
+   [
+    "Find the keeper's chair and whoever sits in it.",
+    "a5_chair"
+   ],
+   [
+    "Answer the voice that has started speaking.",
+    "a5_voice"
+   ],
+   [
+    "Deal with the stewards working the ring.",
+    "a5_stewards"
+   ],
+   [
+    "Look at the last works: the die, the forge, the wedge.",
+    "a5_die"
+   ],
+   [
+    "Go to the masons' scaffold on the door frame.",
+    "a5_masons"
+   ],
+   [
+    "Find the watchers in the gallery above.",
+    "a5_watchers"
+   ],
+   [
+    "Walk out. You have seen enough to report.",
+    "e_a5_ring_1"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_ring_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the socket ring seen, counted, and left, and a company that walks nine miles back up a living gallery with a complete description of the crown door and no crown iron and nothing done",
+  "e": "setback|neutral|Enough to Report"
+ },
+ {
+  "i": "a5_sockets",
+  "r": "choice",
+  "w": 62,
+  "b": "the ring itself at arm's length: eight founding irons seated in eight warm sockets, the ninth socket empty and worn bright, and a maintenance groove worn into the floor by nine hundred years of standing in one place",
+  "c": [
+   [
+    "Read the tallies on the eight seated irons.",
+    "a5_sockets_a"
+   ],
+   [
+    "Measure the ninth socket against your own two.",
+    "a5_sockets_b"
+   ],
+   [
+    "Test the eighth iron's seating with a hand.",
+    "a5_sockets_c"
+   ],
+   [
+    "Draw an iron now, while nobody is looking.",
+    "e_a5_sockets_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_sockets_a",
+  "r": "rising",
+  "w": 55,
+  "b": "eight tallies read at arm's length, one per iron, which are eight parts of one instruction, and which read in order tell you exactly what the ninth iron is required to say and why",
+  "c": [
+   [
+    "Go on to the eighth socket.",
+    "a5_eighth"
+   ],
+   [
+    "Read them again in the reverse order.",
+    "e_a5_sockets_2"
+   ]
+  ]
+ },
+ {
+  "i": "a5_sockets_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the ninth socket measured against Kar Duhn's iron and Hollowmarch's, which fit the socket's gauge and do not fit its tally, and which tells the company what the crown door will and will not accept",
+  "c": [
+   [
+    "Go on to the eighth socket.",
+    "a5_eighth"
+   ]
+  ]
+ },
+ {
+  "i": "a5_sockets_c",
+  "r": "rising",
+  "w": 55,
+  "b": "a hand laid on the eighth iron's seating, which is warm, and firm, and moves a sixteenth of an inch under the palm on the nine-count, which is what the maintenance notes call working properly",
+  "c": [
+   [
+    "Go on to the eighth socket.",
+    "a5_eighth"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_sockets_1",
+  "r": "failure",
+  "w": 58,
+  "b": "an iron drawn out of the crown ring on impulse while nobody appears to be looking, in a chamber that has been continuously staffed for nine hundred years, and where nobody has ever needed to look",
+  "e": "death|negative|While Nobody Was Looking",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a5_sockets_2",
+  "r": "failure",
+  "w": 58,
+  "b": "eight tallies read again in reverse order, which is not how they are meant to be read and is how the founder's plate says they must never be read, and which completes a sentence rather than a set of instructions",
+  "e": "setback|negative|In the Reverse Order"
+ },
+ {
+  "i": "a5_eighth",
+  "r": "choice",
+  "w": 62,
+  "b": "the eighth socket, which is the one the maintenance rota lists as due: its iron a sixteenth proud of the collar, its stone collar cracked in a curve, and a mason's chalk mark round the crack dated this week",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Pack the crack with lead as the rota says.",
+    "a5_eighth_a"
+   ],
+   [
+    "Leave it; a chalk mark means somebody is coming.",
+    "a5_eighth_b"
+   ],
+   [
+    "Draw the eighth iron and look at the collar.",
+    "e_a5_eighth_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_eighth_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a cracked collar packed with lead off the barrow by a company that has read the rota and can follow instructions, which takes an hour and is the single most useful hour anybody spends in this chamber",
+  "c": [
+   [
+    "Go on to the ninth iron.",
+    "a5_ninth"
+   ]
+  ]
+ },
+ {
+  "i": "a5_eighth_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a chalk mark left alone and a mason's arrival waited for, which costs two hours and produces a mason, his apprentice, and a conversation about the crack that changes the company's plan entirely",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the ninth iron.",
+    "a5_ninth"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_eighth_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the eighth iron drawn to inspect a cracked collar, which is exactly the inspection the rota forbids for exactly this reason, and the collar going the rest of the way as the iron clears it",
+  "e": "death|negative|The Rest of the Way",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_ninth",
+  "r": "choice",
+  "w": 62,
+  "b": "the ninth iron itself, which is in the chamber and not in the door: cut, tallied, held in a rack under the keeper's own hand, waiting only for the appointment of a hand to seat it",
+  "c": [
+   [
+    "Take the ninth iron off the rack.",
+    "a5_ninth_a"
+   ],
+   [
+    "Read the appointment plate above the rack.",
+    "a5_ninth_b"
+   ],
+   [
+    "Leave it in the rack; it is not loose by accident.",
+    "a5_collar"
+   ],
+   [
+    "Take the rack, the plate and the iron together.",
+    "e_a5_ninth_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_ninth_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the crown iron off the rack and into a hand: founding gauge, cut with the crown tally, its flank blank where a name goes, and the whole chamber's arithmetic turning, quietly, toward whoever is holding it",
+  "c": [
+   [
+    "Go on to the collar plate.",
+    "a5_collar"
+   ]
+  ]
+ },
+ {
+  "i": "a5_ninth_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the appointment plate read: an office, a term of nine years, a set of duties in nine clauses, and a signature line with the word held written across it in a hand that has held it for nineteen",
+  "x": "crown_iron=true",
+  "c": [
+   [
+    "Go on to the collar plate.",
+    "a5_collar"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_ninth_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the rack, the plate and the iron all taken together, on the sound principle that evidence should be complete, which removes the appointment apparatus of a nine-hundred-year office in one movement and appoints the remover",
+  "e": "death|negative|Complete Evidence",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_collar",
+  "r": "choice",
+  "w": 62,
+  "b": "the door's collar plate above the ring: dwarf bronze, nine clauses, the founding specification of what this door is, what it holds, and what the nine hands are for",
+  "c": [
+   [
+    "Read all nine clauses with Ilsabet.",
+    "a5_collar_a"
+   ],
+   [
+    "Read only the ninth clause.",
+    "a5_decision"
+   ],
+   [
+    "Prise the plate off; it is the whole case.",
+    "e_a5_collar_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_collar_a",
+  "r": "rising",
+  "w": 55,
+  "b": "nine clauses read in full: containment, maintenance, the schedule, the hands, the arrears, and clause nine, which describes what the founders expected to happen on the day the count stopped and what they built into the door against it",
+  "c": [
+   [
+    "Go on to the decision.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_collar_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a founding collar plate prised off a door frame with a moor-iron pick because it is the whole case, and which is not a plaque but a fitting, and which is holding the frame's upper collar into the rock",
+  "e": "setback|neutral|Not a Plaque"
+ },
+ {
+  "i": "a5_chair",
+  "r": "choice",
+  "w": 62,
+  "b": "the keeper's chair, which is a clerk's chair at a clerk's desk beside the ring, occupied: the crown clerk of Kar Ashen, nineteen years in the office, working through a delivery ledger",
+  "c": [
+   [
+    "Sit down opposite him and let him talk.",
+    "a5_chair_a"
+   ],
+   [
+    "Show him the charter and take the desk.",
+    "a5_chair_b"
+   ],
+   [
+    "Put a knife in front of him and ask for the iron.",
+    "e_a5_chair_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_chair_a",
+  "r": "rising",
+  "w": 55,
+  "b": "two hours opposite a man who has kept a wyrm's accounts for nineteen years, who is courteous, exhausted, entirely lucid, and who has been waiting nine years for a Warden company to sit down and ask",
+  "c": [
+   [
+    "Go on to the signet.",
+    "a5_signet"
+   ]
+  ]
+ },
+ {
+  "i": "a5_chair_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a charter put on the crown clerk's desk, which he reads, initials, files, and then explains changes nothing, because the office is not a Warden appointment and never was and the ring does not read charters",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the signet.",
+    "a5_signet"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_chair_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a knife put down in front of the crown clerk of Kar Ashen, who looks at it, and then goes on writing, because the one thing nineteen years in this chair has taught him is exactly how little a knife matters here",
+  "e": "capture|negative|How Little It Matters"
+ },
+ {
+  "i": "a5_signet",
+  "r": "choice",
+  "w": 62,
+  "b": "the keeper's signet on the desk beside the ledger: nine-sided, warm, sized for whoever picks it up, with the last four holders' initials worn off the shank",
+  "c": [
+   [
+    "Take the signet off the desk.",
+    "a5_signet_a"
+   ],
+   [
+    "Read the shank's worn initials.",
+    "a5_signet_b"
+   ],
+   [
+    "Leave it; you have seen this twice.",
+    "a5_book"
+   ],
+   [
+    "Put it on to see whether it fits.",
+    "e_a5_signet_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_signet_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the signet taken off a working desk and put in a pocket rather than on a hand, which the crown clerk permits without comment and enters in his ledger as a transfer pending appointment",
+  "c": [
+   [
+    "Go on to the book.",
+    "a5_book"
+   ]
+  ]
+ },
+ {
+  "i": "a5_signet_b",
+  "r": "rising",
+  "w": 55,
+  "b": "four sets of initials read off a worn shank by lamplight, three of them meaningless and the fourth belonging to a Reckoning legate who came up to Sarnhold with a coach and a writ",
+  "c": [
+   [
+    "Go on to the book.",
+    "a5_book"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_signet_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a nine-sided signet put on a finger to see whether it fits, which it does, exactly, as it has for nineteen holders, and which is the entire appointment procedure and always has been",
+  "e": "death|negative|It Fits",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_book",
+  "r": "choice",
+  "w": 62,
+  "b": "the crown ledger on the desk: eleven hundred pages in nine hands, the current hand nineteen years old, four blank pages at the back and a ruled column at the end headed for a tenth",
+  "c": [
+   [
+    "Read the last nine pages.",
+    "a5_book_a"
+   ],
+   [
+    "Read the four blank pages' headings.",
+    "a5_office"
+   ],
+   [
+    "Take the ledger off the desk and carry it.",
+    "e_a5_book_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_book_a",
+  "r": "rising",
+  "w": 55,
+  "b": "nine pages read over a clerk's shoulder: this month's deliveries, next month's notices, and a standing entry for the crown door's own maintenance signed by the same hand every ninth day",
+  "c": [
+   [
+    "Go and see the office rota.",
+    "a5_office"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_book_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the crown ledger taken off the desk of a working clerk, which he allows, and which he notes, and which means the company is now carrying the only record that can appoint or discharge a ninth hand",
+  "e": "setback|neutral|Appoint or Discharge"
+ },
+ {
+  "i": "a5_office",
+  "r": "choice",
+  "w": 62,
+  "b": "the office itself, explained: nine years' term, nine duties, a house in the counted city, a stipend, and a clause about what happens to the holder's household if the count is not kept",
+  "c": [
+   [
+    "Ask what the household clause actually means.",
+    "a5_office_a"
+   ],
+   [
+    "Ask him why he took it in the first place.",
+    "a5_office_b"
+   ],
+   [
+    "Ask him whether he wants to be relieved.",
+    "e_a5_office_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_office_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the household clause explained without evasion: the holder's family stands as surety, is entered in the ninth column on appointment, and is removed from it only when the successor's family is entered",
+  "c": [
+   [
+    "Go on to the decision.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "a5_office_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the answer to why: he took it at twenty-six because the alternative was his sister taking it, and she had a child, and the appointment plate had been on the rack for a month with the family's name on it",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the decision.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_office_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the crown clerk asked whether he wants to be relieved of the office, and answering yes, and the answer being, procedurally, the beginning of the appointment of whoever asked the question",
+  "e": "capture|negative|Whoever Asked"
+ },
+ {
+  "i": "a5_voice",
+  "r": "choice",
+  "w": 62,
+  "b": "the door's own voice, which is not sound and arrives in the chamber as arithmetic laid directly into five heads at once, and which opens by naming the company's dead accurately and in order",
+  "c": [
+   [
+    "Hear it out to the end of the offer.",
+    "a5_voice_a"
+   ],
+   [
+    "Refuse to be addressed and turn your back.",
+    "a5_voice_b"
+   ],
+   [
+    "Answer it in kind, with the account you carry.",
+    "e_a5_voice_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_voice_a",
+  "r": "rising",
+  "w": 55,
+  "b": "an offer heard out to its end, complete with term, rate, security and a clause about the frontier's peace, delivered with the patience of something that has made this offer to nine hands before",
+  "c": [
+   [
+    "Go on to the terms.",
+    "a5_terms"
+   ]
+  ]
+ },
+ {
+  "i": "a5_voice_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a back turned on Ashendrel in its own socket chamber, which it accepts without any evident feeling, and which means the offer is now being made to whoever else in the company is listening",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the terms.",
+    "a5_terms"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_voice_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the account carried up from Gallowmere read aloud in the socket chamber to the thing the account is about, which is a form of address the founders' plate specifically describes, under clause nine, as an acknowledgement of the debt",
+  "e": "capture|negative|Acknowledgement of the Debt"
+ },
+ {
+  "i": "a5_terms",
+  "r": "choice",
+  "w": 62,
+  "b": "the terms, set out plainly: the count ends today, the ring opens, the arrears of nine hundred years are paid in one payment out of what is nearest, and the frontier is free of the Compact forever afterwards",
+  "c": [
+   [
+    "Write them down and say nothing else.",
+    "a5_terms_a"
+   ],
+   [
+    "Ask what nearest means in the terms.",
+    "a5_terms_b"
+   ],
+   [
+    "Agree to them, here, on the record.",
+    "e_a5_terms_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_terms_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the terms written down word for word by a hedge-thaumaturge whose hand shakes for the first time in three books, witnessed, dated and sealed with a Warden charter's own seal",
+  "x": "wyrm_pact=true",
+  "c": [
+   [
+    "Go on to the price.",
+    "a5_price"
+   ]
+  ]
+ },
+ {
+  "i": "a5_terms_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the question about nearest answered precisely, in figures: a counted city of eleven thousand, a fortress of four hundred, and a company of five, in that order of proximity and no other",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the price.",
+    "a5_price"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_terms_1",
+  "r": "failure",
+  "w": 58,
+  "b": "terms agreed on the record in a socket chamber, in front of the crown clerk, with a Warden seal on the agreement, and a payment schedule that begins with the word immediately",
+  "e": "capture|negative|Beginning Immediately"
+ },
+ {
+  "i": "a5_price",
+  "r": "choice",
+  "w": 62,
+  "b": "the price, which is where the offer stops being abstract: one payment, taken at once, from the nearest principal, and the door's own estimate of what that comes to written out in the crown ledger's tenth column",
+  "c": [
+   [
+    "Read the tenth column's figure.",
+    "a5_price_a"
+   ],
+   [
+    "Refuse to look at it and go to the ring.",
+    "a5_price_b"
+   ],
+   [
+    "Ask whether a smaller principal would serve.",
+    "e_a5_price_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_price_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a figure read in the tenth column of the crown ledger, in a clerk's hand, which is a number of people and a date, and which is the plainest sentence anybody has read in three books",
+  "c": [
+   [
+    "Go on to the oath.",
+    "a5_oath"
+   ]
+  ]
+ },
+ {
+  "i": "a5_price_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a question asked about whether a smaller principal would serve, and answered in the affirmative, with a figure, and the figure being five",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the oath.",
+    "a5_oath"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_price_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a refusal to read the figure, which is the only genuinely cowardly decision available in this chamber, and a company that walks into the ring not knowing what it has been offered and therefore unable to refuse it properly",
+  "e": "capture|negative|Not Knowing the Figure"
+ },
+ {
+  "i": "a5_oath",
+  "r": "choice",
+  "w": 62,
+  "b": "the last conversation before the ring: Ashendrel's own oath offered in the founders' form, which is binding on it in a way nothing else in the mountain is, and which requires a hand to swear on the other side",
+  "c": [
+   [
+    "Take the oath in the founders' form.",
+    "a5_oath_a"
+   ],
+   [
+    "Refuse the oath and hold to the charter.",
+    "a5_oath_b"
+   ],
+   [
+    "Have Nyre take it as a sister of the Reckoning.",
+    "e_a5_oath_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_oath_a",
+  "r": "rising",
+  "w": 55,
+  "b": "an oath taken in the founders' own form, which the collar plate describes and the crown ledger records, and which binds both parties to terms that neither of them can afterwards revise",
+  "c": [
+   [
+    "Go on to the decision.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "a5_oath_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the oath refused and a Warden charter held up instead, which is a legal instrument of a state that has existed for four hundred years addressing an arrangement that has existed for nine hundred",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the decision.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_oath_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the founders' oath taken by a sister of the Reckoning rather than by the captain, which is procedurally sound, which Nyre volunteers for, and which makes her the party bound and not the company",
+  "e": "capture|negative|She Volunteered"
+ },
+ {
+  "i": "a5_stewards",
+  "r": "choice",
+  "w": 62,
+  "b": "the ring's working stewards: nine of the crown clerk's household on the ninth-hour rota, who have been keeping the sockets, trimming the lamps and packing the collars here for their whole working lives",
+  "s": [
+   "peril",
+   "conflict"
+  ],
+  "c": [
+   [
+    "Put the charter to them and stand them down.",
+    "a5_stewards_a"
+   ],
+   [
+    "Work the rota alongside them for one hour.",
+    "a5_stewards_b"
+   ],
+   [
+    "Ask which of them knows the collar work.",
+    "a5_stewards_c",
+    "wyrm_pact"
+   ],
+   [
+    "Clear the chamber by force; they are the count.",
+    "e_a5_stewards_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_stewards_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a charter put to nine stewards who stand down, formally, in writing, and then stand in the gallery watching, because they have nowhere else to be and the rota is at the ninth hour regardless",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the legate.",
+    "a5_legate"
+   ],
+   [
+    "Send them out of the chamber entirely.",
+    "e_a5_stewards_2"
+   ]
+  ],
+  "s": [
+   "conflict"
+  ]
+ },
+ {
+  "i": "a5_stewards_b",
+  "r": "rising",
+  "w": 55,
+  "b": "one hour worked on the rota alongside nine stewards, trimming lamps and reading collars, which teaches the company more about the door than the whole of the archive did",
+  "c": [
+   [
+    "Go on to the legate.",
+    "a5_legate"
+   ]
+  ]
+ },
+ {
+  "i": "a5_stewards_c",
+  "r": "rising",
+  "w": 55,
+  "b": "the question asked, and the collar man identified: a mason of sixty who has packed these collars for forty years, who knows what clause nine means in practice, and who has never been asked before",
+  "c": [
+   [
+    "Go on to the legate.",
+    "a5_legate"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_stewards_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a socket chamber cleared by force of nine unarmed household stewards at the ninth hour, which leaves the ring unattended for the first time in nine hundred years for eleven minutes, which is two minutes too many",
+  "e": "death|negative|Eleven Minutes Unattended",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a5_stewards_2",
+  "r": "failure",
+  "w": 58,
+  "b": "nine stood-down stewards sent out of the chamber entirely, which is correct procedure and removes from the room the only nine people who know which collar is due, on the day the eighth collar is due",
+  "e": "death|negative|The Only Nine Who Knew",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_legate",
+  "r": "choice",
+  "w": 62,
+  "b": "Prior Absolon Rell, who is here, in the socket chamber, having come up the wyrm-road ahead of the company with his coach left at Sarnhold and an appointment plate in his own baggage",
+  "c": [
+   [
+    "Arrest him on the charter, in front of witnesses.",
+    "a5_legate_a"
+   ],
+   [
+    "Hear what he came up here to do.",
+    "a5_legate_b"
+   ],
+   [
+    "Let him proceed and watch what he does.",
+    "e_a5_legate_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_legate_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a mother-house legate arrested in a socket chamber by a chartered company, in front of nine stewards, the crown clerk and a mason, all of whom are entirely willing to witness it and one of whom writes it down",
+  "c": [
+   [
+    "Go on to the Guild.",
+    "a5_guild"
+   ]
+  ]
+ },
+ {
+  "i": "a5_legate_b",
+  "r": "rising",
+  "w": 55,
+  "b": "Rell's own account of his purpose, given without embarrassment: the office is vacant in nine days, the mother house has resolved to fill it from within the order, and he is here to be appointed",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the Guild.",
+    "a5_guild"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_legate_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a legate allowed to proceed and watched, which is the coldest decision in the book, and which ends with an appointment properly made, correctly witnessed, and the Reckoning holding the ninth hand of the crown door",
+  "e": "capture|negative|Correctly Witnessed"
+ },
+ {
+  "i": "a5_guild",
+  "r": "choice",
+  "w": 62,
+  "b": "Bruk Sunder of the Sable Guild, also here, with four delvers and a survey kit, entirely legally, on a Guild charter that predates the Warden charter by two hundred years",
+  "c": [
+   [
+    "Read his Guild charter properly.",
+    "a5_guild_a"
+   ],
+   [
+    "Order him out of the chamber.",
+    "a5_guild_b"
+   ],
+   [
+    "Ask what the Guild intends to do with a wyrm.",
+    "e_a5_guild_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_guild_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a Guild charter read in full by two people who understand documents, which is genuine, older than the Wardens, and grants mineral and salvage rights over precisely this chamber",
+  "c": [
+   [
+    "Go on to the Rooks.",
+    "a5_rooks"
+   ]
+  ]
+ },
+ {
+  "i": "a5_guild_b",
+  "r": "rising",
+  "w": 55,
+  "b": "an order to leave given to a Guild factor with an older charter than yours, which he declines, courteously, and which he has his delvers minute for the Guild's own record",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the Rooks.",
+    "a5_rooks"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_guild_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the question asked of what the Guild intends, and answered fully: the Guild intends to work the arrangement as a going concern, has costed it, and has a nine-year plan with the counted city as the labour supply",
+  "e": "capture|negative|A Nine-Year Plan"
+ },
+ {
+  "i": "a5_rooks",
+  "r": "choice",
+  "w": 62,
+  "b": "Corrow's Rooks, eleven of them, in the gallery above the ring, chartered, armed, and here on a Warden commission of their own that Thane did not mention because Thane did not issue it",
+  "s": [
+   "peril",
+   "conflict"
+  ],
+  "c": [
+   [
+    "Fight them for the chamber now.",
+    "a5_rooks_a"
+   ],
+   [
+    "Get above them by the masons' scaffold.",
+    "a5_rooks_b"
+   ],
+   [
+    "Ask to see the commission they are working under.",
+    "a5_rooks_c"
+   ],
+   [
+    "Hold the ring and let them come down to you.",
+    "e_a5_rooks_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_rooks_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a fight in a socket chamber against eleven chartered mercenaries, in a room with nine warm sockets and a cracked collar in it, which is the worst possible place any of the twenty-two of you could have chosen",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the last works.",
+    "a5_decision"
+   ],
+   [
+    "Push them back up the gallery stair.",
+    "e_a5_rooks_2"
+   ]
+  ],
+  "s": [
+   "conflict"
+  ]
+ },
+ {
+  "i": "a5_rooks_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the scaffold used to get above the gallery, which puts the company on the door frame looking down at eleven Rooks who have not thought about the roof",
+  "c": [
+   [
+    "Go on to the last works.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "a5_rooks_c",
+  "r": "rising",
+  "w": 55,
+  "b": "a commission produced and read: signed, sealed, and issued by the Reckoning's mother house under a Warden counter-seal that Rell carries, which makes the Rooks lawful and the company's charter contested",
+  "c": [
+   [
+    "Go on to the last works.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_rooks_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a ring held against eleven mercenaries coming down a gallery stair, which is good ground, and which the eighth socket's cracked collar is nine feet behind, and which somebody's weight goes into during the fourth minute",
+  "e": "death|negative|Nine Feet Behind",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a5_rooks_2",
+  "r": "failure",
+  "w": 58,
+  "b": "eleven Rooks pushed back up a gallery stair by a company that is winning, and the stair leading to the tithe hall, and the tithe hall being where the ninth-hour delivery is waiting to be called",
+  "e": "death|negative|Up the Gallery Stair",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_die",
+  "r": "choice",
+  "w": 62,
+  "b": "the last works: the crown die on a portable anvil in the chamber's corner, brought down from the mint for the appointment, with a striker's hammer beside it and a blank in the vice",
+  "c": [
+   [
+    "Take the die and break it here.",
+    "a5_die_a"
+   ],
+   [
+    "Read the blank in the vice.",
+    "a5_die_b"
+   ],
+   [
+    "Leave the works alone and go to the ring.",
+    "a5_forge"
+   ],
+   [
+    "Cut the blank yourself, now, and see.",
+    "e_a5_die_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_die_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the crown die off its anvil and broken with a striker's hammer in four blows, in front of the crown clerk, the legate and the Guild, which ends the cutting of irons in this mountain permanently",
+  "c": [
+   [
+    "Go on to the forge.",
+    "a5_forge"
+   ]
+  ]
+ },
+ {
+  "i": "a5_die_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the blank in the vice read: founding gauge, crown tally, and a name already cut into the flank, and the name being the one Rell has been carrying an appointment plate for",
+  "c": [
+   [
+    "Go on to the forge.",
+    "a5_forge"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_die_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a blank cut on the crown die by the captain's own hand to see what happens, which is what the die is for, and which produces a finished ninth iron with a name on its flank that the cutter did not choose",
+  "e": "death|negative|A Name You Did Not Choose",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_forge",
+  "r": "choice",
+  "w": 62,
+  "b": "the chamber's own small forge, kept for collar lead and iron work, hot, with a lead pot on it and a mason's tools laid out in order",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Melt lead and pack the eighth collar properly.",
+    "a5_forge_a"
+   ],
+   [
+    "Use the forge to spoil the blank in the vice.",
+    "a5_forge_b"
+   ],
+   [
+    "Put the crown iron in the fire and see if it goes.",
+    "e_a5_forge_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_forge_a",
+  "r": "rising",
+  "w": 55,
+  "b": "an hour with a lead pot and a mason's tools, packing a cracked collar the way the rota specifies, which is not heroic and is the thing most likely to keep this door shut for another century",
+  "c": [
+   [
+    "Go on to the wedge.",
+    "a5_wedge"
+   ]
+  ]
+ },
+ {
+  "i": "a5_forge_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the blank in the vice spoiled with a hot iron, deliberately, which cannot be undone and which means no appointment can be made in this chamber until the mint cuts another, which takes nine days",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the wedge.",
+    "a5_wedge"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_forge_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a founding-gauge crown iron put into a working forge to see whether it will burn, which it does not, and which it takes considerable exception to in a chamber with eight of its fellows in the walls",
+  "e": "death|negative|It Does Not Burn",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_wedge",
+  "r": "choice",
+  "w": 62,
+  "b": "the wedge, which is Vurma's idea and has been since Hollowmarch: an iron driven crosswise through the ring's collars rather than into a socket, locking all nine into one piece that no hand can draw",
+  "c": [
+   [
+    "Have Vurma set the wedge properly.",
+    "a5_wedge_a"
+   ],
+   [
+    "Have the mason check the wedge's bearing first.",
+    "a5_wedge_b"
+   ],
+   [
+    "Set it yourself, fast, before anybody stops you.",
+    "a5_wedge_c"
+   ],
+   [
+    "Wedge it with the founding iron from the chapel.",
+    "e_a5_wedge_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_wedge_a",
+  "r": "rising",
+  "w": 55,
+  "b": "Vurma setting a wedge in the crown ring with forty years of Guild pathfinding behind the placement, which takes eleven minutes and is the best piece of work anybody does in this book",
+  "c": [
+   [
+    "Go on to the vigil.",
+    "a5_vigil"
+   ],
+   [
+    "Have her set a second wedge on the far side.",
+    "e_a5_wedge_2"
+   ]
+  ]
+ },
+ {
+  "i": "a5_wedge_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a mason of forty years' collar experience checking a wedge's bearing before it is driven, which finds two problems, fixes both, and moves the wedge four inches to the left",
+  "c": [
+   [
+    "Go on to the vigil.",
+    "a5_vigil"
+   ]
+  ]
+ },
+ {
+  "i": "a5_wedge_c",
+  "r": "rising",
+  "w": 55,
+  "b": "a wedge set fast by the captain's own hands before the legate can object, which holds, and which nobody in the chamber will certify as sound because nobody was allowed to look at it",
+  "c": [
+   [
+    "Go on to the vigil.",
+    "a5_vigil"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_wedge_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a chapel founding iron used as a wedge, which is a different alloy, cut in a different century, and which shears under the ring's nine-count load in the fourth minute with the whole company standing inside the ring",
+  "e": "death|negative|A Different Alloy",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a5_wedge_2",
+  "r": "failure",
+  "w": 58,
+  "b": "a second wedge set on the far side of the ring for redundancy, which is sound engineering, and which puts two hard points into a collar system designed to distribute its load across nine",
+  "e": "setback|negative|Two Hard Points"
+ },
+ {
+  "i": "a5_vigil",
+  "r": "choice",
+  "w": 62,
+  "b": "a dwarf watch-alcove off the socket chamber, where the stewards rest between rota hours, with a bench, a lamp and a view of the whole ring",
+  "c": [
+   [
+    "Take three hours before you do anything.",
+    "a5_vigil_a"
+   ],
+   [
+    "Do not sit down. Finish this now.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "a5_vigil_a",
+  "r": "rising",
+  "w": 55,
+  "b": "three hours on a steward's bench with the ring in front of you and the whole company asleep in shifts, which is the last quiet anybody in this story gets and which everybody knows it at the time",
+  "x": "vigor+1",
+  "c": [
+   [
+    "Go to the decision.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "a5_masons",
+  "r": "choice",
+  "w": 62,
+  "b": "the masons on the scaffold at the door frame: a master of sixty, two journeymen and an apprentice, working on the frame's upper collar as they have every ninth day for forty years",
+  "c": [
+   [
+    "Ask the master what the frame is doing.",
+    "a5_masons_a"
+   ],
+   [
+    "Order them off the scaffold on the charter.",
+    "a5_masons_b"
+   ],
+   [
+    "Ask him what clause nine means in stone.",
+    "e_a5_masons_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_masons_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a master mason's answer about the frame, given in trade terms with his hand on the stone: the frame is spreading, has been spreading since autumn, and will need more than lead within the year",
+  "c": [
+   [
+    "Go up the scaffold.",
+    "a5_scaffold"
+   ]
+  ]
+ },
+ {
+  "i": "a5_masons_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a mason of forty years asked what clause nine means in stone, and answering, and the answer being that the founders cut the frame so that it fails inward rather than outward, and that he has been maintaining that failure his whole life",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go up the scaffold.",
+    "a5_scaffold"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_masons_1",
+  "r": "failure",
+  "w": 58,
+  "b": "four masons ordered off a scaffold on a Warden charter in the middle of collar work, which they comply with, and which leaves a partly-packed upper collar open on the day the eighth socket was already due",
+  "e": "capture|negative|Partly Packed"
+ },
+ {
+  "i": "a5_scaffold",
+  "r": "choice",
+  "w": 62,
+  "b": "the masons' scaffold on the door frame: dwarf poles and planks, four levels of it, giving a hand's reach to the frame's upper collar and a view down into the socket ring",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Climb it and look at the upper collar.",
+    "a5_scaffold_a"
+   ],
+   [
+    "Use it to get above the gallery and the Rooks.",
+    "a5_scaffold_b"
+   ],
+   [
+    "Take it down; it is a way in for other people.",
+    "e_a5_scaffold_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_scaffold_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the upper collar seen at a hand's reach: dwarf stone, spread a finger's width, packed and repacked with lead in nine hundred years of visible layers, and the newest layer eleven days old",
+  "c": [
+   [
+    "Go on to the crane.",
+    "a5_crane"
+   ]
+  ]
+ },
+ {
+  "i": "a5_scaffold_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the scaffold used as a route above the gallery, which nobody in the chamber expects, and which gives the company the only high ground in a room that has been fought over exactly once before",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the crane.",
+    "a5_crane"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_scaffold_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a masons' scaffold taken down to deny it to other people, which takes forty minutes, and which removes the only access to an upper collar that is spreading a finger's width and is due for packing today",
+  "e": "death|negative|Access Removed",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_crane",
+  "r": "choice",
+  "w": 62,
+  "b": "a dwarf crane over the ring, used for setting collar stone, with a hook, a wire fall and a counterweight, still greased and still turning on its bearing after nine hundred years",
+  "c": [
+   [
+    "Rig the crane to draw a collar stone.",
+    "a5_crane_a"
+   ],
+   [
+    "Rig it over the ninth socket for the seating.",
+    "a5_crane_b"
+   ],
+   [
+    "Leave the crane; it is not your equipment.",
+    "a5_seal"
+   ],
+   [
+    "Cut the counterweight and drop the fall.",
+    "e_a5_crane_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_crane_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the crane rigged to draw a collar stone under the mason's direction, which is what it is for, and which gives the company the ability to open or close the ring's stonework rather than only its irons",
+  "c": [
+   [
+    "Go on to the seal.",
+    "a5_seal"
+   ]
+  ]
+ },
+ {
+  "i": "a5_crane_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the crane rigged over the ninth socket, which is how the founders seated the first nine irons and how the ninth will be seated today by somebody, and which is now under the company's hand",
+  "c": [
+   [
+    "Go on to the seal.",
+    "a5_seal"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_crane_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a nine-hundred-year-old counterweight cut in a chamber with eight warm sockets and a scaffold in it, and eleven hundred pounds of dwarf stone arriving on the ring floor at the ninth minute",
+  "e": "death|negative|Eleven Hundred Pounds",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_seal",
+  "r": "choice",
+  "w": 62,
+  "b": "the founders' seal, cut into the chamber floor in front of the ring: nine hands in a circle around a door, and around them an inscription in the founders' own hand that the city has never translated",
+  "c": [
+   [
+    "Have Ilsabet translate the floor inscription.",
+    "a5_seal_a"
+   ],
+   [
+    "Stand on the seal and read the ring from it.",
+    "a5_decision"
+   ],
+   [
+    "Cut the seal out of the floor and carry it.",
+    "e_a5_seal_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_seal_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a founders' inscription translated on the chamber floor after nine hundred years: not a dedication and not a warning but an apology, addressed to whoever is standing on it, from the people who built the arrangement",
+  "c": [
+   [
+    "Go to the decision.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_seal_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a founders' seal cut out of the chamber floor and carried, which is nine hundred pounds of dwarf flagstone and the only apology anybody ever wrote for any of this, and which the company cannot get up the wyrm-road",
+  "e": "setback|neutral|Nine Hundred Pounds of Apology"
+ },
+ {
+  "i": "a5_watchers",
+  "r": "choice",
+  "w": 62,
+  "b": "the gallery above the ring, where nine of the counted stand at the rail in shifts and watch the door, and have watched it, in shifts, without instruction from anybody, for nine hundred years",
+  "s": [
+   "peril",
+   "conflict"
+  ],
+  "c": [
+   [
+    "Ask them what they are watching for.",
+    "a5_watchers_a"
+   ],
+   [
+    "Get them out of the gallery before the hour.",
+    "a5_watchers_b"
+   ],
+   [
+    "Stand with them at the rail for one shift.",
+    "a5_watchers_c"
+   ],
+   [
+    "Clear them out; the gallery is a firing position.",
+    "e_a5_watchers_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_watchers_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the answer given by nine people at a rail: they are watching for the day the count stops, because the founders told the first nine to watch, and each nine has told the next, and nobody has ever stood down",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the hollow.",
+    "a5_hollow"
+   ],
+   [
+    "Ask them what they were told to do if it stops.",
+    "e_a5_watchers_2"
+   ]
+  ],
+  "s": [
+   "conflict"
+  ]
+ },
+ {
+  "i": "a5_watchers_b",
+  "r": "rising",
+  "w": 55,
+  "b": "nine watchers got out of the gallery before the ninth hour with some difficulty, which is a kindness, and which means nobody is at the rail when the hour comes for the first time in nine hundred years",
+  "c": [
+   [
+    "Go on to the hollow.",
+    "a5_hollow"
+   ]
+  ]
+ },
+ {
+  "i": "a5_watchers_c",
+  "r": "rising",
+  "w": 55,
+  "b": "one full shift stood at the rail with nine of the counted, in silence, watching a door breathe on a nine-count, which is the single most useful hour of preparation the company could have had",
+  "c": [
+   [
+    "Go on to the hollow.",
+    "a5_hollow"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_watchers_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a gallery cleared by force because it is a firing position, and nine watchers put out of a place they have held in shifts for nine hundred years, and the ninth of them explaining on the way out what they were watching for",
+  "e": "death|negative|What They Were Watching For",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a5_watchers_2",
+  "r": "failure",
+  "w": 58,
+  "b": "the watchers asked what they were told to do if the count stopped, and answering, all nine at once, in the founders' own words, and the words being an instruction that the company is now standing inside of",
+  "e": "death|negative|All Nine At Once",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_hollow",
+  "r": "choice",
+  "w": 62,
+  "b": "a hollow behind the ring wall, found by Vurma's hammer: a void the founders left between the door frame and the rock, with a dwarf ladder in it and nine hundred years of dust undisturbed",
+  "c": [
+   [
+    "Go down the founders' ladder.",
+    "a5_hollow_a"
+   ],
+   [
+    "Sound the void and map it from outside.",
+    "a5_hollow_b"
+   ],
+   [
+    "Wall the hollow up before anybody else finds it.",
+    "a5_hollow_c"
+   ],
+   [
+    "Send Kettle down alone to see.",
+    "e_a5_hollow_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_hollow_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a founders' ladder descended into a void nobody has entered since the founding, which has a bench at the bottom, a tool rack, and a set of written instructions for dismantling the door",
+  "c": [
+   [
+    "Go on to the bellows.",
+    "a5_bellows"
+   ],
+   [
+    "Take the dismantling instructions off the wall.",
+    "e_a5_hollow_2"
+   ]
+  ]
+ },
+ {
+  "i": "a5_hollow_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a void sounded and mapped from outside with a hammer and a wire, which tells Vurma its size, its shape and the fact that the door's frame is not attached to the rock in the way the whole city believes",
+  "c": [
+   [
+    "Go on to the bellows.",
+    "a5_bellows"
+   ]
+  ]
+ },
+ {
+  "i": "a5_hollow_c",
+  "r": "rising",
+  "w": 55,
+  "b": "Kettle down the founders' ladder alone with a lamp and back in eleven minutes, white, with a description of a bench, a tool rack, and a set of instructions in dwarf that she cannot read and Ilsabet can",
+  "c": [
+   [
+    "Go on to the bellows.",
+    "a5_bellows"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_hollow_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a founders' hollow walled up to keep it from other people, with the company on the outside of it, which seals the only route by which the door could be dismantled and the only apparatus for doing it",
+  "e": "death|negative|Walled Up",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a5_hollow_2",
+  "r": "failure",
+  "w": 58,
+  "b": "a set of nine-hundred-year-old dismantling instructions taken off a founders' wall and carried up a ladder, which are inscribed on nine bronze plates, and which are the wall's own bracing",
+  "e": "setback|negative|The Wall's Own Bracing"
+ },
+ {
+  "i": "a5_bellows",
+  "r": "choice",
+  "w": 62,
+  "b": "a dwarf bellows apparatus in the hollow, connected through the rock to the door's own frame, built by the founders for a purpose the crown clerk has never known about and the masons have",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Have the mason explain the bellows.",
+    "a5_bellows_a"
+   ],
+   [
+    "Work the bellows and see what it does.",
+    "a5_bellows_b"
+   ],
+   [
+    "Leave it; the founders left it for a reason.",
+    "e_a5_bellows_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_bellows_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the mason's explanation, given with real pleasure at being asked: the bellows cools the frame's upper collar, it has not been worked in ninety years, and working it would buy the frame a decade",
+  "c": [
+   [
+    "Go on to the tithe box.",
+    "a5_tithebox"
+   ]
+  ]
+ },
+ {
+  "i": "a5_bellows_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the bellows worked by two people for an hour, which drops the upper collar's temperature by a measurable amount, tightens the frame's spread by a hair, and is the most boring heroism in three books",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the tithe box.",
+    "a5_tithebox"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_bellows_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a founders' bellows left alone on the principle that the founders left it for a reason, which is true, and the reason being that it must be worked every ninth decade, and the ninetieth year being this one",
+  "e": "death|negative|The Ninetieth Year",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_tithebox",
+  "r": "choice",
+  "w": 62,
+  "b": "the tithe box beside the ring: a dwarf strongbox where the counted city's tokens are collected after each delivery, full, with nine hundred years of tokens in it and a tally slate on the lid",
+  "c": [
+   [
+    "Read the tally slate on the lid.",
+    "a5_tithebox_a"
+   ],
+   [
+    "Take the box; it is nine hundred years of evidence.",
+    "a5_tithebox_b"
+   ],
+   [
+    "Leave it and go to the ring.",
+    "a5_decision"
+   ],
+   [
+    "Empty it into the hollow and lose the tokens.",
+    "e_a5_tithebox_1"
+   ]
+  ]
+ },
+ {
+  "i": "a5_tithebox_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a tally slate read off a strongbox lid: this month's tokens, next month's requirement, and a note in the crown clerk's hand that the requirement has doubled since Kar Duhn shut",
+  "c": [
+   [
+    "Go to the decision.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "a5_tithebox_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a dwarf strongbox of nine hundred years of household tokens taken and lashed to the barrow, which is ninety pounds, and which is the counted city's entire history of who paid what and when",
+  "c": [
+   [
+    "Go to the decision.",
+    "a5_decision"
+   ]
+  ]
+ },
+ {
+  "i": "e_a5_tithebox_1",
+  "r": "failure",
+  "w": 58,
+  "b": "nine hundred years of household tokens emptied into a founders' hollow to destroy the record, and the record being the only proof that any of the eleven thousand ever paid anything, and the city's own arithmetic simply starting again from one",
+  "e": "death|negative|Starting Again From One",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a5_decision",
+  "r": "climax",
+  "w": 80,
+  "b": "the ring at the ninth hour, everything now known: eight irons warm, one socket bright and empty, a crown iron somewhere in the room, a legate with an appointment plate, a Guild with an older charter, eleven Rooks on the stair, and a door breathing on a nine-count in front of five people",
+  "c": [
+   [
+    "Go to the door and settle it.",
+    "a6_resolve"
+   ]
+  ]
+ }
 ]

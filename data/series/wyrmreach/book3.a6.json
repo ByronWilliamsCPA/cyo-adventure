@@ -1,709 +1,1154 @@
 [
-  {
-    "i": "a6_resolve",
-    "r": "climax",
-    "w": 95,
-    "b": "the crown door of Kar Ashen at the end of the wyrm-road: dwarf iron in a frame older than dwarves, nine sockets in a ring with eight filled and warm, the ninth worn bright and empty, and behind it Ashendrel, awake enough to be listening and too large for the word awake to be any use",
-    "s": ["peril", "scary_imagery"],
-    "c": [
-      ["Set the crown iron in its socket and lock the door.", "a6_lock", "crown_iron"],
-      ["Draw the eight irons and unmake the Compact here.", "a6_unmake"],
-      ["Take the crown iron out of the mountain entirely.", "a6_carry", "crown_iron"],
-      ["Open the door a hand's width and look.", "a6_open"],
-      ["Hold to the terms Ashendrel named.", "a6_pact", "wyrm_pact"],
-      ["Withdraw. Three doors is a Warden war, not a commission.", "a6_withdraw"],
-      ["Knock, as you knocked at the first two.", "e_a6_knock"]
-    ]
-  },
-  {
-    "i": "a6_lock",
-    "r": "climax",
-    "w": 85,
-    "b": "the crown iron seated in the ninth socket, all nine warm, the frame taking the load, and the count in the whole mountain stopping mid-number for the first time since the road was cut",
-    "x": "door_state=1",
-    "s": ["peril"],
-    "c": [
-      ["Break the crown die so no tenth iron can be cut.", "a6_breakdie"],
-      ["Take the keeper's ring; a count still needs a hand.", "a6_takering", "knows_compact"],
-      ["Get everyone out while the mountain is quiet.", "a6_out"],
-      ["Drive it in crooked and jam the socket forever.", "e_a6_jam"]
-    ]
-  },
-  {
-    "i": "a6_breakdie",
-    "r": "rising",
-    "w": 65,
-    "b": "the crown die broken across the mint's own anvil in four strokes, the pieces bagged, and Vurma checking the floor twice because she does not trust fragments",
-    "x": "renown+1",
-    "c": [["Go up and out.", "a6_out"]]
-  },
-  {
-    "i": "a6_takering",
-    "r": "choice",
-    "w": 80,
-    "b": "the ninth hand's ring on the keeper's desk, warm and sized for whoever lifts it, and the arithmetic beside it: nine irons hold a door without a keeper only until something tests it, and this door has Ashendrel behind it",
-    "s": ["scary_imagery"],
-    "c": [
-      ["Put it on. Somebody has to keep this one.", "a6_ringon"],
-      ["Leave it. Nobody in this company signs that twice.", "a6_out"]
-    ]
-  },
-  {
-    "i": "a6_ringon",
-    "r": "rising",
-    "w": 80,
-    "b": "the ring on, and the count arriving in the back of the skull as an obligation with dates in it, larger than the two before it by an order nobody in the company can express",
-    "x": "door_state=2",
-    "s": ["scary_imagery", "sad_moment"],
-    "c": [["Take the company out.", "a6_out"]]
-  },
-  {
-    "i": "a6_unmake",
-    "r": "climax",
-    "w": 85,
-    "b": "the decision to unmake the Compact at its own crown: eight irons in eight warm sockets, nine hundred years of instalments, and five people standing in front of the arrangement that has kept a wyrm asleep since before the legion",
-    "s": ["peril"],
-    "c": [
-      ["Draw one iron and watch what the door does.", "a6_onebyone"],
-      ["Draw all eight at once and run for the stair.", "e_a6_unmade"],
-      ["Draw them, then wedge the ring with the crown iron.", "a6_wedge", "crown_iron"],
-      ["Change your mind and seat the crown iron instead.", "a6_lock", "crown_iron"]
-    ]
-  },
-  {
-    "i": "a6_onebyone",
-    "r": "choice",
-    "w": 85,
-    "b": "one iron out and the door leans a quarter inch; two, and the frame sweats; three, and something on the far side of it says the captain's name in the voice of the paymaster of Kar Duhn, who has been dead for two books",
-    "s": ["peril", "scary_imagery"],
-    "c": [
-      ["Re-seat all three and step back.", "a6_reseat"],
-      ["Keep drawing. Finish it.", "e_a6_opened"],
-      ["Ask it what the whole account comes to.", "e_a6_asked"]
-    ]
-  },
-  {
-    "i": "a6_reseat",
-    "r": "rising",
-    "w": 70,
-    "b": "three irons put back by hands that are not steady, the door settling, and the voice thanking the company by name, all five names, and then adding the names of the two hands that held the office before it",
-    "x": "door_state=4",
-    "s": ["scary_imagery"],
-    "c": [["Get out of the mountain.", "a6_out"]]
-  },
-  {
-    "i": "a6_wedge",
-    "r": "choice",
-    "w": 80,
-    "b": "the crown iron driven crosswise through the socket ring instead of into it, dwarf iron biting dwarf iron until the ring is one piece that no hand can draw and no keeper can count",
-    "x": "door_state=5",
-    "s": ["peril"],
-    "c": [
-      ["Leave it wedged and go.", "a6_out"],
-      ["Test it. Put your weight on the door.", "e_a6_wedgefail"]
-    ]
-  },
-  {
-    "i": "a6_carry",
-    "r": "climax",
-    "w": 85,
-    "b": "the arithmetic the company has been carrying for two books, taken to its end: the ninth iron is the count, a count that cannot be kept is a debt that cannot be collected, and three of nine in one pack makes the Compact arithmetic that no longer closes",
-    "s": ["peril"],
-    "c": [
-      ["Wrap it with the other two and carry it out.", "a6_wrap"],
-      ["Seat it after all; a shut door beats leverage.", "a6_lock"],
-      ["Carry it out in the open and let them come for it.", "e_a6_bait"],
-      ["Sink it in the aqueduct on the way up.", "e_a6_sunk"]
-    ]
-  },
-  {
-    "i": "a6_wrap",
-    "r": "rising",
-    "w": 80,
-    "b": "salt-cloth, oilcloth, and the middle of the pack, the three irons laid so that none of them touches another, and the mountain's whole attention arriving and settling on five people who are about to walk uphill with it",
-    "x": "door_state=6",
-    "s": ["peril"],
-    "c": [["Up the wyrm-road, and quickly.", "a6_out"]]
-  },
-  {
-    "i": "a6_pact",
-    "r": "climax",
-    "w": 90,
-    "b": "Ashendrel's own terms, named in the gallery below and repeated here by a voice that arrives as arithmetic rather than sound: the count ends, the doors open, and the wyrm takes its arrears in one payment rather than nine hundred years of instalments",
-    "s": ["peril", "scary_imagery"],
-    "c": [
-      ["Hold to the terms and open the ring as agreed.", "a6_pactsworn"],
-      ["Refuse the terms to its face and seat the iron.", "a6_pactrefused", "crown_iron"],
-      ["Refuse the terms and withdraw entirely.", "a6_withdraw"],
-      ["Ask what one payment means in numbers.", "e_a6_arrears"]
-    ]
-  },
-  {
-    "i": "a6_pactsworn",
-    "r": "choice",
-    "w": 85,
-    "b": "the terms held to, the ring opened in the order the wyrm gives, and the mountain going quiet in a way that is not silence but attention, with the whole road's arithmetic waiting on one company's word",
-    "x": "door_state=3",
-    "s": ["peril", "scary_imagery"],
-    "c": [
-      ["Stand where you are and let it pay itself.", "e_a6_paid"],
-      ["Break faith at the last moment and run.", "a6_out"]
-    ]
-  },
-  {
-    "i": "a6_pactrefused",
-    "r": "rising",
-    "w": 80,
-    "b": "the terms refused out loud to something the size of the hall, the crown iron seated while it is still speaking, and the count resuming under the refusal like a clerk continuing to write through an argument",
-    "x": "door_state=1",
-    "s": ["peril"],
-    "c": [["Go, before it finishes considering the refusal.", "a6_out"]]
-  },
-  {
-    "i": "a6_open",
-    "r": "climax",
-    "w": 85,
-    "b": "a hand's width of the crown door held on a pick haft, warm air coming out of it on a nine-count, and light on the other side that is not lamplight and has been burning without fuel since the founding",
-    "x": "door_state=3",
-    "s": ["peril", "scary_imagery"],
-    "c": [
-      ["Look through it.", "a6_looked"],
-      ["Put a lamp through first.", "a6_lamp"],
-      ["Shut it again without looking.", "a6_closed"],
-      ["Speak through the gap.", "e_a6_spoke"]
-    ]
-  },
-  {
-    "i": "a6_looked",
-    "r": "choice",
-    "w": 90,
-    "b": "what is behind the crown door: the hall is the inside of the mountain and Ashendrel fills it the way water fills a cup, and standing in rows in front of it, counting, are the counted of nine hundred years, and there is a gap in the ninth row exactly five people wide",
-    "s": ["peril", "scary_imagery"],
-    "c": [
-      ["Shut it and seat the crown iron.", "a6_lock", "crown_iron"],
-      ["Shut it and get out of the mountain.", "a6_out"],
-      ["Walk into the gap. Somebody has to.", "e_a6_gap"]
-    ]
-  },
-  {
-    "i": "a6_lamp",
-    "r": "choice",
-    "w": 75,
-    "b": "a lamp lowered through the gap on a rope, burning steadily for four seconds, going out from the wick down, and coming back up relit by nobody with the flame a better colour than before",
-    "s": ["peril", "scary_imagery"],
-    "c": [
-      ["Look through, now that you have to know.", "a6_looked"],
-      ["Reach through and take the lamp back.", "e_a6_lamp"]
-    ]
-  },
-  {
-    "i": "a6_closed",
-    "r": "choice",
-    "w": 75,
-    "b": "the door eased shut on nothing seen, the count resuming exactly where it was, and five people standing in front of it having agreed not to know the one thing they came up a mountain to find out",
-    "c": [
-      ["Go up and out.", "a6_out"],
-      ["Make it a Warden matter and withdraw properly.", "a6_withdraw"]
-    ]
-  },
-  {
-    "i": "a6_withdraw",
-    "r": "choice",
-    "w": 85,
-    "b": "the honest option said out loud in front of the crown door by Nyre, who has been assembling it since Hollowmarch: three doors is a war, a war is Warden business, and five people with a charter do not get to be the hinge of it twice",
-    "c": [
-      ["Out the way you came, and no souvenirs.", "a6_out"],
-      ["Out, but take the crown ledger from the mint.", "a6_takebook"],
-      ["Out, and burn the nine lamps of the ring behind you.", "e_a6_burn"],
-      ["Out, and sell the road to the Guild on the way down.", "e_a6_sold"]
-    ]
-  },
-  {
-    "i": "a6_takebook",
-    "r": "choice",
-    "w": 80,
-    "b": "back to the mint for the crown ledger, eleven hundred pages of instalments in nine hands with four blank pages at the end and a ruled column already headed for a tenth",
-    "c": [
-      ["Take it and go.", "a6_out"],
-      ["Take it and cut the tenth column out of it first.", "e_a6_column"]
-    ]
-  },
-  {
-    "i": "a6_out",
-    "r": "choice",
-    "w": 90,
-    "b": "the wyrm-road back up, and Kar Ashen has changed its mind about the company: the tally-yards are lit, the counted are standing in the streets facing the gate, and the crown gate has closed to a thumb's width",
-    "s": ["peril"],
-    "c": [
-      ["Force the crown gate with everything you have.", "a6_forcegate"],
-      ["Go out by the foundry chimney.", "a6_chimney"],
-      ["Go out by the mason's postern under the wall.", "a6_postern"],
-      ["Walk out in the ninth-hour file, counting.", "a6_file", "knows_compact"],
-      ["Sit down on the wyrm-road. You are finished.", "e_a6_satdown"]
-    ]
-  },
-  {
-    "i": "a6_forcegate",
-    "r": "choice",
-    "w": 80,
-    "b": "five people, a pick haft and a Warden shield as a fulcrum against a gate that is not being held shut by weight, and eleven minutes of the worst work anybody has done in three books",
-    "x": "vigor-1",
-    "s": ["peril"],
-    "c": [
-      ["Get everybody through the moment it is wide enough.", "a6_road"],
-      ["Hold it and count them through by name.", "e_a6_counted"]
-    ]
-  },
-  {
-    "i": "a6_chimney",
-    "r": "choice",
-    "w": 80,
-    "b": "the drowned foundry's chimney, ninety feet of soot-glazed dwarf brick with staples at the bends, breathing warm air that smells of the forge Kar Ashen has not lit in nine hundred years",
-    "s": ["peril"],
-    "c": [
-      ["Climb it in pairs and take the skin off your hands.", "a6_road"],
-      ["Send the strongest up first to haul the rest.", "e_a6_chimneyfall"]
-    ]
-  },
-  {
-    "i": "a6_postern",
-    "r": "rising",
-    "w": 70,
-    "b": "out by the mason's postern under the outer wall, the lead seal broken behind you, and the corridor lighting itself politely one niche at a time all the way back to the ring, like a house seeing a guest off the property",
-    "s": ["scary_imagery"],
-    "c": [["Get onto the road.", "a6_road"]]
-  },
-  {
-    "i": "a6_file",
-    "r": "choice",
-    "w": 85,
-    "b": "the ninth hour kept in the slag yard and then the file forming in the street below, nine lamps lifted, the count starting, and the Ninth Sword walking out of Kar Ashen inside it with the rhythm right and three irons in one pack",
-    "s": ["peril", "scary_imagery"],
-    "c": [
-      ["Break off at the gate and get clear.", "a6_road"],
-      ["Stay in the file to the end of the count. It is only nine.", "e_a6_filekept"]
-    ]
-  },
-  {
-    "i": "a6_road",
-    "r": "choice",
-    "w": 85,
-    "b": "the Ninefold Road down off the spine in a thaw, Sarnhold two days below, and the company carrying whatever it decided to carry, with Nyre asking the question that has to be settled before anybody speaks to a Warden",
-    "c": [
-      ["Straight down to Sarnhold and the Commandant.", "a6_sarnhold"],
-      ["Two days at the ice gallery first; they are spent.", "a6_rest"],
-      ["Put it to the company as a company. All five voices.", "a6_council"],
-      ["Send Kettle ahead to see who is waiting at the fortress.", "a6_ahead"],
-      ["Off the road and west, with what you carry.", "e_a6_west"]
-    ]
-  },
-  {
-    "i": "a6_rest",
-    "r": "rising",
-    "w": 70,
-    "b": "two days in the ice gallery with a brazier and no watch, Kettle asleep eleven hours, Dellach's hands coming back, and Ilsabet writing out the whole account twice in case one copy burns",
-    "x": "vigor+1",
-    "c": [["Walk into Sarnhold on the third morning.", "a6_sarnhold"]]
-  },
-  {
-    "i": "a6_council",
-    "r": "choice",
-    "w": 85,
-    "b": "the company council on a switchback bench above a two-thousand-foot drop: Dellach for the record, Nyre for her order's hearing, Kettle for the west road and no names, Ilsabet for whichever choice puts the fewest copies of the truth in the fewest hands",
-    "c": [
-      ["Take it to the Commandant, all five names on it.", "a6_sarnhold"],
-      ["Write the report the Wardens will read in fifty years.", "a6_record"],
-      ["Let them argue it out and then decide alone.", "e_a6_split"]
-    ]
-  },
-  {
-    "i": "a6_ahead",
-    "r": "choice",
-    "w": 80,
-    "b": "Kettle back from the last switchback with a list: a Reckoning coach in the fortress yard, a Guild train loading at the sally port, and eleven Warden cloaks on the gate that do not fit the men wearing them",
-    "s": ["peril"],
-    "c": [
-      ["Walk in anyway; there is nowhere else to walk.", "a6_sarnhold"],
-      ["Wait for dark and go in over the curtain wall.", "e_a6_ambushed"]
-    ]
-  },
-  {
-    "i": "a6_sarnhold",
-    "r": "choice",
-    "w": 90,
-    "b": "Sarnhold in the thaw with the whole frontier waiting on the yard cobbles: Commandant Iver Thane at the tower door, Prior Absolon Rell beside a coach with the Reckoning's seal on it, Bruk Sunder of the Sable Guild with a contract already drawn, and three irons in a pack on the captain's shoulder",
-    "c": [
-      ["Report to Thane, on the record, in full.", "a6_report"],
-      ["Go to the Reckoning hearing and name Rell.", "a6_hearing"],
-      ["Write the report the Wardens will read in fifty years.", "a6_record"],
-      ["Hear what the Guild is offering for the road.", "a6_guild"],
-      ["Say the minimum, take the fee, and be gone by dark.", "e_a6_fee"],
-      ["Hand the irons to the legate and be done with it.", "e_a6_legate"]
-    ]
-  },
-  {
-    "i": "a6_report",
-    "r": "choice",
-    "w": 90,
-    "b": "Iver Thane reads it twice without a question, sets it down, squares it, and asks the three things a Commandant of the spine has to ask: what is shut, what is loose, and what is in the pack",
-    "c": [
-      ["Ask for the standing charter and a spine writ.", "e_a6_charter", "renown>=4"],
-      ["Hand over all three irons with the report.", "e_a6_handover", "crown_iron"],
-      ["Keep the three, and have him raise the frontier.", "e_a6_completion", "crown_iron&knows_compact"],
-      ["Put the crown ledger on the table and let him decide.", "e_a6_ledger"],
-      ["Tell him the door is shut and leave the rest out.", "e_a6_silent"],
-      ["Tell him what Ashendrel offered, word for word.", "e_a6_terms", "wyrm_pact"]
-    ]
-  },
-  {
-    "i": "a6_record",
-    "r": "choice",
-    "w": 90,
-    "b": "the written report, which will outlive everybody in the room: dated, signed by five hands, sealed to the spine archive, and requiring the captain to set down in plain words what was done to the crown door and by whom",
-    "c": [
-      ["Write that the company now keeps the count.", "e_a6_keeper", "door_state==2"],
-      ["Write that the door is open, and how far.", "e_a6_openrecord", "door_state==3"],
-      ["Write that three irons were drawn and reseated.", "e_a6_reseated", "door_state==4"],
-      ["Write that the ring is wedged and ask for masons.", "e_a6_wedged", "door_state==5"],
-      ["Write that the crown iron left the mountain.", "e_a6_carried", "door_state==6"],
-      ["Write that the company did not go through the door.", "e_a6_didnot"]
-    ]
-  },
-  {
-    "i": "a6_hearing",
-    "r": "choice",
-    "w": 85,
-    "b": "the Reckoning hearing convened in Sarnhold's chapel with four priors down from the mother house, Absolon Rell taking his own minutes, and Nyre standing up as a sister of the Reckoning with two dead brothers' worth of requisitions in her hand",
-    "c": [
-      ["Testify in full, everything, on the record.", "e_a6_testify"],
-      ["Testify, and hand the order one iron as surety.", "e_a6_surety", "crown_iron"],
-      ["Withdraw the accusation for what Rell is offering.", "e_a6_bought"]
-    ]
-  },
-  {
-    "i": "a6_guild",
-    "r": "choice",
-    "w": 85,
-    "b": "Bruk Sunder's contract, already drawn and witnessed: the Guild wants the charts, the hours and the crown road, and it will pay in coin, in shares, and in a delving company's worth of silence",
-    "c": [
-      ["Refuse, and take the report to Thane instead.", "a6_report"],
-      ["Sell the road and take the shares.", "e_a6_guildsold"],
-      ["Sell the charts but keep the hours.", "e_a6_guildhalf"]
-    ]
-  },
-  {
-    "i": "e_a6_completion",
-    "r": "completion",
-    "w": 110,
-    "b": "three of the nine irons kept, wrapped, and entered on the spine record as company property held in trust; Thane's couriers going out the same night to every Warden post from Sarnhold to the Ledger cities; the Compact's arithmetic broken at three doors at once, which cannot be repaired by any hand that has not got an iron; and a frontier that now knows, in writing, what it has been paying for. On the last page of the crown ledger, in the ruled column headed for a tenth hand, somebody has written the six remaining doors in order, with dates, and the nearest of them is Sarnhold's own chapel",
-    "e": "completion|positive|The Third of Nine"
-  },
-  {
-    "i": "e_a6_charter",
-    "r": "completion",
-    "w": 90,
-    "b": "the charter made standing and the writ made spine-wide, the Ninth Sword entered in the Warden roll as a company of record with a seal of its own, and Thane's first order under it reading, in his hand, hold the crown road and report the hour of every lamp on it",
-    "e": "success|positive|The Spine Writ"
-  },
-  {
-    "i": "e_a6_handover",
-    "r": "completion",
-    "w": 85,
-    "b": "three irons handed across a Commandant's table and locked in a fortress strongbox with two Wardens on it day and night, the fee paid in full with the hazard added, and a crown door under the spine that is shut tonight and will be shut in the morning",
-    "e": "success|positive|Into the Strongbox"
-  },
-  {
-    "i": "e_a6_ledger",
-    "r": "completion",
-    "w": 90,
-    "b": "eleven hundred pages of instalments in nine hands laid on a Commandant's table, which makes them his problem and his career, and Thane reading the last twenty pages twice with the slow attention of a man finding his own fortress in the delivery schedule",
-    "e": "success|neutral|The Crown Ledger"
-  },
-  {
-    "i": "e_a6_testify",
-    "r": "completion",
-    "w": 90,
-    "b": "Absolon Rell named to his face in front of four priors of the mother house, with his own requisitions matched to the crown ledger by a sister of his own order, and an order discovering that its frontier chapters have been paying a wyrm in people since before the Reckoning had a rule",
-    "e": "success|positive|Named Before the Priors"
-  },
-  {
-    "i": "e_a6_terms",
-    "r": "completion",
-    "w": 90,
-    "b": "Ashendrel's terms reported to a Warden Commandant word for word, written down, witnessed and sealed, which is the first time in nine hundred years that what the thing under the spine actually wants has been entered in a human record instead of paid quietly",
-    "e": "success|positive|Its Own Words, Written Down"
-  },
-  {
-    "i": "e_a6_wedged",
-    "r": "completion",
-    "w": 85,
-    "b": "a socket ring locked into one piece by an iron driven crosswise, reported in plain words, and a spine-wide request going out the same week for masons, an engineer and a permanent watch, because what the company did cannot be undone and cannot be trusted forever",
-    "e": "success|neutral|Wedged, and Written Down"
-  },
-  {
-    "i": "e_a6_silent",
-    "r": "discovery",
-    "w": 80,
-    "b": "a short honest report that says the crown door is shut and stops there, the fee paid, the company thanked, and four people who each know that nine hundred years of arithmetic was left out of a Warden file on purpose",
-    "e": "discovery|neutral|What He Was Told"
-  },
-  {
-    "i": "e_a6_surety",
-    "r": "discovery",
-    "w": 80,
-    "b": "one iron handed to the Reckoning as surety and entered in its register under a number, which is the safest vault on the frontier and the one place the Compact has always been able to reach, and a receipt worth what the paper is worth",
-    "e": "discovery|neutral|Held as Surety"
-  },
-  {
-    "i": "e_a6_carried",
-    "r": "failure",
-    "w": 85,
-    "b": "written into the spine archive in the captain's own hand: the crown iron left the mountain in a company pack, which means the count cannot be kept and the door cannot be paid, and nobody in the room can say which of those is worse",
-    "e": "setback|neutral|The Iron Left the Mountain"
-  },
-  {
-    "i": "e_a6_keeper",
-    "r": "failure",
-    "w": 85,
-    "b": "written into a Warden file by a captain who has now read three versions of the same clause: the crown door is shut, all nine irons are seated, and the count is kept by the captain of the Ninth Sword, who will be under the spine every ninth night for the rest of it",
-    "e": "setback|negative|Somebody Has to Count",
-    "s": ["sad_moment"]
-  },
-  {
-    "i": "e_a6_openrecord",
-    "r": "failure",
-    "w": 85,
-    "b": "the truth entered to the inch, Sarnhold's evacuation order posted before noon, the Ninefold Road closed at both ends by the week's end, and a company that did the honest thing watching a fortress load its carts",
-    "e": "setback|negative|How Far It Is Open"
-  },
-  {
-    "i": "e_a6_reseated",
-    "r": "failure",
-    "w": 80,
-    "b": "three irons drawn and reseated, written down in exactly those words, and Thane asking the question nobody in three books has been able to answer: whether a socket emptied once holds the same as a socket that never has",
-    "e": "setback|neutral|Drawn and Put Back"
-  },
-  {
-    "i": "e_a6_didnot",
-    "r": "failure",
-    "w": 80,
-    "b": "a file recording that the company reached the crown door, described it accurately, touched nothing and came back down, which is the most defensible sentence in the spine archive and the one the Ninth Sword will be asked about for the rest of its working life",
-    "e": "setback|neutral|Did Not Go Through"
-  },
-  {
-    "i": "e_a6_fee",
-    "r": "failure",
-    "w": 80,
-    "b": "the fee taken for a report that says as little as a report can say, and the company out of the sally port before dark with the money split five ways and an understanding that the spine is somebody else's arithmetic now",
-    "e": "setback|neutral|The Minimum, and the Fee"
-  },
-  {
-    "i": "e_a6_legate",
-    "r": "failure",
-    "w": 85,
-    "b": "three irons handed to Prior Absolon Rell in a fortress yard in front of witnesses, receipted properly, and loaded into a coach with the Reckoning's seal on the door that turns south and is not seen again by anybody who asks after it",
-    "e": "setback|negative|Into the Legate's Coach"
-  },
-  {
-    "i": "e_a6_bought",
-    "r": "failure",
-    "w": 85,
-    "b": "the accusation withdrawn for a chapter house, a pension and nine years of the company's debts carried, and Nyre resigning her order in the corridor afterwards in one sentence that Rell writes into his own minutes",
-    "e": "setback|negative|Rell's Price",
-    "s": ["sad_moment"]
-  },
-  {
-    "i": "e_a6_guildsold",
-    "r": "failure",
-    "w": 85,
-    "b": "the crown road sold to the Sable Guild with shares and silence, and by midsummer a Guild train working the tally-yards of Kar Ashen on a schedule the Guild does not understand and has not been told the price of",
-    "e": "setback|negative|Sold to the Guild"
-  },
-  {
-    "i": "e_a6_guildhalf",
-    "r": "failure",
-    "w": 80,
-    "b": "the charts sold and the hours kept back, which is exactly the half of the thing that gets people killed, and a Guild train that walks into Kar Ashen at the wrong hour of the ninth night with forty people and a clean bill of lading",
-    "e": "setback|negative|Charts Without Hours"
-  },
-  {
-    "i": "e_a6_split",
-    "r": "failure",
-    "w": 85,
-    "b": "an argument above a two-thousand-foot drop allowed to run until it stops being an argument: Kettle west that afternoon, Nyre to her order, Dellach to the tower alone with his own version, and the Ninth Sword ending at the top of the road it survived",
-    "e": "setback|negative|Five Voices, No Company",
-    "s": ["sad_moment"]
-  },
-  {
-    "i": "e_a6_west",
-    "r": "failure",
-    "w": 80,
-    "b": "off the Ninefold Road and west over the shoulder with three irons in the pack, no report and no fee and no charter, and a company that has made itself the only thing on the continent worth hunting",
-    "e": "setback|neutral|Off the Road, West"
-  },
-  {
-    "i": "e_a6_knock",
-    "r": "failure",
-    "w": 80,
-    "b": "three knocks on the crown door, because it worked twice and neither time was an argument for a third, and the door answering in the same rhythm at a scale that takes the gallery's dust off the ceiling and the opinions out of everybody present",
-    "e": "death|negative|Knocked, Again",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_jam",
-    "r": "failure",
-    "w": 80,
-    "b": "the crown iron hammered in at an angle to jam the socket forever, which works, and which cracks the collar, and a ring of nine that has held since the founding discovering in front of witnesses that it is now a ring of eight and a wound",
-    "e": "death|negative|Driven In Crooked",
-    "s": ["peril"]
-  },
-  {
-    "i": "e_a6_unmade",
-    "r": "failure",
-    "w": 85,
-    "b": "eight irons pulled in under a minute and five people running for a stair that is a mile long, which is a plan requiring the crown door to open slowly, and the crown door has had nine hundred years to decide how it would like to do this",
-    "e": "death|negative|All Eight, and Run",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_opened",
-    "r": "failure",
-    "w": 85,
-    "b": "the fourth iron drawn while the voice is still being courteous, and the fifth, after which no further decisions are required of anybody in the gallery, because the arrangement has concluded and the account is being settled in the order it was opened",
-    "e": "death|negative|Finish What You Started",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_asked",
-    "r": "failure",
-    "w": 85,
-    "b": "the whole account asked for through three empty sockets and given in full, itemised, with dates and interest and a note on arrears, and the figure turning out to be one that the company is standing inside of and has been since Gallowmere",
-    "e": "capture|negative|What the Account Comes To",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_arrears",
-    "r": "failure",
-    "w": 85,
-    "b": "one payment explained in numbers by something that does not use sound to do it: the arrears of nine hundred years, taken at once, from the nearest available principal, which is a fortress two days down the road and a company standing in a gallery",
-    "e": "capture|negative|Arrears, In One Payment",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_paid",
-    "r": "failure",
-    "w": 90,
-    "b": "the terms held to the end and the wyrm paying itself out of the row it was owed, which takes eleven minutes and is not violent, and afterwards the crown door stands open on a hall with nobody counting in it and the road above it entirely quiet for the first time since the legion",
-    "e": "setback|negative|Paid In Full",
-    "s": ["peril", "sad_moment"]
-  },
-  {
-    "i": "e_a6_gap",
-    "r": "failure",
-    "w": 85,
-    "b": "five people walking into a gap in the ninth row exactly five people wide, which is the most defensible decision anybody makes in three books, and which closes the gap, adjusts the schedule by nothing at all, and changes nothing else",
-    "e": "death|negative|A Gap Five People Wide",
-    "s": ["peril", "sad_moment"]
-  },
-  {
-    "i": "e_a6_spoke",
-    "r": "failure",
-    "w": 80,
-    "b": "one sentence spoken through a hand's width of crown door, politely, and the reply arriving as arithmetic rather than sound: the company counted, priced, scheduled and entered against an instalment recorded as falling due immediately",
-    "e": "death|negative|Spoken To",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_lamp",
-    "r": "failure",
-    "w": 80,
-    "b": "an arm through the gap for a lamp relit by nobody, and the lamp handed over properly into the hand that reached for it by something that has waited nine hundred years for a transaction it did not have to begin",
-    "e": "death|negative|Reaching For the Lamp",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_wedgefail",
-    "r": "failure",
-    "w": 80,
-    "b": "a shoulder put against a wedged crown door to see whether the work holds, which it does entirely, and in the same second the thing on the other side putting its own weight against the same door out of what can only be called professional curiosity",
-    "e": "death|negative|Testing the Wedge",
-    "s": ["peril"]
-  },
-  {
-    "i": "e_a6_bait",
-    "r": "failure",
-    "w": 80,
-    "b": "three irons carried openly down the wyrm-road as an invitation, on the theory that whatever wants them must come out into lamplight to ask, and the discovery on the first night that Kar Ashen is not outside anything and never was",
-    "e": "death|negative|Come and Ask For Them",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_sunk",
-    "r": "failure",
-    "w": 80,
-    "b": "the crown iron sunk in the aqueduct on the way up, which solves the problem until the summer draw-down, when a Guild water detail finds a strip of warm metal on the bottom and sells it in Sarnhold market for two coppers",
-    "e": "setback|negative|The Aqueduct"
-  },
-  {
-    "i": "e_a6_burn",
-    "r": "failure",
-    "w": 85,
-    "b": "the nine lamps of the socket ring smashed and burning as a gesture on the way out, which feels justified for two days, and the mountain's answer arriving on the ninth night at Sarnhold in a file that comes up the switchbacks with its own lamps and its own list",
-    "e": "setback|negative|Nine Lamps at the Ring"
-  },
-  {
-    "i": "e_a6_sold",
-    "r": "failure",
-    "w": 85,
-    "b": "the crown road sold to the Guild on the way down for coin and no receipt, the commission returned unfulfilled with an excuse Thane cannot disprove, and a Guild banner going up the Ninefold Road at midsummer with forty people under it",
-    "e": "setback|negative|Sold on the Descent"
-  },
-  {
-    "i": "e_a6_column",
-    "r": "failure",
-    "w": 85,
-    "b": "the tenth column cut out of the crown ledger with a knife because a blank column is an invitation, which takes eleven minutes, and which the mint's own standing order describes as the one alteration that transfers the office to whoever performs it",
-    "e": "death|negative|The Tenth Column",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_satdown",
-    "r": "failure",
-    "w": 80,
-    "b": "a captain sitting down on the wyrm-road because the legs have finished arguing, a company that will not leave without its captain, and a road that has been getting longer all evening and is in no hurry at all",
-    "e": "death|negative|Sat Down on the Wyrm-Road",
-    "s": ["peril", "sad_moment"]
-  },
-  {
-    "i": "e_a6_counted",
-    "r": "failure",
-    "w": 85,
-    "b": "the crown gate held on a shield fulcrum while five names are called through it in order, which is precisely what a dead Warden scratched a warning about on a shield two books ago, and the fifth name answered from the far side in the captain's own voice",
-    "e": "capture|negative|Counted Through By Name",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_chimneyfall",
-    "r": "failure",
-    "w": 80,
-    "b": "the strongest sent up the chimney first to haul the others, which puts one set of hands ninety feet up and four sets of boots on soot-glazed brick, and the third staple from the bend has been waiting since the founding for exactly this order of climbing",
-    "e": "death|negative|Strongest First",
-    "s": ["peril"]
-  },
-  {
-    "i": "e_a6_filekept",
-    "r": "failure",
-    "w": 85,
-    "b": "the file stayed with to the end of the count because it is only nine and the rhythm is easy and the gate is right there, and the ninth number arriving in open road air with the switchbacks visible below, and the count starting again from one without a gap",
-    "e": "capture|negative|It Is Only Nine",
-    "s": ["peril", "scary_imagery"]
-  },
-  {
-    "i": "e_a6_ambushed",
-    "r": "failure",
-    "w": 85,
-    "b": "Kettle's report accurate in every particular, and the company going over Sarnhold's curtain wall after dark instead of through its gate, which is how a chartered company becomes a matter for the provost rather than the Commandant",
-    "e": "capture|negative|Over the Curtain Wall",
-    "s": ["peril"]
-  }
+ {
+  "i": "a6_resolve",
+  "r": "climax",
+  "w": 95,
+  "b": "the crown door of Kar Ashen at the end of the wyrm-road: dwarf iron in a frame older than dwarves, nine sockets in a ring with eight filled and warm, the ninth worn bright and empty, and behind it Ashendrel, awake enough to be listening and too large for the word awake to be any use",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Set the crown iron in its socket and lock the door.",
+    "a6_lock",
+    "crown_iron"
+   ],
+   [
+    "Draw the eight irons and unmake the Compact here.",
+    "a6_unmake"
+   ],
+   [
+    "Take the crown iron out of the mountain entirely.",
+    "a6_carry",
+    "crown_iron"
+   ],
+   [
+    "Open the door a hand's width and look.",
+    "a6_open"
+   ],
+   [
+    "Hold to the terms Ashendrel named.",
+    "a6_pact",
+    "wyrm_pact"
+   ],
+   [
+    "Withdraw. Three doors is a Warden war, not a commission.",
+    "a6_withdraw"
+   ],
+   [
+    "Knock, as you knocked at the first two.",
+    "e_a6_knock"
+   ]
+  ]
+ },
+ {
+  "i": "a6_lock",
+  "r": "climax",
+  "w": 85,
+  "b": "the crown iron seated in the ninth socket, all nine warm, the frame taking the load, and the count in the whole mountain stopping mid-number for the first time since the road was cut",
+  "x": "door_state=1",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Break the crown die so no tenth iron can be cut.",
+    "a6_breakdie"
+   ],
+   [
+    "Take the keeper's ring; a count still needs a hand.",
+    "a6_takering",
+    "knows_compact"
+   ],
+   [
+    "Get everyone out while the mountain is quiet.",
+    "a6_out"
+   ],
+   [
+    "Drive it in crooked and jam the socket forever.",
+    "e_a6_jam"
+   ]
+  ]
+ },
+ {
+  "i": "a6_breakdie",
+  "r": "rising",
+  "w": 65,
+  "b": "the crown die broken across the mint's own anvil in four strokes, the pieces bagged, and Vurma checking the floor twice because she does not trust fragments",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go up and out.",
+    "a6_out"
+   ]
+  ]
+ },
+ {
+  "i": "a6_takering",
+  "r": "choice",
+  "w": 80,
+  "b": "the ninth hand's ring on the keeper's desk, warm and sized for whoever lifts it, and the arithmetic beside it: nine irons hold a door without a keeper only until something tests it, and this door has Ashendrel behind it",
+  "s": [
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Put it on. Somebody has to keep this one.",
+    "a6_ringon"
+   ],
+   [
+    "Leave it. Nobody in this company signs that twice.",
+    "a6_out"
+   ]
+  ]
+ },
+ {
+  "i": "a6_ringon",
+  "r": "rising",
+  "w": 80,
+  "b": "the ring on, and the count arriving in the back of the skull as an obligation with dates in it, larger than the two before it by an order nobody in the company can express",
+  "x": "door_state=2",
+  "s": [
+   "scary_imagery",
+   "sad_moment"
+  ],
+  "c": [
+   [
+    "Take the company out.",
+    "a6_out"
+   ]
+  ]
+ },
+ {
+  "i": "a6_unmake",
+  "r": "climax",
+  "w": 85,
+  "b": "the decision to unmake the Compact at its own crown: eight irons in eight warm sockets, nine hundred years of instalments, and five people standing in front of the arrangement that has kept a wyrm asleep since before the legion",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Draw one iron and watch what the door does.",
+    "a6_onebyone"
+   ],
+   [
+    "Draw all eight at once and run for the stair.",
+    "e_a6_unmade"
+   ],
+   [
+    "Draw them, then wedge the ring with the crown iron.",
+    "a6_wedge",
+    "crown_iron"
+   ],
+   [
+    "Change your mind and seat the crown iron instead.",
+    "a6_lock",
+    "crown_iron"
+   ]
+  ]
+ },
+ {
+  "i": "a6_onebyone",
+  "r": "choice",
+  "w": 85,
+  "b": "one iron out and the door leans a quarter inch; two, and the frame sweats; three, and something on the far side of it says the captain's name in the voice of the paymaster of Kar Duhn, who has been dead for two books",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Re-seat all three and step back.",
+    "a6_reseat"
+   ],
+   [
+    "Keep drawing. Finish it.",
+    "e_a6_opened"
+   ],
+   [
+    "Ask it what the whole account comes to.",
+    "e_a6_asked"
+   ]
+  ]
+ },
+ {
+  "i": "a6_reseat",
+  "r": "rising",
+  "w": 70,
+  "b": "three irons put back by hands that are not steady, the door settling, and the voice thanking the company by name, all five names, and then adding the names of the two hands that held the office before it",
+  "x": "door_state=4",
+  "s": [
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Get out of the mountain.",
+    "a6_out"
+   ]
+  ]
+ },
+ {
+  "i": "a6_wedge",
+  "r": "choice",
+  "w": 80,
+  "b": "the crown iron driven crosswise through the socket ring instead of into it, dwarf iron biting dwarf iron until the ring is one piece that no hand can draw and no keeper can count",
+  "x": "door_state=5",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Leave it wedged and go.",
+    "a6_out"
+   ],
+   [
+    "Test it. Put your weight on the door.",
+    "e_a6_wedgefail"
+   ]
+  ]
+ },
+ {
+  "i": "a6_carry",
+  "r": "climax",
+  "w": 85,
+  "b": "the arithmetic the company has been carrying for two books, taken to its end: the ninth iron is the count, a count that cannot be kept is a debt that cannot be collected, and three of nine in one pack makes the Compact arithmetic that no longer closes",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Wrap it with the other two and carry it out.",
+    "a6_wrap"
+   ],
+   [
+    "Seat it after all; a shut door beats leverage.",
+    "a6_lock"
+   ],
+   [
+    "Carry it out in the open and let them come for it.",
+    "e_a6_bait"
+   ],
+   [
+    "Sink it in the aqueduct on the way up.",
+    "e_a6_sunk"
+   ]
+  ]
+ },
+ {
+  "i": "a6_wrap",
+  "r": "rising",
+  "w": 80,
+  "b": "salt-cloth, oilcloth, and the middle of the pack, the three irons laid so that none of them touches another, and the mountain's whole attention arriving and settling on five people who are about to walk uphill with it",
+  "x": "door_state=6",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Up the wyrm-road, and quickly.",
+    "a6_out"
+   ]
+  ]
+ },
+ {
+  "i": "a6_pact",
+  "r": "climax",
+  "w": 90,
+  "b": "Ashendrel's own terms, named in the gallery below and repeated here by a voice that arrives as arithmetic rather than sound: the count ends, the doors open, and the wyrm takes its arrears in one payment rather than nine hundred years of instalments",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Hold to the terms and open the ring as agreed.",
+    "a6_pactsworn"
+   ],
+   [
+    "Refuse the terms to its face and seat the iron.",
+    "a6_pactrefused",
+    "crown_iron"
+   ],
+   [
+    "Refuse the terms and withdraw entirely.",
+    "a6_withdraw"
+   ],
+   [
+    "Ask what one payment means in numbers.",
+    "e_a6_arrears"
+   ]
+  ]
+ },
+ {
+  "i": "a6_pactsworn",
+  "r": "choice",
+  "w": 85,
+  "b": "the terms held to, the ring opened in the order the wyrm gives, and the mountain going quiet in a way that is not silence but attention, with the whole road's arithmetic waiting on one company's word",
+  "x": "door_state=3",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Stand where you are and let it pay itself.",
+    "e_a6_paid"
+   ],
+   [
+    "Break faith at the last moment and run.",
+    "a6_out"
+   ]
+  ]
+ },
+ {
+  "i": "a6_pactrefused",
+  "r": "rising",
+  "w": 80,
+  "b": "the terms refused out loud to something the size of the hall, the crown iron seated while it is still speaking, and the count resuming under the refusal like a clerk continuing to write through an argument",
+  "x": "door_state=1",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Go, before it finishes considering the refusal.",
+    "a6_out"
+   ]
+  ]
+ },
+ {
+  "i": "a6_open",
+  "r": "climax",
+  "w": 85,
+  "b": "a hand's width of the crown door held on a pick haft, warm air coming out of it on a nine-count, and light on the other side that is not lamplight and has been burning without fuel since the founding",
+  "x": "door_state=3",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Look through it.",
+    "a6_looked"
+   ],
+   [
+    "Put a lamp through first.",
+    "a6_lamp"
+   ],
+   [
+    "Shut it again without looking.",
+    "a6_closed"
+   ],
+   [
+    "Speak through the gap.",
+    "e_a6_spoke"
+   ]
+  ]
+ },
+ {
+  "i": "a6_looked",
+  "r": "choice",
+  "w": 90,
+  "b": "what is behind the crown door: the hall is the inside of the mountain and Ashendrel fills it the way water fills a cup, and standing in rows in front of it, counting, are the counted of nine hundred years, and there is a gap in the ninth row exactly five people wide",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Shut it and seat the crown iron.",
+    "a6_lock",
+    "crown_iron"
+   ],
+   [
+    "Shut it and get out of the mountain.",
+    "a6_out"
+   ],
+   [
+    "Walk into the gap. Somebody has to.",
+    "e_a6_gap"
+   ]
+  ]
+ },
+ {
+  "i": "a6_lamp",
+  "r": "choice",
+  "w": 75,
+  "b": "a lamp lowered through the gap on a rope, burning steadily for four seconds, going out from the wick down, and coming back up relit by nobody with the flame a better colour than before",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Look through, now that you have to know.",
+    "a6_looked"
+   ],
+   [
+    "Reach through and take the lamp back.",
+    "e_a6_lamp"
+   ]
+  ]
+ },
+ {
+  "i": "a6_closed",
+  "r": "choice",
+  "w": 75,
+  "b": "the door eased shut on nothing seen, the count resuming exactly where it was, and five people standing in front of it having agreed not to know the one thing they came up a mountain to find out",
+  "c": [
+   [
+    "Go up and out.",
+    "a6_out"
+   ],
+   [
+    "Make it a Warden matter and withdraw properly.",
+    "a6_withdraw"
+   ]
+  ]
+ },
+ {
+  "i": "a6_withdraw",
+  "r": "choice",
+  "w": 85,
+  "b": "the honest option said out loud in front of the crown door by Nyre, who has been assembling it since Hollowmarch: three doors is a war, a war is Warden business, and five people with a charter do not get to be the hinge of it twice",
+  "c": [
+   [
+    "Out the way you came, and no souvenirs.",
+    "a6_out"
+   ],
+   [
+    "Out, but take the crown ledger from the mint.",
+    "a6_takebook"
+   ],
+   [
+    "Out, and burn the nine lamps of the ring behind you.",
+    "e_a6_burn"
+   ],
+   [
+    "Out, and sell the road to the Guild on the way down.",
+    "e_a6_sold"
+   ]
+  ]
+ },
+ {
+  "i": "a6_takebook",
+  "r": "choice",
+  "w": 80,
+  "b": "back to the mint for the crown ledger, eleven hundred pages of instalments in nine hands with four blank pages at the end and a ruled column already headed for a tenth",
+  "c": [
+   [
+    "Take it and go.",
+    "a6_out"
+   ],
+   [
+    "Take it and cut the tenth column out of it first.",
+    "e_a6_column"
+   ]
+  ]
+ },
+ {
+  "i": "a6_out",
+  "r": "choice",
+  "w": 90,
+  "b": "the wyrm-road back up, and Kar Ashen has changed its mind about the company: the tally-yards are lit, the counted are standing in the streets facing the gate, and the crown gate has closed to a thumb's width",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Force the crown gate with everything you have.",
+    "a6_forcegate"
+   ],
+   [
+    "Go out by the foundry chimney.",
+    "a6_chimney"
+   ],
+   [
+    "Go out by the mason's postern under the wall.",
+    "a6_postern"
+   ],
+   [
+    "Walk out in the ninth-hour file, counting.",
+    "a6_file",
+    "knows_compact"
+   ],
+   [
+    "Sit down on the wyrm-road. You are finished.",
+    "e_a6_satdown"
+   ]
+  ]
+ },
+ {
+  "i": "a6_forcegate",
+  "r": "choice",
+  "w": 80,
+  "b": "five people, a pick haft and a Warden shield as a fulcrum against a gate that is not being held shut by weight, and eleven minutes of the worst work anybody has done in three books",
+  "x": "vigor-1",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Get everybody through the moment it is wide enough.",
+    "a6_road"
+   ],
+   [
+    "Hold it and count them through by name.",
+    "e_a6_counted"
+   ]
+  ]
+ },
+ {
+  "i": "a6_chimney",
+  "r": "choice",
+  "w": 80,
+  "b": "the drowned foundry's chimney, ninety feet of soot-glazed dwarf brick with staples at the bends, breathing warm air that smells of the forge Kar Ashen has not lit in nine hundred years",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Climb it in pairs and take the skin off your hands.",
+    "a6_road"
+   ],
+   [
+    "Send the strongest up first to haul the rest.",
+    "e_a6_chimneyfall"
+   ]
+  ]
+ },
+ {
+  "i": "a6_postern",
+  "r": "rising",
+  "w": 70,
+  "b": "out by the mason's postern under the outer wall, the lead seal broken behind you, and the corridor lighting itself politely one niche at a time all the way back to the ring, like a house seeing a guest off the property",
+  "s": [
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Get onto the road.",
+    "a6_road"
+   ]
+  ]
+ },
+ {
+  "i": "a6_file",
+  "r": "choice",
+  "w": 85,
+  "b": "the ninth hour kept in the slag yard and then the file forming in the street below, nine lamps lifted, the count starting, and the Ninth Sword walking out of Kar Ashen inside it with the rhythm right and three irons in one pack",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ],
+  "c": [
+   [
+    "Break off at the gate and get clear.",
+    "a6_road"
+   ],
+   [
+    "Stay in the file to the end of the count. It is only nine.",
+    "e_a6_filekept"
+   ]
+  ]
+ },
+ {
+  "i": "a6_road",
+  "r": "choice",
+  "w": 85,
+  "b": "the Ninefold Road down off the spine in a thaw, Sarnhold two days below, and the company carrying whatever it decided to carry, with Nyre asking the question that has to be settled before anybody speaks to a Warden",
+  "c": [
+   [
+    "Straight down to Sarnhold and the Commandant.",
+    "a6_sarnhold"
+   ],
+   [
+    "Two days at the ice gallery first; they are spent.",
+    "a6_rest"
+   ],
+   [
+    "Put it to the company as a company. All five voices.",
+    "a6_council"
+   ],
+   [
+    "Send Kettle ahead to see who is waiting at the fortress.",
+    "a6_ahead"
+   ],
+   [
+    "Off the road and west, with what you carry.",
+    "e_a6_west"
+   ]
+  ]
+ },
+ {
+  "i": "a6_rest",
+  "r": "rising",
+  "w": 70,
+  "b": "two days in the ice gallery with a brazier and no watch, Kettle asleep eleven hours, Dellach's hands coming back, and Ilsabet writing out the whole account twice in case one copy burns",
+  "x": "vigor+1",
+  "c": [
+   [
+    "Walk into Sarnhold on the third morning.",
+    "a6_sarnhold"
+   ]
+  ]
+ },
+ {
+  "i": "a6_council",
+  "r": "choice",
+  "w": 85,
+  "b": "the company council on a switchback bench above a two-thousand-foot drop: Dellach for the record, Nyre for her order's hearing, Kettle for the west road and no names, Ilsabet for whichever choice puts the fewest copies of the truth in the fewest hands",
+  "c": [
+   [
+    "Take it to the Commandant, all five names on it.",
+    "a6_sarnhold"
+   ],
+   [
+    "Write the report the Wardens will read in fifty years.",
+    "a6_record"
+   ],
+   [
+    "Let them argue it out and then decide alone.",
+    "e_a6_split"
+   ]
+  ]
+ },
+ {
+  "i": "a6_ahead",
+  "r": "choice",
+  "w": 80,
+  "b": "Kettle back from the last switchback with a list: a Reckoning coach in the fortress yard, a Guild train loading at the sally port, and eleven Warden cloaks on the gate that do not fit the men wearing them",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Walk in anyway; there is nowhere else to walk.",
+    "a6_sarnhold"
+   ],
+   [
+    "Wait for dark and go in over the curtain wall.",
+    "e_a6_ambushed"
+   ]
+  ]
+ },
+ {
+  "i": "a6_sarnhold",
+  "r": "choice",
+  "w": 90,
+  "b": "Sarnhold in the thaw with the whole frontier waiting on the yard cobbles: Commandant Iver Thane at the tower door, Prior Absolon Rell beside a coach with the Reckoning's seal on it, Bruk Sunder of the Sable Guild with a contract already drawn, and three irons in a pack on the captain's shoulder",
+  "c": [
+   [
+    "Report to Thane, on the record, in full.",
+    "a6_report"
+   ],
+   [
+    "Go to the Reckoning hearing and name Rell.",
+    "a6_hearing"
+   ],
+   [
+    "Write the report the Wardens will read in fifty years.",
+    "a6_record"
+   ],
+   [
+    "Hear what the Guild is offering for the road.",
+    "a6_guild"
+   ],
+   [
+    "Say the minimum, take the fee, and be gone by dark.",
+    "e_a6_fee"
+   ],
+   [
+    "Hand the irons to the legate and be done with it.",
+    "e_a6_legate"
+   ]
+  ]
+ },
+ {
+  "i": "a6_report",
+  "r": "choice",
+  "w": 90,
+  "b": "Iver Thane reads it twice without a question, sets it down, squares it, and asks the three things a Commandant of the spine has to ask: what is shut, what is loose, and what is in the pack",
+  "c": [
+   [
+    "Ask for the standing charter and a spine writ.",
+    "e_a6_charter",
+    "renown>=4"
+   ],
+   [
+    "Hand over all three irons with the report.",
+    "e_a6_handover",
+    "crown_iron"
+   ],
+   [
+    "Keep the three, and have him raise the frontier.",
+    "e_a6_completion",
+    "crown_iron&knows_compact"
+   ],
+   [
+    "Put the crown ledger on the table and let him decide.",
+    "e_a6_ledger"
+   ],
+   [
+    "Tell him the door is shut and leave the rest out.",
+    "e_a6_silent"
+   ],
+   [
+    "Tell him what Ashendrel offered, word for word.",
+    "e_a6_terms",
+    "wyrm_pact"
+   ]
+  ]
+ },
+ {
+  "i": "a6_record",
+  "r": "choice",
+  "w": 90,
+  "b": "the written report, which will outlive everybody in the room: dated, signed by five hands, sealed to the spine archive, and requiring the captain to set down in plain words what was done to the crown door and by whom",
+  "c": [
+   [
+    "Write that the company now keeps the count.",
+    "e_a6_keeper",
+    "door_state==2"
+   ],
+   [
+    "Write that the door is open, and how far.",
+    "e_a6_openrecord",
+    "door_state==3"
+   ],
+   [
+    "Write that three irons were drawn and reseated.",
+    "e_a6_reseated",
+    "door_state==4"
+   ],
+   [
+    "Write that the ring is wedged and ask for masons.",
+    "e_a6_wedged",
+    "door_state==5"
+   ],
+   [
+    "Write that the crown iron left the mountain.",
+    "e_a6_carried",
+    "door_state==6"
+   ],
+   [
+    "Write that the company did not go through the door.",
+    "e_a6_didnot"
+   ]
+  ]
+ },
+ {
+  "i": "a6_hearing",
+  "r": "choice",
+  "w": 85,
+  "b": "the Reckoning hearing convened in Sarnhold's chapel with four priors down from the mother house, Absolon Rell taking his own minutes, and Nyre standing up as a sister of the Reckoning with two dead brothers' worth of requisitions in her hand",
+  "c": [
+   [
+    "Testify in full, everything, on the record.",
+    "e_a6_testify"
+   ],
+   [
+    "Testify, and hand the order one iron as surety.",
+    "e_a6_surety",
+    "crown_iron"
+   ],
+   [
+    "Withdraw the accusation for what Rell is offering.",
+    "e_a6_bought"
+   ]
+  ]
+ },
+ {
+  "i": "a6_guild",
+  "r": "choice",
+  "w": 85,
+  "b": "Bruk Sunder's contract, already drawn and witnessed: the Guild wants the charts, the hours and the crown road, and it will pay in coin, in shares, and in a delving company's worth of silence",
+  "c": [
+   [
+    "Refuse, and take the report to Thane instead.",
+    "a6_report"
+   ],
+   [
+    "Sell the road and take the shares.",
+    "e_a6_guildsold"
+   ],
+   [
+    "Sell the charts but keep the hours.",
+    "e_a6_guildhalf"
+   ]
+  ]
+ },
+ {
+  "i": "e_a6_completion",
+  "r": "completion",
+  "w": 110,
+  "b": "three of the nine irons kept, wrapped, and entered on the spine record as company property held in trust; Thane's couriers going out the same night to every Warden post from Sarnhold to the Ledger cities; the Compact's arithmetic broken at three doors at once, which cannot be repaired by any hand that has not got an iron; and a frontier that now knows, in writing, what it has been paying for. On the last page of the crown ledger, in the ruled column headed for a tenth hand, somebody has written the six remaining doors in order, with dates, and the nearest of them is Sarnhold's own chapel",
+  "e": "completion|positive|The Third of Nine"
+ },
+ {
+  "i": "e_a6_charter",
+  "r": "completion",
+  "w": 90,
+  "b": "the charter made standing and the writ made spine-wide, the Ninth Sword entered in the Warden roll as a company of record with a seal of its own, and Thane's first order under it reading, in his hand, hold the crown road and report the hour of every lamp on it",
+  "e": "success|positive|The Spine Writ"
+ },
+ {
+  "i": "e_a6_handover",
+  "r": "completion",
+  "w": 85,
+  "b": "three irons handed across a Commandant's table and locked in a fortress strongbox with two Wardens on it day and night, the fee paid in full with the hazard added, and a crown door under the spine that is shut tonight and will be shut in the morning",
+  "e": "success|positive|Into the Strongbox"
+ },
+ {
+  "i": "e_a6_ledger",
+  "r": "completion",
+  "w": 90,
+  "b": "eleven hundred pages of instalments in nine hands laid on a Commandant's table, which makes them his problem and his career, and Thane reading the last twenty pages twice with the slow attention of a man finding his own fortress in the delivery schedule",
+  "e": "success|neutral|The Crown Ledger"
+ },
+ {
+  "i": "e_a6_testify",
+  "r": "completion",
+  "w": 90,
+  "b": "Absolon Rell named to his face in front of four priors of the mother house, with his own requisitions matched to the crown ledger by a sister of his own order, and an order discovering that its frontier chapters have been paying a wyrm in people since before the Reckoning had a rule",
+  "e": "success|positive|Named Before the Priors"
+ },
+ {
+  "i": "e_a6_terms",
+  "r": "completion",
+  "w": 90,
+  "b": "Ashendrel's terms reported to a Warden Commandant word for word, written down, witnessed and sealed, which is the first time in nine hundred years that what the thing under the spine actually wants has been entered in a human record instead of paid quietly",
+  "e": "success|positive|Its Own Words, Written Down"
+ },
+ {
+  "i": "e_a6_wedged",
+  "r": "completion",
+  "w": 85,
+  "b": "a socket ring locked into one piece by an iron driven crosswise, reported in plain words, and a spine-wide request going out the same week for masons, an engineer and a permanent watch, because what the company did cannot be undone and cannot be trusted forever",
+  "e": "success|neutral|Wedged, and Written Down"
+ },
+ {
+  "i": "e_a6_silent",
+  "r": "discovery",
+  "w": 80,
+  "b": "a short honest report that says the crown door is shut and stops there, the fee paid, the company thanked, and four people who each know that nine hundred years of arithmetic was left out of a Warden file on purpose",
+  "e": "discovery|neutral|What He Was Told"
+ },
+ {
+  "i": "e_a6_surety",
+  "r": "discovery",
+  "w": 80,
+  "b": "one iron handed to the Reckoning as surety and entered in its register under a number, which is the safest vault on the frontier and the one place the Compact has always been able to reach, and a receipt worth what the paper is worth",
+  "e": "discovery|neutral|Held as Surety"
+ },
+ {
+  "i": "e_a6_carried",
+  "r": "failure",
+  "w": 85,
+  "b": "written into the spine archive in the captain's own hand: the crown iron left the mountain in a company pack, which means the count cannot be kept and the door cannot be paid, and nobody in the room can say which of those is worse",
+  "e": "setback|neutral|The Iron Left the Mountain"
+ },
+ {
+  "i": "e_a6_keeper",
+  "r": "failure",
+  "w": 85,
+  "b": "written into a Warden file by a captain who has now read three versions of the same clause: the crown door is shut, all nine irons are seated, and the count is kept by the captain of the Ninth Sword, who will be under the spine every ninth night for the rest of it",
+  "e": "setback|negative|Somebody Has to Count",
+  "s": [
+   "sad_moment"
+  ]
+ },
+ {
+  "i": "e_a6_openrecord",
+  "r": "failure",
+  "w": 85,
+  "b": "the truth entered to the inch, Sarnhold's evacuation order posted before noon, the Ninefold Road closed at both ends by the week's end, and a company that did the honest thing watching a fortress load its carts",
+  "e": "setback|negative|How Far It Is Open"
+ },
+ {
+  "i": "e_a6_reseated",
+  "r": "failure",
+  "w": 80,
+  "b": "three irons drawn and reseated, written down in exactly those words, and Thane asking the question nobody in three books has been able to answer: whether a socket emptied once holds the same as a socket that never has",
+  "e": "setback|neutral|Drawn and Put Back"
+ },
+ {
+  "i": "e_a6_didnot",
+  "r": "failure",
+  "w": 80,
+  "b": "a file recording that the company reached the crown door, described it accurately, touched nothing and came back down, which is the most defensible sentence in the spine archive and the one the Ninth Sword will be asked about for the rest of its working life",
+  "e": "setback|neutral|Did Not Go Through"
+ },
+ {
+  "i": "e_a6_fee",
+  "r": "failure",
+  "w": 80,
+  "b": "the fee taken for a report that says as little as a report can say, and the company out of the sally port before dark with the money split five ways and an understanding that the spine is somebody else's arithmetic now",
+  "e": "setback|neutral|The Minimum, and the Fee"
+ },
+ {
+  "i": "e_a6_legate",
+  "r": "failure",
+  "w": 85,
+  "b": "three irons handed to Prior Absolon Rell in a fortress yard in front of witnesses, receipted properly, and loaded into a coach with the Reckoning's seal on the door that turns south and is not seen again by anybody who asks after it",
+  "e": "setback|negative|Into the Legate's Coach"
+ },
+ {
+  "i": "e_a6_bought",
+  "r": "failure",
+  "w": 85,
+  "b": "the accusation withdrawn for a chapter house, a pension and nine years of the company's debts carried, and Nyre resigning her order in the corridor afterwards in one sentence that Rell writes into his own minutes",
+  "e": "setback|negative|Rell's Price",
+  "s": [
+   "sad_moment"
+  ]
+ },
+ {
+  "i": "e_a6_guildsold",
+  "r": "failure",
+  "w": 85,
+  "b": "the crown road sold to the Sable Guild with shares and silence, and by midsummer a Guild train working the tally-yards of Kar Ashen on a schedule the Guild does not understand and has not been told the price of",
+  "e": "setback|negative|Sold to the Guild"
+ },
+ {
+  "i": "e_a6_guildhalf",
+  "r": "failure",
+  "w": 80,
+  "b": "the charts sold and the hours kept back, which is exactly the half of the thing that gets people killed, and a Guild train that walks into Kar Ashen at the wrong hour of the ninth night with forty people and a clean bill of lading",
+  "e": "setback|negative|Charts Without Hours"
+ },
+ {
+  "i": "e_a6_split",
+  "r": "failure",
+  "w": 85,
+  "b": "an argument above a two-thousand-foot drop allowed to run until it stops being an argument: Kettle west that afternoon, Nyre to her order, Dellach to the tower alone with his own version, and the Ninth Sword ending at the top of the road it survived",
+  "e": "setback|negative|Five Voices, No Company",
+  "s": [
+   "sad_moment"
+  ]
+ },
+ {
+  "i": "e_a6_west",
+  "r": "failure",
+  "w": 80,
+  "b": "off the Ninefold Road and west over the shoulder with three irons in the pack, no report and no fee and no charter, and a company that has made itself the only thing on the continent worth hunting",
+  "e": "setback|neutral|Off the Road, West"
+ },
+ {
+  "i": "e_a6_knock",
+  "r": "failure",
+  "w": 80,
+  "b": "three knocks on the crown door, because it worked twice and neither time was an argument for a third, and the door answering in the same rhythm at a scale that takes the gallery's dust off the ceiling and the opinions out of everybody present",
+  "e": "death|negative|Knocked, Again",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_jam",
+  "r": "failure",
+  "w": 80,
+  "b": "the crown iron hammered in at an angle to jam the socket forever, which works, and which cracks the collar, and a ring of nine that has held since the founding discovering in front of witnesses that it is now a ring of eight and a wound",
+  "e": "death|negative|Driven In Crooked",
+  "s": [
+   "peril"
+  ]
+ },
+ {
+  "i": "e_a6_unmade",
+  "r": "failure",
+  "w": 85,
+  "b": "eight irons pulled in under a minute and five people running for a stair that is a mile long, which is a plan requiring the crown door to open slowly, and the crown door has had nine hundred years to decide how it would like to do this",
+  "e": "death|negative|All Eight, and Run",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_opened",
+  "r": "failure",
+  "w": 85,
+  "b": "the fourth iron drawn while the voice is still being courteous, and the fifth, after which no further decisions are required of anybody in the gallery, because the arrangement has concluded and the account is being settled in the order it was opened",
+  "e": "death|negative|Finish What You Started",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_asked",
+  "r": "failure",
+  "w": 85,
+  "b": "the whole account asked for through three empty sockets and given in full, itemised, with dates and interest and a note on arrears, and the figure turning out to be one that the company is standing inside of and has been since Gallowmere",
+  "e": "capture|negative|What the Account Comes To",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_arrears",
+  "r": "failure",
+  "w": 85,
+  "b": "one payment explained in numbers by something that does not use sound to do it: the arrears of nine hundred years, taken at once, from the nearest available principal, which is a fortress two days down the road and a company standing in a gallery",
+  "e": "capture|negative|Arrears, In One Payment",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_paid",
+  "r": "failure",
+  "w": 90,
+  "b": "the terms held to the end and the wyrm paying itself out of the row it was owed, which takes eleven minutes and is not violent, and afterwards the crown door stands open on a hall with nobody counting in it and the road above it entirely quiet for the first time since the legion",
+  "e": "setback|negative|Paid In Full",
+  "s": [
+   "peril",
+   "sad_moment"
+  ]
+ },
+ {
+  "i": "e_a6_gap",
+  "r": "failure",
+  "w": 85,
+  "b": "five people walking into a gap in the ninth row exactly five people wide, which is the most defensible decision anybody makes in three books, and which closes the gap, adjusts the schedule by nothing at all, and changes nothing else",
+  "e": "death|negative|A Gap Five People Wide",
+  "s": [
+   "peril",
+   "sad_moment"
+  ]
+ },
+ {
+  "i": "e_a6_spoke",
+  "r": "failure",
+  "w": 80,
+  "b": "one sentence spoken through a hand's width of crown door, politely, and the reply arriving as arithmetic rather than sound: the company counted, priced, scheduled and entered against an instalment recorded as falling due immediately",
+  "e": "death|negative|Spoken To",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_lamp",
+  "r": "failure",
+  "w": 80,
+  "b": "an arm through the gap for a lamp relit by nobody, and the lamp handed over properly into the hand that reached for it by something that has waited nine hundred years for a transaction it did not have to begin",
+  "e": "death|negative|Reaching For the Lamp",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_wedgefail",
+  "r": "failure",
+  "w": 80,
+  "b": "a shoulder put against a wedged crown door to see whether the work holds, which it does entirely, and in the same second the thing on the other side putting its own weight against the same door out of what can only be called professional curiosity",
+  "e": "death|negative|Testing the Wedge",
+  "s": [
+   "peril"
+  ]
+ },
+ {
+  "i": "e_a6_bait",
+  "r": "failure",
+  "w": 80,
+  "b": "three irons carried openly down the wyrm-road as an invitation, on the theory that whatever wants them must come out into lamplight to ask, and the discovery on the first night that Kar Ashen is not outside anything and never was",
+  "e": "death|negative|Come and Ask For Them",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_sunk",
+  "r": "failure",
+  "w": 80,
+  "b": "the crown iron sunk in the aqueduct on the way up, which solves the problem until the summer draw-down, when a Guild water detail finds a strip of warm metal on the bottom and sells it in Sarnhold market for two coppers",
+  "e": "setback|negative|The Aqueduct"
+ },
+ {
+  "i": "e_a6_burn",
+  "r": "failure",
+  "w": 85,
+  "b": "the nine lamps of the socket ring smashed and burning as a gesture on the way out, which feels justified for two days, and the mountain's answer arriving on the ninth night at Sarnhold in a file that comes up the switchbacks with its own lamps and its own list",
+  "e": "setback|negative|Nine Lamps at the Ring"
+ },
+ {
+  "i": "e_a6_sold",
+  "r": "failure",
+  "w": 85,
+  "b": "the crown road sold to the Guild on the way down for coin and no receipt, the commission returned unfulfilled with an excuse Thane cannot disprove, and a Guild banner going up the Ninefold Road at midsummer with forty people under it",
+  "e": "setback|negative|Sold on the Descent"
+ },
+ {
+  "i": "e_a6_column",
+  "r": "failure",
+  "w": 85,
+  "b": "the tenth column cut out of the crown ledger with a knife because a blank column is an invitation, which takes eleven minutes, and which the mint's own standing order describes as the one alteration that transfers the office to whoever performs it",
+  "e": "death|negative|The Tenth Column",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_satdown",
+  "r": "failure",
+  "w": 80,
+  "b": "a captain sitting down on the wyrm-road because the legs have finished arguing, a company that will not leave without its captain, and a road that has been getting longer all evening and is in no hurry at all",
+  "e": "death|negative|Sat Down on the Wyrm-Road",
+  "s": [
+   "peril",
+   "sad_moment"
+  ]
+ },
+ {
+  "i": "e_a6_counted",
+  "r": "failure",
+  "w": 85,
+  "b": "the crown gate held on a shield fulcrum while five names are called through it in order, which is precisely what a dead Warden scratched a warning about on a shield two books ago, and the fifth name answered from the far side in the captain's own voice",
+  "e": "capture|negative|Counted Through By Name",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_chimneyfall",
+  "r": "failure",
+  "w": 80,
+  "b": "the strongest sent up the chimney first to haul the others, which puts one set of hands ninety feet up and four sets of boots on soot-glazed brick, and the third staple from the bend has been waiting since the founding for exactly this order of climbing",
+  "e": "death|negative|Strongest First",
+  "s": [
+   "peril"
+  ]
+ },
+ {
+  "i": "e_a6_filekept",
+  "r": "failure",
+  "w": 85,
+  "b": "the file stayed with to the end of the count because it is only nine and the rhythm is easy and the gate is right there, and the ninth number arriving in open road air with the switchbacks visible below, and the count starting again from one without a gap",
+  "e": "capture|negative|It Is Only Nine",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a6_ambushed",
+  "r": "failure",
+  "w": 85,
+  "b": "Kettle's report accurate in every particular, and the company going over Sarnhold's curtain wall after dark instead of through its gate, which is how a chartered company becomes a matter for the provost rather than the Commandant",
+  "e": "capture|negative|Over the Curtain Wall",
+  "s": [
+   "peril"
+  ]
+ }
 ]

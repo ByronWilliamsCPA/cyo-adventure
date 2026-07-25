@@ -1,1602 +1,1602 @@
 [
-  {
-    "i": "a3_plaza",
-    "r": "choice",
-    "w": 80,
-    "b": "the plaza of the counted city at the deep stair's foot: nine streets radiating, nine hundred lamps, a great chapel, a working mint, a market, an archive, and eleven thousand people living inside the arithmetic",
-    "c": [
-      [
-        "Go to the great chapel.",
-        "a3_chapel"
-      ],
-      [
-        "Go to the mint where the irons are cut.",
-        "a3_mint"
-      ],
-      [
-        "Walk into the market of the counted.",
-        "a3_market"
-      ],
-      [
-        "Find the archive and read the whole thing.",
-        "a3_archive"
-      ],
-      [
-        "Follow the aqueduct into the lower city.",
-        "a3_aqueduct"
-      ],
-      [
-        "Find the city's own Wardens.",
-        "a3_wardens"
-      ],
-      [
-        "Take the baths; you are filthy and half dead.",
-        "a3_baths"
-      ],
-      [
-        "Turn round and take the stair back up.",
-        "e_a3_plaza_1"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_plaza_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the plaza seen, the city counted at a glance, and the stair taken straight back up, which is the last moment at which the company could still have called this a reconnaissance",
-    "e": "setback|neutral|Straight Back Up"
-  },
-  {
-    "i": "a3_chapel",
-    "r": "choice",
-    "w": 62,
-    "b": "the great chapel of Kar Ashen, which is Reckoning-built over dwarf foundations and holds four thousand, with a service in progress and the whole congregation counting in unison",
-    "c": [
-      [
-        "Sit through the service to the end.",
-        "a3_chapel_a"
-      ],
-      [
-        "Interrupt it and ask who wrote the liturgy.",
-        "a3_chapel_b"
-      ],
-      [
-        "Take the celebrant aside afterwards and press him.",
-        "e_a3_chapel_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_chapel_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a full hour of a liturgy that is arithmetic set to plainsong, four thousand voices keeping a count in nines, and a form of words at the end that names the debt, the term and the collateral",
-    "c": [
-      [
-        "Go through to the choir.",
-        "a3_choir"
-      ]
-    ]
-  },
-  {
-    "i": "a3_chapel_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a service interrupted from the aisle by a Warden charter, and a celebrant who stops, answers the question fully, invites the captain to read the liturgy's colophon, and then resumes the count from where he left it",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go through to the choir.",
-        "a3_choir"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_chapel_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a celebrant pressed in his own vestry about the liturgy's author, and answering, and the answer being a name in the company's own pack on a signed requisition, and four thousand people still counting on the other side of the door",
-    "e": "capture|negative|The Colophon"
-  },
-  {
-    "i": "a3_choir",
-    "r": "choice",
-    "w": 62,
-    "b": "the choir loft above the nave, where nine cantors keep the count for the whole city in shifts and have done, in that loft, without a break, since the founding",
-    "c": [
-      [
-        "Read the cantors' shift roll.",
-        "a3_choir_a"
-      ],
-      [
-        "Leave the loft; you have heard enough of it.",
-        "a3_confessor"
-      ],
-      [
-        "Stop the count. Put a hand over the ninth cantor's mouth.",
-        "e_a3_choir_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_choir_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the shift roll read in a choir loft: nine hundred years of names in nine-hour shifts, four hundred pages, and the last page listing next month's shifts with nine blanks at the bottom of it",
-    "c": [
-      [
-        "Go and find the confessor.",
-        "a3_confessor"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_choir_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a count stopped in the great chapel of Kar Ashen for nine seconds by a hand over a cantor's mouth, and the whole city hearing it stop, and eleven thousand people turning toward the chapel at once",
-    "e": "setback|neutral|Nine Seconds of Silence"
-  },
-  {
-    "i": "a3_confessor",
-    "r": "choice",
-    "w": 62,
-    "b": "the chapel's confessor, an old man with a lifetime of the city's private arithmetic in his head, who will talk to a Warden company because he has been waiting forty years to be asked officially",
-    "c": [
-      [
-        "Hear his whole account, on the record.",
-        "a3_confessor_a"
-      ],
-      [
-        "Ask only who the crown clerk is.",
-        "a3_confessor_b"
-      ],
-      [
-        "Ask him to name the families who fell behind.",
-        "e_a3_confessor_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_confessor_a",
-    "r": "rising",
-    "w": 55,
-    "b": "four hours in a confessional with a man who has kept the city's secrets professionally, and who gives up all of them at once in a flat voice while Ilsabet writes as fast as she can",
-    "c": [
-      [
-        "Go and look at the reliquary.",
-        "a3_relic"
-      ]
-    ]
-  },
-  {
-    "i": "a3_confessor_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the crown clerk named: an office, not a person, held for nine hundred years, and the current holder a man the confessor christened himself and has confessed every ninth day since",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go and look at the reliquary.",
-        "a3_relic"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_confessor_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a confessor asked to name the fallen-behind families out loud in his own chapel, and doing it, all four hundred of them, in order, and the ninth name in the list being his own",
-    "e": "capture|negative|Four Hundred Names"
-  },
-  {
-    "i": "a3_relic",
-    "r": "choice",
-    "w": 62,
-    "b": "the chapel reliquary of the counted city: eight tally-irons on velvet in a case built for nine, and a ninth setting with a plate under it engraved and not yet filled",
-    "c": [
-      [
-        "Read the ninth plate's engraving.",
-        "a3_relic_a"
-      ],
-      [
-        "Take an iron off the velvet.",
-        "a3_relic_b"
-      ],
-      [
-        "Leave the case; you have two of these already.",
-        "a3_wyrmgate"
-      ],
-      [
-        "Break the case and take all eight.",
-        "e_a3_relic_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_relic_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the ninth plate read: an office, a date this spring, and a space for a name, and the engraving fresh enough that the burr is still on the letters",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "a3_relic_b",
-    "r": "rising",
-    "w": 55,
-    "b": "one founding iron off the velvet in a chapel that has four thousand people in it, which nobody stops, and which two of the cantors watch the whole time without breaking the count",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_relic_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a reliquary case broken in the great chapel and all eight founding irons taken at once, which is the entire holding tally of a door somewhere in this mountain, and which the city's response to is not violence but a bell",
-    "e": "death|negative|All Eight, in the Chapel",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a3_mint",
-    "r": "choice",
-    "w": 62,
-    "b": "the mint of Kar Ashen, working: nine hearths, a rolling floor, gauge benches, and the crown die itself under a hood at the far end with two of the crown clerk's household beside it",
-    "c": [
-      [
-        "Go in openly on the charter.",
-        "a3_mint_a"
-      ],
-      [
-        "Go in through the coal yard at shift change.",
-        "a3_mint_b"
-      ],
-      [
-        "Send Kettle over the roof to the die.",
-        "a3_mint_c"
-      ],
-      [
-        "Walk in and demand the die on Warden authority.",
-        "e_a3_mint_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_mint_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the coal yard at shift change, forty smiths going out and forty coming in, and five strangers crossing a mint floor in the middle of it with nobody looking at anything but their own hands",
-    "c": [
-      [
-        "Go on to the die room.",
-        "a3_dies"
-      ],
-      [
-        "Take a hearthman's apron and stay for the shift.",
-        "e_a3_mint_2"
-      ]
-    ]
-  },
-  {
-    "i": "a3_mint_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the mint entered openly on a Warden charter, which the mint-master reads, accepts, and files, and then he shows the company the floor himself, because there is nothing on it he considers illegal",
-    "c": [
-      [
-        "Go on to the die room.",
-        "a3_dies"
-      ]
-    ]
-  },
-  {
-    "i": "a3_mint_c",
-    "r": "rising",
-    "w": 55,
-    "b": "Kettle over the mint roof and down into the die room's clerestory, which takes forty minutes and puts one member of the company inside the only room in Kar Ashen that matters",
-    "c": [
-      [
-        "Go on to the die room.",
-        "a3_dies"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_mint_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the crown die demanded on Warden authority in a working mint in front of eighty smiths, and the two of the household beside it stepping back rather than forward, and the eighty smiths putting down their tools and forming up in nines",
-    "e": "death|negative|Eighty Smiths, in Nines",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a3_mint_2",
-    "r": "failure",
-    "w": 58,
-    "b": "a hearthman's apron taken and a whole shift stood on a mint floor to learn the work, which teaches the company the gauge, the tally and the die's own rhythm, and which puts five strangers on a shift roll that is counted at the end of it",
-    "e": "setback|negative|Stayed For the Shift"
-  },
-  {
-    "i": "a3_dies",
-    "r": "choice",
-    "w": 62,
-    "b": "the die room: the crown die bolted to a dwarf anvil under a hood, four cut irons in a rack beside it cooling, and a ledger listing what has been cut this season and what is still to cut",
-    "c": [
-      [
-        "Take a cut iron off the cooling rack.",
-        "a3_dies_a"
-      ],
-      [
-        "Read the season's cutting ledger.",
-        "a3_dies_b"
-      ],
-      [
-        "Take nothing and go through to the smiths.",
-        "a3_smiths"
-      ],
-      [
-        "Take the crown die itself off the anvil.",
-        "e_a3_dies_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_dies_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a cut iron off the cooling rack, founding gauge, still warm, with a tally on it that matches the crown door's own ring and a name on its flank that has not been filled in",
-    "c": [
-      [
-        "Go on to the smiths.",
-        "a3_smiths"
-      ]
-    ]
-  },
-  {
-    "i": "a3_dies_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the season's ledger read: nine irons cut, eight distributed to the ring, and the ninth entered as held pending the appointment of a hand",
-    "x": "crown_iron=true",
-    "c": [
-      [
-        "Go on to the smiths.",
-        "a3_smiths"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_dies_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the crown die unbolted from its anvil in the middle of a working mint, forty pounds of dwarf steel that decides what every iron in the mountain says, and a mint that stops, entirely, and turns round",
-    "e": "death|negative|Off the Anvil",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a3_smiths",
-    "r": "choice",
-    "w": 62,
-    "b": "the mint's smiths, eighty of them, who have cut irons here for nine hundred years father to daughter, and whose foreman would like to know what a Warden company thinks it is doing on his floor",
-    "s": [
-      "peril",
-      "conflict"
-    ],
-    "c": [
-      [
-        "Fight your way across the floor to the far door.",
-        "a3_smiths_a"
-      ],
-      [
-        "Put the charter to the foreman and argue it out.",
-        "a3_smiths_b"
-      ],
-      [
-        "Have a blank cut for you, here, on the crown die.",
-        "a3_smiths_c",
-        "!crown_iron"
-      ],
-      [
-        "Fire the hearths' oil store and go out in the smoke.",
-        "e_a3_smiths_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_smiths_a",
-    "r": "rising",
-    "w": 55,
-    "b": "eleven minutes of fighting across a mint floor against people who work with hammers for a living, which costs the company blood and reaches the far door",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the blank store.",
-        "a3_blanks"
-      ],
-      [
-        "Go back for the die once the floor is clear.",
-        "e_a3_smiths_2"
-      ]
-    ],
-    "s": [
-      "conflict"
-    ]
-  },
-  {
-    "i": "a3_smiths_b",
-    "r": "rising",
-    "w": 55,
-    "b": "an argument with a mint foreman conducted entirely in trade terms, which he wins on two points and loses on the third, and which ends with him standing aside and writing down that he did",
-    "c": [
-      [
-        "Go on to the blank store.",
-        "a3_blanks"
-      ]
-    ]
-  },
-  {
-    "i": "a3_smiths_c",
-    "r": "rising",
-    "w": 55,
-    "b": "a blank cut for the company on the crown die by a foreman who has been asked, correctly, in trade form, and who does it because the request was made properly and the die does not care whose hand pulls it",
-    "x": "crown_iron=true",
-    "c": [
-      [
-        "Go on to the blank store.",
-        "a3_blanks"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_smiths_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a hearth oil store fired to make smoke to escape in, in a mint with nine working hearths and a nine-hundred-year accumulation of oil in its floor seams, and eighty smiths who know exactly which door to hold",
-    "e": "death|negative|In the Smoke",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a3_smiths_2",
-    "r": "failure",
-    "w": 58,
-    "b": "a return across a cleared mint floor for the crown die, on the reasonable grounds that the fight has already been had, and the second shift arriving through the coal yard door at the ninth hour with the whole household behind it",
-    "e": "death|negative|Back For the Die",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a3_blanks",
-    "r": "choice",
-    "w": 62,
-    "b": "the blank store behind the mint: nine hundred years of uncut blanks in dwarf bins, and a ledger of issues going back to the founding with four entries this spring in a hand the company has seen on requisitions",
-    "c": [
-      [
-        "Read the spring issues.",
-        "a3_blanks_a"
-      ],
-      [
-        "Take blanks and go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ],
-      [
-        "Burn the issue ledger where it stands.",
-        "e_a3_blanks_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_blanks_a",
-    "r": "rising",
-    "w": 55,
-    "b": "four spring issues read: three to the ring, and one to a name Nyre stops reading aloud halfway through, because it is the name of the legate who came up to Sarnhold to take custody of the company's irons",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_blanks_1",
-    "r": "failure",
-    "w": 58,
-    "b": "an issue ledger burned in a dwarf blank store to destroy the record, which destroys the only evidence that connects a mother-house legate to a mint under a mountain, and which the company realises about four minutes too late",
-    "e": "setback|neutral|The Record Burned"
-  },
-  {
-    "i": "a3_market",
-    "r": "choice",
-    "w": 62,
-    "b": "the market of the counted, which is a market like any market except for the ninth stall in every row, which sells nothing and has a clerk at it and a queue",
-    "c": [
-      [
-        "Join the ninth stall's queue and watch.",
-        "a3_market_a"
-      ],
-      [
-        "Buy food and rope and ask nothing at all.",
-        "a3_market_b"
-      ],
-      [
-        "Clear the ninth stall and send the queue home.",
-        "e_a3_market_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_market_a",
-    "r": "rising",
-    "w": 55,
-    "b": "an hour in a queue at a stall that sells nothing, where eleven people in turn give a clerk a name, receive a token, and thank him, and where the twelfth in the queue is a child on her own",
-    "c": [
-      [
-        "Go on to the pens.",
-        "a3_pens"
-      ]
-    ]
-  },
-  {
-    "i": "a3_market_b",
-    "r": "rising",
-    "w": 55,
-    "b": "food, rope and lamp oil bought at fair prices in a market under a mountain, and eleven thousand people going about a morning around the company as though it were weather",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the pens.",
-        "a3_pens"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_market_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a ninth stall cleared and its queue sent home by a Warden company, and the queue going home, and coming back at the ninth hour, and the stall being staffed again by then with a different clerk and the same book",
-    "e": "capture|negative|The Queue Comes Back"
-  },
-  {
-    "i": "a3_pens",
-    "r": "choice",
-    "w": 62,
-    "b": "the pens below the market, which are for stock, and which hold stock, and which also hold nine people in the ninth pen who are fed, warm, and waiting with their households' tokens around their necks",
-    "s": [
-      "peril",
-      "conflict"
-    ],
-    "c": [
-      [
-        "Open the ninth pen.",
-        "a3_pens_a"
-      ],
-      [
-        "Talk to them over the rail first.",
-        "a3_pens_b"
-      ],
-      [
-        "Buy the whole ninth pen from the stockman.",
-        "a3_pens_c"
-      ],
-      [
-        "Cut the stockman down and take his keys.",
-        "e_a3_pens_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_pens_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the ninth pen opened, and nine people who stay in it, and the eldest of them explaining to a Warden captain with real patience why leaving would cost nine other households their tokens",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the auction.",
-        "a3_auction"
-      ],
-      [
-        "Carry the youngest out over her objection.",
-        "e_a3_pens_2"
-      ]
-    ],
-    "s": [
-      "conflict"
-    ]
-  },
-  {
-    "i": "a3_pens_b",
-    "r": "rising",
-    "w": 55,
-    "b": "eleven minutes over a rail with nine people who are calm, informed and entirely uninterested in rescue, and who ask the company to carry a letter down to a family at the eighth station",
-    "c": [
-      [
-        "Go on to the auction.",
-        "a3_auction"
-      ]
-    ]
-  },
-  {
-    "i": "a3_pens_c",
-    "r": "rising",
-    "w": 55,
-    "b": "the ninth pen bought outright from a stockman at market rate, receipted, with nine tokens handed over and nine names struck from a book, which takes eleven minutes and empties the company's purse",
-    "c": [
-      [
-        "Go on to the auction.",
-        "a3_auction"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_pens_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a stockman cut down in his own pens for a set of keys, in a city of eleven thousand where the pens are municipal property and the stockman was a father of four, and a hue and cry that closes nine streets",
-    "e": "death|negative|The Stockman",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a3_pens_2",
-    "r": "failure",
-    "w": 58,
-    "b": "the youngest of the ninth pen carried out over her own objection and her household's, and her household's tokens struck the same afternoon, and the eight who remain making up the difference",
-    "e": "death|negative|Over Her Objection",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a3_auction",
-    "r": "choice",
-    "w": 62,
-    "b": "the arrears auction, held on the ninth of every month in a hall off the market, where households that have fallen behind bid their own names against each other for another month's grace",
-    "c": [
-      [
-        "Sit at the back and watch the whole auction.",
-        "a3_auction_a"
-      ],
-      [
-        "Bid on every lot until the money runs out.",
-        "a3_auction_b"
-      ],
-      [
-        "Break up the auction from the floor.",
-        "e_a3_auction_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_auction_a",
-    "r": "rising",
-    "w": 55,
-    "b": "an hour at the back of an arrears auction, which is conducted with perfect courtesy in a room of nine hundred people and ends with four names sold, two of them to the crown clerk's own household",
-    "c": [
-      [
-        "Go on to the ledgers.",
-        "a3_ledgers"
-      ]
-    ]
-  },
-  {
-    "i": "a3_auction_b",
-    "r": "rising",
-    "w": 55,
-    "b": "every lot bid on until the purse is empty, which buys four households a month of grace, and which raises the reserve on every remaining lot because the room has learned there is money in it",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the ledgers.",
-        "a3_ledgers"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_auction_1",
-    "r": "failure",
-    "w": 58,
-    "b": "an arrears auction broken up from the floor by a Warden company, and the auction adjourning politely, and reconvening at the ninth hour in the chapel undercroft with the same lots and nine more",
-    "e": "capture|negative|Adjourned to the Undercroft"
-  },
-  {
-    "i": "a3_ledgers",
-    "r": "choice",
-    "w": 62,
-    "b": "the auction hall's own ledgers, nine hundred years of them, shelved by century, recording every name sold in the counted city since the founding in one continuous hand",
-    "c": [
-      [
-        "Read the current century and take notes.",
-        "a3_ledgers_a"
-      ],
-      [
-        "Take the ledgers and go on to the archive.",
-        "a3_wyrmgate"
-      ],
-      [
-        "Compare the hand against the requisitions in your pack.",
-        "e_a3_ledgers_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_ledgers_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a century of arrears read in ninety minutes by two people taking notes, which establishes the rate, the cycle, the household names and the fact that the rate has doubled since Kar Duhn shut",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_ledgers_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the auction ledger's hand held against a Reckoning requisition from the company's own pack, in front of the hall clerk, and the two hands matching, and the hall clerk quietly leaving the room to report it",
-    "e": "setback|neutral|The Hands Match"
-  },
-  {
-    "i": "a3_archive",
-    "r": "choice",
-    "w": 62,
-    "b": "the city archive: nine floors of dwarf shelving with nine hundred years of Kar Ashen's arithmetic on it, staffed by four archivists, entirely open to any citizen who asks",
-    "c": [
-      [
-        "Ask for everything on the crown door.",
-        "a3_archive_a"
-      ],
-      [
-        "Ask for the founding charter of the arrangement.",
-        "a3_stacks"
-      ],
-      [
-        "Set the archive alight and end the arithmetic.",
-        "e_a3_archive_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_archive_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a request for everything on the crown door, filled in forty minutes by an archivist who brings eleven boxes on a trolley and asks whether the company would like the founding volume as well",
-    "c": [
-      [
-        "Go through to the stacks.",
-        "a3_stacks"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_archive_1",
-    "r": "failure",
-    "w": 58,
-    "b": "nine floors of dwarf shelving set alight to end an arithmetic, and the arithmetic surviving because it is kept in nine places, and the city losing its own history in one night and blaming the company for exactly that",
-    "e": "setback|neutral|Nine Floors"
-  },
-  {
-    "i": "a3_stacks",
-    "r": "choice",
-    "w": 62,
-    "b": "the stacks themselves, where the founding volume is kept: a dwarf vault at the bottom of nine floors, with a door that has been open for nine hundred years and a step worn into a groove",
-    "s": [
-      "peril"
-    ],
-    "c": [
-      [
-        "Go down and read the founding volume.",
-        "a3_stacks_a"
-      ],
-      [
-        "Have Ilsabet copy the relevant clauses only.",
-        "a3_stacks_b"
-      ],
-      [
-        "Take the founding volume off the mountain.",
-        "e_a3_stacks_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_stacks_a",
-    "r": "rising",
-    "w": 55,
-    "b": "four hours in a dwarf vault with the founding volume, which is not a contract but a set of engineering specifications, and which describes the doors as containment and the count as a maintenance schedule",
-    "c": [
-      [
-        "Go on to the index.",
-        "a3_index"
-      ]
-    ]
-  },
-  {
-    "i": "a3_stacks_b",
-    "r": "rising",
-    "w": 55,
-    "b": "nine clauses copied in Ilsabet's shorthand, which is the smallest defensible extract and the one an inquiry will actually read, and which takes an hour instead of four",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the index.",
-        "a3_index"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_stacks_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the founding volume taken out of its vault, which the archive permits, and which the archive's own standing order requires be reported to the crown clerk within the hour, along with the borrower's name",
-    "e": "death|negative|The Borrower's Name",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a3_index",
-    "r": "choice",
-    "w": 62,
-    "b": "the archive's index, kept on nine thousand slips in nine cabinets, cross-referenced by name, household and year, and entirely usable by anybody who understands the system",
-    "c": [
-      [
-        "Look up the company's own five names.",
-        "a3_index_a"
-      ],
-      [
-        "Look up the crown clerk's office holders.",
-        "a3_archivist"
-      ],
-      [
-        "Look up nothing; the index reads both ways.",
-        "e_a3_index_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_index_a",
-    "r": "rising",
-    "w": 55,
-    "b": "five names looked up in a nine-thousand-slip index, and all five found, with arrival dates, and with a sixth slip filed behind them that has the whole company's number on it and a date this week",
-    "c": [
-      [
-        "Go and find the archivist.",
-        "a3_archivist"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_index_1",
-    "r": "failure",
-    "w": 58,
-    "b": "an index consulted for the crown clerk's office holders, which produces nine slips, and a tenth slip in the same drawer that is blank except for a date and the words pending appointment, and the date is today",
-    "e": "setback|neutral|Pending Appointment"
-  },
-  {
-    "i": "a3_archivist",
-    "r": "choice",
-    "w": 62,
-    "b": "the senior archivist, who has been in the building fifty years, knows exactly what her archive is and has spent her whole professional life keeping it complete against a day like this",
-    "c": [
-      [
-        "Ask her to certify copies for a Warden inquiry.",
-        "a3_archivist_a"
-      ],
-      [
-        "Ask her what she thinks the count is for.",
-        "a3_archivist_b"
-      ],
-      [
-        "Ask her to come down the mountain and testify.",
-        "e_a3_archivist_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_archivist_a",
-    "r": "rising",
-    "w": 55,
-    "b": "nine certified copies made, sealed and signed by an archivist of fifty years' standing, which is worth more in a Warden court than anything else the company has picked up in three books",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "a3_archivist_b",
-    "r": "rising",
-    "w": 55,
-    "b": "an answer given by somebody who has read all of it: the count is a maintenance schedule for a containment, and the containment has been maintained, and she wants the company to understand that she is not defending it",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_archivist_1",
-    "r": "failure",
-    "w": 58,
-    "b": "an archivist of fifty years' standing asked to come down a mountain and testify, and agreeing, and packing a bag, and being entered in the ninth column before the company reaches the wyrm gate",
-    "e": "capture|negative|She Agreed to Come"
-  },
-  {
-    "i": "a3_aqueduct",
-    "r": "choice",
-    "w": 62,
-    "b": "the city aqueduct, which brings warm water down from somewhere above the crown door and runs the whole lower city on it, with an inspection walkway along its channel",
-    "s": [
-      "peril"
-    ],
-    "c": [
-      [
-        "Follow the walkway up toward the source.",
-        "a3_aqueduct_a"
-      ],
-      [
-        "Cross the channel and go down into the lower city.",
-        "a3_aqueduct_b"
-      ],
-      [
-        "Swim the channel; it is warm and quiet.",
-        "e_a3_aqueduct_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_aqueduct_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a mile of inspection walkway upstream, the water getting warmer under the hand every hundred yards, and the channel's stonework changing from dwarf work to something older at the ninth marker",
-    "c": [
-      [
-        "Go on to the sluice.",
-        "a3_sluice"
-      ]
-    ]
-  },
-  {
-    "i": "a3_aqueduct_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the channel crossed on a maintenance plank and the lower city entered from above, which is quieter and dirtier and puts the company among the uncounted rather than the counted",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the sluice.",
-        "a3_sluice"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_aqueduct_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a warm quiet channel swum for a quarter mile because it is warm and quiet, and the grating at the far end being a filter rather than a gate, and the filter being where the aqueduct's warmth comes from",
-    "e": "death|negative|The Filter",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a3_sluice",
-    "r": "choice",
-    "w": 62,
-    "b": "the great sluice where the aqueduct divides nine ways for the nine quarters, with a sluice-keeper's hut, nine gates, and a keeper who has held them for thirty years",
-    "c": [
-      [
-        "Ask the keeper what is upstream.",
-        "a3_sluice_a"
-      ],
-      [
-        "Shut the ninth gate and see who complains.",
-        "a3_sluice_b"
-      ],
-      [
-        "Open all nine gates and flood the quarters.",
-        "a3_sluice_c"
-      ],
-      [
-        "Read the sluice log for the last nine days.",
-        "e_a3_sluice_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_sluice_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the keeper's answer, given while he works: upstream is the crown cistern, and above the cistern is the door, and the water is warm because it comes off the door, and it has always come off the door",
-    "c": [
-      [
-        "Go on to the mills.",
-        "a3_mills"
-      ],
-      [
-        "Ask him what the water tastes of in the ninth week.",
-        "e_a3_sluice_2"
-      ]
-    ]
-  },
-  {
-    "i": "a3_sluice_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the ninth gate shut, which dries one quarter in forty minutes, and which brings not constables but nine householders with buckets who ask the company, reasonably, to open it again",
-    "c": [
-      [
-        "Go on to the mills.",
-        "a3_mills"
-      ]
-    ]
-  },
-  {
-    "i": "a3_sluice_c",
-    "r": "rising",
-    "w": 55,
-    "b": "nine days of sluice log read: the same allocations every day, and on the ninth day a diversion of the whole flow to the crown cistern for two hours, entered in advance for tomorrow",
-    "c": [
-      [
-        "Go on to the mills.",
-        "a3_mills"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_sluice_1",
-    "r": "failure",
-    "w": 58,
-    "b": "nine sluice gates opened at once to flood nine quarters, which is nine hundred years of arithmetic drowned in an afternoon, and eleven thousand people who lose their homes to a company that came here to help them",
-    "e": "death|negative|Nine Gates at Once",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a3_sluice_2",
-    "r": "failure",
-    "w": 58,
-    "b": "a sluice-keeper asked what the water tastes of in the ninth week, and answering honestly out of thirty years of tasting it, and the company standing in a hut understanding at last what has been coming down the aqueduct",
-    "e": "setback|negative|In the Ninth Week"
-  },
-  {
-    "i": "a3_mills",
-    "r": "choice",
-    "w": 62,
-    "b": "the mill row on the aqueduct, nine mills grinding, with the ninth mill's stones turning on nothing at all and its miller standing outside it because he will not go in while it is running",
-    "s": [
-      "peril",
-      "conflict"
-    ],
-    "c": [
-      [
-        "Go into the ninth mill with him.",
-        "a3_mills_a"
-      ],
-      [
-        "Stop the ninth mill's wheel yourself.",
-        "a3_mills_b"
-      ],
-      [
-        "Ask him what the ninth mill grinds.",
-        "a3_mills_c"
-      ],
-      [
-        "Go past the mills entirely; the door is above.",
-        "e_a3_mills_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_mills_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the ninth mill entered with a miller who has not been inside it in nine years, and which is grinding, and which has a hopper, and which has been fed on the ninth of every month since he inherited it",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the quiet room.",
-        "a3_quiet"
-      ],
-      [
-        "Look in the hopper.",
-        "e_a3_mills_2"
-      ]
-    ],
-    "s": [
-      "conflict"
-    ]
-  },
-  {
-    "i": "a3_mills_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the miller's answer at his own door: the ninth mill grinds what the ninth column allots, and the flour goes to the chapel, and he has never eaten the chapel's bread and neither has his family",
-    "c": [
-      [
-        "Go on to the quiet room.",
-        "a3_quiet"
-      ]
-    ]
-  },
-  {
-    "i": "a3_mills_c",
-    "r": "rising",
-    "w": 55,
-    "b": "the mill row walked past at speed with nine wheels turning and one of them turning on nothing, which is the correct decision and which nobody in the company is able to leave behind afterwards",
-    "c": [
-      [
-        "Go on to the quiet room.",
-        "a3_quiet"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_mills_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the ninth mill's wheel stopped by a company that has had enough, which stops the chapel's bread, which stops the count's own liturgy, and which brings the crown clerk's household to the mill row inside the hour",
-    "e": "death|negative|The Ninth Wheel",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a3_mills_2",
-    "r": "failure",
-    "w": 58,
-    "b": "a look into the ninth mill's hopper, taken deliberately by somebody who had been told what was in it and needed to see, and the hopper being full, and the mill continuing to work while the looking happens",
-    "e": "death|negative|In the Hopper",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a3_quiet",
-    "r": "choice",
-    "w": 62,
-    "b": "a dwarf rest-house on the mill row, empty, clean, with nine beds and a stove, kept by the city for travellers because the city keeps everything properly",
-    "c": [
-      [
-        "Take four hours and the stove.",
-        "a3_quiet_a"
-      ],
-      [
-        "Press on; the door is nine hours off.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "a3_quiet_a",
-    "r": "rising",
-    "w": 55,
-    "b": "four hours in a warm dwarf rest-house on clean beds, taken deliberately by a company that has learned three books' worth of lessons about arriving somewhere tired",
-    "x": "vigor+1",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "a3_wardens",
-    "r": "choice",
-    "w": 62,
-    "b": "the city's own Warden post, which exists, and is manned by six Wardens of a garrison that was posted here nine years ago and has heard nothing from Sarnhold since",
-    "c": [
-      [
-        "Bring them under Thane's orders and take them with you.",
-        "a3_wardens_a"
-      ],
-      [
-        "Ask them why they never sent a report.",
-        "a3_wardens_b"
-      ],
-      [
-        "Arrest the whole post for dereliction.",
-        "e_a3_wardens_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_wardens_a",
-    "r": "rising",
-    "w": 55,
-    "b": "six Wardens brought under a Commandant's written orders, who fall in gratefully and badly, and who have not drilled in nine years and will be a liability everywhere except at the door",
-    "c": [
-      [
-        "Go on to the gibbets.",
-        "a3_gibbets"
-      ]
-    ]
-  },
-  {
-    "i": "a3_wardens_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the answer given by a sergeant who has drafted eleven reports and sent all of them: they went down with the couriers, on the schedule, and the schedule is the crown clerk's, and none of them arrived",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go on to the gibbets.",
-        "a3_gibbets"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_wardens_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a whole Warden post arrested for dereliction by a chartered company, which is legally sound and practically insane, and which puts six men in their own cells and the company on the crown clerk's list twice over",
-    "e": "capture|negative|Arrested for Dereliction"
-  },
-  {
-    "i": "a3_gibbets",
-    "r": "choice",
-    "w": 62,
-    "b": "the gibbet row at the city's ninth street, where the counted city hangs its criminals, and where nine cages hang with eight of them full and the ninth standing open with a step under it",
-    "c": [
-      [
-        "Read the plates on the eight cages.",
-        "a3_gibbets_a"
-      ],
-      [
-        "Cut the eight down and be done with it.",
-        "a3_kennels"
-      ],
-      [
-        "Stand under the ninth cage and look up.",
-        "e_a3_gibbets_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_gibbets_a",
-    "r": "rising",
-    "w": 55,
-    "b": "eight plates read: eight names, eight crimes, and all eight crimes the same crime, which is refusing an entry in the ninth column, and all eight dated within the last two months",
-    "c": [
-      [
-        "Go on to the kennels.",
-        "a3_kennels"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_gibbets_1",
-    "r": "failure",
-    "w": 58,
-    "b": "eight gibbet cages cut down in the ninth street of a city of eleven thousand, which is a public act, and which the city treats not as a rescue but as an arrears, and arrears fall on whoever is standing nearest",
-    "e": "setback|neutral|Cut Down in the Ninth Street"
-  },
-  {
-    "i": "a3_kennels",
-    "r": "choice",
-    "w": 62,
-    "b": "the city kennels, where the crown clerk's household keeps its hounds, and the hounds are not hounds, and the kennel-master is the only man in Kar Ashen who is armed as a matter of course",
-    "s": [
-      "peril",
-      "conflict"
-    ],
-    "c": [
-      [
-        "Kill the kennel-master and free the kennels.",
-        "a3_kennels_a"
-      ],
-      [
-        "Go past the kennels along the wall.",
-        "a3_kennels_b"
-      ],
-      [
-        "Show him the charter and ask what they are for.",
-        "a3_kennels_c"
-      ],
-      [
-        "Open the kennels and let them out.",
-        "e_a3_kennels_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_kennels_a",
-    "r": "rising",
-    "w": 55,
-    "b": "a kennel-master killed at his own door, which takes eleven seconds because he is one man, and which leaves the company standing between an open kennel and a street with nine hundred people in it",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the cages.",
-        "a3_cages"
-      ],
-      [
-        "Go in and finish what is in the kennels.",
-        "e_a3_kennels_2"
-      ]
-    ],
-    "s": [
-      "conflict"
-    ]
-  },
-  {
-    "i": "a3_kennels_b",
-    "r": "rising",
-    "w": 55,
-    "b": "the kennels passed along the wall at the pace of a funeral, with nine of them coming to the bars in order as the company goes by and none of them making any sound at all",
-    "c": [
-      [
-        "Go on to the cages.",
-        "a3_cages"
-      ]
-    ]
-  },
-  {
-    "i": "a3_kennels_c",
-    "r": "rising",
-    "w": 55,
-    "b": "the charter shown to a kennel-master who reads it, and answers, and explains without embarrassment that they are for households that run, and that there have been nine this year and none of them got past the second street",
-    "c": [
-      [
-        "Go on to the cages.",
-        "a3_cages"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_kennels_1",
-    "r": "failure",
-    "w": 58,
-    "b": "the crown clerk's kennels opened by a company acting on principle, in a city with nine hundred people in the street outside, and nine of them going into that street ahead of anybody's ability to warn it",
-    "e": "death|negative|Let Out Into the Street",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "e_a3_kennels_2",
-    "r": "failure",
-    "w": 58,
-    "b": "a decision to go into the kennels and finish what is in them, which is nine of them in a stone run eleven feet wide, and which is the last tactical decision anybody in the company makes on this street",
-    "e": "death|negative|Into the Run",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a3_cages",
-    "r": "choice",
-    "w": 62,
-    "b": "the cage yard behind the kennels: nine transport cages on wheels, four of them loaded and sealed for the ninth-hour delivery, with a manifest chained to the yard gate",
-    "s": [
-      "peril"
-    ],
-    "c": [
-      [
-        "Read the manifest on the gate.",
-        "a3_cages_a"
-      ],
-      [
-        "Break the four loaded cages open.",
-        "a3_cages_b"
-      ],
-      [
-        "Take a cage and go up in it yourselves.",
-        "e_a3_cages_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_cages_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the manifest read: four cages, nine names, a delivery time and a destination, and the destination being the crown door itself, at the ninth hour, tomorrow",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "a3_cages_b",
-    "r": "rising",
-    "w": 55,
-    "b": "four sealed transport cages broken open in a yard behind the kennels, and nine people who get out, and who ask, immediately and unanimously, to be put back in before the yard's own count is taken",
-    "x": "vigor-1",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_cages_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a company riding up to the crown door inside a sealed transport cage, on the ninth-hour delivery, in place of the nine, which is an excellent plan for arriving and has no provision whatsoever for the arrival itself",
-    "e": "death|negative|Inside the Delivery",
-    "s": [
-      "peril",
-      "scary_imagery"
-    ]
-  },
-  {
-    "i": "a3_baths",
-    "r": "choice",
-    "w": 62,
-    "b": "the city baths, dwarf-built, fed off the warm aqueduct, open to any citizen, full at midday and entirely indifferent to a Warden company standing in the doorway filthy",
-    "c": [
-      [
-        "Take the baths and let the company be human for an hour.",
-        "a3_baths_a"
-      ],
-      [
-        "Skip it; there is a door nine hours above you.",
-        "a3_surgeon"
-      ]
-    ]
-  },
-  {
-    "i": "a3_baths_a",
-    "r": "rising",
-    "w": 55,
-    "b": "an hour in a dwarf bath fed by water that comes off the crown door, which nobody in the company enjoys once Vurma says so out loud, and which gets four days of the spine off five people",
-    "x": "vigor+1",
-    "c": [
-      [
-        "Go and find the surgeon.",
-        "a3_surgeon"
-      ]
-    ]
-  },
-  {
-    "i": "a3_surgeon",
-    "r": "choice",
-    "w": 62,
-    "b": "the city surgeon, who is competent, who has set the company's kind of injuries before, and who wants nothing in return except that somebody official finally write down what she has been treating",
-    "c": [
-      [
-        "Have her treat the company properly.",
-        "a3_surgeon_a"
-      ],
-      [
-        "Take her statement and have Ilsabet witness it.",
-        "a3_surgeon_b"
-      ],
-      [
-        "Refuse; she reports to the ward like everyone.",
-        "e_a3_surgeon_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_surgeon_a",
-    "r": "rising",
-    "w": 55,
-    "b": "two hours with a competent surgeon: Dellach's forearm resewn, Mira's ankle strapped, everybody's frostbite dressed, and the company genuinely capable again for the first time since the pass",
-    "c": [
-      [
-        "Go and look at the beds.",
-        "a3_beds"
-      ]
-    ]
-  },
-  {
-    "i": "a3_surgeon_b",
-    "r": "rising",
-    "w": 55,
-    "b": "a surgeon's statement taken and witnessed: nineteen years of injuries, their pattern, their timing, and the nine cases a year that arrive on the tenth of the month having been in a cage",
-    "x": "renown+1",
-    "c": [
-      [
-        "Go and look at the beds.",
-        "a3_beds"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_surgeon_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a city surgeon refused on the assumption that she reports to the ward, which she does, and which she does honestly and openly, and which is why her ward return for today records a Warden company that declined treatment and looked ill",
-    "e": "capture|negative|Declined Treatment"
-  },
-  {
-    "i": "a3_beds",
-    "r": "choice",
-    "w": 62,
-    "b": "the surgeon's ward: nine beds, eight with patients in them, and the ninth made up with a chart already hanging on its rail and a name written on the chart",
-    "c": [
-      [
-        "Read the name on the ninth chart.",
-        "a3_beds_a"
-      ],
-      [
-        "Leave the ward; you know what it says.",
-        "a3_wyrmgate"
-      ],
-      [
-        "Take the chart off the rail and pocket it.",
-        "e_a3_beds_1"
-      ]
-    ]
-  },
-  {
-    "i": "a3_beds_a",
-    "r": "rising",
-    "w": 55,
-    "b": "the ninth chart read off its rail: a name, an age, an admission date of tomorrow, and a treatment plan consisting of the word none, in the same hand that has signed every requisition in the company's pack",
-    "c": [
-      [
-        "Go on to the wyrm gate.",
-        "a3_wyrmgate"
-      ]
-    ]
-  },
-  {
-    "i": "e_a3_beds_1",
-    "r": "failure",
-    "w": 58,
-    "b": "a chart taken off a ward rail, which the surgeon reports because a missing chart is a missing patient, and which puts the company's own description into a city report at the exact hour it most needed not to be there",
-    "e": "setback|neutral|A Missing Chart"
-  },
-  {
-    "i": "a3_wyrmgate",
-    "r": "climax",
-    "w": 80,
-    "b": "the wyrm gate at the counted city's lowest street: a dwarf arch with the whole city's warm air going up through it, nine lamps, no guard at all, and beyond it the wyrm-road going down along Ashendrel's own flank",
-    "c": [
-      [
-        "Go down the wyrm-road in order.",
-        "a4_flank"
-      ],
-      [
-        "Go down along the scale-wall side.",
-        "a4_scalewall"
-      ],
-      [
-        "Go down with the couriers at the hour.",
-        "a4_couriers"
-      ]
-    ]
-  }
+ {
+  "i": "a3_plaza",
+  "r": "choice",
+  "w": 80,
+  "b": "the plaza of the counted city at the deep stair's foot: nine streets radiating, nine hundred lamps, a great chapel, a working mint, a market, an archive, and eleven thousand people living inside the arithmetic",
+  "c": [
+   [
+    "Go to the great chapel.",
+    "a3_chapel"
+   ],
+   [
+    "Go to the mint where the irons are cut.",
+    "a3_mint"
+   ],
+   [
+    "Walk into the market of the counted.",
+    "a3_market"
+   ],
+   [
+    "Find the archive and read the whole thing.",
+    "a3_archive"
+   ],
+   [
+    "Follow the aqueduct into the lower city.",
+    "a3_aqueduct"
+   ],
+   [
+    "Find the city's own Wardens.",
+    "a3_wardens"
+   ],
+   [
+    "Take the baths; you are filthy and half dead.",
+    "a3_baths"
+   ],
+   [
+    "Turn round and take the stair back up.",
+    "e_a3_plaza_1"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_plaza_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the plaza seen, the city counted at a glance, and the stair taken straight back up, which is the last moment at which the company could still have called this a reconnaissance",
+  "e": "setback|neutral|Straight Back Up"
+ },
+ {
+  "i": "a3_chapel",
+  "r": "choice",
+  "w": 62,
+  "b": "the great chapel of Kar Ashen, which is Reckoning-built over dwarf foundations and holds four thousand, with a service in progress and the whole congregation counting in unison",
+  "c": [
+   [
+    "Sit through the service to the end.",
+    "a3_chapel_a"
+   ],
+   [
+    "Interrupt it and ask who wrote the liturgy.",
+    "a3_chapel_b"
+   ],
+   [
+    "Take the celebrant aside afterwards and press him.",
+    "e_a3_chapel_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_chapel_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a full hour of a liturgy that is arithmetic set to plainsong, four thousand voices keeping a count in nines, and a form of words at the end that names the debt, the term and the collateral",
+  "c": [
+   [
+    "Go through to the choir.",
+    "a3_choir"
+   ]
+  ]
+ },
+ {
+  "i": "a3_chapel_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a service interrupted from the aisle by a Warden charter, and a celebrant who stops, answers the question fully, invites the captain to read the liturgy's colophon, and then resumes the count from where he left it",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go through to the choir.",
+    "a3_choir"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_chapel_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a celebrant pressed in his own vestry about the liturgy's author, and answering, and the answer being a name in the company's own pack on a signed requisition, and four thousand people still counting on the other side of the door",
+  "e": "capture|negative|The Colophon"
+ },
+ {
+  "i": "a3_choir",
+  "r": "choice",
+  "w": 62,
+  "b": "the choir loft above the nave, where nine cantors keep the count for the whole city in shifts and have done, in that loft, without a break, since the founding",
+  "c": [
+   [
+    "Read the cantors' shift roll.",
+    "a3_choir_a"
+   ],
+   [
+    "Leave the loft; you have heard enough of it.",
+    "a3_confessor"
+   ],
+   [
+    "Stop the count. Put a hand over the ninth cantor's mouth.",
+    "e_a3_choir_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_choir_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the shift roll read in a choir loft: nine hundred years of names in nine-hour shifts, four hundred pages, and the last page listing next month's shifts with nine blanks at the bottom of it",
+  "c": [
+   [
+    "Go and find the confessor.",
+    "a3_confessor"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_choir_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a count stopped in the great chapel of Kar Ashen for nine seconds by a hand over a cantor's mouth, and the whole city hearing it stop, and eleven thousand people turning toward the chapel at once",
+  "e": "setback|neutral|Nine Seconds of Silence"
+ },
+ {
+  "i": "a3_confessor",
+  "r": "choice",
+  "w": 62,
+  "b": "the chapel's confessor, an old man with a lifetime of the city's private arithmetic in his head, who will talk to a Warden company because he has been waiting forty years to be asked officially",
+  "c": [
+   [
+    "Hear his whole account, on the record.",
+    "a3_confessor_a"
+   ],
+   [
+    "Ask only who the crown clerk is.",
+    "a3_confessor_b"
+   ],
+   [
+    "Ask him to name the families who fell behind.",
+    "e_a3_confessor_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_confessor_a",
+  "r": "rising",
+  "w": 55,
+  "b": "four hours in a confessional with a man who has kept the city's secrets professionally, and who gives up all of them at once in a flat voice while Ilsabet writes as fast as she can",
+  "c": [
+   [
+    "Go and look at the reliquary.",
+    "a3_relic"
+   ]
+  ]
+ },
+ {
+  "i": "a3_confessor_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the crown clerk named: an office, not a person, held for nine hundred years, and the current holder a man the confessor christened himself and has confessed every ninth day since",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go and look at the reliquary.",
+    "a3_relic"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_confessor_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a confessor asked to name the fallen-behind families out loud in his own chapel, and doing it, all four hundred of them, in order, and the ninth name in the list being his own",
+  "e": "capture|negative|Four Hundred Names"
+ },
+ {
+  "i": "a3_relic",
+  "r": "choice",
+  "w": 62,
+  "b": "the chapel reliquary of the counted city: eight tally-irons on velvet in a case built for nine, and a ninth setting with a plate under it engraved and not yet filled",
+  "c": [
+   [
+    "Read the ninth plate's engraving.",
+    "a3_relic_a"
+   ],
+   [
+    "Take an iron off the velvet.",
+    "a3_relic_b"
+   ],
+   [
+    "Leave the case; you have two of these already.",
+    "a3_wyrmgate"
+   ],
+   [
+    "Break the case and take all eight.",
+    "e_a3_relic_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_relic_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the ninth plate read: an office, a date this spring, and a space for a name, and the engraving fresh enough that the burr is still on the letters",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "a3_relic_b",
+  "r": "rising",
+  "w": 55,
+  "b": "one founding iron off the velvet in a chapel that has four thousand people in it, which nobody stops, and which two of the cantors watch the whole time without breaking the count",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_relic_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a reliquary case broken in the great chapel and all eight founding irons taken at once, which is the entire holding tally of a door somewhere in this mountain, and which the city's response to is not violence but a bell",
+  "e": "death|negative|All Eight, in the Chapel",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a3_mint",
+  "r": "choice",
+  "w": 62,
+  "b": "the mint of Kar Ashen, working: nine hearths, a rolling floor, gauge benches, and the crown die itself under a hood at the far end with two of the crown clerk's household beside it",
+  "c": [
+   [
+    "Go in openly on the charter.",
+    "a3_mint_a"
+   ],
+   [
+    "Go in through the coal yard at shift change.",
+    "a3_mint_b"
+   ],
+   [
+    "Send Kettle over the roof to the die.",
+    "a3_mint_c"
+   ],
+   [
+    "Walk in and demand the die on Warden authority.",
+    "e_a3_mint_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_mint_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the coal yard at shift change, forty smiths going out and forty coming in, and five strangers crossing a mint floor in the middle of it with nobody looking at anything but their own hands",
+  "c": [
+   [
+    "Go on to the die room.",
+    "a3_dies"
+   ],
+   [
+    "Take a hearthman's apron and stay for the shift.",
+    "e_a3_mint_2"
+   ]
+  ]
+ },
+ {
+  "i": "a3_mint_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the mint entered openly on a Warden charter, which the mint-master reads, accepts, and files, and then he shows the company the floor himself, because there is nothing on it he considers illegal",
+  "c": [
+   [
+    "Go on to the die room.",
+    "a3_dies"
+   ]
+  ]
+ },
+ {
+  "i": "a3_mint_c",
+  "r": "rising",
+  "w": 55,
+  "b": "Kettle over the mint roof and down into the die room's clerestory, which takes forty minutes and puts one member of the company inside the only room in Kar Ashen that matters",
+  "c": [
+   [
+    "Go on to the die room.",
+    "a3_dies"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_mint_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the crown die demanded on Warden authority in a working mint in front of eighty smiths, and the two of the household beside it stepping back rather than forward, and the eighty smiths putting down their tools and forming up in nines",
+  "e": "death|negative|Eighty Smiths, in Nines",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a3_mint_2",
+  "r": "failure",
+  "w": 58,
+  "b": "a hearthman's apron taken and a whole shift stood on a mint floor to learn the work, which teaches the company the gauge, the tally and the die's own rhythm, and which puts five strangers on a shift roll that is counted at the end of it",
+  "e": "setback|negative|Stayed For the Shift"
+ },
+ {
+  "i": "a3_dies",
+  "r": "choice",
+  "w": 62,
+  "b": "the die room: the crown die bolted to a dwarf anvil under a hood, four cut irons in a rack beside it cooling, and a ledger listing what has been cut this season and what is still to cut",
+  "c": [
+   [
+    "Take a cut iron off the cooling rack.",
+    "a3_dies_a"
+   ],
+   [
+    "Read the season's cutting ledger.",
+    "a3_dies_b"
+   ],
+   [
+    "Take nothing and go through to the smiths.",
+    "a3_smiths"
+   ],
+   [
+    "Take the crown die itself off the anvil.",
+    "e_a3_dies_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_dies_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a cut iron off the cooling rack, founding gauge, still warm, with a tally on it that matches the crown door's own ring and a name on its flank that has not been filled in",
+  "c": [
+   [
+    "Go on to the smiths.",
+    "a3_smiths"
+   ]
+  ]
+ },
+ {
+  "i": "a3_dies_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the season's ledger read: nine irons cut, eight distributed to the ring, and the ninth entered as held pending the appointment of a hand",
+  "x": "crown_iron=true",
+  "c": [
+   [
+    "Go on to the smiths.",
+    "a3_smiths"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_dies_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the crown die unbolted from its anvil in the middle of a working mint, forty pounds of dwarf steel that decides what every iron in the mountain says, and a mint that stops, entirely, and turns round",
+  "e": "death|negative|Off the Anvil",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a3_smiths",
+  "r": "choice",
+  "w": 62,
+  "b": "the mint's smiths, eighty of them, who have cut irons here for nine hundred years father to daughter, and whose foreman would like to know what a Warden company thinks it is doing on his floor",
+  "s": [
+   "peril",
+   "conflict"
+  ],
+  "c": [
+   [
+    "Fight your way across the floor to the far door.",
+    "a3_smiths_a"
+   ],
+   [
+    "Put the charter to the foreman and argue it out.",
+    "a3_smiths_b"
+   ],
+   [
+    "Have a blank cut for you, here, on the crown die.",
+    "a3_smiths_c",
+    "!crown_iron"
+   ],
+   [
+    "Fire the hearths' oil store and go out in the smoke.",
+    "e_a3_smiths_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_smiths_a",
+  "r": "rising",
+  "w": 55,
+  "b": "eleven minutes of fighting across a mint floor against people who work with hammers for a living, which costs the company blood and reaches the far door",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the blank store.",
+    "a3_blanks"
+   ],
+   [
+    "Go back for the die once the floor is clear.",
+    "e_a3_smiths_2"
+   ]
+  ],
+  "s": [
+   "conflict"
+  ]
+ },
+ {
+  "i": "a3_smiths_b",
+  "r": "rising",
+  "w": 55,
+  "b": "an argument with a mint foreman conducted entirely in trade terms, which he wins on two points and loses on the third, and which ends with him standing aside and writing down that he did",
+  "c": [
+   [
+    "Go on to the blank store.",
+    "a3_blanks"
+   ]
+  ]
+ },
+ {
+  "i": "a3_smiths_c",
+  "r": "rising",
+  "w": 55,
+  "b": "a blank cut for the company on the crown die by a foreman who has been asked, correctly, in trade form, and who does it because the request was made properly and the die does not care whose hand pulls it",
+  "x": "crown_iron=true",
+  "c": [
+   [
+    "Go on to the blank store.",
+    "a3_blanks"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_smiths_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a hearth oil store fired to make smoke to escape in, in a mint with nine working hearths and a nine-hundred-year accumulation of oil in its floor seams, and eighty smiths who know exactly which door to hold",
+  "e": "death|negative|In the Smoke",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a3_smiths_2",
+  "r": "failure",
+  "w": 58,
+  "b": "a return across a cleared mint floor for the crown die, on the reasonable grounds that the fight has already been had, and the second shift arriving through the coal yard door at the ninth hour with the whole household behind it",
+  "e": "death|negative|Back For the Die",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a3_blanks",
+  "r": "choice",
+  "w": 62,
+  "b": "the blank store behind the mint: nine hundred years of uncut blanks in dwarf bins, and a ledger of issues going back to the founding with four entries this spring in a hand the company has seen on requisitions",
+  "c": [
+   [
+    "Read the spring issues.",
+    "a3_blanks_a"
+   ],
+   [
+    "Take blanks and go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ],
+   [
+    "Burn the issue ledger where it stands.",
+    "e_a3_blanks_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_blanks_a",
+  "r": "rising",
+  "w": 55,
+  "b": "four spring issues read: three to the ring, and one to a name Nyre stops reading aloud halfway through, because it is the name of the legate who came up to Sarnhold to take custody of the company's irons",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_blanks_1",
+  "r": "failure",
+  "w": 58,
+  "b": "an issue ledger burned in a dwarf blank store to destroy the record, which destroys the only evidence that connects a mother-house legate to a mint under a mountain, and which the company realises about four minutes too late",
+  "e": "setback|neutral|The Record Burned"
+ },
+ {
+  "i": "a3_market",
+  "r": "choice",
+  "w": 62,
+  "b": "the market of the counted, which is a market like any market except for the ninth stall in every row, which sells nothing and has a clerk at it and a queue",
+  "c": [
+   [
+    "Join the ninth stall's queue and watch.",
+    "a3_market_a"
+   ],
+   [
+    "Buy food and rope and ask nothing at all.",
+    "a3_market_b"
+   ],
+   [
+    "Clear the ninth stall and send the queue home.",
+    "e_a3_market_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_market_a",
+  "r": "rising",
+  "w": 55,
+  "b": "an hour in a queue at a stall that sells nothing, where eleven people in turn give a clerk a name, receive a token, and thank him, and where the twelfth in the queue is a child on her own",
+  "c": [
+   [
+    "Go on to the pens.",
+    "a3_pens"
+   ]
+  ]
+ },
+ {
+  "i": "a3_market_b",
+  "r": "rising",
+  "w": 55,
+  "b": "food, rope and lamp oil bought at fair prices in a market under a mountain, and eleven thousand people going about a morning around the company as though it were weather",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the pens.",
+    "a3_pens"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_market_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a ninth stall cleared and its queue sent home by a Warden company, and the queue going home, and coming back at the ninth hour, and the stall being staffed again by then with a different clerk and the same book",
+  "e": "capture|negative|The Queue Comes Back"
+ },
+ {
+  "i": "a3_pens",
+  "r": "choice",
+  "w": 62,
+  "b": "the pens below the market, which are for stock, and which hold stock, and which also hold nine people in the ninth pen who are fed, warm, and waiting with their households' tokens around their necks",
+  "s": [
+   "peril",
+   "conflict"
+  ],
+  "c": [
+   [
+    "Open the ninth pen.",
+    "a3_pens_a"
+   ],
+   [
+    "Talk to them over the rail first.",
+    "a3_pens_b"
+   ],
+   [
+    "Buy the whole ninth pen from the stockman.",
+    "a3_pens_c"
+   ],
+   [
+    "Cut the stockman down and take his keys.",
+    "e_a3_pens_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_pens_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the ninth pen opened, and nine people who stay in it, and the eldest of them explaining to a Warden captain with real patience why leaving would cost nine other households their tokens",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the auction.",
+    "a3_auction"
+   ],
+   [
+    "Carry the youngest out over her objection.",
+    "e_a3_pens_2"
+   ]
+  ],
+  "s": [
+   "conflict"
+  ]
+ },
+ {
+  "i": "a3_pens_b",
+  "r": "rising",
+  "w": 55,
+  "b": "eleven minutes over a rail with nine people who are calm, informed and entirely uninterested in rescue, and who ask the company to carry a letter down to a family at the eighth station",
+  "c": [
+   [
+    "Go on to the auction.",
+    "a3_auction"
+   ]
+  ]
+ },
+ {
+  "i": "a3_pens_c",
+  "r": "rising",
+  "w": 55,
+  "b": "the ninth pen bought outright from a stockman at market rate, receipted, with nine tokens handed over and nine names struck from a book, which takes eleven minutes and empties the company's purse",
+  "c": [
+   [
+    "Go on to the auction.",
+    "a3_auction"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_pens_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a stockman cut down in his own pens for a set of keys, in a city of eleven thousand where the pens are municipal property and the stockman was a father of four, and a hue and cry that closes nine streets",
+  "e": "death|negative|The Stockman",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a3_pens_2",
+  "r": "failure",
+  "w": 58,
+  "b": "the youngest of the ninth pen carried out over her own objection and her household's, and her household's tokens struck the same afternoon, and the eight who remain making up the difference",
+  "e": "death|negative|Over Her Objection",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a3_auction",
+  "r": "choice",
+  "w": 62,
+  "b": "the arrears auction, held on the ninth of every month in a hall off the market, where households that have fallen behind bid their own names against each other for another month's grace",
+  "c": [
+   [
+    "Sit at the back and watch the whole auction.",
+    "a3_auction_a"
+   ],
+   [
+    "Bid on every lot until the money runs out.",
+    "a3_auction_b"
+   ],
+   [
+    "Break up the auction from the floor.",
+    "e_a3_auction_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_auction_a",
+  "r": "rising",
+  "w": 55,
+  "b": "an hour at the back of an arrears auction, which is conducted with perfect courtesy in a room of nine hundred people and ends with four names sold, two of them to the crown clerk's own household",
+  "c": [
+   [
+    "Go on to the ledgers.",
+    "a3_ledgers"
+   ]
+  ]
+ },
+ {
+  "i": "a3_auction_b",
+  "r": "rising",
+  "w": 55,
+  "b": "every lot bid on until the purse is empty, which buys four households a month of grace, and which raises the reserve on every remaining lot because the room has learned there is money in it",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the ledgers.",
+    "a3_ledgers"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_auction_1",
+  "r": "failure",
+  "w": 58,
+  "b": "an arrears auction broken up from the floor by a Warden company, and the auction adjourning politely, and reconvening at the ninth hour in the chapel undercroft with the same lots and nine more",
+  "e": "capture|negative|Adjourned to the Undercroft"
+ },
+ {
+  "i": "a3_ledgers",
+  "r": "choice",
+  "w": 62,
+  "b": "the auction hall's own ledgers, nine hundred years of them, shelved by century, recording every name sold in the counted city since the founding in one continuous hand",
+  "c": [
+   [
+    "Read the current century and take notes.",
+    "a3_ledgers_a"
+   ],
+   [
+    "Take the ledgers and go on to the archive.",
+    "a3_wyrmgate"
+   ],
+   [
+    "Compare the hand against the requisitions in your pack.",
+    "e_a3_ledgers_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_ledgers_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a century of arrears read in ninety minutes by two people taking notes, which establishes the rate, the cycle, the household names and the fact that the rate has doubled since Kar Duhn shut",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_ledgers_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the auction ledger's hand held against a Reckoning requisition from the company's own pack, in front of the hall clerk, and the two hands matching, and the hall clerk quietly leaving the room to report it",
+  "e": "setback|neutral|The Hands Match"
+ },
+ {
+  "i": "a3_archive",
+  "r": "choice",
+  "w": 62,
+  "b": "the city archive: nine floors of dwarf shelving with nine hundred years of Kar Ashen's arithmetic on it, staffed by four archivists, entirely open to any citizen who asks",
+  "c": [
+   [
+    "Ask for everything on the crown door.",
+    "a3_archive_a"
+   ],
+   [
+    "Ask for the founding charter of the arrangement.",
+    "a3_stacks"
+   ],
+   [
+    "Set the archive alight and end the arithmetic.",
+    "e_a3_archive_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_archive_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a request for everything on the crown door, filled in forty minutes by an archivist who brings eleven boxes on a trolley and asks whether the company would like the founding volume as well",
+  "c": [
+   [
+    "Go through to the stacks.",
+    "a3_stacks"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_archive_1",
+  "r": "failure",
+  "w": 58,
+  "b": "nine floors of dwarf shelving set alight to end an arithmetic, and the arithmetic surviving because it is kept in nine places, and the city losing its own history in one night and blaming the company for exactly that",
+  "e": "setback|neutral|Nine Floors"
+ },
+ {
+  "i": "a3_stacks",
+  "r": "choice",
+  "w": 62,
+  "b": "the stacks themselves, where the founding volume is kept: a dwarf vault at the bottom of nine floors, with a door that has been open for nine hundred years and a step worn into a groove",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Go down and read the founding volume.",
+    "a3_stacks_a"
+   ],
+   [
+    "Have Ilsabet copy the relevant clauses only.",
+    "a3_stacks_b"
+   ],
+   [
+    "Take the founding volume off the mountain.",
+    "e_a3_stacks_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_stacks_a",
+  "r": "rising",
+  "w": 55,
+  "b": "four hours in a dwarf vault with the founding volume, which is not a contract but a set of engineering specifications, and which describes the doors as containment and the count as a maintenance schedule",
+  "c": [
+   [
+    "Go on to the index.",
+    "a3_index"
+   ]
+  ]
+ },
+ {
+  "i": "a3_stacks_b",
+  "r": "rising",
+  "w": 55,
+  "b": "nine clauses copied in Ilsabet's shorthand, which is the smallest defensible extract and the one an inquiry will actually read, and which takes an hour instead of four",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the index.",
+    "a3_index"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_stacks_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the founding volume taken out of its vault, which the archive permits, and which the archive's own standing order requires be reported to the crown clerk within the hour, along with the borrower's name",
+  "e": "death|negative|The Borrower's Name",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a3_index",
+  "r": "choice",
+  "w": 62,
+  "b": "the archive's index, kept on nine thousand slips in nine cabinets, cross-referenced by name, household and year, and entirely usable by anybody who understands the system",
+  "c": [
+   [
+    "Look up the company's own five names.",
+    "a3_index_a"
+   ],
+   [
+    "Look up the crown clerk's office holders.",
+    "a3_archivist"
+   ],
+   [
+    "Look up nothing; the index reads both ways.",
+    "e_a3_index_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_index_a",
+  "r": "rising",
+  "w": 55,
+  "b": "five names looked up in a nine-thousand-slip index, and all five found, with arrival dates, and with a sixth slip filed behind them that has the whole company's number on it and a date this week",
+  "c": [
+   [
+    "Go and find the archivist.",
+    "a3_archivist"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_index_1",
+  "r": "failure",
+  "w": 58,
+  "b": "an index consulted for the crown clerk's office holders, which produces nine slips, and a tenth slip in the same drawer that is blank except for a date and the words pending appointment, and the date is today",
+  "e": "setback|neutral|Pending Appointment"
+ },
+ {
+  "i": "a3_archivist",
+  "r": "choice",
+  "w": 62,
+  "b": "the senior archivist, who has been in the building fifty years, knows exactly what her archive is and has spent her whole professional life keeping it complete against a day like this",
+  "c": [
+   [
+    "Ask her to certify copies for a Warden inquiry.",
+    "a3_archivist_a"
+   ],
+   [
+    "Ask her what she thinks the count is for.",
+    "a3_archivist_b"
+   ],
+   [
+    "Ask her to come down the mountain and testify.",
+    "e_a3_archivist_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_archivist_a",
+  "r": "rising",
+  "w": 55,
+  "b": "nine certified copies made, sealed and signed by an archivist of fifty years' standing, which is worth more in a Warden court than anything else the company has picked up in three books",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "a3_archivist_b",
+  "r": "rising",
+  "w": 55,
+  "b": "an answer given by somebody who has read all of it: the count is a maintenance schedule for a containment, and the containment has been maintained, and she wants the company to understand that she is not defending it",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_archivist_1",
+  "r": "failure",
+  "w": 58,
+  "b": "an archivist of fifty years' standing asked to come down a mountain and testify, and agreeing, and packing a bag, and being entered in the ninth column before the company reaches the wyrm gate",
+  "e": "capture|negative|She Agreed to Come"
+ },
+ {
+  "i": "a3_aqueduct",
+  "r": "choice",
+  "w": 62,
+  "b": "the city aqueduct, which brings warm water down from somewhere above the crown door and runs the whole lower city on it, with an inspection walkway along its channel",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Follow the walkway up toward the source.",
+    "a3_aqueduct_a"
+   ],
+   [
+    "Cross the channel and go down into the lower city.",
+    "a3_aqueduct_b"
+   ],
+   [
+    "Swim the channel; it is warm and quiet.",
+    "e_a3_aqueduct_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_aqueduct_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a mile of inspection walkway upstream, the water getting warmer under the hand every hundred yards, and the channel's stonework changing from dwarf work to something older at the ninth marker",
+  "c": [
+   [
+    "Go on to the sluice.",
+    "a3_sluice"
+   ]
+  ]
+ },
+ {
+  "i": "a3_aqueduct_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the channel crossed on a maintenance plank and the lower city entered from above, which is quieter and dirtier and puts the company among the uncounted rather than the counted",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the sluice.",
+    "a3_sluice"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_aqueduct_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a warm quiet channel swum for a quarter mile because it is warm and quiet, and the grating at the far end being a filter rather than a gate, and the filter being where the aqueduct's warmth comes from",
+  "e": "death|negative|The Filter",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a3_sluice",
+  "r": "choice",
+  "w": 62,
+  "b": "the great sluice where the aqueduct divides nine ways for the nine quarters, with a sluice-keeper's hut, nine gates, and a keeper who has held them for thirty years",
+  "c": [
+   [
+    "Ask the keeper what is upstream.",
+    "a3_sluice_a"
+   ],
+   [
+    "Shut the ninth gate and see who complains.",
+    "a3_sluice_b"
+   ],
+   [
+    "Open all nine gates and flood the quarters.",
+    "a3_sluice_c"
+   ],
+   [
+    "Read the sluice log for the last nine days.",
+    "e_a3_sluice_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_sluice_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the keeper's answer, given while he works: upstream is the crown cistern, and above the cistern is the door, and the water is warm because it comes off the door, and it has always come off the door",
+  "c": [
+   [
+    "Go on to the mills.",
+    "a3_mills"
+   ],
+   [
+    "Ask him what the water tastes of in the ninth week.",
+    "e_a3_sluice_2"
+   ]
+  ]
+ },
+ {
+  "i": "a3_sluice_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the ninth gate shut, which dries one quarter in forty minutes, and which brings not constables but nine householders with buckets who ask the company, reasonably, to open it again",
+  "c": [
+   [
+    "Go on to the mills.",
+    "a3_mills"
+   ]
+  ]
+ },
+ {
+  "i": "a3_sluice_c",
+  "r": "rising",
+  "w": 55,
+  "b": "nine days of sluice log read: the same allocations every day, and on the ninth day a diversion of the whole flow to the crown cistern for two hours, entered in advance for tomorrow",
+  "c": [
+   [
+    "Go on to the mills.",
+    "a3_mills"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_sluice_1",
+  "r": "failure",
+  "w": 58,
+  "b": "nine sluice gates opened at once to flood nine quarters, which is nine hundred years of arithmetic drowned in an afternoon, and eleven thousand people who lose their homes to a company that came here to help them",
+  "e": "death|negative|Nine Gates at Once",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a3_sluice_2",
+  "r": "failure",
+  "w": 58,
+  "b": "a sluice-keeper asked what the water tastes of in the ninth week, and answering honestly out of thirty years of tasting it, and the company standing in a hut understanding at last what has been coming down the aqueduct",
+  "e": "setback|negative|In the Ninth Week"
+ },
+ {
+  "i": "a3_mills",
+  "r": "choice",
+  "w": 62,
+  "b": "the mill row on the aqueduct, nine mills grinding, with the ninth mill's stones turning on nothing at all and its miller standing outside it because he will not go in while it is running",
+  "s": [
+   "peril",
+   "conflict"
+  ],
+  "c": [
+   [
+    "Go into the ninth mill with him.",
+    "a3_mills_a"
+   ],
+   [
+    "Stop the ninth mill's wheel yourself.",
+    "a3_mills_b"
+   ],
+   [
+    "Ask him what the ninth mill grinds.",
+    "a3_mills_c"
+   ],
+   [
+    "Go past the mills entirely; the door is above.",
+    "e_a3_mills_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_mills_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the ninth mill entered with a miller who has not been inside it in nine years, and which is grinding, and which has a hopper, and which has been fed on the ninth of every month since he inherited it",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the quiet room.",
+    "a3_quiet"
+   ],
+   [
+    "Look in the hopper.",
+    "e_a3_mills_2"
+   ]
+  ],
+  "s": [
+   "conflict"
+  ]
+ },
+ {
+  "i": "a3_mills_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the miller's answer at his own door: the ninth mill grinds what the ninth column allots, and the flour goes to the chapel, and he has never eaten the chapel's bread and neither has his family",
+  "c": [
+   [
+    "Go on to the quiet room.",
+    "a3_quiet"
+   ]
+  ]
+ },
+ {
+  "i": "a3_mills_c",
+  "r": "rising",
+  "w": 55,
+  "b": "the mill row walked past at speed with nine wheels turning and one of them turning on nothing, which is the correct decision and which nobody in the company is able to leave behind afterwards",
+  "c": [
+   [
+    "Go on to the quiet room.",
+    "a3_quiet"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_mills_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the ninth mill's wheel stopped by a company that has had enough, which stops the chapel's bread, which stops the count's own liturgy, and which brings the crown clerk's household to the mill row inside the hour",
+  "e": "death|negative|The Ninth Wheel",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a3_mills_2",
+  "r": "failure",
+  "w": 58,
+  "b": "a look into the ninth mill's hopper, taken deliberately by somebody who had been told what was in it and needed to see, and the hopper being full, and the mill continuing to work while the looking happens",
+  "e": "death|negative|In the Hopper",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a3_quiet",
+  "r": "choice",
+  "w": 62,
+  "b": "a dwarf rest-house on the mill row, empty, clean, with nine beds and a stove, kept by the city for travellers because the city keeps everything properly",
+  "c": [
+   [
+    "Take four hours and the stove.",
+    "a3_quiet_a"
+   ],
+   [
+    "Press on; the door is nine hours off.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "a3_quiet_a",
+  "r": "rising",
+  "w": 55,
+  "b": "four hours in a warm dwarf rest-house on clean beds, taken deliberately by a company that has learned three books' worth of lessons about arriving somewhere tired",
+  "x": "vigor+1",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "a3_wardens",
+  "r": "choice",
+  "w": 62,
+  "b": "the city's own Warden post, which exists, and is manned by six Wardens of a garrison that was posted here nine years ago and has heard nothing from Sarnhold since",
+  "c": [
+   [
+    "Bring them under Thane's orders and take them with you.",
+    "a3_wardens_a"
+   ],
+   [
+    "Ask them why they never sent a report.",
+    "a3_wardens_b"
+   ],
+   [
+    "Arrest the whole post for dereliction.",
+    "e_a3_wardens_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_wardens_a",
+  "r": "rising",
+  "w": 55,
+  "b": "six Wardens brought under a Commandant's written orders, who fall in gratefully and badly, and who have not drilled in nine years and will be a liability everywhere except at the door",
+  "c": [
+   [
+    "Go on to the gibbets.",
+    "a3_gibbets"
+   ]
+  ]
+ },
+ {
+  "i": "a3_wardens_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the answer given by a sergeant who has drafted eleven reports and sent all of them: they went down with the couriers, on the schedule, and the schedule is the crown clerk's, and none of them arrived",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go on to the gibbets.",
+    "a3_gibbets"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_wardens_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a whole Warden post arrested for dereliction by a chartered company, which is legally sound and practically insane, and which puts six men in their own cells and the company on the crown clerk's list twice over",
+  "e": "capture|negative|Arrested for Dereliction"
+ },
+ {
+  "i": "a3_gibbets",
+  "r": "choice",
+  "w": 62,
+  "b": "the gibbet row at the city's ninth street, where the counted city hangs its criminals, and where nine cages hang with eight of them full and the ninth standing open with a step under it",
+  "c": [
+   [
+    "Read the plates on the eight cages.",
+    "a3_gibbets_a"
+   ],
+   [
+    "Cut the eight down and be done with it.",
+    "a3_kennels"
+   ],
+   [
+    "Stand under the ninth cage and look up.",
+    "e_a3_gibbets_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_gibbets_a",
+  "r": "rising",
+  "w": 55,
+  "b": "eight plates read: eight names, eight crimes, and all eight crimes the same crime, which is refusing an entry in the ninth column, and all eight dated within the last two months",
+  "c": [
+   [
+    "Go on to the kennels.",
+    "a3_kennels"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_gibbets_1",
+  "r": "failure",
+  "w": 58,
+  "b": "eight gibbet cages cut down in the ninth street of a city of eleven thousand, which is a public act, and which the city treats not as a rescue but as an arrears, and arrears fall on whoever is standing nearest",
+  "e": "setback|neutral|Cut Down in the Ninth Street"
+ },
+ {
+  "i": "a3_kennels",
+  "r": "choice",
+  "w": 62,
+  "b": "the city kennels, where the crown clerk's household keeps its hounds, and the hounds are not hounds, and the kennel-master is the only man in Kar Ashen who is armed as a matter of course",
+  "s": [
+   "peril",
+   "conflict"
+  ],
+  "c": [
+   [
+    "Kill the kennel-master and free the kennels.",
+    "a3_kennels_a"
+   ],
+   [
+    "Go past the kennels along the wall.",
+    "a3_kennels_b"
+   ],
+   [
+    "Show him the charter and ask what they are for.",
+    "a3_kennels_c"
+   ],
+   [
+    "Open the kennels and let them out.",
+    "e_a3_kennels_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_kennels_a",
+  "r": "rising",
+  "w": 55,
+  "b": "a kennel-master killed at his own door, which takes eleven seconds because he is one man, and which leaves the company standing between an open kennel and a street with nine hundred people in it",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the cages.",
+    "a3_cages"
+   ],
+   [
+    "Go in and finish what is in the kennels.",
+    "e_a3_kennels_2"
+   ]
+  ],
+  "s": [
+   "conflict"
+  ]
+ },
+ {
+  "i": "a3_kennels_b",
+  "r": "rising",
+  "w": 55,
+  "b": "the kennels passed along the wall at the pace of a funeral, with nine of them coming to the bars in order as the company goes by and none of them making any sound at all",
+  "c": [
+   [
+    "Go on to the cages.",
+    "a3_cages"
+   ]
+  ]
+ },
+ {
+  "i": "a3_kennels_c",
+  "r": "rising",
+  "w": 55,
+  "b": "the charter shown to a kennel-master who reads it, and answers, and explains without embarrassment that they are for households that run, and that there have been nine this year and none of them got past the second street",
+  "c": [
+   [
+    "Go on to the cages.",
+    "a3_cages"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_kennels_1",
+  "r": "failure",
+  "w": 58,
+  "b": "the crown clerk's kennels opened by a company acting on principle, in a city with nine hundred people in the street outside, and nine of them going into that street ahead of anybody's ability to warn it",
+  "e": "death|negative|Let Out Into the Street",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "e_a3_kennels_2",
+  "r": "failure",
+  "w": 58,
+  "b": "a decision to go into the kennels and finish what is in them, which is nine of them in a stone run eleven feet wide, and which is the last tactical decision anybody in the company makes on this street",
+  "e": "death|negative|Into the Run",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a3_cages",
+  "r": "choice",
+  "w": 62,
+  "b": "the cage yard behind the kennels: nine transport cages on wheels, four of them loaded and sealed for the ninth-hour delivery, with a manifest chained to the yard gate",
+  "s": [
+   "peril"
+  ],
+  "c": [
+   [
+    "Read the manifest on the gate.",
+    "a3_cages_a"
+   ],
+   [
+    "Break the four loaded cages open.",
+    "a3_cages_b"
+   ],
+   [
+    "Take a cage and go up in it yourselves.",
+    "e_a3_cages_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_cages_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the manifest read: four cages, nine names, a delivery time and a destination, and the destination being the crown door itself, at the ninth hour, tomorrow",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "a3_cages_b",
+  "r": "rising",
+  "w": 55,
+  "b": "four sealed transport cages broken open in a yard behind the kennels, and nine people who get out, and who ask, immediately and unanimously, to be put back in before the yard's own count is taken",
+  "x": "vigor-1",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_cages_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a company riding up to the crown door inside a sealed transport cage, on the ninth-hour delivery, in place of the nine, which is an excellent plan for arriving and has no provision whatsoever for the arrival itself",
+  "e": "death|negative|Inside the Delivery",
+  "s": [
+   "peril",
+   "scary_imagery"
+  ]
+ },
+ {
+  "i": "a3_baths",
+  "r": "choice",
+  "w": 62,
+  "b": "the city baths, dwarf-built, fed off the warm aqueduct, open to any citizen, full at midday and entirely indifferent to a Warden company standing in the doorway filthy",
+  "c": [
+   [
+    "Take the baths and let the company be human for an hour.",
+    "a3_baths_a"
+   ],
+   [
+    "Skip it; there is a door nine hours above you.",
+    "a3_surgeon"
+   ]
+  ]
+ },
+ {
+  "i": "a3_baths_a",
+  "r": "rising",
+  "w": 55,
+  "b": "an hour in a dwarf bath fed by water that comes off the crown door, which nobody in the company enjoys once Vurma says so out loud, and which gets four days of the spine off five people",
+  "x": "vigor+1",
+  "c": [
+   [
+    "Go and find the surgeon.",
+    "a3_surgeon"
+   ]
+  ]
+ },
+ {
+  "i": "a3_surgeon",
+  "r": "choice",
+  "w": 62,
+  "b": "the city surgeon, who is competent, who has set the company's kind of injuries before, and who wants nothing in return except that somebody official finally write down what she has been treating",
+  "c": [
+   [
+    "Have her treat the company properly.",
+    "a3_surgeon_a"
+   ],
+   [
+    "Take her statement and have Ilsabet witness it.",
+    "a3_surgeon_b"
+   ],
+   [
+    "Refuse; she reports to the ward like everyone.",
+    "e_a3_surgeon_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_surgeon_a",
+  "r": "rising",
+  "w": 55,
+  "b": "two hours with a competent surgeon: Dellach's forearm resewn, Mira's ankle strapped, everybody's frostbite dressed, and the company genuinely capable again for the first time since the pass",
+  "c": [
+   [
+    "Go and look at the beds.",
+    "a3_beds"
+   ]
+  ]
+ },
+ {
+  "i": "a3_surgeon_b",
+  "r": "rising",
+  "w": 55,
+  "b": "a surgeon's statement taken and witnessed: nineteen years of injuries, their pattern, their timing, and the nine cases a year that arrive on the tenth of the month having been in a cage",
+  "x": "renown+1",
+  "c": [
+   [
+    "Go and look at the beds.",
+    "a3_beds"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_surgeon_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a city surgeon refused on the assumption that she reports to the ward, which she does, and which she does honestly and openly, and which is why her ward return for today records a Warden company that declined treatment and looked ill",
+  "e": "capture|negative|Declined Treatment"
+ },
+ {
+  "i": "a3_beds",
+  "r": "choice",
+  "w": 62,
+  "b": "the surgeon's ward: nine beds, eight with patients in them, and the ninth made up with a chart already hanging on its rail and a name written on the chart",
+  "c": [
+   [
+    "Read the name on the ninth chart.",
+    "a3_beds_a"
+   ],
+   [
+    "Leave the ward; you know what it says.",
+    "a3_wyrmgate"
+   ],
+   [
+    "Take the chart off the rail and pocket it.",
+    "e_a3_beds_1"
+   ]
+  ]
+ },
+ {
+  "i": "a3_beds_a",
+  "r": "rising",
+  "w": 55,
+  "b": "the ninth chart read off its rail: a name, an age, an admission date of tomorrow, and a treatment plan consisting of the word none, in the same hand that has signed every requisition in the company's pack",
+  "c": [
+   [
+    "Go on to the wyrm gate.",
+    "a3_wyrmgate"
+   ]
+  ]
+ },
+ {
+  "i": "e_a3_beds_1",
+  "r": "failure",
+  "w": 58,
+  "b": "a chart taken off a ward rail, which the surgeon reports because a missing chart is a missing patient, and which puts the company's own description into a city report at the exact hour it most needed not to be there",
+  "e": "setback|neutral|A Missing Chart"
+ },
+ {
+  "i": "a3_wyrmgate",
+  "r": "climax",
+  "w": 80,
+  "b": "the wyrm gate at the counted city's lowest street: a dwarf arch with the whole city's warm air going up through it, nine lamps, no guard at all, and beyond it the wyrm-road going down along Ashendrel's own flank",
+  "c": [
+   [
+    "Go down the wyrm-road in order.",
+    "a4_flank"
+   ],
+   [
+    "Go down along the scale-wall side.",
+    "a4_scalewall"
+   ],
+   [
+    "Go down with the couriers at the hour.",
+    "a4_couriers"
+   ]
+  ]
+ }
 ]
