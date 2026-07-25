@@ -762,18 +762,26 @@ marked **(no default)** genuinely need your input.
    > ADR-023 is Accepted).** [ADR-023](../planning/adr/adr-023-story-personalization-slots.md)
    > proposes a third route the analysis above did not consider: guardian opt-in, **render-time,
    > client-side** substitution over generic sentinels that the server always stores and always
-   > serves unchanged. Every Route B cost listed above is avoided by construction: no real name
-   > reaches any provider, none is persisted in `storybook_version.blob`, and the PII guard needs
-   > no carve-out. Route A's *mechanism* is therefore fully preserved and unmodified at the
-   > request and generation layers, including the `IDENTITY_PROTECTION` self-naming block in
-   > `story_requests/interpretation.py`.
+   > serves unchanged. **None of this is built yet**, so the claims below describe an intended
+   > design, not current behaviour. As designed, every Route B cost listed above would be avoided
+   > by construction: no real name would reach any provider, none would be persisted in
+   > `storybook_version.blob`, and the PII guard would need no carve-out. Route A's *mechanism*
+   > would therefore be preserved and unmodified at the request and generation layers, including
+   > the `IDENTITY_PROTECTION` self-naming block in `story_requests/interpretation.py`.
    >
-   > What does change, and what this addendum exists to flag, is Route A's **messaging**. The
+   > What would change, and what this addendum exists to flag, is Route A's **messaging**. The
    > kid-facing copy ("Heroes in our stories always have made-up names") is an absolute that
-   > becomes false for an opted-in family, and at ring 2 becomes false on a connected family's
-   > devices as well. The claim that survives unchanged is narrower and is about egress and
-   > storage, not about what appears on a screen. If ADR-023 ships, this record and that copy
+   > would become false for an opted-in family, and at ring 2 would become false on a connected
+   > family's devices as well. The claim that survives unchanged is narrower and is about egress
+   > and storage, not about what appears on a screen. If ADR-023 ships, this record and that copy
    > need updating together; see ADR-023 open decision OD-3.
+   >
+   > ADR-023 also adds a **new** child-linked data category this plan does not currently cover:
+   > per-child personalization slot values (a pet name, a kinship label, a favourite) stored
+   > server-side and delivered to family devices as a small values payload. These are new
+   > collection, not a new use of existing data, so they need a retention-window row in the table
+   > above, an erasure path, and an export entry. See the implementation plan's data-model and
+   > erasure sections.
    >
    > Note also that this document has no numbered "Section 5 Decision 4", despite
    > `story_requests/interpretation.py:174` citing one. The self-naming ruling is Section 2's

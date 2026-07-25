@@ -45,8 +45,15 @@ placeholders replaced with that child's real details, and that replacement happe
 browser, at render time, from a per-profile values payload the server never bakes into content.
 The result: a child can read a book that says their own name, while the invariant "a real child's
 name never reaches a provider" stays exactly as true as it is today. Ring 1 (own family) is the
-default ceiling; ring 2 (a connected family) is allowed for a strict subset of slots and requires
-its own separate disclosure consent; ring 3 is categorically excluded and always renders generic.
+default ceiling; ring 2 (a connected family) is allowed for a subset of slots and requires its own
+separate disclosure consent; ring 3 is categorically excluded and always renders generic.
+
+Two things this does **not** claim, stated up front because both are easy to over-read. At ring 2 a
+child's details **do leave their household**, rendered on a connected family's devices; the claim
+that survives is about providers and stored content, not about staying inside one home. And
+substituted text is read aloud through the browser's `speechSynthesis` API, which on several
+platforms is cloud-backed, so a personalized passage may leave the device by a path the app does
+not control (see the leak-surface register in the implementation plan).
 
 ## Context
 
@@ -91,9 +98,9 @@ construction rather than by policy.
   defect (`coppa-gdpr-remediation-plan.md:742-745`).
 - **Ring 3 is closed.** ADR-016 requires that "no child identity, family identity, or
   connection-graph information may surface in or be inferable from a global recommendation"
-  (`adr-016-...md:99-102`) and treats anonymization as "a hard requirement, not an optimization"
-  (`:146`). Anything visible outside rings 1 and 2 renders fully generic, without a toggle to
-  change that.
+  (ADR-016, "Ring 3: global (system only, future)") and treats anonymization as "a hard
+  requirement, not an optimization" (ADR-016, "Trade-offs"). Anything visible outside rings 1 and 2
+  renders fully generic, without a toggle to change that.
 - **The offline cache is device-wide, not per-reader.** `frontend/src/offline/db.ts:161` keys
   cached story blobs by `` `${story.id}@${story.version}` `` only, and the store's own docstring
   explains why: "`storybooks` is keyed by `id@version` only, not by profile, because a book can
@@ -164,34 +171,104 @@ instructions)" (`src/cyo_adventure/generation/templates/fill_bound.md:110-117`).
 bound through that path would land in a provider prompt on the very first call.
 
 So personalization slots are a **new slot kind** whose contract-declared value at fill time is a
-generic default (for example `HERO` bound to `"Explorer"`), and whose rendered output carries a
+generic default, taken from the contract's existing `default_binding[slot_id]` rather than a new
+field (for example `HERO` bound to `"Explorer"`), and whose rendered output carries a
 machine-recognizable sentinel that survives verbatim through fill, validation, moderation,
 approval, and storage. The generic default is what the LLM sees and what the sentinel renders to
-for every non-opted-in reader; the sentinel is what the client looks for. Nothing about the value
+for every non-opted-in reader; the sentinel is what the client looks for.
+
+One correction worth carrying at ADR level, because an earlier draft implied otherwise: for node
+prose the sentinel is not *preserved*, it is **emitted**. Node bodies are generated fresh from
+`<<FILL>>` directives, so there is no input token to protect; the fill template has to instruct the
+model to reproduce the token verbatim, and the post-fill check verifies it did. Ending titles are
+the exception and are genuinely preserved, under an existing "do not change" rule. Choice labels
+deliberately carry no sentinels at all, because the template instructs the model to re-phrase every
+label in the theme's own vocabulary and that instruction is worth more than a name in a button.
+Implementation plan section 2.3 carries the mechanism. Nothing about the value
 side of the pipeline changes: the fill prompt still sees only generic text, and
 `validate_slot_bindings` still runs unchanged over the generic binding.
 
 ### 3. Governance: per-profile toggles, default off, ring-scoped
 
-- Two ring-scoped booleans per child profile, both defaulting to **off**:
-  `real_name_ring1_enabled` and `real_name_ring2_enabled`. Ring 1 is a child's own family;
-  ring 2 is a family connected by an active, dual-consented, directional, revocable
-  `family_connection` (ADR-016 `:82-89`).
-- **Ring 2 requires its own separately-worded disclosure consent event**, timestamped and
+- **Per slot type, per profile, per ring.** Every included taxonomy entry has its own enablement
+  at its own ring ceiling, all defaulting to **off**. The protagonist first name (row 1) is the
+  only entry whose ceiling is ring 2 by way of an explicit named pair,
+  `real_name_ring1_enabled` and `real_name_ring2_enabled`; the rest are enabled per slot type
+  with a ring dimension bounded by the ceiling column of the taxonomy table. Ring 1 is a child's
+  own family; ring 2 is a family connected by an active, dual-consented, directional, revocable
+  `family_connection` (ADR-016, "Ring 2: connected families (allowed, guardian-gated, the cousins case)").
+- **The ring-2 consent rule, stated once (this closes an ambiguity a reviewer caught).** There is
+  **one ring-2 disclosure consent record per (child profile, connection)**, and it covers every
+  slot type that profile has opted into at ring 2. There is **no** per-slot-type consent record and
+  **no** per-slot-type signature ceremony. Concretely: a guardian consents once for Alex with the
+  Diaz family, and that single record carries the enumerated set of Alex's ring-2 slots it covers
+  (first name, sibling reference, pet name, kinship label, favourites, home type, pet species, in
+  whatever subset is enabled). The enumeration exists so the scope of a past disclosure is legible
+  after the fact, not so each entry needs its own signature. **Widening** the set requires
+  re-consent, which supersedes the record in place with a new timestamp and policy version;
+  **narrowing** it does not, since it only shrinks the disclosure. One audit artifact per
+  disclosure relationship.
+- **One slot type carries an extra condition, and only one.** The sibling reference (taxonomy row
+  3) discloses a second child's name, so at ring 2 it resolves only when the **referenced**
+  profile's own ring-2 enablement and consent also cover that same connection. This is a predicate
+  on the values fetch, not a second consent record: sibling B's guardian has already signed B's own
+  ring-2 consent for that connection, and this condition simply reads it.
+- **Ring 2 requires its own separately-worded disclosure consent**, timestamped and
   policy-versioned, mirroring the paired `consent_accepted_at` / `consent_policy_version` /
   `consent_signer_name` / `consent_ip` columns already CHECK-enforced on `User`
   (`src/cyo_adventure/db/models.py:305-308`, `:385-395`) for ADR-018 D1. It must **not** reuse
-  the account-level onboarding consent. The reasoning is that COPPA's 2025 amendments require
-  disclosure consent to be obtained separately from collection consent; reusing one signature
-  for both makes the disclosure unverifiable after the fact. This is a design position, not a
-  legal conclusion, and is one of the two items flagged for counsel below.
+  the account-level onboarding consent, and it must **not** reuse the `family_connection`'s own
+  `consented_by_sharer_user_id` (`db/models.py:532-535`), which consents to recommendations
+  crossing the boundary, not to story content bearing a real child's details. The reasoning is
+  that COPPA's 2025 amendments require disclosure consent to be obtained separately from
+  collection consent; reusing one signature for both makes the disclosure unverifiable after the
+  fact. This is a design position, not a legal conclusion, and is one of the two items flagged
+  for counsel below.
 - **Ring 3 has no toggle.** It is categorically excluded. Any surface visible beyond rings 1 and
   2, including any future ADR-016 ring-3 aggregate recommendation, always renders the generic
   sentinel default. There is no configuration that changes this.
-- Consent bookkeeping is **per slot type, per profile, per ring**, and per connection at ring 2.
-  It is recorded as pipeline events that carry the fact of consent and never the values, matching
-  the PII-free payload allowlist contract already enforced in
+- Consent and toggle changes are recorded as pipeline events that carry the fact of the change
+  and never the values, matching the PII-free payload allowlist contract already enforced in
   `src/cyo_adventure/events/writer.py:17-19`.
+
+#### 3a. How a value actually crosses to a connected family
+
+The delivery mechanism, because "ring 2 is allowed" is not a design on its own. Ring 2 uses
+**the same client-side resolution pattern as ring 1**, with one difference: the values payload is
+fetched from a cross-family endpoint authorized by the connection rather than by the reader's own
+family membership.
+
+- The story blob is generic and identical for everyone, as always. Nothing about the artifact
+  family B receives is Alex-specific.
+- Family B's reader, on opening a book whose personalization subject is a profile outside its own
+  family, requests that subject's ring-2 values from a new endpoint. The endpoint returns values
+  only when **all three** conditions hold: an active dual-consented `family_connection` in the
+  correct direction, the subject profile's ring-2 enablement for the requested slot types, and a
+  ring-2 disclosure consent record covering that (profile, connection, slot type). Any one
+  missing returns an empty payload, and the reader renders the generic default.
+- Because the gate is on the **values fetch** and not on the book, a personalization-eligible book
+  that reaches an unconnected family through the catalog renders fully generic with no additional
+  enforcement. That is the structural property that makes ring 3 exclusion hold for **content**
+  without a per-surface check. Do not over-read it: the *payload* path is a runtime predicate that
+  somebody has to write, test, and keep correct (implementation plan 8.4). Content is free; the
+  values route is not.
+
+The implementation plan's section 8 designs this end to end: the endpoint, the authorization
+predicate, the caller (which is not the reading child's own session directly, for reasons that
+section works through), and a worked before-and-after user story.
+
+**Prerequisite this ADR must name.** `Visibility` is a closed two-value enum, `family` or
+`catalog` (`src/cyo_adventure/publishing/state_machine.py:45-55`), and
+`recommendations.py::_visible_books` states plainly that "a cross-family (ring 2) book only ever
+reaches this profile through the catalog + assignment path"
+(`src/cyo_adventure/api/recommendations.py:135-137`). There is **no connection-scoped book
+visibility today**: ring 2 currently carries recommendations, which are pointers, not books. So a
+family-A book only reaches family B by being published to the catalog, where every family can see
+it. This does not break the design (the values gate is what protects the content, not the book's
+visibility), but it does mean ring-2 personalization's realistic v1 surface is a catalog book with
+a personalization subject in a connected family, and that anyone else in the catalog sees the
+generic version. If the product wants "share this book with just the Diaz family", that is a
+separate connection-scoped visibility feature, and it is not a prerequisite for this one.
 
 ### 4. Route A stays completely untouched at the request and generation layers
 
@@ -261,13 +338,88 @@ list shipped with the app, never free text.
 |---|---|---|---|---|---|---|
 | 1 | Protagonist first name | Highest. The single detail that makes a book feel like the child's own. | Direct identifier (soft); already collected as `child_profile.display_name`, no new collection | Moderate. A first name alone is a weak identifier; it becomes materially riskier combined with a real location, which is why #9 is excluded | Ring 1 default; ring 2 with separate disclosure consent | **Include, profile-bound only** |
 | 2 | Pronoun set (she/her, he/him only) | High for a child whose gender the default text gets wrong | Special-category-adjacent (gender); no new field if derived from an existing profile attribute, a new field otherwise | High at ring 2: pronoun disclosure can out a child to extended family in a way a first name does not | **Ring 1 only** | **Include, v1 scoped to she/her and he/him; they/them deferred** |
-| 3 | Sibling or family-child name (a `COMPANION`-style slot) | High. A story with a real sibling in it is a distinct experience | Direct identifier for a *second* child who is not the consenting subject of this flow | High. Two real names plus any setting detail compounds fast | **Ring 1 only in v1** | **Include, profile-bound to another `child_profile` in the same family; ring 2 deferred** |
+| 3 | Sibling or family-child name (a `COMPANION`-style slot) | High. A story with a real sibling in it is a distinct experience | Direct identifier for a *second* child who is not the subject of this book | Moderate at ring 2, and see the dual-consent rule below | Ring 1 + ring 2 | **Include, profile-bound to another `child_profile` in the same family. At ring 2, the referenced sibling's OWN ring-2 enablement and consent must also cover that connection** |
 | 4a | Pet species | Moderate. Cheap warmth, near-zero identifier value | Not an identifier | Low | Ring 1 + ring 2 | **Include, closed enum only** |
-| 4b | Pet name | Moderate | Weak identifier with outsized credential value | Real. A pet name is a classic security-question and social-engineering datum | **Ring 1 only** | **Include, free text at ring 1 only** |
+| 4b | Pet name | Moderate | Weak identifier with credential-reset value | Real but ring-scoped: see the note below | Ring 1 + ring 2 | **Include, free text; never at ring 3, permanently** |
 | 5 | Trusted-adult kinship label ("Grandma", "Abuela", "Auntie", "Grandpa") | High. Kinship vocabulary is culturally specific and cheap to get right | Not an identifier; a relationship label, not a person | Low | Ring 1 + ring 2 | **Include, closed enum only. A real adult's personal name is excluded: a third party who never consented** |
 | 6 | Favorite color, food, hobby | Moderate. Small, frequent hits of recognition | Preference data, not identifying | Low, given a closed vocabulary | Ring 1 + ring 2 | **Include, closed vocabulary lists only, never free text** |
 | 7 | Home type (house, apartment, farm, ...) | Low. Occasionally grounds an opening scene | Coarse, non-identifying | Low. Explicitly not a location: see #9 | Ring 1 + ring 2 | **Include, closed enum, low priority** |
-| 8 | Dedication or inscription line | High emotional value, zero prose risk | Contains a name and a kinship label already covered by #1 and #5 | Low, because it is template-constrained | **Ring 1 only** | **Include, template-constrained ("For {NAME}, love {KINSHIP}"), rendered as a title-page overlay outside the story blob, never injected as free text into a kid-facing prose surface** |
+| 8 | Dedication or inscription line | High emotional value, zero prose risk | Contains a name and a kinship label already covered by #1 and #5 | Low, because it is template-constrained | **Ring 1 only** | **Include, render-only over already-stored values: see the note below** |
+
+#### Three ceiling decisions worth their reasoning
+
+These three rows were argued both ways during review. The outcomes are recorded with the reasoning
+so a later reader can contest the reasoning rather than guess at it.
+
+**Rows 3 and 4b were raised from ring 1 to ring 1 + ring 2.** The original ring-1-only ceilings
+were set against the wrong threat model, and correcting them also fixes a real inconsistency in
+this ADR's own ring-2 argument.
+
+- *Sibling name (row 3).* The objection to ring 2 was that it discloses a second child who is not
+  the subject of this flow. That objection has force against a **third-party** child, which is why
+  row 16 (friend name) stays excluded outright. It has much less force here: the sibling is the
+  same guardian's child, so the same adult holds parental responsibility for both, and the consent
+  is within their own authority rather than borrowed from someone who never gave it. **That
+  authority is assumed, not verified**, though: the system infers it from two profiles sharing a
+  family account, and this row is titled "sibling *or family-child*" precisely because it admits
+  stepchildren, foster placements, and extended-family arrangements where the account-holding adult
+  may not hold legal authority over the second child. So the ceremony adds an explicit
+  parental-authority attestation for this case (implementation plan 10.1.1, item 3), and OD-5 flags
+  the assumption for counsel rather than resting on it.
+
+  The other residual risk is that sibling B might be personally more private than A, and the design
+  answers that directly rather than by assertion: **at ring 2 the sibling slot resolves only if
+  profile B's own ring-2 enablement and consent also cover that same connection.** B's name is
+  governed by B's settings wherever it appears, including inside A's book.
+
+  One framing caveat, recorded so it is not misused later. It is true that in the cousins case the
+  connected household very likely already knows the sibling's name, and that observation is
+  **residual-harm commentary only**: it bears on how much a disclosure costs, never on whether
+  consent is needed. Consent is required regardless of what the recipient already knows. This
+  sentence must never be cited as a reason to skip, bundle, or soften it.
+- *Pet name (row 4b).* The objection was that pet names are classic security-question answers.
+  Stated precisely for counsel, this is a **narrow-audience disclosure of a credential-adjacent
+  datum**, and two distinct risks have to be separated because ring-scoping only touches one. The
+  *disclosure* risk (who deliberately sees it) is genuinely small at ring 2: a parent-built,
+  enumerable graph of typically one to three households who, in the cousins case, have met the dog.
+  The *collection* risk (that a credential-adjacent value exists in our database at all, and in a
+  breach corpus if we are breached) is **created at ring 1 and is entirely unchanged by this
+  ceiling decision**. Raising the ceiling neither worsens it nor excuses it. So: defensible on
+  disclosure grounds, while the collection question stands on its own and belongs in the DPIA's
+  breach-impact analysis rather than here. What the credential concern still buys is permanent
+  ring-3 exclusion and a length-bounded field rather than open text.
+- *What this does to the ring-2 argument, and why that is a feature.* The coordination section
+  below argues ring 2 needs stricter consent partly because a name arrives compounded with other
+  details. Under the original taxonomy that argument was **false**: the richest compounding
+  details were ring 1 only and could never co-occur. Raising rows 3 and 4b makes the argument true
+  rather than shrinking the argument to fit. The ring-2 compounding set is now genuinely
+  substantial (first name, a sibling's first name, a pet's name, a kinship label, favourites, home
+  type, pet species), which strengthens rather than weakens the case for a separate, enumerated
+  disclosure consent.
+
+**Row 2 (pronouns) stays ring 1 only, deliberately.** With rows 3 and 4b raised, pronouns and the
+dedication line (row 8, ring 1 only because a dedication is addressed to its own household) are the
+only entries that do not reach ring 2, and pronouns are the only one held back on risk. The
+reasoning that moved rows 3 and 4b does not transfer. A sibling's name and a pet's name are facts a
+connected household in the cousins case very likely already knows; a child's pronouns may be
+precisely what that household does *not* know, and the guardian consenting is not always the person
+with standing to disclose it. The asymmetry is about marginal information and about whose fact it
+is, not about squeamishness.
+
+**Row 8 (dedication line) stays in v1, as a render-only feature.** This was reconsidered on the
+grounds that a title-page overlay is a separate mechanism carrying its own validation and
+revocation paths, and therefore poor value for a single decorative line. On inspection that premise
+does not hold for this design. The dedication stores **no new kind of data**: its two parameters are
+a name (already `child_profile.display_name`, row 1) and a kinship label (already a closed enum,
+row 5), so it adds one `slot_type` row in a table that already exists, not a new store. It reuses
+the same write-time validation, the same values payload, and the same purge triggers as every other
+slot, so there is no second validation path and no second revocation path. The composed string is
+never stored and never serialized by any API; it is assembled in the browser from values the reader
+already holds. What is genuinely new is one small render component and one boolean. That is a low
+enough marginal cost, against the highest emotional-value-per-line-of-code item in the taxonomy,
+that deferring it would be a worse-engineered answer than building it. It is sequenced **last**
+among the included slots, because it shares nothing with the sentinel work and can slip without
+blocking anything.
 
 #### Excluded
 
@@ -291,6 +443,56 @@ most of the felt personalization ("Captain Rosa, a young explorer") with none of
 Real-name substitution is an **opt-in escalation layered on top of it**, not a replacement for it,
 and the guardian-facing UI should frame it that way rather than presenting the generic experience
 as a degraded state.
+
+### 9. Age bands: the child-facing half of this feature does not apply uniformly
+
+The app spans six reading bands from 3-5 to 16+ (`storybook/models.py::AgeBand`, used throughout
+`validator/band_profile.py`), and this feature assumes a child who can read the control it offers
+them. That assumption fails at the bottom of the range.
+
+- **3-5, and in practice much of 5-8**: the reader is pre-literate or barely literate. A
+  child-facing "use my name in stories" control is not a meaningful consent surface for them: they
+  cannot read it, and a tap on it carries no intent. For these bands, personalization is
+  **entirely a guardian-controlled setting with no expectation of child-side agency**, and the
+  child-facing control is **not rendered at all** rather than rendered and quietly ignored. Saying
+  this explicitly matters: a veto nobody can exercise is worse than no veto, because it looks like
+  a safeguard in a compliance review while providing none.
+- **8-11 and above**: the child-facing control is rendered and is real. This is also where the
+  pronoun slot matters most and where the ability to switch it off without asking an adult has
+  actual value.
+- Personalization is **not defaulted differently by band**: it is off everywhere. What varies by
+  band is only whether a child-side control exists. There is no argument for auto-enabling it for
+  young children on the theory that they will enjoy it more.
+- The kinship-label slot (row 5) and the dedication line (row 8) are the entries with the most
+  value at the youngest bands and the least risk, since neither is an identifier. If v1 needs to
+  ship narrow, those two plus the first name at ring 1 are the defensible 3-5 subset.
+- **At the other end of the range, the guardian may stop being the consent-holder.** This section
+  assumes throughout that a guardian consents and a child does not. That holds under COPPA (under
+  13) and under the US-only posture confirmed in ADR-018 D3. It does not hold universally: under
+  GDPR Article 8 the member-state digital-consent age is 13 to 16, so a reader in the 13-16 or 16+
+  band could be their own consent-holder rather than their guardian. That is shelved today with the
+  remediation plan's Phase 9 (GDPR-K/AADC conformance), on the recorded basis that no UK/EEA users
+  exist or are planned. If that fact changes, the 16+ band is where this feature's consent model
+  breaks first, and it must be revisited together with ADR-018 D3 and Phase 9, not separately.
+
+### 10. What a sentinel looks like to a human reviewer
+
+Because the stored blob is what a guardian or admin approves under ADR-005, someone will read
+marker-bearing prose during review. Two properties keep that acceptable, and they need stating
+together because they sound contradictory otherwise.
+
+A sentinel **wraps** its generic default rather than replacing it, so the underlying prose is
+always complete and readable: with every marker stripped, the text reads exactly as an
+unpersonalized story does. The reviewer is therefore reading real prose, not a template with
+holes, and can judge it on its merits.
+
+The review surfaces (`frontend/src/admin/ReviewDetailPage.tsx`, `ReviewCompare.tsx`) should
+**render the markers visibly**, as a deliberate affordance rather than hiding them: a reviewer
+approving a personalizable story ought to see exactly which words a family can replace, since that
+is part of what they are approving. That is different from a **kid-facing** surface, where an
+unresolved marker is a straightforward visual defect and must never appear. The rule is therefore
+not "sentinels are always safe to display" but "sentinels degrade safely to correct prose
+everywhere, and are shown deliberately in review and never in the reader".
 
 ## Options Considered
 
@@ -351,9 +553,19 @@ outcome is still what an untouched family gets.
   client-side player engine that mirrors backend logic (`frontend/src/player/`). Personalization
   adds a second piece of rendering logic that must not drift. Mitigation: keep resolution in
   `frontend/src/player/` next to the existing engine and give it the same test discipline.
-- ⚠️ **Ring 2 exports a real child's name into another household's devices.** That is a genuinely
-  new child-linked data flow, of a different order from ADR-016's existing recommendation
-  attribution. See the coordination section: this is the item most in need of sign-off.
+- ⚠️ **Ring 2 exports real child details into another household's devices**, and after the ceiling
+  revision above that means a first name, a sibling's first name, a pet's name, a kinship label,
+  favourites, and a home type, potentially all in one book. That is a genuinely new child-linked
+  data flow, of a different order from ADR-016's existing recommendation attribution, and it is
+  now a wider one than this ADR's first draft proposed. It is bounded by: a parent-built,
+  enumerable, dual-consented graph; a separate enumerated disclosure consent per (profile,
+  connection); and a per-referenced-child check so a sibling's name never rides out on their
+  brother's consent alone. See the coordination section: this is the item most in need of sign-off.
+- ⚠️ **A second adult now has to be right about a third person's privacy.** The sibling slot means
+  guardian G's decision about child A's book discloses child B. The design answers this by reading
+  B's own settings, but B is still a child whose preferences may not be recorded anywhere, and the
+  guardian remains the only actual decision-maker. This is inherent to parental consent, not a bug
+  in the mechanism, but it should not be described as if B consented.
 - ⚠️ **`display_name` is under-validated for this use.** It is guardian free text with a length
   bound and nothing else: `DisplayName = Annotated[str, StringConstraints(strip_whitespace=True,
   min_length=1, max_length=120)]` (`src/cyo_adventure/api/schemas.py:1032-1034`), written straight
@@ -373,10 +585,21 @@ outcome is still what an untouched family gets.
 - ⚠️ **Pronoun substitution is a per-skeleton audit, not a feature flag.** Gendered pronouns are
   hardcoded in beats and choice labels across the catalog. Whatever fraction of the catalog is
   pronoun-parameterized after the audit is the fraction this ever works on.
-- ⚠️ **A new consent artifact to maintain.** Per-slot, per-profile, per-ring, per-connection
-  consent records are more bookkeeping than the account-level consent already built for ADR-018
-  D1, and they inherit that decision's open counsel question about what constitutes a valid
-  signature.
+- ⚠️ **A new consent artifact to maintain.** One ring-2 disclosure record per (child
+  profile, connection), enumerating the slot types it covers, is still more bookkeeping than the
+  single account-level consent already built for ADR-018 D1, and it inherits that decision's open
+  counsel question about what constitutes a valid signature. (An earlier draft of this bullet
+  described a per-slot, per-ring, per-connection consent model; that is superseded by the
+  single-record rule in section 3 and is not what gets built.)
+- ⚠️ **"Dual consent" on a connection is two records, not two independent decision-makers.**
+  ADR-016's `family_connection` requires a consent from each side, and this ADR layers a
+  sharer-side disclosure consent on top. It is worth naming plainly that in the common case these
+  are **one guardian's decision, recorded more than once**: the same adult signs for the sharer
+  family and, in the sibling case, signs on behalf of two different children. Calling it "dual
+  consent" flatters the mechanism. The accurate description is **dual-record, single-guardian**,
+  and what it actually buys is auditability and revocability, not independent judgement by two
+  parties. Wherever this ADR or its implementation plan calls a disclosure "dual-consented", read
+  it that way.
 
 ### Technical Debt
 
@@ -384,11 +607,11 @@ outcome is still what an untouched family gets.
   mechanism, the post-fill sentinel-integrity check, the toggles, the consent events, the values
   payload, the client resolver, and the kid-visible indicator are all unbuilt.
 - No post-fill check currently verifies that a published blob contains exactly the declared
-  sentinel multiset with no mutated or forged tokens. The existing charset rule
+  sentinel token set per node, with no mutated or forged tokens. The existing charset rule
   (`validator/slots.py:380-431`) blocks forgery on the **value** side (it rejects `{`, `}`, `<<`,
   `>>` in a bound value) but nothing checks the **prose** side, where the LLM writes freely.
 - Ring 3 has no implementation to exclude from yet: ADR-016 records ring-3 aggregation as unbuilt
-  (`adr-016-...md:152-155`). The exclusion is therefore a forward-binding design constraint on
+  (ADR-016, "Technical Debt"). The exclusion is therefore a forward-binding design constraint on
   whoever builds it, and needs to land as a test in the ring-3 work, not only as a sentence here.
 
 ## Validation
@@ -401,7 +624,12 @@ outcome is still what an untouched family gets.
 - [ ] `assert_prompt_pii_safe` is unchanged, and a test asserts a personalization-eligible
       generation job still raises on a seeded real child name.
 - [ ] Two sibling profiles on one device, with different toggle states, read from the same cached
-      `id@version` blob and see different rendered text; neither can see the other's values.
+      `id@version` blob and see different rendered text. The application resolves each profile's
+      values only from that profile's own payload record, and switching profiles switches the
+      payload. Note the honest limit: both records sit in the same origin's IndexedDB, so this is
+      an application-level access boundary, not a device-level isolation guarantee; a device
+      shared by siblings is a shared trust boundary, exactly as it already is for the shared
+      `storybooks` cache.
 - [ ] Turning a toggle off removes the local values payload on the next app open, and a test
       asserts the rendered text reverts to generic.
 - [ ] A cover-art prompt built from a personalization-eligible blob contains no sentinel token and
@@ -409,16 +637,24 @@ outcome is still what an untouched family gets.
       (`api/recommendations.py`), a rescreen re-read, and every pipeline event payload.
 - [ ] A story reachable through any ring-3 surface renders fully generic regardless of every
       toggle, asserted as a test in the ring-3 work when it lands.
-- [ ] A ring-2 render is blocked unless a separate, timestamped, policy-versioned disclosure
-      consent exists for that profile, that slot type, and that specific connection; revoking the
-      `family_connection` blocks it immediately.
+- [ ] A cross-family values fetch returns nothing unless **all** of: the connection is active
+      (both guardians consented), the subject profile's `real_name_ring2_enabled` is true, and a
+      ring-2 disclosure consent row exists for that (profile, connection) pair. Revoking any one of
+      the three causes the **next** fetch to return nothing; a device already holding a payload
+      reverts on its next successful fetch or app open, not instantly mid-session while offline.
+      Revocation here is prospective, exactly as it is at ring 1.
 - [ ] A profile `display_name` that fails `validator/slots.py` structural checks or the
       band-mandatory denylist floor cannot be substituted, and the reader falls back to the
-      generic default rather than rendering it.
+      generic default rather than rendering it. The same check applies to every stored slot value,
+      not only the name.
 - [ ] A published blob whose sentinel multiset does not exactly match the declared set is rejected
       before it can be approved.
-- [ ] The kid-visible indicator is present on every personalized book, and its veto is one-way
-      (a child can turn substitution off, never on).
+- [ ] The kid-visible control is present on every personalized book. A child may turn substitution
+      off and back on **within the envelope their guardian has already consented to**, and can
+      never enable a slot or a ring the guardian has not enabled. Turning it off never requires an
+      adult; turning it back on never widens the disclosure.
+- [ ] For the 3-5 band, no child-facing control is rendered at all, and the guardian setting
+      surface says so.
 - [ ] Route A's block still fires unchanged: `tests/unit/test_interpretation.py`'s
       `IDENTITY_PROTECTION` cases pass without modification.
 
@@ -433,8 +669,32 @@ outcome is still what an untouched family gets.
 - [ ] **OD-3: Route A copy addendum wording.** Agree the replacement kid-facing and
       guardian-facing strings before any toggle ships, so the absolute claim is never live
       alongside a contradicting feature.
-- [ ] **OD-4: Whether ring 2 is in v1 at all.** A defensible narrower v1 is ring 1 only for every
-      slot, deferring the entire ring-2 consent mechanism.
+- [ ] **OD-4: The ring-2 catalog-visibility surface.** Ring 2 **is in v1** (owner direction,
+      2026-07-25); the earlier "ship ring 1 only" fallback is withdrawn and is not an option this
+      ADR offers. What remains open is narrower: given that there is no connection-scoped book
+      visibility today (section 3a), confirm that "a catalog book with a personalization subject
+      in a connected family" is an acceptable v1 surface, or decide that connection-scoped
+      visibility is a prerequisite after all. This changes sequencing, not the decision to build
+      ring 2.
+- [ ] **OD-5: The sibling and pet-name raise to ring 2.** This revision raised taxonomy rows 3 and
+      4b from ring 1 to ring 2 (reasoning recorded in the taxonomy section). It is the most legally
+      aggressive change in this ADR and it needs its own counsel pass rather than riding on OD-1.
+      Three questions, in descending order of risk:
+      **(a) Is the parental-responsibility assumption sound?** The design infers a guardian's
+      authority over sibling B from B's profile sharing a family account. Row 3 explicitly admits
+      "family-child" cases (stepchild, foster placement, extended family) where that inference can
+      be wrong. The mitigation is an explicit attestation in the consent ceremony (implementation
+      plan 10.1.1 item 3); the question is whether an attestation suffices, or whether the sibling
+      slot must stay ring 1 until authority can actually be verified.
+      **(b) Does the consent copy stretch far enough?** Predicate condition 8 reads B's own
+      name-sharing consent to authorize B appearing as a *companion in A's book*, a different
+      context from B's own stories. The plan requires the ceremony wording to cover that
+      explicitly; confirm it is adequate, or require a distinct consent for companion appearances.
+      **(c) Is one bundled per-connection consent adequate for this disclosure?** A single record
+      enumerating several slot types is efficient and auditable, but one signature then authorizes
+      a compounded disclosure. Confirm, or require the sibling and pet-name entries to be signed
+      separately. Related: whether narrowing `covered_slot_types` may update a signed record in
+      place or must append a new one (implementation plan 5.3, open question 7).
 
 ### Review Schedule
 
@@ -481,12 +741,24 @@ neighbouring context. Both positions can be right, and the argument for why they
 differ is about bandwidth and richness of disclosure rather than about the datum:
 
 - A recommendation attribution is a **single, low-bandwidth signal** attached to a pointer: this
-  named child liked this book. It is one fact, in one place, in a surface the receiving guardian
-  opted into seeing.
-- A name substituted throughout full story prose, read repeatedly in another household, is a
-  **much larger and richer disclosure**. It carries the name plus, by combination, whatever else
-  the substituted slots reveal (a pet's name, a sibling's name, a kinship term), and it is read by
-  the other family's *children*, not only its guardians.
+  named child liked this book. It is one fact, rendered once, in a feed surface the receiving
+  guardian opted into seeing.
+- A name substituted throughout full story prose is the **same datum delivered continuously**,
+  across every passage of a book that may be re-read many times, and it is read directly by the
+  other household's *children* rather than surfaced to its guardian. Repetition and audience, not
+  novelty of the datum, are what make it a larger disclosure.
+- It also arrives **compounded**. Under the taxonomy as finally settled, a ring-2 disclosure can
+  carry, in one book: the child's first name, a sibling's first name, a pet's name, a kinship
+  label, favourites, a home type. Individually trivial; together, and repeated across a book, a
+  recognisable portrait of a named child and their household. An attribution line carries exactly
+  one of those and never compounds.
+
+  One honest bound on that third point. Pronouns (row 2) remain ring 1 only, so the most
+  identity-sensitive slot never participates in a ring-2 disclosure. And an earlier draft of this
+  ADR made this argument while the taxonomy still capped sibling and pet name at ring 1, which made
+  the compounding claim untrue at the time. It is true now because rows 3 and 4b were raised
+  deliberately, with reasoning recorded in the taxonomy section above, and not because the argument
+  needed propping up.
 
 That is the honest argument for the asymmetry. It is not obviously decisive, and this ADR does not
 claim to settle it: OD-1 above is the sign-off gate. What it does claim is that the two asks must
@@ -572,9 +844,10 @@ out of.
   `window.speechSynthesis` API, which on several platforms is cloud-backed. A personalized passage
   read aloud therefore may leave the device through a path the app does not control. This is not a
   blocker, but it belongs in the leak-surface register rather than being discovered later.
-- **The ADR index is missing ADR-020.** `docs/planning/adr/README.md`'s index table skips from
+- **The ADR index was missing ADR-020.** `docs/planning/adr/README.md`'s index table skipped from
   ADR-019 to ADR-021 even though `adr-020-mutation-derived-skeletons-and-catalog-growth.md`
-  exists. Flagged, not fixed here.
+  exists. **Fixed in this same change**, since the table was already being edited to add ADR-023;
+  the row records Accepted / 2026-07-20, matching that file's own status line.
 
 ## Related
 
@@ -594,6 +867,23 @@ out of.
   child-linked data category that never reaches the server in content form.
 - [ws7-request-interpretation-design.md](../ws7-request-interpretation-design.md): the disposition
   and reason-code model this ADR deliberately leaves unmodified.
-- [Capability register](../capability-register.md): this feature needs new G-series and K-series
-  IDs before implementation starts, per the register's own "new proposals must cite the IDs they
-  serve" rule.
+- [Capability register](../capability-register.md): **G18** (guardian opts a child's real details
+  in, per slot, ring-scoped) and **K20** (a child reads a story using their own details and holds
+  a switch over it) were minted for this feature in register v1.8, with scope notes added to G4,
+  G17, K19, S10, S11, and S12.
+
+  The register's rule 3 requires a conscious call here, so the reasoning, not just the outcome.
+  Cross-references alone were the tempting answer and they are not sufficient: G4 already promises
+  "personalized stories" and its own example names a real child, but G4's mechanism is
+  generation-time with real names kept out of prompts, so folding this in would make one row mean
+  two incompatible things. S10 and S11 are genuinely *extended* by this feature (a new child-linked
+  data category, a new kind of ring-2 flow) but they are cross-cutting guarantees, and a feature
+  cannot be acceptance-tested against "privacy architecture". K16 is identity in the app, not
+  identity in the story. Without new IDs the most user-visible thing this feature does would trace
+  to nothing, which is the exact failure rule 3 exists to catch.
+
+  Equally deliberately, **two IDs and no more**. No A-series entry: an admin reading marker-bearing
+  prose at review is a presentation detail of A6's existing approval gate, not a new authority. No
+  S-series entry: the sentinel and render architecture *implements* S10's invariant rather than
+  adding a cross-cutting guarantee, so those rows get extended notes. Both new rows sit at ❌ until
+  this ADR is Accepted and the work lands.

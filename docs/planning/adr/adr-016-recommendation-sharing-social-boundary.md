@@ -93,6 +93,35 @@ Dad," "your sister loved this"). No new consent needed; the family is the trust 
 - There is **no "receive recommendations from everyone" option**, by design. The connection
   graph is enumerable, parent-built, and small.
 
+> **PROPOSED ADDENDUM to ring 2, pending coordination (added 2026-07-25; flags an open question,
+> does not resolve it).** Two in-flight workstreams both want a sentence added here recording
+> **what granularity of child-linked data may cross ring 2**, and they ask for different bars.
+> They must be reconciled in one edit, not raced.
+>
+> 1. **Recommendation attribution** (PR #415 item B6, owner decision 2026-07-25): sharing a
+>    child's first name with a connected family via `display_name` next to a recommendation is
+>    working-as-intended, sanctioned by this ADR's mutual connection consent **alone**, with no
+>    additional disclosure consent layered on top. B6 asks that this ADR state that granularity
+>    explicitly, since the Decision section above defines the rings but never enumerates what may
+>    cross ring 2 beyond "book reference, recommender display name, and rating/like".
+> 2. **Personalized story content** ([ADR-023](./adr-023-story-personalization-slots.md), status
+>    Proposed): render-time substitution of a child's real first name, and of a small set of
+>    other opted-in details, throughout story prose read in a connected household. ADR-023
+>    proposes a **stricter** bar for this: a separate, separately-worded, timestamped,
+>    policy-versioned disclosure consent, held per profile and per connection, on top of the
+>    mutual connection consent this ADR already requires.
+>
+> The argument that the two legitimately differ is about bandwidth and repetition, not about the
+> datum. An attribution is a single low-bandwidth signal attached to a pointer, rendered once in a
+> feed. A name substituted throughout full story prose is the same datum delivered continuously,
+> read directly by the other household's children rather than surfaced to its guardian, and
+> compounded by whatever else ADR-023's taxonomy permits at ring 2 alongside it: a sibling's first
+> name, a pet's name, a kinship label, a favourite, a home type. One book can carry all of them at
+> once, repeatedly; an attribution line carries one, once. That argument is not obviously decisive.
+> Neither
+> ADR-023 nor this note picks a side; ADR-023 open decision OD-1 is the sign-off gate. Whoever
+> writes the real amendment sentence should cover both cases in a single change.
+
 ### Ring 3: global (system only, future)
 
 The system may eventually aggregate book scores across all families and recommend books to a
@@ -100,29 +129,6 @@ child ("kids your age loved this"). Aggregation is anonymized: no child identity
 identity, or connection-graph information may surface in or be inferable from a global
 recommendation. Kid-to-kid recommendation across unconnected families never happens, at any
 scale.
-
-> **PROPOSED ADDENDUM, pending coordination (added 2026-07-25; flags an open question, does not
-> resolve it).** Two in-flight workstreams both want a sentence added here recording **ring-2
-> granularity**, and they ask for different bars. They must be reconciled in one edit, not raced.
->
-> 1. **Recommendation attribution** (PR #415 item B6, owner decision 2026-07-25): sharing a
->    child's first name with a connected family via `display_name` next to a recommendation is
->    working-as-intended, sanctioned by this ADR's mutual connection consent **alone**, with no
->    additional disclosure consent layered on top. B6 asks that this ADR state that granularity
->    explicitly, since it currently defines the rings but not what may cross ring 2.
-> 2. **Personalized story content** ([ADR-023](./adr-023-story-personalization-slots.md), status
->    Proposed): render-time substitution of a child's real first name throughout story prose read
->    in a connected household. ADR-023 proposes a **stricter** bar for this: a separate,
->    separately-worded, timestamped, policy-versioned disclosure consent per profile, per slot
->    type, per connection.
->
-> The argument that the two legitimately differ is about bandwidth, not about the datum: an
-> attribution is a single low-bandwidth signal attached to a pointer, seen by a guardian who opted
-> into that feed, whereas a name substituted throughout full prose is a much larger and richer
-> disclosure, read repeatedly by the other family's children and compounded by whatever other
-> slots are substituted alongside it. That argument is not obviously decisive. Neither ADR-023 nor
-> this note picks a side; ADR-023 open decision OD-1 is the sign-off gate. Whoever writes the real
-> amendment sentence should cover both cases in a single change.
 
 ### The standing exclusions (unchanged in force, now precisely scoped)
 
