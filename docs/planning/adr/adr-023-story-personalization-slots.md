@@ -729,7 +729,7 @@ counsel items called out under OD-1 and OD-5 are answered.
       **(c) Bundled consent: adequate.** One bundled per-(profile, connection) consent record
       covering every opted-in slot type, including the sibling and pet-name entries, is sufficient.
       Those two do not need their own separate signature. By extension the related question in
-      implementation plan open question 7 is closed the same way: narrowing `covered_slot_types`
+      the implementation plan (section 14, closed question 4) is closed the same way: narrowing `covered_slot_types`
       updates the signed record in place and does not require re-signing.
       **Flagged for counsel**: this is the most legally aggressive choice in the ADR, and the
       attestation in (a) is a self-declaration rather than a verification. It is the second of the
