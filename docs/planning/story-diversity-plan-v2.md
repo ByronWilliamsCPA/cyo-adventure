@@ -3,7 +3,7 @@ schema_type: planning
 title: "Story Diversity Plan v2"
 description: "Rebuilt diversity plan, grounded only in measurements that survived a seven-reviewer adversarial
   pass and a 98-document corpus survey. Fourteen near-term deliverables, six independent defects, eight items deferred
-  behind named prerequisites, four resolved owner decisions, and one confirmation outstanding. Replaces two
+  behind named prerequisites, five resolved owner decisions and no open questions. Replaces two
   superseded plans."
 tags:
   - planning
@@ -98,7 +98,7 @@ Each item traces to a fact in section 1. Effort: S under a day, M a few days, L 
 | **A11** | **State the request restrictions before submission.** `RequestStory.tsx` shows one prompt and no restrictions. `_ELEMENT_MUST_BE_NULL` spans `SAFETY_POLICY`, `PERSONAL_DETAILS` and `IDENTITY_PROTECTION`, so for the three most surprising restrictions the WS-7 echo can name the reason but structurally cannot show what was dropped. Serve the restriction set from the API off `ReasonCode` / `band_profile` / the profile's `content_nogo`, never hand-written copy. Kid surface omits the `content_nogo` values entirely and its copy stays invariant to their contents. Note `capability-register.md:133` marks K19 delivered; update it. | M |
 | **A12** | **Enable Go back in continuation reads.** `replayRecordedPath` fails closed when `path[0] !== start_node`, disabling Go back in exactly the state-carrying series books where a reader has most to lose. A bug fix, not a feature. | M |
 | **A13** | **Make Go back walk to the nearest node with an untaken choice**, up to a small bound. Today it is single-step, and only **15 of 73** shallow foreclosing terminals are reached from a node offering an alternative; the other 58 sit at the end of single-choice corridors, so one hop re-presents the same fatal choice. **All 73 are within 3 hops.** This replaces a fail-depth floor plus 73 ending relocations with one player change and zero skeleton edits. **Bound: 3 hops** (owner, 2026-07-25), to be re-evaluated as stories are developed. Interacts with `runtime-semantics.md` section 6, so it needs B2's revision first. | M |
-| **A14** | **`PL-23`: no decision may offer only fatal options.** Owner rule (2026-07-25): every decision must leave at least one option that advances or loops back. `PL-23` is the next free policy ID (`PL-22` is the band-profile fail-closed guard). Scope per section 6.1: enforce that no decision node has **all** options leading to negative-valence terminals, which is **37** of 2,668 nodes today, and register the rule in `validator-rules.md` in the same PR. Pairs with A13: A14 governs decisions, A13 governs the 776 single-choice corridors that end fatally, which are not decisions and cannot be fixed by a rule about choice sets. | M |
+| **A14** | **`L2-14`: no decision may offer only fatal options.** Owner rule (2026-07-25): a reader must never be shown option A and option B where both end in death. Stated over **visible** choices in every reachable configuration, not declared choices, because a condition-gated survivable option is invisible to a reader who lacks the state and the decision then presents as all-fatal. That places it in the **Layer 2** stateful walk beside `L2-9`/`L2-11`, not the static policy layer: `validate_policy(story)` sees only declared structure. **`L2-14`** is the next free L2 id (`L2-13` is the current maximum); an earlier draft called this `PL-23`, which was the wrong layer. Scope: no decision node may have **all** visible choices leading to negative-valence terminals, which is **37** of 2,668 nodes at declared scope today and adds no further violations from gating (verified). Register in `validator-rules.md` in the same PR. Pairs with A13, which covers the 776 single-choice corridors that end fatally and are not decisions. | M |
 
 ## 4. Track B: defects found by the review, independent of this plan
 
@@ -120,7 +120,7 @@ Not "later" in the abstract. Each has one thing that must happen first.
 | Item | Prerequisite |
 | --- | --- |
 | Reading telemetry (depth reached, early-exit rate, real satisfying rate) | A schema design for durable per-session reading data plus a child-behaviour privacy review. `r1-deferred-debt-register.md` U5 already registers this as Phase 4b with an owner; extend that, do not duplicate it. |
-| A fail-depth floor (`PL-23`; `PL-22` is taken) | **Probably not needed at all** if A13 lands: a multi-step Go back fixes all 73 shallow foreclosing terminals with no skeleton edits, where a floor needs 73 relocations and a fraction with no non-circular basis. Revisit only if A13 is rejected or telemetry shows a residual problem. |
+| A fail-depth floor (`PL-23` is free; `PL-22` is taken) | **Probably not needed at all** if A13 lands: a multi-step Go back fixes all 73 shallow foreclosing terminals with no skeleton edits, where a floor needs 73 relocations and a fraction with no non-circular basis. Revisit only if A13 is rejected or telemetry shows a residual problem. |
 | An outcome-mix floor keyed on the fail-kind mix | Telemetry. Do not key it on topology. |
 | Challenge mode / permadeath | B2's ADR, since it is a backtracking-semantics change; plus a per-(profile, series) row, which does not exist. |
 | Alternate beat phrasings | Its own design doc and ADR. The evidence for it is weaker than stated (the illustrating quotation was wrong), though the byte-frozen-beat constraint is real. Also bounded by the `L2-12` 100,000-configuration cap, which permanently caps declared variables near five. |
@@ -149,7 +149,7 @@ brass-lantern, and it has three consequences:
 
 **Resolved (owner, 2026-07-25): difficulty.** Adopt A13 with a **3-hop** bound, re-evaluated as stories are
 developed, rather than a fail-depth floor. And a new rule: **no decision may offer only fatal options; at least
-one must allow advancing or looping back.** That becomes A14 (`PL-23`).
+one must allow advancing or looping back.** That becomes A14 (`L2-14`, see section 6.1 for why Layer 2).
 
 **Resolved (owner, 2026-07-25): ring-2 attribution.** Sharing the child's first name with a connected family is
 fine, because both guardians have agreed. Keep `display_name` as the attribution; B6 closes as
@@ -158,7 +158,10 @@ control, `coppa-compliance-audit.md:129` establishes that `display_name` is a fi
 only stored child name, and the disclosure is inventoried in `gdpr-compliance-review.md:160`. ADR-016 should
 gain a sentence stating ring-2 attribution granularity, since it currently defines the rings but not this.
 
-### 6.1 One confirmation needed on A14's scope
+**Resolved (owner, 2026-07-25): A14's scope.** The intent is that a reader is never shown option A and option B
+where both result in death. Confirmed at the negative-valence reading below, which is a superset of that concern.
+
+### 6.1 How A14's scope was chosen, and why it is a Layer 2 rule
 
 The rule reads naturally as three different tests, and the measurement separates them:
 
@@ -168,8 +171,21 @@ The rule reads naturally as three different tests, and the measurement separates
 | Every option is a **negative-valence** terminal (doomed whatever you pick) | **37** | **Recommended.** Matches the intent: the reader is offered a decision with no good outcome. |
 | Every option terminates at all | 144 | **Not implementable as stated.** These sit at median 90% of max tree depth and 88 of them offer a positive ending: they are climaxes. Forbidding them would make it impossible to end a story on a choice. |
 
-Recommend the middle reading, so A14 is scoped to 37 nodes. Confirm, and note the literal phrase "advancing or
-loop back" points at the third reading, which the climax finding rules out.
+The middle reading is adopted. The literal phrase "advancing or loop back" points at the third, which the
+climax measurement rules out: a story must be able to end on a choice.
+
+**Two findings from checking the gated case**, which the declared-choice count would have missed:
+
+- **No skeleton has "unconditional options all fatal with the survivable one gated."** Of 107 decision nodes
+  carrying a conditional choice, none degrades that way, so A14 adds no violations beyond the 37.
+- **18 decision nodes have every choice conditional** (in `the-cinder-bazaar`, `the-quiet-harbor-protocol`,
+  `the-iron-spire-trial`, `the-glass-comet`, and the brass-lantern pair). That shape is already covered:
+  **`L2-9`** blocks "any reachable non-ending configuration with zero visible choices", so a reader can never
+  face an empty decision, and these skeletons pass the gate today.
+
+Together those two are why A14 belongs in Layer 2 and must be written over visible choices. Nothing violates it
+through gating today, and stating it that way costs nothing while closing the loophole permanently. `L2-9` and
+`L2-11` already walk the same configuration space, so the `L2-12` cap is not a new constraint.
 
 ## 7. Method rules for this document
 
