@@ -3,7 +3,8 @@ schema_type: planning
 title: "Story Diversity Plan v2"
 description: "Rebuilt diversity plan, grounded only in measurements that survived a seven-reviewer adversarial
   pass and a 98-document corpus survey. Eighteen near-term deliverables, six independent defects, eight items deferred
-  behind named prerequisites, five resolved owner decisions, and a child-reader review folded in. Replaces two
+  behind named prerequisites, five resolved owner decisions, a child-reader review folded in, and a
+  development-stage section re-ordering the work for a catalog with one author and one test household. Replaces two
   superseded plans."
 tags:
   - planning
@@ -27,6 +28,53 @@ source: "story-diversity-analysis.md (measurements, as corrected); story-diversi
 > [story-diversity-execution-plan.md](story-diversity-execution-plan.md), both superseded.
 > [story-diversity-analysis.md](story-diversity-analysis.md) remains the measurement record;
 > [story-diversity-review-errata.md](story-diversity-review-errata.md) records what was refuted and why.
+
+---
+
+## 0. Development stage, and what it changes
+
+**Owner context (2026-07-25): every story in the catalog was authored by the owner, and the only readers are the
+owner's own children helping test.** There is no third-party author, no other family, no published cross-family
+catalog, and no reader whose progress belongs to someone else. The risks below are real for the future; most are
+not live yet.
+
+That does not make the plan smaller. It **re-orders** it, and in a direction worth stating explicitly, because
+the intuitive reading is backwards.
+
+**Do the catalog-quality rules now, precisely because enforcement is currently free.** A8 (in-cell clone audit),
+A14 (`L2-14`), B3 (`SR-8`) and A16-as-a-rule are all validator or CI gates over authored content. Today there
+are 58 skeletons, no published cross-family content to grandfather, no external author to coordinate with, and
+no reader to disrupt. Every month of authoring makes each of these strictly more expensive to adopt, because the
+violating set grows and the fix list grows with it. The 37 `L2-14` violations and the one clone pair are the
+owner's own work to fix, which is the cheapest possible remediation posture. **These get more urgent, not less.**
+
+**A9 is unblocked.** The clone pair can be retired and replaced outright with no migration concern, because the
+only progress recorded against it is test data belonging to the owner's family.
+
+**The reader-protection machinery is genuinely premature.** A15 (retire without deleting progress), A17
+(tombstone card), and the deferred visibility-ceiling work all protect a reader whose collection is not the
+owner's to discard. Today it is. These should be recorded as **triggered**, not scheduled:
+
+| Deferred item | Trigger that makes it live |
+| --- | --- |
+| A15, A17 (progress preservation, tombstones) | The first reader outside the owner's household, or the first book the owner would be unwilling to reset |
+| A16 (no retiring a non-final series book early) | Same. Keep it as a **written rule now**, since it costs nothing and prevents a habit forming |
+| Visibility ceiling, ring-2 attribution | The first connected family |
+| Reading telemetry (`r1-deferred-debt-register` U5) | Enough readers for a distribution to mean anything. With one family it cannot calibrate anything |
+| A10 (empty teen `short` cells) | A request that actually lands in one. The owner controls requests today |
+
+**And the child-reader findings can now be tested rather than argued.** The subagent review in section 6.1
+reasoned about what a child would find confusing. The owner's children are the current test readers, and the
+repo already ships `.claude/skills/naive-ux-check/` for exactly this: staged naive-user comprehension prompts
+per persona, logged to a dated findings report. Three of that review's judgements are empirical questions a
+single session with a real child would settle better than any amount of analysis:
+
+- Does a 3-hop rewind read as "the app took my turn"? (A13b's core risk)
+- Is the lower back-chevron confusable with the one that exits the book? (A18)
+- Does a hero-name field with a shuffle land as a toy or as a restriction? (A11)
+
+Run those before building A11, A13b or A18, not after. It is the one form of evidence this plan has been unable
+to gather, and it is currently available.
 
 ---
 
@@ -100,9 +148,9 @@ Each item traces to a fact in section 1. Effort: S under a day, M a few days, L 
 | **A13a** | **Leave the in-story Go back exactly as it is: one step, always available.** `Reader.tsx:210` states its purpose, "Kids mis-tap constantly; Go back undoes just the last choice." A multi-hop rewind bound to that button would move a mis-tapping 4-year-old three passages upstream and erase prose they were enjoying. At 3-5 and 5-8 that is pure loss, since `_PROFILES` forbids `death` and `capture` at both bands so there is no fatal corridor to rescue, and a 3-5 story is 10-45 nodes, making 3 hops up to a third of the book. **No change to `back()` or `canGoBack()`.** | none |
 | **A13b** | **Add a second, separately labelled affordance at the ending screen only: "Try a different way."** Walks up to **3 hops** to the last node where the reader had a real pick, and **falls back to one step when there is none**. Availability stays exactly today's `path.length > 1` and replayable: it must never become "an untaken choice exists within 3 hops", because that hides the button at precisely the 88 preserved climaxes (take option A, die, go back, take option B, win: on that second ending there is no untaken fork nearby and a button the child just learned would vanish). "Untaken" is defined against the current read only, and the walk stops at the **first branching ancestor** regardless of whether its other options were used, so the destination is always "the last place you got to pick" rather than a distance that varies per press. Captures the full measured benefit (the 58 corridor terminals) without repurposing a learned affordance. | M |
 | **A14** | **`L2-14`: no decision may offer only fatal options, band-scoped, and stated so it cannot be dodged.** Owner rule: a reader must never be shown option A and option B where both end in death. Two corrections from the child-reader review (section 6.2). **(a) Band-scope it.** `Valence.NEGATIVE` includes `setback`, so a single negative-valence rule would forbid a 15-year-old from ever facing a lose-lose dilemma, which is exactly what a `gauntlet` reader seeks and what ADR-011 sanctions from 13-16 up. Enforce the negative-valence reading at **8-11 and 10-13**, and the `death`/`capture` reading at **13-16 and 16+**. **(b) State it over the reader-visible decision unit, not the node**, or an author can comply by splitting an all-fatal decision into two single-choice corridors that each end fatally: the rule passes and the child now gets a page with one button that kills them. So: no reachable branching node may have every downstream path reach a forbidden terminal without an intervening visible choice. That also folds in the 776 single-choice fatal corridors, which are the larger agency problem and which the node-scoped rule missed entirely. Layer 2 (`L2-14`) because it is about visible choices in reachable configurations. | M |
-| **A15** | **Retire-for-quality must not delete a child's progress.** `archive` is the only exit from `published`, `library.py` filters on published status, `reconcileOfflineCache` purges the local copy, and `reading_history.py::_history_item` degrades a version-less book to a storybook **id** as its title with `total_endings = 0`. So a retired book takes the shelf card, the in-progress read, the offline copy and the "6 of 7 endings found" badge with it, silently. Distinguish **unsafe** (archive now, the urgency justifies it) from **substandard** (no new readers: stop assigning, keep it readable for any profile with progress or completions, let it age out). Interim before the deferred visibility work exists: unassign only from profiles with no activity. Fix `_history_item`'s degraded row to show a friendly retired label, not a UUID. | M |
-| **A16** | **Never retire a non-final series book before its replacement ships in the same release.** `Reader.tsx:313-320` offers "Continue the series" on a satisfying ending of a non-final book; if book 2 changes or goes, that promise goes quiet with no in-product account, after a teen spent hours in a 550-node book and earned carried state. The replacement must accept book 1's carried state, which is exactly what B3 gates. If it cannot, re-cut book 1 to `is_final` so the continuation is never promised. Binds A9. | S |
-| **A17** | **A retired book leaves a tombstone, not a hole**: title, endings the child found, and one line ("This one has gone back to the workshop. Your 6 endings are still yours."). Children infer causes, and a card that vanishes next to a `StarRating` they cannot clear invites "did I lose it because I rated it 2 stars?". | S |
+| **A15** | **Triggered, not scheduled (section 0).** **Retire-for-quality must not delete a child's progress.** `archive` is the only exit from `published`, `library.py` filters on published status, `reconcileOfflineCache` purges the local copy, and `reading_history.py::_history_item` degrades a version-less book to a storybook **id** as its title with `total_endings = 0`. So a retired book takes the shelf card, the in-progress read, the offline copy and the "6 of 7 endings found" badge with it, silently. Distinguish **unsafe** (archive now, the urgency justifies it) from **substandard** (no new readers: stop assigning, keep it readable for any profile with progress or completions, let it age out). Interim before the deferred visibility work exists: unassign only from profiles with no activity. Fix `_history_item`'s degraded row to show a friendly retired label, not a UUID. | M |
+| **A16** | **Adopt as a written rule now, enforce when triggered (section 0).** **Never retire a non-final series book before its replacement ships in the same release.** `Reader.tsx:313-320` offers "Continue the series" on a satisfying ending of a non-final book; if book 2 changes or goes, that promise goes quiet with no in-product account, after a teen spent hours in a 550-node book and earned carried state. The replacement must accept book 1's carried state, which is exactly what B3 gates. If it cannot, re-cut book 1 to `is_final` so the continuation is never promised. Binds A9. | S |
+| **A17** | **Triggered, not scheduled (section 0).** **A retired book leaves a tombstone, not a hole**: title, endings the child found, and one line ("This one has gone back to the workshop. Your 6 endings are still yours."). Children infer causes, and a card that vanishes next to a `StarRating` they cannot clear invites "did I lose it because I rated it 2 stars?". | S |
 | **A18** | **Differentiate the two back-chevrons.** `Reader.tsx` renders Go back as a ghost button with a chevron visually identical to the top-bar "Leave" chevron, one of which exits the book. A13b makes the lower one more consequential. Give the story-level control a circular-arrow glyph, and make the ending-screen affordance primary weight rather than ghost, since there it is a headline action. | S |
 
 ## 4. Track B: defects found by the review, independent of this plan
