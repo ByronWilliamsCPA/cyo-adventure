@@ -2,7 +2,7 @@
 schema_type: planning
 title: "Story Diversity Remediation and Enhancement Plan"
 description: "Phased plan to close the nine gaps in story-diversity-analysis.md and raise book diversity
-  further. Records ten review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because
+  further. Records eleven review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because
   the closed vocabulary is load-bearing for the WS-7 echo surface; the gamebook cells' 98% negative share is
   ADR-011-intended with PL-20 working as designed, the real gap being a shallow fail-path tail PL-20 leaves
   out of scope; expanding the curated vocabulary is the better fix and it exposes a symmetric-Jaccard defect
@@ -13,7 +13,9 @@ description: "Phased plan to close the nine gaps in story-diversity-analysis.md 
   visibility-independent; PL-22's fraction resolves to 33% on measured funnel depth; and the request page must
   state its restrictions up front, because the three most surprising ones can never be explained afterwards; and
   'how many winning arcs' is the wrong question, since path mass and ending count are decoupled, which also
-  exposes two series-continuity gaps."
+  exposes two series-continuity gaps. Identifies the root cause of the gamebook symptoms: ADR-011's
+  restart-on-fail primitive is specified, unrepresentable in the schema, and half-built in the player, so every
+  terminal is a hard stop."
 tags:
   - planning
   - generation
@@ -45,11 +47,11 @@ source: "story-diversity-analysis.md; review challenges on GDPR exposure of an o
 
 ## 1. Corrections and refinements from review
 
-Ten items, each from a review challenge and each changing the work. They are recorded here rather than
+Eleven items, each from a review challenge and each changing the work. They are recorded here rather than
 silently patched into the audit, because each rests on a fact the audit did not establish. 1.1 and 1.2 correct
 errors; 1.3 through 1.10 are owner direction and resolved decisions that reshape the approach. 1.6 also
 corrects an earlier claim about offline revocation, and 1.9 replaces a deliverable that measured the wrong
-thing.
+thing, and 1.11 identifies the root cause the P4 measurements were symptoms of.
 
 ### 1.1 The open-vocabulary theme signature is unsafe as drafted
 
@@ -647,6 +649,74 @@ and series-second, which is how it acquired 94 foreclosing endings.
 remediation converts foreclosing terminals into continuable ones. Both are M2 ending re-maps in the same
 direction, so the two jobs should be done in one pass over the affected skeletons rather than twice.
 
+### 1.11 Root cause: `restart-on-fail` is specified, half-built, and unrepresentable
+
+Owner expectation (2026-07-25): in a gamebook, many paths should be **setbacks**, not end-of-story-and-start-over.
+
+That is what ADR-011 specifies, and tracing why the catalog does not do it found the root cause of every P4
+symptom.
+
+**ADR-011 defines `restart-on-fail` as a first-class flow primitive.** Its flow-primitive list reads:
+"**restart-on-fail** (negative ending -> start/checkpoint)". The per-band allowance table grants it as
+"yes, lethal (gamebook)" for 13-16 and 16+. And it is written into the definition of the `gauntlet` topology
+itself: "linear spine, branch-to-fail, terminal (many), **restart-on-fail**", whose reread driver is
+"master the one path". A gauntlet is *supposed* to be many terminals plus a loop back, so the reader learns the
+route across attempts.
+
+**The schema forbids the edge that would implement it.** `storybook/models.py`'s `Node` validator:
+
+```text
+if self.is_ending:
+    if self.choices:
+        msg = f"ending node '{self.id}' must have no choices"
+```
+
+An ending node has no outgoing edge, by invariant. So "negative ending -> start/checkpoint" is unrepresentable
+in an authored graph. Grepping the source for `restart` finds worker restarts, Redis restarts, and Kubernetes
+probes: the primitive appears nowhere in the implementation.
+
+**And the checkpoint half is built but has no producer.** `player/state.py` carries
+`save_slots: dict[str, Snapshot]`, and `engine.py::_clone` copies each snapshot individually with a documented
+purity guarantee so "a cloned timeline cannot mutate a save slot shared with the original". `replay.py` already
+reconstructs a state from a `choice_path`, so state restoration works. But `EffectOp` operates on variables
+only (`var: str`), there is no save-slot effect, the strings `save` and `slot` do not appear in
+`storybook/models.py`, and no API exposes slots. **`save_slots` is correct runtime plumbing that nothing can
+ever write to.**
+
+**So the chain is:** ADR-011 specifies restart-on-fail; the schema cannot express it; the checkpoint mechanism
+has no producer; therefore all 1,778 gamebook terminals are hard stops, and the gauntlet topology's defining
+reread loop has no in-product mechanism at all. That is why SPM is ~0%, why an early terminal costs the whole
+session rather than a few nodes, and why only 30 of 143 endings are ever reached.
+
+**Two designs, and the tension between them resolves cleanly.**
+
+*Design A, the non-terminal setback (the literal reading of the owner expectation).* Model a setback as an
+ordinary node: an `on_enter` penalty effect plus choices routing onward. **Expressible today with no schema
+change**, which is worth knowing: authors simply used `is_ending: true, kind: setback` instead. But it collides
+with ADR-011's terminal fraction. `the-thornwood-trial` has 111 setback terminals out of 115 endings against a
+`min_endings` floor of 94, so converting even 22 of them breaks the floor. Wholesale conversion is not viable;
+targeted conversion of the shallowest terminals is exactly what D17 already does.
+
+*Design B, restart-on-fail via checkpoints (what ADR-011 intended).* Keep terminals many, and make a terminal
+not the end of the **session**. Needs three pieces: a way to establish a checkpoint (a new effect op, or an
+implicit checkpoint at bottleneck nodes), a restart affordance offered at an ending in the API and reader UI,
+and authored checkpoint placement. Two of the three hard parts already exist in `save_slots` and `replay.py`.
+
+**Design B is primary, A is the targeted supplement.** B preserves ADR-011's terminal fraction and the "many
+fails" character while restoring the loop the framework assumes, and it is the design the ADR actually
+specifies. A stays useful for the shallowest terminals under D17.
+
+**Two consequences for deliverables already in this plan:**
+
+1. **D18's SPM measure changes shape.** With restart-on-fail, a per-walk satisfying path mass near zero is not
+   necessarily a defect: the meaningful measure becomes the **cumulative satisfying rate per session**, across
+   restarts. The structural per-walk SPM stays useful as a design gate, but the floor must be set against
+   session-level telemetry (D16), not against the single-walk model.
+2. **Checkpoint placement and PL-22 are the same measurement.** A restart that returns the reader to node 1
+   makes them re-read the shared opening funnel, which is precisely the diversity failure PL-22 exists to
+   prevent. So checkpoints must sit at or past the funnel-clearing depth, which is the same 33%-of-`min_complete`
+   quantity section 1.7 derived. One number serves both rules.
+
 ---
 
 ## 2. Objective and constraints
@@ -838,6 +908,21 @@ catalog. Small, and it shares its remediation pass with D17.
 | D44 | **Remediate `brass-lantern`.** Both books carry 94 of 152 endings (62%) as `death` or `capture` against a non-final `is_final: false`. Convert the foreclosing terminals to continuable `setback`s via M2 ending re-map, in the **same pass** as D17's PL-22 relocations, since both are ending re-maps in the same direction over the same two skeletons. Note these are also the section 3.2 structural clone pair, so D9's resolution should be sequenced with this. | M |
 | D45 | Record the series-plus-gamebook tension in ADR-011's amendment: a series book's fails must be `setback`-shaped rather than lethal, so the combination is more constrained than either style alone. `brass-lantern` reads as authored gamebook-first and series-second, which is how it acquired 94 foreclosing endings. | S |
 
+### P10: Implement `restart-on-fail` (section 1.11)
+
+The root-cause phase. ADR-011 specifies the primitive, the schema cannot express it, and the checkpoint
+mechanism is built with no producer. Highest leverage in the whole plan for the gamebook cells, because it
+addresses the cause rather than the symptoms P4 measures. Needs an ADR amendment and a design doc before code.
+
+| ID | Deliverable | Effort |
+| --- | --- | --- |
+| D46 | **Decide the checkpoint mechanism.** A new `EffectOp` writing a named save slot, versus an implicit checkpoint at bottleneck nodes, versus a node-level `checkpoint: true` marker. Implicit-at-bottleneck needs no schema change to authored stories and no author discipline, which argues for it; an explicit marker gives authors control over pacing. Decide before D47. | S |
+| D47 | **Restart-on-fail affordance at an ending.** Offer "return to your last checkpoint" when a reader reaches a non-satisfying terminal, restoring `var_state`, `visit_set`, and position from the slot. `save_slots` and `engine._clone`'s snapshot purity are already built, and `replay.py` already reconstructs a state from a `choice_path`, so this is API plus reader UI over existing primitives. | M |
+| D48 | **Checkpoint placement at or past the funnel-clearing depth** (section 1.11 consequence 2): a restart that returns the reader to node 1 re-reads the shared opening funnel, which is the diversity failure PL-22 exists to prevent. Reuse the same 33%-of-`min_complete` quantity from section 1.7 rather than deriving a second number. | S |
+| D49 | **Amend ADR-011** to record that `restart-on-fail` is a player-level loop over hard terminals rather than a graph edge, since `Node` forbids choices on an ending node and that invariant is worth keeping. The ADR currently implies a graph edge ("negative ending -> start/checkpoint"), which is not implementable as written. | S |
+| D50 | **Re-shape D18's floor as a session-level measure** once D47 ships: cumulative satisfying rate per session across restarts, with structural per-walk SPM retained as the design gate. Without this, D18 would floor a metric that restart-on-fail deliberately makes unrepresentative. | S |
+| D51 | Audit whether `save_slots` should stay unwritable until D46 lands. It is currently correct plumbing with no producer, which is harmless but invites a future contributor to assume checkpoints work. Either document it as reserved-for-D47 or gate it behind the same decision. | S |
+
 ---
 
 ## 4. Sequencing
@@ -858,6 +943,7 @@ P7 (visibility: D25 -> D26, D27, D28 -> D29..D32, D34)   independent; D25 unbloc
      D33 (read-time filter test) gates D32
 P8 (expectation setting: D36 -> D37, D38, D39, D40)   independent; no open decisions
 P9 (series: D42 -> D41, D43; D44 shares D17's remediation pass; D45)
+P10 (restart-on-fail: D46 -> D47 -> D48, D50; D49, D51)   root cause; ADR-011 amendment first
 ```
 
 P1 before P3: escalation cannot act on a signal that does not fire. P1 before any metric claim: until the
@@ -891,6 +977,7 @@ Beyond the WS-0 suite:
 | Satisfying path mass (SPM) | Share of choice-uniform playthroughs reaching a `success`/`completion` ending; the structural design gate | D18 |
 | Ending-mass concentration | Share of terminal mass on the top-k endings, and how many declared endings are ever reached | D18 |
 | Satisfying-ending rate | Real share of readers reaching a `success`/`completion` ending per storybook; the SPM floor's calibration input | D16, D18 |
+| Session satisfying rate | Cumulative share of reading *sessions* reaching a `success`/`completion` ending across restarts; supersedes per-walk SPM as the floor once D47 ships | D50 |
 | Series continuation admissibility | Non-final series books with zero continuation-foreclosing endings | D41, D44 |
 | Outcome-mix spread | Per cell, spread of negative-ending share across candidates | D19 |
 | Escalated ATG lift | ATG masked distance at `LEAF` escalation minus the same pair at `TREE` | D11 |
@@ -913,6 +1000,7 @@ doing anything, however good the code looks.
 | Admin visibility lever | **Guardian sets a ceiling; the admin may only restrict.** `resolved = min(guardian_ceiling, admin_choice)`. | 1.5, built by D26 |
 | What does the kid surface say about `GUARDIAN_CONTROL`? | **Only that some themes are off**, never the list. The kid-surface API response omits `content_nogo` entirely, and the copy stays invariant to the list's contents. | 1.8, built by D39 |
 | How many winning arcs should a gamebook have? | **Wrong question: it is path mass, not ending count.** Floor the satisfying path mass, keyed on topology ("a reflection of the branching strategy"); leave positive ending count unconstrained; permit reconvergence. Ten positive endings at 0% mass must fail. | 1.9, built by D18 |
+| Should gamebook fails be terminal? | **No: many paths should be setbacks, not end-of-story.** ADR-011 already specifies `restart-on-fail`; the schema forbids the edge and the checkpoint mechanism has no producer. Root cause of the P4 symptoms. | 1.11, built by P10 |
 | Series end points | **Every ending must allow the next book's single start point.** New SR-8; `brass-lantern` has 62% foreclosing endings today. | 1.10, built by D41/D44 |
 | Open vs curated vocabulary | **Expand the curated closed list**; the open-vocabulary variant drops to a fallback (D7) that may never be needed. | 1.3 |
 
@@ -924,6 +1012,9 @@ doing anything, however good the code looks.
 - **Does a `capture` ending foreclose series continuation?** `death` is unambiguous; `capture` may be a
   legitimate cliffhanger ("you are taken, and book 2 opens in the cell"). A narrative decision, needed before
   D41 fixes SR-8's kind set. **The last substantive product decision left in this plan.**
+- **Which checkpoint mechanism?** A new `EffectOp`, an implicit checkpoint at bottleneck nodes, or a node-level
+  marker. D46. Implicit-at-bottleneck needs no authored-schema change and no author discipline; an explicit
+  marker gives authors pacing control.
 - **Should PL-22 become `max(0.33 * min_complete, funnel_clearing_depth)`?** One skeleton
   (`the-smugglers-cut`) has a funnel deeper than its 33% floor. Start with the constant plus a per-cell
   override; revisit on D16's telemetry.
