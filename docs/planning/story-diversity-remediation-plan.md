@@ -2,7 +2,7 @@
 schema_type: planning
 title: "Story Diversity Remediation and Enhancement Plan"
 description: "Phased plan to close the nine gaps in story-diversity-analysis.md and raise book diversity
-  further. Records six review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because
+  further. Records eight review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because
   the closed vocabulary is load-bearing for the WS-7 echo surface; the gamebook cells' 98% negative share is
   ADR-011-intended with PL-20 working as designed, the real gap being a shallow fail-path tail PL-20 leaves
   out of scope; expanding the curated vocabulary is the better fix and it exposes a symmetric-Jaccard defect
@@ -10,7 +10,8 @@ description: "Phased plan to close the nine gaps in story-diversity-analysis.md 
   sound but blocked on visibility being set at approval rather than at intake; and visibility authorization is
   a monotone restriction rule where the guardian sets a ceiling the admin may lower but never raise, which a
   guardian may change later without any content re-screen because every content screen is already
-  visibility-independent."
+  visibility-independent; PL-22's fraction resolves to 33% on measured funnel depth; and the request page must
+  state its restrictions up front, because the three most surprising ones can never be explained afterwards."
 tags:
   - planning
   - generation
@@ -42,10 +43,10 @@ source: "story-diversity-analysis.md; review challenges on GDPR exposure of an o
 
 ## 1. Corrections and refinements from review
 
-Six items, each from a review challenge and each changing the work. They are recorded here rather than
+Eight items, each from a review challenge and each changing the work. They are recorded here rather than
 silently patched into the audit, because each rests on a fact the audit did not establish. 1.1 and 1.2 correct
-errors; 1.3 through 1.6 are owner direction that reshapes the approach, and 1.6 also corrects an
-earlier claim about offline revocation.
+errors; 1.3 through 1.8 are owner direction and resolved decisions that reshape the approach, and 1.6 also
+corrects an earlier claim about offline revocation.
 
 ### 1.1 The open-vocabulary theme signature is unsafe as drafted
 
@@ -429,6 +430,118 @@ the guardian control stays a real control rather than something the admin lever 
 policy, and that file is not present in `docs/planning/`. A security-relevant decision is currently governed by
 a document that cannot be read. Restore it or repoint the citation.
 
+### 1.7 PL-22's fraction: 33%, and the reasoning is measurable
+
+Three candidate fractions, evaluated against the constraints that actually bear on the choice.
+
+**Is there guidance in the initial research?** No. Searching `docs/planning/`, `docs/planning/adr/`, and
+`docs/architecture/` for difficulty, frustration, discouragement, early-death, or forgiveness guidance returns
+nothing on this question. ADR-011 sets terminal *fraction* ("~25-35% of nodes are terminals") and the
+"few wins + many fails" character, and PL-20 sets the winning-path floor. How early a reader may be
+terminated, and how many winning arcs there should be, are genuinely unspecified rather than specified
+elsewhere and missed. So this is a decision to make, not a decision to look up.
+
+**Constraint 1: the ending-count floor does not discriminate between 25% and 33%.** Converting an early
+terminal into a routing `setback` removes an ending, and both the band `min_endings` and the breadth-scaled
+gamebook ending fraction still have to hold. Measured headroom per skeleton:
+
+| PL-22 fraction | Endings affected | Share of 1,778 | Skeletons breaking the ending floor |
+| --- | --- | --- | --- |
+| 25% of `min_complete` | 100 | 5.6% | 1 (`the-ashfall-expedition`) |
+| 33% | 178 | 10.0% | 1 (`the-ashfall-expedition`) |
+| 50% | 395 | 22.2% | **10 of 14** |
+
+So 50% is confirmed as a genuine rebalance and should be rejected. 25% and 33% cost the same single exception,
+which means the floor constraint is silent between them. And that exception is avoidable by construction:
+**remediation must be ending-count-preserving**, relocating a terminal deeper (M2 ending re-map, or re-targeting
+the choice that reached it) rather than deleting it. `the-ashfall-expedition` has zero headroom at either
+fraction and so *must* relocate; everywhere else it is the better default anyway, because deleting endings
+erodes the "many fails" character the fraction exists to preserve.
+
+**Constraint 2: the shared opening funnel, which is what the diversity argument actually rests on.** PL-22
+exists so a reader gets past the shared opening before terminating, since a reader who exits inside the funnel
+has read nothing that distinguishes this tree from another. So the floor should clear the depth at which the
+tree's distinctive content becomes reachable. Using "BFS depth at which 10% of the tree is reachable" as that
+proxy:
+
+| Measure | Median | Range |
+| --- | --- | --- |
+| Depth at which 10% of the tree is reachable | **9** | 6 to 12 |
+| 25% of `min_complete` | 8.0 | 6 to 9 |
+| 33% of `min_complete` | 10.6 | 8 to 12 |
+
+Per skeleton, **33% clears the 10%-reachable depth in 13 of 14; 25% clears it in only 3 of 14.** A 25% floor
+lands just inside the funnel region, which is precisely the failure PL-22 is meant to prevent. A 33% floor
+lands just past it.
+
+**Recommendation: 33%.** It is the smallest fraction that satisfies the rule's own rationale, it costs the same
+single ending-floor exception as 25%, and 178 relocations across 14 skeletons is a bounded, mechanical job.
+Choosing 25% would ship a rule that passes its own test on 3 of 14 trees, which is worse than not having the
+rule, because it would read as solved.
+
+**One exception to note.** `the-smugglers-cut` has a 33% floor of 8 but reaches 10% of its tree only at depth
+11, so it still permits an exit inside its funnel. The per-cell table should therefore allow a per-cell
+override where the funnel is unusually deep, rather than treating 33% as universal. Defining PL-22 as
+`max(0.33 * min_complete, funnel_clearing_depth)` is the more principled form; start with the constant, and
+promote to the max form if D16's telemetry shows funnel exits still matter.
+
+**Resolved: the 60% tense-but-fair question.** Accepted per owner review. A cell holding one ~95% gauntlet, one
+~80% harsh-but-survivable, and one ~60% tense-but-fair is legitimate gamebook variety rather than a broken
+`narrative_style` promise. D19 moves from "hold pending telemetry" to accepted, and the in-cell outcome-spread
+requirement is a design target rather than an open question. `narrative_style` continues to promise the
+gamebook *form* (second person, gauntlet-capable topologies, many fails), not a specific lethality rate.
+
+### 1.8 The request page must state the restrictions before the child invests in an idea
+
+Owner direction (2026-07-25): if we block a child from using their own name and never said so on the request
+page, they will be annoyed that the book did not turn out as expected. That is correct, and there is a
+structural reason it cannot be fixed after the fact.
+
+**What the request surface says today.** `frontend/src/library/RequestStory.tsx` renders one prompt, "What
+should your story be about?", a 500-character textarea, and an optional series name. It states **no
+restrictions at all**. A child can type "a story where I'm the hero and my name is Maya" with no indication
+that neither part of that will happen.
+
+**Why the WS-7 echo cannot cover this.** WS-7 reflects the interpretation back after submission, which is the
+right mechanism for "here is what we built and what we set aside". But `interpretation.py` defines
+`_ELEMENT_MUST_BE_NULL` over exactly three reason codes, `SAFETY_POLICY`, `PERSONAL_DETAILS`, and
+`IDENTITY_PROTECTION`: for these, the offending phrase "is never echoed, stored, or paraphrased". So for the
+three most surprising restrictions, including self-naming, the post-hoc reflection can name the *reason* but
+structurally cannot show the child *what* it dropped. Pre-submission disclosure is therefore not a nicety
+duplicating the echo; it is the only place the expectation can actually be set.
+
+**The authoritative restriction set.** `ReasonCode` has ten members, six of which are requester-facing
+restrictions worth stating up front:
+
+| Reason code | What to tell the requester |
+| --- | --- |
+| `IDENTITY_PROTECTION` | The hero will not be you. Self-naming is disallowed by design (Route A). |
+| `PERSONAL_DETAILS` | No real names, addresses, phone numbers, or emails, yours or anyone's. |
+| `STRUCTURE_FIXED` | How many endings there are, where they are, and how the story branches are already set and cannot be requested. |
+| `BAND_POLICY` | Some content is off-limits for this reader's age band. |
+| `GUARDIAN_CONTROL` | This family has some themes turned off. |
+| `SAFETY_POLICY` | Some phrasings are withheld by the safety floor. |
+
+The remaining four are not restrictions: `BOUND_TO_SLOT` and `STORY_FIT` are successes, `NOT_THIS_STORY_KIND`
+and `NO_CONFORMING_BINDING` are fit outcomes that only exist after a bind attempt.
+
+**Design requirements:**
+
+1. **Derive the copy from the enforcement source, not from hand-written strings.** A hard-coded list on the
+   request page will drift from `ReasonCode`, `band_profile`, and the guardian's `content_nogo` the first time
+   any of them changes, and a stated restriction that no longer matches behaviour is worse than none. Serve
+   the restriction set from the API, keyed on the requesting profile's band, so the page renders what the
+   pipeline will actually enforce.
+2. **Band-appropriate copy.** The `AgeBand` is known at request time. A 3-5 requester and a 16+ requester need
+   different wording for the same rule, and the kid surface needs the positive framing ("your hero gets a
+   made-up name") rather than the policy framing.
+3. **Guardian-specific restrictions need a disclosure decision.** `GUARDIAN_CONTROL` reflects that family's
+   own banned themes. Showing a child the literal banned-theme list exposes guardian intent and may be
+   counterproductive. Recommend the kid surface state only that some themes are off for this family, while the
+   guardian surface shows the actual list, which the guardian set and can change.
+4. **Serves [K19](capability-register.md)** (expectation-setting) as its pre-submission half, alongside WS-7's
+   post-submission reflection. Worth recording as such so the two are maintained together.
+
 ---
 
 ## 2. Objective and constraints
@@ -524,7 +637,7 @@ receive; D15 and D18 are the product decisions PL-20's authors deliberately left
 | D16 | Instrument **real** reading depth. `ReadingState` and `Completion` already hold what is needed: nodes visited per session, terminal reached, endings collected per profile, re-reads per storybook. Report the distribution of depth-reached against `min_complete` per cell, plus the share of sessions terminating below PL-22's candidate fractions. This replaces both proxies (random walk and BFS ending depth) with measurement, and it is what decides whether D17 is needed at all. | M |
 | D17 | Remediate the endings PL-22 rejects, via WS-5's M2 ending re-map: convert an early lethal terminal into a `setback` that routes back into the graph rather than deleting it. At 25% that is 100 endings across 14 skeletons, concentrated in `the-ashfall-expedition` (19), `the-drowned-court` (15), `the-serpent-vaults` (11), and the clone pair (10 each). Every remutated tree re-runs the full gate. | M |
 | D18 | Give "few wins" a number. 2 to 5 winning endings out of 74 to 209 is unconstrained by any rule; ADR-011 specifies terminal *fraction* but not valence mix. Add a `min_positive_endings` scaling with ending count, and optionally a negative-share ceiling. Independent of the depth work, and a product decision rather than a defect. | M |
-| D19 | Optional, pending D16: require in-cell **outcome spread** so candidates in one cell occupy different points in the valence envelope. A cell holding one 95% gauntlet, one ~80% harsh-but-survivable, and one ~60% tense-but-fair is still entirely gamebook, and it varies how the cell *plays* rather than only how it reads. Enforced by the D5 audit. Hold until D16 shows whether readers experience the uniformity. | M |
+| D19 | **Accepted** (section 1.7): require in-cell **outcome spread** so candidates in one cell occupy different points in the valence envelope. A cell holding one 95% gauntlet, one ~80% harsh-but-survivable, and one ~60% tense-but-fair is still entirely gamebook, and it varies how the cell *plays* rather than only how it reads. Enforced by the D5 audit. Hold until D16 shows whether readers experience the uniformity. | M |
 
 **Acceptance.** PL-22 fails on the current `main` for the 100 endings below a 25% floor and passes after D17.
 D16 publishes the measured depth-reached distribution per cell. No skeleton regresses on PL-20: converting a
@@ -592,6 +705,21 @@ both prongs, so no relaxation is needed to get the diversity benefit. P7 then st
 (guardians wanting to share good books, and the authorization rule being correct) rather than as a privacy
 workaround. That is the better outcome, and a reason to do P1 first.
 
+### P8: Pre-submission expectation setting (section 1.8)
+
+The pre-submission half of [K19](capability-register.md), complementing WS-7's post-submission reflection.
+Independent of every other phase. Small, and it addresses the most direct cause of a child feeling the book
+"did not turn out as expected": three of the six requester-facing restrictions can never be explained after
+the fact, because `_ELEMENT_MUST_BE_NULL` forbids echoing the offending phrase.
+
+| ID | Deliverable | Effort |
+| --- | --- | --- |
+| D36 | **Serve the restriction set from the API**, keyed on the requesting profile's band, derived from `ReasonCode`, `band_profile`, and the profile's `content_nogo` rather than hand-written copy. A hard-coded list on the page drifts from enforcement the first time any of those changes, and a stated restriction that no longer matches behaviour is worse than none. | M |
+| D37 | **Surface it on the kid request surface** (`frontend/src/library/RequestStory.tsx`), which today shows one prompt, a 500-character textarea, and no restrictions at all. Positive, band-appropriate framing: the hero gets a made-up name, no real names or contact details, the story's shape is already set. | M |
+| D38 | **Surface the fuller set on the guardian intake surface** (`frontend/src/guardian/IntakePage.tsx`), including the family's actual `content_nogo` list, which the guardian set and can change. | S |
+| D39 | **Decide the `GUARDIAN_CONTROL` disclosure level for the kid surface.** Showing a child the literal banned-theme list exposes guardian intent and may be counterproductive. Recommend the kid surface state only that some themes are off for this family, with the specifics on the guardian surface. Needs an owner call before D37 ships its copy. | S |
+| D40 | Regression-test the pair: a request naming the requesting child resolves to `IDENTITY_PROTECTION`, and the restriction the API served for that band covers it. Keeps the stated restrictions and the enforced ones from diverging silently, which is the failure mode D36 exists to prevent. | S |
+
 ---
 
 ## 4. Sequencing
@@ -610,6 +738,7 @@ P4 (fail-path depth + outcome mix) ----+
 P6 (ceiling: D23, D24)   independent, longest lead time, start the D23 design early
 P7 (visibility: D25 -> D26, D27, D28 -> D29..D32, D34)   independent; D25 unblocks the rest
      D33 (read-time filter test) gates D32
+P8 (expectation setting: D36 -> D37, D38, D40; D39 decides D37's copy)   independent
 ```
 
 P1 before P3: escalation cannot act on a signal that does not fire. P1 before any metric claim: until the
@@ -654,14 +783,19 @@ doing anything, however good the code looks.
 - **Does the similarity signature need a DPIA addendum?** The design adds no personal data at rest and no new
   export, which is the basis for arguing no. That is a DPO or legal call, not an engineering one. D7 raises it;
   it does not answer it.
-- **What fraction of `min_complete` should PL-22 use?** 25% (100 endings) or 33% (178)? D15 ratifies it. The
-  principle is not in question, only the number: PL-20 already establishes that depth is guaranteed, and PL-22
-  extends that guarantee from the winning path to every path.
+- **Resolved: PL-22 uses 33% of `min_complete`** (section 1.7). 25% clears the rule's own funnel rationale on
+  only 3 of 14 gamebook skeletons; 33% clears it on 13 of 14, at the same single ending-floor exception.
+  Remediation must be ending-count-preserving. D15 ratifies it as an ADR-011 amendment. Remaining sub-question:
+  whether to promote the constant to `max(0.33 * min_complete, funnel_clearing_depth)` for the one skeleton
+  (`the-smugglers-cut`) whose funnel runs deeper than its 33% floor; defer to D16's telemetry.
+- **Resolved: a ~60% tense-but-fair tree is legitimate gamebook variety** (section 1.7), so D19's in-cell
+  outcome-spread requirement is a design target rather than an open question. `narrative_style` promises the
+  gamebook form, not a lethality rate.
 - **How many winning arcs should a gamebook have?** 2 out of 209 is unconstrained rather than chosen. D18 needs
-  ratified numbers; ADR-011 specifies terminal fraction but not valence mix.
-- **Does the D19 outcome-spread requirement conflict with `narrative_style` as a promise?** If a reader picks
-  "gamebook" expecting a deadly maze, is a 60% tense-but-fair tree in that cell a broken promise or the
-  variety the cell needs? Resolve before authoring against it.
+  ratified numbers; ADR-011 specifies terminal fraction but not valence mix. Note that no guidance exists in the
+  research on this (section 1.7), so it is a decision to make rather than one to look up.
+- **What should the kid surface say about `GUARDIAN_CONTROL`?** D39. Naming a family's banned themes to a child
+  exposes guardian intent; recommend categories on the kid surface and specifics on the guardian surface.
 - **Should the ATG become blocking, and at what per-band threshold?** Inherited from WS-1, unblocked by D21's
   calibration.
 - **ADR candidate for D23.** Alternate beat phrasings move a safety-adjacent artifact from frozen string to
