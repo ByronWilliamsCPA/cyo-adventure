@@ -133,6 +133,47 @@
   color: inherit;
 }
 
+/* End-cap "Ask for a new story" tile: shaped like a book card slot (dashed,
+   like the picker's Add Child tile) so it reads as "a book that could be",
+   not a book. A real button; the whole card is the tap target. */
+.book-card--request {
+  font: inherit;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  text-align: inherit;
+  cursor: pointer;
+  border: 2px dashed var(--color-parchment-deeper);
+  background: transparent;
+  box-shadow: none;
+  height: 100%;
+  transition:
+    transform var(--duration-fast, 120ms) var(--easing-default, ease-in-out),
+    border-color var(--duration-fast, 120ms) var(--easing-default, ease-in-out);
+}
+
+.book-card--request:hover,
+.book-card--request:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--color-amber, #e07f2e);
+}
+
+.book-card--request:focus-visible {
+  outline: 3px solid var(--color-amber);
+  outline-offset: 2px;
+}
+
+.book-card__tile--request {
+  background: var(--color-amber-subtle, #fdf3e6);
+  color: var(--color-amber-deep, #c17b2a);
+  box-shadow: none;
+}
+
+.book-card__request-label {
+  font-weight: var(--weight-bold, 700);
+  font-size: var(--text-base);
+  text-align: center;
+}
+
 .book-card__tile {
   position: relative;
   display: grid;
@@ -297,6 +338,11 @@
   .star-rating__glyph--pulse {
     animation: none;
   }
+
+  .book-card--request:hover,
+  .book-card--request:focus-visible {
+    transform: none;
+  }
 }
 
 /* Guardian-set per-profile reduce_motion (data-reduce-motion on the kid
@@ -306,6 +352,11 @@
 [data-reduce-motion='true'] .library__loading-mascot,
 [data-reduce-motion='true'] .star-rating__glyph--pulse {
   animation: none;
+}
+
+[data-reduce-motion='true'] .book-card--request:hover,
+[data-reduce-motion='true'] .book-card--request:focus-visible {
+  transform: none;
 }
 
 .library__request {

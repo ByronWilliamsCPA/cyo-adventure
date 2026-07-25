@@ -86,6 +86,11 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
   const [continueAnchor, setContinueAnchor] = useState<ContinueAnchor | null>(null)
+  // Bumped by the shelf's "Ask for a new story" end-cap tile; RequestStory
+  // opens on the bump and the effect below brings the form into view. A
+  // counter (not a boolean) so every tap re-triggers, even with the form
+  // already open.
+  const [requestOpenSignal, setRequestOpenSignal] = useState(0)
   const requestStoryRef = useRef<HTMLDivElement>(null)
 
   const askForNextBook = useCallback(
@@ -93,6 +98,23 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
     []
   )
   const clearContinueAnchor = useCallback(() => setContinueAnchor(null), [])
+  const askForNewStory = useCallback(() => setRequestOpenSignal((signal) => signal + 1), [])
+
+  // Smooth only when nothing asks for reduced motion: the OS-level media
+  // query OR the guardian-set profile flag (data-reduce-motion on the kid
+  // shell, band-tokens.css), mirroring Reader.tsx's passage scroll.
+  const scrollRequestIntoView = useCallback(() => {
+    const reduceMotion =
+      (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false) ||
+      Boolean(requestStoryRef.current?.closest('[data-reduce-motion="true"]'))
+    // Optional-call scrollIntoView: it is absent under jsdom (test env) and
+    // guarding keeps the focus move working there without a test shim.
+    requestStoryRef.current?.scrollIntoView?.({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'start',
+    })
+    requestStoryRef.current?.focus()
+  }, [])
 
   // #ASSUME: UI state: tapping "Ask for the next book" opens the RequestStory
   // form at the top of the page with no visual cue near the tapped card;
@@ -102,12 +124,18 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   // scrolled into view and receives focus.
   useEffect(() => {
     if (continueAnchor !== null) {
-      // Optional-call scrollIntoView: it is absent under jsdom (test env) and
-      // guarding keeps the focus move working there without a test shim.
-      requestStoryRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
-      requestStoryRef.current?.focus()
+      scrollRequestIntoView()
     }
-  }, [continueAnchor])
+  }, [continueAnchor, scrollRequestIntoView])
+
+  // The end-cap tile's twin of the anchor effect above: same wayfinding rule
+  // (opening something far away must move the reader there), keyed on its
+  // own signal so clearing an anchor never re-scrolls.
+  useEffect(() => {
+    if (requestOpenSignal > 0) {
+      scrollRequestIntoView()
+    }
+  }, [requestOpenSignal, scrollRequestIntoView])
 
   // #ASSUME: timing dependencies: the "Try again" button calls `load()`
   // directly and discards its cleanup, so `cancelled` alone cannot stop a
@@ -416,6 +444,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             onContinue={canRequest ? askForNextBook : undefined}
             downloaded={isDownloaded(hero)}
             readOnly={readOnly}
+            ratable={!offline}
             endings={endingsFor(hero)}
             recommendation={recommendationFor(hero)}
           />
@@ -423,7 +452,12 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
       ) : null}
       {shelf.length > 0 ? (
         <section aria-label="More to Explore">
-          <h2 className="library__shelf-heading">More to Explore</h2>
+          {/* With a hero above, the grid really is "more"; on a fresh shelf
+              (nothing started, no hero) it is the whole page, so the heading
+              becomes the call to action instead. Visible text only: the
+              region's accessible name stays "More to Explore" so assistive
+              tech and the e2e suite keep one stable landmark name. */}
+          <h2 className="library__shelf-heading">{hero ? 'More to Explore' : 'Pick a book!'}</h2>
           <ul className="library__shelf">
             {shelf.map((item) => (
               <li key={item.id}>
@@ -434,11 +468,32 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
                   onContinue={canRequest ? askForNextBook : undefined}
                   downloaded={isDownloaded(item)}
                   readOnly={readOnly}
+                  ratable={!offline}
                   endings={endingsFor(item)}
                   recommendation={recommendationFor(item)}
                 />
               </li>
             ))}
+            {/* End-cap "Ask for a new story" tile: the request box lives
+                below the shelf and falls under the fold once a family has a
+                few books, so the invitation also appears where a browsing
+                child's eyes already are, as the shelf's last slot. Tapping
+                it opens the form (openSignal) and scrolls there. Same gate
+                as the form itself: never in guardian preview or offline. */}
+            {canRequest ? (
+              <li>
+                <button
+                  type="button"
+                  className="book-card book-card--request"
+                  onClick={askForNewStory}
+                >
+                  <span className="book-card__tile book-card__tile--request" aria-hidden="true">
+                    ✨
+                  </span>
+                  <span className="book-card__request-label">Ask for a new story</span>
+                </button>
+              </li>
+            ) : null}
           </ul>
         </section>
       ) : null}
@@ -457,6 +512,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             anchor={continueAnchor}
             onClearAnchor={clearContinueAnchor}
             libraryTitles={items.map((item) => item.title)}
+            openSignal={requestOpenSignal}
           />
         </div>
       ) : null}

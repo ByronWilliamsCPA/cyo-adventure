@@ -119,6 +119,36 @@ describe('LibraryPage', () => {
     expect(link).toHaveAttribute('href', '/read/p1/s1/2')
   })
 
+  it('opens and focuses the request form from the shelf end-cap tile', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, NOT_STARTED] } })
+    renderLibrary()
+    const shelf = await screen.findByRole('region', { name: /more to explore/i })
+
+    // The form starts closed; the end-cap tile lives inside the shelf grid.
+    expect(
+      screen.queryByRole('textbox', { name: /what should your story be about/i })
+    ).not.toBeInTheDocument()
+    fireEvent.click(within(shelf).getByRole('button', { name: /ask for a new story/i }))
+
+    expect(
+      await screen.findByRole('textbox', { name: /what should your story be about/i })
+    ).toBeInTheDocument()
+    // Wayfinding: the tap moved the reader to the far-away form container.
+    expect(document.activeElement).toHaveClass('library__request')
+  })
+
+  it('titles the shelf "Pick a book!" when nothing has been started yet', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED, SERIES_BOOK] } })
+    renderLibrary()
+    const shelf = await screen.findByRole('region', { name: /more to explore/i })
+
+    // No hero without progress; the lone shelf's heading becomes the call to
+    // action while the region keeps its stable accessible name.
+    expect(screen.queryByRole('region', { name: /continue reading/i })).not.toBeInTheDocument()
+    expect(within(shelf).getByRole('heading', { name: 'Pick a book!' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'More to Explore' })).not.toBeInTheDocument()
+  })
+
   it('titles the hero "Keep reading" for an unfinished book', async () => {
     mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, NOT_STARTED] } })
     renderLibrary()
@@ -189,10 +219,13 @@ describe('LibraryPage', () => {
     renderLibrary()
 
     expect(await screen.findByText(/no internet\./i)).toBeInTheDocument()
-    // Online, both would render (SERIES_BOOK is series-tagged); offline they
-    // could only dead-end in a failure message, so neither is offered.
+    // Online, all of these would render (SERIES_BOOK is series-tagged);
+    // offline they could only dead-end in a failure message or a silently
+    // dropped write, so none are offered.
     expect(screen.queryByRole('button', { name: /request a story/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /ask for the next book/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /ask for a new story/i })).not.toBeInTheDocument()
+    expect(screen.queryAllByRole('group', { name: /^rate /i })).toHaveLength(0)
   })
 
   it('shows the ask-a-grown-up gate on a 401, with no retry', async () => {
@@ -486,6 +519,7 @@ describe('LibraryPage', () => {
       expect(
         screen.queryByRole('button', { name: /ask for the next book/i })
       ).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /ask for a new story/i })).not.toBeInTheDocument()
       expect(container.querySelector('a[href^="/read/"]')).not.toBeInTheDocument()
     })
 

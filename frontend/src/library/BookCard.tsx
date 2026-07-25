@@ -42,6 +42,13 @@ export interface BookCardProps {
    * recommendations fetch is still loading, failed, or has no entry for this
    * book; the chip is withheld rather than shown as an error either way. */
   recommendation?: RecommendationSummary
+  /**
+   * False on the offline shelf (UX-K1 family): a rating tap there could only
+   * fail silently (the POST needs the network and transient failures keep
+   * the old value), so the stars are withheld entirely, consistent with the
+   * offline suppression of the request affordances.
+   */
+  ratable?: boolean
 }
 
 export function BookCard({
@@ -54,6 +61,7 @@ export function BookCard({
   readOnly = false,
   endings,
   recommendation,
+  ratable = true,
 }: BookCardProps) {
   const readTo = `/read/${profileId}/${item.id}/${item.version}`
   const pct = percentComplete(item)
@@ -64,51 +72,51 @@ export function BookCard({
   const showImage = Boolean(item.cover_url) && !coverError
   const inner = (
     <>
-        <div
-          className={showImage ? 'book-card__tile' : 'book-card__tile book-card__tile--painted'}
-          style={showImage ? undefined : { background: coverGradient(item.title) }}
-          aria-hidden="true"
-        >
-          {showImage ? (
-            <img
-              className="book-card__cover"
-              src={item.cover_url ?? undefined}
-              alt=""
-              onError={() => setCoverError(true)}
-            />
-          ) : (
-            <span className="book-card__letter">{item.title.charAt(0).toUpperCase()}</span>
-          )}
-        </div>
-        <h3 className="book-card__title">{item.title}</h3>
-        {hero ? (
-          <ProgressBar
-            // A finished book fills the bar and reads "Finished!" instead of a
-            // misleading "N of M pages explored" that under-reports a branching
-            // story (a branch touches only a fraction of all nodes) (UX-K5).
-            value={item.progress?.completed ? 100 : pct}
-            label={
-              item.progress?.completed
-                ? 'Finished!'
-                : item.progress
-                  ? `${item.progress.nodes_visited} pages explored`
-                  : 'Not started'
-            }
-            showLabel
+      <div
+        className={showImage ? 'book-card__tile' : 'book-card__tile book-card__tile--painted'}
+        style={showImage ? undefined : { background: coverGradient(item.title) }}
+        aria-hidden="true"
+      >
+        {showImage ? (
+          <img
+            className="book-card__cover"
+            src={item.cover_url ?? undefined}
+            alt=""
+            onError={() => setCoverError(true)}
           />
-        ) : item.progress?.completed ? (
-          <div className="book-card__finished">
-            <ProgressBar value={100} />
-            <span className="book-card__finished-label">Finished!</span>
-          </div>
-        ) : started ? (
-          <ProgressBar value={pct} />
         ) : (
-          <div className="book-card__not-started">
-            <ProgressBar value={0} />
-            <span className="book-card__not-started-label">Not started</span>
-          </div>
+          <span className="book-card__letter">{item.title.charAt(0).toUpperCase()}</span>
         )}
+      </div>
+      <h3 className="book-card__title">{item.title}</h3>
+      {hero ? (
+        <ProgressBar
+          // A finished book fills the bar and reads "Finished!" instead of a
+          // misleading "N of M pages explored" that under-reports a branching
+          // story (a branch touches only a fraction of all nodes) (UX-K5).
+          value={item.progress?.completed ? 100 : pct}
+          label={
+            item.progress?.completed
+              ? 'Finished!'
+              : item.progress
+                ? `${item.progress.nodes_visited} pages explored`
+                : 'Not started'
+          }
+          showLabel
+        />
+      ) : item.progress?.completed ? (
+        <div className="book-card__finished">
+          <ProgressBar value={100} />
+          <span className="book-card__finished-label">Finished!</span>
+        </div>
+      ) : started ? (
+        <ProgressBar value={pct} />
+      ) : (
+        <div className="book-card__not-started">
+          <ProgressBar value={0} />
+          <span className="book-card__not-started-label">Not started</span>
+        </div>
+      )}
     </>
   )
   return (
@@ -135,7 +143,7 @@ export function BookCard({
         <EndingsBadge found={endings.found} total={endings.total} />
       ) : null}
       {recommendation ? <RecommendationChip summary={recommendation} /> : null}
-      {readOnly ? null : (
+      {readOnly || !ratable ? null : (
         <StarRating
           value={item.rating}
           onRate={(value) => onRate(item.id, value)}

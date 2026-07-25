@@ -41,6 +41,28 @@ describe('RequestStory', () => {
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
   })
 
+  it('opens the idea form when the parent bumps openSignal (shelf end-cap tile)', async () => {
+    const { rerender } = render(<RequestStory profileId="p1" openSignal={0} />)
+    expect(
+      screen.queryByRole('textbox', { name: /what should your story be about/i })
+    ).not.toBeInTheDocument()
+
+    rerender(<RequestStory profileId="p1" openSignal={1} />)
+
+    expect(
+      await screen.findByRole('textbox', { name: /what should your story be about/i })
+    ).toBeInTheDocument()
+    // Unlike the anchor path, nothing typed is cleared: a bump while the form
+    // is already open keeps the child's draft intact.
+    fireEvent.change(screen.getByRole('textbox', { name: /what should your story be about/i }), {
+      target: { value: 'A robot who learns to bake' },
+    })
+    rerender(<RequestStory profileId="p1" openSignal={2} />)
+    expect(screen.getByRole('textbox', { name: /what should your story be about/i })).toHaveValue(
+      'A robot who learns to bake'
+    )
+  })
+
   it('sends the idea and refreshes the status list', async () => {
     mockGet.mockResolvedValueOnce(emptyList()).mockResolvedValueOnce({
       data: { requests: [{ id: 'req1', status: 'pending' }] },
@@ -334,9 +356,9 @@ describe('RequestStory', () => {
 
     // Reopening shows a fresh, empty form: cancel really reset the state.
     await user.click(screen.getByRole('button', { name: /request a story/i }))
-    expect(
-      screen.getByRole('textbox', { name: /what should your story be about/i })
-    ).toHaveValue('')
+    expect(screen.getByRole('textbox', { name: /what should your story be about/i })).toHaveValue(
+      ''
+    )
     expect(screen.getByLabelText(/part of a series\? give it a name!/i)).toHaveValue('')
   })
 

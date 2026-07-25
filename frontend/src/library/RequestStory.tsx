@@ -69,11 +69,16 @@ export function RequestStory({
   anchor = null,
   onClearAnchor,
   libraryTitles = [],
+  openSignal = 0,
 }: {
   profileId: string
   anchor?: ContinueAnchor | null
   onClearAnchor?: () => void
   libraryTitles?: string[]
+  /** Bumped by the parent (the shelf's "Ask for a new story" tile) to open
+   * the idea form from afar, exactly like tapping the form's own button:
+   * clears any stale error, preserves anything already typed. */
+  openSignal?: number
 }) {
   const api = useApi()
   const requestApi = useMemo(() => makeKidStoryRequestApi(api), [api])
@@ -104,6 +109,20 @@ export function RequestStory({
     if (anchor !== null) {
       setOpen(true)
       setSeriesTitle('')
+      setError(null)
+    }
+  }
+
+  // Same render-adjust pattern as the anchor above: a bumped openSignal
+  // opens the form with a clean error slate, mirroring the form's own
+  // "Request a story" button. Unlike the anchor path it clears neither the
+  // idea text nor the series title: the child may have typed, wandered off
+  // to browse, and come back via the shelf tile.
+  const [lastOpenSignal, setLastOpenSignal] = useState(openSignal)
+  if (openSignal !== lastOpenSignal) {
+    setLastOpenSignal(openSignal)
+    if (openSignal > 0) {
+      setOpen(true)
       setError(null)
     }
   }
