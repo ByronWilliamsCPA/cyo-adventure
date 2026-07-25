@@ -41,6 +41,10 @@ source: "story-diversity-analysis.md; review challenges on GDPR exposure of an o
   (2026-07-25)."
 ---
 
+> **Execution schedule:** [story-diversity-execution-plan.md](story-diversity-execution-plan.md) re-sequences
+> this plan's 56 deliverables from discovery order into dependency and value order, as seven milestones with
+> one branch per shippable unit. Start there to begin work; stay here for the evidence and reasoning.
+>
 > **Companion documents.** [story-flexibility-plan.md](story-flexibility-plan.md) is the strategy of record.
 > [story-diversity-analysis.md](story-diversity-analysis.md) is the current-state audit this plan executes.
 > Finding references below (3.1, 3.2, ...) point at that audit's section numbers.
