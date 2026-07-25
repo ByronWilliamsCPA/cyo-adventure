@@ -34,6 +34,13 @@ source: "Design discussion 2026-07-18 following the initial story-inventory run;
 > and (d) adds structure/state variety and a catalog flywheel. Parameterized
 > skeletons are an ADR-019 candidate (see Open questions).
 
+> **Current-state audit (2026-07-25):** see
+> [story-diversity-analysis.md](story-diversity-analysis.md) for a measured audit of what the shipped
+> pipeline actually does. Headline findings: `theme_signature`'s closed 12-tag vocabulary leaves WS-4's
+> ladder inert for most real requests; the WS-4 escalation level never reaches `fill_skeleton`; and one
+> in-cell structural clone pair is live in `skeletons/13-16/` at a structural distance of 0.0009 against
+> the 0.05 `TAU_CELL` floor. Section 2 below should be read alongside it.
+
 ---
 
 ## 1. Objective: each story must feel like a new adventure
