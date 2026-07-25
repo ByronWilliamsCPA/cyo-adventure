@@ -2,7 +2,7 @@
 schema_type: planning
 title: "Story Diversity Remediation and Enhancement Plan"
 description: "Phased plan to close the nine gaps in story-diversity-analysis.md and raise book diversity
-  further. Records eight review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because
+  further. Records ten review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because
   the closed vocabulary is load-bearing for the WS-7 echo surface; the gamebook cells' 98% negative share is
   ADR-011-intended with PL-20 working as designed, the real gap being a shallow fail-path tail PL-20 leaves
   out of scope; expanding the curated vocabulary is the better fix and it exposes a symmetric-Jaccard defect
@@ -11,7 +11,9 @@ description: "Phased plan to close the nine gaps in story-diversity-analysis.md 
   a monotone restriction rule where the guardian sets a ceiling the admin may lower but never raise, which a
   guardian may change later without any content re-screen because every content screen is already
   visibility-independent; PL-22's fraction resolves to 33% on measured funnel depth; and the request page must
-  state its restrictions up front, because the three most surprising ones can never be explained afterwards."
+  state its restrictions up front, because the three most surprising ones can never be explained afterwards; and
+  'how many winning arcs' is the wrong question, since path mass and ending count are decoupled, which also
+  exposes two series-continuity gaps."
 tags:
   - planning
   - generation
@@ -43,10 +45,11 @@ source: "story-diversity-analysis.md; review challenges on GDPR exposure of an o
 
 ## 1. Corrections and refinements from review
 
-Eight items, each from a review challenge and each changing the work. They are recorded here rather than
+Ten items, each from a review challenge and each changing the work. They are recorded here rather than
 silently patched into the audit, because each rests on a fact the audit did not establish. 1.1 and 1.2 correct
-errors; 1.3 through 1.8 are owner direction and resolved decisions that reshape the approach, and 1.6 also
-corrects an earlier claim about offline revocation.
+errors; 1.3 through 1.10 are owner direction and resolved decisions that reshape the approach. 1.6 also
+corrects an earlier claim about offline revocation, and 1.9 replaces a deliverable that measured the wrong
+thing.
 
 ### 1.1 The open-vocabulary theme signature is unsafe as drafted
 
@@ -545,6 +548,105 @@ and `NO_CONFORMING_BINDING` are fit outcomes that only exist after a bind attemp
 4. **Serves [K19](capability-register.md)** (expectation-setting) as its pre-submission half, alongside WS-7's
    post-submission reflection. Worth recording as such so the two are maintained together.
 
+### 1.9 "How many winning arcs" is the wrong question: it is path mass, not ending count
+
+Owner direction (2026-07-25), resolving the last open product decision:
+
+- A gamebook may have **more than one** successful outcome.
+- For a **series**, every end point must allow for a **single start point** in the next book.
+- The minimum should be **a reflection of the branching strategy**, not a fixed number.
+- Reconvergence is fine: many nodes collapsing to a couple of final paths, or several paths all reaching one
+  successful ending, is acceptable.
+- But **ten positive endings where 90% of paths reach a couple of unsuccessful ones does not work.**
+
+That last clause invalidates D18 as drafted. A `min_positive_endings` count scaling with ending count would
+have passed a book with ten unreachable wins and failed a book with one well-fed win, which is backwards. The
+constraint is on **the distribution of path mass across endings**, and the count of positive endings should be
+left entirely unconstrained.
+
+**The failure case is already in the catalog.** Choice-uniform walk, 40,000 trials per skeleton. `SPM` is
+satisfying path mass, the share of playthroughs reaching a `success`/`completion` ending; `top2`/`top5` are the
+share of terminal mass absorbed by the most-hit 2 and 5 endings; `reached` is how many distinct endings were
+ever hit:
+
+| Skeleton | Endings | Positive | SPM | top2 | top5 | Reached |
+| --- | --- | --- | --- | --- | --- | --- |
+| the-drowned-court | 105 | **5** | **0.00%** | 38% | 75% | 43 |
+| the-harrowstone-keep | 152 | 4 | 0.01% | 38% | 57% | 136 |
+| the-thornwood-trial | 115 | 4 | 0.00% | 50% | 85% | 48 |
+| the-serpent-vaults | 172 | 4 | 0.00% | 29% | 72% | 40 |
+| the-ashfall-expedition | 143 | 3 | 0.00% | 40% | 70% | **30** |
+| the-tenfold-siege | 209 | 2 | 0.00% | 29% | 71% | 54 |
+| the-smugglers-cut | 80 | 2 | 0.50% | 50% | 76% | 62 |
+
+`the-drowned-court` is the described failure exactly: **five positive endings, and effectively no path mass
+reaches any of them**, while the top five endings absorb 75%. Ending count and path mass are fully decoupled,
+which is why the count is the wrong lever.
+
+**A third finding falls out of the `reached` column.** Only 30 to 136 of each book's declared endings are ever
+hit in 40,000 walks: `the-ashfall-expedition` reaches 30 of 143, `the-tenfold-siege` 54 of 209. The
+breadth-scaled `min_endings` floor counts **declared** endings, so ADR-011's terminal-fraction guarantee is
+satisfied in part by endings a reader will essentially never see. Declared ending count overstates delivered
+variety, and any future ending-count floor should prefer mass-bearing endings.
+
+**The formalization, replacing `min_positive_endings`:**
+
+1. **A satisfying-path-mass floor, keyed on topology.** "A reflection of the branching strategy" is directly
+   implementable: `structure_features().topology` already classifies every tree as `gauntlet`,
+   `branch_and_bottleneck`, `sorting_hat`, `open_map`, `time_cave`, or `loop_and_grow`. A `gauntlet` earns a
+   lower SPM floor than a `sorting_hat` by design. The floor is per topology, not per cell and not a constant.
+2. **Concentration is explicitly permitted.** Reconvergence to few endings is fine, and one satisfying ending
+   absorbing all winning mass is fine. The rule fails only when the *satisfying* share falls below the floor.
+   No rule should penalize a low ending count or a high top-k share on its own.
+3. **Positive ending count stays unconstrained.** Deliberately: it is the measure that produced the wrong
+   answer.
+
+**Caveat on the model.** Choice-uniform walk is a structural lower bound, not a prediction: a real reader reads
+the prose and avoids obviously fatal choices, and condition-gated choices mean some sampled paths are ones a
+real reader could not take. So structural SPM is a **design gate**, and the floor must be calibrated against
+the real satisfying-ending rate from D16's telemetry rather than set from the model alone.
+
+### 1.10 The series rule exposes two validator gaps and one design tension
+
+"Every end point must allow for a single start point in the next book" is stronger than what SR-5 enforces, and
+checking it found two gaps.
+
+**What SR-5 does today.** Its docstring: "each non-final book has a win ending and a next-book entry node...
+It does NOT trace that the win ending targets that entry node; books are independent graphs with no shared node
+ids." So it verifies that *a* win exists and that the next book declares a `series_entry_node`. It says nothing
+about the other 148 endings.
+
+**Gap 1: endings that foreclose continuation are permitted in a non-final book.** `death` and `capture` are
+states you cannot continue a campaign from, yet nothing forbids them in a book that promises a sequel. The
+catalog's only series, `brass-lantern`, is exactly this case:
+
+| Book | Skeleton | Endings | death | capture | Foreclosing | Satisfying |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | the-harrowstone-keep | 152 | 17 | 77 | **94 (62%)** | 4 |
+| 2 | the-sunken-temple | 152 | 17 | 77 | **94 (62%)** | 4 |
+
+62% of each book's endings cannot lead to the next book's `n_start`. Both books do use a single
+`series_entry_node` of `n_start`, so the single-start-point convention is already followed; it is the endings
+that do not honor it. The machine-checkable part of the owner's rule is therefore a new rule, **SR-8**: in a
+non-final series book, no ending may be of a continuation-foreclosing kind. `death` is unambiguous; whether
+`capture` forecloses or is a legitimate cliffhanger ("you are taken, and book 2 opens in the cell") is a
+narrative decision to settle before SR-8 lands.
+
+**Gap 2: nothing requires the highest-index book to be final.** SR-4 flags a book *below* the highest index
+that is `is_final`; SR-5 skips the highest index entirely. So `brass-lantern` book 2, declaring
+`is_final: false` with no book 3 in the catalog, passes both. A chain can promise a continuation that does not
+exist, and a reader finishes book 2 expecting book 3. That is **SR-9**: the highest-index book must be
+`is_final`, or a successor must exist.
+
+**The design tension, worth recording.** A gamebook wants many fails; a series requires every ending to be
+continuable. So series-plus-gamebook is a genuinely constrained combination: its fails must be `setback`-shaped,
+survivable and continuable, rather than `death` or `capture`. `brass-lantern` reads as authored gamebook-first
+and series-second, which is how it acquired 94 foreclosing endings.
+
+**This composes with PL-22.** D17's remediation converts early terminals into routing `setback`s, and SR-8's
+remediation converts foreclosing terminals into continuable ones. Both are M2 ending re-maps in the same
+direction, so the two jobs should be done in one pass over the affected skeletons rather than twice.
+
 ---
 
 ## 2. Objective and constraints
@@ -637,9 +739,9 @@ receive; D15 and D18 are the product decisions PL-20's authors deliberately left
 | --- | --- | --- |
 | D14 | **PL-22, a fail-depth floor.** The sibling rule PL-20 never had: no terminal ending may sit closer to `start_node` than a set fraction of the cell's `min_complete`. Measured sizing says a floor at 25% touches 100 of 1,778 gamebook endings (5.6%), and 33% touches 178 (10.0%). Same enforcement shape as PL-20 (BFS shortest path from `start_node`), same `band_profile.py` cell table, so it costs one rule and one constant per cell. | S |
 | D15 | Ratify PL-22's fraction as an ADR-011 amendment. 25% and 33% are both defensible; 50% is a genuine rebalance (395 endings, 22.2%) and should be rejected unless D16's data demands it. The amendment should state the principle explicitly: the age-appropriate-depth guarantee applies to every path a reader can take, not only to the winning one. | S |
-| D16 | Instrument **real** reading depth. `ReadingState` and `Completion` already hold what is needed: nodes visited per session, terminal reached, endings collected per profile, re-reads per storybook. Report the distribution of depth-reached against `min_complete` per cell, plus the share of sessions terminating below PL-22's candidate fractions. This replaces both proxies (random walk and BFS ending depth) with measurement, and it is what decides whether D17 is needed at all. | M |
+| D16 | Instrument **real** reading depth. `ReadingState` and `Completion` already hold what is needed: nodes visited per session, terminal reached, endings collected per profile, re-reads per storybook. Report the distribution of depth-reached against `min_complete` per cell, the share of sessions terminating below PL-22's candidate fractions, and the **real satisfying-ending rate** per book and per profile (the calibration input D18's SPM floor needs). This replaces the structural proxies (choice-uniform walk and BFS ending depth) with measurement, and it is what decides whether D17 is needed at all. | M |
 | D17 | Remediate the endings PL-22 rejects, via WS-5's M2 ending re-map: convert an early lethal terminal into a `setback` that routes back into the graph rather than deleting it. At 25% that is 100 endings across 14 skeletons, concentrated in `the-ashfall-expedition` (19), `the-drowned-court` (15), `the-serpent-vaults` (11), and the clone pair (10 each). Every remutated tree re-runs the full gate. | M |
-| D18 | Give "few wins" a number. 2 to 5 winning endings out of 74 to 209 is unconstrained by any rule; ADR-011 specifies terminal *fraction* but not valence mix. Add a `min_positive_endings` scaling with ending count, and optionally a negative-share ceiling. Independent of the depth work, and a product decision rather than a defect. | M |
+| D18 | **A satisfying-path-mass (SPM) floor keyed on topology**, replacing the `min_positive_endings` count this deliverable previously proposed (section 1.9: count and mass are decoupled, and `the-drowned-court` has 5 positive endings at 0.00% SPM). Floor the share of playthroughs reaching a `success`/`completion` ending, keyed on `structure_features().topology` so a `gauntlet` earns a lower floor than a `sorting_hat`. Explicitly permit reconvergence and high top-k concentration; leave positive ending count unconstrained. Calibrate against D16 telemetry, not the model alone. | M |
 | D19 | **Accepted** (section 1.7): require in-cell **outcome spread** so candidates in one cell occupy different points in the valence envelope. A cell holding one 95% gauntlet, one ~80% harsh-but-survivable, and one ~60% tense-but-fair is still entirely gamebook, and it varies how the cell *plays* rather than only how it reads. Enforced by the D5 audit. Hold until D16 shows whether readers experience the uniformity. | M |
 
 **Acceptance.** PL-22 fails on the current `main` for the 100 endings below a 25% floor and passes after D17.
@@ -723,6 +825,19 @@ the fact, because `_ELEMENT_MUST_BE_NULL` forbids echoing the offending phrase.
 | D39 | **Enforce the resolved `GUARDIAN_CONTROL` disclosure level** (section 1.8, owner-decided): the kid surface states only that some themes are off. D36's kid-surface response must omit the `content_nogo` values entirely rather than sending them for the client to hide, and the copy must be invariant to the list's contents so it cannot leak membership by changing. Test both. | S |
 | D40 | Regression-test the pair: a request naming the requesting child resolves to `IDENTITY_PROTECTION`, and the restriction the API served for that band covers it. Keeps the stated restrictions and the enforced ones from diverging silently, which is the failure mode D36 exists to prevent. | S |
 
+### P9: Series continuity (section 1.10)
+
+Two validator gaps the owner's single-start-point rule exposed, plus the remediation of the one series in the
+catalog. Small, and it shares its remediation pass with D17.
+
+| ID | Deliverable | Effort |
+| --- | --- | --- |
+| D41 | **SR-8: continuation-admissible endings.** In a non-final series book, no ending may be of a continuation-foreclosing kind, so that every end point can lead to the next book's single `series_entry_node`. SR-5 today checks only that *a* win ending exists and that the next book declares an entry node; it says nothing about the other 148. | S |
+| D42 | **Settle whether `capture` forecloses continuation.** `death` is unambiguous. `capture` may be a legitimate cliffhanger ("you are taken, and book 2 opens in the cell") or may foreclose. Needs a narrative decision before D41 fixes its kind set. This is the one open question P9 adds. | S |
+| D43 | **SR-9: the highest-index book must be `is_final`, or a successor must exist.** SR-4 flags a book below the highest index that *is* final; SR-5 skips the highest index entirely, so a chain can promise a continuation that does not exist. `brass-lantern` book 2 declares `is_final: false` with no book 3 and passes both rules today. | S |
+| D44 | **Remediate `brass-lantern`.** Both books carry 94 of 152 endings (62%) as `death` or `capture` against a non-final `is_final: false`. Convert the foreclosing terminals to continuable `setback`s via M2 ending re-map, in the **same pass** as D17's PL-22 relocations, since both are ending re-maps in the same direction over the same two skeletons. Note these are also the section 3.2 structural clone pair, so D9's resolution should be sequenced with this. | M |
+| D45 | Record the series-plus-gamebook tension in ADR-011's amendment: a series book's fails must be `setback`-shaped rather than lethal, so the combination is more constrained than either style alone. `brass-lantern` reads as authored gamebook-first and series-second, which is how it acquired 94 foreclosing endings. | S |
+
 ---
 
 ## 4. Sequencing
@@ -742,6 +857,7 @@ P6 (ceiling: D23, D24)   independent, longest lead time, start the D23 design ea
 P7 (visibility: D25 -> D26, D27, D28 -> D29..D32, D34)   independent; D25 unblocks the rest
      D33 (read-time filter test) gates D32
 P8 (expectation setting: D36 -> D37, D38, D39, D40)   independent; no open decisions
+P9 (series: D42 -> D41, D43; D44 shares D17's remediation pass; D45)
 ```
 
 P1 before P3: escalation cannot act on a signal that does not fire. P1 before any metric claim: until the
@@ -772,7 +888,10 @@ Beyond the WS-0 suite:
 | Shallow-terminal share | Per skeleton, endings whose BFS depth is under 25%/33% of the cell's `min_complete` | D14, D17 |
 | Depth-reached distribution | Real nodes visited per session before a terminal, as a ratio of `min_complete` | D16 |
 | Early-exit rate | Share of real sessions terminating below PL-22's candidate fractions | D14, D16 |
-| Satisfying-ending rate | Share of readers reaching a `success`/`completion` ending per storybook | D16, D18 |
+| Satisfying path mass (SPM) | Share of choice-uniform playthroughs reaching a `success`/`completion` ending; the structural design gate | D18 |
+| Ending-mass concentration | Share of terminal mass on the top-k endings, and how many declared endings are ever reached | D18 |
+| Satisfying-ending rate | Real share of readers reaching a `success`/`completion` ending per storybook; the SPM floor's calibration input | D16, D18 |
+| Series continuation admissibility | Non-final series books with zero continuation-foreclosing endings | D41, D44 |
 | Outcome-mix spread | Per cell, spread of negative-ending share across candidates | D19 |
 | Escalated ATG lift | ATG masked distance at `LEAF` escalation minus the same pair at `TREE` | D11 |
 
@@ -793,6 +912,8 @@ doing anything, however good the code looks.
 | Dual-role adults | Enforce the lattice on **the role being acted in**, via `principal.acting_role(family_id)`. | 1.6, built by D34 |
 | Admin visibility lever | **Guardian sets a ceiling; the admin may only restrict.** `resolved = min(guardian_ceiling, admin_choice)`. | 1.5, built by D26 |
 | What does the kid surface say about `GUARDIAN_CONTROL`? | **Only that some themes are off**, never the list. The kid-surface API response omits `content_nogo` entirely, and the copy stays invariant to the list's contents. | 1.8, built by D39 |
+| How many winning arcs should a gamebook have? | **Wrong question: it is path mass, not ending count.** Floor the satisfying path mass, keyed on topology ("a reflection of the branching strategy"); leave positive ending count unconstrained; permit reconvergence. Ten positive endings at 0% mass must fail. | 1.9, built by D18 |
+| Series end points | **Every ending must allow the next book's single start point.** New SR-8; `brass-lantern` has 62% foreclosing endings today. | 1.10, built by D41/D44 |
 | Open vs curated vocabulary | **Expand the curated closed list**; the open-vocabulary variant drops to a fallback (D7) that may never be needed. | 1.3 |
 
 ### 6.2 Still open
@@ -800,10 +921,9 @@ doing anything, however good the code looks.
 - **Does the similarity signature need a DPIA addendum?** Only relevant if D7 is ever built. The design adds no
   personal data at rest and no new export, which is the basis for arguing no. A DPO or legal call, not an
   engineering one. D7 raises it; it does not answer it.
-- **How many winning arcs should a gamebook have?** 2 out of 209 is unconstrained rather than chosen. D18 needs
-  ratified numbers; ADR-011 specifies terminal fraction but not valence mix. No guidance exists in the research
-  (section 1.7), so this is a decision to make rather than one to look up. **The last substantive product
-  decision left in this plan.**
+- **Does a `capture` ending foreclose series continuation?** `death` is unambiguous; `capture` may be a
+  legitimate cliffhanger ("you are taken, and book 2 opens in the cell"). A narrative decision, needed before
+  D41 fixes SR-8's kind set. **The last substantive product decision left in this plan.**
 - **Should PL-22 become `max(0.33 * min_complete, funnel_clearing_depth)`?** One skeleton
   (`the-smugglers-cut`) has a funnel deeper than its 33% floor. Start with the constant plus a per-cell
   override; revisit on D16's telemetry.
