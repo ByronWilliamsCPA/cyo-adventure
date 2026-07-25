@@ -23,14 +23,18 @@ source: "Read of generation/skeleton_match.py, story_requests/authoring_plan.py,
   skeletons/ library (2026-07-25)."
 ---
 
-> **Superseded in two places (2026-07-25).** Review challenge corrected this audit twice, and
+> **Superseded in three places (2026-07-25).** Review challenge corrected this audit three times, and
 > [story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) section 1 carries the corrected
 > designs. **(a)** Section 3.1's fix as written is a privacy regression: the closed vocabulary is load-bearing
-> for the WS-7 echo surface, so the signature must be *split* into an echo signature (stays closed) and an
-> internal similarity signature (open, entity-masked, never rendered or persisted). Do not implement 3.1 as
-> drafted. **(b)** Section 2.4's ending-mix concern is real but mis-framed: the 98% negative share is ADR-011's
-> stated intent, PL-20 already guarantees age-appropriate depth on the winning path and passes everywhere, and
-> the real gap is the shallow fail-path tail PL-20 explicitly leaves out of scope. See that plan's section 1.2.
+> for the WS-7 echo surface. Do not implement 3.1 as drafted; the plan's chosen path is instead to *expand* the
+> curated closed vocabulary, which keeps the echo guarantee and needs no privacy review at all. **(b)** Section
+> 2.4's ending-mix concern is real but mis-framed: the 98% negative share is ADR-011's stated intent, PL-20
+> already guarantees age-appropriate depth on the winning path and passes everywhere, and the real gap is the
+> shallow fail-path tail PL-20 explicitly leaves out of scope. **(c)** 3.1 also *understated* the severity. The
+> two sides of the similarity comparison use different vocabularies: a stored story's signature unions its raw
+> curated `metadata.themes` while a request's cannot, so symmetric Jaccard scores a byte-identical premise on
+> the same tree at 0.333, below the 0.35 threshold. WS-4 is closer to inert for *all* themes, not only
+> out-of-vocabulary ones. See that plan's sections 1.2 and 1.3.
 >
 > **Scope.** This is a current-state audit, not a new plan. It assumes
 > [story-flexibility-plan.md](story-flexibility-plan.md) as the strategy of record and does not re-propose
@@ -72,7 +76,7 @@ Measured over `skeletons/` (61 files, 58 production-eligible), 2026-07-25.
 Selection is scoped to a `(band, length, style)` cell (`skeleton_match.candidates_for_cell`). Pool sizes:
 
 | Cell | Prod-eligible | Cell | Prod-eligible |
-|------|---------------|------|---------------|
+| --- | --- | --- | --- |
 | 3-5 / short | 3 | 13-16 / medium / gamebook | 3 |
 | 3-5 / medium | 3 | 13-16 / long / prose | 3 |
 | 5-8 / short | 3 | 13-16 / long / gamebook | 5 |
@@ -92,7 +96,7 @@ Fourteen of eighteen cells hold exactly three trees. A child who reads four stor
 Monte Carlo over the shipped `select_skeleton_for_cell` (20,000 trials, 6 sequential requests per trial):
 
 | Cell size | Signal | P(story 2 reuses story 1's tree) | P(consecutive pair reuses) | Distinct trees over 6 |
-|-----------|--------|----------------------------------|----------------------------|------------------------|
+| --- | --- | --- | --- | --- |
 | 3 | recency only (today's real path) | **20.1%** | 24.7% | 2.95 / 3 |
 | 3 | + theme similarity (WS-4 active) | 9.2% | 19.7% | 3.00 / 3 |
 | 4 | recency only | 13.9% | 16.7% | 3.71 / 4 |
@@ -114,7 +118,7 @@ worked. This is worth protecting as the catalog grows by automation.
 `structure_features().valence_hist` (negative share is the dominant component in these cells):
 
 | Cell | Negative-ending share per candidate |
-|------|--------------------------------------|
+| --- | --- |
 | 13-16 / long / gamebook | 0.95, 0.97, 0.78, 0.95, 0.97 |
 | 13-16 / medium / gamebook | 0.96, 0.96, 0.91 |
 | 16+ / long / gamebook | 0.98, 0.98, 0.98 |
@@ -154,7 +158,7 @@ decision points carry the entire felt-agency load, which amplifies any sense of 
 **12 distinct tags** (`castle, cave, dinosaur, dragon, fire, forest, knight, magic, ocean, pirate, robot,
 space`). A premise matching none of them returns `frozenset()`. Measured:
 
-```
+```text
 'a dragon who lost his fire'                         -> {dragon, fire}
 'dragon story please'                                -> {dragon}
 'a story about my hamster escaping the cage'          -> frozenset()
@@ -260,7 +264,7 @@ fill of a skeleton forever.
 
 Because the skeletons are already slot-parameterized, the armature is visible in the beat text itself:
 
-```
+```text
 the-cave-of-echoes / la_fork:
   'the way splits into two tracks: on one side {A1_SIGN} catches the light,
    on the other {A2_SIGN} deepens into a warning...'
@@ -381,7 +385,7 @@ Ordered by perceived-diversity gain per unit of effort. Items 1 through 4 are th
 child experiences this quarter.
 
 | # | Change | Addresses | Effort | Why this order |
-|---|--------|-----------|--------|----------------|
+| --- | --- | --- | --- | --- |
 | 1 | Split echo vs similarity signature, then open-vocabulary the similarity half; unknown is not "dissimilar" | 3.1 | S-M | Turns WS-4, the saturation warning, and the WS-8 trigger on for the majority of real requests. Everything downstream of similarity is currently dark. **The split is mandatory and comes first: see the banner and the remediation plan section 1.1.** |
 | 2 | In-cell `structural_distance` audit in CI at `TAU_CELL`; resolve the clone pair | 3.2 | S | One cell is a tree short right now, and selection reports the swap as differentiation. Cheap, and it protects the catalog as automation grows it. |
 | 3 | Thread `DifferentiationLevel` + neighbors into `fill_skeleton` and `fill.md` | 3.3 | M | Completes WS-4's other half. Without it, escalation is a log line. |
