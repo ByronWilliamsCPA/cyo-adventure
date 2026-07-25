@@ -119,6 +119,25 @@ describe('LibraryPage', () => {
     expect(link).toHaveAttribute('href', '/read/p1/s1/2')
   })
 
+  it('titles the hero "Keep reading" for an unfinished book', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, NOT_STARTED] } })
+    renderLibrary()
+    const hero = await screen.findByRole('region', { name: /continue reading/i })
+    expect(within(hero).getByRole('heading', { name: 'Keep reading' })).toBeInTheDocument()
+  })
+
+  it('titles the hero "Read it again?" once its book is finished', async () => {
+    const finished = {
+      ...IN_PROGRESS,
+      progress: { ...IN_PROGRESS.progress, completed: true },
+    }
+    mockGet.mockResolvedValue({ data: { stories: [finished, NOT_STARTED] } })
+    renderLibrary()
+    const hero = await screen.findByRole('region', { name: /continue reading/i })
+    expect(within(hero).getByRole('heading', { name: 'Read it again?' })).toBeInTheDocument()
+    expect(within(hero).queryByRole('heading', { name: 'Keep reading' })).not.toBeInTheDocument()
+  })
+
   it('shows the empty state when nothing is assigned', async () => {
     mockGet.mockResolvedValue({ data: { stories: [] } })
     renderLibrary()
@@ -154,11 +173,26 @@ describe('LibraryPage', () => {
     renderLibrary()
 
     // The offline banner and the cached shelf render instead of a dead-end.
-    expect(await screen.findByText(/no internet\. these books are ready to read/i)).toBeInTheDocument()
+    expect(
+      await screen.findByText(/no internet\. these books are ready to read/i)
+    ).toBeInTheDocument()
     expect(screen.getByText('The Lantern')).toBeInTheDocument()
     // The not-downloaded book is shown but marked as needing internet.
     expect(screen.getByText(/needs internet to open/i)).toBeInTheDocument()
     expect(screen.queryByText(/lost the bookshelf/i)).not.toBeInTheDocument()
+  })
+
+  it('hides the request affordances on the offline shelf (they need the network)', async () => {
+    await cacheLibraryList('p1', [IN_PROGRESS, SERIES_BOOK])
+    mockGet.mockRejectedValue(new Error('offline'))
+
+    renderLibrary()
+
+    expect(await screen.findByText(/no internet\./i)).toBeInTheDocument()
+    // Online, both would render (SERIES_BOOK is series-tagged); offline they
+    // could only dead-end in a failure message, so neither is offered.
+    expect(screen.queryByRole('button', { name: /request a story/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /ask for the next book/i })).not.toBeInTheDocument()
   })
 
   it('shows the ask-a-grown-up gate on a 401, with no retry', async () => {
@@ -448,10 +482,10 @@ describe('LibraryPage', () => {
       await screen.findByRole('region', { name: /continue reading/i })
 
       expect(screen.queryAllByRole('group', { name: /^rate /i })).toHaveLength(0)
+      expect(screen.queryByRole('region', { name: /request a story/i })).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('region', { name: /request a story/i })
+        screen.queryByRole('button', { name: /ask for the next book/i })
       ).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: /ask for the next book/i })).not.toBeInTheDocument()
       expect(container.querySelector('a[href^="/read/"]')).not.toBeInTheDocument()
     })
 
@@ -459,9 +493,7 @@ describe('LibraryPage', () => {
       mockGet.mockResolvedValue({ data: { stories: [] } })
       renderLibraryReadOnly()
       await screen.findByText(/no books yet/i)
-      expect(
-        screen.queryByRole('region', { name: /request a story/i })
-      ).not.toBeInTheDocument()
+      expect(screen.queryByRole('region', { name: /request a story/i })).not.toBeInTheDocument()
     })
   })
 

@@ -8,11 +8,7 @@ import { useApi } from '../hooks/useApi'
 import { Mascot } from '../kid/Mascot'
 import { reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
-import {
-  cacheLibraryList,
-  getCachedLibraryList,
-  getCachedStorybook,
-} from '../offline/db'
+import { cacheLibraryList, getCachedLibraryList, getCachedStorybook } from '../offline/db'
 import { BookCard } from './BookCard'
 import { makeLibraryApi, type LibraryItemView, type ReadingHistoryItem } from './libraryApi'
 import { pickHero } from './pickHero'
@@ -279,10 +275,14 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
 
   if (!profileId) return null
   if (state.status === 'loading') {
+    // Branded, kid-facing loading state (Pip + short reassurance), matching
+    // the reader's "Opening your story…" pattern so every wait on the kid
+    // surface looks like the same friendly app, not a bare system message.
     return (
-      <p className="library__status" role="status" aria-live="polite">
-        Loading your books…
-      </p>
+      <div className="library__loading" role="status" aria-live="polite">
+        <Mascot size={96} className="library__loading-mascot" />
+        <p className="library__loading-text">Loading your books…</p>
+      </div>
     )
   }
   if (state.status === 'unauthenticated') {
@@ -328,6 +328,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
         <EmptyState
           title="We lost the bookshelf"
           description="Something went wrong loading your books."
+          icon={<Mascot size={96} />}
           actions={
             <>
               <Button variant="primary" size="lg" onClick={load}>
@@ -384,6 +385,12 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const shelf = items
     .filter((item) => item.id !== hero?.id)
     .sort((a, b) => a.title.localeCompare(b.title))
+  // Requesting (a new story, or a series continuation) needs the network:
+  // offline, the form and the "Ask for the next book" taps could only end in
+  // a failure message, so neither affordance renders then. readOnly (guardian
+  // preview) suppresses them for the write-isolation reasons documented on
+  // LibraryPageProps.
+  const canRequest = !readOnly && !offline
   return (
     <div className="library">
       <h1 className="library__heading">My Books</h1>
@@ -394,12 +401,19 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
       ) : null}
       {hero ? (
         <section aria-label="Continue Reading">
+          {/* A visible name for the hero spot (the section aria-label alone
+              gave sighted kids no cue why this book is big). A finished hero
+              stays the most recent activity, so its invitation flips to a
+              replay nudge instead of a nonsensical "keep reading". */}
+          <h2 className="library__shelf-heading">
+            {hero.progress?.completed ? 'Read it again?' : 'Keep reading'}
+          </h2>
           <BookCard
             item={hero}
             profileId={profileId}
             hero
             onRate={rate}
-            onContinue={readOnly ? undefined : askForNextBook}
+            onContinue={canRequest ? askForNextBook : undefined}
             downloaded={isDownloaded(hero)}
             readOnly={readOnly}
             endings={endingsFor(hero)}
@@ -417,7 +431,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
                   item={item}
                   profileId={profileId}
                   onRate={rate}
-                  onContinue={readOnly ? undefined : askForNextBook}
+                  onContinue={canRequest ? askForNextBook : undefined}
                   downloaded={isDownloaded(item)}
                   readOnly={readOnly}
                   endings={endingsFor(item)}
@@ -433,8 +447,10 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
           Omitted entirely in guardian preview mode (readOnly): a guardian
           previewing their child's shelf has their own request flow already
           (guardian console), and this form would otherwise submit a request
-          under the previewed child's identity. */}
-      {readOnly ? null : (
+          under the previewed child's identity. Also omitted on the offline
+          shelf (canRequest): sending an idea needs the network, and inviting
+          one only to answer with "Something went wrong" is a dead end. */}
+      {canRequest ? (
         <div ref={requestStoryRef} tabIndex={-1} className="library__request">
           <RequestStory
             profileId={profileId}
@@ -443,7 +459,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
             libraryTitles={items.map((item) => item.title)}
           />
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

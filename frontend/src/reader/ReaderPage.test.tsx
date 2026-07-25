@@ -63,7 +63,7 @@ describe('ReaderPage', () => {
     // A fetch that never settles keeps the page in its loading phase.
     renderPage(() => new Promise<Storybook>(() => {}))
     const loading = screen.getByTestId('loading')
-    expect(loading).toHaveTextContent('Opening your story...')
+    expect(loading).toHaveTextContent('Opening your story…')
     expect(loading.getAttribute('role')).toBe('status')
   })
 

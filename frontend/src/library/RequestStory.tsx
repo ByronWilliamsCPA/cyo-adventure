@@ -217,11 +217,15 @@ export function RequestStory({
         <div className="request-story__form">
           <label className="request-story__label">
             What should your story be about?
+            {/* A playful example so a child who freezes at a blank box sees
+                the kind of answer that works; it disappears the moment they
+                type, and Send stays disabled until they write their own. */}
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               maxLength={500}
               rows={3}
+              placeholder="A dragon who loves pancakes…"
             />
           </label>
           {anchor ? (

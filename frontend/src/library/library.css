@@ -7,10 +7,40 @@
   margin: 0 auto;
 }
 
-.library__status {
-  text-align: center;
-  color: var(--color-ink-muted);
+/* Branded loading state (Pip + short reassurance), mirroring the reader's
+   .reader-loading so every kid-surface wait looks like the same app. */
+.library__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  min-height: 60vh;
   padding: var(--space-8) var(--space-4);
+  color: var(--color-ink);
+  text-align: center;
+}
+
+.library__loading-text {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+}
+
+.library__loading-mascot {
+  animation: library-mascot-bob 1.6s var(--easing-default) infinite;
+}
+
+@keyframes library-mascot-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(calc(-1 * var(--space-2)));
+  }
 }
 
 .library__heading {
@@ -263,9 +293,19 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .library__loading-mascot,
   .star-rating__glyph--pulse {
     animation: none;
   }
+}
+
+/* Guardian-set per-profile reduce_motion (data-reduce-motion on the kid
+   shell, see band-tokens.css) must still the same decorative motion the
+   OS-level preference does; these animations use concrete durations rather
+   than the --band-motion-* tokens, so they need explicit twins. */
+[data-reduce-motion='true'] .library__loading-mascot,
+[data-reduce-motion='true'] .star-rating__glyph--pulse {
+  animation: none;
 }
 
 .library__request {
@@ -444,6 +484,13 @@
     animation: none;
     opacity: 1;
   }
+}
+
+/* Same twin rule as the loading/star animations above: the profile-level
+   reduce_motion flag stills the dots exactly like the OS preference. */
+[data-reduce-motion='true'] .request-story__generating-dots > span {
+  animation: none;
+  opacity: 1;
 }
 
 .request-story__item[data-status='published'] {

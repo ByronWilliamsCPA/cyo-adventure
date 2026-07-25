@@ -23,11 +23,17 @@
 }
 
 /* ── Persistent kid navigation bar ─────────────────────────── */
+/* The right padding clears the fixed theme toggle (.kid-shell__theme-toggle:
+   44px wide, inset var(--space-3) from the viewport's right edge), which
+   otherwise floats over the right-aligned "Switch reader" pill at every
+   width; both anchor to the viewport's right, so a constant reservation of
+   toggle + its inset + one breathing gap keeps them apart at any size. */
 .kid-nav {
   display: flex;
   align-items: center;
   gap: var(--space-3, 0.75rem);
   padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  padding-right: calc(44px + var(--space-3, 0.75rem) * 2);
   background: var(--color-parchment-dark, #ede6d0);
   border-bottom: 2px solid var(--color-parchment-deeper, #e0d5b8);
   position: sticky;
@@ -170,6 +176,53 @@
   line-height: 1;
 }
 
+/* UX-K8: tap feedback while the picked profile's session mints. The chosen
+   tile breathes and names what is happening; every other tile quiets down so
+   the tap visibly "took" even on a slow connection. */
+.picker-tile--picking {
+  border-color: var(--color-amber, #e07f2e);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+  animation: picker-tile-breathe 1.1s var(--easing-default, ease-in-out) infinite;
+}
+
+.picker-tile--waiting {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* --color-ink-secondary, not --color-ink-muted: renders on
+   --color-parchment-dark (the tile background), where ink-muted misses the
+   4.5:1 AA minimum (same audit note as .kid-nav__label span). */
+.picker-tile__opening {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--weight-semibold, 600);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* Visually hidden polite live region for the pick announcement. */
+.picker__status-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes picker-tile-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.04);
+  }
+}
+
 .picker-tile--add {
   border-style: dashed;
   background: transparent;
@@ -297,4 +350,21 @@
   .picker-tile:focus-visible {
     transform: none;
   }
+
+  .picker-tile--picking {
+    animation: none;
+  }
+}
+
+/* Guardian-set per-profile reduce_motion (data-reduce-motion on the kid
+   shell) stills the same motion the OS-level preference does. The picker
+   itself never carries the attribute today (no profile is picked yet), but
+   the twin keeps this file aligned with the band-tokens.css contract. */
+[data-reduce-motion='true'] .picker-tile:hover,
+[data-reduce-motion='true'] .picker-tile:focus-visible {
+  transform: none;
+}
+
+[data-reduce-motion='true'] .picker-tile--picking {
+  animation: none;
 }
