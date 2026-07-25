@@ -53,8 +53,17 @@ __all__ = [
     "contract_path_for",
     "interpret_and_bind",
     "load_contract_for",
+    "personalizable_slot_ids",
     "render_bound_skeleton",
 ]
+
+# The shared empty-frozenset default for `personalizable_slots` parameters
+# below. A bare `frozenset()` call in a parameter default expression trips
+# BasedPyright's `reportCallInDefaultInitializer` (it cannot prove a fresh
+# call in a default position is side-effect-free); a frozen, already-built
+# module-level constant sidesteps that without changing behavior, since
+# `frozenset` is immutable and safe to share across every call.
+_NO_PERSONALIZABLE: frozenset[str] = frozenset()
 
 # The interpret-and-bind element decomposition is advisory, not load-bearing:
 # it is capped so a malformed or adversarial response can never balloon the
@@ -441,7 +450,7 @@ def _substitute_choice_labels(
 def _substitute_slotted_surfaces(
     bound: dict[str, object],
     bindings: Mapping[str, str],
-    personalizable_slots: frozenset[str] = frozenset(),
+    personalizable_slots: frozenset[str] = _NO_PERSONALIZABLE,
 ) -> None:
     """Substitute bound values into ``bound``'s three slotted surfaces, in place.
 
@@ -581,7 +590,7 @@ def _assert_fill_invariant_preserved(
 def render_bound_skeleton(
     skeleton: dict[str, object],
     bindings: Mapping[str, str],
-    personalizable_slots: frozenset[str] = frozenset(),
+    personalizable_slots: frozenset[str] = _NO_PERSONALIZABLE,
 ) -> dict[str, object]:
     """Substitute validated slot values into the three slotted surfaces only.
 
@@ -689,8 +698,15 @@ def _parse_bind_response(raw: str) -> dict[str, str] | None:
     return cast("dict[str, str]", parsed_map)
 
 
-def _personalizable_slot_ids(contract: ThemeContract) -> frozenset[str]:
+def personalizable_slot_ids(contract: ThemeContract) -> frozenset[str]:
     """Return the ids of the contract's ``kind == "personalizable"`` slots.
+
+    The single source of truth for this set: :func:`bind_theme_to_contract`
+    and :func:`interpret_and_bind` (below) both call it, and so do
+    :mod:`cyo_adventure.generation.worker` and
+    :mod:`cyo_adventure.generation.import_story`, which import it from here
+    rather than re-deriving the ``{slot.id for slot in contract.slots if
+    slot.kind == "personalizable"}`` comprehension at each call site.
 
     Args:
         contract: The theme contract to inspect.
@@ -777,6 +793,48 @@ def _merge_personalizable_defaults(
     }
 
 
+def _drop_personalizable_violations(
+    violations: list[SlotViolation], personalizable_ids: frozenset[str]
+) -> list[SlotViolation]:
+    """Drop every violation naming a personalizable slot, defense in depth.
+
+    :meth:`~cyo_adventure.storybook.theme_contract.ThemeContract._check_personalizable_defaults`
+    already rejects, at contract-construction time, a personalizable slot
+    whose pinned default fails any of its *static* per-value constraints
+    (non-emptiness, charset, ``max_words``, ``forbid``, ``pattern``), so
+    those checks can never produce a violation here. ``distinct_from`` is the
+    one remaining *dynamic* constraint: it compares a slot's value against
+    whatever value its declared sibling currently holds, and a personalizable
+    slot's sibling can be a ``theme`` slot the model just proposed, whose
+    value differs on every attempt. A contract-time check cannot see that
+    value, so a personalizable slot's own ``distinct_from`` violation can, in
+    that one case, still reach this point.
+
+    Filtering it out here (rather than only from the retry prompt) closes
+    both halves of the leak (design review Finding 1): the personalizable
+    slot's id never reaches :func:`~cyo_adventure.generation.prompts.build_bind_prompt`'s
+    violation feedback (the model was never shown that slot and could never
+    act on it), and the futile retry loop this would otherwise cause (the
+    same theme brief re-sent, hitting the same collision, until
+    ``max_attempts`` is exhausted for no fixable reason) never starts,
+    because the violation no longer counts against the attempt's pass/fail
+    decision either.
+
+    Args:
+        violations: The raw violations from
+            :func:`~cyo_adventure.validator.slots.validate_slot_bindings`.
+        personalizable_ids: The ids of the contract's personalizable slots.
+
+    Returns:
+        ``violations`` with every entry whose ``slot_id`` is in
+        ``personalizable_ids`` removed; unchanged when ``personalizable_ids``
+        is empty (the common case for contracts predating ADR-023).
+    """
+    if not personalizable_ids:
+        return violations
+    return [v for v in violations if v.slot_id not in personalizable_ids]
+
+
 async def bind_theme_to_contract(  # noqa: PLR0913
     contract: ThemeContract,
     theme_brief: Mapping[str, object],
@@ -805,7 +863,13 @@ async def bind_theme_to_contract(  # noqa: PLR0913
     by the model. Its pinned ``contract.default_binding[slot_id]`` value is
     merged into the parsed map (:func:`_merge_personalizable_defaults`) AFTER
     parsing but BEFORE ``validate_slot_bindings`` runs, so the completeness
-    check always sees a full, contract-complete binding.
+    check always sees a full, contract-complete binding. Any violation
+    ``validate_slot_bindings`` still reports against a personalizable slot id
+    is then dropped (:func:`_drop_personalizable_violations`, defense in
+    depth alongside the contract-construction-time check in
+    :meth:`~cyo_adventure.storybook.theme_contract.ThemeContract._check_personalizable_defaults`):
+    that slot's id must never reach the retry-feedback prompt, since the
+    model was never shown it and could never act on the feedback.
 
     Args:
         contract: The theme contract to bind against.
@@ -836,7 +900,7 @@ async def bind_theme_to_contract(  # noqa: PLR0913
     # call.
     # #VERIFY: test_bind_step.py.
     guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
-    personalizable_ids = _personalizable_slot_ids(contract)
+    personalizable_ids = personalizable_slot_ids(contract)
     request_contract = _request_contract(contract, personalizable_ids)
 
     violations: list[SlotViolation] = []
@@ -860,7 +924,9 @@ async def bind_theme_to_contract(  # noqa: PLR0913
 
         parse_failed = False
         merged = _merge_personalizable_defaults(contract, parsed, personalizable_ids)
-        violations = validate_slot_bindings(contract, merged)
+        violations = _drop_personalizable_violations(
+            validate_slot_bindings(contract, merged), personalizable_ids
+        )
         if not violations:
             return merged
 
@@ -1059,7 +1125,7 @@ async def interpret_and_bind(  # noqa: PLR0913
     # each screened by PiiGuardedProvider before any network call.
     # #VERIFY: test_interpret_bind.py.
     guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
-    personalizable_ids = _personalizable_slot_ids(contract)
+    personalizable_ids = personalizable_slot_ids(contract)
     request_contract = _request_contract(contract, personalizable_ids)
 
     violations: list[SlotViolation] = []
@@ -1084,7 +1150,9 @@ async def interpret_and_bind(  # noqa: PLR0913
         bindings, elements = parsed
         parse_failed = False
         merged = _merge_personalizable_defaults(contract, bindings, personalizable_ids)
-        violations = validate_slot_bindings(contract, merged)
+        violations = _drop_personalizable_violations(
+            validate_slot_bindings(contract, merged), personalizable_ids
+        )
         if not violations:
             return merged, elements
 

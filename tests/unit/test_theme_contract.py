@@ -1,9 +1,13 @@
 """Unit tests for the theme contract schema (storybook/theme_contract.py)."""
 
+from typing import cast
+
 import pytest
 from pydantic import ValidationError as PydanticValidationError
 
+from cyo_adventure.generation.binding import render_bound_skeleton
 from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.storybook.theme_contract import (
     PERSONALIZATION_FIELDS,
     REAL_PERSON_PERSONALIZATION_FIELDS,
@@ -292,3 +296,157 @@ def test_theme_slot_rejects_role_safety():
     )
     with pytest.raises(PydanticValidationError, match="kind='theme'"):
         _contract([slot], {"HERO": "Priya"})
+
+
+# ---------------------------------------------------------------------------
+# Personalizable slot default_binding validation (Task 2 review fix, ADR-023)
+# ---------------------------------------------------------------------------
+
+
+def _personalizable_slot(
+    slot_id: str = "PET_NAME",
+    *,
+    personalization_field: str = "pet_name",
+    constraints: SlotConstraints | None = None,
+) -> SlotSpec:
+    return SlotSpec(
+        id=slot_id,
+        scope=SlotScope.GLOBAL,
+        meaning="the pet's name",
+        kind="personalizable",
+        personalization_field=personalization_field,
+        constraints=constraints or SlotConstraints(),
+    )
+
+
+def test_personalizable_default_rejects_empty_value():
+    slot = _personalizable_slot()
+    with pytest.raises(PydanticValidationError, match="default_binding value"):
+        _contract([slot], {"PET_NAME": ""})
+
+
+def test_personalizable_default_rejects_whitespace_only_value():
+    slot = _personalizable_slot()
+    with pytest.raises(PydanticValidationError, match="default_binding value"):
+        _contract([slot], {"PET_NAME": "   "})
+
+
+def test_personalizable_default_rejects_value_exceeding_max_words():
+    slot = _personalizable_slot(constraints=SlotConstraints(max_words=2))
+    with pytest.raises(PydanticValidationError, match="max_words"):
+        _contract([slot], {"PET_NAME": "a very long pet name indeed"})
+
+
+def test_personalizable_default_rejects_forbidden_bundle_term():
+    slot = _personalizable_slot(constraints=SlotConstraints(forbid=["lethal"]))
+    with pytest.raises(PydanticValidationError, match="forbid:lethal"):
+        _contract([slot], {"PET_NAME": "a deadly pet"})
+
+
+def test_personalizable_default_rejects_wrap_forbidden_char():
+    """A value ``validate_slot_bindings`` accepts (no doubled `<<`/`>>`) but
+    `wrap` rejects (a lone apostrophe) must still be rejected at contract
+    construction, since it would otherwise crash `render_bound_skeleton`.
+    """
+    slot = _personalizable_slot()
+    with pytest.raises(PydanticValidationError, match="sentinel-safe"):
+        _contract([slot], {"PET_NAME": "Buddy's"})
+
+
+def test_personalizable_default_valid_value_constructs_binds_and_renders():
+    """A regression/positive-path check: a valid personalizable contract still
+    constructs, and its default renders cleanly through the real bind/render
+    pipeline (`generation/binding.py`).
+    """
+    slot = _personalizable_slot()
+    contract = _contract([slot], {"PET_NAME": "Buddy"})
+    assert contract.slots[0].kind == "personalizable"
+
+    skeleton: dict[str, object] = {
+        "schema_version": "2.0",
+        "id": "s_test_personalizable_default",
+        "version": 1,
+        "title": "Test Story",
+        "metadata": {
+            "age_band": "3-5",
+            "reading_level": {
+                "scheme": "flesch_kincaid",
+                "target": 1.0,
+                "tolerance": 1.0,
+            },
+            "tier": 1,
+            "themes": ["adventure"],
+            "estimated_minutes": 5,
+            "ending_count": 2,
+            "topology": "time_cave",
+            "content_flags": {
+                "violence": "none",
+                "scariness": "none",
+                "peril": "none",
+            },
+        },
+        "variables": [],
+        "start_node": "n_start",
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": (
+                    "<<FILL role=setup words=40 "
+                    "beats='Meet {PET_NAME} at the door and choose a path.'>>"
+                ),
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_a", "label": "Go inside.", "target": "n_end_a"},
+                    {"id": "c_b", "label": "Stay outside.", "target": "n_end_b"},
+                ],
+            },
+            {
+                "id": "n_end_a",
+                "body": (
+                    "<<FILL role=ending words=30 beats='They go home together.'>>"
+                ),
+                "is_ending": True,
+                "ending": {
+                    "id": "e_a",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Home Again",
+                },
+                "choices": [],
+            },
+            {
+                "id": "n_end_b",
+                "body": (
+                    "<<FILL role=ending words=30 beats='They wait a while longer.'>>"
+                ),
+                "is_ending": True,
+                "ending": {
+                    "id": "e_b",
+                    "valence": "neutral",
+                    "kind": "completion",
+                    "title": "A Quiet Evening",
+                },
+                "choices": [],
+            },
+        ],
+    }
+    bound = render_bound_skeleton(
+        skeleton,
+        {"PET_NAME": "Buddy"},
+        personalizable_slots=frozenset({"PET_NAME"}),
+    )
+    nodes = cast("list[dict[str, object]]", bound["nodes"])
+    assert wrap("PET_NAME", "Buddy") in cast("str", nodes[0]["body"])
+
+
+def test_personalizable_default_check_does_not_affect_theme_slot_defaults():
+    """A `theme` slot's default is not subject to this invariant.
+
+    The same value that would fail the personalizable check (too many words
+    for a tight `max_words`) is left alone for a `theme` slot, proving the
+    new invariant is scoped to `kind='personalizable'` only and cannot reject
+    any existing (all-theme-slot) contract.
+    """
+    slot = _slot("HERO", constraints=SlotConstraints(max_words=1))
+    contract = _contract([slot], {"HERO": "a name with several words in it"})
+    assert contract.slots[0].kind == "theme"

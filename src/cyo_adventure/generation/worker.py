@@ -52,6 +52,7 @@ from cyo_adventure.generation.binding import (
     contract_path_for,
     interpret_and_bind,
     load_contract_for,
+    personalizable_slot_ids,
     render_bound_skeleton,
 )
 from cyo_adventure.generation.concept import ConceptBrief
@@ -895,9 +896,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         theme_brief_dict=theme_brief_dict,
         ctx=ctx,
     )
-    personalizable_slots = frozenset(
-        slot.id for slot in result.contract.slots if slot.kind == "personalizable"
-    )
+    personalizable_slots = personalizable_slot_ids(result.contract)
     bound = render_bound_skeleton(
         result.skeleton, result.bindings, personalizable_slots
     )

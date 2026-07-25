@@ -15,17 +15,38 @@ The authoritative safety check against a proposed slot *binding* (whether a
 value actually satisfies a slot's constraints, including the band-mandatory
 denylist floor) lives in :mod:`cyo_adventure.validator.slots`, not here. This
 module only shapes and cross-validates the contract document itself.
+
+One exception to that layering: a ``personalizable`` slot's ``default_binding``
+value is never proposed by the LLM binder and is pinned straight into a
+binding map before :func:`~cyo_adventure.validator.slots.validate_slot_bindings`
+runs (``generation/binding.py::_merge_personalizable_defaults``), so a
+pinned value that fails its own slot's constraints would leak that slot's id
+into retry-feedback the model can never act on (it was never shown that
+slot) and exhaust the bind retry budget for no reason. Closing that leak
+requires validating the pinned value against its own constraints at
+contract-construction time, which means this module imports
+:func:`cyo_adventure.validator.slots.validate_slot_bindings` (the canonical
+evaluator, reused rather than re-implemented) for
+:meth:`ThemeContract._check_personalizable_defaults` only. This is not a
+layering inversion: :mod:`cyo_adventure.validator.slots` imports this module's
+names only inside an ``if TYPE_CHECKING:`` block (never executed at
+runtime), so no runtime import cycle exists in either direction.
 """
 
 from __future__ import annotations
 
 import re
 from enum import StrEnum
-from typing import Literal, Self
+from typing import TYPE_CHECKING, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.sentinels import wrap
+from cyo_adventure.validator.slots import validate_slot_bindings
+
+if TYPE_CHECKING:
+    from cyo_adventure.validator.slots import SlotViolation
 
 # The token grammar for `{SLOT}` placeholders, defined once here and imported
 # everywhere a slotted surface (beats guidance, ending title, choice label
@@ -186,6 +207,7 @@ class ThemeContract(BaseModel):
         self._check_distinct_from_references()
         self._check_forbid_bundle_ids()
         self._check_personalizable_slots()
+        self._check_personalizable_defaults()
         return self
 
     def _check_unique_slot_ids(self) -> None:
@@ -287,6 +309,100 @@ class ThemeContract(BaseModel):
         ]
         if errors:
             raise ValueError("; ".join(errors))
+
+    # #CRITICAL: security: a `personalizable` slot's value is NEVER an LLM
+    # proposal; it is always `default_binding[slot.id]`, merged into a
+    # binding map BEFORE `validate_slot_bindings` runs (`generation/binding.py
+    # ::_merge_personalizable_defaults`). If that pinned value could itself
+    # fail the slot's own constraints, the resulting `SlotViolation` would
+    # carry the personalizable slot's id into the next retry's
+    # `_violations_block` (`generation/prompts.py`), a leak the model can
+    # never act on (it was never shown that slot) that also exhausts
+    # `max_attempts` in a futile loop. Rejecting a bad default HERE, at
+    # contract-construction time, makes that leak structurally impossible: a
+    # contract can only be constructed once every personalizable default
+    # already satisfies its own constraints, so no personalizable
+    # `SlotViolation` can ever be produced at bind time.
+    # #VERIFY: tests/unit/test_theme_contract.py's personalizable-default
+    # cases (empty, whitespace-only, wrap-forbidden charset, max_words,
+    # forbid, and the "does not affect existing contracts" regression).
+    def _check_personalizable_defaults(self) -> None:
+        """Reject a personalizable slot whose pinned default is not safe to bind.
+
+        Reuses :func:`cyo_adventure.validator.slots.validate_slot_bindings`
+        (called with ``is_default=True``, exactly as the migration
+        acceptance check validates a contract's own default binding) as the
+        single canonical evaluator for `max_words`, the `forbid` bundles
+        (including the band-mandatory floor), `distinct_from`, `pattern`,
+        non-emptiness, single-line, and structural-injection charset, rather
+        than re-implementing any of those checks locally; only the
+        violations naming a `personalizable` slot are treated as fatal here
+        (a `theme` slot's default is not checked by this method, so no
+        existing contract can newly fail it). ``validate_slot_bindings``'s
+        `_charset_violations` does not reject a lone `<`, `>`, `'`, or `~`
+        (only the doubled `<<`/`>>` FILL-directive delimiters and the paired
+        `{`/`}` slot-token braces), so this method additionally calls
+        :func:`cyo_adventure.storybook.sentinels.wrap` on each personalizable
+        default to catch those, since a value `wrap` rejects can never be
+        rendered by :func:`~cyo_adventure.generation.binding.render_bound_skeleton`
+        without crashing.
+
+        Raises:
+            ValueError: If any personalizable slot's `default_binding` value
+                violates its own declared constraints, or is rejected by
+                `wrap` (empty, or containing a wrap-forbidden character).
+        """
+        personalizable_ids = {
+            slot.id for slot in self.slots if slot.kind == "personalizable"
+        }
+        if not personalizable_ids:
+            return
+
+        violations: list[SlotViolation] = validate_slot_bindings(
+            self, self.default_binding, is_default=True
+        )
+        errors = [
+            _personalizable_constraint_error_message(violation)
+            for violation in violations
+            if violation.slot_id in personalizable_ids
+        ]
+        for slot_id in sorted(personalizable_ids):
+            try:
+                wrap(slot_id, self.default_binding[slot_id])
+            except ValueError as exc:
+                errors.append(_personalizable_wrap_error_message(slot_id, exc))
+        if errors:
+            raise ValueError("; ".join(errors))
+
+
+def _personalizable_constraint_error_message(violation: SlotViolation) -> str:
+    """Return the error message for one personalizable-slot constraint violation.
+
+    Extracted to a single-literal f-string (one physical line) so the message
+    is built without implicit string concatenation across lines.
+
+    Args:
+        violation: One violation returned by `validate_slot_bindings` whose
+            `slot_id` names a `personalizable` slot.
+
+    Returns:
+        A human-readable error message naming the slot, the failed rule, and
+        the violation's own message.
+    """
+    return f"slot {violation.slot_id!r} is kind='personalizable' but its default_binding value violates rule {violation.rule!r}: {violation.message}"
+
+
+def _personalizable_wrap_error_message(slot_id: str, exc: ValueError) -> str:
+    """Return the error message for a `wrap`-rejected personalizable default.
+
+    Args:
+        slot_id: The personalizable slot whose default value `wrap` rejected.
+        exc: The `ValueError` `wrap` raised.
+
+    Returns:
+        A human-readable error message naming the slot and `wrap`'s reason.
+    """
+    return f"slot {slot_id!r} is kind='personalizable' but its default_binding value is not sentinel-safe: {exc}"
 
 
 def _personalizable_slot_errors(slot: SlotSpec) -> list[str]:

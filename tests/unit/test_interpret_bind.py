@@ -576,3 +576,64 @@ async def test_interpret_bind_with_no_personalizable_slots_is_unchanged() -> Non
         RawElement(phrase="a curious fox", slot_id="HERO"),
         RawElement(phrase="a glowing cave", slot_id=None),
     ]
+
+
+def _contract_with_personalizable_distinct_from_theme_sibling() -> ThemeContract:
+    """A personalizable slot whose `distinct_from` targets a `theme` sibling.
+
+    Mirrors ``tests/unit/test_bind_step.py``'s fixture of the same name.
+    Exercises the one path the contract-construction-time invariant
+    (`ThemeContract._check_personalizable_defaults`) cannot close:
+    `distinct_from` compares a slot's value against whatever value its
+    declared sibling CURRENTLY holds. The contract's own `default_binding`
+    has no collision (HERO defaults to "Priya", PROTAGONIST to "Ada"), so
+    construction passes; but a `theme` sibling's bound value changes on every
+    bind attempt, so a real bind can still propose a HERO value that collides
+    with PROTAGONIST's pinned default, something no contract-construction-time
+    check can see in advance.
+    """
+    return ThemeContract(
+        contract_version=1,
+        skeleton_slug="s_test_interpret_bind_personalizable_distinct",
+        age_band=AgeBand.BAND_8_11,
+        legacy_lexicon=["Maya"],
+        default_binding={"HERO": "Priya", "PROTAGONIST": "Ada"},
+        slots=[
+            _slot("HERO", constraints=SlotConstraints(max_words=4, forbid=["weapon"])),
+            SlotSpec(
+                id="PROTAGONIST",
+                scope=SlotScope.GLOBAL,
+                meaning="the reader's own child, personalized",
+                guidance="",
+                kind="personalizable",
+                personalization_field="protagonist_first_name",
+                role_safety="protagonist",
+                constraints=SlotConstraints(distinct_from=["HERO"]),
+            ),
+        ],
+    )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_interpret_bind_drops_personalizable_distinct_from_violation() -> None:
+    """A personalizable/theme `distinct_from` collision at bind time is dropped.
+
+    Defense in depth for review Finding 1: even though the collision could
+    never be predicted at contract-construction time (the theme sibling's
+    value is the model's to choose), the resulting `SlotViolation` naming the
+    personalizable slot must never reach the retry prompt, and must not cause
+    a futile retry the model could never fix.
+    """
+    contract = _contract_with_personalizable_distinct_from_theme_sibling()
+    # HERO="Ada" collides with PROTAGONIST's pinned default ("Ada"), which
+    # would otherwise produce a `distinct_from` violation naming PROTAGONIST.
+    provider = MockProvider(responses=[_resp({"HERO": "Ada"}, [])])
+
+    bindings, _elements = await interpret_and_bind(
+        contract, _brief(), provider, _empty_pii()
+    )
+
+    assert bindings == {"HERO": "Ada", "PROTAGONIST": "Ada"}
+    assert len(provider.calls) == 1
+    assert "PROTAGONIST" not in provider.calls[0]

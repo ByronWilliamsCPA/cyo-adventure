@@ -23,7 +23,11 @@ from cyo_adventure.generation.authoring_metadata import (
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
 )
-from cyo_adventure.generation.binding import load_contract_for, render_bound_skeleton
+from cyo_adventure.generation.binding import (
+    load_contract_for,
+    personalizable_slot_ids,
+    render_bound_skeleton,
+)
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
@@ -348,9 +352,7 @@ def _stage1_reference_skeleton(
     bindings = (
         recorded_bindings if recorded_bindings is not None else contract.default_binding
     )
-    personalizable_slots = frozenset(
-        slot.id for slot in contract.slots if slot.kind == "personalizable"
-    )
+    personalizable_slots = personalizable_slot_ids(contract)
     try:
         return (
             render_bound_skeleton(original_skeleton, bindings, personalizable_slots),
