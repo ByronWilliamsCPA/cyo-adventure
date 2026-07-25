@@ -3303,6 +3303,20 @@ relate to the Supabase project constraints.</p>
   a signal to investigate rather than a block; it can be promoted to required
   once its per-PR flakiness rate is known. The same spec also runs under
   <code>real-backend</code> in the nightly (one spec, two projects).</li>
+<li><strong>Mobile-web tap targets (Task A7, mobile-safari)</strong>:
+  <code>frontend/e2e/admin-touch-targets.spec.ts</code> — asserts every action button in
+  the six admin CRUD surfaces migrated to the <code>@ds</code> <code>Button</code> (FamiliesTab,
+  KidsTab, ConnectionsTab, UsersTab, ProviderAllowlistPage, AuditPage) plus the
+  two moderation pages' trigger/submit buttons clears the 44px minimum height
+  (WCAG 2.5.5) at a phone viewport, scoped per <code>main section</code> content container
+  so the regression stays pinned to the migrated buttons rather than chrome.</li>
+<li><strong>Mobile-web narrow-width overflow sweep (Task A12, mobile-safari)</strong>:
+  <code>frontend/e2e/mobile-viewport.spec.ts</code> — runs under the <code>mobile-safari</code>
+  project (<code>npm run test:e2e:mobile</code>); asserts zero horizontal overflow at real
+  phone widths across landing, kid picker/library, and guardian surfaces. Guards
+  fluid-layout overflow only; Playwright device profiles do not emulate
+  <code>env(safe-area-inset-*)</code>, so notch/home-indicator overlap (Task A8) needs a
+  real device or the Capacitor build.</li>
 </ul>
 <hr />
 <h2 id="landing-page-marketing">Landing page / marketing<a class="headerlink" href="#landing-page-marketing" title="Permanent link">&para;</a></h2>
@@ -3678,6 +3692,13 @@ in their journey sections instead.</p>
   <code>frontend/src/theme/ThemeProvider.test.tsx</code> (provider state, <code>&lt;html
   data-theme&gt;</code> sync, OS-preference and cross-tab <code>storage</code> re-resolution, and
   the ThemeToggle three-way cycle plus its per-mode accessible label)</li>
+<li>Connectivity / offline infrastructure (mobile-web readiness, Phase A):
+  <code>frontend/src/hooks/probeConnectivity.test.ts</code> (the active fetch-based
+  reachability probe behind <code>useOnlineStatus</code>: an ok response resolves true, a
+  reject or timeout resolves false, and a no-fetch runtime assumes reachable)
+  and <code>frontend/src/offline/persist.test.ts</code> (<code>requestPersistentStorage()</code>: an
+  absent Storage API resolves false, and it skips the <code>persist()</code> request when
+  storage is already persisted)</li>
 </ul>
 <h2 id="keeping-this-matrix-current">Keeping this matrix current<a class="headerlink" href="#keeping-this-matrix-current" title="Permanent link">&para;</a></h2>
 <p><code>#ASSUME: data-integrity: this matrix is hand-maintained and will drift as
@@ -3717,7 +3738,7 @@ closure. A companion action-level verdict for this audit lives at
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 24, 2026 21:50:31 UTC">July 24, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 25, 2026 15:28:38 UTC">July 25, 2026</span>
   </span>
 
     
