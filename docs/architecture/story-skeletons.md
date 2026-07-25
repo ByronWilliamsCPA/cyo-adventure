@@ -66,14 +66,17 @@ by narrative role.
 | The Drowned Court | 16+ | 18 | 1 | branch_and_bottleneck | 314 | 5/2/98 | [svg](diagrams/skeletons/16+/the-drowned-court.svg) |
 | The Last Train North | 16+ | 14 | 1 | branch_and_bottleneck | 143 | 5/9/11 | [svg](diagrams/skeletons/16+/the-last-train-north.svg) |
 | The Longwinter Station | 16+ | 34 | 2 | open_map | 248 | 22/9/13 | [svg](diagrams/skeletons/16+/the-longwinter-station.svg) |
+| The Ninth Hand | 16+ | 14 | 2 | branch_and_bottleneck | 746 | 5/31/151 | [svg](diagrams/skeletons/16+/the-ninth-hand.svg) |
 | The Pale Road | 16+ | 45 | 1 | gauntlet | 498 | 2/1/147 | [svg](diagrams/skeletons/16+/the-pale-road.svg) |
 | The Quiet Harbor Protocol | 16+ | 24 | 2 | branch_and_bottleneck | 153 | 3/11/14 | [svg](diagrams/skeletons/16+/the-quiet-harbor-protocol.svg) |
 | The Red Meridian Run | 16+ | 30 | 1 | gauntlet | 306 | 2/1/87 | [svg](diagrams/skeletons/16+/the-red-meridian-run.svg) |
 | The Salt Archive | 16+ | 24 | 1 | branch_and_bottleneck | 225 | 15/21/18 | [svg](diagrams/skeletons/16+/the-salt-archive.svg) |
 | The Sunken Signal | 16+ | 30 | 2 | branch_and_bottleneck | 32 | 1/1/12 | [svg](diagrams/skeletons/16+/the-sunken-signal.svg) |
+| The Sunless March | 16+ | 8 | 2 | branch_and_bottleneck | 305 | 5/17/83 | [svg](diagrams/skeletons/16+/the-sunless-march.svg) |
 | The Tenfold Siege | 16+ | 55 | 2 | gauntlet | 677 | 2/3/204 | [svg](diagrams/skeletons/16+/the-tenfold-siege.svg) |
 | The Third Shift | 16+ | 26 | 1 | sorting_hat | 151 | 6/11/11 | [svg](diagrams/skeletons/16+/the-third-shift.svg) |
 | The Tricameral City | 16+ | 44 | 1 | sorting_hat | 240 | 8/17/17 | [svg](diagrams/skeletons/16+/the-tricameral-city.svg) |
+| The Vault of Nine Iron | 16+ | 8 | 2 | branch_and_bottleneck | 305 | 5/17/83 | [svg](diagrams/skeletons/16+/the-vault-of-nine-iron.svg) |
 | Baking Day with Grandma Vole | 3-5 | 4 | 1 | loop_and_grow | 30 | 6/0/0 | [svg](diagrams/skeletons/3-5/baking-day-with-grandma-vole.svg) |
 | Puddle Jumping Day | 3-5 | 3 | 1 | time_cave | 19 | 4/0/0 | [svg](diagrams/skeletons/3-5/puddle-jumping-day.svg) |
 | The Big Red Balloon | 3-5 | 4 | 1 | time_cave | 32 | 5/1/0 | [svg](diagrams/skeletons/3-5/the-big-red-balloon.svg) |

@@ -1,0 +1,1314 @@
+@startuml the-sunless-march
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 75w
+state a0_tower #FFF9C4
+a0_tower : choice · 60w
+state a0_tower_q #D1C4E9
+a0_tower_q : rising · 50w
+state a0_haggle #FFF9C4
+a0_haggle : choice · 55w
+state a0_charter #D1C4E9
+a0_charter : rising · 45w
+state a0_sign #FFF9C4
+a0_sign : choice · 55w
+state a0_guide #FFF9C4
+a0_guide : choice · 50w
+state a0_guide_hired #D1C4E9
+a0_guide_hired : rising · 45w
+state a0_dispatch #D1C4E9
+a0_dispatch : rising · 55w
+state a0_taproom #FFF9C4
+a0_taproom : choice · 60w
+state a0_rumors #FFF9C4
+a0_rumors : choice · 55w
+state a0_lamps #FFF9C4
+a0_lamps : choice · 55w
+state a0_lamps_full #D1C4E9
+a0_lamps_full : rising · 50w
+state a0_brawl #FFF9C4
+a0_brawl : choice · 55w
+state a0_brawl_win #D1C4E9
+a0_brawl_win : rising · 50w
+state a0_brawl_bought #D1C4E9
+a0_brawl_bought : rising · 50w
+state a0_rest #D1C4E9
+a0_rest : rising · 45w
+state a0_yard #FFF9C4
+a0_yard : choice · 60w
+state a0_ilsabet #FFF9C4
+a0_ilsabet : choice · 55w
+state a0_ilsabet_full #D1C4E9
+a0_ilsabet_full : rising · 50w
+state a0_ilsabet_half #D1C4E9
+a0_ilsabet_half : rising · 50w
+state a0_spears #D1C4E9
+a0_spears : rising · 50w
+state w0_rooks #FFF9C4
+w0_rooks : choice · 50w
+state w0_rooks_drink #D1C4E9
+w0_rooks_drink : rising · 50w
+state w0_ledger #FFF9C4
+w0_ledger : choice · 60w
+state w0_account #D1C4E9
+w0_account : rising · 55w
+state w0_kit #D1C4E9
+w0_kit : rising · 50w
+state w0_indent #FFF9C4
+w0_indent : choice · 50w
+state w0_kettle #FFF9C4
+w0_kettle : choice · 55w
+state w0_kettle_press #FFF9C4
+w0_kettle_press : choice · 55w
+state w0_rhyme #D1C4E9
+w0_rhyme : rising · 50w
+state w0_betray #D1C4E9
+w0_betray : rising · 50w
+state a0_gather #FFF9C4
+a0_gather : choice · 60w
+state a0_march_light #D1C4E9
+a0_march_light : rising · 45w
+state a0_march_night #D1C4E9
+a0_march_night : rising · 50w
+state a0_supply #FFF9C4
+a0_supply : choice · 50w
+state a0_supply_mule #D1C4E9
+a0_supply_mule : rising · 45w
+state a0_supply_blade #D1C4E9
+a0_supply_blade : rising · 45w
+state a0_muster #FFF9C4
+a0_muster : choice · 65w
+state e_a0_insult #FFCDD2
+e_a0_insult : setback (negative)
+e_a0_insult : "Terms Refused"
+state e_a0_moor_night #FFCDD2
+e_a0_moor_night : death (negative)
+e_a0_moor_night : "Lit an Hour Early"
+state e_a0_gaol #FFCDD2
+e_a0_gaol : capture (negative)
+e_a0_gaol : "The Gate Cells"
+state e_a0_sell #E0E0E0
+e_a0_sell : setback (neutral)
+e_a0_sell : "The Contract Sold"
+state e_a0_indenture #FFCDD2
+e_a0_indenture : setback (negative)
+e_a0_indenture : "Signed in the Chapter House"
+state e_a0_walk #E0E0E0
+e_a0_walk : setback (neutral)
+e_a0_walk : "Wintered at the Gate"
+state a1_dyke #FFF9C4
+a1_dyke : choice · 55w
+state a1_dyke_top #D1C4E9
+a1_dyke_top : rising · 50w
+state a1_dyke_low #D1C4E9
+a1_dyke_low : rising · 50w
+state a1_gibbet #FFF9C4
+a1_gibbet : choice · 60w
+state a1_gibbet_mark #D1C4E9
+a1_gibbet_mark : rising · 50w
+state a1_sluice #FFF9C4
+a1_sluice : choice · 60w
+state a1_sluice_wade #FFF9C4
+a1_sluice_wade : choice · 50w
+state a1_sluice_round #D1C4E9
+a1_sluice_round : rising · 50w
+state a1_sluice_ward #D1C4E9
+a1_sluice_ward : rising · 50w
+state a1_moor #FFF9C4
+a1_moor : choice · 60w
+state a1_moor_slow #D1C4E9
+a1_moor_slow : rising · 50w
+state a1_moor_fast #FFF9C4
+a1_moor_fast : choice · 55w
+state a1_moor_path #FFF9C4
+a1_moor_path : choice · 55w
+state a1_drag #FFF9C4
+a1_drag : choice · 65w
+state a1_drag_kit #D1C4E9
+a1_drag_kit : rising · 50w
+state a1_burial #D1C4E9
+a1_burial : rising · 55w
+state a1_ambush #D1C4E9
+a1_ambush : rising · 55w
+state a1_bog #FFF9C4
+a1_bog : choice · 65w
+state a1_bog_token #D1C4E9
+a1_bog_token : rising · 55w
+state a1_deadroad #FFF9C4
+a1_deadroad : choice · 60w
+state a1_road_cut #FFF9C4
+a1_road_cut : choice · 55w
+state a1_niche #D1C4E9
+a1_niche : rising · 50w
+state a1_gallery #FFF9C4
+a1_gallery : choice · 60w
+state a1_gallery_dig #FFF9C4
+a1_gallery_dig : choice · 60w
+state a1_crawl #FFF9C4
+a1_crawl : choice · 60w
+state a1_seal #D1C4E9
+a1_seal : rising · 55w
+state a1_camp #FFF9C4
+a1_camp : choice · 70w
+state a1_camp_dark #FFF9C4
+a1_camp_dark : choice · 65w
+state a1_camp_fire #FFF9C4
+a1_camp_fire : choice · 60w
+state a1_challenge #FFF9C4
+a1_challenge : choice · 60w
+state a1_scout #FFF9C4
+a1_scout : choice · 65w
+state a1_slip #D1C4E9
+a1_slip : rising · 50w
+state a1_follow #FFF9C4
+a1_follow : choice · 60w
+state a1_pass_as_nine #D1C4E9
+a1_pass_as_nine : rising · 65w
+state a1_night_push #D1C4E9
+a1_night_push : rising · 50w
+state a1_gate #FFE0B2
+a1_gate : climax · 75w
+state a1_watch #FFF9C4
+a1_watch : choice · 65w
+state e_a1_gibbet_night #FFCDD2
+e_a1_gibbet_night : death (negative)
+e_a1_gibbet_night : "Counted at the Fourth Station"
+state e_a1_beam #FFCDD2
+e_a1_beam : death (negative)
+e_a1_beam : "The Fourth Bracket"
+state e_a1_swept #FFCDD2
+e_a1_swept : death (negative)
+e_a1_swept : "Under the Cistern"
+state e_a1_drown #FFCDD2
+e_a1_drown : death (negative)
+e_a1_drown : "The Shoulder Tries Again"
+state e_a1_fenkin_camp #FFCDD2
+e_a1_fenkin_camp : capture (negative)
+e_a1_fenkin_camp : "Guests of the Skree"
+state e_a1_fall #FFCDD2
+e_a1_fall : death (negative)
+e_a1_fall : "The Gallery Settles"
+state e_a1_counted #FFCDD2
+e_a1_counted : death (negative)
+e_a1_counted : "Given the Next Number"
+state e_a1_kettle_alone #FFCDD2
+e_a1_kettle_alone : setback (negative)
+e_a1_kettle_alone : "Sent Alone"
+state e_a1_bram #FFCDD2
+e_a1_bram : setback (negative)
+e_a1_bram : "Halt and Weem Go North"
+state e_a1_turn_back #E0E0E0
+e_a1_turn_back : setback (neutral)
+e_a1_turn_back : "Weather Turned Us"
+state a1_approach #FFF9C4
+a1_approach : choice · 65w
+state e_a1_mule #FFCDD2
+e_a1_mule : setback (negative)
+e_a1_mule : "The Barrow Goes First"
+state a2_threshold #FFF9C4
+a2_threshold : choice · 65w
+state a2_gap #FFF9C4
+a2_gap : choice · 55w
+state a2_lever #FFF9C4
+a2_lever : choice · 60w
+state a2_shield #D1C4E9
+a2_shield : rising · 60w
+state a2_chute #FFF9C4
+a2_chute : choice · 60w
+state a2_chute_rope #D1C4E9
+a2_chute_rope : rising · 50w
+state a2_chute_kettle #FFF9C4
+a2_chute_kettle : choice · 55w
+state a2_sump #FFF9C4
+a2_sump : choice · 65w
+state a2_grate #D1C4E9
+a2_grate : rising · 55w
+state a2_dark #FFF9C4
+a2_dark : choice · 65w
+state a2_burn #D1C4E9
+a2_burn : rising · 60w
+state a2_quiet #FFF9C4
+a2_quiet : choice · 55w
+state a2_postern #FFF9C4
+a2_postern : choice · 60w
+state a2_tally #FFF9C4
+a2_tally : choice · 55w
+state a2_postern_open #D1C4E9
+a2_postern_open : rising · 55w
+state a2_postern_break #FFF9C4
+a2_postern_break : choice · 60w
+state a2_hall #FFF9C4
+a2_hall : choice · 70w
+state a2_mosaic #FFF9C4
+a2_mosaic : choice · 60w
+state a2_mosaic_read #D1C4E9
+a2_mosaic_read : rising · 65w
+state a2_barracks #FFF9C4
+a2_barracks : choice · 65w
+state a2_wall #FFF9C4
+a2_wall : choice · 70w
+state a2_wall_mercy #D1C4E9
+a2_wall_mercy : rising · 55w
+state a2_wall_ask #FFF9C4
+a2_wall_ask : choice · 65w
+state a2_chest #FFF9C4
+a2_chest : choice · 60w
+state a2_roster #D1C4E9
+a2_roster : rising · 55w
+state a2_blank #D1C4E9
+a2_blank : rising · 50w
+state a2_bottle #D1C4E9
+a2_bottle : rising · 50w
+state a2_rest #D1C4E9
+a2_rest : rising · 55w
+state a2_counting #FFF9C4
+a2_counting : choice · 70w
+state a2_lastpage #FFF9C4
+a2_lastpage : choice · 65w
+state a2_ledger #FFF9C4
+a2_ledger : choice · 55w
+state a2_take_iron #FFF9C4
+a2_take_iron : choice · 70w
+state a2_wrap #D1C4E9
+a2_wrap : rising · 55w
+state a2_put_back #D1C4E9
+a2_put_back : rising · 55w
+state a2_alcove #FFF9C4
+a2_alcove : choice · 65w
+state a2_tally_private #D1C4E9
+a2_tally_private : rising · 65w
+state a2_hole #FFF9C4
+a2_hole : choice · 60w
+state a2_lamps #FFF9C4
+a2_lamps : choice · 70w
+state a2_keeper #FFF9C4
+a2_keeper : choice · 70w
+state a2_keeper_all #D1C4E9
+a2_keeper_all : rising · 70w
+state a2_keeper_route #D1C4E9
+a2_keeper_route : rising · 55w
+state a2_keeper_out #D1C4E9
+a2_keeper_out : rising · 60w
+state a2_terms #FFF9C4
+a2_terms : choice · 65w
+state a2_kill_keeper #FFF9C4
+a2_kill_keeper : choice · 65w
+state a2_cloak #D1C4E9
+a2_cloak : rising · 60w
+state a2_board #FFF9C4
+a2_board : choice · 70w
+state a2_ninth_hour #D1C4E9
+a2_ninth_hour : rising · 65w
+state a2_douse #FFF9C4
+a2_douse : choice · 65w
+state a2_stair #FFE0B2
+a2_stair : climax · 70w
+state e_a2_knock #FFCDD2
+e_a2_knock : capture (negative)
+e_a2_knock : "Answered at the Gate"
+state e_a2_pinned #FFCDD2
+e_a2_pinned : death (negative)
+e_a2_pinned : "Pinned in the Gap"
+state e_a2_chute_fall #FFCDD2
+e_a2_chute_fall : death (negative)
+e_a2_chute_fall : "Forty Feet of Staples"
+state e_a2_kettle_gone #FFCDD2
+e_a2_kettle_gone : setback (negative)
+e_a2_kettle_gone : "Ten Minutes as Agreed"
+state e_a2_outflow #FFCDD2
+e_a2_outflow : death (negative)
+e_a2_outflow : "The Overflow"
+state e_a2_nest #FFCDD2
+e_a2_nest : death (negative)
+e_a2_nest : "On Your Terms"
+state e_a2_tooth #FFCDD2
+e_a2_tooth : death (negative)
+e_a2_tooth : "Off the Nearest One's Belt"
+state e_a2_challenge #FFCDD2
+e_a2_challenge : capture (negative)
+e_a2_challenge : "Who Goes There"
+state e_a2_loot_home #E0E0E0
+e_a2_loot_home : setback (neutral)
+e_a2_loot_home : "Kit and Pay Chest"
+state e_a2_carry #FFCDD2
+e_a2_carry : death (negative)
+e_a2_carry : "Evidence for the Warden"
+state e_a2_ask_too_long #FFCDD2
+e_a2_ask_too_long : death (negative)
+e_a2_ask_too_long : "The Ninth Question"
+state e_a2_withdraw_rich #E0E0E0
+e_a2_withdraw_rich : setback (neutral)
+e_a2_withdraw_rich : "Salvage, Not Contract"
+state e_a2_mouth #FFCDD2
+e_a2_mouth : death (negative)
+e_a2_mouth : "As the Frozen Man Carried His"
+state e_a2_hole #FFCDD2
+e_a2_hole : death (negative)
+e_a2_hole : "Down the Clerk's Hole"
+state e_a2_reached #FFCDD2
+e_a2_reached : capture (negative)
+e_a2_reached : "What Was Lying by the Bootprints"
+state e_a2_fire #FFCDD2
+e_a2_fire : death (negative)
+e_a2_fire : "Nine Lamps at Once"
+state e_a2_join #FFCDD2
+e_a2_join : capture (negative)
+e_a2_join : "One Hour in the File"
+state e_a2_douse #FFCDD2
+e_a2_douse : death (negative)
+e_a2_douse : "What Comes Up to Relight Them"
+state e_a2_out #E0E0E0
+e_a2_out : setback (neutral)
+e_a2_out : "Out, and Honest About It"
+state a3_landing #FFF9C4
+a3_landing : choice · 65w
+state a3_dark_descent #FFF9C4
+a3_dark_descent : choice · 65w
+state a3_scout_descent #FFF9C4
+a3_scout_descent : choice · 65w
+state a3_shrine #FFF9C4
+a3_shrine : choice · 65w
+state a3_shrine_set #D1C4E9
+a3_shrine_set : rising · 60w
+state a3_lit #D1C4E9
+a3_lit : rising · 55w
+state a3_overtake #D1C4E9
+a3_overtake : rising · 55w
+state a3_stairfoot #FFF9C4
+a3_stairfoot : choice · 75w
+state a3_flood #FFF9C4
+a3_flood : choice · 65w
+state a3_flood_swim #FFF9C4
+a3_flood_swim : choice · 60w
+state a3_ledge #FFF9C4
+a3_ledge : choice · 60w
+state a3_ferry #FFF9C4
+a3_ferry : choice · 70w
+state a3_crate #FFF9C4
+a3_crate : choice · 65w
+state a3_free #D1C4E9
+a3_free : rising · 60w
+state a3_gangpass #D1C4E9
+a3_gangpass : rising · 65w
+state a3_payhall #FFF9C4
+a3_payhall : choice · 70w
+state a3_paymaster #FFF9C4
+a3_paymaster : choice · 70w
+state a3_eight #FFF9C4
+a3_eight : choice · 65w
+state a3_one_iron #D1C4E9
+a3_one_iron : rising · 55w
+state a3_walltally #FFF9C4
+a3_walltally : choice · 65w
+state a3_chapel #FFF9C4
+a3_chapel : choice · 70w
+state a3_terms3 #FFF9C4
+a3_terms3 : choice · 70w
+state a3_offer #FFF9C4
+a3_offer : choice · 70w
+state a3_counter #D1C4E9
+a3_counter : rising · 65w
+state a3_attack #FFF9C4
+a3_attack : choice · 70w
+state a3_kill_vale #FFF9C4
+a3_kill_vale : choice · 70w
+state a3_valebook #D1C4E9
+a3_valebook : rising · 65w
+state a3_wheel #FFF9C4
+a3_wheel : choice · 70w
+state a3_pump #FFF9C4
+a3_pump : choice · 65w
+state a3_flood_deep #FFF9C4
+a3_flood_deep : choice · 65w
+state a3_race #FFF9C4
+a3_race : choice · 60w
+state a3_barrow #FFF9C4
+a3_barrow : choice · 70w
+state a3_plaques #FFF9C4
+a3_plaques : choice · 70w
+state a3_close #D1C4E9
+a3_close : rising · 60w
+state a3_through #FFF9C4
+a3_through : choice · 65w
+state a3_forge #FFF9C4
+a3_forge : choice · 70w
+state a3_cut #FFF9C4
+a3_cut : choice · 70w
+state a3_die #D1C4E9
+a3_die : rising · 55w
+state a3_orders #D1C4E9
+a3_orders : rising · 70w
+state a3_door #FFE0B2
+a3_door : climax · 80w
+state e_a3_landing_rest #FFCDD2
+e_a3_landing_rest : death (negative)
+e_a3_landing_rest : "Twenty Minutes on the Stair"
+state e_a3_shrine_take #FFCDD2
+e_a3_shrine_take : death (negative)
+e_a3_shrine_take : "One of the Eight"
+state e_a3_count_steps #FFCDD2
+e_a3_count_steps : death (negative)
+e_a3_count_steps : "Counted on the Stair"
+state e_a3_grab #FFCDD2
+e_a3_grab : death (negative)
+e_a3_grab : "Taken Hold Of"
+state e_a3_slack #FFCDD2
+e_a3_slack : setback (negative)
+e_a3_slack : "The End of the Rope"
+state e_a3_shout #FFCDD2
+e_a3_shout : capture (negative)
+e_a3_shout : "Somebody Down Here Must Be Warden"
+state e_a3_sink #FFCDD2
+e_a3_sink : death (negative)
+e_a3_sink : "Holed From Below"
+state e_a3_swim #FFCDD2
+e_a3_swim : death (negative)
+e_a3_swim : "What Was Under You"
+state e_a3_ledge #FFCDD2
+e_a3_ledge : death (negative)
+e_a3_ledge : "Where the Ledge Is Broken"
+state e_a3_crate #FFCDD2
+e_a3_crate : capture (negative)
+e_a3_crate : "What He Was Counting Toward"
+state e_a3_bell #FFCDD2
+e_a3_bell : capture (negative)
+e_a3_bell : "Who Still Answers It"
+state e_a3_hands #FFCDD2
+e_a3_hands : death (negative)
+e_a3_hands : "Where His Hands Went"
+state e_a3_eight_all #FFCDD2
+e_a3_eight_all : death (negative)
+e_a3_eight_all : "All Eight"
+state e_a3_read_end #FFCDD2
+e_a3_read_end : death (negative)
+e_a3_read_end : "The Name at the Bottom"
+state e_a3_burn_wall #FFCDD2
+e_a3_burn_wall : death (negative)
+e_a3_burn_wall : "The Tally-Wall Burns"
+state e_a3_accept #FFCDD2
+e_a3_accept : capture (negative)
+e_a3_accept : "One of the Five"
+state e_a3_accept_self #FFCDD2
+e_a3_accept_self : setback (negative)
+e_a3_accept_self : "The Ninth Hand's Chair"
+state e_a3_hostage #FFCDD2
+e_a3_hostage : death (negative)
+e_a3_hostage : "A Priest as Surety"
+state e_a3_chapel_defends #FFCDD2
+e_a3_chapel_defends : death (negative)
+e_a3_chapel_defends : "Nine Benches Worth"
+state e_a3_vale_count #FFCDD2
+e_a3_vale_count : death (negative)
+e_a3_vale_count : "A Count Without a Keeper"
+state e_a3_wheel #FFCDD2
+e_a3_wheel : death (negative)
+e_a3_wheel : "What the Wheel Drains Into"
+state e_a3_pump_stay #FFCDD2
+e_a3_pump_stay : setback (negative)
+e_a3_pump_stay : "Somebody Has to Run It"
+state e_a3_drown_own #FFCDD2
+e_a3_drown_own : death (negative)
+e_a3_drown_own : "Half the Company Below"
+state e_a3_race #FFCDD2
+e_a3_race : death (negative)
+e_a3_race : "Nine Paddles Coming Round"
+state e_a3_ring #FFCDD2
+e_a3_ring : death (negative)
+e_a3_ring : "The Empty Tenth Chair"
+state e_a3_through #FFCDD2
+e_a3_through : death (negative)
+e_a3_through : "Once, So You Know"
+state e_a3_forge_light #FFCDD2
+e_a3_forge_light : death (negative)
+e_a3_forge_light : "The Forge Relit"
+state e_a3_second #FFCDD2
+e_a3_second : death (negative)
+e_a3_second : "Never Cut Twice"
+state e_a3_knock_door #FFCDD2
+e_a3_knock_door : death (negative)
+e_a3_knock_door : "Knocked, Again"
+state e_a3_leave #E0E0E0
+e_a3_leave : setback (neutral)
+e_a3_leave : "Never Speak of It"
+state a3_hall #FFF9C4
+a3_hall : choice · 70w
+state e_a3_tags #FFCDD2
+e_a3_tags : death (negative)
+e_a3_tags : "Somebody's Family Gets a Name"
+state a4_lock #FFE0B2
+a4_lock : climax · 80w
+state a4_break_die #D1C4E9
+a4_break_die : rising · 65w
+state a4_take_ring #FFF9C4
+a4_take_ring : choice · 70w
+state a4_ring_on #D1C4E9
+a4_ring_on : rising · 70w
+state a4_unmake #FFE0B2
+a4_unmake : climax · 75w
+state a4_one_at_a_time #FFF9C4
+a4_one_at_a_time : choice · 70w
+state a4_reseat #D1C4E9
+a4_reseat : rising · 65w
+state a4_wedge #FFF9C4
+a4_wedge : choice · 70w
+state a4_open #FFE0B2
+a4_open : climax · 75w
+state a4_looked #FFF9C4
+a4_looked : choice · 75w
+state a4_lamp_through #FFF9C4
+a4_lamp_through : choice · 65w
+state a4_closed_unlooked #FFF9C4
+a4_closed_unlooked : choice · 65w
+state a4_carry #FFE0B2
+a4_carry : climax · 75w
+state a4_wrap_iron #D1C4E9
+a4_wrap_iron : rising · 70w
+state a4_withdraw #FFF9C4
+a4_withdraw : choice · 70w
+state a4_take_ledger #FFF9C4
+a4_take_ledger : choice · 65w
+state a4_out #FFF9C4
+a4_out : choice · 75w
+state a4_force_gate #FFF9C4
+a4_force_gate : choice · 70w
+state a4_chute_out #FFF9C4
+a4_chute_out : choice · 65w
+state a4_postern_out #D1C4E9
+a4_postern_out : rising · 60w
+state a4_file_out #FFF9C4
+a4_file_out : choice · 70w
+state a4_moorback #FFF9C4
+a4_moorback : choice · 70w
+state a4_bothy #D1C4E9
+a4_bothy : rising · 65w
+state a4_council #FFF9C4
+a4_council : choice · 70w
+state a4_boy #FFF9C4
+a4_boy : choice · 70w
+state a4_gallowmere #FFF9C4
+a4_gallowmere : choice · 75w
+state a4_mother #FFF9C4
+a4_mother : choice · 70w
+state a4_report #FFF9C4
+a4_report : choice · 75w
+state a4_record #FFF9C4
+a4_record : choice · 75w
+state a4_name_halloway #FFF9C4
+a4_name_halloway : choice · 70w
+state e_a4_completion #C8E6C9
+e_a4_completion : completion (positive)
+e_a4_completion : "The Second of Nine"
+state e_a4_win_charter #C8E6C9
+e_a4_win_charter : success (positive)
+e_a4_win_charter : "The Charter and the Writ"
+state e_a4_win_plain #C8E6C9
+e_a4_win_plain : success (positive)
+e_a4_win_plain : "The Contract, Kept"
+state e_a4_win_book #E0E0E0
+e_a4_win_book : success (neutral)
+e_a4_win_book : "Ferrin's Book on the Table"
+state e_a4_win_testify #C8E6C9
+e_a4_win_testify : success (positive)
+e_a4_win_testify : "Named in the Chapter House"
+state e_a4_wedge_win #E0E0E0
+e_a4_wedge_win : success (neutral)
+e_a4_wedge_win : "Wedged, and Written Down"
+state e_a4_win_boy #C8E6C9
+e_a4_win_boy : success (positive)
+e_a4_win_boy : "The Novice"
+state e_a4_silent #E0E0E0
+e_a4_silent : discovery (neutral)
+e_a4_silent : "What She Was Told"
+state e_a4_surety #E0E0E0
+e_a4_surety : discovery (neutral)
+e_a4_surety : "Held as Surety"
+state e_a4_keeper_office #FFCDD2
+e_a4_keeper_office : setback (negative)
+e_a4_keeper_office : "Somebody Has to Count"
+state e_a4_open_admitted #FFCDD2
+e_a4_open_admitted : setback (negative)
+e_a4_open_admitted : "How Far It Is Open"
+state e_a4_reseat_end #E0E0E0
+e_a4_reseat_end : setback (neutral)
+e_a4_reseat_end : "Drawn and Put Back"
+state e_a4_withdrew #E0E0E0
+e_a4_withdrew : setback (neutral)
+e_a4_withdrew : "Did Not Go Through"
+state e_a4_fee #E0E0E0
+e_a4_fee : setback (neutral)
+e_a4_fee : "The Minimum, and the Fee"
+state e_a4_bought #FFCDD2
+e_a4_bought : setback (negative)
+e_a4_bought : "Corrow's Price"
+state e_a4_south #E0E0E0
+e_a4_south : setback (neutral)
+e_a4_south : "Over the Shoulder, West"
+state e_a4_split #FFCDD2
+e_a4_split : setback (negative)
+e_a4_split : "Five Voices, No Company"
+state e_a4_mother_stay #E0E0E0
+e_a4_mother_stay : setback (neutral)
+e_a4_mother_stay : "Until the Candles Burn Out"
+state e_a4_jam_fail #FFCDD2
+e_a4_jam_fail : death (negative)
+e_a4_jam_fail : "Driven In Crooked"
+state e_a4_unmade #FFCDD2
+e_a4_unmade : death (negative)
+e_a4_unmade : "All Eight, and Run"
+state e_a4_opened #FFCDD2
+e_a4_opened : death (negative)
+e_a4_opened : "Finish What You Started"
+state e_a4_asked #FFCDD2
+e_a4_asked : capture (negative)
+e_a4_asked : "What It Is Owed"
+state e_a4_wedge_fail #FFCDD2
+e_a4_wedge_fail : death (negative)
+e_a4_wedge_fail : "Testing the Wedge"
+state e_a4_spoke #FFCDD2
+e_a4_spoke : death (negative)
+e_a4_spoke : "Spoken To"
+state e_a4_in_for_people #FFCDD2
+e_a4_in_for_people : death (negative)
+e_a4_in_for_people : "Somebody Has To"
+state e_a4_lamp #FFCDD2
+e_a4_lamp : death (negative)
+e_a4_lamp : "Reaching For the Lamp"
+state e_a4_moor #FFCDD2
+e_a4_moor : setback (negative)
+e_a4_moor : "The Cistern Dip"
+state e_a4_bait #FFCDD2
+e_a4_bait : death (negative)
+e_a4_bait : "Come and Ask For It"
+state e_a4_burn_lamps #FFCDD2
+e_a4_burn_lamps : setback (negative)
+e_a4_burn_lamps : "Nine Lamps at the Gate"
+state e_a4_sell_knowledge #FFCDD2
+e_a4_sell_knowledge : setback (negative)
+e_a4_sell_knowledge : "Sold to the Rooks"
+state e_a4_ledger_lingered #FFCDD2
+e_a4_ledger_lingered : death (negative)
+e_a4_ledger_lingered : "The Clerk's Tally, Too"
+state e_a4_sat_down #FFCDD2
+e_a4_sat_down : death (negative)
+e_a4_sat_down : "Sat Down on the Stair"
+state e_a4_forced_shut #FFCDD2
+e_a4_forced_shut : capture (negative)
+e_a4_forced_shut : "Counted Through By Name"
+state e_a4_chute_out_fall #FFCDD2
+e_a4_chute_out_fall : death (negative)
+e_a4_chute_out_fall : "Strongest First"
+state e_a4_file_kept #FFCDD2
+e_a4_file_kept : capture (negative)
+e_a4_file_kept : "It Is Only Nine"
+state e_a4_boy_lost #FFCDD2
+e_a4_boy_lost : setback (negative)
+e_a4_boy_lost : "Faster By the Gate Leaf"
+state e_a4_ambushed #FFCDD2
+e_a4_ambushed : capture (negative)
+e_a4_ambushed : "Who Was Waiting at the Gate"
+state a4_causeway #FFF9C4
+a4_causeway : choice · 65w
+state a4_ahead #FFF9C4
+a4_ahead : choice · 65w
+state a4_tower #FFF9C4
+a4_tower : choice · 70w
+state e_a4_left_with_clerk #E0E0E0
+e_a4_left_with_clerk : setback (neutral)
+e_a4_left_with_clerk : "Left With the Clerk"
+n_start --> a0_tower : Report to the Warden of the Deep Road.
+n_start --> a0_taproom : Take the company into the Lamp and Ladde...
+n_start --> a0_yard : Walk the caravan yard and see who is goi...
+n_start --> w0_ledger : Go with Nyre to the Reckoning chapter ho...
+n_start --> w0_kettle : Ask Kettle why she has not unpacked.
+a0_tower --> a0_tower_q : Ask what her patrols found at Sixteen Mi...
+a0_tower --> a0_haggle : Press her for terms worth the walk.
+a0_tower --> a0_sign : Take the commission as offered.
+a0_tower_q --> a0_haggle : Press her for better terms now that you ...
+a0_tower_q --> a0_sign : Take it as offered; the road will not im...
+a0_haggle --> a0_charter : Swear the oath and take her authority.
+a0_haggle --> a0_sign : Keep your hands free and take the coin i...
+a0_haggle --> e_a0_insult : Refuse the road entirely and winter sout...
+a0_charter --> a0_sign : Go and gather the company.
+a0_sign --> a0_guide : Ask her for a guide who knows the hours.
+a0_sign --> a0_dispatch : Ask to read the tower's last report.
+a0_sign --> a0_gather : Go and gather your company.
+a0_guide --> a0_guide_hired : Take her on and clear the debts.
+a0_guide --> a0_gather : Refuse; Vurma can read a dwarf road well...
+a0_guide_hired --> a0_gather : Gather the company.
+a0_dispatch --> a0_gather : Take the charts and gather the company.
+a0_taproom --> a0_rumors : Buy the room a round and listen.
+a0_taproom --> a0_lamps : Corner the road-mason about the ninth st...
+a0_taproom --> a0_brawl : Step in before the Sable Guild starts on...
+a0_taproom --> a0_rest : Take the company to the bunkroom; sleep ...
+a0_rumors --> a0_lamps : Follow up the ninth station story.
+a0_rumors --> a0_gather : That is enough for one night.
+a0_lamps --> a0_lamps_full : Pay him for the whole account.
+a0_lamps --> a0_gather : Write it off as drink and altitude.
+a0_lamps --> e_a0_moor_night : Have him take you up to the shoulder ton...
+a0_lamps_full --> a0_gather : Let him be and gather the company.
+a0_brawl --> a0_brawl_win : Let Dellach answer it with his hands.
+a0_brawl --> a0_brawl_bought : Buy the table a round and end it.
+a0_brawl --> e_a0_gaol : Draw steel in a Warden gatehouse.
+a0_brawl_win --> a0_gather : Get the company to the bunkroom.
+a0_brawl_bought --> a0_gather : Take the bunkroom and the quiet night.
+a0_rest --> a0_gather : Gather the company at the bell.
+a0_yard --> a0_ilsabet : Talk to the dwarf sitting alone.
+a0_yard --> a0_spears : Hire the two road-porters looking for a ...
+a0_yard --> w0_rooks : Cross to the Rooks banner.
+a0_yard --> a0_gather : Hire nobody; five is enough to feed.
+a0_ilsabet --> a0_ilsabet_full : Take her on at a full share.
+a0_ilsabet --> a0_ilsabet_half : Offer her a half share and the copy.
+a0_ilsabet_full --> a0_gather : Gather the company.
+a0_ilsabet_half --> a0_gather : Gather the company.
+a0_spears --> a0_gather : Gather the company.
+w0_rooks --> w0_rooks_drink : Refuse, and drink long enough to learn w...
+w0_rooks --> e_a0_sell : Sell her the contract and winter in comf...
+w0_rooks_drink --> a0_gather : Leave her the bay and gather your compan...
+w0_ledger --> w0_account : Have Nyre read the chapter's road accoun...
+w0_ledger --> w0_kit : Draw kit and credit against the commissi...
+w0_ledger --> w0_indent : Hear the offer Vask would rather make.
+w0_ledger --> a0_gather : Leave; this is Reckoning business.
+w0_account --> a0_gather : Take the copy and gather the company.
+w0_kit --> a0_gather : Load out and gather the company.
+w0_indent --> e_a0_indenture : Sign what Vask is actually offering.
+w0_indent --> a0_gather : Refuse, and notice that she said nine.
+w0_kettle --> w0_kettle_press : Press her, gently, until she says the re...
+w0_kettle --> a0_gather : Let her keep it; she has earned one sile...
+w0_kettle --> w0_betray : Tell Orr the company's scout will not go...
+w0_kettle_press --> w0_rhyme : Ask her to give you the cadence.
+w0_kettle_press --> a0_gather : That is enough for tonight.
+w0_rhyme --> a0_gather : Sit with that a while, then gather the c...
+w0_betray --> a0_gather : Gather the company.
+a0_gather --> a0_march_light : Go down at the bell, light kit, good ord...
+a0_gather --> a0_march_night : Go down tonight, ahead of the Guild trai...
+a0_gather --> a0_supply : Spend the advance properly before you mo...
+a0_gather --> e_a0_walk : Give the commission back and winter here...
+a0_march_light --> a0_muster : Take the first junction.
+a0_march_night --> a0_muster : Take the first junction.
+a0_supply --> a0_supply_mule : Barrow, salt, oil and rope.
+a0_supply --> a0_supply_blade : Wire line and a moor-iron pick.
+a0_supply_mule --> a0_muster : Take the first junction.
+a0_supply_blade --> a0_muster : Take the first junction.
+a0_muster --> a1_dyke : Stay on the lit Lamp Road.
+a0_muster --> a1_moor : Go up over the shoulder and rejoin below...
+a0_muster --> a1_deadroad : Take the old drift and go under it all.
+a1_dyke --> a1_dyke_top : Keep to the crown of the road.
+a1_dyke --> a1_dyke_low : Drop into the drainage gallery alongside...
+a1_dyke --> a1_gibbet : Stop at the fourth station where a couri...
+a1_dyke_top --> a1_sluice : Press on to the cistern dip.
+a1_dyke_top --> a1_dyke_low : Get down into the drainage gallery out o...
+a1_dyke_low --> a1_sluice : Climb out at the cistern dip.
+a1_gibbet --> a1_gibbet_mark : Cut the tally out of the post for Ilsabe...
+a1_gibbet --> a1_sluice : Leave it; the barrow is not your busines...
+a1_gibbet --> e_a1_gibbet_night : Camp here at the station where it is dry...
+a1_gibbet_mark --> a1_sluice : Pocket it and go on to the cistern.
+a1_sluice --> a1_sluice_wade : Rope a line and wade it.
+a1_sluice --> a1_sluice_round : Go round by the maintenance crawl and lo...
+a1_sluice --> a1_sluice_ward : Have Ilsabet crust the surface hard enou...
+a1_sluice --> e_a1_beam : Cross dry along the lamp brackets.
+a1_sluice_wade --> a1_camp : Keep the line taut and cross one at a ti...
+a1_sluice_wade --> e_a1_swept : Let go and swim the last twenty feet.
+a1_sluice_round --> a1_camp : Rejoin the road and make camp.
+a1_sluice_ward --> a1_camp : Give her a minute, then make camp.
+a1_moor --> a1_moor_slow : Rope up and take it slowly.
+a1_moor --> a1_moor_fast : Push the pace and get over before dark.
+a1_moor --> a1_moor_path : Follow the beaten sledge trail somebody ...
+a1_moor_slow --> a1_bog : Drop off the shoulder at the old working...
+a1_moor_fast --> a1_bog : Slow down; the shoulder made its point.
+a1_moor_fast --> e_a1_drown : Keep the pace and let the shoulder try a...
+a1_moor_path --> a1_drag : Follow it and see what was hauled.
+a1_moor_path --> a1_bog : Get off it and back into open snow.
+a1_moor_path --> a1_ambush : Set an ambush on the trail and wait.
+a1_drag --> a1_drag_kit : Take the Warden signet and the dispatch ...
+a1_drag --> a1_burial : Bury what can be buried and let Nyre say...
+a1_drag --> a1_bog : Back off now; the Skree are still on the...
+a1_drag --> e_a1_fenkin_camp : Follow the small bootprints back to thei...
+a1_drag_kit --> a1_bog : Get off the trail and go to ground.
+a1_burial --> a1_bog : Move before the light goes.
+a1_ambush --> a1_bog : Take the tally-ring and get off the trai...
+a1_bog --> a1_bog_token : Have Ilsabet read the iron in the mouth.
+a1_bog --> a1_camp : Take the iron and go.
+a1_bog --> a1_camp : Cover the face and leave the man his iro...
+a1_bog_token --> a1_camp : Make camp while there is light.
+a1_deadroad --> a1_road_cut : Walk the open drift where the survey pil...
+a1_deadroad --> a1_gallery : Take the covered gallery where the roof ...
+a1_deadroad --> a1_sluice : Back out and rejoin the Lamp Road at the...
+a1_road_cut --> a1_niche : Take the oil; a full reservoir is a full...
+a1_road_cut --> a1_camp : Leave the niche exactly as you found it.
+a1_road_cut --> a1_gallery : Duck into the covered gallery instead.
+a1_niche --> a1_camp : Push on to the camp ground.
+a1_gallery --> a1_gallery_dig : Dig through the fall.
+a1_gallery --> a1_crawl : Take the crawl on the left of it.
+a1_gallery --> a1_niche : Back out and take the open drift's lamp ...
+a1_gallery_dig --> a1_camp : Take the gap while the fall is quiet.
+a1_gallery_dig --> e_a1_fall : Widen it properly first; do it once, do ...
+a1_crawl --> a1_seal : Take the chapter seal off the body.
+a1_crawl --> a1_camp : Back out; nine dead lamps is a message a...
+a1_seal --> a1_camp : Take it and get out into moving air.
+a1_camp --> a1_camp_dark : Cold camp, full watch, no lamps.
+a1_camp --> a1_camp_fire : Lamps, hot food and a short watch; they ...
+a1_camp --> a1_scout : Send Kettle forward to look at the March...
+a1_camp --> a1_night_push : Break camp and be at the gate before the...
+a1_camp --> e_a1_turn_back : Call it. The road has beaten better comp...
+a1_camp_dark --> a1_approach : Let it pass and log the hour.
+a1_camp_dark --> a1_follow : Follow it at distance.
+a1_camp_dark --> e_a1_bram : Leave the porters on watch and get an ho...
+a1_camp_fire --> a1_challenge : Stand to and challenge it.
+a1_camp_fire --> a1_approach : Douse the lamp and lie flat until it goe...
+a1_challenge --> a1_approach : Say nothing more; hold and let it go.
+a1_challenge --> e_a1_counted : Answer it. Give it the next number.
+a1_scout --> a1_approach : Walk up to the gate at the hour and go i...
+a1_scout --> a1_slip : Wait for the next file and go in behind ...
+a1_scout --> e_a1_kettle_alone : Send her in alone to open the way for th...
+a1_slip --> a1_approach : Go in.
+a1_follow --> a1_approach : Keep silent and follow to the gate.
+a1_follow --> a1_pass_as_nine : Take the count up with them and walk in ...
+a1_pass_as_nine --> a1_approach : Break off at the gate before the count c...
+a1_night_push --> a1_approach : Look at what you came for.
+a1_gate --> a2_threshold : Go in by the open leaf.
+a1_gate --> a2_chute : Send Kettle up the ventilation shaft and...
+a1_gate --> a2_postern : Have Ilsabet break the mason's postern i...
+a1_gate --> a1_watch : Sit on the gate and watch it for a full ...
+a1_watch --> a2_threshold : Enough watching. Go in by the leaf.
+a1_watch --> a2_chute : Go up the ventilation shaft where nobody...
+a1_watch --> a2_postern : Take the mason's postern.
+a1_approach --> a1_gate : Walk up the middle of the road in good o...
+a1_approach --> a1_gate : Come at it along the drainage gallery in...
+a1_approach --> e_a1_mule : Send the barrow up the paving ahead of y...
+a2_threshold --> a2_gap : Go through the gap one at a time.
+a2_threshold --> a2_lever : Lever the leaf wider with the pick.
+a2_threshold --> a2_shield : Take the Warden's shield off the post fi...
+a2_threshold --> e_a2_knock : Knock, and see who keeps the gate.
+a2_gap --> a2_hall : Get everyone through and form up inside.
+a2_gap --> e_a2_pinned : Hold the leaf with the pick while the la...
+a2_lever --> a2_hall : Go in fast, before it finishes counting.
+a2_lever --> a2_shield : Take the Warden's shield off the post be...
+a2_shield --> a2_gap : Take the shield and go in by the gap.
+a2_chute --> a2_chute_rope : Rope down in order, quietly.
+a2_chute --> a2_chute_kettle : Send Kettle down first and follow her si...
+a2_chute --> e_a2_chute_fall : Climb it on the staples; it is only fort...
+a2_chute_rope --> a2_sump : Wade out of the cistern room.
+a2_chute_kettle --> a2_sump : Go down when her signal finally comes.
+a2_chute_kettle --> a2_dark : Go down now, fast, and find her.
+a2_chute_kettle --> e_a2_kettle_gone : Wait the full ten minutes as agreed.
+a2_sump --> a2_hall : Force the grate and go through to the gu...
+a2_sump --> a2_dark : Follow the cistern wall to the dry store...
+a2_sump --> a2_grate : Take what is caught in the grate.
+a2_sump --> e_a2_outflow : Dive the overflow and see where it goes.
+a2_grate --> a2_hall : Force the grate and go on to the guardro...
+a2_dark --> a2_hall : Withdraw along the wall to the guardroom...
+a2_dark --> a2_burn : Burn the stores with the lamp oil.
+a2_dark --> a2_quiet : Go through quietly and leave them fed.
+a2_dark --> e_a2_nest : Wake them and fight in the dark, on your...
+a2_burn --> a2_hall : Move on before the fourth brings help.
+a2_quiet --> a2_hall : Keep going and do not look back.
+a2_quiet --> e_a2_tooth : Take the iron off the nearest one's belt...
+a2_postern --> a2_postern_open : Let Ilsabet unpick the seal properly; it...
+a2_postern --> a2_postern_break : Break it with the pick and go in loud.
+a2_postern --> a2_tally : Read the tally beside it first.
+a2_tally --> a2_postern_open : Have Ilsabet open the seal properly.
+a2_tally --> a2_postern_break : Break it; whoever keeps that count alrea...
+a2_postern_open --> a2_hall : Go in.
+a2_postern_break --> a2_keeper : Take him alive.
+a2_postern_break --> a2_hall : Put him down quietly and move.
+a2_postern_break --> e_a2_challenge : Challenge whoever is behind that lamp.
+a2_hall --> a2_barracks : Clear the barracks arch first.
+a2_hall --> a2_counting : Go to the road office; that is the contr...
+a2_hall --> a2_lamps : Follow the smell of fresh oil.
+a2_hall --> a2_mosaic : Read the mosaic on the floor properly.
+a2_mosaic --> a2_mosaic_read : Have Ilsabet read the border.
+a2_mosaic --> a2_counting : Enough floor-reading; the road office is...
+a2_mosaic_read --> a2_counting : Take that to the road office.
+a2_barracks --> a2_wall : Take the barricade apart.
+a2_barracks --> a2_chest : Search the sergeant's chest.
+a2_barracks --> a2_rest : Sleep here in shifts; the company is spe...
+a2_barracks --> e_a2_loot_home : Strip the kit and the pay chest and go b...
+a2_wall --> a2_wall_mercy : Put it down properly and quickly.
+a2_wall --> a2_wall_ask : Ask it a question.
+a2_wall --> a2_chest : Wall it back up and walk away.
+a2_wall --> e_a2_carry : Cut it free and carry it up the road for...
+a2_wall_mercy --> a2_chest : Go through the sergeant's chest.
+a2_wall_ask --> a2_chest : Stop there. Put it down and close the wa...
+a2_wall_ask --> e_a2_ask_too_long : Ask it the ninth question.
+a2_chest --> a2_roster : Take the roster.
+a2_chest --> a2_blank : Take the blank iron.
+a2_chest --> a2_bottle : Share the spirit out; they have earned t...
+a2_roster --> a2_counting : Take the road office passage.
+a2_blank --> a2_counting : Take the road office passage.
+a2_bottle --> a2_counting : Take the road office passage.
+a2_rest --> a2_counting : Take the road office passage.
+a2_counting --> a2_lastpage : Read the last page before you touch anyt...
+a2_counting --> a2_ledger : Take the road-book; Orr wants the road-b...
+a2_counting --> a2_take_iron : Take the relay iron out of the lock.
+a2_counting --> a2_alcove : Search the clerk's cubby behind the desk...
+a2_counting --> e_a2_withdraw_rich : Load the relay chests' plate and go back...
+a2_lastpage --> a2_take_iron : Take the iron out of the lock and get ou...
+a2_lastpage --> a2_alcove : Leave it all where it lies and search th...
+a2_ledger --> a2_take_iron : Take the iron from the lock as well.
+a2_ledger --> a2_alcove : Leave the iron; the road-book is what wa...
+a2_take_iron --> a2_wrap : Wrap it in Ilsabet's salt-cloth before y...
+a2_take_iron --> a2_put_back : Put it straight back in the lock and tak...
+a2_take_iron --> a2_alcove : Pocket it and search the clerk's cubby.
+a2_take_iron --> e_a2_mouth : Carry it in your mouth, the way the froz...
+a2_wrap --> a2_board : Make for the stair by way of the schedul...
+a2_put_back --> a2_alcove : Search the clerk's cubby and get out.
+a2_alcove --> a2_tally_private : Read the clerk's private tally.
+a2_alcove --> a2_hole : Put a lamp down the hole and look.
+a2_alcove --> a2_board : Leave it; read the schedule board and ta...
+a2_alcove --> e_a2_hole : Go down the hole now, while it is quiet.
+a2_tally_private --> a2_board : Go on to the schedule board.
+a2_hole --> a2_board : Pull the lamp up and go by the schedule ...
+a2_hole --> e_a2_reached : Reach down and take up what is lying by ...
+a2_lamps --> a2_keeper : Take him alive and ask him everything.
+a2_lamps --> a2_terms : Wake him politely and talk terms.
+a2_lamps --> a2_kill_keeper : Kill him and take the book.
+a2_lamps --> a2_board : Read the board and leave him sleeping.
+a2_lamps --> e_a2_fire : Put a light in the oil store on your way...
+a2_keeper --> a2_keeper_all : Let him talk it all the way out.
+a2_keeper --> a2_keeper_route : Ask only what you need: the safe way dow...
+a2_keeper --> a2_keeper_out : Promise to take him out with you when yo...
+a2_keeper_all --> a2_board : Read the schedule board with new eyes.
+a2_keeper_route --> a2_board : Read the schedule board.
+a2_keeper_out --> a2_board : Read the schedule board together.
+a2_terms --> a2_board : Accept his terms and take the stair.
+a2_terms --> a2_keeper : Break faith; bind him and ask properly.
+a2_terms --> e_a2_join : Take his other offer: one hour in the fi...
+a2_kill_keeper --> a2_board : Take the book and move before the count ...
+a2_kill_keeper --> a2_cloak : Put on his habit and carry his lamp.
+a2_cloak --> a2_board : Read the schedule board.
+a2_board --> a2_stair : Go down now, well clear of the ninth hou...
+a2_board --> a2_ninth_hour : Wait for the ninth hour and go down behi...
+a2_board --> a2_douse : Douse all nine lamps before you go down.
+a2_ninth_hour --> a2_stair : Take the stair.
+a2_douse --> a2_stair : Take the stair immediately, in the dark.
+a2_douse --> e_a2_douse : Wait to see what comes up to relight the...
+a2_stair --> a3_landing : Go down in order with lamps lit.
+a2_stair --> a3_dark_descent : Go down dark, one hand on the wall.
+a2_stair --> a3_scout_descent : Rope the stair and send Kettle a flight ...
+a2_stair --> e_a2_out : Turn around. Take what you have and get ...
+a3_landing --> a3_shrine : Stop at the shrine and read it.
+a3_landing --> a3_stairfoot : Straight down past both landings.
+a3_landing --> e_a3_landing_rest : Take twenty minutes on the first landing...
+a3_dark_descent --> a3_stairfoot : Press flat to the wall and let it pass.
+a3_dark_descent --> a3_lit : Strike a light; blind is worse than seen...
+a3_dark_descent --> e_a3_count_steps : Count the steps aloud to keep the compan...
+a3_dark_descent --> e_a3_grab : Take hold of it as it goes by.
+a3_scout_descent --> a3_stairfoot : Go down fast on the last signal she gave...
+a3_scout_descent --> a3_overtake : Overtake the slack and take the lead you...
+a3_scout_descent --> e_a3_slack : Haul the rope in and see what is on the ...
+a3_shrine --> a3_stairfoot : Leave the ninth niche empty and go down.
+a3_shrine --> a3_shrine_set : Set the relay iron in the empty niche.
+a3_shrine --> e_a3_shrine_take : Take one of the eight tokens.
+a3_shrine_set --> a3_stairfoot : Go down and see what you have bought.
+a3_lit --> a3_stairfoot : Go down before it comes back for a secon...
+a3_overtake --> a3_stairfoot : Wait for the file to pass and go down.
+a3_stairfoot --> a3_flood : Take the flooded haulage gallery.
+a3_stairfoot --> a3_payhall : Open the pay-station doors.
+a3_stairfoot --> a3_chapel : Follow the chapel light.
+a3_stairfoot --> a3_wheel : Go and find the wheel that is turning.
+a3_stairfoot --> a3_barrow : Look into the breach in the wall.
+a3_stairfoot --> a3_forge : Try the cutting-shop first.
+a3_stairfoot --> a3_hall : Straight down the hall to the door at th...
+a3_stairfoot --> e_a3_shout : Hail the garrison; somebody down here mu...
+a3_flood --> a3_flood_swim : Swim the gallery past them in the dark w...
+a3_flood --> a3_ledge : Take the haulage ledge above the waterli...
+a3_flood --> a3_ferry : Ambush the barge from both sides.
+a3_flood --> e_a3_sink : Go under and hole the barge from below.
+a3_flood_swim --> a3_hall : Get out at the far steps and keep going.
+a3_flood_swim --> e_a3_swim : Take a breath and see what is under you.
+a3_ledge --> a3_hall : Work along it to the far end.
+a3_ledge --> a3_ferry : Drop on the barge as it passes underneat...
+a3_ledge --> e_a3_ledge : Take the shortcut where the ledge is bro...
+a3_ferry --> a3_crate : Open the crate.
+a3_ferry --> a3_hall : Leave it sealed and take the barge down ...
+a3_ferry --> a3_free : Free what is in it, whatever it is.
+a3_ferry --> a3_gangpass : Take the gang's lamps and pass as the ha...
+a3_crate --> a3_hall : Cut him loose, take him with you, and go...
+a3_crate --> e_a3_crate : Ask him what he is counting toward.
+a3_free --> a3_hall : Carry him and go on to the door.
+a3_gangpass --> a3_hall : Tie up at the door steps and get off the...
+a3_payhall --> a3_paymaster : Turn the paymaster over.
+a3_payhall --> a3_eight : Take the eight irons off the rack.
+a3_payhall --> a3_walltally : Read the tally cut into the wall behind ...
+a3_payhall --> e_a3_bell : Ring the shift bell and see who still an...
+a3_paymaster --> a3_eight : Take the confession and the irons.
+a3_paymaster --> a3_hall : Take the confession and go straight to t...
+a3_paymaster --> e_a3_hands : Look for what happened to his hands.
+a3_eight --> a3_one_iron : Take one iron and leave the seven seated...
+a3_eight --> a3_hall : Leave them all exactly where they are.
+a3_eight --> e_a3_eight_all : Take all eight; the Warden can have the ...
+a3_one_iron --> a3_hall : Go to the door.
+a3_walltally --> a3_hall : Stop reading and go to the door.
+a3_walltally --> e_a3_read_end : Read it to the end; there is a name at t...
+a3_chapel --> a3_offer : Hear the offer he means to make.
+a3_chapel --> a3_terms3 : Ask what the Compact actually pays, and ...
+a3_chapel --> a3_attack : Put him down where he stands.
+a3_chapel --> a3_wheel : Back out and go and find the wheel inste...
+a3_chapel --> e_a3_burn_wall : Put a lamp against his tally-wall and bu...
+a3_terms3 --> a3_offer : Let him make his offer, then.
+a3_terms3 --> a3_hall : Leave him talking and go to the door.
+a3_offer --> a3_hall : Refuse, and go for the door.
+a3_offer --> a3_counter : Counter: the company will settle this an...
+a3_offer --> e_a3_accept : Accept, and name one of them.
+a3_offer --> e_a3_accept_self : Accept, and name yourself.
+a3_counter --> a3_hall : Go to the door with his blessing, such a...
+a3_attack --> a3_kill_vale : Finish him before the benches close.
+a3_attack --> a3_hall : Break off and run for the door.
+a3_attack --> e_a3_hostage : Take him hostage and walk him to the doo...
+a3_attack --> e_a3_chapel_defends : Stand and fight the chapel.
+a3_kill_vale --> a3_hall : Run for the door now, while the silence ...
+a3_kill_vale --> a3_valebook : Take his tally-book and his ring off the...
+a3_kill_vale --> e_a3_vale_count : Wait and see what the count does without...
+a3_valebook --> a3_hall : Take both and go to the door.
+a3_wheel --> a3_pump : Kill the crew and mend the paddles.
+a3_wheel --> a3_flood_deep : Jam the wheel and flood the lower march ...
+a3_wheel --> a3_race : Cross the wheel-race to the door gallery...
+a3_wheel --> e_a3_wheel : Ride the wheel down and see what it drai...
+a3_pump --> a3_hall : Leave it running and go to the door.
+a3_pump --> e_a3_pump_stay : Stay and keep it running; somebody has t...
+a3_flood_deep --> a3_hall : Do it and run for the door on the high s...
+a3_flood_deep --> e_a3_drown_own : Do it now, while half the company is sti...
+a3_race --> a3_hall : Cross one at a time on the count of the ...
+a3_race --> e_a3_race : Cross together and quickly; the crew has...
+a3_barrow --> a3_plaques : Read the wardens' plaques.
+a3_barrow --> a3_close : Close the breach with rubble and be done...
+a3_barrow --> a3_through : Go through the shrine to the door galler...
+a3_barrow --> e_a3_ring : Take the ring off the empty tenth chair.
+a3_plaques --> a3_hall : Go to the door with that in your head.
+a3_plaques --> a3_through : Follow where all nine hands are pointing...
+a3_close --> a3_hall : Go on to the door.
+a3_through --> a3_hall : Walk past it without looking and keep wa...
+a3_through --> e_a3_through : Look at it properly, once, so you know.
+a3_forge --> a3_cut : Cut a blank into a ninth relay iron on t...
+a3_forge --> a3_die : Take the tally-die off the anvil.
+a3_forge --> a3_orders : Read the cutting-orders on the bench.
+a3_forge --> e_a3_forge_light : Light the forge; you need the heat and t...
+a3_cut --> a3_hall : Take it and go to the door.
+a3_cut --> e_a3_second : Cut a second one while the die is set.
+a3_die --> a3_hall : Carry it and go to the door.
+a3_orders --> a3_hall : Take the orders and go to the door.
+a3_door --> a4_lock : Set the relay iron in its socket and loc...
+a3_door --> a4_unmake : Draw the eight irons and unmake the Comp...
+a3_door --> a4_carry : Take the relay iron out of the march ent...
+a3_door --> a4_open : Open the door a hand's width and look.
+a3_door --> a4_withdraw : Withdraw. This is a Warden matter and an...
+a3_door --> e_a3_knock_door : Knock, the way you knocked at the gate.
+a3_door --> e_a3_leave : Walk out of the march and never speak of...
+a3_hall --> a3_door : Walk it, lamps up, and do not stop.
+a3_hall --> a3_door : Put out your own lamps and walk it in th...
+a3_hall --> e_a3_tags : Take the tags out of the boots; somebody...
+a4_lock --> a4_break_die : Break the tally-die so no tenth iron can...
+a4_lock --> a4_take_ring : Take the keeper's ring; a count still ne...
+a4_lock --> a4_out : Get everyone up the stair while it is qu...
+a4_lock --> e_a4_jam_fail : Drive it in crooked so the socket jams f...
+a4_break_die --> a4_out : Go up the stair.
+a4_take_ring --> a4_ring_on : Put it on. Somebody has to keep the coun...
+a4_take_ring --> a4_out : Leave it on the desk. Nobody in this com...
+a4_ring_on --> a4_out : Take the company up the stair.
+a4_unmake --> a4_one_at_a_time : Draw one iron and watch what the door do...
+a4_unmake --> e_a4_unmade : Draw all eight at once and run.
+a4_unmake --> a4_wedge : Draw them, then wedge the ring of socket...
+a4_unmake --> a4_lock : Change your mind and seat the ninth inst...
+a4_one_at_a_time --> a4_reseat : Re-seat all three and step back from it.
+a4_one_at_a_time --> e_a4_opened : Keep drawing. Finish what you started.
+a4_one_at_a_time --> e_a4_asked : Ask it what it is owed.
+a4_reseat --> a4_out : Get out of the march.
+a4_wedge --> a4_out : Leave it wedged and go up the stair.
+a4_wedge --> e_a4_wedge_fail : Test it first; put your weight on the do...
+a4_open --> a4_looked : Look through it.
+a4_open --> a4_lamp_through : Put a lamp through first and watch what ...
+a4_open --> a4_closed_unlooked : Shut it again without looking. Nobody ne...
+a4_open --> e_a4_spoke : Speak through the gap.
+a4_looked --> a4_lock : Shut it and seat the relay iron.
+a4_looked --> a4_out : Shut it and get out of the march.
+a4_looked --> e_a4_in_for_people : Go in for them. Somebody has to.
+a4_lamp_through --> a4_looked : Look through it now that you have to kno...
+a4_lamp_through --> e_a4_lamp : Reach through and take the lamp back.
+a4_closed_unlooked --> a4_out : Go up the stair.
+a4_closed_unlooked --> a4_withdraw : Withdraw properly and make it a Warden m...
+a4_carry --> a4_wrap_iron : Wrap it deep and carry it out of the mar...
+a4_carry --> a4_lock : Seat it after all; a shut door is worth ...
+a4_carry --> e_a4_moor : Carry it out and sink it in the cistern ...
+a4_carry --> e_a4_bait : Carry it in the open and let them come a...
+a4_wrap_iron --> a4_out : Up the stair, and quickly.
+a4_withdraw --> a4_out : Out the way you came in, and no souvenir...
+a4_withdraw --> a4_take_ledger : Out, but take the road-book from the off...
+a4_withdraw --> e_a4_burn_lamps : Out, and burn the nine gate lamps behind...
+a4_withdraw --> e_a4_sell_knowledge : Out, and sell what you know to Corrow in...
+a4_take_ledger --> a4_out : Take the road-book and go.
+a4_take_ledger --> e_a4_ledger_lingered : Take the road-book and the clerk's tally...
+a4_out --> a4_force_gate : Force the gate leaf with everything you ...
+a4_out --> a4_chute_out : Go out up the ventilation shaft.
+a4_out --> a4_postern_out : Go out by the mason's postern.
+a4_out --> a4_file_out : Wait for the ninth hour and walk out wit...
+a4_out --> e_a4_sat_down : Sit down on the stair. You are finished.
+a4_force_gate --> a4_moorback : Get everyone through the moment it is wi...
+a4_force_gate --> e_a4_forced_shut : Hold it and count them through by name.
+a4_chute_out --> a4_moorback : Go up in pairs, slowly, and take the ski...
+a4_chute_out --> e_a4_chute_out_fall : Send the strongest up first to haul the ...
+a4_postern_out --> a4_moorback : Get out onto the paving.
+a4_file_out --> a4_moorback : Break off at the gate and get clear.
+a4_file_out --> e_a4_file_kept : Stay in the file to the end of the count...
+a4_moorback --> a4_causeway : Straight up the road to Rell's Gate.
+a4_moorback --> a4_bothy : Two days at the fourth station first; th...
+a4_moorback --> a4_council : Put it to the company as a company. All ...
+a4_moorback --> e_a4_south : Go over the shoulder and away west with ...
+a4_bothy --> a4_causeway : Walk into Rell's Gate on the third morni...
+a4_council --> a4_causeway : Take it to the Warden, all five names on...
+a4_council --> a4_causeway : Take it in and let the record decide it,...
+a4_council --> e_a4_split : Let them argue it out and then decide fo...
+a4_boy --> e_a4_win_boy : Go in at the postern and get him out.
+a4_boy --> a4_tower : Call him out from the gate and wait one ...
+a4_boy --> e_a4_boy_lost : Go in by the gate leaf because it is fas...
+a4_gallowmere --> a4_tower : Report to Orr, on the record, in full.
+a4_gallowmere --> a4_name_halloway : Go to the Reckoning hearing and name Vas...
+a4_gallowmere --> a4_record : Write the report the Wardens will read i...
+a4_gallowmere --> a4_boy : Go back down for the novice before anyth...
+a4_gallowmere --> a4_mother : Tell Prior Vask about her brother before...
+a4_gallowmere --> e_a4_fee : Say the minimum, take the fee, and be go...
+a4_gallowmere --> e_a4_bought : Hear Corrow's price for your silence and...
+a4_mother --> a4_report : Take her with you to the Warden.
+a4_mother --> e_a4_mother_stay : Stay with her until the candles burn out...
+a4_report --> e_a4_win_charter : Ask for the Warden charter and a standin...
+a4_report --> e_a4_win_plain : Hand over the relay iron with the report...
+a4_report --> e_a4_completion : Keep both irons, and have her write to t...
+a4_report --> e_a4_win_book : Put Ferrin's book on the table and let h...
+a4_report --> e_a4_silent : Tell her the door is shut and leave the ...
+a4_record --> e_a4_keeper_office : Write that the company now keeps the cou...
+a4_record --> e_a4_open_admitted : Write that the door is open and how far.
+a4_record --> e_a4_reseat_end : Write that three irons were drawn and re...
+a4_record --> e_a4_wedge_win : Write that the sockets are wedged and as...
+a4_record --> e_a4_withdrew : Write that the company did not go throug...
+a4_name_halloway --> e_a4_win_testify : Testify in full, everything, on the reco...
+a4_name_halloway --> e_a4_surety : Testify, and hand the order the relay ir...
+a4_name_halloway --> e_a4_bought : Withdraw the accusation for what she is ...
+a4_causeway --> a4_gallowmere : Walk in openly, up the middle, in your o...
+a4_causeway --> a4_ahead : Send Kettle ahead to see who is waiting ...
+a4_causeway --> a4_gallowmere : Go round to the chapter house's back doo...
+a4_ahead --> a4_gallowmere : Walk in anyway; there is nowhere else to...
+a4_ahead --> e_a4_ambushed : Wait for full dark and go in over the ga...
+a4_tower --> a4_report : Go in and give it to Orr straight.
+a4_tower --> a4_report : Ask for the Reckoning prior to be presen...
+a4_tower --> e_a4_left_with_clerk : Leave the fair copy with the clerk and w...
+e_a0_insult --> [*]
+e_a0_moor_night --> [*]
+e_a0_gaol --> [*]
+e_a0_sell --> [*]
+e_a0_indenture --> [*]
+e_a0_walk --> [*]
+e_a1_gibbet_night --> [*]
+e_a1_beam --> [*]
+e_a1_swept --> [*]
+e_a1_drown --> [*]
+e_a1_fenkin_camp --> [*]
+e_a1_fall --> [*]
+e_a1_counted --> [*]
+e_a1_kettle_alone --> [*]
+e_a1_bram --> [*]
+e_a1_turn_back --> [*]
+e_a1_mule --> [*]
+e_a2_knock --> [*]
+e_a2_pinned --> [*]
+e_a2_chute_fall --> [*]
+e_a2_kettle_gone --> [*]
+e_a2_outflow --> [*]
+e_a2_nest --> [*]
+e_a2_tooth --> [*]
+e_a2_challenge --> [*]
+e_a2_loot_home --> [*]
+e_a2_carry --> [*]
+e_a2_ask_too_long --> [*]
+e_a2_withdraw_rich --> [*]
+e_a2_mouth --> [*]
+e_a2_hole --> [*]
+e_a2_reached --> [*]
+e_a2_fire --> [*]
+e_a2_join --> [*]
+e_a2_douse --> [*]
+e_a2_out --> [*]
+e_a3_landing_rest --> [*]
+e_a3_shrine_take --> [*]
+e_a3_count_steps --> [*]
+e_a3_grab --> [*]
+e_a3_slack --> [*]
+e_a3_shout --> [*]
+e_a3_sink --> [*]
+e_a3_swim --> [*]
+e_a3_ledge --> [*]
+e_a3_crate --> [*]
+e_a3_bell --> [*]
+e_a3_hands --> [*]
+e_a3_eight_all --> [*]
+e_a3_read_end --> [*]
+e_a3_burn_wall --> [*]
+e_a3_accept --> [*]
+e_a3_accept_self --> [*]
+e_a3_hostage --> [*]
+e_a3_chapel_defends --> [*]
+e_a3_vale_count --> [*]
+e_a3_wheel --> [*]
+e_a3_pump_stay --> [*]
+e_a3_drown_own --> [*]
+e_a3_race --> [*]
+e_a3_ring --> [*]
+e_a3_through --> [*]
+e_a3_forge_light --> [*]
+e_a3_second --> [*]
+e_a3_knock_door --> [*]
+e_a3_leave --> [*]
+e_a3_tags --> [*]
+e_a4_completion --> [*]
+e_a4_win_charter --> [*]
+e_a4_win_plain --> [*]
+e_a4_win_book --> [*]
+e_a4_win_testify --> [*]
+e_a4_wedge_win --> [*]
+e_a4_win_boy --> [*]
+e_a4_silent --> [*]
+e_a4_surety --> [*]
+e_a4_keeper_office --> [*]
+e_a4_open_admitted --> [*]
+e_a4_reseat_end --> [*]
+e_a4_withdrew --> [*]
+e_a4_fee --> [*]
+e_a4_bought --> [*]
+e_a4_south --> [*]
+e_a4_split --> [*]
+e_a4_mother_stay --> [*]
+e_a4_jam_fail --> [*]
+e_a4_unmade --> [*]
+e_a4_opened --> [*]
+e_a4_asked --> [*]
+e_a4_wedge_fail --> [*]
+e_a4_spoke --> [*]
+e_a4_in_for_people --> [*]
+e_a4_lamp --> [*]
+e_a4_moor --> [*]
+e_a4_bait --> [*]
+e_a4_burn_lamps --> [*]
+e_a4_sell_knowledge --> [*]
+e_a4_ledger_lingered --> [*]
+e_a4_sat_down --> [*]
+e_a4_forced_shut --> [*]
+e_a4_chute_out_fall --> [*]
+e_a4_file_kept --> [*]
+e_a4_boy_lost --> [*]
+e_a4_ambushed --> [*]
+e_a4_left_with_clerk --> [*]
+
+legend right
+  The Sunless March
+  Band 16+ · Tier 2 · ~8 min
+  Topology: branch_and_bottleneck
+  305 nodes · 105 endings (5+ / 17n / 83-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml

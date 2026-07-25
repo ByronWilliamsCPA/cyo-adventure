@@ -891,3 +891,445 @@ the event loop.
 - `_repair_preserves_identity` / `_repair_is_adoptable` are correct as written (id + tier + node
   count, plus a full gate re-run); they are simply unreachable on a book this size, per the repair
   finding above.
+
+---
+
+# Part 3: Test coverage and catalog membership
+
+## Adversarial review: three new 16+ gamebook skeletons as CATALOG members
+
+9 findings, worst first. Environment note: `uv sync --extra api --extra dev` was needed to get
+a working pytest; the repo-root `pytest` on PATH cannot load the project config. All test runs
+below use `.venv/bin/python -m pytest`.
+
+
+### The committed mutation-floor baseline is stale: `test_skeleton_mutation_floors.py` FAILS on main [VERIFIED]
+WHAT: Adding the three skeletons to `skeletons/16+/` changes the calibrated anti-clone
+floors, and `docs/planning/ws5_floor_baseline.json` was never regenerated. The catalog-wide
+calibration test fails today, on a clean checkout of `main`, with no local edits:
+
+```
+FAILED tests/unit/test_skeleton_mutation_floors.py::test_calibration_is_deterministic_and_committed_baseline_is_current
+E  AssertionError: assert 1 == 0   (calib.main(["--check"]) returned 1)
+stderr: Stale mutation-floor baseline (re-run the calibrator and commit):
+        /home/user/cyo-adventure/docs/planning/ws5_floor_baseline.json
+```
+(run: `.venv/bin/python -m pytest tests/unit/test_skeleton_mutation_floors.py -q`)
+
+Causation is arithmetic, not inference. The committed baseline records
+`same_cell_structural.n_pairs = 67` and `cross_tier2_state.n_pairs = 78`; recomputing gives 77
+and 120. Adding these exact three books takes (16+, medium, gamebook) from 3 to 5 members
+(3 -> 10 pairs) and (16+, long, gamebook) from 3 to 4 (3 -> 6 pairs), i.e. +10, matching
+67 -> 77; and the Tier-2 count from 13 to 16, i.e. C(13,2)=78 -> C(16,2)=120. TAU_STRUCT moved
+0.332507 -> 0.329972. (TAU_CELL 0.05 and TAU_STATE 0.5 are unchanged, so the functional floors
+did not move; only the stats and the documentation-only TAU_STRUCT did. The failure is real
+regardless.)
+
+WHY: CI is red on main. Every subsequent PR inherits a failing required check, so the
+quality gate stops discriminating: the next author either disables/xfails the test or
+learns to ignore a red gate. The floors this baseline pins are the WS-5 anti-clone floors,
+so the thing that has silently drifted is exactly the mechanism meant to stop
+near-duplicate skeletons from entering the catalog.
+WHERE: tests/unit/test_skeleton_mutation_floors.py:95-104, docs/planning/ws5_floor_baseline.json,
+scripts/calibrate_mutation_floors.py
+FIX: re-run `uv run python scripts/calibrate_mutation_floors.py --write` and commit the
+regenerated `docs/planning/ws5_floor_baseline.json` in the same change that adds skeletons;
+better, make the skeleton-promotion gate (or a pre-commit hook) run `--check` so adding a
+skeleton without recalibrating cannot merge.
+
+### Books 1 and 2 are near-clones of each other: distance 0.0139, 3.6x BELOW the project's own anti-clone floor TAU_CELL=0.05 [VERIFIED]
+WHAT: `the-vault-of-nine-iron` and `the-sunless-march` (both 16+/medium/gamebook, both 305
+nodes, both 105 endings, both branch_and_bottleneck) sit at
+`structural_distance = 0.013939`. Measured with the project's own metric
+(`cyo_adventure.diversity.structure.structural_distance`) over the production catalog:
+
+```
+0.000947  (13-16, long, gamebook)   the-harrowstone-keep  <-> the-sunken-temple   (pre-existing)
+0.013939  (16+,   medium, gamebook) the-sunless-march     <-> the-vault-of-nine-iron   <-- NEW
+0.091226  (13-16, medium, gamebook) the-smugglers-cut     <-> the-sunspire-ascent
+0.164429  (16+,   medium, gamebook) the-cinder-bazaar     <-> the-vault-of-nine-iron   <-- NEW
+0.172557  (16+,   medium, gamebook) the-cinder-bazaar     <-> the-sunless-march        <-- NEW
+```
+The new pair is the second-closest pair in the entire catalog. TAU_CELL, the floor a
+*mutant* must clear against every in-cell tree, is 0.05
+(scripts/calibrate_mutation_floors.py:85). Two hand-authored books were admitted at 0.0139,
+i.e. the catalog now contains a pair that the mutation gate would reject as a clone. Cell
+(16+, medium, gamebook) has 5 members and 3 of its 10 pairs are now under 0.18.
+
+WHY: three concrete consequences.
+1. Selection diversity in that cell is fake. `select_skeleton_for_cell`
+   (generation/skeleton_match.py:328) treats all in-cell candidates as interchangeable and
+   de-weights only by *slug* recency; a family that just read `the-vault-of-nine-iron` and
+   is then handed `the-sunless-march` gets the same tree with different prose, and the
+   recency weighting cannot see that because it keys on slug, not shape.
+2. The anti-clone bar is now asymmetric and self-inconsistent: mutants are held to 0.05
+   while hand-authored promotions are held to nothing. A future mutant of either book, or
+   of `the-cinder-bazaar`, is now measured against a denser cell and is more likely to be
+   rejected for landing near a tree that should not have been there.
+3. It moved the calibrated distribution: same-cell p05 fell 0.2306 -> 0.1709 and P25
+   (TAU_STRUCT) 0.332507 -> 0.329972, which is the drift that makes finding 1 fail.
+
+WHERE: skeletons/16+/the-vault-of-nine-iron.json, skeletons/16+/the-sunless-march.json,
+scripts/calibrate_mutation_floors.py:77-85 (TAU_CELL), src/cyo_adventure/diversity/structure.py
+FIX: apply the mutation-side anti-clone rule to hand-authored additions too: a promotion /
+CI check that computes `structural_distance` of a new skeleton against every in-cell
+catalog tree and fails below TAU_CELL. Then either re-shape book 2's graph (it was derived
+from book 1's topology, so re-shaping is the intent-preserving fix) or declare the pair a
+deliberate series-continuity exception and record it as an explicit allowlist entry so the
+check stays meaningful. The pre-existing 0.000947 harrowstone/sunken-temple pair is the
+same defect and would be caught by the same check.
+
+### The matcher can select `the-ninth-hand` for a live request, but the automated fill pipeline cannot emit it: it needs ~101k output tokens against a hard 32,000 cap [VERIFIED]
+WHAT: `fill_skeleton` does a ONE-SHOT fill: the entire skeleton JSON goes in one prompt and
+the entire filled document must come back in one completion, capped at
+`_MAX_TOKENS_PROSE = 32000` (orchestrator.py:95, used at orchestrator.py:826). There is no
+chunking, batching, per-node loop, or act-by-act pass anywhere in `generation/`
+(grep for batch/chunk/per_node/window across orchestrator.py, prompts.py, worker.py returns
+nothing). The committed hand-authored fills let this be measured exactly rather than guessed
+(minified, ~4 chars/token):
+
+```
+the-ninth-hand.filled.json          746 nodes  405,742 chars  ~101,400 out-tokens  3.2x the cap
+the-harrowstone-keep.filled.json    550 nodes  343,542 chars   ~85,900 out-tokens
+the-ashfall-expedition.filled.json  505 nodes  292,396 chars   ~73,100 out-tokens
+the-sunless-march.filled.json       305 nodes  184,425 chars   ~46,100 out-tokens
+the-vault-of-nine-iron.filled.json  305 nodes  177,842 chars   ~44,500 out-tokens
+```
+13 of the 26 committed fills are over the cap. Input side: `build_fill_prompt` for
+the-ninth-hand is 399,437 chars, ~99,900 prompt tokens.
+
+Nothing guards this. `candidates_for_cell` (skeleton_match.py:176) filters on band, length,
+style and `production_eligible` only; there is no node-count or token-budget predicate
+anywhere in selection, and all three new skeletons are `production_eligible: true`. The
+matcher therefore hands `the-ninth-hand` to `_run_skeleton_fill` (worker.py:737) like any
+other book.
+
+WHY: the request does not fail fast, it fails expensively. A truncated response is invalid
+JSON, which the gate reports as L1-1, which enters the repair loop (`max_repairs=3`); each
+repair prompt embeds the whole document again (`build_repair_prompt`, prompts.py:670), so a
+doomed job burns ~4 x 100k input tokens plus 4 x 32k output tokens before giving up, inside
+a 1800s `generation_job_timeout_seconds` (config.py:352). The guardian sees a failed
+generation with no explanation of the real cause, and the failure is deterministic: retrying
+the same slug fails again forever.
+
+Honest scoping: this is a PRE-EXISTING catalog-wide defect, not introduced by this commit;
+`the-tenfold-siege` (677 nodes) and `the-harrowstone-keep` (550) already had it. What this
+commit does is add the worst case yet, at the (16+, long, gamebook) node ceiling, and
+confirm that nothing in the promotion path checks fill feasibility.
+WHERE: src/cyo_adventure/generation/orchestrator.py:95, src/cyo_adventure/generation/orchestrator.py:826,
+src/cyo_adventure/generation/worker.py:737-860, src/cyo_adventure/generation/skeleton_match.py:176-194,
+src/cyo_adventure/core/config.py:352
+FIX: two parts, and the cheap one first. (1) Add a fill-feasibility predicate to selection:
+derive the expected output size from the skeleton (`sum(FILL words)` plus a structural
+overhead factor is already computable) and exclude any skeleton whose one-shot fill cannot
+fit `_MAX_TOKENS_PROSE`, or gate it behind an explicit admin override so it can never be
+drawn for an ordinary guardian request. Add a test that asserts every
+`production_eligible` skeleton is fill-feasible; today that assertion would fail for 13
+books, which is the point. (2) The real fix is an act-scoped / sub-graph fill loop so book
+size stops being bounded by one completion; the hand-authoring workflow already fills these
+books in acts, so the shape of that solution is known.
+
+### The anti-clone floor is architecturally unreachable for a hand-authored skeleton, so nothing could have caught the near-clone [VERIFIED]
+WHAT: `scripts/check_promotion_bundle.py::prove_shell` is the only place the WS-5 anti-clone
+floor is applied in CI, and it can never run on a hand-authored addition, for two independent
+reasons:
+1. It returns early on a missing lineage sidecar (`check_promotion_bundle.py:262-265`:
+   `reasons.append(...); return reasons`) BEFORE `_floor_reason` is reached.
+2. Even with a lineage sidecar present, `_floor_reason` returns `None` when
+   `lineage.parent_slug is None` (`check_promotion_bundle.py:196-202`), and a hand-authored
+   book has no mutation parent by definition. `origin != "mutation"` is likewise exempted in
+   `_verify_parent_hash`.
+
+Verified by running the prover on the three new files:
+```
+$ .venv/bin/python scripts/check_promotion_bundle.py skeletons/16+/the-ninth-hand.json \
+    skeletons/16+/the-vault-of-nine-iron.json skeletons/16+/the-sunless-march.json
+ok: skeleton passes gate and brief checks     (x3)
+FAIL promotion-bundle proof:
+  - the-ninth-hand.json: missing lineage sidecar the-ninth-hand.lineage.json
+  - the-sunless-march.json: missing lineage sidecar ...
+  - the-vault-of-nine-iron.json: missing lineage sidecar ...
+```
+The floor never evaluated. (The lineage-sidecar failure itself is the already-logged issue;
+the point here is the different one: the floor is skipped, and would be skipped even if the
+sidecar existed.)
+
+WHY: the anti-clone bar exists to stop the catalog filling with near-identical trees, and it
+is enforced against machine-generated mutants only, i.e. against the source that has an
+automated distance check anyway, while the source that actually produced the two closest
+pairs in the catalog (hand authoring) is exempt. That asymmetry is why the 0.0139 pair and the
+pre-existing 0.000947 pair are both sitting in `skeletons/` today.
+WHERE: scripts/check_promotion_bundle.py:196-202, scripts/check_promotion_bundle.py:236-283,
+src/cyo_adventure/mutation/floors.py:262-332
+FIX: split the in-cell duplication check out of the lineage-gated block so it runs on ANY
+changed `skeletons/**` shell: load the in-cell catalog excluding the shell itself (the
+`content_sha256` self-exclusion at check_promotion_bundle.py:227-232 already exists) and fail
+below `TAU_CELL`. That is a ~10-line change and it makes the existing floor apply to the
+source that needs it most.
+
+### Series books 2 and 3 are selectable as standalone stories: the matcher has no series filter, so a fresh request can draw "book 2 of 3" with its carried state pre-seeded [VERIFIED]
+WHAT: All three books declare `metadata.series` with `carries_state: true` and
+`book_index` 1/2/3, and all three are `production_eligible: true`. Selection is band/
+length/style/eligibility only; `skeleton_matches_cell` (skeleton_match.py:146-173) and
+`candidates_for_cell` (skeleton_match.py:176-194) never look at `metadata.series`, and
+`story_requests/authoring_plan.py` contains no occurrence of "series" at all
+(`grep -n series src/cyo_adventure/story_requests/authoring_plan.py` -> no matches).
+
+Measured pool today:
+```
+(16+, medium, gamebook) 5 candidates: cinder-bazaar, drowned-court, red-meridian-run,
+                                     sunless-march (book 2), vault-of-nine-iron (book 1)
+(16+, long,   gamebook) 4 candidates: ashfall-expedition, ninth-hand (book 3),
+                                     pale-road, tenfold-siege
+```
+So on an unweighted draw, ~40% of (16+, medium, gamebook) requests land on a Wyrmreach book
+and ~20% land specifically on book 2; ~25% of (16+, long, gamebook) requests land on book 3.
+
+The continuation books are not merely mid-series, they are pre-seeded with the previous
+book's outcome. From `skeletons/16+/the-sunless-march.json` (book 2) `variables`:
+```
+renown       initial 2     "Carried from Kar Duhn: the standing of the company that shut the first door."
+iron_key     initial true  "Carried: the ninth key-iron of Kar Duhn is in the company's keeping."
+knows_compact initial true "Carried: the company knows what the Compact is and what its doors hold."
+```
+and its start node's beats: `'... the company known now, the ninth iron of Kar Duhn in the
+captain's pack ...'`. Book 3 is worse: `renown` has `min: 3` and beats
+`'... with two of the Compact's nine irons in the captain's pack ...'`.
+
+WHY: a guardian asks for a 16+ gamebook on any theme; the pipeline fills book 2 or book 3 of
+a trilogy against that theme and delivers it as a standalone story. The reader opens on a
+protagonist who already owns two artifacts and a reputation earned in a book they have never
+seen, and the fill has to render beats that name Kar Duhn / the Compact / the ninth iron
+regardless of the requested theme, so the Stage 1 fidelity gate is fighting the skeleton
+rather than checking it. There is no test asserting a continuation book is excluded from
+standalone selection (`grep -n series tests/unit/test_skeleton_match.py
+tests/unit/test_authoring_plan.py` -> no matches), so nothing pins the intended behavior
+either way.
+WHERE: src/cyo_adventure/generation/skeleton_match.py:146-194,
+src/cyo_adventure/story_requests/authoring_plan.py:320-410,
+skeletons/16+/the-sunless-march.json (metadata.series, variables),
+skeletons/16+/the-ninth-hand.json (metadata.series, variables)
+FIX: exclude continuation books from ordinary cell matching. Cheapest correct version: in
+`_production_candidates`/`skeleton_matches_cell`, treat a skeleton with
+`metadata.series.book_index > 1` as ineligible for a request that is not an explicit
+continuation of that series (the request already knows whether it is a series continuation:
+`generation/series_link.py` owns that flow), and keep book 1 selectable as a series entry
+point. Pin it with a test asserting `candidates_for_cell("16+", "medium", "gamebook")` does
+not contain `the-sunless-march` for a non-continuation request. Note `is_final: false` on
+book 3 is NOT a defect: `series_link.py:145,200` document v1 as always-False.
+
+### Answering "are they protected by a test": the three SKELETONS are covered by two glob-discovered suites; the three FILLED STORIES and the whole `data/series/wyrmreach/` spec set have zero test coverage [VERIFIED]
+WHAT: No test or CI workflow references the new artifacts by name:
+`grep -rn "wyrmreach|ninth-hand|vault-of-nine|sunless" tests/ scripts/ noxfile.py .github/`
+returns exactly one hit, a docstring in `scripts/build_series_book.py:12`.
+
+What DOES pick the skeletons up, via directory globs (all three pass):
+- `tests/unit/test_skeleton.py:116-153` (`Path("skeletons").glob("*/*.json")`) - full gate +
+  production-eligibility, per skeleton. 399 tests pass.
+- `tests/unit/test_skeleton_mutation_identity.py:50-76` - metadata resync, rename collision
+  freedom, per skeleton.
+- `tests/unit/test_skeleton_mutation_floors.py:95-104` - catalog-wide calibration. FAILS
+  (finding 1).
+
+What does NOT pick anything up:
+- `tests/unit/test_skeleton_contracts.py:36` globs `*/*.contract.json`, so a skeleton with no
+  contract is invisible to the WS-2 drift guard: the three new books simply are not tested by
+  it. Its guard-the-guard test (`test_the_catalog_has_theme_contracts`, line 73) only asserts
+  the list is non-empty, so contract coverage can fall arbitrarily without failing anything.
+  16+ now has 16 skeletons and 9 contracts.
+- `out/*.filled.json` - the 26 committed hand-authored fills, including the three new ones,
+  are referenced by NO test. Only `out/pilot/fills/*` are used, as diversity fixtures
+  (tests/unit/test_diversity_structure.py:18-20, test_diversity_leaf.py:22-24,
+  test_diversity_normalize.py:22). No CI job runs the gate over `out/` (ci.yml jobs are:
+  detect-release-pr, ci, frontend, design-system, contract, diversity, coverage-upload,
+  detect-api-collection, api-tests, ci-gate).
+- `data/series/wyrmreach/*` (24 spec/prose files) - referenced by no test at all.
+
+WHY: the filled stories are the deliverable, and the skeleton passing the gate does not prove
+the fill does. The two are separate documents and a fill can regress independently (prose
+edits, a hand-patched body, a broken `{SLOT}` render). Worse, the gate has a rule that says
+so out loud. Running it manually:
+```
+$ .venv/bin/python scripts/run_story_gate.py out/the-ninth-hand.filled.json
+WARNING L2-13  L2-13 scale: Tier-2 story 'sk_ninth_hand' has 746 nodes, past the
+  hand-authoring ceiling of 460; the completed Layer-2 configuration walk is now its sole
+  correctness guarantee (hand-review insufficient at this scale)
+findings=1 blocked=False
+```
+The validator states that for this book hand review is insufficient and the walk is the only
+guarantee, and the walk is never run on the filled book in CI. (The other two gate clean:
+`findings=0 blocked=False`.)
+WHERE: tests/unit/test_skeleton.py:116-153, tests/unit/test_skeleton_contracts.py:36-79,
+tests/unit/test_skeleton_mutation_identity.py:50-76, out/the-ninth-hand.filled.json,
+data/series/wyrmreach/, .github/workflows/ci.yml
+FIX: add a glob-discovered fill suite mirroring `_discover_production_skeletons`: for every
+`out/*.filled.json`, assert `run_gate` does not block and no FILL directive survives
+(`has_unfilled_directives` is False; `scripts/check_fill_integrity.py` already exists for
+this). It is cheap: measured `run_gate` cost is 1.73s (vault), 3.82s (sunless), 2.37s
+(ninth-hand), so all 26 fills are well inside the <30s suite target. Separately, tighten
+`test_the_catalog_has_theme_contracts` from "non-empty" to a real coverage assertion, or an
+explicit allowlist of contract-exempt slugs, so contract coverage cannot silently decay.
+
+### `the-ninth-hand` is a dead-end mutation parent: 4 nodes of headroom to the cell ceiling, and the additive operators do not terminate on it [VERIFIED]
+WHAT: two independent problems.
+
+(a) Ceiling headroom. `(16+, long, gamebook)` is `(min 475, max 750, depth 93)`
+(band_profile.py:177). `the-ninth-hand` has 746 nodes, so 4 nodes of headroom.
+`_node_count_reason` (operators.py:3073-3096) hard-rejects any candidate with
+`count > bounds[1]`, and `_graft_envelope`-style post-graft check does the same
+(operators.py:2283, "post-graft node count exceeds the cell envelope maximum"). Measured
+operator deltas: M4 insert-linear +1 node, M4 insert-decision +2 nodes (verified on
+`the-locked-carousel`: 71 -> 72 and 71 -> 73). So the only additive operators that can ever
+be admitted on this parent are the two smallest ones, and M3 graft, the operator that
+produces genuinely new structure, is dead for any donor region larger than 4 nodes.
+
+(b) The operators do not finish. Applying M4 to `the-ninth-hand` with a per-call alarm:
+```
+M4 insert-linear   -> TIMEOUT >150s
+M4 insert-decision -> TIMEOUT >150s
+```
+Same wall on the two other new books and their in-cell neighbours (each 120s alarm):
+```
+the-vault-of-nine-iron  305 nodes  insert-linear / insert-decision / remove-linear  ALL >120s
+the-cinder-bazaar       453 nodes  insert-linear  >120s
+the-drowned-court       314 nodes  insert-linear 44.3s  insert-decision 44.9s  remove-linear 23.5s
+the-locked-carousel      71 nodes  1.2s / 1.2s / 0.1s
+```
+Note the cost is not driven by node count: `the-drowned-court` (314 nodes) completes in 44s
+while `the-vault-of-nine-iron` (305 nodes) does not finish. The difference is the
+state-configuration space the Layer-2 walk explores per candidate. Measured
+`walk_configurations` sizes:
+```
+the-sunless-march       305 nodes  56,739 configs   (walk 2.09s, run_gate 3.82s)
+the-ninth-hand          746 nodes  36,781 configs   (walk 1.54s, run_gate 2.37s)
+the-vault-of-nine-iron  305 nodes  30,416 configs   (walk 0.97s, run_gate 1.73s)
+the-tenfold-siege       677 nodes   9,832 configs
+the-harrowstone-keep    550 nodes   7,280 configs
+the-drowned-court       314 nodes     314 configs
+```
+The three new books hold the three largest configuration spaces in the catalog, 100x
+`the-drowned-court` at the same node count, because their carried-state variable set is much
+richer. A single `run_gate` or `walk` is cheap (under 4s); it is the operators' repeated
+per-candidate re-walk that becomes unbounded.
+
+Honest scoping: the operator slowness is PRE-EXISTING, not caused by these skeletons
+(`the-glass-comet`, 105 nodes, also exceeds 120s on both insert modes). The new fact is that
+all three new books land on the wrong side of that wall, and `the-ninth-hand` additionally has
+no ceiling headroom, so the answer to "is a 746-node skeleton a valid mutation parent" is: it
+is a formally valid parent that the flywheel cannot actually use.
+
+WHERE: src/cyo_adventure/validator/band_profile.py:177,
+src/cyo_adventure/mutation/operators.py:3073-3096, src/cyo_adventure/mutation/operators.py:2283,
+src/cyo_adventure/mutation/operators.py:1565-1584
+FIX: (1) Record explicitly that a book authored at or near the cell node ceiling is not a
+mutation parent, and have the flywheel's parent-selection (`src/cyo_adventure/flywheel/strategy.py`)
+skip a parent whose headroom is below the smallest additive operator's delta, so the flywheel
+does not spend runs discovering it. (2) Bound the operators: give the candidate search a
+configuration-count budget and discard with a clear reason instead of running unbounded, so a
+high-state parent fails fast rather than hanging a flywheel run.
+
+### The 3-book chain should be a `validator/series.py` fixture: it passes today, it costs 0.02s, and the only current coverage is 2-node synthetic books [VERIFIED]
+WHAT: `tests/unit/test_series.py` exercises SR-1..SR-7 entirely against a synthetic `_book()`
+helper that builds a 2-node story (`tests/unit/test_series.py:19-65`, `nodes=[start, end]`).
+There is no test of the meta-validator against a real chain. The Wyrmreach trilogy is the
+first real one in the repo and it validates clean:
+```
+parse 3 filled books           0.02s
+validate_series(books)         0.00s   ok=True   (0 findings)
+validate_series(skeletons)             ok=True   (0 findings)
+```
+CI cost is therefore negligible and the brief's feared expense does not materialize: the
+~37k-configuration Layer-2 walk is NOT what a series fixture needs. Measured separately, a
+full `run_gate` (which includes the walk) is 1.73s / 3.82s / 2.37s for the three books and
+`walk_configurations` alone is 0.97s / 2.09s / 1.54s, so even the maximal version of this
+fixture is single-digit seconds against ci.yml's `ci` job and the project's <30s suite target.
+
+WHY: SR-2 contiguity, SR-3 entry nodes, SR-4 final flags, SR-5 continuity, SR-6/SR-7 state-carry
+uniformity are all currently proven only against a shape no author would ever write. A real
+3-book state-carrying chain at the 16+ band is exactly the input those rules were written for,
+and right now if a refactor broke SR-5's win-ending detection on real multi-ending books,
+nothing would notice.
+WHERE: tests/unit/test_series.py:19-65, src/cyo_adventure/validator/series.py:42-64,
+out/the-vault-of-nine-iron.filled.json, out/the-sunless-march.filled.json,
+out/the-ninth-hand.filled.json
+FIX: add a `tests/unit/test_series.py` case that loads the three `out/*.filled.json` Wyrmreach
+books and asserts `validate_series(books).ok`, plus negative variants built by mutating the
+real chain in memory (drop book 2 -> SR-2; blank book 3's `series_entry_node` -> SR-3;
+flip book 1's `carries_state` -> SR-7). That converts a hand-verified artifact into a
+permanent regression asset at essentially zero runtime cost. Do it in the same change as the
+`out/*.filled.json` gate suite from the previous finding so `out/` stops being untested data.
+
+### The generated skeleton-catalog doc and the three PlantUML diagrams are stale, and nothing in CI checks them [VERIFIED]
+WHAT: `scripts/render_skeleton_diagrams.py --check` is the drift guard for the generated
+region of `docs/architecture/story-skeletons.md` (the documented-skeletons table + band
+coverage matrix, built by `generation/skeleton_catalog.py`) and for the per-skeleton `.puml`
+diagrams. It fails today:
+```
+$ .venv/bin/python scripts/render_skeleton_diagrams.py --check ; echo $?
+Stale skeleton diagrams/catalog (re-run the generator and commit):
+  docs/architecture/diagrams/skeletons/16+/the-ninth-hand.puml
+  docs/architecture/diagrams/skeletons/16+/the-sunless-march.puml
+  docs/architecture/diagrams/skeletons/16+/the-vault-of-nine-iron.puml
+  docs/architecture/story-skeletons.md
+1
+```
+Unlike the floor baseline, this one is NOT wired into CI:
+`grep -rn "render_skeleton_diagrams|story-skeletons" .pre-commit-config.yaml .github/workflows/ noxfile.py`
+returns nothing. The tests in `tests/unit/test_render_skeleton_diagrams.py` exercise
+`check_outputs` and `main(--check)` against `tmp_path` fixtures only, never against the live
+`docs/` tree, which is why the suite is green while the artifacts are stale.
+
+WHY: `docs/architecture/story-skeletons.md` is the human-readable index of the catalog, the
+document an author or reviewer consults to answer "what is already in cell (16+, medium,
+gamebook)?". It currently omits all three new books, so the next author asking exactly the
+question that would have surfaced the near-clone (finding 2) gets an answer that predates it.
+This is also the second stale generated artifact in the same commit, which suggests the
+skeleton-addition workflow has no "regenerate derived artifacts" step at all.
+WHERE: scripts/render_skeleton_diagrams.py, docs/architecture/story-skeletons.md,
+docs/architecture/diagrams/skeletons/16+/, src/cyo_adventure/generation/skeleton_catalog.py,
+tests/unit/test_render_skeleton_diagrams.py:365-432
+FIX: regenerate and commit; then add both `--check` invocations
+(`render_skeleton_diagrams.py --check` and `calibrate_mutation_floors.py --check`) as steps in
+the existing `skeleton-promotion` workflow, which already triggers on `paths: skeletons/**`
+and is the natural home for "adding a skeleton keeps its derived artifacts current".
+
+
+## Checked and fine
+
+- The FULL unit suite passes with the new skeletons present, with the single exception in
+  finding 1: `.venv/bin/python -m pytest tests/unit -q --deselect
+  tests/unit/test_skeleton_mutation_floors.py::test_calibration_is_deterministic_and_committed_baseline_is_current`
+  -> **4662 passed in 183s**. So exactly one existing test newly fails, and no catalog test
+  became vacuous.
+- `tests/unit/test_skeleton.py` (glob-discovered full gate over every production skeleton),
+  `tests/unit/test_skeleton_contracts.py`, `tests/unit/test_skeleton_match.py`: 399 passed
+  with the three new skeletons present. All three pass the full blocking gate, the offered-cell
+  check, and the production node envelope (`check_skeleton` via `check_promotion_bundle`:
+  `746/232 -> (16+, long, gamebook)`, `305/105 -> (16+, medium, gamebook)`, both inside
+  `_PRODUCTION_CELLS` bounds of (475,750,93) and (300,475,73)).
+- `tests/unit/test_skeleton_mutation_identity.py`: metadata resync, topology re-declaration and
+  id-rename collision-freedom all hold over the enlarged catalog.
+- `scripts/run_diversity_eval.py --check` (the `diversity` CI gate): `findings=0`, exit 0.
+- `tests/unit/test_diversity_structure.py`, `test_diversity_aggregate.py`, `test_mutation_score.py`,
+  `test_run_story_gate.py`, `test_series.py`, `test_hand_authored_stories.py`: all pass; none
+  globs `skeletons/` catalog-wide except via the suites above, so none became vacuous.
+- `scripts/check_coverage_matrix.py` is unrelated to skeletons: it enumerates frontend
+  Playwright/Vitest test files against `docs/testing/coverage-matrix.md`. Unaffected.
+- `scripts/mutation_score.py` aggregates mutmut `.meta` files (code mutation testing), not
+  story-skeleton mutation. Unaffected by catalog changes.
+- Matcher discoverability is correct in the mechanical sense: all three are found by
+  `candidates_for_cell` and by `find_skeleton_metadata`, sidecar skipping is unaffected, and
+  the `is_sidecar` convention is honoured consistently across `skeleton_match`, `floors`,
+  `calibrate_mutation_floors`, and `check_promotion_bundle`.
+- `is_final: false` on book 3 is NOT a bug: `generation/series_link.py:145,200` documents
+  `is_final` as always False in v1, and SR-4 only forbids a non-last book being final.
+- The three skeletons' absence of a `*.contract.json` sidecar does not break the fill: the
+  no-sidecar path is the byte-identical WS-1 free-text path (`worker.py:812-860`), and four
+  pre-existing 16+ skeletons (`the-cinder-bazaar`, `the-longwinter-station`,
+  `the-quiet-harbor-protocol`, `the-tenfold-siege`) are already contract-less. The real
+  costs are (a) they can never be a WS-7 D7 re-route target ("skipping ... any contract-less
+  alternate", worker.py:605) and (b) they are invisible to the WS-2 drift guard, which is
+  folded into the test-coverage finding above.
+- `out/the-vault-of-nine-iron.filled.json` and `out/the-sunless-march.filled.json` gate clean
+  (`findings=0 blocked=False`); `out/the-ninth-hand.filled.json` produces only the L2-13
+  scale warning.

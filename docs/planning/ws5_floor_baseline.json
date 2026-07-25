@@ -11,23 +11,23 @@
   "generated_by": "scripts/calibrate_mutation_floors.py",
   "stats": {
     "cross_tier2_state": {
-      "max": 230.993602,
-      "median": 85.268962,
+      "max": 389.955269,
+      "median": 116.220302,
       "min": 35.904505,
-      "n_pairs": 78,
-      "p05": 48.211541,
-      "p25": 63.908436
+      "n_pairs": 120,
+      "p05": 49.950444,
+      "p25": 70.958613
     },
     "same_cell_structural": {
       "max": 0.57661,
-      "median": 0.395598,
+      "median": 0.387648,
       "min": 0.000947,
-      "n_pairs": 67,
-      "p05": 0.2306,
-      "p25": 0.332507
+      "n_pairs": 77,
+      "p05": 0.170932,
+      "p25": 0.329972
     }
   },
   "tau_cell": 0.05,
   "tau_state": 0.5,
-  "tau_struct": 0.332507
+  "tau_struct": 0.329972
 }
