@@ -8,8 +8,8 @@
     "age_band": "16+",
     "reading_level": {
       "scheme": "flesch_kincaid",
-      "target": 9.0,
-      "tolerance": 2.0
+      "target": 9.5,
+      "tolerance": 2.5
     },
     "tier": 2,
     "themes": [
