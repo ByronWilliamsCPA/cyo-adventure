@@ -20,6 +20,12 @@ reproduce any book's text; only its publicly-documented branching mechanics are
 described, and the two benchmark fixtures built alongside this doc are
 original content that model those mechanics, not excerpts.
 
+See also `docs/planning/pathfinder-structure-exploration.md`, an existing
+exploratory document (status: exploratory, not committed) that independently
+proposes a deterministic build/threshold/resource grammar for the teen
+gamebook cells; several findings below turn out to already be answered there,
+and are cross-referenced rather than re-litigated.
+
 ## Framework capabilities used as the comparison baseline
 
 - **State**: a flat list of globally-declared `Variable`s, `bool` or `int`
@@ -101,37 +107,51 @@ original content that model those mechanics, not excerpts.
    reader interface", which is consistent with ADR "mandatory human approval"
    and the reachability guarantee, but it is a real, permanent expressiveness
    ceiling relative to at least one well-known published mechanic.
-2. **No randomness primitive at all.** Fighting Fantasy and Lone Wolf combat
-   is fundamentally dice-resolved; our `Effect` model only supports
-   author-fixed literal `inc`/`dec` amounts, never a random draw. A
-   dice-driven combat system can only be approximated by pre-branching every
-   outcome the author is willing to write by hand (an "if you rolled high"
-   / "if you rolled low" choice pair authored as two fixed branches), which
-   defeats the compactness dice give a real gamebook and would blow up node
-   counts fast for anything beyond a single combat round. This is a
-   deliberate simplicity trade-off per ADR-001/ADR-006, not a bug, but it is
-   the sharpest ceiling this comparison found. ADR-006 already names CEL as
-   "a future escape hatch, not v1": a bounded, whitelisted random-effect
-   operator (e.g. a `roll` op with a fixed die and a declared seed policy)
-   would be the natural place to extend if stat/dice gamebooks are ever a
-   target genre.
-3. **No first-class inventory or stats block.** Skill/Stamina/Luck or a
-   backpack of items must each be hand-declared as an individual `int`/`bool`
-   `Variable`; there is no "this story has an inventory of up to N item
-   slots" primitive. This is workable (as fixture 1 shows for two items) but
-   scales awkwardly: Lone Wolf's several dozen possible inventory items would
-   mean several dozen individually-declared bool variables, each condition
-   and effect referencing them by hand, with no automatic capacity
-   enforcement: capacity has to be separately modeled as its own `int`
-   counter, checked in every acquisition choice's condition.
-4. **No player-authored initial state.** Lone Wolf's character-creation step
-   (pick N Kai Disciplines from a list before node 1) has no direct schema
-   equivalent: `Variable.initial` is a single author-fixed value, not a
-   player choice made before the story starts. It is emulable as an opening
-   sequence of nodes/choices that each `set` a different variable, but that
-   is a hand-rolled workaround, not a modeled concept, and it consumes real
-   node budget for something that in the original book is a single
-   character sheet, not part of the narrative graph.
+2. **No randomness primitive at all, and this is permanent, not a v1 gap.**
+   Fighting Fantasy and Lone Wolf combat is fundamentally dice-resolved; our
+   `Effect` model only supports author-fixed literal `inc`/`dec` amounts,
+   never a random draw, because determinism is architectural (byte-identical
+   replay for the TS player, offline sync, and the L2 state-space walk all
+   require state to be a pure function of the choice path; see
+   `docs/planning/pathfinder-structure-exploration.md` section 4). A separate
+   exploration document already worked through the intended answer for this,
+   in depth: replace the die with the reader's own accumulated build ("your
+   build is the roll", section 4.1), using threshold bands over small bounded
+   ints as a deterministic degrees-of-success ladder, with the gate's `L2-9`/
+   `L2-11` machinery proving every band is both reachable and escapable
+   (fairness is machine-checked, not promised). That document is exploratory
+   and not yet a committed ADR, but it is a far more developed answer than "a
+   future `roll` operator"; a new random-effect primitive is explicitly the
+   rejected alternative there (section 4.4), not the plan.
+3. **No first-class inventory or stats block, and the same exploration
+   already scopes the intended shape.** Skill/Stamina/Luck or a backpack of
+   items must each be hand-declared as an individual `int`/`bool` `Variable`;
+   there is no "this story has an inventory of up to N item slots" primitive,
+   and per the exploration doc there deliberately never will be: a "light
+   character sheet" of 2-4 small bounded ints, built with existing
+   `variables`/`set`/`inc` and permanently capped near 5 variables (the
+   `L2-12` 100,000-configuration walk cap multiplies across every declared
+   range), is the intended ceiling, not an interim workaround. Two skeletons
+   already in the catalog (`the-iron-spire-trial.json`, `the-tenfold-siege.json`)
+   already use fragments of this pattern in production today.
+4. **Player-authored initial state (Lone Wolf's Kai Disciplines) is already
+   answered, just not yet built.** `docs/planning/pathfinder-structure-exploration.md`
+   section 5.2 works through exactly this: one early "background choice" node
+   whose mutually-exclusive options each `set` a small stat package (and
+   optionally a gear flag), fully inside today's schema with zero validator
+   change, and it explicitly names this pattern "what makes builds real."
+   Despite its name the document has since been reframed away from
+   Pathfinder/OGL and toward the D&D SRD 5.1/5.2 and Kobold Press's Black
+   Flag Reference Document, both CC-BY-4.0 (section 7.4), specifically
+   because 5e's flatter math and BFRD's Luck/Doom metacurrencies fit the
+   dice-free model with less distortion, and because CC-BY-4.0 carries none
+   of the OGL 1.0a per-distribution notice/designation burden. Status is
+   Phase 0 of a four-phase, owner-gated rollout (section 8): not committed
+   to `roadmap.md`, `capability-register.md`, or an ADR yet, and gated on a
+   go/no-go plus (only if actual reference text is ever shipped) legal
+   review. My original framing of this as an unaddressed gap was wrong; it
+   is a scoped, gate-validated proposal awaiting a decision, not an open
+   question.
 5. **No "visited node before" predicate.** None of the six books strictly
    required it to model here, but several gamebook traditions (and some of
    our own `open_map`/`sorting_hat` skeletons) would benefit from a condition
@@ -175,13 +195,20 @@ uv run python scripts/check_skeleton.py \
 
 ## Recommendation
 
-No schema/validator changes are proposed here: every gap above (randomness,
-inventory-as-primitive, player-authored initial state, visited-node
-predicates) is a known, bounded expressiveness trade-off already reasoned
-about in ADR-001/ADR-006, not a defect. If a future roadmap phase wants to
-target dice-driven or inventory-heavy gamebook styles (there is already a
-`narrative_style: gamebook` metadata field for 13-16/16+ bands), the concrete
-next step would be a new ADR proposing a narrow, whitelisted extension (a
-bounded `roll` effect operator, and/or a `visited(node_id)` condition
-primitive) rather than opening up the condition evaluator to a general
-expression language.
+No schema/validator changes are proposed here. Three of the four gaps above
+(randomness, inventory-as-primitive, player-authored initial state) turn out
+to already have a scoped, gate-validated answer on file:
+`docs/planning/pathfinder-structure-exploration.md` (status: exploratory, not
+a committed build) proposes exactly the deterministic build/threshold/resolve
+grammar this comparison independently arrived at, reframed toward D&D SRD
+5.1/5.2 or the Black Flag Reference Document (both CC-BY-4.0) rather than
+Pathfinder/OGL, with its own phased path (Phase 0 owner go/no-go and an
+`ADR-0xx` if approved, through a Phase 1 pilot skeleton). If a future roadmap
+phase wants to target dice-driven or inventory-heavy gamebook cells (there is
+already a `narrative_style: gamebook` metadata field for 13-16/16+ bands),
+the concrete next step is to run that document's Phase 0, not to open a new
+design from scratch. Only the remaining two findings (UFO 54-40's
+graph-breaking secret ending, and a `visited(node_id)` condition predicate)
+have no existing proposal; if either is ever wanted, the same pattern
+applies: a narrow, whitelisted extension proposed by its own ADR, not a
+general expression language.
