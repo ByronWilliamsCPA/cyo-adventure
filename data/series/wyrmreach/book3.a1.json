@@ -1,0 +1,1591 @@
+[
+  {
+    "i": "a1_foot",
+    "r": "choice",
+    "w": 80,
+    "b": "the first counted station above Sarnhold, a lamp bracket and a signing book on a chain, and six ways up the spine from here that all reach the crown gate and none of them safely",
+    "c": [
+      [
+        "Take the switchbacks on the road proper.",
+        "a1_switch"
+      ],
+      [
+        "Take the ice stair up the shoulder.",
+        "a1_ice"
+      ],
+      [
+        "Go by the counted villages on the shelf road.",
+        "a1_village"
+      ],
+      [
+        "Take the smugglers' adit into the rock.",
+        "a1_adit"
+      ],
+      [
+        "Cross by the old span and the watchtower.",
+        "a1_bridge"
+      ],
+      [
+        "Go up ahead of the weather coming off the summit.",
+        "a1_storm"
+      ],
+      [
+        "Sign the book, turn round, and go back down.",
+        "e_a1_foot_1"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_foot_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the station book signed and the road refused in the same movement, which is at least honest, and a company that walks back into Sarnhold to explain a charter it will not be keeping",
+    "e": "setback|neutral|Signed, and Turned Round"
+  },
+  {
+    "i": "a1_switch",
+    "r": "choice",
+    "w": 62,
+    "b": "nine switchbacks of dwarf paving in thaw meltwater, the drop growing behind each turn, and a Guild train's ruts a day old in the slush",
+    "c": [
+      [
+        "Keep to the paving and take the turns wide.",
+        "a1_switch_a"
+      ],
+      [
+        "Cut the corners on the scree between turns.",
+        "a1_switch_b"
+      ],
+      [
+        "Rope the company for the exposed sections.",
+        "a1_switch_c"
+      ],
+      [
+        "Run the switchbacks before the meltwater freezes.",
+        "e_a1_switch_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_switch_a",
+    "r": "rising",
+    "w": 55,
+    "b": "corner-cutting on wet scree, which saves an hour and puts everybody's ankles on notice, and Hask remarking that he has done this twice and paid both times",
+    "c": [
+      [
+        "Go on to the scree field.",
+        "a1_scree"
+      ],
+      [
+        "Cut the last corner too, over the drop.",
+        "e_a1_switch_2"
+      ]
+    ]
+  },
+  {
+    "i": "a1_switch_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the paving taken properly, turn by wide turn, in meltwater that has opinions about boot leather but none at all about the company's schedule",
+    "c": [
+      [
+        "Go on to the scree field.",
+        "a1_scree"
+      ]
+    ]
+  },
+  {
+    "i": "a1_switch_c",
+    "r": "rising",
+    "w": 55,
+    "b": "the company roped through four exposed turns on Vurma's insistence, which costs a half hour and means that when Mira goes down on the third turn she goes down eleven inches",
+    "c": [
+      [
+        "Go on to the scree field.",
+        "a1_scree"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_switch_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the switchbacks run in the last of the light with the meltwater going to glass behind every boot, and the fourth turn taken at a pace that the fourth turn has been refusing to accept since the legion cut it",
+    "e": "death|negative|The Fourth Turn",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_switch_2",
+    "r": "failure",
+    "w": 58,
+    "b": "the last corner cut over the drop because the first four worked, and the scree there turning out to be scree over ice over nothing, and the company hearing it happen rather than seeing it",
+    "e": "setback|negative|One Corner Too Many"
+  },
+  {
+    "i": "a1_scree",
+    "r": "choice",
+    "w": 62,
+    "b": "a scree field crossing the road for two hundred yards, live and moving, with a Guild train's wheel-track disappearing into the middle of it",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Cross one at a time, slowly, in the wheel-track.",
+        "a1_scree_a"
+      ],
+      [
+        "Cross together and fast while it is quiet.",
+        "a1_scree_b"
+      ],
+      [
+        "Go under the field by the drainage culvert.",
+        "e_a1_scree_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_scree_a",
+    "r": "rising",
+    "w": 55,
+    "b": "five separate crossings at a walking pace with the field talking under everybody's boots, which takes ninety minutes and gets five people across",
+    "c": [
+      [
+        "Go on to the cairn.",
+        "a1_cairn"
+      ]
+    ]
+  },
+  {
+    "i": "a1_scree_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the field crossed at a run, all five at once, which works and costs the company its wind and one reservoir lamp gone down the slope in eleven bounces",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go on to the cairn.",
+        "a1_cairn"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_scree_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the drainage culvert under the scree field, which is four feet high, half full of meltwater and completely full of the reason the Guild train's wheel-track stops in the middle of the field",
+    "e": "death|negative|The Culvert",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_cairn",
+    "r": "choice",
+    "w": 62,
+    "b": "a cairn at the third station's turning, built of station-book pages under a flat stone, with nine names on the top page and a tenth begun",
+    "c": [
+      [
+        "Read the pages under the stone.",
+        "a1_cairn_a"
+      ],
+      [
+        "Leave the cairn as you found it.",
+        "a1_wind"
+      ],
+      [
+        "Take the cairn apart properly.",
+        "e_a1_cairn_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_cairn_a",
+    "r": "rising",
+    "w": 55,
+    "b": "nine names read off station-book pages, all of them Wardens, all of them signed in at the fourth station this winter, and none of them signed out anywhere at all",
+    "c": [
+      [
+        "Go on up into the wind.",
+        "a1_wind"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_cairn_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a cairn taken apart on the road to see what it was built over, which is a station book with four hundred pages in it and a hand at the bottom of the pile that is still holding the pen",
+    "e": "setback|neutral|Under the Stone"
+  },
+  {
+    "i": "a1_wind",
+    "r": "choice",
+    "w": 62,
+    "b": "the wind gap above the third station, where the spine funnels the whole valley's air through eighty feet of dwarf cutting and has done since the founding",
+    "c": [
+      [
+        "Wait out the gust cycle and cross in the lull.",
+        "a1_wind_a"
+      ],
+      [
+        "Crawl it, roped, under the worst of it.",
+        "a1_wind_b"
+      ],
+      [
+        "Send the barrow through first on a line.",
+        "a1_wind_c"
+      ],
+      [
+        "Walk it upright; it is only wind.",
+        "e_a1_wind_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_wind_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a lull counted out by Ossa, who has crossed this gap eleven times, and used, and the whole company through in the ninety seconds she promised",
+    "c": [
+      [
+        "Go on to the crown gate road.",
+        "a1_crowngate"
+      ],
+      [
+        "Go back for the barrow in the next lull.",
+        "e_a1_wind_2"
+      ]
+    ]
+  },
+  {
+    "i": "a1_wind_b",
+    "r": "rising",
+    "w": 55,
+    "b": "eighty feet of crawling on a roped line with the wind taking the breath out of everybody's mouths sideways, which works and which nobody discusses afterwards",
+    "c": [
+      [
+        "Go on to the crown gate road.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "a1_wind_c",
+    "r": "rising",
+    "w": 55,
+    "b": "the barrow sent through first on a line, which arrives on the far side upside down and lighter by one cask, and which is still a better outcome than any of the alternatives",
+    "c": [
+      [
+        "Go on to the crown gate road.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_wind_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the wind gap walked upright by people who have been on a spine road for a day and a half and think they understand it, and the gust that arrives at the sixtieth foot, which the dwarves cut this gap to survive and did not cut it for anybody else",
+    "e": "death|negative|Upright, in the Gap",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_wind_2",
+    "r": "failure",
+    "w": 58,
+    "b": "a return trip into the gap for a barrow in what looked like the next lull, which was not a lull but the pause the cycle makes before its worst, and Ossa's count reaching four",
+    "e": "setback|negative|Back for the Barrow"
+  },
+  {
+    "i": "a1_ice",
+    "r": "choice",
+    "w": 62,
+    "b": "the ice stair: four hundred dwarf steps up the shoulder, glazed a finger thick, with an iron handline that stops halfway and a two-thousand-foot fall on the outside",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Cut steps in the glaze the whole way up.",
+        "a1_ice_a"
+      ],
+      [
+        "Use the handline as far as it goes and trust the crampons.",
+        "a1_ice_b"
+      ],
+      [
+        "Go up the rock beside the stair instead.",
+        "e_a1_ice_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_ice_a",
+    "r": "rising",
+    "w": 55,
+    "b": "two hours of step-cutting with a pick, one person working and four waiting in the cold, which is the slow way and the way everybody comes back from",
+    "c": [
+      [
+        "Go on to the glass gallery.",
+        "a1_glass"
+      ]
+    ]
+  },
+  {
+    "i": "a1_ice_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the handline to the halfway post and crampons above it, which is fast and which puts every person's weight on eleven inches of dwarf ironwork the mountain has been working on for nine centuries",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go on to the glass gallery.",
+        "a1_glass"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_ice_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the rock beside the stair taken instead of the stair, which is sound rock, and which has a nine-hundred-year glaze of black ice on its handholds that is indistinguishable from wet stone until it is not",
+    "e": "death|negative|Black Ice",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_glass",
+    "r": "choice",
+    "w": 62,
+    "b": "the glass gallery, where the road runs inside the mountain for a mile and the wall ice is clear enough to see the lamp niches burning on the far side of it",
+    "c": [
+      [
+        "Walk the gallery straight through, lamps down.",
+        "a1_glass_a"
+      ],
+      [
+        "Chip through to a niche and see what feeds it.",
+        "a1_glass_b"
+      ],
+      [
+        "Wait at the mouth for the ninth hour to pass.",
+        "a1_glass_c"
+      ],
+      [
+        "Break the wall ice and take the shortcut.",
+        "e_a1_glass_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_glass_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a niche chipped open through nine inches of clear ice, and a lamp behind it with clean oil and a trimmed wick, and nothing at all to say how either got there this winter",
+    "c": [
+      [
+        "Go on to the crevasse.",
+        "a1_crevasse"
+      ],
+      [
+        "Take the lamp out of the niche.",
+        "e_a1_glass_2"
+      ]
+    ]
+  },
+  {
+    "i": "a1_glass_b",
+    "r": "rising",
+    "w": 55,
+    "b": "a mile of gallery walked with the company's own lamps hooded, past nine niches burning behind the ice, and nobody speaking after the fourth one",
+    "c": [
+      [
+        "Go on to the crevasse.",
+        "a1_crevasse"
+      ]
+    ]
+  },
+  {
+    "i": "a1_glass_c",
+    "r": "rising",
+    "w": 55,
+    "b": "an hour at the gallery mouth waiting out the ninth hour, and the sound of the file passing inside: nine lamps, unhurried, and a count that does not go up",
+    "c": [
+      [
+        "Go on to the crevasse.",
+        "a1_crevasse"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_glass_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the wall ice broken for a shortcut through a mile of gallery, which is nine inches of ice holding back the mountain's meltwater and has been holding it back since the founding, and which stops holding it in the fourth minute",
+    "e": "death|negative|Nine Inches of Ice",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_glass_2",
+    "r": "failure",
+    "w": 58,
+    "b": "a lamp taken out of a niche behind nine inches of ice, and the nine niches of the gallery all going dark in order behind the company, and the count in the dark starting from one much closer than the far wall",
+    "e": "setback|negative|Out of the Niche"
+  },
+  {
+    "i": "a1_crevasse",
+    "r": "choice",
+    "w": 62,
+    "b": "a crevasse across the shoulder where the ice has pulled off the rock, forty feet down to blue and no bottom visible, with a snow bridge at the narrow end and a Guild ladder frozen into the wide one",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Cross on the Guild's frozen ladder.",
+        "a1_crevasse_a"
+      ],
+      [
+        "Cross the snow bridge roped and one at a time.",
+        "a1_crevasse_b"
+      ],
+      [
+        "Jump the narrow end; it is four feet.",
+        "e_a1_crevasse_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_crevasse_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the Guild ladder chopped free and laid across, which holds five people and one barrow and does not deserve to, and which Vurma refuses to look at while anybody is on it",
+    "c": [
+      [
+        "Go on to the ice lamps.",
+        "a1_icelamps"
+      ]
+    ]
+  },
+  {
+    "i": "a1_crevasse_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the snow bridge crossed roped, one at a time, on hands and knees, with the fourth person putting a leg through and being pulled out by the harness in eleven seconds",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go on to the ice lamps.",
+        "a1_icelamps"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_crevasse_1",
+    "r": "failure",
+    "w": 58,
+    "b": "four feet jumped at the crevasse's narrow end by somebody who has been walking uphill in crampons for six hours, and a lip of snow-over-nothing on the landing side that has been waiting all winter for exactly that reasoning",
+    "e": "death|negative|Four Feet",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_icelamps",
+    "r": "choice",
+    "w": 62,
+    "b": "the ice-lamp station above the crevasse: nine brackets cut into the ice wall, all nine burning, and a station book on a chain with the last four weeks signed in one hand",
+    "c": [
+      [
+        "Read the last four weeks of the book.",
+        "a1_icelamps_a"
+      ],
+      [
+        "Sign the book and go on.",
+        "a1_crowngate"
+      ],
+      [
+        "Take the book off the chain and carry it.",
+        "e_a1_icelamps_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_icelamps_a",
+    "r": "rising",
+    "w": 55,
+    "b": "four weeks of station book read in a wind that wants the pages: the same hand every day, the same time to the minute, and the hours written in the column for the day before they were kept",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go on to the crown gate road.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_icelamps_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a station book taken off its chain and carried, which is Warden property and also the only record of who has come up this road, and which is missed at the next station by the person who has been signing it",
+    "e": "setback|neutral|Off the Chain"
+  },
+  {
+    "i": "a1_village",
+    "r": "choice",
+    "w": 62,
+    "b": "Highfold, first of the counted villages on the shelf road: forty houses, nine lamps on the green burning at midday, and a headman's wife who counts the company in and does not stop counting after five",
+    "c": [
+      [
+        "Ask her plainly what the lamps are for.",
+        "a1_village_a"
+      ],
+      [
+        "Say nothing and ask for a bed and bread.",
+        "a1_village_b"
+      ],
+      [
+        "Order the lamps put out on Warden authority.",
+        "e_a1_village_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_village_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the question asked plainly on a village green, and answered plainly by a woman who has lived under the arrangement all her life: the lamps are the rent, and the village has paid it since her grandmother",
+    "c": [
+      [
+        "Go on to the shrine.",
+        "a1_shrine"
+      ]
+    ]
+  },
+  {
+    "i": "a1_village_b",
+    "r": "rising",
+    "w": 55,
+    "b": "bread, cheese and a barn floor bought for coin, no questions asked in either direction, and a village that goes about its afternoon around the company as though it were weather",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go on to the shrine.",
+        "a1_shrine"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_village_1",
+    "r": "failure",
+    "w": 58,
+    "b": "nine lamps ordered out on Warden authority in a village that has kept them lit for nine generations, and forty people who do not argue, and do not put them out, and do not let the company leave before the ninth hour",
+    "e": "capture|negative|The Rent"
+  },
+  {
+    "i": "a1_shrine",
+    "r": "choice",
+    "w": 62,
+    "b": "the village shrine on the shelf road, which is a dwarf road-marker with a Reckoning cross fixed to it and a tally cut into the base in groups of nine going back further than the cross",
+    "c": [
+      [
+        "Read the base of the marker.",
+        "a1_shrine_a"
+      ],
+      [
+        "Leave the shrine; you have read three of these.",
+        "a1_barn"
+      ],
+      [
+        "Prise the cross off and read what is under it.",
+        "e_a1_shrine_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_shrine_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the marker's base read with a glove off: nine hundred years of groups, and in the last group eight strokes and a ninth begun, and cut over the top of all of it a Reckoning cross fixed with four modern nails",
+    "c": [
+      [
+        "Go on to the barn.",
+        "a1_barn"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_shrine_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a Reckoning cross prised off a dwarf marker in front of a counted village, which is sacrilege to two orders at once, and a company that spends the ninth hour explaining itself to forty people on a green",
+    "e": "setback|neutral|Four Modern Nails"
+  },
+  {
+    "i": "a1_barn",
+    "r": "choice",
+    "w": 62,
+    "b": "the barn at the village's upper end, which the headman's wife asked the company not to open, and which has nine bootprints going in through the mud of the doorway and none coming out",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "Open it and go in with lamps up.",
+        "a1_barn_a"
+      ],
+      [
+        "Watch it from the lane until the hour turns.",
+        "a1_barn_b"
+      ],
+      [
+        "Go round it and count the roof beams from outside.",
+        "a1_barn_c"
+      ],
+      [
+        "Fire it where it stands.",
+        "e_a1_barn_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_barn_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the barn opened: nine of them standing in the straw in Warden cloaks, drained to paper, hands folded, and one of them turning its head with the deliberate courtesy of a clerk noticing a visitor",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go on to the headman.",
+        "a1_headman"
+      ],
+      [
+        "Ask it which station it signed at.",
+        "e_a1_barn_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a1_barn_b",
+    "r": "rising",
+    "w": 55,
+    "b": "an hour in the lane watching a barn door, and at the hour's turn the door opening from inside and nine of them going out along the shelf road in file, unhurried, in the wrong direction for a village",
+    "c": [
+      [
+        "Go on to the headman.",
+        "a1_headman"
+      ]
+    ]
+  },
+  {
+    "i": "a1_barn_c",
+    "r": "rising",
+    "w": 55,
+    "b": "the roof beams counted from the lane, which is nine, and the barn's own footprint measured out in paces, which is nine by nine, and a building that nobody in Highfold will say who built",
+    "c": [
+      [
+        "Go on to the headman.",
+        "a1_headman"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_barn_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a barn fired in a counted village with nine of them standing in the straw, and a fire that goes up beautifully, and forty villagers watching the company from their doorways without any expression at all while it burns",
+    "e": "death|negative|Fired Where It Stood",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_barn_2",
+    "r": "failure",
+    "w": 58,
+    "b": "a question asked of something standing in straw, and answered: a station name, a date, and then the captain's own name with the correct rank, and then the other eight turning their heads together to hear the rest",
+    "e": "death|negative|Which Station It Signed At",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_headman",
+    "r": "choice",
+    "w": 62,
+    "b": "the headman of Highfold, who has been expecting somebody official for nine years and has a ledger ready, and who wants the company to take his village's accounts down to Sarnhold and be witnessed doing it",
+    "c": [
+      [
+        "Take his ledger and witness it properly.",
+        "a1_headman_a"
+      ],
+      [
+        "Refuse; you cannot carry a village's paperwork up a mountain.",
+        "a1_headman_b"
+      ],
+      [
+        "Read his ledger through on the green before you decide.",
+        "e_a1_headman_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_headman_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a village ledger taken and witnessed on the green in front of forty people, which weighs four pounds and puts Highfold's arrangement into the Warden record for the first time since it was made",
+    "c": [
+      [
+        "Go on to the crown gate road.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "a1_headman_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the refusal given honestly, with a promise to send a Warden clerk in the spring, and a headman who has heard that promise from two previous officials and writes the date down anyway",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go on to the crown gate road.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_headman_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a headman's ledger read on his own green and found to have the company's own arrival entered in it, in advance, in the hand that signs the station books, and forty people standing between the green and the road",
+    "e": "capture|negative|Entered in Advance"
+  },
+  {
+    "i": "a1_adit",
+    "r": "choice",
+    "w": 62,
+    "b": "the smugglers' adit, a dwarf drainage bore that runs under the first four stations, four feet high, half-flooded and entirely unlit, with a Guild rope still rigged in the entrance",
+    "c": [
+      [
+        "Take it on the Guild's rigged rope.",
+        "a1_adit_a"
+      ],
+      [
+        "Rig your own line and go slow.",
+        "a1_adit_b"
+      ],
+      [
+        "Send Kettle in first to find the roof-falls.",
+        "a1_adit_c"
+      ],
+      [
+        "Take it fast; four stations is four days.",
+        "e_a1_adit_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_adit_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the Guild's rope taken on trust, which is fine for six hundred feet and then ends in a splice somebody else made in the dark, above water of an unknown depth",
+    "c": [
+      [
+        "Come out at the drift head.",
+        "a1_drift"
+      ],
+      [
+        "Splice on and keep going.",
+        "e_a1_adit_2"
+      ]
+    ]
+  },
+  {
+    "i": "a1_adit_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the company's own line rigged and paid out properly, which costs three hours and means everybody comes out of the bore at the same time as everybody else",
+    "c": [
+      [
+        "Come out at the drift head.",
+        "a1_drift"
+      ]
+    ]
+  },
+  {
+    "i": "a1_adit_c",
+    "r": "rising",
+    "w": 55,
+    "b": "Kettle in first and back in forty minutes with a count of three roof-falls, two crawlable and one that has to be dug, and an opinion about the water she delivers in one word",
+    "c": [
+      [
+        "Come out at the drift head.",
+        "a1_drift"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_adit_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a four-foot flooded dwarf bore taken fast because four stations is four days, and the third roof-fall arriving at chest-deep water in the dark with the whole company already past the second",
+    "e": "death|negative|Four Stations, Four Days",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_adit_2",
+    "r": "failure",
+    "w": 58,
+    "b": "somebody else's splice trusted a second time in the dark, over water, by people who have already got away with it once, and the second splice being where the first rigger stopped",
+    "e": "setback|negative|The Second Splice"
+  },
+  {
+    "i": "a1_drift",
+    "r": "choice",
+    "w": 62,
+    "b": "the drift head where the adit opens into a dwarf gallery, and the gallery floor has been swept: nine feet wide, swept clean, in a bore nobody has officially entered since the survey",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Follow the swept floor uphill.",
+        "a1_drift_a"
+      ],
+      [
+        "Cross the gallery and get back into the bore.",
+        "a1_drift_b"
+      ],
+      [
+        "Follow the swept floor downhill instead.",
+        "e_a1_drift_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_drift_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the swept floor followed uphill for a quarter mile to a lamp niche with a broom leaning beside it, dry bristles, and a candle stub still warm to the back of a hand",
+    "c": [
+      [
+        "Go on to the cache.",
+        "a1_cache"
+      ]
+    ]
+  },
+  {
+    "i": "a1_drift_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the gallery crossed at a run and the bore re-entered on the far side, wet to the waist again, with everybody's opinion of the swept floor left deliberately unspoken",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go on to the cache.",
+        "a1_cache"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_drift_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the swept floor followed downhill, which is the direction the sweeping was going, and which arrives after eleven minutes at what is being swept toward, and what is doing the sweeping, and how long it has been at it",
+    "e": "death|negative|Downhill, With the Sweeping",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_cache",
+    "r": "choice",
+    "w": 62,
+    "b": "a smugglers' cache in a side bay: eleven crates under tarpaulin, Guild marks on nine of them and no marks at all on two, and a lamp bracket screwed into the dwarf stone above them",
+    "c": [
+      [
+        "Open the two unmarked crates.",
+        "a1_cache_a"
+      ],
+      [
+        "Open a Guild crate and take supplies.",
+        "a1_cache_b"
+      ],
+      [
+        "Leave the cache and go on to the deep bay.",
+        "a1_beast"
+      ],
+      [
+        "Take the lamp bracket off the wall for the oil.",
+        "e_a1_cache_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_cache_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the two unmarked crates opened: founding-gauge blanks in one, packed in straw, and in the other nine lamp reservoirs filled and sealed with wax and dated for a week from now",
+    "c": [
+      [
+        "Go on to the deep bay.",
+        "a1_beast"
+      ]
+    ]
+  },
+  {
+    "i": "a1_cache_b",
+    "r": "rising",
+    "w": 55,
+    "b": "a Guild crate opened and salt beef, candles and two coils of line taken out of it, with a note left in the lid in Nyre's hand recording exactly what was removed and by whom",
+    "c": [
+      [
+        "Go on to the deep bay.",
+        "a1_beast"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_cache_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a lamp bracket unscrewed from dwarf stone for the sake of a pint of oil, and the bracket coming away with nine hundred years of the wall's own arrangement behind it, and the bay's roof taking that personally",
+    "e": "death|negative|For a Pint of Oil",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_beast",
+    "r": "choice",
+    "w": 62,
+    "b": "the deep bay, where the bore widens into a chamber the survey does not show, and something that has been eating the smugglers' cache for a season is asleep across the only exit",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "Take it while it sleeps.",
+        "a1_beast_a"
+      ],
+      [
+        "Go over it along the ledge above the exit.",
+        "a1_beast_b"
+      ],
+      [
+        "Put the last of the Guild's salt beef down and go past.",
+        "a1_beast_c"
+      ],
+      [
+        "Wake it and fight it in the open bay.",
+        "e_a1_beast_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_beast_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a killing attempted on something asleep, which goes well for four seconds and then becomes eleven minutes of noise in a stone chamber with a pick, a poleaxe and no room to swing either",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Come out on the shelf road.",
+        "a1_crowngate"
+      ],
+      [
+        "Finish it rather than leave it wounded.",
+        "e_a1_beast_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a1_beast_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the ledge above the exit taken in the dark, eleven inches wide, with the thing breathing underneath at a pace that does not change while five people go over it",
+    "c": [
+      [
+        "Come out on the shelf road.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "a1_beast_c",
+    "r": "rising",
+    "w": 55,
+    "b": "the last of the salt beef put down eleven feet from the exit, and the transaction accepted, and a company walking past something that watches them go with its chin on its paws",
+    "c": [
+      [
+        "Come out on the shelf road.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_beast_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a thing woken deliberately in a stone chamber with one exit, by a company that wanted the fight on its own terms, and which discovers that the terms in a room with one exit belong to whatever lives in the room",
+    "e": "death|negative|On Your Terms",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_beast_2",
+    "r": "failure",
+    "w": 58,
+    "b": "a wounded thing finished rather than left, which is correct practice and takes four minutes longer than the company has, because the noise of the first four seconds has been travelling up the bore the whole time",
+    "e": "death|negative|Rather Than Leave It",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_bridge",
+    "r": "choice",
+    "w": 62,
+    "b": "the old span at the fifth station: a dwarf bridge over two hundred feet of air, its parapet gone, its deck sound, and a Guild sign at each end forbidding more than two on it at once",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Cross two at a time as the sign says.",
+        "a1_bridge_a"
+      ],
+      [
+        "Cross all together and quickly.",
+        "a1_bridge_b"
+      ],
+      [
+        "Go down to the ford and up the far side.",
+        "e_a1_bridge_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_bridge_a",
+    "r": "rising",
+    "w": 55,
+    "b": "three crossings of two, done slowly, with the deck ringing under boots and the drop doing what drops do to conversation",
+    "c": [
+      [
+        "Go on to the watchtower.",
+        "a1_watchtower"
+      ]
+    ]
+  },
+  {
+    "i": "a1_bridge_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the whole company on a dwarf deck at once against a Guild sign's advice, which the deck survives and which costs a cask off the barrow and everybody's nerve for the next mile",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go on to the watchtower.",
+        "a1_watchtower"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_bridge_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the ford below the old span, which is a spine river in thaw, and which is crossable in late summer by people who know it and is not crossable at all in the second week of a thaw by anybody",
+    "e": "death|negative|The Ford in Thaw",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_watchtower",
+    "r": "choice",
+    "w": 62,
+    "b": "the fifth station's watchtower, empty, its door barred from outside, its lamp lit, and its signing book on the table open at a page dated tomorrow",
+    "c": [
+      [
+        "Read the book's page dated tomorrow.",
+        "a1_watchtower_a"
+      ],
+      [
+        "Take the lamp oil and the tower's spare rope.",
+        "a1_watchtower_b"
+      ],
+      [
+        "Bar the door again and go on up.",
+        "a1_pass"
+      ],
+      [
+        "Wait in the tower for whoever wrote tomorrow's page.",
+        "e_a1_watchtower_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_watchtower_a",
+    "r": "rising",
+    "w": 55,
+    "b": "tomorrow's page read today: five arrivals entered in advance in a clerk's hand, with the company's own number among them and a time against it that has not happened yet",
+    "c": [
+      [
+        "Go on to the pass.",
+        "a1_pass"
+      ]
+    ]
+  },
+  {
+    "i": "a1_watchtower_b",
+    "r": "rising",
+    "w": 55,
+    "b": "four gallons of station oil and forty feet of spare rope taken from a Warden tower and signed for in the book under today's date, which is the correct procedure and looks like nothing at all in tomorrow's",
+    "c": [
+      [
+        "Go on to the pass.",
+        "a1_pass"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_watchtower_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a night spent in a barred watchtower waiting for whoever writes tomorrow's page, and the page being written at the ninth hour, from the inside, by a hand that comes up through the floor hatch to do it",
+    "e": "death|negative|Whoever Writes Tomorrow",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_pass",
+    "r": "choice",
+    "w": 62,
+    "b": "the pass at nine thousand feet: the last of the road above cloud, the crown gate of Kar Ashen visible for the first time as a black notch in the ridge, and weather building behind the summit",
+    "c": [
+      [
+        "Push over the pass before the weather lands.",
+        "a1_pass_a"
+      ],
+      [
+        "Dig in below the pass and let it pass over.",
+        "a1_pass_b"
+      ],
+      [
+        "Go round the pass by the high traverse.",
+        "a1_pass_c"
+      ],
+      [
+        "Send Hask over alone to find the gate road.",
+        "e_a1_pass_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_pass_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the pass taken at a run in the last hour before the weather, which works, and which everybody in the company will remember as the point at which the mountain stopped being scenery",
+    "c": [
+      [
+        "Go on to the crown gate road.",
+        "a1_camp"
+      ],
+      [
+        "Keep going through the first hour of the storm.",
+        "e_a1_pass_2"
+      ]
+    ]
+  },
+  {
+    "i": "a1_pass_b",
+    "r": "rising",
+    "w": 55,
+    "b": "a hole dug below the pass and roofed with the tarpaulin, five people in it for eleven hours while the weather goes over the top of them making a sound like a mill",
+    "c": [
+      [
+        "Go on to the crown gate road.",
+        "a1_camp"
+      ]
+    ]
+  },
+  {
+    "i": "a1_pass_c",
+    "r": "rising",
+    "w": 55,
+    "b": "the high traverse round the pass, which adds four miles and a thousand feet and keeps the company out of the wind, and which Ossa says her father called the long way and used every time",
+    "c": [
+      [
+        "Go on to the crown gate road.",
+        "a1_camp"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_pass_1",
+    "r": "failure",
+    "w": 58,
+    "b": "Hask sent over the pass alone to find the gate road, on the reasonable grounds that he has been up twice, and the weather landing between him and the company in the fourth minute, and eleven hours of nothing afterwards",
+    "e": "death|negative|Sent Over Alone",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_pass_2",
+    "r": "failure",
+    "w": 58,
+    "b": "the storm's first hour walked into on the strength of having beaten the pass, and a company strung out on a ridge at nine thousand feet in weather that takes the top layer off the snow and puts it into everybody's lungs",
+    "e": "setback|negative|Into the First Hour"
+  },
+  {
+    "i": "a1_camp",
+    "r": "choice",
+    "w": 62,
+    "b": "the last camp below the crown gate, in the lee of a dwarf revetment, with the gate a mile above and nine lamps burning on it in cloud",
+    "c": [
+      [
+        "Sleep properly; the gate can wait a night.",
+        "a1_camp_a"
+      ],
+      [
+        "Break camp at once and go up in the dark.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "a1_camp_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a real night's sleep in the lee of dwarf stonework with a brazier and two watches, and a company that stands up in the morning able to walk up to a closed gate and think about it",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Go up to the crown gate.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "a1_storm",
+    "r": "choice",
+    "w": 62,
+    "b": "the weather off the summit arriving early, on the shelf road, with nine hours of daylight left and no shelter marked on any chart between here and the eighth station",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go on through it on the road, roped.",
+        "a1_storm_a"
+      ],
+      [
+        "Get off the road and dig in on the lee side.",
+        "a1_storm_b"
+      ],
+      [
+        "Run for the eighth station and hope it is manned.",
+        "e_a1_storm_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_storm_a",
+    "r": "rising",
+    "w": 55,
+    "b": "nine miles walked roped in whiteout with Ossa's pole on the road edge, which is the worst day anybody has had since the Barrow Moor and which nobody loses",
+    "c": [
+      [
+        "Go on to the shelter.",
+        "a1_shelter"
+      ]
+    ]
+  },
+  {
+    "i": "a1_storm_b",
+    "r": "rising",
+    "w": 55,
+    "b": "a hole dug in the lee of the road bank and roofed with the tarpaulin, and eleven hours of five people breathing each other's air while the spine works itself out overhead",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go on to the shelter.",
+        "a1_shelter"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_storm_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a run for the eighth station in whiteout on the strength of it probably being manned, and the eighth station turning out to be four hundred yards off the road on a spur, and the spur being where the company looks for it",
+    "e": "death|negative|Probably Manned",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_shelter",
+    "r": "choice",
+    "w": 62,
+    "b": "a dwarf shelter cut into the road bank at the eighth station: benches, a flue, a wood store still stacked, and nine lamp brackets with nine trimmed lamps in them",
+    "c": [
+      [
+        "Light the flue and take four hours.",
+        "a1_shelter_a"
+      ],
+      [
+        "Take nothing and go straight on up.",
+        "a1_wolves"
+      ]
+    ]
+  },
+  {
+    "i": "a1_shelter_a",
+    "r": "rising",
+    "w": 55,
+    "b": "four hours with a fire in a dwarf flue and dry socks all round, and the wood store's own tally on the wall showing it restocked eleven days ago by somebody who has not signed anything",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Go on to the wolves' ground.",
+        "a1_wolves"
+      ]
+    ]
+  },
+  {
+    "i": "a1_wolves",
+    "r": "choice",
+    "w": 62,
+    "b": "the ninth station's ground, where the spine wolves den in the old revetments, and where four of them are sitting in the road watching the company come up as though they had been told to expect it",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "Break through them with shields and noise.",
+        "a1_wolves_a"
+      ],
+      [
+        "Back off the road and go round their ground.",
+        "a1_wolves_b"
+      ],
+      [
+        "Put meat down and walk through slowly.",
+        "a1_wolves_c"
+      ],
+      [
+        "Shoot the nearest one and see what the rest do.",
+        "e_a1_wolves_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_wolves_a",
+    "r": "rising",
+    "w": 55,
+    "b": "four spine wolves broken through with shields, noise and a poleaxe, which costs Dellach a forearm laid open to the bone and buys the company the road",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go on to the ridge.",
+        "a1_ridge"
+      ],
+      [
+        "Follow the ones that ran and finish them.",
+        "e_a1_wolves_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a1_wolves_b",
+    "r": "rising",
+    "w": 55,
+    "b": "a mile off the road round the wolves' ground in deep snow, which costs two hours and everybody's legs and no blood at all",
+    "c": [
+      [
+        "Go on to the ridge.",
+        "a1_ridge"
+      ]
+    ]
+  },
+  {
+    "i": "a1_wolves_c",
+    "r": "rising",
+    "w": 55,
+    "b": "salt beef put down in the road and the company walking through at the pace of a funeral, with four wolves eating eleven feet away and one of them watching the pack instead of the meat",
+    "c": [
+      [
+        "Go on to the ridge.",
+        "a1_ridge"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_wolves_1",
+    "r": "failure",
+    "w": 58,
+    "b": "one wolf shot in the road to see what the rest do, which is a question with a known answer to anybody who has wintered on the spine, and four becoming eleven inside a minute in country with no cover",
+    "e": "death|negative|What the Rest Do",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_wolves_2",
+    "r": "failure",
+    "w": 58,
+    "b": "the runners followed off the road and finished in their own revetment, which is thorough, and which puts five people in a dwarf ruin at dusk with the wolves' den behind them and the den occupied",
+    "e": "death|negative|Into the Revetment",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a1_ridge",
+    "r": "choice",
+    "w": 62,
+    "b": "the last ridge below Kar Ashen: the crown gate a quarter mile above, nine lamps on it, and the whole spine dropping away on both sides into cloud with the road running along the crest",
+    "c": [
+      [
+        "Walk the crest in the open.",
+        "a1_ridge_a"
+      ],
+      [
+        "Traverse below the crest on the north side.",
+        "a1_ridge_b"
+      ],
+      [
+        "Wait for cloud and go up inside it.",
+        "a1_ridge_c"
+      ],
+      [
+        "Go up the crest at a run; it is a quarter mile.",
+        "e_a1_ridge_1"
+      ]
+    ]
+  },
+  {
+    "i": "a1_ridge_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the north traverse below the crest, out of sight of the gate and in snow to the thigh, which takes an hour and arrives with the company below the gate rather than in front of it",
+    "c": [
+      [
+        "Go up to the crown gate.",
+        "a1_crowngate"
+      ],
+      [
+        "Traverse further and try to get above the gate.",
+        "e_a1_ridge_2"
+      ]
+    ]
+  },
+  {
+    "i": "a1_ridge_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the crest walked in the open in full view of a lit gate a quarter mile above, which is either confidence or a formality, and which nothing at all interrupts",
+    "c": [
+      [
+        "Go up to the crown gate.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "a1_ridge_c",
+    "r": "rising",
+    "w": 55,
+    "b": "cloud waited for and then used, forty minutes of it, and the company arriving at the gate's own revetment inside the weather with nobody's lamp visible from anywhere",
+    "c": [
+      [
+        "Go up to the crown gate.",
+        "a1_crowngate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_ridge_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a quarter mile of crest at nine thousand feet taken at a run by five people carrying packs, and the cornice on the left hand that a Guild survey marked in spring and nobody has marked since",
+    "e": "death|negative|The Cornice",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_ridge_2",
+    "r": "failure",
+    "w": 58,
+    "b": "a traverse pushed further to get above the gate, onto the north face proper, which is not a route and was never a route and has one thing on it that resembles a ledge for its first eleven feet",
+    "e": "setback|negative|Above the Gate"
+  },
+  {
+    "i": "a1_crowngate",
+    "r": "climax",
+    "w": 80,
+    "b": "the crown gate of Kar Ashen: a dwarf arch the width of the road driven into the ridge, nine lamps burning on nine brackets in cloud, a scraped Warden shield nailed to the post, and the gate itself standing open a hand's width with the bar set down neatly inside",
+    "c": [
+      [
+        "Go in by the open gate.",
+        "a2_ward"
+      ],
+      [
+        "Go round to the foundry chimney under the wall.",
+        "a2_gatehouse"
+      ],
+      [
+        "Take the cistern channel under the outer ward.",
+        "a2_cistern"
+      ]
+    ]
+  }
+]

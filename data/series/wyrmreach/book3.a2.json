@@ -1,0 +1,1570 @@
+[
+  {
+    "i": "a2_ward",
+    "r": "choice",
+    "w": 80,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_gatehouse"
+      ],
+      [
+        "TODO",
+        "a2_tallyyard"
+      ],
+      [
+        "TODO",
+        "a2_cistern"
+      ],
+      [
+        "TODO",
+        "a2_barracks"
+      ],
+      [
+        "TODO",
+        "a2_market"
+      ],
+      [
+        "TODO",
+        "a2_yardmaster"
+      ],
+      [
+        "TODO",
+        "e_a2_ward_1"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_ward_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a2_gatehouse",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_gatehouse_a"
+      ],
+      [
+        "TODO",
+        "a2_gatehouse_b"
+      ],
+      [
+        "TODO",
+        "a2_gatehouse_c"
+      ],
+      [
+        "TODO",
+        "e_a2_gatehouse_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_gatehouse_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_wheelhouse"
+      ],
+      [
+        "TODO 2",
+        "e_a2_gatehouse_2"
+      ]
+    ]
+  },
+  {
+    "i": "a2_gatehouse_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_wheelhouse"
+      ]
+    ]
+  },
+  {
+    "i": "a2_gatehouse_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_wheelhouse"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_gatehouse_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_gatehouse_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|negative|TODO"
+  },
+  {
+    "i": "a2_wheelhouse",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a2_wheelhouse_a"
+      ],
+      [
+        "TODO",
+        "a2_wheelhouse_b"
+      ],
+      [
+        "TODO",
+        "e_a2_wheelhouse_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_wheelhouse_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_foundry"
+      ]
+    ]
+  },
+  {
+    "i": "a2_wheelhouse_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_foundry"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_wheelhouse_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_foundry",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a2_foundry_a"
+      ],
+      [
+        "TODO",
+        "a2_foundry_b"
+      ],
+      [
+        "TODO",
+        "a2_foundry_c"
+      ],
+      [
+        "TODO",
+        "e_a2_foundry_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_foundry_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_slag"
+      ],
+      [
+        "TODO 2",
+        "e_a2_foundry_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a2_foundry_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_slag"
+      ]
+    ]
+  },
+  {
+    "i": "a2_foundry_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_slag"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_foundry_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_foundry_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_slag",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_slag_a"
+      ],
+      [
+        "TODO",
+        "a2_slag_b"
+      ],
+      [
+        "TODO",
+        "a2_deepstair"
+      ],
+      [
+        "TODO",
+        "e_a2_slag_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_slag_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "a2_slag_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_slag_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_tallyyard",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_tallyyard_a"
+      ],
+      [
+        "TODO",
+        "a2_tallyyard_b"
+      ],
+      [
+        "TODO",
+        "e_a2_tallyyard_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_tallyyard_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_scales"
+      ]
+    ]
+  },
+  {
+    "i": "a2_tallyyard_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_scales"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_tallyyard_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a2_scales",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_scales_a"
+      ],
+      [
+        "TODO",
+        "a2_clerks"
+      ],
+      [
+        "TODO",
+        "e_a2_scales_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_scales_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_clerks"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_scales_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a2_clerks",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_clerks_a"
+      ],
+      [
+        "TODO",
+        "a2_clerks_b"
+      ],
+      [
+        "TODO",
+        "e_a2_clerks_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_clerks_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_cells"
+      ]
+    ]
+  },
+  {
+    "i": "a2_clerks_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_cells"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_clerks_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a2_cells",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a2_cells_a"
+      ],
+      [
+        "TODO",
+        "a2_cells_b"
+      ],
+      [
+        "TODO",
+        "a2_cells_c"
+      ],
+      [
+        "TODO",
+        "e_a2_cells_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_cells_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ],
+      [
+        "TODO 2",
+        "e_a2_cells_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a2_cells_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "a2_cells_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_cells_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_cells_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_cistern",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a2_cistern_a"
+      ],
+      [
+        "TODO",
+        "a2_cistern_b"
+      ],
+      [
+        "TODO",
+        "e_a2_cistern_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_cistern_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_drowned"
+      ]
+    ]
+  },
+  {
+    "i": "a2_cistern_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_drowned"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_cistern_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_drowned",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_drowned_a"
+      ],
+      [
+        "TODO",
+        "a2_drowned_b"
+      ],
+      [
+        "TODO",
+        "a2_drowned_c"
+      ],
+      [
+        "TODO",
+        "e_a2_drowned_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_drowned_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_pumps"
+      ],
+      [
+        "TODO 2",
+        "e_a2_drowned_2"
+      ]
+    ]
+  },
+  {
+    "i": "a2_drowned_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_pumps"
+      ]
+    ]
+  },
+  {
+    "i": "a2_drowned_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_pumps"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_drowned_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_drowned_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|negative|TODO"
+  },
+  {
+    "i": "a2_pumps",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_pumps_a"
+      ],
+      [
+        "TODO",
+        "a2_pumps_b"
+      ],
+      [
+        "TODO",
+        "a2_eels"
+      ],
+      [
+        "TODO",
+        "e_a2_pumps_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_pumps_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_eels"
+      ]
+    ]
+  },
+  {
+    "i": "a2_pumps_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_eels"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_pumps_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_eels",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a2_eels_a"
+      ],
+      [
+        "TODO",
+        "a2_eels_b"
+      ],
+      [
+        "TODO",
+        "a2_eels_c"
+      ],
+      [
+        "TODO",
+        "e_a2_eels_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_eels_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ],
+      [
+        "TODO 2",
+        "e_a2_eels_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a2_eels_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "a2_eels_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_eels_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_eels_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_barracks",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_barracks_a"
+      ],
+      [
+        "TODO",
+        "a2_barracks_b"
+      ],
+      [
+        "TODO",
+        "a2_wall"
+      ],
+      [
+        "TODO",
+        "e_a2_barracks_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_barracks_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_wall"
+      ]
+    ]
+  },
+  {
+    "i": "a2_barracks_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_wall"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_barracks_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_wall",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a2_wall_a"
+      ],
+      [
+        "TODO",
+        "a2_wall_b"
+      ],
+      [
+        "TODO",
+        "a2_wall_c"
+      ],
+      [
+        "TODO",
+        "e_a2_wall_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_wall_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_bell"
+      ],
+      [
+        "TODO 2",
+        "e_a2_wall_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a2_wall_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_bell"
+      ]
+    ]
+  },
+  {
+    "i": "a2_wall_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_bell"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_wall_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_wall_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_bell",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a2_bell_a"
+      ],
+      [
+        "TODO",
+        "a2_bell_b"
+      ],
+      [
+        "TODO",
+        "e_a2_bell_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_bell_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_billet"
+      ]
+    ]
+  },
+  {
+    "i": "a2_bell_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_billet"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_bell_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_billet",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_billet_a"
+      ],
+      [
+        "TODO",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "a2_billet_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor+1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "a2_market",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_market_a"
+      ],
+      [
+        "TODO",
+        "a2_market_b"
+      ],
+      [
+        "TODO",
+        "e_a2_market_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_market_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_beggars"
+      ]
+    ]
+  },
+  {
+    "i": "a2_market_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_beggars"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_market_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a2_beggars",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_beggars_a"
+      ],
+      [
+        "TODO",
+        "a2_gaol"
+      ],
+      [
+        "TODO",
+        "e_a2_beggars_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_beggars_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_gaol"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_beggars_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a2_gaol",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_gaol_a"
+      ],
+      [
+        "TODO",
+        "a2_gaol_b"
+      ],
+      [
+        "TODO",
+        "e_a2_gaol_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_gaol_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_keeper"
+      ]
+    ]
+  },
+  {
+    "i": "a2_gaol_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_keeper"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_gaol_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a2_keeper",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_keeper_a"
+      ],
+      [
+        "TODO",
+        "a2_keeper_b"
+      ],
+      [
+        "TODO",
+        "e_a2_keeper_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_keeper_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "a2_keeper_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_keeper_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a2_yardmaster",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_yardmaster_a"
+      ],
+      [
+        "TODO",
+        "a2_yardmaster_b"
+      ],
+      [
+        "TODO",
+        "e_a2_yardmaster_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_yardmaster_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_stores"
+      ]
+    ]
+  },
+  {
+    "i": "a2_yardmaster_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_stores"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_yardmaster_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a2_stores",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_stores_a"
+      ],
+      [
+        "TODO",
+        "a2_stores_b"
+      ],
+      [
+        "TODO",
+        "a2_kiln"
+      ],
+      [
+        "TODO",
+        "e_a2_stores_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_stores_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_kiln"
+      ]
+    ]
+  },
+  {
+    "i": "a2_stores_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_kiln"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_stores_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_kiln",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a2_kiln_a"
+      ],
+      [
+        "TODO",
+        "a2_kiln_b"
+      ],
+      [
+        "TODO",
+        "a2_kiln_c"
+      ],
+      [
+        "TODO",
+        "e_a2_kiln_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_kiln_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a2_watch"
+      ],
+      [
+        "TODO 2",
+        "e_a2_kiln_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a2_kiln_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_watch"
+      ]
+    ]
+  },
+  {
+    "i": "a2_kiln_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_watch"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_kiln_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_kiln_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a2_watch",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a2_watch_a"
+      ],
+      [
+        "TODO",
+        "a2_deepstair"
+      ],
+      [
+        "TODO",
+        "e_a2_watch_1"
+      ]
+    ]
+  },
+  {
+    "i": "a2_watch_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a2_deepstair"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_watch_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a2_deepstair",
+    "r": "climax",
+    "w": 80,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_plaza"
+      ],
+      [
+        "TODO",
+        "a3_chapel"
+      ],
+      [
+        "TODO",
+        "a3_mint"
+      ]
+    ]
+  }
+]

@@ -1,0 +1,107 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_ninth_hand",
+  "version": 1,
+  "title": "The Ninth Hand",
+  "start_node": "n_start",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.5,
+      "tolerance": 2.5
+    },
+    "tier": 2,
+    "themes": [
+      "adventure",
+      "loyalty",
+      "greed",
+      "monsters",
+      "mystery",
+      "sacrifice"
+    ],
+    "estimated_minutes": 90,
+    "ending_count": 0,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "long",
+    "narrative_style": "gamebook",
+    "production_eligible": true,
+    "series": {
+      "series_id": "wyrmreach",
+      "book_index": 3,
+      "series_entry_node": "n_start",
+      "is_final": false,
+      "carries_state": true
+    }
+  },
+  "variables": [
+    {
+      "name": "vigor",
+      "type": "int",
+      "initial": 5,
+      "min": 0,
+      "max": 6,
+      "description": "The condition of the company: wounds, altitude, sleep and supply."
+    },
+    {
+      "name": "renown",
+      "type": "int",
+      "initial": 3,
+      "min": 3,
+      "max": 5,
+      "description": "Carried: the standing of the company that shut two of the Compact's doors."
+    },
+    {
+      "name": "iron_key",
+      "type": "bool",
+      "initial": true,
+      "description": "Carried: the ninth key-iron of Kar Duhn."
+    },
+    {
+      "name": "second_iron",
+      "type": "bool",
+      "initial": true,
+      "description": "Carried: the relay iron of Hollowmarch, taken from the second door."
+    },
+    {
+      "name": "knows_compact",
+      "type": "bool",
+      "initial": true,
+      "description": "Carried: the company knows what the Compact is and what its doors hold."
+    },
+    {
+      "name": "crown_iron",
+      "type": "bool",
+      "initial": false,
+      "description": "The ninth iron of the crown door at Kar Ashen, cut or lifted."
+    },
+    {
+      "name": "wyrm_pact",
+      "type": "bool",
+      "initial": false,
+      "description": "Ashendrel has spoken to the company and named its own terms."
+    },
+    {
+      "name": "door_state",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 6,
+      "description": "What the company did at the crown door: 0 nothing, 1 locked, 2 locked and the count kept, 3 opened, 4 drawn and reseated, 5 wedged, 6 the ninth iron carried out."
+    }
+  ],
+  "include": [
+    "book3.a0.json",
+    "book3.a1.json",
+    "book3.a2.json",
+    "book3.a3.json",
+    "book3.a4.json",
+    "book3.a5.json",
+    "book3.a6.json"
+  ]
+}

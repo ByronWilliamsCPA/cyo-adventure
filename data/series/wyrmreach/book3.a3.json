@@ -1,0 +1,1602 @@
+[
+  {
+    "i": "a3_plaza",
+    "r": "choice",
+    "w": 80,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_chapel"
+      ],
+      [
+        "TODO",
+        "a3_mint"
+      ],
+      [
+        "TODO",
+        "a3_market"
+      ],
+      [
+        "TODO",
+        "a3_archive"
+      ],
+      [
+        "TODO",
+        "a3_aqueduct"
+      ],
+      [
+        "TODO",
+        "a3_wardens"
+      ],
+      [
+        "TODO",
+        "a3_baths"
+      ],
+      [
+        "TODO",
+        "e_a3_plaza_1"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_plaza_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a3_chapel",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_chapel_a"
+      ],
+      [
+        "TODO",
+        "a3_chapel_b"
+      ],
+      [
+        "TODO",
+        "e_a3_chapel_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_chapel_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_choir"
+      ]
+    ]
+  },
+  {
+    "i": "a3_chapel_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_choir"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_chapel_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a3_choir",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_choir_a"
+      ],
+      [
+        "TODO",
+        "a3_confessor"
+      ],
+      [
+        "TODO",
+        "e_a3_choir_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_choir_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_confessor"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_choir_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a3_confessor",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_confessor_a"
+      ],
+      [
+        "TODO",
+        "a3_confessor_b"
+      ],
+      [
+        "TODO",
+        "e_a3_confessor_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_confessor_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_relic"
+      ]
+    ]
+  },
+  {
+    "i": "a3_confessor_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_relic"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_confessor_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a3_relic",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_relic_a"
+      ],
+      [
+        "TODO",
+        "a3_relic_b"
+      ],
+      [
+        "TODO",
+        "a3_wyrmgate"
+      ],
+      [
+        "TODO",
+        "e_a3_relic_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_relic_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "a3_relic_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_relic_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a3_mint",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_mint_a"
+      ],
+      [
+        "TODO",
+        "a3_mint_b"
+      ],
+      [
+        "TODO",
+        "a3_mint_c"
+      ],
+      [
+        "TODO",
+        "e_a3_mint_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_mint_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_dies"
+      ],
+      [
+        "TODO 2",
+        "e_a3_mint_2"
+      ]
+    ]
+  },
+  {
+    "i": "a3_mint_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_dies"
+      ]
+    ]
+  },
+  {
+    "i": "a3_mint_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_dies"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_mint_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_mint_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|negative|TODO"
+  },
+  {
+    "i": "a3_dies",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_dies_a"
+      ],
+      [
+        "TODO",
+        "a3_dies_b"
+      ],
+      [
+        "TODO",
+        "a3_smiths"
+      ],
+      [
+        "TODO",
+        "e_a3_dies_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_dies_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_smiths"
+      ]
+    ]
+  },
+  {
+    "i": "a3_dies_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "crown_iron=true",
+    "c": [
+      [
+        "TODO 1",
+        "a3_smiths"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_dies_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a3_smiths",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a3_smiths_a"
+      ],
+      [
+        "TODO",
+        "a3_smiths_b"
+      ],
+      [
+        "TODO",
+        "a3_smiths_c",
+        "!crown_iron"
+      ],
+      [
+        "TODO",
+        "e_a3_smiths_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_smiths_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_blanks"
+      ],
+      [
+        "TODO 2",
+        "e_a3_smiths_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a3_smiths_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_blanks"
+      ]
+    ]
+  },
+  {
+    "i": "a3_smiths_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "crown_iron=true",
+    "c": [
+      [
+        "TODO 1",
+        "a3_blanks"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_smiths_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_smiths_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a3_blanks",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_blanks_a"
+      ],
+      [
+        "TODO",
+        "a3_wyrmgate"
+      ],
+      [
+        "TODO",
+        "e_a3_blanks_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_blanks_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_blanks_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a3_market",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_market_a"
+      ],
+      [
+        "TODO",
+        "a3_market_b"
+      ],
+      [
+        "TODO",
+        "e_a3_market_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_market_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_pens"
+      ]
+    ]
+  },
+  {
+    "i": "a3_market_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_pens"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_market_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a3_pens",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a3_pens_a"
+      ],
+      [
+        "TODO",
+        "a3_pens_b"
+      ],
+      [
+        "TODO",
+        "a3_pens_c"
+      ],
+      [
+        "TODO",
+        "e_a3_pens_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_pens_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_auction"
+      ],
+      [
+        "TODO 2",
+        "e_a3_pens_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a3_pens_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_auction"
+      ]
+    ]
+  },
+  {
+    "i": "a3_pens_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_auction"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_pens_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_pens_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a3_auction",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_auction_a"
+      ],
+      [
+        "TODO",
+        "a3_auction_b"
+      ],
+      [
+        "TODO",
+        "e_a3_auction_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_auction_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_ledgers"
+      ]
+    ]
+  },
+  {
+    "i": "a3_auction_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_ledgers"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_auction_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a3_ledgers",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_ledgers_a"
+      ],
+      [
+        "TODO",
+        "a3_wyrmgate"
+      ],
+      [
+        "TODO",
+        "e_a3_ledgers_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_ledgers_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_ledgers_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a3_archive",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_archive_a"
+      ],
+      [
+        "TODO",
+        "a3_stacks"
+      ],
+      [
+        "TODO",
+        "e_a3_archive_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_archive_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_stacks"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_archive_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a3_stacks",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a3_stacks_a"
+      ],
+      [
+        "TODO",
+        "a3_stacks_b"
+      ],
+      [
+        "TODO",
+        "e_a3_stacks_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_stacks_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_index"
+      ]
+    ]
+  },
+  {
+    "i": "a3_stacks_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_index"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_stacks_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a3_index",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_index_a"
+      ],
+      [
+        "TODO",
+        "a3_archivist"
+      ],
+      [
+        "TODO",
+        "e_a3_index_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_index_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_archivist"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_index_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a3_archivist",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_archivist_a"
+      ],
+      [
+        "TODO",
+        "a3_archivist_b"
+      ],
+      [
+        "TODO",
+        "e_a3_archivist_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_archivist_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "a3_archivist_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_archivist_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a3_aqueduct",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a3_aqueduct_a"
+      ],
+      [
+        "TODO",
+        "a3_aqueduct_b"
+      ],
+      [
+        "TODO",
+        "e_a3_aqueduct_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_aqueduct_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_sluice"
+      ]
+    ]
+  },
+  {
+    "i": "a3_aqueduct_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_sluice"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_aqueduct_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a3_sluice",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_sluice_a"
+      ],
+      [
+        "TODO",
+        "a3_sluice_b"
+      ],
+      [
+        "TODO",
+        "a3_sluice_c"
+      ],
+      [
+        "TODO",
+        "e_a3_sluice_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_sluice_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_mills"
+      ],
+      [
+        "TODO 2",
+        "e_a3_sluice_2"
+      ]
+    ]
+  },
+  {
+    "i": "a3_sluice_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_mills"
+      ]
+    ]
+  },
+  {
+    "i": "a3_sluice_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_mills"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_sluice_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_sluice_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|negative|TODO"
+  },
+  {
+    "i": "a3_mills",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a3_mills_a"
+      ],
+      [
+        "TODO",
+        "a3_mills_b"
+      ],
+      [
+        "TODO",
+        "a3_mills_c"
+      ],
+      [
+        "TODO",
+        "e_a3_mills_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_mills_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_quiet"
+      ],
+      [
+        "TODO 2",
+        "e_a3_mills_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a3_mills_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_quiet"
+      ]
+    ]
+  },
+  {
+    "i": "a3_mills_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_quiet"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_mills_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_mills_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a3_quiet",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_quiet_a"
+      ],
+      [
+        "TODO",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "a3_quiet_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor+1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "a3_wardens",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_wardens_a"
+      ],
+      [
+        "TODO",
+        "a3_wardens_b"
+      ],
+      [
+        "TODO",
+        "e_a3_wardens_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_wardens_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_gibbets"
+      ]
+    ]
+  },
+  {
+    "i": "a3_wardens_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_gibbets"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_wardens_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a3_gibbets",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_gibbets_a"
+      ],
+      [
+        "TODO",
+        "a3_kennels"
+      ],
+      [
+        "TODO",
+        "e_a3_gibbets_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_gibbets_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_kennels"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_gibbets_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a3_kennels",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a3_kennels_a"
+      ],
+      [
+        "TODO",
+        "a3_kennels_b"
+      ],
+      [
+        "TODO",
+        "a3_kennels_c"
+      ],
+      [
+        "TODO",
+        "e_a3_kennels_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_kennels_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_cages"
+      ],
+      [
+        "TODO 2",
+        "e_a3_kennels_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a3_kennels_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_cages"
+      ]
+    ]
+  },
+  {
+    "i": "a3_kennels_c",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_cages"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_kennels_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_kennels_2",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a3_cages",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "TODO",
+        "a3_cages_a"
+      ],
+      [
+        "TODO",
+        "a3_cages_b"
+      ],
+      [
+        "TODO",
+        "e_a3_cages_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_cages_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "a3_cages_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor-1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_cages_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "death|negative|TODO",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a3_baths",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_baths_a"
+      ],
+      [
+        "TODO",
+        "a3_surgeon"
+      ]
+    ]
+  },
+  {
+    "i": "a3_baths_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "vigor+1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_surgeon"
+      ]
+    ]
+  },
+  {
+    "i": "a3_surgeon",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_surgeon_a"
+      ],
+      [
+        "TODO",
+        "a3_surgeon_b"
+      ],
+      [
+        "TODO",
+        "e_a3_surgeon_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_surgeon_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_beds"
+      ]
+    ]
+  },
+  {
+    "i": "a3_surgeon_b",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "x": "renown+1",
+    "c": [
+      [
+        "TODO 1",
+        "a3_beds"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_surgeon_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "capture|negative|TODO"
+  },
+  {
+    "i": "a3_beds",
+    "r": "choice",
+    "w": 62,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a3_beds_a"
+      ],
+      [
+        "TODO",
+        "a3_wyrmgate"
+      ],
+      [
+        "TODO",
+        "e_a3_beds_1"
+      ]
+    ]
+  },
+  {
+    "i": "a3_beds_a",
+    "r": "rising",
+    "w": 55,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO 1",
+        "a3_wyrmgate"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_beds_1",
+    "r": "failure",
+    "w": 58,
+    "b": "TODO",
+    "e": "setback|neutral|TODO"
+  },
+  {
+    "i": "a3_wyrmgate",
+    "r": "climax",
+    "w": 80,
+    "b": "TODO",
+    "c": [
+      [
+        "TODO",
+        "a4_flank"
+      ],
+      [
+        "TODO",
+        "a4_scalewall"
+      ],
+      [
+        "TODO",
+        "a4_couriers"
+      ]
+    ]
+  }
+]

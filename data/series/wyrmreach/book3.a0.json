@@ -1,0 +1,1417 @@
+[
+  {
+    "i": "n_start",
+    "r": "setup",
+    "w": 75,
+    "b": "Sarnhold in the thaw, the Warden fortress at the foot of the spine, with two of the Compact's nine irons in the captain's pack and everybody in the district waiting to see who gets them",
+    "c": [
+      [
+        "Report to the Warden Commandant.",
+        "a0_gatehouse"
+      ],
+      [
+        "Answer the Reckoning legate's summons.",
+        "a0_legate"
+      ],
+      [
+        "Hear out the Sable Guild at the guildhall.",
+        "a0_guildhall"
+      ],
+      [
+        "Walk the thaw market first.",
+        "a0_market"
+      ],
+      [
+        "See to the company's own roster.",
+        "a0_roster"
+      ],
+      [
+        "Go straight to the stables and the road out.",
+        "a0_stables"
+      ],
+      [
+        "Ride out now, before anybody puts a hand on the pack.",
+        "e_n_start_1"
+      ]
+    ]
+  },
+  {
+    "i": "e_n_start_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the company riding out of Sarnhold before anybody is seen, west and downhill with the irons still in the pack, which is a decision that unmakes a charter in a single afternoon",
+    "e": "setback|neutral|Nobody's Company"
+  },
+  {
+    "i": "a0_gatehouse",
+    "r": "choice",
+    "w": 62,
+    "b": "Sarnhold's gatehouse under a provost's inspection: three irons expected in the pack and two found, a charter read twice, and a queue of Guild carters watching the whole performance",
+    "c": [
+      [
+        "Declare the irons and let the provost seal them.",
+        "a0_gatehouse_a"
+      ],
+      [
+        "Declare the charter and nothing else.",
+        "a0_gatehouse_b"
+      ],
+      [
+        "Let Nyre answer as a sister of the Reckoning.",
+        "a0_gatehouse_c"
+      ],
+      [
+        "Walk past the provost on the charter's authority.",
+        "e_a0_gatehouse_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_gatehouse_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the irons declared, sealed under a provost's wax and signed for, which means the fortress now knows exactly what the company is carrying and so does everybody in the queue behind it",
+    "c": [
+      [
+        "Go up to the Commandant.",
+        "a0_commandant"
+      ],
+      [
+        "Ask for the seals back before you go anywhere.",
+        "e_a0_gatehouse_2"
+      ]
+    ]
+  },
+  {
+    "i": "a0_gatehouse_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the charter presented and nothing volunteered, the provost reading it three times looking for a reason to be difficult and failing to find one",
+    "c": [
+      [
+        "Go up to the Commandant.",
+        "a0_commandant"
+      ]
+    ]
+  },
+  {
+    "i": "a0_gatehouse_c",
+    "r": "rising",
+    "w": 55,
+    "b": "Nyre answering in her order's form, which the provost has to accept and clearly resents accepting, and which puts the Reckoning's name on the company's arrival before the Wardens have it",
+    "c": [
+      [
+        "Go up to the Commandant.",
+        "a0_commandant"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_gatehouse_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a chartered company walking past a provost's inspection on its own authority, and a fortness gate crew that has been drilled for exactly that, and a pack cut off a shoulder in the archway by somebody who knew where the irons were",
+    "e": "death|negative|Taken at the Gate",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a0_gatehouse_2",
+    "r": "failure",
+    "w": 58,
+    "b": "the provost's seals demanded back an hour after they were given, which is a confession of second thoughts in front of witnesses, and a charter suspended pending an inquiry that will sit in the spring",
+    "e": "setback|negative|Second Thoughts, in Writing"
+  },
+  {
+    "i": "a0_commandant",
+    "r": "choice",
+    "w": 62,
+    "b": "Commandant Iver Thane, thirty years on the spine, who has read Orr's letter twice and does not believe the parts of it that are true, and who wants to know what the company thinks it is going to do about a third door",
+    "c": [
+      [
+        "Tell him everything, in order, from Gallowmere.",
+        "a0_commandant_a"
+      ],
+      [
+        "Tell him what he needs to act on and no more.",
+        "a0_commandant_b"
+      ],
+      [
+        "Refuse to answer until the irons are receipted.",
+        "e_a0_commandant_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_commandant_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the whole account given in order across a map table, two hours of it, and Thane listening without once interrupting and then asking for the last part again with the dates",
+    "c": [
+      [
+        "Take his orders.",
+        "a0_orders"
+      ]
+    ]
+  },
+  {
+    "i": "a0_commandant_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the account given as a soldier gives it: what is shut, what is loose, what is needed, and how long the company has, which is the only version Thane can act on before the thaw",
+    "x": "renown+1",
+    "c": [
+      [
+        "Take his orders.",
+        "a0_orders"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_commandant_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a Commandant who decides that a company carrying two irons is evidence rather than a company, and a fortress that has cells for evidence, and a spring inquiry to be held once the passes clear",
+    "e": "capture|negative|Evidence, Not a Company"
+  },
+  {
+    "i": "a0_orders",
+    "r": "choice",
+    "w": 62,
+    "b": "Thane's orders and the spine charts spread beside them: eleven lamp stations up the Ninefold Road, the crown gate of Kar Ashen at the top, and a pencil line where his last patrol turned back",
+    "c": [
+      [
+        "Read the charts with Vurma before you accept anything.",
+        "a0_orders_a"
+      ],
+      [
+        "Take the orders as written and go.",
+        "a0_armoury"
+      ],
+      [
+        "Ask for a Warden column to come with you.",
+        "e_a0_orders_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_orders_a",
+    "r": "rising",
+    "w": 55,
+    "b": "an hour with the charts and a dwarf pathfinder, which turns eleven stations into eleven questions and gets nine of them answered by a man who has walked it",
+    "x": "renown+1",
+    "c": [
+      [
+        "Draw kit from the armoury.",
+        "a0_armoury"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_orders_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a Warden column requested, refused, and minuted, because Thane has four hundred men for two hundred miles of spine and a written reason for every one of them, and the company left standing in a map room being thanked",
+    "e": "setback|neutral|A Column, Refused"
+  },
+  {
+    "i": "a0_armoury",
+    "r": "choice",
+    "w": 62,
+    "b": "the fortress armoury with a quartermaster who has been told to be generous and does not enjoy it: crampons, spine rope, pitch, dwarf candles, a moor-iron pick, and a warded haft nobody will explain",
+    "c": [
+      [
+        "Draw the climbing kit and the rope.",
+        "a0_armoury_a"
+      ],
+      [
+        "Draw the warded haft and the pick.",
+        "a0_armoury_b"
+      ],
+      [
+        "Draw nothing; the company is loaded already.",
+        "a0_road"
+      ],
+      [
+        "Draw everything and let him argue about it later.",
+        "e_a0_armoury_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_armoury_a",
+    "r": "rising",
+    "w": 55,
+    "b": "spine rope, crampons and forty candles, signed for in triplicate, which is the difference between the ice gallery being a route and being an obituary",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "a0_armoury_b",
+    "r": "rising",
+    "w": 55,
+    "b": "a moor-iron pick and a warded haft off the back rack, cold in the hand, with a Warden's initials filed off the ferrule and the quartermaster looking at the wall while he books them out",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_armoury_1",
+    "r": "failure",
+    "w": 58,
+    "b": "everything drawn and nothing signed for, a quartermaster's complaint sworn before the provost, and a charter that survives the accusation but not the delay, because the crown door is nine days off and the inquiry is eleven",
+    "e": "death|negative|Everything, Unsigned",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_legate",
+    "r": "choice",
+    "w": 62,
+    "b": "Prior Absolon Rell of the Reckoning's mother house, down from the south with a coach and a writ, who wants the two irons placed in his order's custody today and has the paperwork already drawn",
+    "c": [
+      [
+        "Hear the writ out in full.",
+        "a0_legate_a"
+      ],
+      [
+        "Tell him the irons are Warden property and watch his face.",
+        "a0_legate_b"
+      ],
+      [
+        "Take the writ away to read it properly, and do not come back.",
+        "e_a0_legate_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_legate_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the writ read out in a chapel with the company standing: custody, safekeeping, and a clause about the count that Nyre stops him in the middle of because she has read it twice already",
+    "c": [
+      [
+        "Go through to the chapel.",
+        "a0_chapel"
+      ]
+    ]
+  },
+  {
+    "i": "a0_legate_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the refusal given plainly to a mother-house legate in front of four novices, which costs the company its welcome in the chapter house and buys it something with the Wardens by evening",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go through to the chapel.",
+        "a0_chapel"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_legate_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a legate's escort, a receipt, and two irons in a coach with the Reckoning's seal on the door, and a company standing in a fortress yard holding a piece of paper and no leverage at all",
+    "e": "capture|negative|Into the Legate's Custody"
+  },
+  {
+    "i": "a0_chapel",
+    "r": "choice",
+    "w": 62,
+    "b": "Sarnhold's chapel, which has a tally on its east wall in groups of nine that nobody local can account for, and a chaplain who has been counting them for six years without asking why",
+    "c": [
+      [
+        "Read the east wall properly.",
+        "a0_chapel_a"
+      ],
+      [
+        "Leave it; you know what it says.",
+        "a0_relics"
+      ],
+      [
+        "Ask the chaplain what he has been counting.",
+        "e_a0_chapel_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_chapel_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the east wall read: nine hundred years of groups, the last group with eight strokes cut and a ninth begun, and the mortar dust of the ninth stroke still on the floor beneath it",
+    "c": [
+      [
+        "Go and look at the reliquary.",
+        "a0_relics"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_chapel_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a chaplain asked the question he has spent six years not asking, and answering it in front of his own congregation, and a bell rung that empties the fortress chapel and fills the provost's office instead",
+    "e": "setback|neutral|The Question in the Chapel"
+  },
+  {
+    "i": "a0_relics",
+    "r": "choice",
+    "w": 62,
+    "b": "the chapel reliquary: three tally-irons on velvet under glass, labelled as relics of the founding, and a fourth setting empty with its label still in place",
+    "c": [
+      [
+        "Take a tally-iron off the velvet.",
+        "a0_relics_a"
+      ],
+      [
+        "Read the labels and take nothing.",
+        "a0_relics_b"
+      ],
+      [
+        "Leave the reliquary alone entirely.",
+        "a0_novices"
+      ],
+      [
+        "Break the glass; the fourth setting explains itself.",
+        "e_a0_relics_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_relics_a",
+    "r": "rising",
+    "w": 55,
+    "b": "one tally-iron off the velvet, cold as well-water in the hand and considerably heavier than a relic ought to be, and a fourth setting that now has two empty places in a row",
+    "c": [
+      [
+        "Go on to the novices' dormitory.",
+        "a0_novices"
+      ]
+    ]
+  },
+  {
+    "i": "a0_relics_b",
+    "r": "rising",
+    "w": 55,
+    "b": "four labels read in a chaplain's careful hand, three of them naming founding wardens and the fourth naming nobody at all, with a date on it that is this spring",
+    "c": [
+      [
+        "Go on to the novices' dormitory.",
+        "a0_novices"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_relics_1",
+    "r": "failure",
+    "w": 58,
+    "b": "glass broken in a Warden chapel to settle a question about a label, and the answer arriving from the direction of the empty setting rather than the glass, in a voice that uses the captain's own name and the correct rank",
+    "e": "death|negative|The Fourth Setting",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_novices",
+    "r": "choice",
+    "w": 62,
+    "b": "the novices' dormitory where Rell's four juniors sleep, and a jug of hot wine set out for the company's arrival with four cups poured and a fifth standing dry",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Refuse the wine and say why.",
+        "a0_novices_a"
+      ],
+      [
+        "Drink it and watch which of them drinks too.",
+        "a0_novices_b"
+      ],
+      [
+        "Take the jug and pour it out the window.",
+        "e_a0_novices_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_novices_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the wine refused in a room of novices who look relieved rather than insulted, and one of them following the company into the corridor to say four words about the fifth cup",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "a0_novices_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the wine drunk, and the night that follows it: eleven hours of sleep nobody chose, waking with the kit gone through and the seals on the pack broken and re-set by somebody patient",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_novices_1",
+    "r": "failure",
+    "w": 58,
+    "b": "the jug poured out of a dormitory window in front of four novices of the mother house, and Rell's complaint reaching the provost before the wine reaches the yard, and the company's charter suspended for the length of an inquiry",
+    "e": "death|negative|Out the Window",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_guildhall",
+    "r": "choice",
+    "w": 62,
+    "b": "the Sable Guild hall, where Bruk Sunder has a contract already drawn: the Guild will underwrite the whole expedition for the charts, the hours, and first claim on the crown road",
+    "c": [
+      [
+        "Hear the offer out and let him finish.",
+        "a0_guildhall_a"
+      ],
+      [
+        "Tell him the road is not the company's to sell.",
+        "a0_guildhall_b"
+      ],
+      [
+        "Sign the underwriting and take the Guild's money.",
+        "e_a0_guildhall_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_guildhall_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the offer heard out in full, which takes a quarter of an hour and includes three concessions Sunder did not have to make, and which tells you exactly how much the Guild already knows",
+    "c": [
+      [
+        "Go through to the chart room.",
+        "a0_charts"
+      ]
+    ]
+  },
+  {
+    "i": "a0_guildhall_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the refusal given across a guildhall table, and Sunder taking it well, which is worse than taking it badly, because it means he has a second plan and has had it for a while",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go through to the chart room.",
+        "a0_charts"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_guildhall_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a Guild contract signed for underwriting and shares, and a delving company on the road within the week with the company's own charts, and a Warden charter that now belongs to whoever holds the paper",
+    "e": "capture|negative|Underwritten"
+  },
+  {
+    "i": "a0_charts",
+    "r": "choice",
+    "w": 62,
+    "b": "the Guild chart room, which has three surveys of the crown road that the Wardens do not have, one of them dated this spring and initialled by a surveyor who did not come back",
+    "c": [
+      [
+        "Copy the spring survey while Sunder is out.",
+        "a0_charts_a"
+      ],
+      [
+        "Leave the charts; they are not yours yet.",
+        "a0_forge"
+      ],
+      [
+        "Take the whole spring survey off the wall.",
+        "e_a0_charts_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_charts_a",
+    "r": "rising",
+    "w": 55,
+    "b": "an hour of copying in Ilsabet's shorthand with Vurma reading elevations aloud, and a spring survey that shows the crown gate closed and two ways in that the Wardens have never mapped",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go down to the forge.",
+        "a0_forge"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_charts_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a spring survey taken off a guildhall wall, missed within the hour, and a Guild grievance sworn at the provost's desk that ends with the company's charts impounded and its charter under review",
+    "e": "setback|neutral|Off the Wall"
+  },
+  {
+    "i": "a0_forge",
+    "r": "choice",
+    "w": 62,
+    "b": "the Guild forge, still hot at the ninth hour, where a dwarf smith will cut anything for coin and asks no questions at all about gauge, length, or why a company wants a blank in that particular size",
+    "c": [
+      [
+        "Have a blank cut to the founding gauge.",
+        "a0_forge_a"
+      ],
+      [
+        "Have the pick re-tempered and the haft rewarded.",
+        "a0_forge_b"
+      ],
+      [
+        "Buy nothing here; the Guild sells twice.",
+        "a0_delvers"
+      ],
+      [
+        "Have the two irons copied while you wait.",
+        "e_a0_forge_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_forge_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a blank cut to the founding gauge and wrapped in salt-cloth, which is either the most useful thing in the pack or a confession waiting to be found in it",
+    "c": [
+      [
+        "Go through to the delvers' yard.",
+        "a0_delvers"
+      ]
+    ]
+  },
+  {
+    "i": "a0_forge_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the pick re-tempered and the haft rewarded properly for the first time since Gallowmere, which costs a day's fee and buys the company back the difference in the first ice gallery",
+    "c": [
+      [
+        "Go through to the delvers' yard.",
+        "a0_delvers"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_forge_1",
+    "r": "failure",
+    "w": 58,
+    "b": "two of the Compact's irons handed to a Guild smith to be copied, and copies made, and originals returned, and nobody in the company able to say afterwards with any certainty which pair went back into the pack",
+    "e": "death|negative|Copied, While You Wait",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_delvers",
+    "r": "choice",
+    "w": 62,
+    "b": "the delvers' yard, where four Sable Guild hands have opinions about surface companies holding dwarf irons, and where Vurma Kell is recognised by two of them as the pathfinder their foreman burned",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "Let Dellach settle it in the yard.",
+        "a0_delvers_a"
+      ],
+      [
+        "Buy the yard a cask and let Vurma talk.",
+        "a0_delvers_b"
+      ],
+      [
+        "Put the Guild's own oath to them, in dwarf.",
+        "a0_delvers_c"
+      ],
+      [
+        "Draw steel in a Guild yard.",
+        "e_a0_delvers_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_delvers_a",
+    "r": "rising",
+    "w": 55,
+    "b": "four exchanges, a broken trestle, and a delver sitting down in the slush with his opinion revised, and the yard foreman calling it fair because the alternative is a provost",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ],
+      [
+        "Press it further while you are winning.",
+        "e_a0_delvers_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a0_delvers_b",
+    "r": "rising",
+    "w": 55,
+    "b": "a cask bought and Vurma given the floor for eleven minutes, at the end of which the yard knows what its own foreman burned and two of the four will not look at him again",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "a0_delvers_c",
+    "r": "rising",
+    "w": 55,
+    "b": "the Guild's own founding oath recited back to them in dwarf by a hedge-thaumaturge with a southern accent, which stops the yard dead and earns the company a guide it did not ask for",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_delvers_1",
+    "r": "failure",
+    "w": 58,
+    "b": "steel drawn in a Guild yard inside a Warden fortress, which is two jurisdictions at once, and a company in the provost's cells by the ninth hour with its charter and its irons both impounded",
+    "e": "death|negative|Two Jurisdictions",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a0_delvers_2",
+    "r": "failure",
+    "w": 58,
+    "b": "a yard fight pressed past the point where it was won, which turns four delvers into a Guild grievance and a Guild grievance into a knife under a rib in a slush-filled yard nobody was watching",
+    "e": "death|negative|Pressed Too Far",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_market",
+    "r": "choice",
+    "w": 62,
+    "b": "the thaw market at Sarnhold, mud to the ankle, where the whole spine is selling what it has: rope, salt beef, dwarf candles, a stall of tally-irons labelled as scrap, and a boy selling lamp oil by the ninth",
+    "c": [
+      [
+        "Buy the stall's tally-irons as scrap.",
+        "a0_market_a"
+      ],
+      [
+        "Buy salt, oil and beef for a month.",
+        "a0_market_b"
+      ],
+      [
+        "Buy nothing and walk on to the taproom.",
+        "a0_taproom"
+      ],
+      [
+        "Ask the boy who taught him to sell by the ninth.",
+        "e_a0_market_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_market_a",
+    "r": "rising",
+    "w": 55,
+    "b": "nine tally-irons bought as scrap for the price of scrap, four of them founding gauge, which Ilsabet spreads on a bed that night and sorts into two piles without explaining either",
+    "c": [
+      [
+        "Go on to the taproom.",
+        "a0_taproom"
+      ]
+    ]
+  },
+  {
+    "i": "a0_market_b",
+    "r": "rising",
+    "w": 55,
+    "b": "a month of salt, oil and beef loaded on the barrow, which is the least interesting purchase anybody makes in Sarnhold and the one that decides the ice gallery",
+    "c": [
+      [
+        "Go on to the taproom.",
+        "a0_taproom"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_market_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a boy asked who taught him to sell oil by the ninth, and answering honestly, and the two men who have been standing behind his stall all morning deciding that the question is worth following up in an alley",
+    "e": "death|negative|Sold by the Ninth",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_taproom",
+    "r": "choice",
+    "w": 62,
+    "b": "the Hooked Lamp, full of Guild carters and Warden off-duty and one table of Rooks in charter colours, where the story of Kar Duhn is being told badly by three people who were not there",
+    "c": [
+      [
+        "Correct the story, quietly, with names.",
+        "a0_taproom_a"
+      ],
+      [
+        "Buy the room a round and let the story run.",
+        "a0_taproom_b"
+      ],
+      [
+        "Take the argument outside with whoever is telling it.",
+        "e_a0_taproom_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_taproom_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the story corrected with names and dates by somebody who was there, which the room does not enjoy and does not forget, and which reaches Thane's clerk before the company reaches the door",
+    "c": [
+      [
+        "Go over to the Rooks' table.",
+        "a0_brawl"
+      ]
+    ]
+  },
+  {
+    "i": "a0_taproom_b",
+    "r": "rising",
+    "w": 55,
+    "b": "a round bought and the bad version left standing, which costs nothing and earns the room's opinion, and which is the first sensible thing anybody has done in Sarnhold today",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go over to the Rooks' table.",
+        "a0_brawl"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_taproom_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a taproom argument about Kar Duhn that becomes an argument about the irons, in a room with a Rooks table in it, and a company waking in a provost's cell with the pack inventoried by somebody else",
+    "e": "capture|negative|The Hooked Lamp"
+  },
+  {
+    "i": "a0_brawl",
+    "r": "choice",
+    "w": 62,
+    "b": "the Rooks' table: Vasse Corrow's people in charter colours with a lieutenant who was at Hollowmarch and lost four there, and who wants the company to explain, out loud, whose orders those four died under",
+    "s": [
+      "peril",
+      "conflict"
+    ],
+    "c": [
+      [
+        "Let him have it out with fists in the yard.",
+        "a0_brawl_a"
+      ],
+      [
+        "Answer the question honestly, in front of the room.",
+        "a0_brawl_b"
+      ],
+      [
+        "Buy the four dead a round and name them.",
+        "a0_brawl_c"
+      ],
+      [
+        "Tell him to take it to his captain.",
+        "e_a0_brawl_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_brawl_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a yard fight against a man with a real grievance, which is the worst kind, and which the company wins on points and loses on everything else, and Nyre binding two sets of knuckles afterwards",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Take the bunkroom.",
+        "a0_bunks"
+      ],
+      [
+        "Keep going until he stops getting up.",
+        "e_a0_brawl_2"
+      ]
+    ],
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "a0_brawl_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the question answered honestly in front of a full room: whose orders, what they were, and what the company did with what it learned, and a Rooks lieutenant listening all the way to the end",
+    "c": [
+      [
+        "Take the bunkroom.",
+        "a0_bunks"
+      ]
+    ]
+  },
+  {
+    "i": "a0_brawl_c",
+    "r": "rising",
+    "w": 55,
+    "b": "four dead named aloud with a round bought for each, which is old free-company form and older than the Rooks, and which the lieutenant accepts because there is no version of him that could refuse it",
+    "c": [
+      [
+        "Take the bunkroom.",
+        "a0_bunks"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_brawl_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a grievance sent up to Corrow instead of settled, and Corrow arriving in Sarnhold two days later with a chartered company and a written complaint, and an inquiry that keeps everybody off the spine until the passes close",
+    "e": "death|negative|Take It to Your Captain",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a0_brawl_2",
+    "r": "failure",
+    "w": 58,
+    "b": "a yard fight continued past the point of decision, in slush, in front of Wardens, and a Rooks lieutenant who does not get up again, and a provost who has no discretion at all in the matter of killings inside a fortress",
+    "e": "death|negative|Until He Stops Getting Up",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_bunks",
+    "r": "choice",
+    "w": 62,
+    "b": "the fortress bunkroom, warm from the kitchen flue, with the door barred and the pack under the captain's head, and a whole night available for the first time since the Deep Road",
+    "c": [
+      [
+        "Take the full night and let the watch go.",
+        "a0_bunks_a"
+      ],
+      [
+        "Sleep in shifts anyway; the pack is the pack.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "a0_bunks_a",
+    "r": "rising",
+    "w": 55,
+    "b": "one whole night on a straw mattress in a warm stone room, boots off, nobody on watch, and a company that wakes able to do the thing it has come here to do",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "a0_roster",
+    "r": "choice",
+    "w": 62,
+    "b": "the company's own business in a borrowed office: two hands short since Hollowmarch, forty applicants in the yard, and Ossa Vend's cousin at the front of them with her own lamp-pole",
+    "c": [
+      [
+        "Take Ossa's cousin and one Warden veteran.",
+        "a0_roster_a"
+      ],
+      [
+        "Take nobody; five who know is better than seven who do not.",
+        "a0_roster_b"
+      ],
+      [
+        "Hire fast; take the first six who can carry.",
+        "e_a0_roster_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_roster_a",
+    "r": "rising",
+    "w": 55,
+    "b": "Mira Vend hired at a half share with her own pole, and a Warden veteran called Hask who has been up the Ninefold Road twice and does not pretend to have enjoyed either",
+    "c": [
+      [
+        "See to the kit.",
+        "a0_kit"
+      ]
+    ]
+  },
+  {
+    "i": "a0_roster_b",
+    "r": "rising",
+    "w": 55,
+    "b": "forty applicants refused in one sentence each, which takes an hour and is the correct decision, and a company that goes up the spine at exactly the strength that came down off Hollowmarch",
+    "x": "renown+1",
+    "c": [
+      [
+        "See to the kit.",
+        "a0_kit"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_roster_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a hiring yard worked through carelessly, and one of the forty turning out to be a Reckoning novice under instruction with a writ in his boot, and a company that discovers the writ in the ice gallery rather than the yard",
+    "e": "capture|negative|One of the Forty"
+  },
+  {
+    "i": "a0_kit",
+    "r": "choice",
+    "w": 62,
+    "b": "the company's kit spread on a fortress floor for the first honest inventory since Gallowmere: two irons, three books, a tally-die's fragments, and rope that has been up two mountains too many",
+    "c": [
+      [
+        "Replace the rope and the reservoirs.",
+        "a0_kit_a"
+      ],
+      [
+        "Split the irons between two packs.",
+        "a0_kit_b"
+      ],
+      [
+        "Load out as you are; there is no time.",
+        "a0_night"
+      ],
+      [
+        "Leave one iron with the fortress strongbox.",
+        "e_a0_kit_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_kit_a",
+    "r": "rising",
+    "w": 55,
+    "b": "new spine rope, two clean reservoirs and a spare wick roll, which is eleven crowns and the difference between the crevasse being a crossing and being a paragraph in a report",
+    "c": [
+      [
+        "Take the night watch.",
+        "a0_night"
+      ]
+    ]
+  },
+  {
+    "i": "a0_kit_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the two irons split between two packs on Ilsabet's insistence, which halves the loss if one goes and doubles the number of people who can be robbed of one, and which she argues for anyway",
+    "c": [
+      [
+        "Take the night watch.",
+        "a0_night"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_kit_1",
+    "r": "failure",
+    "w": 58,
+    "b": "one iron left in a fortress strongbox for safekeeping, receipted properly, and a strongbox opened on the ninth night by two Wardens whose cloaks did not fit them, and a receipt that is now the only iron the company owns",
+    "e": "death|negative|Left in the Strongbox",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_night",
+    "r": "choice",
+    "w": 62,
+    "b": "the last night in Sarnhold, with the spine standing over the fortress in moonlight and the Ninefold Road visible as a thread of lamps going up into cloud",
+    "c": [
+      [
+        "Sleep. The road can have you in the morning.",
+        "a0_night_a"
+      ],
+      [
+        "Sit up with the charts and the company.",
+        "a0_council"
+      ]
+    ]
+  },
+  {
+    "i": "a0_night_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a full night's sleep taken deliberately by five people who have learned the cost of not taking one, and a morning in which everybody's hands work",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Hold the company council.",
+        "a0_council"
+      ]
+    ]
+  },
+  {
+    "i": "a0_council",
+    "r": "choice",
+    "w": 62,
+    "b": "the company council in a fortress stable, all voices, on the only question left: how the Ninth Sword goes up a road that has eleven counted stations and a closed gate at the top",
+    "c": [
+      [
+        "Go up openly, on the charter, station by station.",
+        "a0_council_a"
+      ],
+      [
+        "Go up as Guild carters with the train.",
+        "a0_council_b"
+      ],
+      [
+        "Go up by the smugglers' adit and skip the stations.",
+        "a0_council_c"
+      ],
+      [
+        "Go up split, in two parties, one day apart.",
+        "e_a0_council_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_council_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the decision to go up openly on the charter, station by station, signing the book at each, which is slow and legal and gives the road nine days' notice of the company's arrival",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ],
+      [
+        "Send word ahead to the stations that you are coming.",
+        "e_a0_council_2"
+      ]
+    ]
+  },
+  {
+    "i": "a0_council_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the decision to go up inside the Guild train as carters, which puts forty witnesses around the company and forty pairs of hands near the pack",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "a0_council_c",
+    "r": "rising",
+    "w": 55,
+    "b": "the decision to split the company one day apart, which is what Thane would advise and what nobody in the company likes, and which means somebody walks the ice gallery without Ossa",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_council_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a council that runs until the Guild train has gone, the weather has turned and the crown door's nine days have become four, and a company still arguing in a stable about which way to walk",
+    "e": "death|negative|Still Arguing",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a0_council_2",
+    "r": "failure",
+    "w": 58,
+    "b": "word sent ahead to eleven counted stations that a chartered company is coming up on the charter, station by station, which is courteous, correct, and read by exactly the wrong clerk at the fourth station",
+    "e": "setback|negative|Word Sent Ahead"
+  },
+  {
+    "i": "a0_stables",
+    "r": "choice",
+    "w": 62,
+    "b": "the fortress stables in the thaw: no horses for the spine above the fourth station, one hand-barrow with a broken shaft, and a Guild train loading in the next yard with room for two more",
+    "c": [
+      [
+        "Take the barrow and mend the shaft yourself.",
+        "a0_stables_a"
+      ],
+      [
+        "Buy two mules as far as the fourth station.",
+        "a0_stables_b"
+      ],
+      [
+        "Carry everything and take no wheels at all.",
+        "a0_wagons"
+      ],
+      [
+        "Take a place on the Guild train.",
+        "e_a0_stables_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_stables_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a barrow shaft mended with a spliced ash haft and wire, which Vurma does in an hour and pronounces better than the original, in the tone she uses for things she intends to be asked about later",
+    "c": [
+      [
+        "Go and look at the wagons.",
+        "a0_wagons"
+      ]
+    ]
+  },
+  {
+    "i": "a0_stables_b",
+    "r": "rising",
+    "w": 55,
+    "b": "two mules as far as the fourth station, hired with a boy to bring them back down, which buys the company four days of not carrying and costs it four days of not being quiet",
+    "c": [
+      [
+        "Go and look at the wagons.",
+        "a0_wagons"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_stables_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a place taken on the Guild train, and the train's fourth wagon turning out to be loaded with sealed crates in the founding gauge, and the company discovering at the second station what it has been helping to haul",
+    "e": "death|negative|The Fourth Wagon",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_wagons",
+    "r": "choice",
+    "w": 62,
+    "b": "the Guild train loading for the crown road: eleven wagons, forty hands, and a wagon-master who cannot account for the manifest on the fourth wagon and has stopped pretending to try",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Read the manifest properly with Nyre.",
+        "a0_wagons_a"
+      ],
+      [
+        "Break the fourth wagon's seal and look.",
+        "a0_wagons_b"
+      ],
+      [
+        "Leave the Guild's business to the Guild.",
+        "e_a0_wagons_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_wagons_a",
+    "r": "rising",
+    "w": 55,
+    "b": "a manifest read line by line by a Reckoning sister, which finds nine entries in a hand she has now seen in three fortresses and one entry that has no weight recorded against it at all",
+    "c": [
+      [
+        "Go and find the scouts.",
+        "a0_scouts"
+      ]
+    ]
+  },
+  {
+    "i": "a0_wagons_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the fourth wagon's seal broken in a loading yard, which costs a fight, a fine and the Guild's cooperation for the whole spine, and which shows the company nine crates of founding-gauge blanks",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go and find the scouts.",
+        "a0_scouts"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_wagons_1",
+    "r": "failure",
+    "w": 58,
+    "b": "Guild business left to the Guild, and the fourth wagon going up the Ninefold Road a day ahead of the company, and everything that happens at the fourth station afterwards happening because of what was in it",
+    "e": "death|negative|The Guild's Business",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "a0_scouts",
+    "r": "choice",
+    "w": 62,
+    "b": "Thane's road scouts in the map room, three of them, who have between them walked to the ninth station and back this year and will not go past it for any money the Wardens have",
+    "c": [
+      [
+        "Ask them what is at the ninth station.",
+        "a0_scouts_a"
+      ],
+      [
+        "Ask them for the way in that is not the gate.",
+        "a0_scouts_b"
+      ],
+      [
+        "Press the one who has been past the ninth station.",
+        "e_a0_scouts_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_scouts_a",
+    "r": "rising",
+    "w": 55,
+    "b": "the ninth station described by three people who have seen it: lamps lit two hours early, a count that runs backwards, and a station book signed every day in the same hand since autumn",
+    "c": [
+      [
+        "Go and write your letters.",
+        "a0_farewell"
+      ]
+    ]
+  },
+  {
+    "i": "a0_scouts_b",
+    "r": "rising",
+    "w": 55,
+    "b": "the way in that is not the gate, given reluctantly and drawn on a slate: the foundry chimney at the outer wall, ninety feet, staples at the bends, and a warning about the ninth hour",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go and write your letters.",
+        "a0_farewell"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_scouts_1",
+    "r": "failure",
+    "w": 58,
+    "b": "a scout pressed for a route he has already refused twice, in front of his own officer, and a company that gets the route and also gets a Warden complaint that reaches the provost by evening",
+    "e": "capture|negative|Pressed a Third Time"
+  },
+  {
+    "i": "a0_farewell",
+    "r": "choice",
+    "w": 62,
+    "b": "the last hour before the road: letters written in a fortress hall to be held against the company's return, which is a free-company custom and has never once been optional",
+    "c": [
+      [
+        "Write the letters and hand them in.",
+        "a0_farewell_a"
+      ],
+      [
+        "Do not write them. You are coming back.",
+        "a0_road"
+      ],
+      [
+        "Write one, and read it aloud to the company.",
+        "e_a0_farewell_1"
+      ]
+    ]
+  },
+  {
+    "i": "a0_farewell_a",
+    "r": "rising",
+    "w": 55,
+    "b": "five letters written and handed to a fortress clerk against the company's return, sealed, dated, and entered in a book that has four hundred such letters in it and eleven that were collected",
+    "c": [
+      [
+        "Take the road.",
+        "a0_road"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_farewell_1",
+    "r": "failure",
+    "w": 58,
+    "b": "one letter written and read aloud to the company in a fortress hall, which is not the custom and not survivable as morale, and a company that goes up the spine already grieving itself",
+    "e": "setback|neutral|Read Aloud"
+  },
+  {
+    "i": "a0_road",
+    "r": "climax",
+    "w": 80,
+    "b": "the foot of the Ninefold Road at first light, the spine standing over Sarnhold in cloud, eleven counted stations above and a crown gate at the top of them, and three ways off this first switchback",
+    "c": [
+      [
+        "Take the road proper, station by station.",
+        "a1_foot"
+      ],
+      [
+        "Take the ice stair up the shoulder and rejoin above.",
+        "a1_switch"
+      ],
+      [
+        "Take the smugglers' adit under the first four stations.",
+        "a1_adit"
+      ]
+    ]
+  }
+]
