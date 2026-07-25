@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.34.0] - 2026-07-25
+
+### Chores
+
+- **deps**: Update GitHub Actions
+  ([#406](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/406),
+  [`ef4346c`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/ef4346c0b09378b6da7f50681090963e6b1e5165))
+
+### Features
+
+- **frontend**: Polish the kid-surface UX flow and discoverability
+  ([#407](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/407),
+  [`93c184b`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/93c184b5964325fa9e119e038cbc4c117088c81d))
+
+
 ## [0.33.1] - 2026-07-24
 
 ### Performance Improvements
@@ -2646,6 +2661,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.34.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.33.1...v0.34.0
 [0.33.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.33.0...v0.33.1
 [0.33.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.32.2...v0.33.0
 [0.32.2]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.32.1...v0.32.2
