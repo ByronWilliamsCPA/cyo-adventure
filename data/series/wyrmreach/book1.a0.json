@@ -1,0 +1,687 @@
+[
+  {
+    "i": "n_start",
+    "r": "setup",
+    "w": 75,
+    "b": "the Ninth Sword rides into Gallowmere in freezing rain under a commission seal; a stockade town on the Barrow Moor, the Warden's tower lit, the muster yard full of rival companies, Dellach counting the competition, Nyre reading the gate notice, Kettle too quiet",
+    "c": [
+      [
+        "Report to the Warden-Marshal at once.",
+        "a0_tower"
+      ],
+      [
+        "Take the company into the Broken Wheel first.",
+        "a0_taproom"
+      ],
+      [
+        "Walk the muster yard and see who else is hiring.",
+        "a0_yard"
+      ],
+      [
+        "Let Nyre take you to the Ledger counting room.",
+        "w0_ledger"
+      ],
+      [
+        "Ask Kettle what she is not saying about the moor.",
+        "w0_kettle"
+      ]
+    ]
+  },
+  {
+    "i": "a0_tower",
+    "r": "choice",
+    "w": 60,
+    "b": "Warden-Marshal Ansel Redd lays out the commission: the winter tax-iron of the Kar Duhn garrison never came down the road, and neither did the garrison; sixty crowns for the iron and the pay-ledger both, and no Warden will go in with you",
+    "c": [
+      [
+        "Ask what actually happened to the garrison.",
+        "a0_tower_q"
+      ],
+      [
+        "Press him for better terms before you sign.",
+        "a0_haggle"
+      ],
+      [
+        "Sign it as written and be done.",
+        "a0_sign"
+      ]
+    ]
+  },
+  {
+    "i": "a0_tower_q",
+    "r": "rising",
+    "w": 50,
+    "b": "Redd's answer is thin and he knows it: two relief patrols turned back at the barrow gate for reasons neither could write down, the second came back nine men short, and the vault door was found standing open a hand's width",
+    "c": [
+      [
+        "Press him for better terms now that you know.",
+        "a0_haggle"
+      ],
+      [
+        "Sign anyway; the coin is the coin.",
+        "a0_sign"
+      ]
+    ]
+  },
+  {
+    "i": "a0_haggle",
+    "r": "choice",
+    "w": 55,
+    "b": "the haggle in a cold office: Redd has no more coin, but he has a charter, a stamped writ of salvage that would make the Ninth Sword a name instead of a hired knife, and he offers it only if you drop the hazard pay",
+    "c": [
+      [
+        "Take the charter and drop the hazard pay.",
+        "a0_charter"
+      ],
+      [
+        "Take the coin; charters do not feed anyone.",
+        "a0_sign"
+      ],
+      [
+        "Refuse the whole insult and ride south.",
+        "e_a0_insult"
+      ]
+    ]
+  },
+  {
+    "i": "a0_charter",
+    "r": "rising",
+    "w": 45,
+    "b": "the writ of salvage stamped and sanded, Redd's clerk recording the Ninth Sword by name for the first time; Dellach says nothing and stands a little straighter, Nyre notes what it cost",
+    "x": "renown+1",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_sign"
+      ]
+    ]
+  },
+  {
+    "i": "a0_sign",
+    "r": "choice",
+    "w": 55,
+    "b": "the contract signed, and Redd's last condition spoken quietly: bring back the pay-ledger even if you cannot bring back the iron, because the ledger is what the Marshal's own account will be measured against",
+    "c": [
+      [
+        "Ask him for a guide across the moor.",
+        "a0_guide"
+      ],
+      [
+        "Ask to read the garrison's last dispatch.",
+        "a0_dispatch"
+      ],
+      [
+        "Go and gather your company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_guide",
+    "r": "choice",
+    "w": 50,
+    "b": "the only guide willing is Bram Sull, a fen-runner with a drinker's hands who wants a full share and swears he has walked the dykes in fog; Kettle looks at him the way you look at weather coming",
+    "c": [
+      [
+        "Hire him out of the advance.",
+        "a0_guide_hired"
+      ],
+      [
+        "Refuse; Kettle knows the moor better than she admits.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_guide_hired",
+    "r": "rising",
+    "w": 45,
+    "b": "Bram hired and already spending his share, Dellach unimpressed, Kettle openly disgusted; the company is five now, and one of the five is a stranger who talks",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_dispatch",
+    "r": "rising",
+    "w": 55,
+    "b": "the garrison's last dispatch, water-stained, in a clerk's failing hand: routine counts, routine weather, and then a final line that is not routine at all, that the ninth hand is missing and the door will not hold at eight",
+    "c": [
+      [
+        "Take that with you and gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_taproom",
+    "r": "choice",
+    "w": 60,
+    "b": "the Broken Wheel: peat smoke, wet wool, three companies drinking on other people's commissions, a charcoal burner telling anyone who will listen about lamps moving on the moor in file, and a Rooks bravo already measuring Dellach",
+    "c": [
+      [
+        "Buy the room a round and listen.",
+        "a0_rumors"
+      ],
+      [
+        "Corner the charcoal burner about the lamps.",
+        "a0_lamps"
+      ],
+      [
+        "Get between Dellach and the Rooks bravo.",
+        "a0_brawl"
+      ],
+      [
+        "Take the company upstairs; sleep is worth more.",
+        "a0_rest"
+      ]
+    ]
+  },
+  {
+    "i": "a0_rumors",
+    "r": "choice",
+    "w": 55,
+    "b": "a round bought and the room loosening: the garrison paid its own wages nine times over on paper, a Ledger factor came up from the south twice this autumn, and nobody in Gallowmere will take a contract past the barrow gate at any price",
+    "c": [
+      [
+        "Follow up the lamps story.",
+        "a0_lamps"
+      ],
+      [
+        "You have heard enough for one night.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_lamps",
+    "r": "choice",
+    "w": 55,
+    "b": "the charcoal burner sober enough to be precise: lamps in a file of nine, always nine, moving along the old dwarf road at the same hour, and stopping at the barrow gate as if waiting to be counted in",
+    "c": [
+      [
+        "Pay him for the whole story, slowly.",
+        "a0_lamps_full"
+      ],
+      [
+        "Write him off as drink and firelight.",
+        "a0_gather"
+      ],
+      [
+        "Have him walk you out to see the lamps tonight.",
+        "e_a0_moor_night"
+      ]
+    ]
+  },
+  {
+    "i": "a0_lamps_full",
+    "r": "rising",
+    "w": 50,
+    "b": "the rest of it for two coppers: the lamps have come every ninth night since midsummer, the burner's brother followed them once, and what came back to the hut was his brother's coat, folded, with the buttons cut off",
+    "c": [
+      [
+        "Let him go and gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_brawl",
+    "r": "choice",
+    "w": 55,
+    "b": "the Rooks bravo, Corrow's man, has decided the Ninth Sword is a joke worth telling loudly; Dellach's hand is already flat on the table and the room has gone quiet enough to hear the fire",
+    "s": [
+      "conflict"
+    ],
+    "c": [
+      [
+        "Let Dellach settle it with fists.",
+        "a0_brawl_win"
+      ],
+      [
+        "Pull rank and buy the man's drink.",
+        "a0_brawl_bought"
+      ],
+      [
+        "Draw steel in a Warden town.",
+        "e_a0_gaol"
+      ]
+    ]
+  },
+  {
+    "i": "a0_brawl_win",
+    "r": "rising",
+    "w": 50,
+    "b": "three fast exchanges and the bravo folded over a bench, Dellach's knuckles split, the room's opinion of the company revised upward and its opinion of the Rooks revised down; Nyre binds the hand without comment",
+    "x": "vigor-1,renown+1",
+    "s": [
+      "conflict"
+    ],
+    "c": [
+      [
+        "Get the company upstairs before it starts again.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_brawl_bought",
+    "r": "rising",
+    "w": 50,
+    "b": "a bought drink, a hard smile, and the bravo backing off calling it courtesy; Dellach thinks you spent coin on nothing, Kettle thinks you bought the only thing worth having, which is a quiet night",
+    "c": [
+      [
+        "Take the stairs and the quiet night.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_rest",
+    "r": "rising",
+    "w": 45,
+    "b": "one night in a real bed above a warm floor, boots off, the company sleeping like paid soldiers instead of hunted ones; you wake before the bell feeling the difference in your hands",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Gather the company at first light.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_yard",
+    "r": "choice",
+    "w": 60,
+    "b": "the muster yard in the rain: two companies loading out, a Rooks banner over the best dry ground, and a handful of loose hands looking for a fourth-share, among them a woman in a salt-stained coat reading sigils off a wagon axle",
+    "c": [
+      [
+        "Talk to the woman reading sigils.",
+        "a0_ilsabet"
+      ],
+      [
+        "Hire the two spear-brothers who ask for little.",
+        "a0_spears"
+      ],
+      [
+        "Cross the yard to the Rooks banner.",
+        "w0_rooks"
+      ],
+      [
+        "Hire nobody; four mouths is enough.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_ilsabet",
+    "r": "choice",
+    "w": 55,
+    "b": "Ilsabet Crane, hedge-thaumaturge, glass and salt and a burned sleeve, who reads the wagon's warding aloud and then tells you plainly that whatever emptied Kar Duhn was let in, not broken in, because the marks on the relief patrol's shields were made from the inside",
+    "c": [
+      [
+        "Take her on at a full share.",
+        "a0_ilsabet_full"
+      ],
+      [
+        "Offer her half a share and see if she takes it.",
+        "a0_ilsabet_half"
+      ]
+    ]
+  },
+  {
+    "i": "a0_ilsabet_full",
+    "r": "rising",
+    "w": 50,
+    "b": "a full share agreed with a handshake she does not let go of until you meet her eye; she owns one crate, and everything in it is written on rather than made of anything, and Kettle helps her carry it without being asked",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_ilsabet_half",
+    "r": "rising",
+    "w": 50,
+    "b": "half a share taken with a shrug that costs you something you cannot price yet; she comes, she works, and she keeps one hand's worth of what she knows in reserve, which is exactly what you paid for",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_spears",
+    "r": "rising",
+    "w": 50,
+    "b": "the spear-brothers, Odd and Sten, cheap and cheerful and entirely untested; they ask about the coin twice and the moor not once, and Dellach hires them because a shield wall of two is not a shield wall",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_rooks",
+    "r": "choice",
+    "w": 50,
+    "b": "Captain Vasse Corrow of the Rooks, dry under an oiled awning, offering to buy your commission outright for forty crowns and calling it mercy; she has been to the barrow gate and she will not say what turned her around",
+    "c": [
+      [
+        "Refuse, and drink with her long enough to learn why.",
+        "w0_rooks_drink"
+      ],
+      [
+        "Take the forty crowns and live.",
+        "e_a0_sell"
+      ]
+    ]
+  },
+  {
+    "i": "w0_rooks_drink",
+    "r": "rising",
+    "w": 50,
+    "b": "Corrow drinks and talks around it: her scout went in at the gate and came out wrong, counting under her breath, and would not stop counting until she died of it eleven days later in a Ledger hospice",
+    "c": [
+      [
+        "Leave her the awning and gather your company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_ledger",
+    "r": "choice",
+    "w": 60,
+    "b": "the Ledger counting room, warm as a church and quieter, where Factor Halloway keeps the frontier's debts in a hand like engraving; Nyre's order and his are the same order, which is why she does not trust him",
+    "c": [
+      [
+        "Have Nyre read the garrison's pay account.",
+        "w0_account"
+      ],
+      [
+        "Borrow against the commission for better kit.",
+        "w0_kit"
+      ],
+      [
+        "Hear out the contract Halloway would rather offer.",
+        "w0_indent"
+      ],
+      [
+        "Leave; Ledger business is her business.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_account",
+    "r": "rising",
+    "w": 55,
+    "b": "the account read aloud in Nyre's flat voice: the Kar Duhn garrison drew its winter pay nine times in nine years and every draw was signed by a different hand, and the ninth signature is a mark, not a name",
+    "c": [
+      [
+        "Take that with you.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_kit",
+    "r": "rising",
+    "w": 50,
+    "b": "credit against the commission spent well: oil, dry powder, two lamps with clean wicks, a new haft for Dellach's poleaxe, and salt enough for Ilsabet to work with; the debt sits behind you like a second contract",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Load out and gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_indent",
+    "r": "choice",
+    "w": 50,
+    "b": "Halloway's better offer, laid out with real kindness: forget the iron, bring him the ledger alone, and the Ledger will carry the company's debts for nine years, term for term, hand for hand",
+    "c": [
+      [
+        "Sign what Halloway is actually offering.",
+        "e_a0_indenture"
+      ],
+      [
+        "Refuse, and note that he used the word nine.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_kettle",
+    "r": "choice",
+    "w": 55,
+    "b": "Kettle on the rampart with her back to the moor, lying badly about why she chose this contract; she was born in the fens under that hill and she has not said the words Kar Duhn once since Gallowmere came in sight",
+    "c": [
+      [
+        "Press her, gently, until she says it.",
+        "w0_kettle_press"
+      ],
+      [
+        "Let her keep it; everyone is owed one silence.",
+        "a0_gather"
+      ],
+      [
+        "Tell the Marshal she is holding something back.",
+        "w0_betray"
+      ]
+    ]
+  },
+  {
+    "i": "w0_kettle_press",
+    "r": "choice",
+    "w": 55,
+    "b": "the truth in pieces: she went under the hill at eleven with her father's crew, they were paid in silence and salt to carry crates down and nothing up, and she is the only one of that crew still walking",
+    "c": [
+      [
+        "Ask what the crews sang down there.",
+        "w0_rhyme"
+      ],
+      [
+        "That is enough for tonight.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_rhyme",
+    "r": "rising",
+    "w": 50,
+    "b": "the counting rhyme the crews used on the stair, which Kettle recites without expression: nine hands on the iron, nine irons in the door, eight to hold it shut, and the ninth to keep the score",
+    "c": [
+      [
+        "Sit with that a while, then gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_betray",
+    "r": "rising",
+    "w": 50,
+    "b": "the Marshal informed, the Marshal pleased, a note made in a Warden ledger about a captain who reports; Kettle is on the wagon at dawn and does not look at you for two days, and the company notices which way you jumped",
+    "x": "renown+1",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_gather",
+    "r": "choice",
+    "w": 60,
+    "b": "the last hour in Gallowmere with the company assembled in the yard, kit checked, the moor going blue-black past the stockade, and the only question left the shape of your leaving",
+    "c": [
+      [
+        "March at first light, light kit, good order.",
+        "a0_march_light"
+      ],
+      [
+        "March tonight in the rain, ahead of the Rooks.",
+        "a0_march_night"
+      ],
+      [
+        "Spend the advance properly before you move.",
+        "a0_supply"
+      ],
+      [
+        "Sell the commission on and be a live coward.",
+        "e_a0_walk"
+      ]
+    ]
+  },
+  {
+    "i": "a0_march_light",
+    "r": "rising",
+    "w": 45,
+    "b": "out at first light with the bell, light kit and good order, the stockade gate closing behind the last man and the moor opening ahead like a held breath",
+    "c": [
+      [
+        "Take the causeway.",
+        "a0_muster"
+      ]
+    ]
+  },
+  {
+    "i": "a0_march_night",
+    "r": "rising",
+    "w": 50,
+    "b": "a night march in horizontal rain to steal a day on the Rooks, four miles of it, and by the time the sky greys the company is wet through and paying for the head start in the only currency that matters out here",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Take the causeway.",
+        "a0_muster"
+      ]
+    ]
+  },
+  {
+    "i": "a0_supply",
+    "r": "choice",
+    "w": 50,
+    "b": "the advance on the table and a morning to spend it: the mule-and-salt argument between Nyre and Dellach, one buying endurance and the other buying edge, and both of them right",
+    "c": [
+      [
+        "Mule, salt, oil, and rope.",
+        "a0_supply_mule"
+      ],
+      [
+        "A moor-iron blade and a warded haft.",
+        "a0_supply_blade"
+      ]
+    ]
+  },
+  {
+    "i": "a0_supply_mule",
+    "r": "rising",
+    "w": 45,
+    "b": "a bad-tempered mule named Preacher, four stone of salt, oil, and eighty feet of tarred rope; the company jokes about the mule and will stop joking about it within the week",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Take the causeway.",
+        "a0_muster"
+      ]
+    ]
+  },
+  {
+    "i": "a0_supply_blade",
+    "r": "rising",
+    "w": 45,
+    "b": "moor-iron bought off a smith who would not meet your eye: a short heavy blade and a warded haft for Dellach, cold in the hand and worth what it cost if half the stories are true",
+    "c": [
+      [
+        "Take the causeway.",
+        "a0_muster"
+      ]
+    ]
+  },
+  {
+    "i": "a0_muster",
+    "r": "choice",
+    "w": 65,
+    "b": "the causeway out of Gallowmere at the edge of the Barrow Moor, the last dry ground under the company's boots, three ways ahead: the drover track along the dykes, the straight line across open moor, and the dwarf road that goes under the hill and comes out nobody knows where",
+    "c": [
+      [
+        "Take the drover track along the dykes.",
+        "a1_dyke"
+      ],
+      [
+        "Cut straight across the moor and save a day.",
+        "a1_moor"
+      ],
+      [
+        "Follow the old dwarf road under the hill.",
+        "a1_deadroad"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_insult",
+    "r": "failure",
+    "w": 50,
+    "e": "setback|negative|Terms Refused",
+    "b": "the ride south out of Gallowmere with pride intact and nothing else, the Rooks' banner going up over the commission you refused, and Dellach saying the thing you already know: that pride does not winter well"
+  },
+  {
+    "i": "e_a0_moor_night",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|Lamp-Count",
+    "b": "out on the moor at night behind a drunk with a rushlight, the file of lamps closer than it looked and stopping to count, the burner running, and the last thing the company hears being a number said aloud in a voice that has no throat behind it",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a0_gaol",
+    "r": "failure",
+    "w": 55,
+    "e": "capture|negative|The Warden's Gaol",
+    "b": "steel drawn in a Warden town and the whole company in the stockade cells by midnight, the commission struck and handed to the Rooks at dawn, Redd's clerk reading the forfeiture out loud through the bars while Corrow waits in the yard",
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "e_a0_sell",
+    "r": "failure",
+    "w": 50,
+    "e": "setback|neutral|The Commission Sold",
+    "b": "forty crowns split five ways in a wet yard and the Rooks riding out with your paper; the company is alive and paid and finished as a company, because the story that gets told is the one where you sold",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a0_indenture",
+    "r": "failure",
+    "w": 55,
+    "e": "setback|negative|Signed in the Ledger",
+    "b": "Halloway's ink dry on nine years of the company's labour, the iron forgotten, the ledger promised, and Nyre walking out of the counting room without a word because she has read what you signed and you have not"
+  },
+  {
+    "i": "e_a0_walk",
+    "r": "failure",
+    "w": 50,
+    "e": "setback|neutral|South, and No Questions",
+    "b": "the commission sold on cheap and the road south taken before the weather turns, the moor behind you keeping its garrison and its iron, and the question of what happened under that hill following the company down every road it takes after"
+  }
+]

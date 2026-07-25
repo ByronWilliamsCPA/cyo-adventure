@@ -1,0 +1,1063 @@
+[
+  {
+    "i": "a4_lock",
+    "r": "climax",
+    "w": 80,
+    "b": "the ninth iron set into the ninth socket, which takes it the way a lock takes a key, and the door's slow breathing stopping mid-count: eight irons and a ninth, all nine warm, the frame taking up the load, and nothing behind it moving at all for the first time in nine hundred years",
+    "x": "door_state=1",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Break the tally-die so no tenth iron can ever be cut.",
+        "a4_break_die"
+      ],
+      [
+        "Take the keeper's ring; a count still needs a hand.",
+        "a4_take_ring",
+        "knows_compact"
+      ],
+      [
+        "Get everyone up the stair while it is quiet.",
+        "a4_out"
+      ],
+      [
+        "Drive it in crooked so the socket jams forever.",
+        "e_a4_jam_fail"
+      ]
+    ]
+  },
+  {
+    "i": "a4_break_die",
+    "r": "rising",
+    "w": 65,
+    "b": "the tally-die carried back to the cutting-shop and broken across the anvil in four strokes, dwarf steel going in a way dwarf steel is not supposed to go, and Ilsabet gathering the pieces into a sack because she does not trust fragments",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go up the stair.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_take_ring",
+    "r": "choice",
+    "w": 70,
+    "b": "the ninth hand's ring, warm and exactly sized, and the arithmetic laid out plainly on the chapel desk: nine irons hold the lid without a keeper only until something out there decides to test it, and a count kept honestly by somebody who hates the job is the difference",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Put it on. Somebody has to keep the count.",
+        "a4_ring_on"
+      ],
+      [
+        "Leave it on the desk. Nobody in this company signs that.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_ring_on",
+    "r": "rising",
+    "w": 70,
+    "b": "the ring on, and the count arriving in the back of the skull like a debt schedule read aloud: not a voice, an obligation, nine every nine, and the captain of the Ninth Sword standing in a dwarf chapel understanding the shape of the rest of a life",
+    "x": "door_state=2",
+    "s": [
+      "scary_imagery",
+      "sad_moment"
+    ],
+    "c": [
+      [
+        "Take the company up the stair.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_unmake",
+    "r": "climax",
+    "w": 75,
+    "b": "the decision to unmake the Compact: eight irons in eight warm sockets, nine hundred years of instalments paid by other people, and a company standing in front of the only arrangement anybody has ever managed with the thing behind the door",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Draw one iron and watch what the door does.",
+        "a4_one_at_a_time"
+      ],
+      [
+        "Draw all eight at once and run.",
+        "e_a4_unmade"
+      ],
+      [
+        "Draw them, then wedge the ring of sockets with the ninth.",
+        "a4_wedge",
+        "iron_key"
+      ],
+      [
+        "Change your mind and seat the ninth instead.",
+        "a4_lock",
+        "iron_key"
+      ]
+    ]
+  },
+  {
+    "i": "a4_one_at_a_time",
+    "r": "choice",
+    "w": 70,
+    "b": "one iron out, and the door leans a quarter inch outward; two, and the frame's stone begins to sweat; three, and the door speaks, in the paymaster's voice, politely, asking whether the company is here to settle the account or to increase it",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Re-seat all three and step back from it.",
+        "a4_reseat"
+      ],
+      [
+        "Keep drawing. Finish what you started.",
+        "e_a4_opened"
+      ],
+      [
+        "Ask it what it is owed.",
+        "e_a4_asked"
+      ]
+    ]
+  },
+  {
+    "i": "a4_reseat",
+    "r": "rising",
+    "w": 65,
+    "b": "three irons put back into three sockets by hands that are not steady, the door settling with a sound like a held breath let out slowly, and the paymaster's voice thanking the company by name before it stops",
+    "x": "door_state=4",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Get out of the hill.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_wedge",
+    "r": "choice",
+    "w": 70,
+    "b": "the ninth iron driven crosswise through the socket ring rather than into it, dwarf iron biting dwarf iron, the whole ring locked into one piece that no hand can draw and no keeper can count: crude, permanent, and not in anybody's orders",
+    "x": "door_state=5",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Leave it wedged and go up the stair.",
+        "a4_out"
+      ],
+      [
+        "Test it first; put your weight on the door.",
+        "e_a4_wedge_fail"
+      ]
+    ]
+  },
+  {
+    "i": "a4_open",
+    "r": "climax",
+    "w": 75,
+    "b": "a hand's width of the Ninefold Door, held open on the poleaxe haft, warm air coming out of it in a rhythm that is not wind, and light on the other side that is not lamplight and has no obvious source",
+    "x": "door_state=3",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Look through it.",
+        "a4_looked"
+      ],
+      [
+        "Put a lamp through first and watch what happens to it.",
+        "a4_lamp_through"
+      ],
+      [
+        "Shut it again without looking. Nobody needs to know.",
+        "a4_closed_unlooked"
+      ],
+      [
+        "Speak through the gap.",
+        "e_a4_spoke"
+      ]
+    ]
+  },
+  {
+    "i": "a4_looked",
+    "r": "choice",
+    "w": 75,
+    "b": "what is behind the Ninefold Door: not a beast in a lair but a hall the size of the hill with something in the far end of it too large to resolve into a shape, and standing in rows in front of it eleven hundred people, in Warden cloaks and Fenkin leather and dwarf mail, all of them counting",
+    "x": "knows_compact=true",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Shut it and seat the ninth iron.",
+        "a4_lock",
+        "iron_key"
+      ],
+      [
+        "Shut it and get out of the hill.",
+        "a4_out"
+      ],
+      [
+        "Go in for them. Somebody has to.",
+        "e_a4_in_for_people"
+      ]
+    ]
+  },
+  {
+    "i": "a4_lamp_through",
+    "r": "choice",
+    "w": 65,
+    "b": "a lit lamp set through the gap on the end of a rope and lowered a foot, where it burns steadily for four seconds, and then goes out from the wick down, and then comes back up the rope relit by nobody at all",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Look through it now that you have to know.",
+        "a4_looked"
+      ],
+      [
+        "Reach through and take the lamp back.",
+        "e_a4_lamp"
+      ]
+    ]
+  },
+  {
+    "i": "a4_closed_unlooked",
+    "r": "choice",
+    "w": 65,
+    "b": "the door eased shut on nothing seen, the haft withdrawn, the count resuming exactly where it left off, and five people standing in a dwarf gallery having decided together not to know something they will each privately want to know for the rest of their lives",
+    "c": [
+      [
+        "Go up the stair.",
+        "a4_out"
+      ],
+      [
+        "Withdraw properly and make it a Warden matter.",
+        "a4_withdraw"
+      ]
+    ]
+  },
+  {
+    "i": "a4_carry",
+    "r": "climax",
+    "w": 75,
+    "b": "the arithmetic from the other side: eight irons hold the lid on their own for as long as nobody tests it, but the ninth is the count, and a count that cannot be kept is a debt that cannot be collected, and the ninth iron is in your pack",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Wrap it deep and carry it out of the hill.",
+        "a4_wrap_iron"
+      ],
+      [
+        "Seat it after all; a shut door is worth more than leverage.",
+        "a4_lock"
+      ],
+      [
+        "Carry it out and sink it in the deepest pool on the moor.",
+        "e_a4_moor"
+      ],
+      [
+        "Carry it in the open and let them come and ask for it.",
+        "e_a4_bait"
+      ]
+    ]
+  },
+  {
+    "i": "a4_wrap_iron",
+    "r": "rising",
+    "w": 70,
+    "b": "salt-cloth, oilcloth, the middle of the pack, and Ilsabet's chalk on the flap, and the whole hill's attention arriving and settling on five people who are now, formally, in possession of the ninth hand's instrument and walking out with it",
+    "x": "door_state=6",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Up the stair, and quickly.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_withdraw",
+    "r": "choice",
+    "w": 70,
+    "b": "the honest option, said out loud in front of the Ninefold Door: this is nine hundred years old, it is a Warden matter and a Ledger crime, and a five-person company with one contract does not get to be the hinge of it",
+    "c": [
+      [
+        "Out the way you came in, and no souvenirs.",
+        "a4_out"
+      ],
+      [
+        "Out, but take the pay-ledger from the counting room.",
+        "a4_take_ledger"
+      ],
+      [
+        "Out, and burn the nine gate lamps behind you.",
+        "e_a4_burn_lamps"
+      ],
+      [
+        "Out, and sell what you know to Corrow instead.",
+        "e_a4_sell_knowledge"
+      ]
+    ]
+  },
+  {
+    "i": "a4_take_ledger",
+    "r": "choice",
+    "w": 65,
+    "b": "back up to the counting room for four pounds of paper that the Marshal will read and the Ledger will want burnt, the lamp above the table still lit, and the clerk's alcove behind it with the plaster tally in it going all the way to the ceiling",
+    "c": [
+      [
+        "Take the ledger and go.",
+        "a4_out"
+      ],
+      [
+        "Take the ledger and the clerk's tally off the plaster too.",
+        "e_a4_ledger_lingered"
+      ]
+    ]
+  },
+  {
+    "i": "a4_out",
+    "r": "choice",
+    "w": 75,
+    "b": "four hundred steps up, and the hill has changed its mind about the company: the flights are longer than they were, the stair-shrine's ninth niche is warm again, all nine lamps in the gallery are lit and trimmed, and at the top the great door has come to within a thumb's width of shut",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Force the great door with everything you have.",
+        "a4_force_gate"
+      ],
+      [
+        "Go out up the spoil chute.",
+        "a4_chute_out"
+      ],
+      [
+        "Go out by the mason's postern.",
+        "a4_postern_out"
+      ],
+      [
+        "Wait for the ninth hour and walk out with the file.",
+        "a4_file_out",
+        "knows_compact"
+      ],
+      [
+        "Sit down on the stair. You are finished.",
+        "e_a4_sat_down"
+      ]
+    ]
+  },
+  {
+    "i": "a4_force_gate",
+    "r": "choice",
+    "w": 70,
+    "b": "five people, a poleaxe haft, a Warden's shield as a fulcrum and eleven minutes of the worst work any of them has ever done, the door giving an inch at a time against a pressure that is not weight and not wind and not interested in negotiating",
+    "x": "vigor-1",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Get everyone through the moment it is wide enough.",
+        "a4_moorback"
+      ],
+      [
+        "Hold it and count them through by name.",
+        "e_a4_forced_shut"
+      ]
+    ]
+  },
+  {
+    "i": "a4_chute_out",
+    "r": "choice",
+    "w": 65,
+    "b": "the spoil chute from the bottom, forty feet of loose scree at an angle that was bad enough coming down, with the sump behind you filling and the lamps in the gallery going out one by one from the far end toward the stair",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go up in pairs, slowly, and take the skin off your hands.",
+        "a4_moorback"
+      ],
+      [
+        "Send the strongest up first to haul the rest.",
+        "e_a4_chute_out_fall"
+      ]
+    ]
+  },
+  {
+    "i": "a4_postern_out",
+    "r": "rising",
+    "w": 60,
+    "b": "out by the mason's postern into a night with weather in it, the lead seal broken behind you and the corridor beyond it lighting itself politely, one niche at a time, all the way back to the stair, as if showing a guest to the door",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Get off the hill.",
+        "a4_moorback"
+      ]
+    ]
+  },
+  {
+    "i": "a4_file_out",
+    "r": "choice",
+    "w": 70,
+    "b": "the ninth hour kept in the oil store and then the file forming on the stair below, nine lamps lifted, the count starting, and the Ninth Sword walking out of Kar Duhn in the middle of it with the rhythm right and nobody's hands where they can be seen",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Break off at the gate and get clear.",
+        "a4_moorback"
+      ],
+      [
+        "Stay in the file to the end of the count; it is only nine.",
+        "e_a4_file_kept"
+      ]
+    ]
+  },
+  {
+    "i": "a4_moorback",
+    "r": "choice",
+    "w": 70,
+    "b": "the Barrow Moor at dawn with the hill behind and Gallowmere half a day ahead, the company carrying whatever it decided to carry, and Nyre asking the question that has to be answered before anybody speaks to a Warden: what is it we are going to say",
+    "c": [
+      [
+        "Straight to Gallowmere and the Marshal.",
+        "a4_causeway"
+      ],
+      [
+        "Two days in a shepherd's bothy first; they are spent.",
+        "a4_bothy"
+      ],
+      [
+        "Put it to the company as a company. All five voices.",
+        "a4_council"
+      ],
+      [
+        "Round the town and south with what you carry.",
+        "e_a4_south"
+      ]
+    ]
+  },
+  {
+    "i": "a4_bothy",
+    "r": "rising",
+    "w": 65,
+    "b": "two days in a shepherd's bothy with a peat fire and nobody's watch to keep, Kettle sleeping eleven hours, Dellach's hands coming back, Ilsabet writing everything down twice in case one copy burns, and the whole company remembering how to be people",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Walk into Gallowmere on the third morning.",
+        "a4_causeway"
+      ]
+    ]
+  },
+  {
+    "i": "a4_council",
+    "r": "choice",
+    "w": 70,
+    "b": "the company council on a wet hillside: Dellach for the Marshal and the record, Nyre for the Ledger hearing and the naming of Halloway, Kettle for the road south, Ilsabet for whichever choice keeps the fewest copies of the truth in the fewest hands",
+    "c": [
+      [
+        "Take it to the Marshal, all five names on it.",
+        "a4_causeway"
+      ],
+      [
+        "Take it in and let the record decide it, all five names on it.",
+        "a4_causeway"
+      ],
+      [
+        "Let them argue it out and then decide for yourself.",
+        "e_a4_split"
+      ]
+    ]
+  },
+  {
+    "i": "a4_boy",
+    "r": "choice",
+    "w": 70,
+    "b": "back to the gate for the lamp-keeper's boy, which is a promise made in a lamp gallery in front of witnesses and written in Nyre's book, and which means going back up a hillside the company has just spent everything to leave",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go in at the postern and get him out.",
+        "e_a4_win_boy"
+      ],
+      [
+        "Call him out from the gate and wait one hour, no more.",
+        "a4_tower"
+      ],
+      [
+        "Go in by the great door because it is faster.",
+        "e_a4_boy_lost"
+      ]
+    ]
+  },
+  {
+    "i": "a4_gallowmere",
+    "r": "choice",
+    "w": 75,
+    "b": "Gallowmere in the rain again, and everybody waiting: the Warden's tower with a lamp in the window, a Ledger coach outside the counting house with southern horses, the Rooks in the muster yard pretending not to watch the gate, and a woman at the shrine who has a son under that hill",
+    "c": [
+      [
+        "Report to Redd, on the record, in full.",
+        "a4_tower"
+      ],
+      [
+        "Go to the Ledger hearing and name Halloway.",
+        "a4_name_halloway"
+      ],
+      [
+        "Write the report the Wardens will read in fifty years.",
+        "a4_record"
+      ],
+      [
+        "Go back up the hill for the keeper's boy before anything else.",
+        "a4_boy",
+        "renown>=1"
+      ],
+      [
+        "Tell the boy's mother the truth before you tell anyone else.",
+        "a4_mother",
+        "renown>=1"
+      ],
+      [
+        "Say the minimum, take the fee, and be gone by dark.",
+        "e_a4_fee"
+      ],
+      [
+        "Hear Corrow's price for your silence and your maps.",
+        "e_a4_bought"
+      ]
+    ]
+  },
+  {
+    "i": "a4_mother",
+    "r": "choice",
+    "w": 70,
+    "b": "the boy's mother at the road shrine, told the truth in a wet street by a captain who has been rehearsing it for two days and gets it wrong anyway, and who finds out that she already knew, and has known since midsummer, and has been lighting candles in nines",
+    "s": [
+      "sad_moment"
+    ],
+    "c": [
+      [
+        "Take her with you to the Marshal.",
+        "a4_report"
+      ],
+      [
+        "Stay with her until the candle burns out.",
+        "e_a4_mother_stay"
+      ]
+    ]
+  },
+  {
+    "i": "a4_report",
+    "r": "choice",
+    "w": 75,
+    "b": "Warden-Marshal Ansel Redd reads it twice, all of it, without once asking a question, and then sets it down and asks the only ones that matter: what is shut, what is loose, and what is in the company's pack",
+    "c": [
+      [
+        "Ask for the Warden charter and a standing writ.",
+        "e_a4_win_charter",
+        "renown>=2"
+      ],
+      [
+        "Hand over the ninth iron with the report.",
+        "e_a4_win_plain",
+        "iron_key"
+      ],
+      [
+        "Keep the iron, and have him write to the Deep Road wardens.",
+        "e_a4_completion",
+        "iron_key&knows_compact"
+      ],
+      [
+        "Put Vale's book on the table and let him decide.",
+        "e_a4_win_book",
+        "knows_compact"
+      ],
+      [
+        "Tell him the door is shut and leave the rest out.",
+        "e_a4_silent"
+      ]
+    ]
+  },
+  {
+    "i": "a4_record",
+    "r": "choice",
+    "w": 75,
+    "b": "the written report, which will outlive everyone in the room: dated, signed by five hands, sealed to the Warden archive, and requiring the captain to put down in plain words exactly what was done to the Ninefold Door and by whom",
+    "c": [
+      [
+        "Write that the company now keeps the count.",
+        "e_a4_keeper_office",
+        "door_state==2"
+      ],
+      [
+        "Write that the door is open and how far.",
+        "e_a4_open_admitted",
+        "door_state==3"
+      ],
+      [
+        "Write that three irons were drawn and reseated.",
+        "e_a4_reseat_end",
+        "door_state==4"
+      ],
+      [
+        "Write that the sockets are wedged and ask for masons.",
+        "e_a4_wedge_win",
+        "door_state==5"
+      ],
+      [
+        "Write that the company did not go through the door.",
+        "e_a4_withdrew"
+      ]
+    ]
+  },
+  {
+    "i": "a4_name_halloway",
+    "r": "choice",
+    "w": 70,
+    "b": "the Ledger hearing convened in the counting room with three factors from the south and Halloway sitting at the end of the table taking his own minutes, and Nyre standing up as a sister of the Reckoning to say that the account is not what the account says",
+    "c": [
+      [
+        "Testify in full, everything, on the record.",
+        "e_a4_win_testify",
+        "knows_compact"
+      ],
+      [
+        "Testify, and hand the Ledger the iron as surety.",
+        "e_a4_surety",
+        "iron_key"
+      ],
+      [
+        "Withdraw the accusation for what he is offering.",
+        "e_a4_bought"
+      ]
+    ]
+  },
+  {
+    "i": "e_a4_completion",
+    "r": "completion",
+    "w": 90,
+    "e": "completion|positive|The First of Nine",
+    "b": "the ninth iron kept, wrapped, and entered on the record as company property held in trust; Redd's letter going south to the Deep Road wardens over his own seal; the Compact's count unkeepable at Kar Duhn for the first time in nine hundred years; and Vale's book open on the Marshal's table at the page that lists eight more doors, the nearest of them under the mountains at the far end of the Deep Road, with a date against it that is this winter"
+  },
+  {
+    "i": "e_a4_win_charter",
+    "r": "completion",
+    "w": 75,
+    "e": "success|positive|The Charter and the Writ",
+    "b": "the writ of salvage upgraded to a Warden charter with a standing commission and a company seal, the Ninth Sword entered in the Marshal's book as a name rather than a hire, and a first order under it that reads, in Redd's hand, hold the hill and report the hour of every lamp"
+  },
+  {
+    "i": "e_a4_win_plain",
+    "r": "completion",
+    "w": 70,
+    "e": "success|positive|The Contract, Kept",
+    "b": "the ledger delivered, the ninth iron handed across a Warden's table and locked in a Warden's strongbox, sixty crowns paid in full and the hazard added without argument, and a door under the Barrow Moor that is shut tonight and will be shut in the morning"
+  },
+  {
+    "i": "e_a4_win_book",
+    "r": "completion",
+    "w": 75,
+    "e": "success|neutral|Vale's Book on the Table",
+    "b": "eleven hundred pages of instalments in nine hands laid on a Warden-Marshal's desk, which makes it his problem and his career and no longer the company's, and Redd reading the last twenty pages with the slow attention of a man understanding that his own predecessor signed one of them"
+  },
+  {
+    "i": "e_a4_win_testify",
+    "r": "completion",
+    "w": 75,
+    "e": "success|positive|Named in the Counting Room",
+    "b": "Factor Halloway named to his face in front of three southern factors, the ninth signature matched to his order-book by Nyre in open hearing, and a Ledger house discovering that its frontier accounts have been settled in people for eleven years by a man who kept excellent records"
+  },
+  {
+    "i": "e_a4_wedge_win",
+    "r": "completion",
+    "w": 70,
+    "e": "success|neutral|Wedged, and Written Down",
+    "b": "a socket ring locked into one piece by a ninth iron driven crosswise, reported in plain words, and a Warden request going south for masons and a mining engineer, because what the company did cannot be undone by any hand and also cannot be trusted by anybody who knows how metal ages"
+  },
+  {
+    "i": "e_a4_win_boy",
+    "r": "completion",
+    "w": 70,
+    "e": "success|positive|The Keeper's Boy",
+    "b": "a promise kept: in by the postern at dusk, the lamp gallery found empty and all nine lamps lit, the boy discovered asleep in the oil store where he had been hiding for two days, and carried out over Dellach's shoulder into weather that has never felt better to anybody"
+  },
+  {
+    "i": "e_a4_silent",
+    "r": "discovery",
+    "w": 70,
+    "e": "discovery|neutral|What He Was Told",
+    "b": "a short honest report that says the door is shut and stops there, the fee paid, the company thanked, and four people who each know that a decision was made in a dwarf gallery to leave nine hundred years of arithmetic out of a Warden's file"
+  },
+  {
+    "i": "e_a4_surety",
+    "r": "discovery",
+    "w": 70,
+    "e": "discovery|neutral|Held as Surety",
+    "b": "the ninth iron handed to the Ledger as surety and entered in its register under a number, which is the safest place on the frontier and also the one place the Compact has always been able to reach, and a receipt in the company's hands that will be worth exactly what the paper is"
+  },
+  {
+    "i": "e_a4_keeper_office",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Somebody Has to Count",
+    "b": "written down in a Warden file in the captain's own hand: the door is shut, all nine irons seated, and the count is kept by the captain of the Ninth Sword, who will be at Gallowmere every ninth night for the rest of a life that now has a schedule attached to it",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a4_open_admitted",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|How Far It Is Open",
+    "b": "the truth entered in the record to the inch, the tower emptied within the hour, Gallowmere's evacuation order posted by noon, and a company that did the honest thing sitting in the muster yard watching a frontier town load its carts because of a hand's width of open door"
+  },
+  {
+    "i": "e_a4_reseat_end",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|neutral|Drawn and Put Back",
+    "b": "three irons drawn and reseated, written down exactly like that, and a Warden clerk copying it out twice while Redd asks the question nobody in the room can answer: whether a socket that has been emptied once holds the same as a socket that never has"
+  },
+  {
+    "i": "e_a4_withdrew",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|neutral|Did Not Go Through",
+    "b": "a file that says the company reached the Ninefold Door, described it accurately, touched nothing, and came out, which is the most defensible sentence in the Warden archive and the one the Ninth Sword will be asked about in every taproom for nine years"
+  },
+  {
+    "i": "e_a4_fee",
+    "r": "failure",
+    "w": 65,
+    "e": "setback|neutral|The Minimum, and the Fee",
+    "b": "sixty crowns for the ledger, no questions invited and none asked, and the company out of the gate before dark with the money split five ways and an understanding between them that whatever is under that hill is now officially somebody else's arithmetic"
+  },
+  {
+    "i": "e_a4_bought",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Corrow's Price",
+    "b": "the maps, the route, the lamp hours and the company's silence sold to the Rooks for two hundred crowns and a promise, and a spring in which the Rooks go up to Kar Duhn with eleven people and nobody at all comes back to complain about the price"
+  },
+  {
+    "i": "e_a4_south",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|neutral|Round the Town and South",
+    "b": "Gallowmere skirted at a distance and the Ledger road taken south with the pack still packed, no report, no fee, no charter, and a ninth iron travelling further from its socket every day in the luggage of five people who have agreed not to discuss it"
+  },
+  {
+    "i": "e_a4_split",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Five Voices, No Company",
+    "b": "an argument on a wet hillside allowed to run until it stops being an argument, Kettle going south that afternoon, Nyre to her order, Dellach to the tower alone with his own version, and the Ninth Sword ending not in a vault but in a disagreement about paperwork",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a4_mother_stay",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|neutral|Until the Candle Burns Out",
+    "b": "an afternoon in a road shrine with a woman lighting candles in nines, which is the right place to be and the wrong place to be, and a Warden-Marshal who waited until the fourth hour and then wrote in his file that the company did not present itself"
+  },
+  {
+    "i": "e_a4_jam_fail",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Driven In Crooked",
+    "b": "the ninth iron hammered in at an angle to jam the socket forever, which works, and which also cracks the socket's stone collar, and a ring of nine that has held for nine hundred years discovering all at once that it is now a ring of eight and a wound",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a4_unmade",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|All Eight, and Run",
+    "b": "eight irons pulled in under a minute and a company running for a stair four hundred steps long, which is a plan that requires the door to open slowly, and the Ninefold Door has been waiting nine hundred years and does not see any reason to be slow about it",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_opened",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|Finish What You Started",
+    "b": "the fourth iron drawn while the paymaster's voice is still being polite, and the fifth, and then no more decisions required of anybody in the gallery, because the arrangement the dwarves engineered nine hundred years ago has concluded and the accounts are being settled in the order they were opened",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_asked",
+    "r": "failure",
+    "w": 70,
+    "e": "capture|negative|What It Is Owed",
+    "b": "the question asked through three empty sockets and answered in full, itemised, with dates, and the answer being a figure that the company is standing inside of, and the door explaining without heat that a debt does not require the consent of the instalment",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_wedge_fail",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Testing the Wedge",
+    "b": "a shoulder put against a wedged door to see whether the work holds, which it does, entirely, right up until the thing on the other side puts its own weight against the same door in the same second out of what can only be described as curiosity",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a4_spoke",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|Spoken To",
+    "b": "one sentence spoken through a hand's width of open Ninefold Door, in common speech, politely, and the reply arriving not as sound but as arithmetic: the company counted, priced, scheduled, and entered against an instalment that falls due immediately",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_in_for_people",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|Somebody Has To",
+    "b": "the door pushed wide and five people walking into a hall the size of a hill to bring out eleven hundred who are standing in rows counting, which is the most defensible decision anybody makes in this story, and which adds five to the rows and changes nothing else at all",
+    "s": [
+      "peril",
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a4_lamp",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Reaching For the Lamp",
+    "b": "an arm through the gap to take back a lamp that has been relit by nobody, and the lamp being handed over, properly, into the hand that reached for it, by something that has been waiting nine hundred years for a transaction it did not have to initiate",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_moor",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|The Deepest Pool",
+    "b": "the ninth iron sunk in eleven feet of black water in the middle of the Barrow Moor, which solves the problem for one winter, until the frost lifts the peat and a fen-runner's boy finds a strip of warm metal in a drained pool and sells it in Gallowmere for two coppers"
+  },
+  {
+    "i": "e_a4_bait",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|Come and Ask For It",
+    "b": "the ninth iron carried openly across the Barrow Moor as an invitation, on the theory that whatever wants it will have to come out into daylight and negotiate, and the discovery on the second night that it does not have to come out at all and never has",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_burn_lamps",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Nine Lamps at the Gate",
+    "b": "nine lamps smashed and burning in the gate arch as a gesture on the way out, and the hill's answer arriving not that night but nine nights later, in Gallowmere, in a file that comes up the causeway at the third hour with its own lamps and its own list"
+  },
+  {
+    "i": "e_a4_sell_knowledge",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Sold to the Rooks",
+    "b": "everything the company learned under the hill sold to Vasse Corrow in a wet muster yard for good coin and no receipt, the commission returned unfulfilled, and a Rooks banner going up the causeway a week later with eleven people under it who were told the easy version"
+  },
+  {
+    "i": "e_a4_ledger_lingered",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|The Clerk's Tally, Too",
+    "b": "the plaster tally chiselled off the alcove wall because it is evidence and evidence wins arguments, which takes eleven minutes, which is eight minutes longer than the clerk's own arrangement with whatever comes to read his wall on the hour",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_sat_down",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Sat Down on the Stair",
+    "b": "a captain sitting down on the two hundredth step because the legs have finished arguing, and a company that will not leave without its captain, and a stair that has been getting longer all evening and is in no hurry whatsoever",
+    "s": [
+      "peril",
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a4_forced_shut",
+    "r": "failure",
+    "w": 70,
+    "e": "capture|negative|Counted Through By Name",
+    "b": "the great door held on a shield-fulcrum while five names are called through it in order, which is exactly the arrangement the shield's dead owner scratched a warning about on its inside face, and the fifth name being answered from behind the door in the captain's own voice",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_chute_out_fall",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Strongest First",
+    "b": "the strongest sent up the chute first to haul the rest, which puts one set of hands at the top and four sets of boots on forty feet of scree that has been waiting all day to move, and it moves while the sump behind them is still filling",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a4_file_kept",
+    "r": "failure",
+    "w": 70,
+    "e": "capture|negative|It Is Only Nine",
+    "b": "the file stayed with to the end of the count, because it is only nine and the rhythm is easy and the company is nearly out, and the ninth number arriving on the causeway in open air with the moor visible and the count starting again from one without any gap at all",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_boy_lost",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Faster By the Great Door",
+    "b": "the great door taken because it is faster and the boy needs an hour of daylight, and the door being wide enough for one and then not wide enough for anybody, and a company that keeps its promise as far as the threshold and no further",
+    "s": [
+      "sad_moment",
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a4_ambushed",
+    "r": "failure",
+    "w": 70,
+    "e": "capture|negative|Who Was Waiting at the Gate",
+    "b": "Kettle's report from the causeway: the Rooks in the yard, a Ledger coach at the counting house, and eleven Warden cloaks at the gate that do not fit the men wearing them, and a company walking into Gallowmere anyway because where else is there to walk",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "a4_causeway",
+    "r": "choice",
+    "w": 65,
+    "b": "the causeway into Gallowmere in rain that has not stopped since the company left, the stockade in front of you, the Warden's tower lamp lit at the wrong hour, and a coach with southern horses standing outside the counting house with its curtains drawn",
+    "c": [
+      [
+        "Walk in openly, up the middle, in your own colours.",
+        "a4_gallowmere"
+      ],
+      [
+        "Send Kettle ahead to see who is waiting at the gate.",
+        "a4_ahead"
+      ],
+      [
+        "Go round to the Ledger's back gate and be quiet about it.",
+        "a4_gallowmere"
+      ]
+    ]
+  },
+  {
+    "i": "a4_ahead",
+    "r": "choice",
+    "w": 65,
+    "b": "Kettle back from the gate in eleven minutes with a scout's list: the Rooks in the muster yard doing nothing badly, a Ledger clerk taking names at the counting house door, and eleven Warden cloaks on the gate that do not fit the men inside them",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Walk in anyway; there is nowhere else to walk.",
+        "a4_gallowmere"
+      ],
+      [
+        "Wait for full dark and go in over the stockade.",
+        "e_a4_ambushed"
+      ]
+    ]
+  },
+  {
+    "i": "a4_tower",
+    "r": "choice",
+    "w": 70,
+    "b": "the Warden's anteroom, wet cloaks steaming on the pegs, the report copied fair in Ilsabet's hand and read once more while a clerk pretends not to watch the pack that has not left the captain's shoulder since the hill",
+    "c": [
+      [
+        "Go in and give it to Redd straight.",
+        "a4_report"
+      ],
+      [
+        "Ask for the Ledger factor to be present when you speak.",
+        "a4_report"
+      ],
+      [
+        "Leave the fair copy with the clerk and walk out of town.",
+        "e_a4_left_with_clerk"
+      ]
+    ]
+  },
+  {
+    "i": "e_a4_left_with_clerk",
+    "r": "failure",
+    "w": 65,
+    "e": "setback|neutral|Left With the Clerk",
+    "b": "a fair copy of everything left on a clerk's desk with the company's five names on it and no witness to its handing over, and a Warden-Marshal reading it eleven days later, by which time the coach with the southern horses has been back to the counting house twice"
+  }
+]

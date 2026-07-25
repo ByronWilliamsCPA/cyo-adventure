@@ -1,0 +1,87 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_vault_of_nine_iron",
+  "version": 1,
+  "title": "The Vault of Nine Iron",
+  "start_node": "n_start",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 2.0
+    },
+    "tier": 2,
+    "themes": [
+      "adventure",
+      "loyalty",
+      "greed",
+      "monsters",
+      "mystery",
+      "sacrifice"
+    ],
+    "estimated_minutes": 40,
+    "ending_count": 0,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true,
+    "series": {
+      "series_id": "wyrmreach",
+      "book_index": 1,
+      "series_entry_node": "n_start",
+      "is_final": false,
+      "carries_state": true
+    }
+  },
+  "variables": [
+    {
+      "name": "vigor",
+      "type": "int",
+      "initial": 5,
+      "min": 0,
+      "max": 6,
+      "description": "The condition of the company: wounds, sleep, and supply."
+    },
+    {
+      "name": "renown",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 3,
+      "description": "The Ninth Sword's standing with the Warden-Marshal and the Ledger."
+    },
+    {
+      "name": "iron_key",
+      "type": "bool",
+      "initial": false,
+      "description": "The ninth key-iron of Kar Duhn is in the company's hands."
+    },
+    {
+      "name": "knows_compact",
+      "type": "bool",
+      "initial": false,
+      "description": "The party knows what the Ninefold Door was built to hold."
+    },
+    {
+      "name": "door_state",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 6,
+      "description": "What the company did at the Ninefold Door: 0 nothing, 1 locked, 2 locked and the count kept, 3 opened, 4 drawn and reseated, 5 wedged, 6 the ninth iron carried out."
+    }
+  ],
+  "include": [
+    "book1.a0.json",
+    "book1.a1.json",
+    "book1.a2.json",
+    "book1.a3.json",
+    "book1.a4.json"
+  ]
+}

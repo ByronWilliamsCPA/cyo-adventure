@@ -1,0 +1,1130 @@
+[
+  {
+    "i": "a2_threshold",
+    "r": "choice",
+    "w": 65,
+    "b": "the great door from a foot away: dwarf bronze on iron, a hand's width of gap, warm air coming out of it that smells of lamp oil and wet stone, and the gap itself worn smooth at shoulder height by traffic",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go through the gap one at a time.",
+        "a2_gap"
+      ],
+      [
+        "Lever the door wider with the poleaxe haft.",
+        "a2_lever"
+      ],
+      [
+        "Take the Warden's shield off the post first.",
+        "a2_shield"
+      ],
+      [
+        "Knock, and see who keeps the door.",
+        "e_a2_knock"
+      ]
+    ]
+  },
+  {
+    "i": "a2_gap",
+    "r": "choice",
+    "w": 55,
+    "b": "sideways through a hand's width of gap with a pack passed through after, Dellach last and worst, and the door itself moving a finger's width while Odd is still in it, on no draught at all",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Get everyone through fast and form up inside.",
+        "a2_hall"
+      ],
+      [
+        "Hold the door with the haft while the last man squeezes.",
+        "e_a2_pinned"
+      ]
+    ]
+  },
+  {
+    "i": "a2_lever",
+    "r": "choice",
+    "w": 60,
+    "b": "the poleaxe haft in the gap and Dellach's whole weight behind it, the door coming open two feet with a groan that goes down into the hill and keeps going, and then a pause, and then something below begins to count",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Go in fast, before it finishes counting.",
+        "a2_hall"
+      ],
+      [
+        "Take the Warden's shield off the post before you go in.",
+        "a2_shield"
+      ]
+    ]
+  },
+  {
+    "i": "a2_shield",
+    "r": "rising",
+    "w": 60,
+    "b": "the Warden's shield prised off the post, and on its inside face, scratched with a buckle tongue by somebody who had time and no light: eight hold, nine counts, do not answer when it uses your name",
+    "c": [
+      [
+        "Take the shield and go in by the gap.",
+        "a2_gap"
+      ]
+    ]
+  },
+  {
+    "i": "a2_chute",
+    "r": "choice",
+    "w": 60,
+    "b": "the spoil chute on the hill's flank, a throat of loose scree dropping forty feet into black, cut by dwarves to throw waste out and used since by something coming in, judging by the polish on the stones",
+    "c": [
+      [
+        "Rope down in order, quietly.",
+        "a2_chute_rope"
+      ],
+      [
+        "Send Kettle down first and follow her signal.",
+        "a2_chute_kettle"
+      ],
+      [
+        "Slide it. It is only scree.",
+        "e_a2_chute_fall"
+      ]
+    ]
+  },
+  {
+    "i": "a2_chute_rope",
+    "r": "rising",
+    "w": 50,
+    "b": "forty feet of rope work in the dark, everyone down with skinned palms and the mule left tethered above with Preacher's opinion of the arrangement made loudly clear, and cold water waiting at the bottom",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Wade out of the sump.",
+        "a2_sump"
+      ]
+    ]
+  },
+  {
+    "i": "a2_chute_kettle",
+    "r": "choice",
+    "w": 55,
+    "b": "Kettle down first on a single line, two whistles for clear, and then nothing at all for six minutes, which is four minutes longer than the arrangement",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go down on her signal when it finally comes.",
+        "a2_sump"
+      ],
+      [
+        "Go down now, fast, and find her.",
+        "a2_dark"
+      ],
+      [
+        "Wait the full ten minutes as agreed.",
+        "e_a2_kettle_gone"
+      ]
+    ]
+  },
+  {
+    "i": "a2_sump",
+    "r": "choice",
+    "w": 65,
+    "b": "the sump at the chute's foot: waist-deep black water in a cut stone tank, an iron grate at the far end going into the vault proper, and things caught against the grate that are mostly cloth and mostly Warden",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Force the grate and go through into the hall.",
+        "a2_hall"
+      ],
+      [
+        "Follow the sump wall to the dry gallery.",
+        "a2_dark"
+      ],
+      [
+        "Take what is caught in the grate.",
+        "a2_grate"
+      ],
+      [
+        "Dive the outflow and see where it goes.",
+        "e_a2_outflow"
+      ]
+    ]
+  },
+  {
+    "i": "a2_grate",
+    "r": "rising",
+    "w": 55,
+    "b": "what the grate has kept: a Warden's tally-iron on a thong, a sodden dispatch bag, and a boot with the foot still laced into it, which Nyre takes charge of before anyone can make a joke about it",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Force the grate and go on into the hall.",
+        "a2_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a2_dark",
+    "r": "choice",
+    "w": 65,
+    "b": "the dry gallery, unlit, and in it the smell of a larder: eleven bodies stacked with care in a side bay and four pale drinkers asleep among them, long-limbed, ribbed like greyhounds, their hands folded like men at prayer",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ],
+    "c": [
+      [
+        "Withdraw along the wall to the hall.",
+        "a2_hall"
+      ],
+      [
+        "Burn the bay with the lamp oil.",
+        "a2_burn"
+      ],
+      [
+        "Go through quietly and leave them fed.",
+        "a2_quiet"
+      ],
+      [
+        "Wake them and fight in the dark, on your terms.",
+        "e_a2_nest"
+      ]
+    ]
+  },
+  {
+    "i": "a2_burn",
+    "r": "rising",
+    "w": 60,
+    "b": "oil, flint, and a bay that goes up like a hayrick, three drinkers dead in the fire and the fourth away down the gallery screaming in a register that hurts the teeth; the smoke follows the company for an hour and announces them for two",
+    "x": "vigor-1",
+    "s": [
+      "conflict",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Move on into the hall before the fourth brings company.",
+        "a2_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a2_quiet",
+    "r": "choice",
+    "w": 55,
+    "b": "eleven minutes of moving past sleeping drinkers at the pace of a minute hand, Ilsabet's salt line laid behind each foot, and the fourth one opening its eyes as the last of you passes and choosing, visibly, not to bother",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Keep going and do not look back.",
+        "a2_hall"
+      ],
+      [
+        "Take a hoard-tooth from the bay on the way out.",
+        "e_a2_tooth"
+      ]
+    ]
+  },
+  {
+    "i": "a2_postern",
+    "r": "choice",
+    "w": 60,
+    "b": "the mason's postern round the hill's shoulder: a dwarf door the size of a coffin lid, sealed with lead and mason's marks, and beside it in the rock a tally of nine strokes cut so recently the dust is still in the grooves",
+    "c": [
+      [
+        "Let Ilsabet unpick the seal properly; it will take an hour.",
+        "a2_postern_open"
+      ],
+      [
+        "Break it with the poleaxe and go in loud.",
+        "a2_postern_break"
+      ],
+      [
+        "Read the tally beside it first.",
+        "a2_tally"
+      ]
+    ]
+  },
+  {
+    "i": "a2_tally",
+    "r": "choice",
+    "w": 55,
+    "b": "the tally read close: nine strokes, the ninth struck through, and below it in a second hand a running count in the hundreds, kept in nines, going back further than the lead in the door has been cold",
+    "c": [
+      [
+        "Have Ilsabet open the seal properly.",
+        "a2_postern_open"
+      ],
+      [
+        "Break it; whoever keeps that count already knows.",
+        "a2_postern_break"
+      ]
+    ]
+  },
+  {
+    "i": "a2_postern_open",
+    "r": "rising",
+    "w": 55,
+    "b": "an hour of quiet work, lead cut away in curls and the mason's marks answered one by one in Ilsabet's chalk, and the door opening inward on cold air and a corridor that has not been used by anything with hands",
+    "c": [
+      [
+        "Go in.",
+        "a2_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a2_postern_break",
+    "r": "choice",
+    "w": 60,
+    "b": "the postern broken in four blows that the hill repeats for a long time, and then a lamp coming up the corridor at walking pace, held by somebody who does not hurry and does not call out",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Take him alive.",
+        "a2_keeper"
+      ],
+      [
+        "Put him down quietly and move.",
+        "a2_hall"
+      ],
+      [
+        "Challenge whoever is behind that lamp.",
+        "e_a2_challenge"
+      ]
+    ]
+  },
+  {
+    "i": "a2_hall",
+    "r": "choice",
+    "w": 70,
+    "b": "the weighing floor of Kar Duhn: a hall of standing scales with nine iron-bound chests along the wall, every one open and empty, the floor mosaic showing a door held by nine hands, and three ways on, the barracks arch, the counting-room passage, and a gallery from which the smell of fresh lamp oil comes",
+    "c": [
+      [
+        "Clear the barracks arch first.",
+        "a2_barracks"
+      ],
+      [
+        "Go to the counting room; that is the contract.",
+        "a2_counting"
+      ],
+      [
+        "Follow the smell of fresh oil.",
+        "a2_lamps"
+      ],
+      [
+        "Read the mosaic on the floor properly.",
+        "a2_mosaic"
+      ]
+    ]
+  },
+  {
+    "i": "a2_mosaic",
+    "r": "choice",
+    "w": 60,
+    "b": "the mosaic under the dust: eight hands set flat against a door of nine irons, and a ninth hand standing apart in front of it holding a tally-board, and the border running all the way round in dwarf letters worn by boots",
+    "c": [
+      [
+        "Have Ilsabet read the border.",
+        "a2_mosaic_read"
+      ],
+      [
+        "Enough floor-reading; the counting room is the contract.",
+        "a2_counting"
+      ]
+    ]
+  },
+  {
+    "i": "a2_mosaic_read",
+    "r": "rising",
+    "w": 65,
+    "b": "the border read aloud in Ilsabet's careful dwarf: this door is not a lock but a lid, eight hands to hold it, one hand to keep the count and to bring what is owed, and the last clause is a price, paid in nines, forever",
+    "x": "knows_compact=true",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Take that to the counting room.",
+        "a2_counting"
+      ]
+    ]
+  },
+  {
+    "i": "a2_barracks",
+    "r": "choice",
+    "w": 65,
+    "b": "the garrison barracks: forty bunks made up to inspection standard, kit stowed, boots paired, and the far third of the room walled off floor to ceiling with a barricade of shields and bunk timber built from this side",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Take the shield wall apart.",
+        "a2_wall"
+      ],
+      [
+        "Search the sergeant's chest.",
+        "a2_chest"
+      ],
+      [
+        "Sleep here in shifts; the company is spent.",
+        "a2_rest"
+      ],
+      [
+        "Strip the kit and coin and go home rich.",
+        "e_a2_loot_home"
+      ]
+    ]
+  },
+  {
+    "i": "a2_wall",
+    "r": "choice",
+    "w": 70,
+    "b": "the barricade opened enough to see: eleven Wardens sitting shoulder to shoulder along the wall behind it, drained to paper, hands folded, boots off and paired beside each of them, and the fourth one from the left slowly turning its head",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ],
+    "c": [
+      [
+        "Put it down properly and quickly.",
+        "a2_wall_mercy"
+      ],
+      [
+        "Ask it a question.",
+        "a2_wall_ask"
+      ],
+      [
+        "Wall it back up and walk away.",
+        "a2_chest"
+      ],
+      [
+        "Cut it free and carry it out for the Marshal to see.",
+        "e_a2_carry"
+      ]
+    ]
+  },
+  {
+    "i": "a2_wall_mercy",
+    "r": "rising",
+    "w": 55,
+    "b": "one clean stroke from Dellach and a Warden's boots set straight afterwards by Nyre, who writes his name in her book from the tag at his collar and says the words at half volume because there is no time for the whole rite",
+    "x": "vigor-1",
+    "s": [
+      "sad_moment",
+      "conflict"
+    ],
+    "c": [
+      [
+        "Go through the sergeant's chest.",
+        "a2_chest"
+      ]
+    ]
+  },
+  {
+    "i": "a2_wall_ask",
+    "r": "choice",
+    "w": 65,
+    "b": "the question asked and answered in numbers, patiently, the way a clerk answers: eight, and then a pause, and then eight again, and when Nyre asks who the ninth is, the head turns to look directly at the company",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ],
+    "c": [
+      [
+        "Stop there. Put it down and close the wall.",
+        "a2_chest"
+      ],
+      [
+        "Ask it the ninth question.",
+        "e_a2_ask_too_long"
+      ]
+    ]
+  },
+  {
+    "i": "a2_chest",
+    "r": "choice",
+    "w": 60,
+    "b": "the sergeant's chest, unlocked because there was no longer anything worth locking: a duty roster with nine names struck out in the same ink, an unmarked Warden key-iron blank, and a bottle of paymaster's brandy with two fingers gone",
+    "c": [
+      [
+        "Take the roster.",
+        "a2_roster"
+      ],
+      [
+        "Take the blank iron.",
+        "a2_blank"
+      ],
+      [
+        "Share the brandy out; they have earned two fingers each.",
+        "a2_bottle"
+      ]
+    ]
+  },
+  {
+    "i": "a2_roster",
+    "r": "rising",
+    "w": 55,
+    "b": "the roster read walking: nine names struck out on nine consecutive days, the ninth being the paymaster's own, and against each name in the margin a single word that Ilsabet says is the dwarf term for tendered",
+    "c": [
+      [
+        "Take the counting-room passage.",
+        "a2_counting"
+      ]
+    ]
+  },
+  {
+    "i": "a2_blank",
+    "r": "rising",
+    "w": 50,
+    "b": "an unmarked key-iron, the same length and gauge as the ones the door wants, blank where the tally should be cut, which Ilsabet takes off you and wraps in salt-cloth without explaining why she is smiling",
+    "c": [
+      [
+        "Take the counting-room passage.",
+        "a2_counting"
+      ]
+    ]
+  },
+  {
+    "i": "a2_bottle",
+    "r": "rising",
+    "w": 50,
+    "b": "two fingers of paymaster's brandy each, which is not much and is exactly enough, the company standing in a dead man's barracks drinking a dead man's drink and feeling their hands come back to them",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Take the counting-room passage.",
+        "a2_counting"
+      ]
+    ]
+  },
+  {
+    "i": "a2_rest",
+    "r": "rising",
+    "w": 55,
+    "b": "four hours of shifts on made beds in a barracks that smells of other men's boots, and nobody sleeps well, and everybody sleeps, and at the end of it the company is capable of the day it has to have",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Take the counting-room passage.",
+        "a2_counting"
+      ]
+    ]
+  },
+  {
+    "i": "a2_counting",
+    "r": "choice",
+    "w": 70,
+    "b": "the counting room: a table forty feet long, nine balances set out in a row, the winter pay-ledger open at its last page under a lamp that is still burning, and in the ninth chest's lock a key-iron left standing where a hand let go of it",
+    "c": [
+      [
+        "Read the last page before you touch anything.",
+        "a2_lastpage"
+      ],
+      [
+        "Take the pay-ledger; the Marshal wants the ledger.",
+        "a2_ledger"
+      ],
+      [
+        "Take the ninth iron out of the lock.",
+        "a2_take_iron"
+      ],
+      [
+        "Search the clerk's alcove behind the table.",
+        "a2_alcove"
+      ],
+      [
+        "Load the remaining plate and withdraw with salvage.",
+        "e_a2_withdraw_rich"
+      ]
+    ]
+  },
+  {
+    "i": "a2_lastpage",
+    "r": "choice",
+    "w": 65,
+    "b": "the last page: a winter's pay entered in full and balanced against nothing, nine names tendered in a clerk's failing hand, and at the foot in a different pen, pressed hard enough to tear, the line we are the payment",
+    "x": "knows_compact=true",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Take the iron out of the lock and get out.",
+        "a2_take_iron"
+      ],
+      [
+        "Leave it all where it lies and search the alcove.",
+        "a2_alcove"
+      ]
+    ]
+  },
+  {
+    "i": "a2_ledger",
+    "r": "choice",
+    "w": 55,
+    "b": "the pay-ledger off the table and into Nyre's satchel, four pounds of contract fulfilled, and the lamp above it guttering as it comes away as though the room had been keeping it lit for a reader",
+    "c": [
+      [
+        "Take the iron from the lock as well.",
+        "a2_take_iron"
+      ],
+      [
+        "Leave the iron; the ledger is what was asked for.",
+        "a2_alcove"
+      ]
+    ]
+  },
+  {
+    "i": "a2_take_iron",
+    "r": "choice",
+    "w": 70,
+    "b": "the ninth key-iron drawn out of the lock, cold as the inside of a well and heavier than its size argues for, and the moment it clears the wards every lamp in the upper vault dips together, and far below something that had been counting starts over from one",
+    "x": "iron_key=true",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Wrap it in Ilsabet's salt-cloth before you carry it.",
+        "a2_wrap"
+      ],
+      [
+        "Put it straight back in the lock and take only paper.",
+        "a2_put_back"
+      ],
+      [
+        "Pocket it and search the clerk's alcove.",
+        "a2_alcove"
+      ],
+      [
+        "Carry it in your mouth, the way the bog man carried his.",
+        "e_a2_mouth"
+      ]
+    ]
+  },
+  {
+    "i": "a2_wrap",
+    "r": "rising",
+    "w": 55,
+    "b": "salt-cloth, then oilcloth, then the middle of the pack, and the difference is immediate: the pressure behind the eyes stops, and Ilsabet says the thing nobody wanted said, that it was not the iron doing that, it was being noticed through it",
+    "c": [
+      [
+        "Make for the stair by way of the schedule board.",
+        "a2_board"
+      ]
+    ]
+  },
+  {
+    "i": "a2_put_back",
+    "r": "rising",
+    "w": 55,
+    "b": "the iron set back in the lock exactly as it was found, the lamps steadying, the count below stopping mid-number, and the company standing in a room that has just declined, politely, to keep them",
+    "x": "iron_key=false",
+    "c": [
+      [
+        "Search the clerk's alcove and get out.",
+        "a2_alcove"
+      ]
+    ]
+  },
+  {
+    "i": "a2_alcove",
+    "r": "choice",
+    "w": 65,
+    "b": "the clerk's alcove behind the table: a cot slept in for months, a private tally scratched into the plaster in nines, a jar of clean water, and a hole broken through the wall at floor level going down into warm air",
+    "c": [
+      [
+        "Read the clerk's private tally.",
+        "a2_tally_private"
+      ],
+      [
+        "Put a lamp down the hole and look.",
+        "a2_hole"
+      ],
+      [
+        "Leave it; read the schedule board and take the stair.",
+        "a2_board"
+      ],
+      [
+        "Go down the hole now, while it is quiet.",
+        "e_a2_hole"
+      ]
+    ]
+  },
+  {
+    "i": "a2_tally_private",
+    "r": "rising",
+    "w": 65,
+    "b": "the clerk's plaster tally read by lamp: not a count of days but of deliveries, kept in nines for eleven years, and in the last group only eight strokes and then, instead of a ninth, a word in common speech, mine",
+    "x": "knows_compact=true",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Go on to the schedule board.",
+        "a2_board"
+      ]
+    ]
+  },
+  {
+    "i": "a2_hole",
+    "r": "choice",
+    "w": 60,
+    "b": "a lamp lowered on a bootlace into the hole: eleven feet of broken wall and then a floor, and on that floor a set of small neat footprints in dust that go in a circle, round and round, hundreds of times",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ],
+    "c": [
+      [
+        "Pull the lamp up and go by the schedule board.",
+        "a2_board"
+      ],
+      [
+        "Reach down and take up what is lying by the footprints.",
+        "e_a2_reached"
+      ]
+    ]
+  },
+  {
+    "i": "a2_lamps",
+    "r": "choice",
+    "w": 70,
+    "b": "the lamp gallery: nine niches in a row, all nine lamps trimmed and full, an oil store stacked to the roof, a schedule board on the wall in chalk, and on a bench beneath it a lamp-keeper asleep with a tally-book rising and falling on his chest",
+    "c": [
+      [
+        "Take him alive and ask him everything.",
+        "a2_keeper"
+      ],
+      [
+        "Wake him politely and talk terms.",
+        "a2_terms"
+      ],
+      [
+        "Kill him and take the book.",
+        "a2_kill_keeper"
+      ],
+      [
+        "Read the board and leave him sleeping.",
+        "a2_board"
+      ],
+      [
+        "Put a light in the oil store on your way past.",
+        "e_a2_fire"
+      ]
+    ]
+  },
+  {
+    "i": "a2_keeper",
+    "r": "choice",
+    "w": 70,
+    "b": "the keeper taken with a hand over his mouth and no fight in him at all: nineteen years old, a Warden's son by his belt, and so relieved to be caught by people who ask questions that he begins answering before you ask any",
+    "c": [
+      [
+        "Let him talk it all the way out.",
+        "a2_keeper_all"
+      ],
+      [
+        "Ask only what you need: the safe way down.",
+        "a2_keeper_route"
+      ],
+      [
+        "Promise to take him out with you when you go.",
+        "a2_keeper_out"
+      ]
+    ]
+  },
+  {
+    "i": "a2_keeper_all",
+    "r": "rising",
+    "w": 70,
+    "b": "all of it, in a boy's flat exhausted voice: the Compact is a contract, the thing behind the Ninefold Door is not dead and not meant to be, eight irons hold the lid, the ninth hand keeps the count and brings what is owed, and the garrison was owed",
+    "x": "knows_compact=true",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Read the schedule board with new eyes.",
+        "a2_board"
+      ]
+    ]
+  },
+  {
+    "i": "a2_keeper_route",
+    "r": "rising",
+    "w": 55,
+    "b": "the route only, given gratefully: the great stair behind the ninth niche, the two landings where you must not stop, and the hour when the stair is used by somebody else and must be left entirely alone",
+    "c": [
+      [
+        "Read the schedule board.",
+        "a2_board"
+      ]
+    ]
+  },
+  {
+    "i": "a2_keeper_out",
+    "r": "rising",
+    "w": 60,
+    "b": "a promise made out loud in front of witnesses, which Nyre writes down, and the boy's whole posture changing; he gives you the route, the hours, the count, and a warning about the ninth hour delivered like a man confessing a murder",
+    "x": "renown+1",
+    "c": [
+      [
+        "Read the schedule board together.",
+        "a2_board"
+      ]
+    ]
+  },
+  {
+    "i": "a2_terms",
+    "r": "choice",
+    "w": 65,
+    "b": "the keeper woken civilly, offered a chair he already has, and turning out to be a negotiator: he will give you the stair and the hours if the company will carry one thing out for him, unopened, and put it in a Ledger house",
+    "c": [
+      [
+        "Accept his terms and take the stair.",
+        "a2_board"
+      ],
+      [
+        "Break faith; bind him and ask properly.",
+        "a2_keeper"
+      ],
+      [
+        "Take his other offer: one hour in the file, and safe passage.",
+        "e_a2_join"
+      ]
+    ]
+  },
+  {
+    "i": "a2_kill_keeper",
+    "r": "choice",
+    "w": 65,
+    "b": "a tally-book taken off a boy who never woke up, Nyre's face closing like a ledger, Kettle looking at the wall, and below in the hill the count faltering on a number and then, deliberately, starting again from one",
+    "s": [
+      "conflict",
+      "sad_moment"
+    ],
+    "c": [
+      [
+        "Take the book and move before the count comes up.",
+        "a2_board"
+      ],
+      [
+        "Put on his cloak and carry his lamp.",
+        "a2_cloak"
+      ]
+    ]
+  },
+  {
+    "i": "a2_cloak",
+    "r": "rising",
+    "w": 60,
+    "b": "a keeper's cloak that does not fit and a keeper's lamp held at a keeper's height, which is a disguise for whatever counts by lamp-height and none at all for whatever counts by weight, and nobody in the company says so",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Read the schedule board.",
+        "a2_board"
+      ]
+    ]
+  },
+  {
+    "i": "a2_board",
+    "r": "choice",
+    "w": 70,
+    "b": "the schedule board in chalk: nine niches, nine hours, the lamps trimmed on the hour and the ninth hour ringed twice with a note beside it in the keeper's careful hand, do not be on the stair, and behind the ninth niche the head of the great stair going down",
+    "c": [
+      [
+        "Go down now, well clear of the ninth hour.",
+        "a2_stair"
+      ],
+      [
+        "Wait for the ninth hour and go down behind the file.",
+        "a2_ninth_hour"
+      ],
+      [
+        "Douse all nine lamps before you go down.",
+        "a2_douse"
+      ]
+    ]
+  },
+  {
+    "i": "a2_ninth_hour",
+    "r": "rising",
+    "w": 65,
+    "b": "four hours of waiting in the oil store and then the ninth hour arriving on time: nine lamps lifted off nine hooks by hands the company does not look at, a count going down the stair, and forty paces of silence behind it into which the Ninth Sword steps",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Take the stair.",
+        "a2_stair"
+      ]
+    ]
+  },
+  {
+    "i": "a2_douse",
+    "r": "choice",
+    "w": 65,
+    "b": "nine lamps pinched out one after another, and the quality of the quiet changing with each one until the ninth, after which the hill is not quiet at all but attentive, the way a room is when everyone in it has stopped pretending to read",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Take the stair immediately, in the dark.",
+        "a2_stair"
+      ],
+      [
+        "Wait to see what comes up to relight them.",
+        "e_a2_douse"
+      ]
+    ]
+  },
+  {
+    "i": "a2_stair",
+    "r": "climax",
+    "w": 70,
+    "b": "the great stair of Kar Duhn behind the ninth niche: nine feet wide, cut for dwarves who expected traffic, going down in long flights into air that is warm and moving and should be neither, with the sound of water somewhere under it and a smell like a forge that has been left to go out slowly",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go down in order with lamps lit.",
+        "a3_landing"
+      ],
+      [
+        "Go down dark, one hand on the wall.",
+        "a3_dark_descent"
+      ],
+      [
+        "Rope the stair and send Kettle a flight ahead.",
+        "a3_scout_descent"
+      ],
+      [
+        "Turn around. Take what you have and get out.",
+        "e_a2_out"
+      ]
+    ]
+  },
+  {
+    "i": "e_a2_knock",
+    "r": "failure",
+    "w": 55,
+    "e": "capture|negative|Answered at the Door",
+    "b": "three knocks on dwarf bronze, and the door opening the rest of the way from the inside by nothing the company can see, and a voice from the dark inviting the Ninth Sword in by the correct number, which is five, and not one of them able to explain afterwards why they went",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a2_pinned",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|Pinned in the Gap",
+    "b": "the haft holding the door for eleven seconds and then folding, and the door closing to its hand's width with a man in the gap, and the company on both sides of a foot of bronze that will not move for any lever they have left",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a2_chute_fall",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|Forty Feet of Scree",
+    "b": "the chute taken the fast way, the scree going with you all at once, and the company arriving in the sump under four tons of moving stone in the dark, which is not a fight, not an ambush, and not survivable",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a2_kettle_gone",
+    "r": "failure",
+    "w": 60,
+    "e": "setback|negative|Ten Minutes as Agreed",
+    "b": "the full ten minutes kept as agreed, and then a rope pulled up with its end cut clean, and a company standing on a hillside at dusk with no scout, no way down that anybody trusts, and a long walk to Gallowmere to say so out loud",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a2_outflow",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|The Outflow",
+    "b": "the outflow dived on one breath: eleven feet of cut stone, then a turn the wrong way, then the discovery that dwarves built their drains to be cleaned from the other end and never from this one",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a2_nest",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|On Your Terms",
+    "b": "four pale drinkers woken deliberately in a dark gallery by a company that had a plan, and the plan surviving until the second one comes off the ceiling, after which the gallery is simply a larder with more in it than it had",
+    "s": [
+      "peril",
+      "conflict",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_tooth",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|One Tooth From the Bay",
+    "b": "a hoard-tooth lifted from the bay on the way past, and the fourth drinker deciding after all that it is worth bothering, and the salt line behind the company's feet turning out to have been laid for going forward and not for standing still",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_challenge",
+    "r": "failure",
+    "w": 55,
+    "e": "capture|negative|Who Goes There",
+    "b": "a challenge shouted into a dwarf corridor, and the answer coming back in the correct Warden form, word for word, in the voice of the man whose shield is nailed to the gate post outside, and the lamp coming on at walking pace while nobody moves",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_loot_home",
+    "r": "failure",
+    "w": 55,
+    "e": "setback|neutral|Kit and Coin",
+    "b": "forty sets of Warden kit and a garrison's small coin carried out by mule and sold in Gallowmere for good money, the commission unfulfilled, the ledger left on its table, and a receipt in the Marshal's file that says exactly what the Ninth Sword is"
+  },
+  {
+    "i": "e_a2_carry",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|Evidence for the Marshal",
+    "b": "a drained Warden cut out of the barricade and carried on a shield toward daylight, because evidence wins arguments, and the thing on the shield waiting until the second landing to demonstrate what it was kept alive to do",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_ask_too_long",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|The Ninth Question",
+    "b": "the ninth question asked, and answered, and the answer being the company's own names given back in the order they came through the door, after which the eleven Wardens along the wall all fold their hands the same way at once",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_withdraw_rich",
+    "r": "failure",
+    "w": 60,
+    "e": "setback|neutral|Salvage, Not Contract",
+    "b": "the remaining plate loaded and walked out by the postern, a fair salvage honestly declared and taxed, and Redd reading the declaration without expression before asking the only question that matters, which is where his ledger is"
+  },
+  {
+    "i": "e_a2_mouth",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|As the Bog Man Carried His",
+    "b": "the ninth iron carried in the mouth the way the bound man in the peat carried his, and the discovery, too late to spit it out, of what that particular arrangement is actually for and which of the nine hands it marks you as",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_hole",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|Down the Clerk's Hole",
+    "b": "eleven feet down a broken wall into a room where the footprints go round and round, and the discovery that the circle has a middle, and that the middle is occupied, and that it has been waiting for exactly this",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_reached",
+    "r": "failure",
+    "w": 55,
+    "e": "capture|negative|What Was Lying by the Footprints",
+    "b": "an arm through a hole in a wall to take up what is lying there, which is a lamp, still warm, and a hand closing on the wrist from the dark with the unhurried grip of something that has done this before and knows how long it takes",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_fire",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|Nine Lamps at Once",
+    "b": "a light put into an oil store that holds a year's supply, and the gallery becoming a flue, and the fire going down the stair ahead of the company because that is where the air was going, and finding, down there, something that does not object to fire at all",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a2_join",
+    "r": "failure",
+    "w": 60,
+    "e": "capture|negative|One Hour in the File",
+    "b": "one hour in the file agreed for safe passage, lamps issued and the count taken up, and the hour ending as scheduled without the company being released, because the file's arithmetic has no provision for anybody leaving it",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_douse",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|What Comes Up to Relight Them",
+    "b": "nine lamps out and the company waiting in the dark to see who tends them, and finding out: it comes up the stair without a light, it relights all nine from the bottom hook upward, and it takes the trimming of them very seriously indeed",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a2_out",
+    "r": "failure",
+    "w": 60,
+    "e": "setback|neutral|Out, and Honest About It",
+    "b": "the stair declined and the upper vault walked back out through the gap in the door, the ledger delivered, the iron declared, and a written report that says plainly that the Ninth Sword did not go down, which Redd files and reads twice"
+  }
+]

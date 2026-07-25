@@ -1,0 +1,814 @@
+[
+  {
+    "i": "a1_dyke",
+    "r": "choice",
+    "w": 55,
+    "b": "the drover track on the dyke crest, peat water on both sides going the colour of strong tea, sheep skulls set on posts every hundred paces by somebody who wanted them counted, and the hill of Kar Duhn a grey knuckle on the skyline",
+    "c": [
+      [
+        "Keep to the dyke crest, single file.",
+        "a1_dyke_top"
+      ],
+      [
+        "Drop to the drove road below the bank.",
+        "a1_dyke_low"
+      ],
+      [
+        "Stop at the gibbet cage where the tracks cross.",
+        "a1_gibbet"
+      ]
+    ]
+  },
+  {
+    "i": "a1_dyke_top",
+    "r": "rising",
+    "w": 50,
+    "b": "the crest in a crosswind that makes every man walk like a drunk, good sightlines and no cover at all, and Dellach's flat observation that anything watching the moor has watched you for two hours",
+    "c": [
+      [
+        "Press on to the sluice.",
+        "a1_sluice"
+      ],
+      [
+        "Get down out of sight below the bank.",
+        "a1_dyke_low"
+      ]
+    ]
+  },
+  {
+    "i": "a1_dyke_low",
+    "r": "rising",
+    "w": 50,
+    "b": "the drove road below the bank, shin-deep and sucking, the mule fighting every yard and Odd going down twice; cover from the wind bought with the company's legs",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Climb out at the sluice.",
+        "a1_sluice"
+      ]
+    ]
+  },
+  {
+    "i": "a1_gibbet",
+    "r": "choice",
+    "w": 60,
+    "b": "a Warden's gibbet at the track crossing with a man still in it, tarred and long past complaining, and cut into the post below him a mark that is not Warden work: a ring of nine strokes with the ninth struck through",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Cut the mark out of the post for Ilsabet.",
+        "a1_gibbet_mark"
+      ],
+      [
+        "Leave it be; a hanged man is a hanged man.",
+        "a1_sluice"
+      ],
+      [
+        "Camp under it, out of the wind, and move at first light.",
+        "e_a1_gibbet_night"
+      ]
+    ]
+  },
+  {
+    "i": "a1_gibbet_mark",
+    "r": "rising",
+    "w": 50,
+    "b": "the mark chiselled free and turned over in Ilsabet's hands, her verdict careful: not a ward, not a curse, a tally, and whoever keeps this tally has been keeping it on Warden property for a long time",
+    "c": [
+      [
+        "Pocket it and go on to the sluice.",
+        "a1_sluice"
+      ]
+    ]
+  },
+  {
+    "i": "a1_sluice",
+    "r": "choice",
+    "w": 60,
+    "b": "the dwarf sluice at the moor's throat, a cut stone channel with its gate broken half-open, black water shooting through the gap loud enough to talk over, and the track drowned for forty feet on the far side",
+    "c": [
+      [
+        "Rope a line and wade it.",
+        "a1_sluice_wade"
+      ],
+      [
+        "Go round by the reed island and lose an hour.",
+        "a1_sluice_round"
+      ],
+      [
+        "Have Ilsabet freeze the gap shut long enough to cross.",
+        "a1_sluice_ward"
+      ],
+      [
+        "Cross dry along the gate's iron beam.",
+        "e_a1_beam"
+      ]
+    ]
+  },
+  {
+    "i": "a1_sluice_wade",
+    "r": "choice",
+    "w": 50,
+    "b": "chest-deep in water cold enough to stop a heart, the rope line humming, Dellach's shoulders taking the strain on the far bank while Kettle counts everyone through by name",
+    "x": "vigor-1",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Keep the line taut and go one at a time.",
+        "a1_camp"
+      ],
+      [
+        "Let the line go and swim the last of it.",
+        "e_a1_swept"
+      ]
+    ]
+  },
+  {
+    "i": "a1_sluice_round",
+    "r": "rising",
+    "w": 50,
+    "b": "an hour lost going round by the reed island, dry to the knee and no more, and at the island's high point the first clear sight of nine lamp hooks on the barrow gate, all of them full",
+    "c": [
+      [
+        "Rejoin the track and make camp.",
+        "a1_camp"
+      ]
+    ]
+  },
+  {
+    "i": "a1_sluice_ward",
+    "r": "rising",
+    "w": 50,
+    "b": "salt and glass and Ilsabet's flat working voice, the gap crusting over in grey lace that holds for ninety seconds; the company crosses dry and she sits down hard on the far side and will not be helped up",
+    "c": [
+      [
+        "Give her a minute, then make camp.",
+        "a1_camp"
+      ]
+    ]
+  },
+  {
+    "i": "a1_moor",
+    "r": "choice",
+    "w": 60,
+    "b": "the open moor, pale tussock and black pool, no track and no horizon that stays put, the kind of country that is flat until it kills you; somewhere ahead the hill, and between here and it a day of guessing",
+    "c": [
+      [
+        "Keep to the tussock lines and go slow.",
+        "a1_moor_slow"
+      ],
+      [
+        "Push hard and straight and save the daylight.",
+        "a1_moor_fast"
+      ],
+      [
+        "Follow the fresh path somebody else cut through it.",
+        "a1_moor_path"
+      ]
+    ]
+  },
+  {
+    "i": "a1_moor_slow",
+    "r": "rising",
+    "w": 50,
+    "b": "the slow way, Kettle reading the tussocks like a page and calling each step, the company strung out and patient, four miles bought with six hours and nobody wet above the knee",
+    "c": [
+      [
+        "Cut peat for the fire at the old workings.",
+        "a1_bog"
+      ]
+    ]
+  },
+  {
+    "i": "a1_moor_fast",
+    "r": "choice",
+    "w": 55,
+    "b": "the fast way, which works until Sten goes in to the chest and the moor takes his spear and one boot as payment, and the company spends its saved hour hauling him out by the belt",
+    "x": "vigor-1",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Slow down; the moor made its point.",
+        "a1_bog"
+      ],
+      [
+        "Keep the pace and let the moor try again.",
+        "e_a1_drown"
+      ]
+    ]
+  },
+  {
+    "i": "a1_moor_path",
+    "r": "choice",
+    "w": 55,
+    "b": "a path cut through the tussocks days old and wide as a wagon, except no wagon made it: something was dragged this way, in quantity, and the drag marks have small hard footprints on both sides of them",
+    "c": [
+      [
+        "Follow it and see what was dragged.",
+        "a1_drag"
+      ],
+      [
+        "Get off it and back to open moor.",
+        "a1_bog"
+      ],
+      [
+        "Set an ambush on the path and wait.",
+        "a1_ambush"
+      ]
+    ]
+  },
+  {
+    "i": "a1_drag",
+    "r": "choice",
+    "w": 65,
+    "b": "the butchering ground at the path's end: Warden kit stacked by type, boots in one pile and belts in another, the relief patrol's shields with the paint scraped off, and the tidiness of it worse than the smell",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ],
+    "c": [
+      [
+        "Take the Warden signet and the dispatch case.",
+        "a1_drag_kit"
+      ],
+      [
+        "Bury what can be buried and let Nyre say the words.",
+        "a1_burial"
+      ],
+      [
+        "Back away now; the Fenkin are still close.",
+        "a1_bog"
+      ],
+      [
+        "Follow the small footprints home.",
+        "e_a1_fenkin_camp"
+      ]
+    ]
+  },
+  {
+    "i": "a1_drag_kit",
+    "r": "rising",
+    "w": 50,
+    "b": "a Warden signet and a leather dispatch case lifted from the pile, the case still sealed, the seal not Warden but Ledger, and Nyre's face when she recognises the factor's stamp on it",
+    "c": [
+      [
+        "Get off the path and go to ground.",
+        "a1_bog"
+      ]
+    ]
+  },
+  {
+    "i": "a1_burial",
+    "r": "rising",
+    "w": 55,
+    "b": "an hour of hard work in wet peat and Nyre's burial words said properly over eleven Wardens, the company sweating and silent, Dellach standing watch facing the way the footprints go; it costs the light and buys something you cannot spend",
+    "x": "vigor-1,renown+1",
+    "s": [
+      "sad_moment"
+    ],
+    "c": [
+      [
+        "Move before the light goes entirely.",
+        "a1_bog"
+      ]
+    ]
+  },
+  {
+    "i": "a1_ambush",
+    "r": "rising",
+    "w": 55,
+    "b": "two hours flat in cold water and then eleven minutes of violence: four Fenkin scouts dead on the path, one of them wearing a Warden's boots and a tally-ring of nine strokes on a thong at his throat",
+    "x": "vigor-1,renown+1",
+    "s": [
+      "conflict",
+      "peril"
+    ],
+    "c": [
+      [
+        "Take the tally-ring and get off the path.",
+        "a1_bog"
+      ]
+    ]
+  },
+  {
+    "i": "a1_bog",
+    "r": "choice",
+    "w": 65,
+    "b": "the old peat workings, a cut face standing higher than a man, and in it a bog body preserved to the eyelashes: hands bound at the wrist, a strip of iron laid in the open mouth, and the peat above it undisturbed for a century",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Have Ilsabet read the iron in the mouth.",
+        "a1_bog_token"
+      ],
+      [
+        "Take the iron and go.",
+        "a1_camp"
+      ],
+      [
+        "Cover the face and leave the man his iron.",
+        "a1_camp"
+      ]
+    ]
+  },
+  {
+    "i": "a1_bog_token",
+    "r": "rising",
+    "w": 55,
+    "b": "Ilsabet reading the strip by lamp: dwarf-cut, a pay-tally, one of nine, and the word she translates last is not a number but a rank, the ninth hand, the one that keeps the count for the other eight",
+    "c": [
+      [
+        "Make camp while there is light to choose ground.",
+        "a1_camp"
+      ]
+    ]
+  },
+  {
+    "i": "a1_deadroad",
+    "r": "choice",
+    "w": 60,
+    "b": "the dwarf road going under the hill's shoulder: a cut so straight it insults the moor, roofed in places with slabs the size of doors, and every ninth pace a lamp niche cut into the wall at shoulder height",
+    "c": [
+      [
+        "Walk the open cut where the sky still shows.",
+        "a1_road_cut"
+      ],
+      [
+        "Take the covered gallery where the roof stands.",
+        "a1_gallery"
+      ],
+      [
+        "Back out and rejoin the dyke track at the sluice.",
+        "a1_sluice"
+      ]
+    ]
+  },
+  {
+    "i": "a1_road_cut",
+    "r": "choice",
+    "w": 55,
+    "b": "the open cut, a legion milestone at the bend with nine notches cut under the imperial hand and a lamp niche beside it holding a clay lamp with oil in it that has not had time to gum",
+    "c": [
+      [
+        "Take the oil; a full lamp is a full lamp.",
+        "a1_niche"
+      ],
+      [
+        "Leave the niche exactly as you found it.",
+        "a1_camp"
+      ],
+      [
+        "Duck into the covered gallery instead.",
+        "a1_gallery"
+      ]
+    ]
+  },
+  {
+    "i": "a1_niche",
+    "r": "rising",
+    "w": 50,
+    "b": "the lamp decanted into your own reservoir, good clean oil, and Kettle pointing out what you already noticed: somebody fills these, on a schedule, and that somebody will notice the level",
+    "c": [
+      [
+        "Push on to the camp ground.",
+        "a1_camp"
+      ]
+    ]
+  },
+  {
+    "i": "a1_gallery",
+    "r": "choice",
+    "w": 60,
+    "b": "the covered gallery, dry and dark and echoing wrong, the roof slabs holding except where a fall has closed the way at the far end; in the fall's rubble something shifts once with a sound like a chair moved in another room",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Dig through the fall.",
+        "a1_gallery_dig"
+      ],
+      [
+        "Take the crawl on the left of it.",
+        "a1_crawl"
+      ],
+      [
+        "Back out and take the open cut's lamp niche instead.",
+        "a1_niche"
+      ]
+    ]
+  },
+  {
+    "i": "a1_gallery_dig",
+    "r": "choice",
+    "w": 60,
+    "b": "an hour of moving stone by hand in the dark, Dellach and Odd at the face, dust in every throat, until the fall gives up a gap you could get a shoulder through and a draught comes out of it that smells of lamp oil and old meat",
+    "x": "vigor-1",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Take the gap while the fall is quiet.",
+        "a1_camp"
+      ],
+      [
+        "Widen it properly first; do it once, do it right.",
+        "e_a1_fall"
+      ]
+    ]
+  },
+  {
+    "i": "a1_crawl",
+    "r": "choice",
+    "w": 60,
+    "b": "sixty feet of crawl on your elbows with the roof on your back, and then a chamber: nine lamp niches burnt dry, nine hooks, and a body sitting under them in a good southern coat with a Ledger seal still on its breast",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Take the Ledger seal off the body.",
+        "a1_seal"
+      ],
+      [
+        "Back out; nine dead lamps is a message and you have read it.",
+        "a1_camp"
+      ]
+    ]
+  },
+  {
+    "i": "a1_seal",
+    "r": "rising",
+    "w": 55,
+    "b": "Factor Halloway's own seal in your hand, and the dead man's satchel holding a fair copy of the Kar Duhn pay account with the ninth signature circled twice in a southern ink that does not run",
+    "c": [
+      [
+        "Take it and get out into air.",
+        "a1_camp"
+      ]
+    ]
+  },
+  {
+    "i": "a1_camp",
+    "r": "choice",
+    "w": 70,
+    "b": "the last camp, a dry hummock in sight of the barrow gate a mile off, nine lamps burning on the gate hooks in daylight for nobody's benefit, and the company's mood the specific quiet of people doing sums they do not like",
+    "c": [
+      [
+        "Full watch, no fire, no talking.",
+        "a1_camp_dark"
+      ],
+      [
+        "Fire, hot food, and a short watch; they need it.",
+        "a1_camp_fire"
+      ],
+      [
+        "Send Kettle forward to look at the gate.",
+        "a1_scout"
+      ],
+      [
+        "Break camp and arrive before dawn.",
+        "a1_night_push"
+      ],
+      [
+        "Call it. The moor has beaten better companies.",
+        "e_a1_turn_back"
+      ]
+    ]
+  },
+  {
+    "i": "a1_camp_dark",
+    "r": "choice",
+    "w": 65,
+    "b": "a cold camp and a full watch, and at the third hour a file of lamps comes along the dwarf road below the hummock, nine of them, unhurried, and at the head of the file somebody counting aloud in a language that has too many numbers",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ],
+    "c": [
+      [
+        "Let it pass and log the hour.",
+        "a1_approach"
+      ],
+      [
+        "Follow it at distance.",
+        "a1_follow"
+      ],
+      [
+        "Leave Bram on watch and get an hour's sleep.",
+        "e_a1_bram"
+      ]
+    ]
+  },
+  {
+    "i": "a1_camp_fire",
+    "r": "choice",
+    "w": 60,
+    "b": "one small fire in a peat pit, hot food, dry socks, ninety minutes of real sleep each, and at the end of it something standing at the edge of the firelight that does not come closer and does not leave",
+    "x": "vigor+1",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Stand to and challenge it.",
+        "a1_challenge"
+      ],
+      [
+        "Douse everything and lie flat until it goes.",
+        "a1_approach"
+      ]
+    ]
+  },
+  {
+    "i": "a1_challenge",
+    "r": "choice",
+    "w": 60,
+    "b": "the challenge given in the Warden's form, three times, and the shape at the fire's edge answering on the third with a number instead of a name, and then waiting to see whether the company knows what to say next",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Say nothing more; hold the line and let it go.",
+        "a1_approach"
+      ],
+      [
+        "Answer it. Give it the next number.",
+        "e_a1_counted"
+      ]
+    ]
+  },
+  {
+    "i": "a1_scout",
+    "r": "choice",
+    "w": 65,
+    "b": "Kettle back at dusk with a scout's report and a bad colour: the gate stands a hand's width open, the nine lamps are tended, a Warden's shield is nailed to the post as a notice, and there are boot prints going in and none coming out",
+    "c": [
+      [
+        "Go in openly at the gate in the morning.",
+        "a1_approach"
+      ],
+      [
+        "Wait for the next file and go in behind it.",
+        "a1_slip"
+      ],
+      [
+        "Send her in alone to open the way for the rest.",
+        "e_a1_kettle_alone"
+      ]
+    ]
+  },
+  {
+    "i": "a1_slip",
+    "r": "rising",
+    "w": 50,
+    "b": "the file goes up the causeway at the third hour and the company follows it in at forty paces, moving on the lamp-count, learning the rhythm of it, arriving at the gate with the door still swinging",
+    "c": [
+      [
+        "Go in.",
+        "a1_approach"
+      ]
+    ]
+  },
+  {
+    "i": "a1_follow",
+    "r": "choice",
+    "w": 60,
+    "b": "following nine lamps across a black moor at forty paces, close enough to hear the count and the shuffle of a man in the file who is not walking under his own management, and the count is not going up, it is going round",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ],
+    "c": [
+      [
+        "Keep silent and follow to the gate.",
+        "a1_approach"
+      ],
+      [
+        "Take the count up with them and walk in as one of nine.",
+        "a1_pass_as_nine"
+      ]
+    ]
+  },
+  {
+    "i": "a1_pass_as_nine",
+    "r": "rising",
+    "w": 65,
+    "b": "the company falling into the file and taking the count, Kettle's voice steady on numbers she learned as a girl, and in eleven minutes of walking in that rhythm you understand what the file is for and what it is feeding",
+    "x": "knows_compact=true",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Break off at the gate before the count comes round.",
+        "a1_approach"
+      ]
+    ]
+  },
+  {
+    "i": "a1_night_push",
+    "r": "rising",
+    "w": 50,
+    "b": "camp struck at midnight and the last mile walked in the dark for no better reason than the captain's impatience, the company arriving at the barrow gate grey and short-tempered with the sky just going pale",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Look at what you came for.",
+        "a1_approach"
+      ]
+    ]
+  },
+  {
+    "i": "a1_gate",
+    "r": "climax",
+    "w": 75,
+    "b": "the barrow gate of Kar Duhn: a dwarf-cut arch driven into the hillside, its lintel carved with a door of nine irons, a Warden's shield nailed to the post with the paint scraped off, nine lamps burning on nine hooks, and the great door standing open the width of a hand and no wider, exactly as the dispatch said",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ],
+    "c": [
+      [
+        "Go in by the open door.",
+        "a2_threshold"
+      ],
+      [
+        "Send Kettle up the spoil chute and follow.",
+        "a2_chute"
+      ],
+      [
+        "Have Ilsabet break the mason's postern.",
+        "a2_postern"
+      ],
+      [
+        "Sit on the gate and watch it for a full day first.",
+        "a1_watch"
+      ]
+    ]
+  },
+  {
+    "i": "a1_watch",
+    "r": "choice",
+    "w": 65,
+    "b": "a day spent watching a door: at the ninth hour two men in Warden cloaks that do not fit them come out, take down three lamps, and go back in, and neither of them uses his hands to open the door",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Enough watching. Go in by the door.",
+        "a2_threshold"
+      ],
+      [
+        "Go up the spoil chute where nobody counts.",
+        "a2_chute"
+      ],
+      [
+        "Take the mason's postern.",
+        "a2_postern"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_gibbet_night",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Counted Under the Gibbet",
+    "b": "a good dry camp in the lee of a gibbet post, and at the third hour the lamps arrive and stop, and a voice begins a count that includes the sleepers by name in the order they lay down, and the ninth name is the captain's",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_beam",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|The Sluice Beam",
+    "b": "the iron beam wet, the crosswind arriving in the middle of the third crossing, and the sluice taking two of the company through the gap in less time than it takes to shout, the water going on afterwards exactly as loud as before",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a1_swept",
+    "r": "failure",
+    "w": 50,
+    "e": "death|negative|Black Water",
+    "b": "the rope let go in cold that stops thought, the current under the sluice deeper than it looked and going somewhere the dwarves cut, and the moor keeping what it takes without any fuss at all",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a1_drown",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|The Moor Tries Again",
+    "b": "the pace kept and the moor's second attempt succeeding: a false floor of root and water, three of the company in past the shoulder, the mule gone, and Kar Duhn still a grey knuckle on a horizon nobody from the Ninth Sword reaches",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a1_fenkin_camp",
+    "r": "failure",
+    "w": 65,
+    "e": "capture|negative|Guests of the Fenkin",
+    "b": "the small footprints followed to a fen camp of two hundred, the company taken alive because alive is what the camp is paid to deliver, and a Fenkin quartermaster writing five more marks in a tally he keeps for somebody under the hill",
+    "s": [
+      "peril",
+      "conflict"
+    ]
+  },
+  {
+    "i": "e_a1_fall",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|The Gallery Settles",
+    "b": "the fall widened properly and the roof above it deciding, with a century of patience behind the decision, that this is the hour; forty feet of dwarf gallery comes down on the company in the time it takes to look up",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a1_counted",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Given the Next Number",
+    "b": "the next number given aloud, and the thing at the fire's edge accepting it as an answer and stepping into the light to complete the transaction; whatever the Ninth Sword becomes after that is counted, kept, and no longer a company",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a1_kettle_alone",
+    "r": "failure",
+    "w": 65,
+    "e": "setback|negative|Sent Alone",
+    "b": "Kettle sent in alone at the second hour and the gate closing to a thumb's width behind her, and after four hours of nothing the company withdrawing across the moor without the only person who knew the way down, which ends the contract and something else besides",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a1_bram",
+    "r": "failure",
+    "w": 55,
+    "e": "setback|negative|Bram's Share",
+    "b": "an hour's sleep and a fen-runner's arithmetic: the watch abandoned, the mule gone south with the remains of the advance and the spare lamp oil, and a company sitting in a cold camp within sight of a job it can no longer afford to do"
+  },
+  {
+    "i": "e_a1_turn_back",
+    "r": "failure",
+    "w": 55,
+    "e": "setback|neutral|Weather Turned Us",
+    "b": "the sensible decision made a mile short of the gate, the report written honestly and the fee returned, and a long career afterwards of hearing the Rooks tell it differently in every taproom between here and the Ledger cities"
+  },
+  {
+    "i": "a1_approach",
+    "r": "choice",
+    "w": 65,
+    "b": "the last quarter mile of causeway to the barrow gate, in the open, with the arch ahead of you and the Warden's shield on its post catching what light there is, nine lamps on nine hooks, and boot prints in the mud going in and none coming out",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Walk up the causeway in good order.",
+        "a1_gate"
+      ],
+      [
+        "Come at it off the path, over the spoil heap.",
+        "a1_gate"
+      ],
+      [
+        "Send the mule up the causeway first and watch what happens.",
+        "e_a1_mule"
+      ]
+    ]
+  },
+  {
+    "i": "e_a1_mule",
+    "r": "failure",
+    "w": 60,
+    "e": "setback|negative|Preacher Goes First",
+    "b": "a mule sent up a causeway alone as an experiment, which walks to the gate, stops, stands for nine seconds, and then goes in through a gap it should not fit through, and the company standing in the mud afterwards without its salt, its oil, or its willingness",
+    "s": [
+      "scary_imagery"
+    ]
+  }
+]
