@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.35.0] - 2026-07-25
+
+### Features
+
+- **frontend**: Mobile-web and Capacitor (iOS) readiness sweep
+  ([#393](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/393),
+  [`fe0d087`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/fe0d0870aa4b9e8cd87fee5c917e046cd49a7d00))
+
+
 ## [0.34.0] - 2026-07-25
 
 ### Chores
@@ -2661,6 +2670,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.35.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.33.1...v0.34.0
 [0.33.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.33.0...v0.33.1
 [0.33.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.32.2...v0.33.0
