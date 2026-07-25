@@ -14,6 +14,7 @@ Rules under test:
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from cyo_adventure.storybook.models import Storybook
@@ -62,6 +63,28 @@ _EASY_BODY = (
 # A body that is deliberately below _MIN_WORDS_FOR_FK.
 assert len(_HARD_BODY.split()) >= _MIN_WORDS_FOR_FK, "hard body must pass floor"
 assert len(_EASY_BODY.split()) >= _MIN_WORDS_FOR_FK, "easy body must pass floor"
+
+# A body used for the sentinel-strip test. "explorer" is later swapped for a
+# `{~HERO:explorer~}` sentinel whose inner value is identical, so the
+# stripped sentinel body is character-for-character equal to this body.
+_SENTINEL_BASE_BODY = (
+    "The brave explorer walked through the quiet forest at dawn. "
+    "Birds sang softly while the morning light filtered through leaves. "
+    "The explorer smiled and continued down the winding path with quiet "
+    "confidence."
+)
+assert len(_SENTINEL_BASE_BODY.split()) >= _MIN_WORDS_FOR_FK, (
+    "sentinel base body must pass floor"
+)
+
+_GRADE_RE = re.compile(r"FK grade (-?\d+\.\d+)")
+
+
+def _extract_grade(message: str) -> float:
+    """Extract the numeric FK grade embedded in an RL-13 finding message."""
+    match = _GRADE_RE.search(message)
+    assert match is not None, f"no FK grade found in message: {message!r}"
+    return float(match.group(1))
 
 
 def _short_body() -> str:
@@ -274,3 +297,52 @@ class TestReadingLevelFromFixture:
         )
         report = check_reading_level(story)
         assert report.errors == []
+
+
+class TestReadingLevelSentinelStrip:
+    """A `{~SLOTID:GenericWord~}` sentinel must strip to its inner word before
+    FK scoring, so it never inflates word or syllable counts.
+    """
+
+    def test_sentinel_scores_same_as_inner_word(self) -> None:
+        """A sentinel-bearing body scores identically to its stripped form.
+
+        Without the strip, the raw sentinel tokenizes as two words (the slot
+        id and the value), inflating the FK grade relative to the same
+        passage with the sentinel already resolved to its inner word. A
+        target/tolerance band of [0.0, 0.0] guarantees both bodies produce an
+        RL-13 finding (real prose always scores above grade 0), so the two
+        embedded FK grades can be compared directly.
+        """
+        sentinel_body = _SENTINEL_BASE_BODY.replace("explorer", "{~HERO:explorer~}", 1)
+        assert sentinel_body != _SENTINEL_BASE_BODY
+
+        plain_report = check_reading_level(
+            _make_story(_SENTINEL_BASE_BODY, target=0.0, tolerance=0.0)
+        )
+        sentinel_report = check_reading_level(
+            _make_story(sentinel_body, target=0.0, tolerance=0.0)
+        )
+
+        plain_finding = next(f for f in plain_report.findings if f.rule_id == "RL-13")
+        sentinel_finding = next(
+            f for f in sentinel_report.findings if f.rule_id == "RL-13"
+        )
+
+        assert _extract_grade(sentinel_finding.message) == _extract_grade(
+            plain_finding.message
+        )
+
+    def test_sentinel_body_not_flagged_when_stripped_form_is_in_band(self) -> None:
+        """A sentinel body must not warn when its stripped form is in-band.
+
+        Uses the easy body (well within a wide tolerance band) with a
+        sentinel inserted; if the sentinel were not stripped before scoring,
+        the inflated grade could still land in-band by coincidence, so this
+        is a secondary check alongside the exact-grade-match test above.
+        """
+        sentinel_body = _EASY_BODY.replace("cat", "{~HERO:cat~}", 1)
+        story = _make_story(sentinel_body, target=4.0, tolerance=20.0)
+        report = check_reading_level(story)
+        rl13 = [f for f in report.findings if f.rule_id == "RL-13"]
+        assert rl13 == [], "sentinel body must score within the wide tolerance band"
