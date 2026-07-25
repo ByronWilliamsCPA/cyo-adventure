@@ -535,10 +535,13 @@ and `NO_CONFORMING_BINDING` are fit outcomes that only exist after a bind attemp
 2. **Band-appropriate copy.** The `AgeBand` is known at request time. A 3-5 requester and a 16+ requester need
    different wording for the same rule, and the kid surface needs the positive framing ("your hero gets a
    made-up name") rather than the policy framing.
-3. **Guardian-specific restrictions need a disclosure decision.** `GUARDIAN_CONTROL` reflects that family's
-   own banned themes. Showing a child the literal banned-theme list exposes guardian intent and may be
-   counterproductive. Recommend the kid surface state only that some themes are off for this family, while the
-   guardian surface shows the actual list, which the guardian set and can change.
+3. **Resolved (owner decision, 2026-07-25): the kid surface says only that some themes are off.**
+   `GUARDIAN_CONTROL` reflects that family's own banned themes, and naming them to a child exposes guardian
+   intent, so the kid surface states the fact without the list. The guardian surface shows the actual list,
+   which the guardian set and can change. Two things follow for implementation: D36's API response must not
+   carry the `content_nogo` values on the kid-surface variant at all, rather than sending them and relying on
+   the client not to render them, and the kid-facing copy must not vary with the list's contents, since copy
+   that changes when a theme is added leaks the list one bit at a time.
 4. **Serves [K19](capability-register.md)** (expectation-setting) as its pre-submission half, alongside WS-7's
    post-submission reflection. Worth recording as such so the two are maintained together.
 
@@ -717,7 +720,7 @@ the fact, because `_ELEMENT_MUST_BE_NULL` forbids echoing the offending phrase.
 | D36 | **Serve the restriction set from the API**, keyed on the requesting profile's band, derived from `ReasonCode`, `band_profile`, and the profile's `content_nogo` rather than hand-written copy. A hard-coded list on the page drifts from enforcement the first time any of those changes, and a stated restriction that no longer matches behaviour is worse than none. | M |
 | D37 | **Surface it on the kid request surface** (`frontend/src/library/RequestStory.tsx`), which today shows one prompt, a 500-character textarea, and no restrictions at all. Positive, band-appropriate framing: the hero gets a made-up name, no real names or contact details, the story's shape is already set. | M |
 | D38 | **Surface the fuller set on the guardian intake surface** (`frontend/src/guardian/IntakePage.tsx`), including the family's actual `content_nogo` list, which the guardian set and can change. | S |
-| D39 | **Decide the `GUARDIAN_CONTROL` disclosure level for the kid surface.** Showing a child the literal banned-theme list exposes guardian intent and may be counterproductive. Recommend the kid surface state only that some themes are off for this family, with the specifics on the guardian surface. Needs an owner call before D37 ships its copy. | S |
+| D39 | **Enforce the resolved `GUARDIAN_CONTROL` disclosure level** (section 1.8, owner-decided): the kid surface states only that some themes are off. D36's kid-surface response must omit the `content_nogo` values entirely rather than sending them for the client to hide, and the copy must be invariant to the list's contents so it cannot leak membership by changing. Test both. | S |
 | D40 | Regression-test the pair: a request naming the requesting child resolves to `IDENTITY_PROTECTION`, and the restriction the API served for that band covers it. Keeps the stated restrictions and the enforced ones from diverging silently, which is the failure mode D36 exists to prevent. | S |
 
 ---
@@ -738,7 +741,7 @@ P4 (fail-path depth + outcome mix) ----+
 P6 (ceiling: D23, D24)   independent, longest lead time, start the D23 design early
 P7 (visibility: D25 -> D26, D27, D28 -> D29..D32, D34)   independent; D25 unblocks the rest
      D33 (read-time filter test) gates D32
-P8 (expectation setting: D36 -> D37, D38, D40; D39 decides D37's copy)   independent
+P8 (expectation setting: D36 -> D37, D38, D39, D40)   independent; no open decisions
 ```
 
 P1 before P3: escalation cannot act on a signal that does not fire. P1 before any metric claim: until the
@@ -778,24 +781,32 @@ doing anything, however good the code looks.
 
 ---
 
-## 6. Open questions
+## 6. Decisions and open questions
 
-- **Does the similarity signature need a DPIA addendum?** The design adds no personal data at rest and no new
-  export, which is the basis for arguing no. That is a DPO or legal call, not an engineering one. D7 raises it;
-  it does not answer it.
-- **Resolved: PL-22 uses 33% of `min_complete`** (section 1.7). 25% clears the rule's own funnel rationale on
-  only 3 of 14 gamebook skeletons; 33% clears it on 13 of 14, at the same single ending-floor exception.
-  Remediation must be ending-count-preserving. D15 ratifies it as an ADR-011 amendment. Remaining sub-question:
-  whether to promote the constant to `max(0.33 * min_complete, funnel_clearing_depth)` for the one skeleton
-  (`the-smugglers-cut`) whose funnel runs deeper than its 33% floor; defer to D16's telemetry.
-- **Resolved: a ~60% tense-but-fair tree is legitimate gamebook variety** (section 1.7), so D19's in-cell
-  outcome-spread requirement is a design target rather than an open question. `narrative_style` promises the
-  gamebook form, not a lethality rate.
+### 6.1 Resolved
+
+| Question | Decision | Where |
+| --- | --- | --- |
+| PL-22's fraction | **33% of `min_complete`.** 25% clears the rule's own funnel rationale on only 3 of 14 gamebook skeletons; 33% clears it on 13 of 14, at the same single ending-floor exception. Remediation must be ending-count-preserving. | 1.7, ratified by D15 |
+| Is a ~60% tense-but-fair gamebook tree acceptable? | **Yes.** Legitimate in-cell variety; `narrative_style` promises the gamebook form, not a lethality rate. D19 becomes a design target. | 1.7 |
+| May a guardian change their visibility ceiling later? | **Yes**, and it needs no content re-screen, because every content screen is already visibility-independent. | 1.6, built by D32 |
+| Dual-role adults | Enforce the lattice on **the role being acted in**, via `principal.acting_role(family_id)`. | 1.6, built by D34 |
+| Admin visibility lever | **Guardian sets a ceiling; the admin may only restrict.** `resolved = min(guardian_ceiling, admin_choice)`. | 1.5, built by D26 |
+| What does the kid surface say about `GUARDIAN_CONTROL`? | **Only that some themes are off**, never the list. The kid-surface API response omits `content_nogo` entirely, and the copy stays invariant to the list's contents. | 1.8, built by D39 |
+| Open vs curated vocabulary | **Expand the curated closed list**; the open-vocabulary variant drops to a fallback (D7) that may never be needed. | 1.3 |
+
+### 6.2 Still open
+
+- **Does the similarity signature need a DPIA addendum?** Only relevant if D7 is ever built. The design adds no
+  personal data at rest and no new export, which is the basis for arguing no. A DPO or legal call, not an
+  engineering one. D7 raises it; it does not answer it.
 - **How many winning arcs should a gamebook have?** 2 out of 209 is unconstrained rather than chosen. D18 needs
-  ratified numbers; ADR-011 specifies terminal fraction but not valence mix. Note that no guidance exists in the
-  research on this (section 1.7), so it is a decision to make rather than one to look up.
-- **What should the kid surface say about `GUARDIAN_CONTROL`?** D39. Naming a family's banned themes to a child
-  exposes guardian intent; recommend categories on the kid surface and specifics on the guardian surface.
+  ratified numbers; ADR-011 specifies terminal fraction but not valence mix. No guidance exists in the research
+  (section 1.7), so this is a decision to make rather than one to look up. **The last substantive product
+  decision left in this plan.**
+- **Should PL-22 become `max(0.33 * min_complete, funnel_clearing_depth)`?** One skeleton
+  (`the-smugglers-cut`) has a funnel deeper than its 33% floor. Start with the constant plus a per-cell
+  override; revisit on D16's telemetry.
 - **Should the ATG become blocking, and at what per-band threshold?** Inherited from WS-1, unblocked by D21's
   calibration.
 - **ADR candidate for D23.** Alternate beat phrasings move a safety-adjacent artifact from frozen string to
