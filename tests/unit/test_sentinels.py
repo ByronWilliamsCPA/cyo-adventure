@@ -11,6 +11,7 @@ import pytest
 
 from cyo_adventure.storybook.sentinels import (
     SENTINEL_RE,
+    find_malformed_sentinels,
     find_sentinels,
     strip_sentinels,
     wrap,
@@ -200,3 +201,97 @@ class TestFindSentinels:
     def test_find_none_returns_empty_list(self) -> None:
         """Text with no sentinels returns an empty list."""
         assert find_sentinels("no sentinels here") == []
+
+
+class TestFindMalformedSentinels:
+    """find_malformed_sentinels detects sentinel-shaped near-misses (plan risk R9).
+
+    The near-miss grammar: any non-nested brace-delimited span (``{...}``,
+    via ``[^{}]*`` so an embedded ``{`` or ``}`` ends the span early) that
+    contains at least one tilde but does not fully match ``SENTINEL_RE``. The
+    tilde requirement is what excludes ordinary prose braces (e.g. a
+    templating placeholder like ``{blank}``) that have nothing to do with the
+    sentinel format.
+    """
+
+    def test_clean_sentinel_reports_nothing(self) -> None:
+        """A single well-formed sentinel is not reported."""
+        text = f"The hero met {wrap('HERO', 'Explorer')} at dawn."
+        assert find_malformed_sentinels(text) == []
+
+    def test_multiple_clean_sentinels_report_nothing(self) -> None:
+        """Several well-formed sentinels in one passage are all clean."""
+        text = f"{wrap('HERO', 'Explorer')} found {wrap('PRIZE', 'Gem')}."
+        assert find_malformed_sentinels(text) == []
+
+    def test_ordinary_prose_brace_not_reported(self) -> None:
+        """A literal brace unrelated to a sentinel (no tilde) is not reported."""
+        assert find_malformed_sentinels("Fill in the {blank} form.") == []
+
+    def test_plain_text_with_no_braces_reports_nothing(self) -> None:
+        """Text with no braces at all reports nothing."""
+        assert find_malformed_sentinels("A perfectly ordinary sentence.") == []
+
+    @pytest.mark.parametrize(
+        ("label", "text", "expected_hit"),
+        [
+            (
+                "whitespace after opening tilde",
+                "{~ HERO:Explorer~}",
+                "{~ HERO:Explorer~}",
+            ),
+            (
+                "whitespace around colon",
+                "{~HERO : Explorer~}",
+                "{~HERO : Explorer~}",
+            ),
+            (
+                "lowercase slot id",
+                "{~hero:Explorer~}",
+                "{~hero:Explorer~}",
+            ),
+            (
+                "missing opening tilde",
+                "{HERO:Explorer~}",
+                "{HERO:Explorer~}",
+            ),
+            (
+                "missing closing tilde",
+                "{~HERO:Explorer}",
+                "{~HERO:Explorer}",
+            ),
+            (
+                "forbidden char in value",
+                "{~HERO:Ex'plorer~}",
+                "{~HERO:Ex'plorer~}",
+            ),
+            (
+                "empty value",
+                "{~HERO:~}",
+                "{~HERO:~}",
+            ),
+        ],
+    )
+    def test_each_near_miss_class_is_reported(
+        self, label: str, text: str, expected_hit: str
+    ) -> None:
+        """Each documented near-miss class is caught, embedded in prose."""
+        embedded = f"The hero found {text} on the path."
+        assert find_malformed_sentinels(embedded) == [expected_hit], label
+
+    def test_mixed_clean_and_malformed_reports_only_malformed(self) -> None:
+        """A passage with one clean sentinel and one near-miss reports only the miss."""
+        text = f"{wrap('HERO', 'Explorer')} passed {{~PRIZE:~}} on the way."
+        assert find_malformed_sentinels(text) == ["{~PRIZE:~}"]
+
+    def test_multiple_near_misses_reported_in_order(self) -> None:
+        """Two near-misses in one passage are both reported, left to right."""
+        text = "{~hero:Explorer~} then {~PRIZE:Gem}"
+        assert find_malformed_sentinels(text) == [
+            "{~hero:Explorer~}",
+            "{~PRIZE:Gem}",
+        ]
+
+    def test_empty_string_reports_nothing(self) -> None:
+        """An empty string reports no near-misses."""
+        assert find_malformed_sentinels("") == []

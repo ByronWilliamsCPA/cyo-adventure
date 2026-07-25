@@ -55,6 +55,16 @@ _FORBIDDEN_VALUE_CHARS = frozenset("{}<>'~")
 # terminator unambiguous).
 SENTINEL_RE: re.Pattern[str] = re.compile(r"\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\}")
 
+# A permissive "sentinel-ish" pattern used only by `find_malformed_sentinels`
+# below: any non-nested brace-delimited span (an embedded `{` or `}` ends the
+# span early, so nested braces are not specially handled; this is a known,
+# documented simplification). A candidate is only ever treated as a sentinel
+# *attempt* if it also contains a tilde (see `find_malformed_sentinels`); that
+# extra check is what excludes an ordinary prose brace (e.g. a templating
+# placeholder like `{blank}`) that has nothing to do with the sentinel
+# format.
+_SENTINEL_LOOKALIKE_RE = re.compile(r"\{[^{}]*\}")
+
 
 def wrap(slot_id: str, value: str) -> str:
     """Build the canonical sentinel token for a slot id and generic value.
@@ -114,3 +124,41 @@ def find_sentinels(text: str) -> list[tuple[str, str]]:
             order they appear in ``text``. Empty if no sentinels are found.
     """
     return [(match.group(1), match.group(2)) for match in SENTINEL_RE.finditer(text)]
+
+
+def find_malformed_sentinels(text: str) -> list[str]:
+    """Find every sentinel-shaped-but-malformed substring in text.
+
+    A "near miss" is a brace-delimited span (see `_SENTINEL_LOOKALIKE_RE`)
+    that contains a tilde, the shape signal that marks it as a sentinel
+    *attempt* rather than an ordinary prose brace, but that does not fully
+    match `SENTINEL_RE`. This is the canonical near-miss detector (plan risk
+    R9: keep all sentinel-format regex knowledge in this module); callers
+    such as `cyo_adventure.validator.sentinel_integrity` must import this
+    rather than write their own near-miss regex.
+
+    Covers, at minimum: whitespace inside the braces (``{~ HERO:Explorer~}``,
+    ``{~HERO : Explorer~}``), a lowercase or otherwise malformed slot id
+    (``{~hero:Explorer~}``), a missing tilde on one side
+    (``{~HERO:Explorer}``, ``{HERO:Explorer~}``), a value containing a
+    forbidden character, and an empty value (``{~HERO:~}``).
+
+    A well-formed sentinel and an ordinary prose brace unrelated to a
+    sentinel (one containing no tilde) are never reported.
+
+    Args:
+        text: Text that may contain zero or more sentinel-shaped substrings.
+
+    Returns:
+        list[str]: Every malformed near-miss substring found, in the order
+            they appear in `text`. Empty if none are found.
+    """
+    hits: list[str] = []
+    for match in _SENTINEL_LOOKALIKE_RE.finditer(text):
+        candidate = match.group(0)
+        if "~" not in candidate:
+            continue
+        if SENTINEL_RE.fullmatch(candidate):
+            continue
+        hits.append(candidate)
+    return hits
