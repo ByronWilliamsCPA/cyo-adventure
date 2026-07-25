@@ -2,13 +2,15 @@
 schema_type: planning
 title: "Story Diversity Remediation and Enhancement Plan"
 description: "Phased plan to close the nine gaps in story-diversity-analysis.md and raise book diversity
-  further. Records four review corrections: the open-vocabulary theme signature is unsafe as drafted because
+  further. Records six review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because
   the closed vocabulary is load-bearing for the WS-7 echo surface; the gamebook cells' 98% negative share is
   ADR-011-intended with PL-20 working as designed, the real gap being a shallow fail-path tail PL-20 leaves
   out of scope; expanding the curated vocabulary is the better fix and it exposes a symmetric-Jaccard defect
   that makes an identical premise score as dissimilar; the guardian family-only versus catalog two-prong is
   sound but blocked on visibility being set at approval rather than at intake; and visibility authorization is
-  a monotone restriction rule where the guardian sets a ceiling the admin may lower but never raise."
+  a monotone restriction rule where the guardian sets a ceiling the admin may lower but never raise, which a
+  guardian may change later without any content re-screen because every content screen is already
+  visibility-independent."
 tags:
   - planning
   - generation
@@ -40,9 +42,10 @@ source: "story-diversity-analysis.md; review challenges on GDPR exposure of an o
 
 ## 1. Corrections and refinements from review
 
-Five items, each from a review challenge and each changing the work. They are recorded here rather than
+Six items, each from a review challenge and each changing the work. They are recorded here rather than
 silently patched into the audit, because each rests on a fact the audit did not establish. 1.1 and 1.2 correct
-errors; 1.3, 1.4, and 1.5 are owner direction that reshapes the approach.
+errors; 1.3 through 1.6 are owner direction that reshapes the approach, and 1.6 also corrects an
+earlier claim about offline revocation.
 
 ### 1.1 The open-vocabulary theme signature is unsafe as drafted
 
@@ -364,6 +367,68 @@ ceiling". That is a wire-contract change, so the generated frontend client has t
 over a frozen table in the style of `state_machine.LEGAL_TRANSITIONS`. That keeps it unit-testable without a
 database and gives one place to point at when asking whether a loosening is possible.
 
+### 1.6 Ceiling changes and dual-role enforcement: both settled
+
+Owner decisions (2026-07-25): a guardian **may** change the ceiling later, as long as it does not violate
+privacy restrictions; and for dual-role adults the lattice is enforced on **the role being acted in**.
+
+**What "does not violate privacy restrictions" actually amounts to: less than expected.** Checking whether any
+content screen is keyed on visibility, the answer is that none is, and the screens already run at the stricter
+setting:
+
+- **Self-naming is disallowed by design, at every visibility.** `story_requests/interpretation.py` sets a
+  self-naming request aside as `IDENTITY_PROTECTION` under Route A, and `generation/worker.py` notes that Route
+  A "forbids ANY family requested family-child name". So a family-only book does not contain the requesting
+  child's own name to begin with; there is no name to newly disclose by widening.
+- **The PII egress floor and echo screens are visibility-independent.** `_echo_floor`'s four ordered checks
+  (structural injection, graphic-echo minimum, `assert_prompt_pii_safe` against `PiiContext`, plus the
+  unconditional email/phone/address patterns) take a band, never a visibility.
+- **`moderation/rescreen.py` says so outright:** "this sweep does not filter on `Storybook.visibility`:
+  'family-tier' and 'the current published catalog' are the same set today."
+
+So a guardian widening needs **no content re-screen**. That is the useful finding: the natural design instinct
+here is a re-screen gate on widening, and it would be redundant work, because the content was already screened
+at the strictest level. Widening is a disclosure-surface change, not a content change.
+
+**What widening does require:**
+
+1. **D29's exclusion must be evaluated at read time, not baked at publish time.** If the catalog read surface
+   filters out the family-facing WS-7 interpretation and echo by checking `visibility` when serving, then
+   widening is automatically safe the moment the flag flips. If instead publish-time code decides which fields
+   to persist for cross-family consumption, a later widening would expose family-facing artifacts that were
+   written under the family-only assumption. This is the single load-bearing implementation requirement of the
+   whole ceiling-change decision, and it is a test, not a feature.
+2. **The Phase 7 COPPA gate still applies** (D31). A guardian may widen; that does not bypass the unfinished
+   compliance work for cross-family distribution.
+3. **An informed, deliberate action.** The guardian surface must state what becomes visible to other families.
+   A book already read by another family cannot be unread, whatever the flag says afterwards.
+4. **An explicit, audited, human-invoked path.** ADR-005 governs *both* directions of the publish decision, and
+   `state_machine.LEGAL_TRANSITIONS` has no machine-reachable transition out of `published`. Visibility is a
+   `Storybook` column rather than a status, so a post-publish change is not a status transition and would
+   otherwise be a bare field update. It is a disclosure decision and needs the same audit trail as the original
+   (D28). Open: whether widening a published book should additionally require re-approval, or whether the
+   guardian's own action is sufficient given that no content changes.
+
+**Correction to an earlier statement.** A previous turn of this analysis said narrowing "cannot reach offline
+copies". That is wrong. `frontend/src/offline/revocation.ts::reconcileOfflineCache` already purges revoked
+books from IndexedDB, deletes the associated reading state, and **drops** queued offline writes for a revoked
+book rather than flushing them first. So revocation does reach offline caches on the next reconcile. The only
+residual gap is a device that never comes back online. Narrowing is therefore more effective, and widening
+correspondingly less irreversible, than stated earlier.
+
+**Dual-role enforcement: the role being acted in.** The primitive already exists:
+`story_requests/service.py` derives `initiator_role` from `principal.acting_role(family_id)`, so
+`resolve_visibility` can be evaluated against the acting role rather than against identity or capability. The
+consequence is deliberate friction: an adult holding both guardian and admin for their own family must raise
+their own family's ceiling on the guardian surface, because the admin path can only restrict. In a homelab
+deployment where one adult wears both hats, that is a two-step rather than a toggle, and that is the point:
+the guardian control stays a real control rather than something the admin lever can quietly route around.
+
+**Incidental docs gap.** `story_requests/interpretation.py` cites
+`coppa-gdpr-remediation-plan.md Section 5 Decision 4` as the governing decision for Route A self-naming
+policy, and that file is not present in `docs/planning/`. A security-relevant decision is currently governed by
+a document that cannot be read. Restore it or repoint the citation.
+
 ---
 
 ## 2. Objective and constraints
@@ -510,6 +575,10 @@ all, since a curated closed vocabulary is already safe on both prongs.
 | D29 | **Catalog path: decouple rather than scrub.** On a catalog-visibility book, do not publish the family-facing WS-7 interpretation or echo cross-family at all; the catalog listing carries only skeleton-derived and generated metadata (title, cover, themes, band, length). A structural guarantee, not a redaction filter that has to be right every time. | M |
 | D30 | Family-only relaxation, scoped honestly. Document exactly what the relaxation covers (intra-family echo of the family's own request) and what it does **not** (LLM-provider export, which visibility does not gate, and which still sits behind `privacy-model.md`'s open OpenRouter retention blocker). Any relaxation whose stated basis is "the data never leaves the family" is mis-scoped. | S |
 | D31 | Gate the catalog prong on Phase 7 compliance. ADR-016 makes the catalog the widest ring of the three-ring boundary, and `privacy-model.md`'s "If Shared Beyond Family" section lists COPPA and Kids Category compliance as an unfinished Phase 7 launch blocker. Routing child-premise-derived books cross-family should wait on that work regardless of what the flag permits. | S |
+| D32 | **Guardian ceiling-change path** (section 1.6): a guardian-surface action to raise or lower their own ceiling, audited through D28's trail, with copy stating what becomes visible to other families. No content re-screen is required, and the reason is recorded in section 1.6 so a future reader does not add one as a precaution. Post-publish changes route through an explicit human-invoked path, never a bare column update. | M |
+| D33 | **Assert D29's exclusion is read-time, not publish-time.** A test that widens a published family-only book to catalog and asserts the cross-family read surface still exposes no family-facing interpretation or echo. This is the load-bearing requirement behind allowing ceiling changes at all; if the filter is applied when serving, widening is safe by construction. | S |
+| D34 | **Evaluate `resolve_visibility` against the acting role**, using the existing `principal.acting_role(family_id)` rather than identity or the `is_admin` capability. Test that a dual-role adult acting as admin cannot raise their own family's guardian ceiling, and that the same person acting as guardian can. | S |
+| D35 | Restore or repoint `coppa-gdpr-remediation-plan.md`, cited by `story_requests/interpretation.py` as governing Route A self-naming policy but absent from `docs/planning/`. | S |
 
 **Acceptance.** A story request carries a guardian ceiling from intake. `resolve_visibility` rejects every
 loosening transition in section 1.5's table, enforced in the service layer and covered by unit tests with no
@@ -539,7 +608,8 @@ P4 (fail-path depth + outcome mix) ----+
    D16 (measure)  ->  D18, D19 gated on it
 
 P6 (ceiling: D23, D24)   independent, longest lead time, start the D23 design early
-P7 (visibility: D25 -> D26, D27, D28 -> D29, D30, D31)   independent; D25 unblocks the rest
+P7 (visibility: D25 -> D26, D27, D28 -> D29..D32, D34)   independent; D25 unblocks the rest
+     D33 (read-time filter test) gates D32
 ```
 
 P1 before P3: escalation cannot act on a signal that does not fire. P1 before any metric claim: until the
