@@ -119,7 +119,10 @@ Dad," "your sister loved this"). No new consent needed; the family is the trust 
 > name, a pet's name, a kinship label, a favourite, a home type. One book can carry all of them at
 > once, repeatedly; an attribution line carries one, once. That argument is not obviously decisive.
 > Neither
-> ADR-023 nor this note picks a side; ADR-023 open decision OD-1 is the sign-off gate. Whoever
+> ADR-023 nor this note picks a side on the merits, but the owner has now chosen: **ADR-023 OD-1
+> was confirmed 2026-07-25 (owner choice, pending counsel confirmation)**, keeping the stricter
+> separate-consent bar for personalized story content and accepting the divergence from B6
+> deliberately. Counsel review is the remaining gate on that divergence. Whoever
 > writes the real amendment sentence should cover both cases in a single change.
 
 ### Ring 3: global (system only, future)

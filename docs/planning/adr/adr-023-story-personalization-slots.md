@@ -20,10 +20,14 @@ tags:
 
 # ADR-023: Guardian opt-in story personalization (render-time slot substitution)
 
-> **Status**: Proposed (2026-07-25). Several choices below, above all the ring-2
-> separate-disclosure-consent decision and its tension with PR #415's B6 resolution, need
-> explicit owner and counsel sign-off before this flips to Accepted. This mirrors ADR-018's
-> own convention: a proposed compliance-bearing ADR is itself the tracking signal.
+> **Status**: Proposed (2026-07-25). **Every owner-level open decision is now closed** (the 3-5
+> band question and OD-1 through OD-5, all confirmed by owner choice on 2026-07-25 and recorded
+> in the Validation section below). The status stays Proposed because counsel sign-off is a
+> separate gate that remains open, most sharply on OD-1 (ring-2 separate disclosure consent, which
+> diverges from PR #415's B6 precedent) and OD-5 (the sibling and pet-name raise to ring 2). This
+> is deliberately the ADR-018 pattern: an owner choice recorded and dated is not the same event as
+> counsel confirming it, and a compliance-bearing ADR staying Proposed is itself the tracking
+> signal.
 > **Date**: 2026-07-25
 > **Relates to**: [ADR-016](./adr-016-recommendation-sharing-social-boundary.md) (the three
 > rings this feature's ceilings are cut from), [ADR-018](./adr-018-childrens-privacy-compliance.md)
@@ -267,8 +271,14 @@ family-A book only reaches family B by being published to the catalog, where eve
 it. This does not break the design (the values gate is what protects the content, not the book's
 visibility), but it does mean ring-2 personalization's realistic v1 surface is a catalog book with
 a personalization subject in a connected family, and that anyone else in the catalog sees the
-generic version. If the product wants "share this book with just the Diaz family", that is a
-separate connection-scoped visibility feature, and it is not a prerequisite for this one.
+generic version.
+
+**Decision confirmed 2026-07-25 (owner choice, OD-4): the catalog surface is accepted for v1.**
+Connection-scoped book visibility is explicitly **not** a prerequisite for this feature. The reason
+this is safe rather than merely tolerable is that the gate sits on the values fetch and not on the
+book, so the identical catalog artifact renders fully generic for every unconnected family with no
+extra enforcement. If the product later wants "share this book with just the Diaz family", that is
+a separate visibility feature standing on its own merits, not a debt this feature incurred.
 
 ### 4. Route A stays completely untouched at the request and generation layers
 
@@ -285,12 +295,14 @@ Route A's protective mechanism is therefore fully preserved: a real name still n
 provider, is still never persisted in the blob, and is still never echoed back through the
 interpretation surface.
 
-**Route A's messaging, however, needs a scoped addendum.** The kid-facing copy at
-`interpretation.py:1019-1034` currently asserts an absolute ("Heroes in our stories always have
-made-up names"). Once render-time substitution ships, that sentence is false for an opted-in
-family, and at ring 2 it is false on another household's devices as well. The claim that stays
-true, and that the copy should be reworded toward, is about egress and storage, not about what
-appears on a screen. The implementation plan carries the copy change; the compliance plan carries
+**Route A's messaging, however, needs a scoped addendum, and this ADR now carries the replacement
+text.** The kid-facing copy at `interpretation.py:1019-1034` currently asserts an absolute
+("Heroes in our stories always have made-up names"). Once render-time substitution ships, that
+sentence is false for an opted-in family, and at ring 2 it is false on another household's devices
+as well. The claim that stays true is about egress and storage, not about what appears on a screen.
+Per OD-3 the copy is **drafted here rather than deferred**: the toggle-aware replacement pair is in
+the coordination section's Ask 1b, and the mechanism that selects between the two variants is in
+the implementation plan (section 12). The compliance plan carries
 a proposed caveat note against the Route A record.
 
 ### 5. Eligibility is a per-story marker, not a global assumption
@@ -446,6 +458,11 @@ as a degraded state.
 
 ### 9. Age bands: the child-facing half of this feature does not apply uniformly
 
+**Decision confirmed 2026-07-25 (owner choice):** personalization **is** offered to the 3-5 band,
+guardian-controlled, with no child-facing control rendered at that band. Confirmed as designed; no
+change follows from the confirmation, and the reasoning below is now the recorded rationale rather
+than a proposal.
+
 The app spans six reading bands from 3-5 to 16+ (`storybook/models.py::AgeBand`, used throughout
 `validator/band_profile.py`), and this feature assumes a child who can read the control it offers
 them. That assumption fails at the bottom of the range.
@@ -560,7 +577,8 @@ outcome is still what an untouched family gets.
   now a wider one than this ADR's first draft proposed. It is bounded by: a parent-built,
   enumerable, dual-consented graph; a separate enumerated disclosure consent per (profile,
   connection); and a per-referenced-child check so a sibling's name never rides out on their
-  brother's consent alone. See the coordination section: this is the item most in need of sign-off.
+  brother's consent alone. Confirmed as designed by the owner on 2026-07-25 (OD-5); it remains the
+  item most in need of counsel sign-off.
 - ⚠️ **A second adult now has to be right about a third person's privacy.** The sibling slot means
   guardian G's decision about child A's book discloses child B. The design answers this by reading
   B's own settings, but B is still a child whose preferences may not be recorded anywhere, and the
@@ -658,43 +676,68 @@ outcome is still what an untouched family gets.
 - [ ] Route A's block still fires unchanged: `tests/unit/test_interpretation.py`'s
       `IDENTITY_PROTECTION` cases pass without modification.
 
-### Open decisions (close before Accepted)
+### Owner decisions (all closed 2026-07-25; counsel gate still open)
 
-- [ ] **OD-1: Ring 2 separate disclosure consent.** Confirm with owner and counsel that ring-2
-      real-name substitution requires its own consent event rather than riding ADR-016's mutual
-      connection consent. This is the direct tension with PR #415's B6 resolution; see below.
-- [ ] **OD-2: Pronoun set at ring 1.** Confirm that pronouns are a legitimate personalization
-      field at all, that deriving them requires a new profile field rather than an inference, and
-      that they/them can be deferred without shipping something worse than nothing.
-- [ ] **OD-3: Route A copy addendum wording.** Agree the replacement kid-facing and
-      guardian-facing strings before any toggle ships, so the absolute claim is never live
-      alongside a contradicting feature.
-- [ ] **OD-4: The ring-2 catalog-visibility surface.** Ring 2 **is in v1** (owner direction,
-      2026-07-25); the earlier "ship ring 1 only" fallback is withdrawn and is not an option this
-      ADR offers. What remains open is narrower: given that there is no connection-scoped book
-      visibility today (section 3a), confirm that "a catalog book with a personalization subject
-      in a connected family" is an acceptable v1 surface, or decide that connection-scoped
-      visibility is a prerequisite after all. This changes sequencing, not the decision to build
-      ring 2.
-- [ ] **OD-5: The sibling and pet-name raise to ring 2.** This revision raised taxonomy rows 3 and
-      4b from ring 1 to ring 2 (reasoning recorded in the taxonomy section). It is the most legally
-      aggressive change in this ADR and it needs its own counsel pass rather than riding on OD-1.
-      Three questions, in descending order of risk:
-      **(a) Is the parental-responsibility assumption sound?** The design infers a guardian's
-      authority over sibling B from B's profile sharing a family account. Row 3 explicitly admits
-      "family-child" cases (stepchild, foster placement, extended family) where that inference can
-      be wrong. The mitigation is an explicit attestation in the consent ceremony (implementation
-      plan 10.1.1 item 3); the question is whether an attestation suffices, or whether the sibling
-      slot must stay ring 1 until authority can actually be verified.
-      **(b) Does the consent copy stretch far enough?** Predicate condition 8 reads B's own
-      name-sharing consent to authorize B appearing as a *companion in A's book*, a different
-      context from B's own stories. The plan requires the ceremony wording to cover that
-      explicitly; confirm it is adequate, or require a distinct consent for companion appearances.
-      **(c) Is one bundled per-connection consent adequate for this disclosure?** A single record
-      enumerating several slot types is efficient and auditable, but one signature then authorizes
-      a compounded disclosure. Confirm, or require the sibling and pet-name entries to be signed
-      separately. Related: whether narrowing `covered_slot_types` may update a signed record in
-      place or must append a new one (implementation plan 5.3, open question 7).
+Every decision below was confirmed by the account owner on 2026-07-25. Following ADR-018's
+convention, "owner choice recorded" and "counsel confirmed" are tracked as separate events: the
+boxes are checked because the owner has decided, and the ADR nonetheless stays Proposed until the
+counsel items called out under OD-1 and OD-5 are answered.
+
+- [x] **OD-1: Ring 2 separate disclosure consent.** **Decision confirmed 2026-07-25 (owner choice;
+      pending counsel confirmation).** Confirmed as designed: ring-2 real-name substitution
+      requires its own separate, separately-worded disclosure consent event, distinct from
+      ADR-016's connection consent and never riding on it. This is a **deliberate divergence** from
+      PR #415's B6 precedent, which held that mutual connection consent alone suffices for
+      recommendation attribution. The rationale is unchanged and stands as recorded in the
+      coordination section below (repetition, audience, and compounding, not novelty of the datum);
+      the owner confirmed the conclusion without asking for the reasoning to be revised.
+      **Flagged for counsel**: whether the divergence from B6 is defensible as drawn, and whether a
+      layered disclosure consent on top of a connection consent is the right instrument. This is
+      one of the two items that keeps this ADR at Proposed.
+- [x] **OD-2: Pronoun set at ring 1.** **Decision confirmed 2026-07-25 (owner choice).** Confirmed
+      as designed: pronouns are a legitimate v1 personalization field; the value is **stored** as
+      an explicit guardian-set field, never inferred from any other profile attribute; v1 is scoped
+      to she/her and he/him only; they/them is deferred for the verb-agreement reason already
+      documented in the taxonomy (singular "they" changes conjugation, which a token swap cannot
+      retrofit onto already-conjugated stored prose). Ring 1 only, unchanged.
+- [x] **OD-3: Route A copy.** **Decision confirmed 2026-07-25 (owner choice), resolved differently
+      from either option originally offered.** Rather than the two workstreams negotiating wording
+      or racing independent edits, **ADR-023 completes this work first and drafts the replacement
+      copy, and PR #415 is asked to adopt this ADR's structure and wording.** The drafted copy is
+      now literal text in the coordination section's Ask 1 below, covering both the Route A
+      `IDENTITY_PROTECTION` disposition pair (made toggle-aware) and PR #415's A11 request-page
+      line (kept static and true in every toggle state). Sequencing, not negotiation.
+- [x] **OD-4: The ring-2 catalog-visibility surface.** **Decision confirmed 2026-07-25 (owner
+      choice).** Ring 2 is in v1 (already decided earlier), and the remaining question is now
+      closed too: **the catalog surface is accepted for v1.** A catalog book whose personalization
+      subject sits in a connected family is an acceptable v1 delivery surface, and
+      connection-scoped book visibility is **not** a v1 prerequisite. This is safe because the gate
+      is on the values fetch rather than on the book (section 3a), so the same catalog book renders
+      fully generic for every unconnected family. Connection-scoped visibility remains available as
+      a later product feature on its own merits.
+- [x] **OD-5: The sibling and pet-name raise to ring 2.** **Decision confirmed 2026-07-25 (owner
+      choice; pending counsel confirmation).** All three sub-questions confirmed as designed:
+      **(a) Parental-responsibility assumption: accepted with attestation.** An explicit
+      attestation in the ring-2 consent ceremony ("I am the parent or legal guardian of [sibling]")
+      is sufficient; the sibling slot does **not** need to stay ring 1 pending independent
+      verification of authority. Implementation plan 10.1.1 item 3 carries the wording and
+      `sibling_authority_attested` records it.
+      **(b) Consent-copy scope: adequate as drafted.** Ceremony wording that explicitly covers
+      "this child's name appearing in any of this family's stories shared with the connected
+      family" is sufficient to authorize a companion appearance in a sibling's book. No separate,
+      narrower consent event is required for companion appearances specifically.
+      **(c) Bundled consent: adequate.** One bundled per-(profile, connection) consent record
+      covering every opted-in slot type, including the sibling and pet-name entries, is sufficient.
+      Those two do not need their own separate signature. By extension the related question in
+      implementation plan open question 7 is closed the same way: narrowing `covered_slot_types`
+      updates the signed record in place and does not require re-signing.
+      **Flagged for counsel**: this is the most legally aggressive choice in the ADR, and the
+      attestation in (a) is a self-declaration rather than a verification. It is the second of the
+      two items keeping this ADR at Proposed.
+
+Separately, and not an OD: the **3-5 band** question raised in section 9 is also closed.
+**Decision confirmed 2026-07-25 (owner choice):** personalization is offered to the 3-5 band as
+designed, guardian-controlled, with no child-facing control rendered at that band.
 
 ### Review Schedule
 
@@ -712,14 +755,60 @@ This section is written to be handed directly to those workstreams.
 
 ### PR #415 (`docs/planning/story-diversity-plan-v2.md`, docs-only, unmerged)
 
-**Ask 1 (item A11): do not ship the absolute copy.** A11 plans a "Who's the hero?" field on the
-kid-facing request page, pre-filled with a made-up name plus a shuffle control, and one
-affirmative PII line: "Everyone in the story gets a made-up name, even your friends." That
-sentence is true today and becomes false the moment any family opts in under this ADR, including
-on another family's devices at ring 2. Either scope the copy to a "by default" framing, or
-coordinate the exact wording with this ADR so a single sentence stays true under both. The
-underlying true claim, which does not soften, is about egress and storage: names in the story are
-made up when the story is written, and nobody outside your family ever sees your real name in it.
+**Ask 1 (item A11): adopt the copy below.** Per OD-3, this is a sequencing decision, not a
+negotiation: ADR-023 finishes first and drafts the replacement wording, and PR #415 is asked to
+**adopt this structure and text** rather than draft its own in parallel. That avoids two
+workstreams converging on two different promises about the same mechanism.
+
+The problem being fixed: A11 plans a "Who's the hero?" field on the kid-facing request page,
+pre-filled with a made-up name plus a shuffle control, and one affirmative PII line, "Everyone in
+the story gets a made-up name, even your friends." That sentence is true today and becomes
+misleading the moment a family opts in under this ADR, including on a connected family's devices
+at ring 2. The claim that never softens is about **generation**: every character is written with a
+placeholder, no real child's name ever reaches a provider or gets stored in the story. What changes
+is what a reader **sees**. The copy below keeps the first claim and stops implying the second.
+
+**A11 replacement, kid-facing (static page copy, true in every toggle state, no branching):**
+
+> Everyone in the story starts with a made-up name, even your friends. Ask your grown-up if you
+> want your own name to show up when you read.
+
+**A11 replacement, guardian-facing (help text or tooltip on the same surface):**
+
+> Every story is written with made-up names for every character. No real child's name is ever sent
+> to an AI provider or stored inside the story. If you turn on name personalization for a profile,
+> that child's own name is filled in on your own devices as they read (see ADR-023).
+
+"Starts with" is doing the load-bearing work: it is unconditionally true (generation always uses a
+placeholder), it needs no per-request branching, and it does not promise the reader something their
+family may have deliberately changed.
+
+**Ask 1b: the Route A disposition copy, which this ADR is changing itself.** Not an ask of #415,
+recorded here so the two stay consistent. The `SET_ASIDE` / `IDENTITY_PROTECTION` pair in
+`ws7-request-interpretation-design.md`'s disposition table (backing
+`story_requests/interpretation.py:1017-1035`) currently asserts an absolute to the child and then,
+for an opted-in family, is contradicted by the very next thing that child reads. It becomes
+**toggle-aware**: the toggle-off text is unchanged from today, and a toggle-on variant is added.
+
+| Band group | Toggle OFF (unchanged) | Toggle ON (new) |
+|---|---|---|
+| Young (3-5, 5-8) | Heroes in our stories always have made-up names, so we chose one for you! | Every hero starts with a made-up name. Your name might show up when you read! |
+| Middle (8-11, 10-13) | Heroes in our stories always have made-up names, so we chose one for this adventure! | Every hero starts with a made-up name. Your grown-up turned your real name on, so watch for it when you read! |
+| Teen (13-16, 16+) | Heroes in our stories always use made-up names, so we chose one for this adventure. | Every hero starts with a made-up name. Your grown-up turned on name personalization, so your own name may appear when you read. |
+
+Guardian text, toggle ON (toggle-off keeps today's string, with the stale "Section 5 Decision 4"
+citation corrected to Section 5 "Self-naming" in both):
+
+> The request asked to use the child's real name or self as the protagonist; self-naming is
+> disallowed by design (Route A, coppa-gdpr-remediation-plan.md Section 5 "Self-naming"), so a
+> fictional protagonist was used and no real name reached the generator. Name personalization is
+> enabled for this profile, so the child's own name may still be substituted at read time on your
+> devices (ADR-023).
+
+That guardian line has to make both halves explicit, because they are genuinely different
+mechanisms and a guardian seeing "declined" followed by their child's name in the book would
+otherwise reasonably conclude the decline did not work. Route A is unchanged; personalization is a
+separate, later, client-side step.
 
 **Ask 2 (item A11): answer the shuffle-semantics question.** A11 does not say whether the shuffle
 changes what is stored or generated for that story, or is purely a cosmetic client-side choice
@@ -761,7 +850,10 @@ differ is about bandwidth and richness of disclosure rather than about the datum
   needed propping up.
 
 That is the honest argument for the asymmetry. It is not obviously decisive, and this ADR does not
-claim to settle it: OD-1 above is the sign-off gate. What it does claim is that the two asks must
+claim to have settled it on the merits. The owner confirmed the conclusion on 2026-07-25 (OD-1)
+without asking for this reasoning to change, so the divergence from B6 is now a recorded decision
+rather than a proposal, and counsel review is the remaining gate. What this ADR does claim is that
+the two asks must
 be reconciled in **one** edit to ADR-016, not two racing ones. B6 wants a sentence added recording
 ring-2 attribution granularity; this ADR wants ring-2 personalization granularity recorded
 alongside it. Whoever writes that amendment should write both, or neither, in a single change.
@@ -836,6 +928,18 @@ out of.
   scoped to body text, leaving choice labels, ending titles, and beats uncovered. `fill.md` and
   `fill_bound.md` restate no POV or naming rule at all. Exclusion #12 (appearance) still holds on
   its cover-art argument, but it should not lean on a prose rule that is narrower than stated.
+- **The interpretation renderer does NOT have profile access, contrary to a working assumption in
+  this decision round.** Making the Route A copy toggle-aware was described as a small change
+  because "the disposition renderer already has access to the requesting child's profile". It does
+  not. `render_interpretation` (`story_requests/interpretation.py:1249-1257`) takes `elements`,
+  `band`, `layer`, `created_at`, `skeleton_slug`, and `contract_version`, and its docstring pins it
+  as a pure function ("Pure: builds `kid_text` / `guardian_text` for every element from the
+  template catalog ... `created_at` is supplied by the caller so the module reads no wall clock").
+  The template catalog is keyed `(disposition, reason, band_group)` (`:706`) with no profile axis.
+  The change is still small, but it is a **signature change plus a catalog-key change**, not a free
+  branch: see implementation plan section 12 for the shape (a `bool` parameter, deliberately not a
+  profile object, so the module's purity discipline survives) and for the five production call
+  sites it touches.
 - **Save-state exports are safe, as assumed.** `ReadingState` carries node ids and variable state
   only (`frontend/src/player/types.ts:71`), so no substituted text can ride a sync or replay
   payload.

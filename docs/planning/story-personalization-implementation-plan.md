@@ -19,9 +19,10 @@ tags:
 # Story personalization: implementation plan
 
 > **Status**: Draft (2026-07-25). Blocked on [ADR-023](./adr/adr-023-story-personalization-slots.md)
-> flipping from Proposed to Accepted; its open decisions OD-1 through OD-4 determine the scope of
-> phases P4 and P9 below. Ring 2 is **in scope** (owner direction, 2026-07-25) and is designed end
-> to end in section 8; OD-4 affects only its sequencing.
+> flipping from Proposed to Accepted. **Every owner-level decision it was waiting on is now
+> closed** (the 3-5 band question and OD-1 through OD-5, all confirmed by owner choice 2026-07-25);
+> what remains is counsel confirmation on OD-1 and OD-5, which should land before P7 and P9 ship
+> but blocks no earlier phase. Ring 2 is in scope and designed end to end in section 8.
 > **Decision record**: [ADR-023](./adr/adr-023-story-personalization-slots.md)
 > **Date**: 2026-07-25
 
@@ -49,14 +50,14 @@ nothing, and a values payload with no integrity check behind it is an unaudited 
 | **P1** | Sentinel-bound slot kind; fill-time and storage-time preservation (section 2) | Nothing | No |
 | **P2** | Post-fill sentinel-integrity check and its QA/retry strategy (section 3) | P1 | No |
 | **P3** | Leak-surface guard points and their tests (section 4) | P1 | No |
-| **P4** | Data model: slot values, toggles, consent records, eligibility flags (section 5) | **P2** (3.4's survival measurement gates whether this is worth building at all); ADR-023 OD-1/OD-2/OD-5 for scope | No (schema only) |
+| **P4** | Data model: slot values, toggles, consent records, eligibility flags (section 5) | **P2** (3.4's survival measurement gates whether this is worth building at all); scope settled by ADR-023 OD-1/OD-2/OD-5 (all confirmed 2026-07-25) | No (schema only) |
 | **P5** | API surface plus OpenAPI client regeneration (section 6) | P4 | No (contract only) |
 | **P6** | Client-side resolver in `frontend/src/player/`; ring-1 values payload; offline interaction (section 7) | P1, P3, P5 | Yes, behind `VITE_FEATURE_PERSONALIZATION` |
 | **P7** | Ring-2 cross-family delivery: endpoint, authz predicate, client fetch (section 8) | P5, P6 | Yes, same flag |
 | **P8** | Dedication-line title-page overlay (section 9) | P4, P6 | Yes, same flag |
 | **P9** | Guardian toggle UI; ring-2 consent capture; kid-facing control (section 10) | P4, P6, P7, **and the P11 Route A copy fix as an exit criterion** (see below) | Yes |
 | **P10** | Catalog migration: repair or replace existing test content (section 11) | P1, P2 | No |
-| **P11** | Route A copy addendum; erasure, export, privacy-notice and classification updates (section 12) | P9; ADR-023 OD-3 | Yes (copy) |
+| **P11** | Route A copy wiring (text already drafted per OD-3); erasure, export, privacy-notice and classification updates (section 12) | P9, and the copy half is itself a P9 exit criterion | Yes (copy) |
 
 P3 can run in parallel with P2. P10 can run any time after P2 and should not gate P6, since P6 can
 be developed against a small number of freshly generated sentinel-bearing stories. P8 shares
@@ -489,7 +490,9 @@ disclosure; the row keeps its original signature and the narrowed set. Note the 
 honestly: after a narrowing, the stored record is a signed superset with a subsequently reduced
 scope, so the audit answer to "what did they authorize" is the signature plus the current set, and
 the two can differ. If counsel wants the signed set to be immutable, narrowing has to append a new
-row rather than update, which is a different design; ADR-023 OD-5 carries the question.
+row rather than update, which is a different design. **Resolved 2026-07-25 (owner choice,
+ADR-023 OD-5(c)): narrowing updates in place and does not require re-signing.** The residual noted
+above is accepted and belongs in the DPIA rather than in the schema.
 
 #### The connection cascade would destroy the evidence, so it must not cascade
 
@@ -910,7 +913,10 @@ The predicate, all of which must hold:
    supposed to prevent. So this predicate is only defensible if the ceremony copy says so: the
    ring-2 name consent must be worded to cover **"this child's name appearing in any of this
    family's stories shared with the connected family"**, not only stories where they are the
-   protagonist. Section 10.1 carries that wording requirement; ADR-023 OD-5 flags it for counsel.
+   protagonist. Section 10.1 carries that wording requirement. **Confirmed as adequate 2026-07-25
+   (owner choice, ADR-023 OD-5(b)): no separate, narrower consent event is required for a companion
+   appearance**, provided the ceremony wording covers it explicitly. Still flagged for counsel
+   alongside the rest of OD-5.
 
    Note the useful consequence for revocation: turning B's ring-2 name sharing off silently
    degrades A's book to the generic companion name on the next fetch in the connected household,
@@ -1110,7 +1116,10 @@ to general caution. Draft copy is counsel's to review; these are the constraints
    ceremony adds a distinct checked attestation, recorded as `sibling_authority_attested`:
    **"I am the parent or legal guardian of [B], and I have authority to consent to sharing their
    first name."** It is a separate affirmation, not a clause buried in the main one, because it is a
-   different claim about a different child. Flagged for counsel as ADR-023 OD-5.
+   different claim about a different child. **Confirmed sufficient 2026-07-25 (owner choice,
+   ADR-023 OD-5(a)): the attestation is accepted and the sibling slot does not stay ring-1-only
+   pending independent verification of authority.** Still flagged for counsel, since an attestation
+   is a self-declaration rather than a verification.
 
 The ceremony must also state, as ordinary copy: that revocation is prospective and takes effect on
 the connected household's next connection, not instantly; and that the value never reaches any AI
@@ -1168,13 +1177,45 @@ child-linked production data, so there is no backward-compatibility obligation.
 
 ## 12. P11: copy, erasure, and compliance artifacts
 
-- **Route A messaging addendum.** `src/cyo_adventure/story_requests/interpretation.py:1017-1035`
-  registers the absolute "Heroes in our stories always have made-up names" for the young, middle,
-  and teen bands. It must be reworded before any toggle ships, so the absolute claim is never live
-  alongside a feature that contradicts it. The claim that survives is about egress and storage.
-  Coordinate the exact wording with PR #415's A11 copy (ADR-023 coordination section) so one
-  sentence is true in both surfaces. While there, fix or remove the stale "Section 5 Decision 4"
-  citation at `interpretation.py:174`.
+- **Route A messaging: the copy is drafted, the mechanism is not.** Per ADR-023 OD-3 (decision
+  confirmed 2026-07-25), the replacement strings are already written and live in ADR-023's
+  coordination section, Ask 1b. This bullet is now about wiring, not wording. Also, while in this
+  file, fix the stale "Section 5 Decision 4" citation at `interpretation.py:174`.
+
+  **Correction to a working assumption, because it changes the size of this task.** The change was
+  described during review as a free branch, on the basis that "the disposition renderer already has
+  access to the requesting child's profile". It does not. `render_interpretation`
+  (`interpretation.py:1249-1257`) takes exactly `elements`, `band`, `layer`, `created_at`,
+  `skeleton_slug`, `contract_version`, and its docstring pins its purity ("Pure: builds `kid_text` /
+  `guardian_text` for every element from the template catalog (never model output) ... `created_at`
+  is supplied by the caller so the module reads no wall clock"). The catalog is keyed
+  `(disposition, reason, band_group)` (`interpretation.py:706`), with no profile or toggle axis.
+
+  It is still a small change. It is three specific edits:
+
+  1. **Catalog key gains a toggle axis.** Extend the key to
+     `(disposition, reason, band_group, personalized: bool)`. `_register` (`:709-721`) takes three
+     optional extra `_TemplatePair`s (`young_personalized`, `middle_personalized`,
+     `teen_personalized`) that default to the standard ones, so **only** the
+     `IDENTITY_PROTECTION` registration supplies them and all ~10 other registrations are
+     untouched.
+  2. **`render_interpretation` gains one keyword-only parameter**, `name_personalization_enabled:
+     bool = False`, forwarded to `_render_pair`. Pass a **bool, not the profile object**: the
+     module's purity discipline (stdlib and pydantic only, no ORM, no I/O) is load-bearing and
+     handing it a `ChildProfile` would break it for no gain. The default keeps every existing
+     caller and the five test call sites in `tests/unit/test_interpretation.py` compiling
+     unchanged.
+  3. **Five production call sites thread the flag**: `generation/worker.py:380`, `:433`, `:532`,
+     and `interpretation.py:1441`, `:1487`. Each of these already resolves the requesting profile
+     (or can, in the same query), so each passes `profile.real_name_ring1_enabled`.
+
+  Note the flag is deliberately **ring-1 only**: the disposition message is shown to the requesting
+  child in their own family, so ring 2 is irrelevant to which variant they see.
+
+  **Sequencing (ADR-023 OD-3, and repeated from section 1):** this is a **P9 exit criterion**, not
+  a P11 cleanup. `VITE_FEATURE_PERSONALIZATION` must not be enabled anywhere a real family can
+  reach it until this has merged, or the app tells a child a made-up name was chosen and then shows
+  them their own.
 - **Erasure response template.** Per 8.5, the guardian-facing erasure response needs an accurate
   sentence about connected families' already-synced copies. Add it to the Phase 3 erasure work in
   `docs/compliance/coppa-gdpr-remediation-plan.md` rather than improvising it under an Article
@@ -1199,7 +1240,7 @@ child-linked production data, so there is no backward-compatibility obligation.
 | **R3** | **Offline cache poisoning across siblings.** A future change adds a profile dimension to the story response and the shared `id@version` key starts serving one sibling's copy to another | High | The architecture prevents it, but nothing enforces it. Add a test asserting the story response is byte-identical for two profiles with different toggle states | P6 |
 | **R4** | **Slot values are under-validated.** `display_name` is length-bounded free text only (`api/schemas.py:1032-1034`), written straight to the row (`api/profiles.py:102-103`, `:286`), while sibling fields that reach a prompt are far stricter (`PinCode` at `:1038`, banned themes at `:1050-1051`) | High | Apply `structural_value_violations` plus the band-mandatory denylist floor **twice**: at write time and at payload-build time. The second is not redundant: names set before this feature shipped were never checked | P4, P6 |
 | **R5** | **Revocation residue.** A device retains a synced values payload after a flag flip or consent revocation | Medium | Purge on flip, revoke, deactivation, sign-out, and policy-version change. Document the offline-device window in code and keep guardian copy prospective | P6 |
-| **R6** | **Ring-2 disclosure exceeds what the connection consented to.** A guardian who consented to recommendation attribution finds their child's name throughout another household's story prose | High | A separate consent record per (profile, connection) enumerating covered slot types (5.3), enforced as predicate condition 5 (8.3). ADR-023 OD-1 is the sign-off gate | P4, P7, P9 |
+| **R6** | **Ring-2 disclosure exceeds what the connection consented to.** A guardian who consented to recommendation attribution finds their child's name throughout another household's story prose | High | A separate consent record per (profile, connection) enumerating covered slot types (5.3), enforced as predicate condition 5 (8.3). Model confirmed 2026-07-25 (ADR-023 OD-1); counsel sign-off still pending | P4, P7, P9 |
 | **R7** | **Pronoun outing at ring 2.** A pronoun disclosure reveals something about a child to extended family that the guardian did not intend | High | Pronouns are ring 1 only, enforced by a DB CHECK (5.1) **and** by predicate condition 6 (8.3), not by UI convention. Plus the child-facing off switch | P4, P7, P9 |
 | **R17** | **A sibling's name crosses ring 2 against that sibling's own settings.** Sibling B's name rides out inside sibling A's book because only A's consent was checked | High | Predicate condition 7 (8.3): the sibling slot resolves at ring 2 only if the **referenced** profile's own ring-2 enablement and consent cover that connection. Tested in all four A/B combinations (8.6) | P7 |
 | **R18** | **The ring-2 slot set grows by drift.** A future slot type is added with `ring2_enabled` allowed because the DB CHECK's set was widened casually | Medium | The ring-2-eligible set is a DB CHECK enumerating slot types (5.1), so widening it is a migration with a reviewer, not a config change. ADR-023's taxonomy section records the reasoning for each current ceiling so a change has something to argue against | P4 |
@@ -1213,37 +1254,56 @@ child-linked production data, so there is no backward-compatibility obligation.
 | **R13** | **The ADR-016 amendment gets written twice, racing.** This workstream and PR #415's B6 residual both edit the same document | Low | Single owner, single edit covering both asks; the parked addendum in ADR-016 says so | P11 |
 | **R14** | **Sentinel survival through the fill LLM is worse than assumed**, making retries a real cost line or the approach unworkable | High | Measure before scheduling P4 onward (3.4), with a deterministic post-fill re-insertion fallback prototyped in parallel if early numbers are poor | P2 |
 | **R15** | **The cross-family endpoint becomes the precedent for loosening `authorize_family`.** A future contributor generalises `authorize_via_connection` into something broader | Medium | Keep it a separate, narrowly-named helper with its own `ROUTE_TABLE` row (8.4); never widen `authorize_family` itself | P7 |
-| **R16** | **Ring-2 personalization has no book-delivery path narrower than the catalog.** `Visibility` is `family` or `catalog` only (`publishing/state_machine.py:45-55`) | Medium | Not a blocker: the values gate protects the content regardless of book visibility, so a catalog book renders generic for everyone unconnected. Named as ADR-023 OD-4 so the product decides deliberately whether connection-scoped visibility is wanted | P7 |
+| **R16** | **Ring-2 personalization has no book-delivery path narrower than the catalog.** `Visibility` is `family` or `catalog` only (`publishing/state_machine.py:45-55`) | Medium | Not a blocker: the values gate protects the content regardless of book visibility, so a catalog book renders generic for everyone unconnected. **Accepted for v1 on 2026-07-25 (owner choice, ADR-023 OD-4)**: the catalog surface is the v1 delivery path and connection-scoped visibility is explicitly not a prerequisite | P7 |
 
-## 14. Open questions this plan cannot answer
+## 14. Open questions
 
-1. **ADR-023 OD-1 through OD-4.** Ring-2 consent model, pronoun scope, Route A copy wording, and
-   the ring-2 catalog-visibility surface. Ring 2 itself is settled and in scope.
-2. **PR #415 A11 shuffle semantics.** Whether the shuffle changes what is stored or generated, or
+### Closed 2026-07-25 by owner decision
+
+Every owner-level question this plan was waiting on has been answered. Recorded here rather than
+deleted, so a reader who arrives via an older reference does not think they are still open. Full
+records are in ADR-023's "Owner decisions" section.
+
+1. **ADR-023 OD-1 through OD-5: all confirmed as designed (owner choice, 2026-07-25).** Ring-2
+   separate disclosure consent (OD-1), pronouns stored not inferred and ring-1 only (OD-2), Route A
+   copy drafted by this ADR for #415 to adopt (OD-3), the catalog surface accepted for v1 with
+   connection-scoped visibility explicitly not a prerequisite (OD-4), and all three parts of the
+   sibling and pet-name raise (OD-5). **Counsel confirmation on OD-1 and OD-5 remains outstanding**
+   and is what keeps ADR-023 at Proposed; nothing in this plan is blocked on it, but P7 and P9
+   should not ship ahead of it.
+2. **Whether the 3-5 band should be offered personalization: confirmed as designed (owner choice,
+   2026-07-25).** Offered, guardian-controlled, with no child-facing control rendered at that band.
+   No change to section 10.2.
+3. **Whether pronouns need a new profile field: answered by OD-2.** They do. The value is an
+   explicit guardian-set field, deliberately **stored rather than inferred**, which is the safer of
+   the two given this app's standing posture against inferring anything about a child. That makes
+   it new child-data collection, so it needs its own privacy-model classification entry alongside
+   the others in 5.6, not a footnote on the disclosure question.
+4. **Whether narrowing a consent's scope requires re-signing: answered by OD-5(c).** It does not.
+   Narrowing updates the signed record in place; only widening triggers re-consent. Section 5.3
+   already describes this behaviour and is now confirmed rather than provisional. The honest
+   residual, still worth stating in the DPIA, is that after a narrowing the stored artifact is a
+   signature over a superset of the current scope.
+
+### Genuinely still open
+
+1. **PR #415 A11 shuffle semantics.** Whether the shuffle changes what is stored or generated, or
    is purely a cosmetic client-side choice among generic names. If it changes the stored bound
-   value, it touches the same slot the personalization sentinel occupies and P1 must be sequenced
-   against it. That plan currently lists this as an open user-testing question, not a decision.
-3. **Whether pronouns need a new profile field at all.** Deriving them from an existing attribute
-   may not be possible without an inference this app has deliberately avoided making. If a new
-   field is required, that is new child-data collection needing its own justification in the
-   privacy model, separate from the disclosure question.
-4. **The exact sentinel delimiter.** Deliberately left open in 2.3; a small decision to be made
-   once, in code, by whoever writes the check in P2.
-5. **Whether the 3-5 band should be offered personalization at all.** ADR-023 section 9 argues it
-   should, guardian-controlled, with no child-side control. A defensible alternative is to withhold
-   it below 8-11 entirely. Owner call.
-6. **Shared-device isolation of the values store (risk R20).** Two siblings' values payloads live
+   value it touches the same slot the personalization sentinel occupies, and P1 must be sequenced
+   against it. That plan lists this as an open user-testing question, not a decision, and OD-3
+   deliberately did not resolve it: the copy decision was settled, the shuffle question was not.
+2. **The exact sentinel delimiter.** Section 2.3.2 now proposes `{~HERO:Explorer~}` and discharges
+   all four constraints against the live code, so this is a recommendation awaiting implementation
+   rather than an open design question. Confirm it in code when writing the P2 check.
+3. **Shared-device isolation of the values store (risk R20).** Two siblings' values payloads live
    in one origin's IndexedDB with no isolation beyond application logic. The plan currently accepts
-   this and says so honestly in 7.4 and in the ADR's success criteria, but "accepted" has never
-   actually been decided by anyone. It needs a real answer: accept it (a shared family device is a
-   shared trust boundary, and the exposure is a sibling learning a sibling's pet name), or close it
-   with per-profile encryption or in-memory-only values. The comparison to the existing
-   `storybooks` cache is **not** a justification: that cache holds generic content identical for
-   every reader, this store holds compact per-child personal details. Owner call, tracked here
-   rather than left as a footnote.
-7. **Does narrowing a consent's scope require re-signing?** 5.3 currently says no, leaving a signed
-   superset with a reduced current scope. Counsel may prefer append-only consent rows so the signed
-   set is always exactly the authorized set. Folded into ADR-023 OD-5.
+   this and says so in 7.4 and in ADR-023's success criteria, but "accepted" has still not been
+   decided by anyone: it was not part of the 2026-07-25 decision round. It needs a real answer:
+   accept it (a shared family device is a shared trust boundary, and the exposure is one sibling
+   learning another's pet name), or close it with per-profile encryption or in-memory-only values.
+   The comparison to the existing `storybooks` cache is **not** a justification: that cache holds
+   generic content identical for every reader, this store holds compact per-child personal details.
+   Still an owner call, tracked here rather than left as a footnote.
 
 ## 15. Related
 

@@ -774,7 +774,10 @@ marked **(no default)** genuinely need your input.
    > would become false for an opted-in family, and at ring 2 would become false on a connected
    > family's devices as well. The claim that survives unchanged is narrower and is about egress
    > and storage, not about what appears on a screen. If ADR-023 ships, this record and that copy
-   > need updating together; see ADR-023 open decision OD-3.
+   > need updating together. **ADR-023 OD-3 was decided 2026-07-25 (owner choice)**: that ADR
+   > drafts the replacement copy itself, and the toggle-aware `IDENTITY_PROTECTION` text plus the
+   > guardian variant are in its coordination section. Rewording this record's Route A messaging is
+   > sequenced as a precondition on the personalization feature flag, not as follow-up work.
    >
    > ADR-023 also adds a **new** child-linked data category this plan does not currently cover:
    > per-child personalization slot values (a pet name, a kinship label, a favourite) stored
