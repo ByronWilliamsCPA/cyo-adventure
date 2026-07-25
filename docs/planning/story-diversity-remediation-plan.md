@@ -6,8 +6,9 @@ description: "Phased plan to close the nine gaps in story-diversity-analysis.md 
   the closed vocabulary is load-bearing for the WS-7 echo surface; the gamebook cells' 98% negative share is
   ADR-011-intended with PL-20 working as designed, the real gap being a shallow fail-path tail PL-20 leaves
   out of scope; expanding the curated vocabulary is the better fix and it exposes a symmetric-Jaccard defect
-  that makes an identical premise score as dissimilar; and the guardian family-only versus catalog two-prong
-  is sound but blocked on visibility being set at approval rather than at intake."
+  that makes an identical premise score as dissimilar; the guardian family-only versus catalog two-prong is
+  sound but blocked on visibility being set at approval rather than at intake; and visibility authorization is
+  a monotone restriction rule where the guardian sets a ceiling the admin may lower but never raise."
 tags:
   - planning
   - generation
@@ -39,9 +40,9 @@ source: "story-diversity-analysis.md; review challenges on GDPR exposure of an o
 
 ## 1. Corrections and refinements from review
 
-Four items, each from a review challenge and each changing the work. They are recorded here rather than
+Five items, each from a review challenge and each changing the work. They are recorded here rather than
 silently patched into the audit, because each rests on a fact the audit did not establish. 1.1 and 1.2 correct
-errors; 1.3 and 1.4 are owner direction that reshapes the approach.
+errors; 1.3, 1.4, and 1.5 are owner direction that reshapes the approach.
 
 ### 1.1 The open-vocabulary theme signature is unsafe as drafted
 
@@ -298,6 +299,71 @@ Prefer **guardian opt-in as a precondition, admin approval retained as the gate*
 intent at intake (which is also what unblocks the timing problem above), and the admin still decides whether
 it actually enters the shared catalog. That keeps both controls and costs nothing.
 
+### 1.5 The visibility authorization rule: guardian sets a ceiling, admin may only restrict
+
+Owner direction (2026-07-25): the admin needs a lever, but it must never override a guardian's setting unless
+it is *more* restrictive. Guardian chooses global, admin may choose global or family. Guardian chooses family,
+admin cannot change it. Admin-created book, admin chooses freely.
+
+That is a **monotone restriction rule**, and it has a clean formal shape. Order the two values by
+permissiveness, `FAMILY < CATALOG`. Then the resolved visibility is a lattice meet:
+
+```text
+resolved = min(guardian_ceiling, admin_choice)
+```
+
+with the guardian's value acting as a ceiling the admin can lower but never raise. The admin-created case is
+not a special case at all: an absent guardian means the ceiling is the top element, `CATALOG`, and the meet
+leaves the admin free. One function, no branching on who created the book.
+
+| Guardian ceiling | Admin may resolve to | Admin may NOT | Why |
+| --- | --- | --- | --- |
+| `catalog` (global) | `catalog` or `family` | n/a | Admin restricts; a reviewer can always narrow disclosure. |
+| `family` | `family` only | `catalog` | The guardian's restriction is binding. This is the load-bearing case. |
+| none (admin-created) | `catalog` or `family` | n/a | No guardian intent to honor; ceiling is the top element. |
+
+**The default differs by initiator, and a single constant gets one of them wrong.** `StoryRequest` already
+carries `initiator_role` in `('child', 'guardian', 'admin')`, derived from the authenticated principal and
+marked `#CRITICAL: security` in `story_requests/service.py`, so it is the right discriminator:
+
+- `initiator_role` is `guardian` or `child`, and no explicit choice was made: ceiling is **`family`**. Silence
+  is not consent to cross-family disclosure.
+- `initiator_role` is `admin`: ceiling is **`catalog`**, meaning unconstrained, since there is no guardian
+  whose intent is being honored.
+
+**A child must never set the ceiling.** Per ADR-015 a child-initiated request is gated by a guardian, so the
+ceiling is captured at that gating step, defaulting to `family`. Because `initiator_role` is derived from the
+authenticated principal rather than supplied by the client, a child cannot present as a guardian to raise it.
+The ceiling field must follow the same derivation, not accept a role from the request body.
+
+**This rule turns the current `ApproveBody` default into a silent downgrade.** `ApproveBody.visibility`
+defaults to `"family"` today, which is the safe default while the admin is the sole decider. Under the ceiling
+rule, an admin approving a guardian-`catalog` book with no body would silently restrict it to family and look
+like a deliberate decision. The omitted-body semantics must change from "family" to "honor the guardian
+ceiling". That is a wire-contract change, so the generated frontend client has to be regenerated with it.
+
+**Four decisions the rule implies but does not settle:**
+
+1. **Can a guardian raise their own ceiling later?** It is their family's book, so yes in principle, but only
+   through the guardian surface and never through the admin approve path, or the lever becomes a loophole. If
+   the book is already published as `family`, raising the ceiling should re-enter review rather than widen
+   disclosure in place.
+2. **Post-publish restriction.** Restricting a published `catalog` book to `family` is more restrictive, so the
+   rule permits it, and it is exactly what a takedown needs. But other families may already hold assignments.
+   Recommend the restriction revoke cross-family assignments (the honest reading of "more restrictive") and
+   that reading state be retained rather than deleted, so a re-widening does not lose a child's progress.
+3. **Multi-guardian families.** If two guardians set different ceilings, take the **most restrictive**. Safe,
+   predictable, and consistent with the rest of the rule.
+4. **Dual-role adults.** `/v1/me` returns a base `role` plus an orthogonal `is_admin`, so one person can be
+   both. Enforce the lattice on the **role being acted in**, not on identity: an adult who is both must raise
+   their own family's ceiling on the guardian surface, not sidestep it via the admin path. Otherwise the admin
+   lever is a hole in the guardian control for exactly the families where both hats are worn, which is most of
+   them in a homelab deployment.
+
+**Enforcement location.** In `publishing`'s approve service, not only in the API layer, and as a pure function
+over a frozen table in the style of `state_machine.LEGAL_TRANSITIONS`. That keeps it unit-testable without a
+database and gives one place to point at when asking whether a loosening is possible.
+
 ---
 
 ## 2. Objective and constraints
@@ -428,31 +494,34 @@ the same depth, with the same word budget. Pushing `fill.md` harder collides wit
 fidelity wins because it is the blocking one. D23 is the only deliverable that lifts that cap: it makes
 `beats` a contract the pipeline checks rather than a string it freezes.
 
-### P7: Visibility-tiered privacy controls (section 1.4)
+### P7: Visibility authorization and tiered privacy controls (section 1.4)
 
-The owner's two-prong proposal. D25 is the blocker: without an intake-time intended-visibility field, nothing
-else in this phase can be conditioned on anything. Independent of P1 through P6, and it does not gate them:
-P1's expansion path needs no visibility tiering at all, since a curated closed vocabulary is already safe on
-both prongs.
+The owner's two-prong proposal, with the authorization rule specified in section 1.5. D25 is the blocker:
+without an intake-time guardian ceiling, nothing else in this phase can be conditioned on anything.
+Independent of P1 through P6 and it does not gate them: P1's expansion path needs no visibility tiering at
+all, since a curated closed vocabulary is already safe on both prongs.
 
 | ID | Deliverable | Effort |
 | --- | --- | --- |
-| D25 | **Intended visibility at intake.** A guardian-set field on the story request, so the pipeline can branch at request and fill time. Today `Visibility` is chosen by the admin at release approval, at the end of the pipeline, long after the signature is derived and the echo is rendered. The approval-time value stays authoritative for the published book; this field only informs pipeline strictness. | S |
-| D26 | Guardian opt-in, admin gate. Treat the D25 field as a *request* for catalog inclusion, keeping the admin's approval-time choice as the decision. Preserves the independent reviewer on a cross-family disclosure while giving the guardian the control the proposal asks for. | S |
-| D27 | **Catalog path: decouple rather than scrub.** On a catalog-visibility book, do not publish the family-facing WS-7 interpretation or echo cross-family at all; the catalog listing carries only skeleton-derived and generated metadata (title, cover, themes, band, length). A structural guarantee, not a redaction filter that has to be right every time. | M |
-| D28 | Family-only relaxation, scoped honestly. Document exactly what the relaxation covers (intra-family echo of the family's own request) and what it does **not** (LLM-provider export, which visibility does not gate, and which still sits behind `privacy-model.md`'s open OpenRouter retention blocker). Any relaxation whose stated basis is "the data never leaves the family" is mis-scoped. | S |
-| D29 | Gate the catalog prong on Phase 7 compliance. ADR-016 makes the catalog the widest ring of the three-ring boundary, and `privacy-model.md`'s "If Shared Beyond Family" section lists COPPA and Kids Category compliance as an unfinished Phase 7 launch blocker. Routing child-premise-derived books cross-family should wait on that work regardless of what the flag permits. | S |
+| D25 | **Guardian visibility ceiling at intake.** A guardian-set field on the story request, so the pipeline can branch at request and fill time and so the admin has something to be bound by. Today `Visibility` is chosen by the admin at release approval, at the end of the pipeline, long after the signature is derived and the echo is rendered. Set from the authenticated principal's acting role, never from a client-supplied role: `initiator_role` is already derived this way (`story_requests/service.py`, marked `#CRITICAL: security`) and the ceiling must follow the same pattern so a child cannot set it. | S |
+| D26 | **`resolve_visibility`, a pure lattice meet.** Implement section 1.5's rule as a pure function plus a frozen table, mirroring `state_machine.LEGAL_TRANSITIONS`, and enforce it in `publishing`'s approve service rather than only in the API layer. Unit-testable with no database, exactly like `LEGAL_TRANSITIONS`. | S |
+| D27 | **Fix the `ApproveBody` default, which becomes a silent downgrade.** `ApproveBody.visibility` defaults to `"family"` today, which is safe when the admin is the only decider. Under the ceiling rule an omitted body would silently restrict a guardian's `catalog` book to family. Change the semantics: an omitted body means "honor the guardian ceiling", not "family". This is a wire-contract change and needs the OpenAPI client regenerated. | S |
+| D28 | **Audit every resolution.** Record `(guardian_ceiling, admin_choice, resolved, actor, initiator_role)` in the pipeline event log on each approve. Visibility is a disclosure decision, so "why is this book family-only" must be answerable after the fact, and a rule that silently lowers a setting is exactly the kind of thing that needs a trail. | S |
+| D29 | **Catalog path: decouple rather than scrub.** On a catalog-visibility book, do not publish the family-facing WS-7 interpretation or echo cross-family at all; the catalog listing carries only skeleton-derived and generated metadata (title, cover, themes, band, length). A structural guarantee, not a redaction filter that has to be right every time. | M |
+| D30 | Family-only relaxation, scoped honestly. Document exactly what the relaxation covers (intra-family echo of the family's own request) and what it does **not** (LLM-provider export, which visibility does not gate, and which still sits behind `privacy-model.md`'s open OpenRouter retention blocker). Any relaxation whose stated basis is "the data never leaves the family" is mis-scoped. | S |
+| D31 | Gate the catalog prong on Phase 7 compliance. ADR-016 makes the catalog the widest ring of the three-ring boundary, and `privacy-model.md`'s "If Shared Beyond Family" section lists COPPA and Kids Category compliance as an unfinished Phase 7 launch blocker. Routing child-premise-derived books cross-family should wait on that work regardless of what the flag permits. | S |
 
-**Acceptance.** A story request carries intended visibility from intake. A catalog-visibility book exposes no
-premise-derived free text cross-family, verified by a test that asserts the interpretation and echo fields are
-absent from the cross-family read surface. The family-only relaxation's documented basis names the
-intra-family echo and explicitly excludes provider export.
+**Acceptance.** A story request carries a guardian ceiling from intake. `resolve_visibility` rejects every
+loosening transition in section 1.5's table, enforced in the service layer and covered by unit tests with no
+database. An approve with no body on a guardian-`catalog` book resolves to `catalog`, not `family`. A
+catalog-visibility book exposes no premise-derived free text cross-family, verified by a test asserting the
+interpretation and echo fields are absent from the cross-family read surface.
 
 **Note on ordering.** If P1 lands as D2 plus D3 (expanded curated vocabulary, containment measure), the
-privacy question that motivated this tiering largely evaporates: a closed reviewed vocabulary is echo-safe on
+privacy question that motivated the tiering largely evaporates: a closed reviewed vocabulary is echo-safe on
 both prongs, so no relaxation is needed to get the diversity benefit. P7 then stands on its own product merits
-(guardians wanting to share good books) rather than as a privacy workaround. That is the better outcome, and
-it is a reason to do P1 first and revisit whether P7's relaxation is wanted at all.
+(guardians wanting to share good books, and the authorization rule being correct) rather than as a privacy
+workaround. That is the better outcome, and a reason to do P1 first.
 
 ---
 
@@ -470,7 +539,7 @@ P4 (fail-path depth + outcome mix) ----+
    D16 (measure)  ->  D18, D19 gated on it
 
 P6 (ceiling: D23, D24)   independent, longest lead time, start the D23 design early
-P7 (visibility tiers: D25 -> D26, D27, D28, D29)   independent; D25 unblocks the rest
+P7 (visibility: D25 -> D26, D27, D28 -> D29, D30, D31)   independent; D25 unblocks the rest
 ```
 
 P1 before P3: escalation cannot act on a signal that does not fire. P1 before any metric claim: until the
