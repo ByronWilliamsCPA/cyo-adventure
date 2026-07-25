@@ -2,8 +2,8 @@
 schema_type: planning
 title: "Story Diversity Plan v2"
 description: "Rebuilt diversity plan, grounded only in measurements that survived a seven-reviewer adversarial
-  pass and a 98-document corpus survey. Twelve near-term deliverables, six independent defects, eight items
-  deferred behind named prerequisites, and four decisions required. Replaces two superseded plans."
+  pass and a 98-document corpus survey. Thirteen near-term deliverables, six independent defects, eight items
+  deferred behind named prerequisites, one resolved disposition principle, and two open decisions. Replaces two superseded plans."
 tags:
   - planning
   - generation
@@ -51,6 +51,8 @@ this document is treated as established.
 | 1,778 gamebook endings; 178 sit below 33% of `min_complete`, splitting 104 `setback` / 73 `death`+`capture` / 1 `discovery`; scoped to foreclosing terminals, **no** skeleton breaches `min_endings` | BFS depth + `_effective_floors` |
 | The **shared opening spine is 1 to 6 nodes** (median 3), and within-cell opening-content Jaccard is median 0.089, so two books in a cell were never confusable at the opening | dominator intersection; pairwise content Jaccard |
 | **Go back ships, works at an ending node, and is disabled for continuation reads** | `engine.ts:325-347` (`back` has no ending guard, requires only `path.length > 1`); `engine.ts:288-297` fails closed when `path[0] !== start_node` |
+| Of the 73 shallow foreclosing terminals, **only 15 are escapable by a single Go back**; the other 58 are reached from single-choice corridors, so backing up one step re-presents the same fatal choice | per-terminal predecessor analysis |
+| **All 73 are within 3 Go-back hops** of a node offering a real alternative (15 need one hop, 58 need exactly three; max 3) | back-walk to nearest branching ancestor |
 | `save_slots` is client-writable, server-persisted, and **omitted from `validate_reading_state`** | `schemas.py:80`, `reading.py:412`, `reading.py:168-175` |
 | **129 of 132 catalog themes pass the echo floor at band `3-5`** | ran the real `_echo_floor` at all six bands |
 | Reading telemetry does not exist: `ReadingState` is one mutable row with `path` overwritten; `Completion`'s key includes `ending_id` with one `found_at`, so re-reads and depth-at-terminal are unrecorded | `db/models.py:725-793` |
@@ -91,7 +93,8 @@ Each item traces to a fact in section 1. Effort: S under a day, M a few days, L 
 | **A9** | **Resolve the in-cell duplicate**, pending the decision in section 6.1: `the-harrowstone-keep` and `the-sunken-temple` are brass-lantern books 1 and 2, a deliberate series stress-test artifact, so "retire one" is not available. | M |
 | **A10** | **Make the empty teen `short` cells fail gracefully or fill them.** A `13-16/short` or `16+/short` request has zero candidates today and 422s. Pending the decision in section 6.2. | M |
 | **A11** | **State the request restrictions before submission.** `RequestStory.tsx` shows one prompt and no restrictions. `_ELEMENT_MUST_BE_NULL` spans `SAFETY_POLICY`, `PERSONAL_DETAILS` and `IDENTITY_PROTECTION`, so for the three most surprising restrictions the WS-7 echo can name the reason but structurally cannot show what was dropped. Serve the restriction set from the API off `ReasonCode` / `band_profile` / the profile's `content_nogo`, never hand-written copy. Kid surface omits the `content_nogo` values entirely and its copy stays invariant to their contents. Note `capability-register.md:133` marks K19 delivered; update it. | M |
-| **A12** | **Enable Go back in continuation reads.** `back()` already works at an ending node, so an early foreclosing terminal costs one node, not the session. But `replayRecordedPath` fails closed when `path[0] !== start_node`, which disables it in exactly the state-carrying series books where a reader has most to lose. This is the whole of the previous plan's M3 that survives, and it is a bug fix. | M |
+| **A12** | **Enable Go back in continuation reads.** `replayRecordedPath` fails closed when `path[0] !== start_node`, disabling Go back in exactly the state-carrying series books where a reader has most to lose. A bug fix, not a feature. | M |
+| **A13** | **Make Go back walk to the nearest node with an untaken choice**, up to a small bound. Today it is single-step, and only **15 of 73** shallow foreclosing terminals are reached from a node offering an alternative; the other 58 sit at the end of single-choice corridors, so one hop re-presents the same fatal choice. **All 73 are within 3 hops.** This replaces a fail-depth floor plus 73 ending relocations with one player change and zero skeleton edits. Interacts with `runtime-semantics.md` section 6, so it needs B2's revision first. | M |
 
 ## 4. Track B: defects found by the review, independent of this plan
 
@@ -113,7 +116,7 @@ Not "later" in the abstract. Each has one thing that must happen first.
 | Item | Prerequisite |
 | --- | --- |
 | Reading telemetry (depth reached, early-exit rate, real satisfying rate) | A schema design for durable per-session reading data plus a child-behaviour privacy review. `r1-deferred-debt-register.md` U5 already registers this as Phase 4b with an owner; extend that, do not duplicate it. |
-| A fail-depth floor (`PL-23`; `PL-22` is taken) | A difficulty decision (section 6.3), and telemetry to calibrate against. Its value is materially lower than the previous plan assumed, because Go back already works at an ending. |
+| A fail-depth floor (`PL-23`; `PL-22` is taken) **Probably not needed at all** if A13 lands: a multi-step Go back fixes all 73 shallow foreclosing terminals with no skeleton edits, where a floor needs 73 relocations and a fraction with no non-circular basis. Revisit only if A13 is rejected or telemetry shows a residual problem. |
 | An outcome-mix floor keyed on the fail-kind mix | Telemetry. Do not key it on topology. |
 | Challenge mode / permadeath | B2's ADR, since it is a backtracking-semantics change; plus a per-(profile, series) row, which does not exist. |
 | Alternate beat phrasings | Its own design doc and ADR. The evidence for it is weaker than stated (the illustrating quotation was wrong), though the byte-frozen-beat constraint is real. Also bounded by the `L2-12` 100,000-configuration cap, which permanently caps declared variables near five. |
@@ -123,15 +126,39 @@ Not "later" in the abstract. Each has one thing that must happen first.
 
 ## 6. Decisions required
 
-1. **The brass-lantern duplicate.** Books 1 and 2 of one series share an isomorphic tree. Options: exempt
-   same-series books from the in-cell clone rule (they are narratively continuous, and their opening beats do
-   differ, Jaccard 0.145); mutate book 2's tree past `TAU_CELL`; or accept the cell holding four distinct trees
-   rather than five. Blocks A9.
-2. **The empty teen `short` cells.** Author skeletons, or make the request surface degrade gracefully instead of
-   422ing. Blocks A10.
-3. **Difficulty.** Given that Go back works at an ending, is an early foreclosing terminal acceptable? This
-   governs whether a fail-depth floor is wanted at all, and there is no guidance anywhere in the corpus.
-4. **Ring-2 child display names.** B6.
+**Resolved (owner, 2026-07-25): catalog disposition.** No book or skeleton is required to be kept. Retire and
+replace, or fix; substandard work is not carried. This is a standing principle, not a one-off ruling on
+brass-lantern, and it has three consequences:
+
+- **A9** takes the fix-or-replace path. A same-series exemption from the in-cell clone rule is **off the table**:
+  two books of one series sharing an isomorphic tree is substandard regardless of the narrative continuity that
+  explains it.
+- **A8 gains teeth.** The audit may require replacement rather than negotiate an exemption, which makes a
+  stricter threshold viable: `TAU_CELL` (0.05) is the anti-duplication floor, while `TAU_STRUCT` (0.33 in the
+  committed baseline) is described in `floors.py` as the bar for "a genuinely new tree". Under this principle,
+  auditing hand-authored trees at `TAU_STRUCT` is defensible; note `13-16/medium/gamebook` sits at 0.091 and
+  would fail it. Recommend starting at `TAU_CELL` to fix the known duplicate, then evaluating the `TAU_STRUCT`
+  bar as a separate decision with the failing set measured first.
+- **A10** leans to authoring the missing teen `short` skeletons rather than degrading the surface, since a cell
+  that 422s is itself substandard. Still needs a call on sequencing, because this is content authoring with
+  nothing to fix.
+
+Still open:
+
+1. **Difficulty.** Not "is the catalog too hard" but: **adopt A13 (multi-step Go back) or a fail-depth floor?**
+   A13 fixes all 73 shallow foreclosing terminals with one player change and no skeleton edits; a floor would
+   require 73 ending relocations and needs a fraction for which no non-circular basis exists. A13 also helps every
+   deep terminal, not just shallow ones. Recommend A13. The residual question is the hop bound: 3 covers all 73
+   today, but a bound is a difficulty knob and there is no corpus guidance on it.
+2. **Ring-2 attribution granularity.** What crosses the family boundary is `child_profile.display_name`, which
+   `coppa-compliance-audit.md:129` defines as "a first name or nickname; the only stored child name", plus a star
+   rating. It reaches a family that has completed **mutual** connection consent, about a book that is already
+   catalog-visible, published, approved, and assigned to the recipient's own child. It is inventoried in both
+   `gdpr-compliance-review.md:160` and the COPPA audit. So this is **not a compliance gap**; it is an
+   unspecified granularity choice, because ADR-016 defines the three rings but never says what a ring-2
+   recommendation should be attributed to. Options: keep the nickname; show an initial or avatar only; or
+   attribute to "a reader in a connected family". The `ring` field is already computed at
+   `recommendations.py:339`, so any of the three is a rendering change.
 
 ## 7. Method rules for this document
 
