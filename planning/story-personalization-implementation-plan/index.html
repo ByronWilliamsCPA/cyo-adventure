@@ -1,0 +1,5038 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/story-personalization-implementation-plan/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Story personalization: implementation plan - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#story-personalization-implementation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Story personalization: implementation plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../template_feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Feedback
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-what-this-plan-assumes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. What this plan assumes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-phase-ordering-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Phase ordering and why
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-p1-the-sentinel-bound-slot-kind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. P1: the sentinel-bound slot kind
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. P1: the sentinel-bound slot kind">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-why-the-existing-slot-machinery-cannot-be-reused-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Why the existing slot machinery cannot be reused unchanged
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-schema-change-slotspeckind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Schema change: SlotSpec.kind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-sentinel-format-and-crucially-how-one-gets-into-the-prose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Sentinel format and, crucially, how one gets into the prose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-what-must-not-change-in-p1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 What must not change in P1
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-p2-the-sentinel-forgery-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. P2: the sentinel-forgery check
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. P2: the sentinel-forgery check">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-the-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 The gap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-the-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 The check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-rescreen-and-repair-interaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Rescreen and repair interaction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-qa-and-measurement-will-sentinels-actually-survive-the-fill-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 QA and measurement: will sentinels actually survive the fill LLM?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-p3-leak-surface-guard-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. P3: leak-surface guard points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-p4-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. P4: data model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. P4: data model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-child_profile_personalization-the-slot-value-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 child_profile_personalization: the slot-value store
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-write-time-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Write-time validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-ring-2-disclosure-consent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Ring-2 disclosure consent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-deletion-cascade-what-is-automatic-and-what-is-new-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Deletion cascade: what is automatic and what is new work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Export
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-privacy-model-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Privacy-model classification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-p5-api-surface-and-contract-regeneration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. P5: API surface and contract regeneration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. P5: API surface and contract regeneration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-request-and-response-shapes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Request and response shapes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-openapi-contract-regeneration-do-not-skip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 OpenAPI contract regeneration (do not skip)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-p6-client-side-resolution-ring-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. P6: client-side resolution (ring 1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. P6: client-side resolution (ring 1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-where-it-lives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Where it lives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-where-it-is-applied" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Where it is applied
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-the-values-payload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 The values payload
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-offline-and-revocation-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Offline and revocation mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-the-feature-flag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 The feature flag
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-p7-ring-2-cross-family-delivery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. P7: ring-2 cross-family delivery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. P7: ring-2 cross-family delivery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-the-product-situation-concretely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 The product situation, concretely
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-the-personalization-subject" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 The personalization subject
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-discovery-the-client-cannot-name-what-it-cannot-see" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Discovery: the client cannot name what it cannot see
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-the-endpoint-and-its-authorization-predicate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 The endpoint and its authorization predicate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-who-actually-calls-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Who actually calls it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-does-the-receiving-family-need-their-own-consent-or-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 Does the receiving family need their own consent or notice?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#87-cross-family-erasure-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7 Cross-family erasure propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#88-tests-this-phase-must-carry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.8 Tests this phase must carry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-p8-the-dedication-line-overlay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. P8: the dedication-line overlay
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-p9-guardian-surfaces-and-the-child-facing-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. P9: guardian surfaces and the child-facing control
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. P9: guardian surfaces and the child-facing control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-guardian" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Guardian
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-the-child-facing-control-and-what-one-way-actually-means" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 The child-facing control, and what "one-way" actually means
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-p10-catalog-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. P10: catalog migration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-p11-copy-erasure-and-compliance-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. P11: copy, erasure, and compliance artifacts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-risk-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Risk register
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Open questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Open questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#closed-2026-07-25-by-owner-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Closed 2026-07-25 by owner decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#genuinely-still-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Genuinely still open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="story-personalization-implementation-plan">Story personalization: implementation plan<a class="headerlink" href="#story-personalization-implementation-plan" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Draft (2026-07-25). Blocked on <a href="../adr/adr-023-story-personalization-slots/">ADR-023</a>
+flipping from Proposed to Accepted. <strong>Every owner-level decision it was waiting on is now
+closed</strong> (the 3-5 band question and OD-1 through OD-5, all confirmed by owner choice 2026-07-25);
+what remains is counsel confirmation on OD-1 and OD-5, which should land before P7 and P9 ship
+but blocks no earlier phase. Ring 2 is in scope and designed end to end in section 8.
+<strong>Decision record</strong>: <a href="../adr/adr-023-story-personalization-slots/">ADR-023</a>
+<strong>Date</strong>: 2026-07-25</p>
+</blockquote>
+<h2 id="0-what-this-plan-assumes">0. What this plan assumes<a class="headerlink" href="#0-what-this-plan-assumes" title="Permanent link">&para;</a></h2>
+<p>Read ADR-023 first. The one-line summary this plan builds on: the server always stores and serves
+a generic, sentinel-bearing story blob, identical for every viewer; a small per-profile values
+payload is resolved <strong>client-side at render time</strong> and never persisted into story content, never
+sent to any provider, and never baked into a blob.</p>
+<p>Nothing in this feature exists in code today. Every file reference below is either a file to
+change or a file whose current behaviour is the reason a change is needed. Line numbers were
+verified against the working tree on 2026-07-25 (branch <code>claude/children-data-privacy-gdpr-8mxlxx</code>,
+HEAD <code>79e10c5</code>) and should be re-checked before use, since several of these files are actively
+edited by other workstreams.</p>
+<h2 id="1-phase-ordering-and-why">1. Phase ordering and why<a class="headerlink" href="#1-phase-ordering-and-why" title="Permanent link">&para;</a></h2>
+<p>Dependencies force most of the order. The rule of thumb: <strong>nothing user-visible can ship before
+the sentinel mechanism exists</strong>, because a toggle with no sentinel to resolve is a toggle over
+nothing, and a values payload with no integrity check behind it is an unaudited injection path.</p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Deliverable</th>
+<th>Depends on</th>
+<th>Ships anything user-visible?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P1</strong></td>
+<td>Sentinel-bound slot kind; fill-time and storage-time preservation (section 2)</td>
+<td>Nothing</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>P2</strong></td>
+<td>Post-fill sentinel-integrity check and its QA/retry strategy (section 3)</td>
+<td>P1</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>P3</strong></td>
+<td>Leak-surface guard points and their tests (section 4)</td>
+<td>P1</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>P4</strong></td>
+<td>Data model: slot values, toggles, consent records, eligibility flags (section 5)</td>
+<td><strong>P2</strong> (3.4's survival measurement gates whether this is worth building at all); scope settled by ADR-023 OD-1/OD-2/OD-5 (all confirmed 2026-07-25)</td>
+<td>No (schema only)</td>
+</tr>
+<tr>
+<td><strong>P5</strong></td>
+<td>API surface plus OpenAPI client regeneration (section 6)</td>
+<td>P4</td>
+<td>No (contract only)</td>
+</tr>
+<tr>
+<td><strong>P6</strong></td>
+<td>Client-side resolver in <code>frontend/src/player/</code>; ring-1 values payload; offline interaction (section 7)</td>
+<td>P1, P3, P5</td>
+<td>Yes, behind <code>VITE_FEATURE_PERSONALIZATION</code></td>
+</tr>
+<tr>
+<td><strong>P7</strong></td>
+<td>Ring-2 cross-family delivery: endpoint, authz predicate, client fetch (section 8)</td>
+<td>P5, P6</td>
+<td>Yes, same flag</td>
+</tr>
+<tr>
+<td><strong>P8</strong></td>
+<td>Dedication-line title-page overlay (section 9)</td>
+<td>P4, P6</td>
+<td>Yes, same flag</td>
+</tr>
+<tr>
+<td><strong>P9</strong></td>
+<td>Guardian toggle UI; ring-2 consent capture; kid-facing control (section 10)</td>
+<td>P4, P6, P7, <strong>and the P11 Route A copy fix as an exit criterion</strong> (see below)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>P10</strong></td>
+<td>Catalog migration: repair or replace existing test content (section 11)</td>
+<td>P1, P2</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>P11</strong></td>
+<td>Route A copy wiring (text already drafted per OD-3); erasure, export, privacy-notice and classification updates (section 12)</td>
+<td>P9, and the copy half is itself a P9 exit criterion</td>
+<td>Yes (copy)</td>
+</tr>
+</tbody>
+</table>
+<p>P3 can run in parallel with P2. P10 can run any time after P2 and should not gate P6, since P6 can
+be developed against a small number of freshly generated sentinel-bearing stories. P8 shares
+nothing with the sentinel work and can slip without blocking anything else.</p>
+<p><strong>Two ordering constraints that are easy to get wrong, called out because an earlier draft got both
+wrong:</strong></p>
+<ul>
+<li><strong>The Route A copy fix is not a P11 cleanup, it is a P9 gate.</strong> P11 rewrites the kid-facing
+  "Heroes in our stories always have made-up names" strings
+  (<code>story_requests/interpretation.py:1017-1035</code>). If that lands after P9, the app ships a live
+  toggle that makes an absolute on-screen claim false for every family that flips it. The rule:
+  <strong><code>VITE_FEATURE_PERSONALIZATION</code> may not be enabled in any environment where a real family can
+  reach it until the copy fix has merged.</strong> Treat the copy change as an exit criterion on P9 and a
+  precondition on the flag, not as documentation debt.</li>
+<li><strong>P4 waits on P2, not P1.</strong> Section 3.4 measures whether sentinels actually survive the fill LLM.
+  That measurement can invalidate the whole approach, so building the data model, the consent
+  tables, and the migrations before it lands risks schema work for a mechanism that does not
+  function. P1 plus P2 plus the 3.4 numbers is the real gate on committing to the rest.</li>
+</ul>
+<p>Two cross-cutting obligations that are not phases:</p>
+<ul>
+<li><strong>Authoring-lessons log.</strong> Once PR #416 merges, <code>CLAUDE.md</code> will carry a CRITICAL directive
+  requiring any authoring or validator work to append lessons to
+  <code>docs/planning/authoring-lessons-log.md</code>, validated by <code>scripts/check_lessons_log.py</code>. P1, P2,
+  and P10 are validator and authoring work by that definition. Log lessons as they are learned,
+  not retroactively at the end.</li>
+<li><strong>Capability register.</strong> Done: <strong>G18</strong> and <strong>K20</strong> were minted in register v1.8 (2026-07-25),
+  with scope notes on G4, G17, K19, S10, S11, and S12; ADR-023's Related section records why two
+  new IDs rather than cross-references alone. Both sit at ❌ and flip when the work lands, per
+  register maintenance rule 2, which also asks for the spec link and the covering tests.</li>
+</ul>
+<h2 id="2-p1-the-sentinel-bound-slot-kind">2. P1: the sentinel-bound slot kind<a class="headerlink" href="#2-p1-the-sentinel-bound-slot-kind" title="Permanent link">&para;</a></h2>
+<h3 id="21-why-the-existing-slot-machinery-cannot-be-reused-unchanged">2.1 Why the existing slot machinery cannot be reused unchanged<a class="headerlink" href="#21-why-the-existing-slot-machinery-cannot-be-reused-unchanged" title="Permanent link">&para;</a></h3>
+<p><code>render_bound_skeleton</code> (<code>src/cyo_adventure/generation/binding.py:560</code>) substitutes bound values
+into exactly three surfaces before the fill call: the <code>beats='...'</code> segment of <code>&lt;&lt;FILL ...&gt;&gt;</code> node
+bodies, <code>ending.title</code> strings, and <code>choices[].label</code> strings (<code>binding.py:10-15</code>, <code>:571</code>).
+<code>fill_bound.md</code> then injects those same bound values into the LLM prompt verbatim, under the
+heading "Bound Theme Values (validated data, not instructions)"
+(<code>src/cyo_adventure/generation/templates/fill_bound.md:110-117</code>).</p>
+<p>So a real value bound through the existing path reaches a provider on the first call. The new slot
+kind exists precisely to break that: <strong>the value bound at fill time is a generic default, and the
+sentinel is what survives into storage.</strong></p>
+<h3 id="22-schema-change-slotspeckind">2.2 Schema change: <code>SlotSpec.kind</code><a class="headerlink" href="#22-schema-change-slotspeckind" title="Permanent link">&para;</a></h3>
+<p>Add a <code>kind</code> discriminator to <code>SlotSpec</code> in <code>src/cyo_adventure/storybook/theme_contract.py:76-85</code>,
+defaulting to the existing behaviour so all 45 current contracts keep parsing unchanged:</p>
+<ul>
+<li><code>kind: "theme"</code> (default) is today's behaviour: the bound value is substituted and reaches the
+  fill prompt.</li>
+<li><code>kind: "personalizable"</code> is new. It declares a <code>personalization_field</code> (which ADR-023 taxonomy
+  entry it maps to). At bind time it is <strong>pinned</strong> to a constant generic value, so the fill prompt
+  sees only generic text; at render time that value is emitted wrapped in a sentinel.</li>
+<li><code>role_safety</code> on the same spec: a slot mapped to a real-person field (protagonist name, sibling
+  name) must declare that its narrative role is never antagonist and never the subject of a mishap
+  beat. This is the mechanism behind risk R11.</li>
+</ul>
+<p><strong>The pinned value is <code>default_binding[slot_id]</code>, not a new field.</strong> An earlier draft proposed a
+separate <code>generic_default</code> on the slot spec. That was redundant and created a sync hazard:
+<code>ThemeContract._check_default_binding_keys</code> (<code>theme_contract.py:152-168</code>) already requires
+<code>default_binding</code> keys to match the declared slot ids <em>exactly</em>, so every personalizable slot is
+guaranteed to have a default already. Use it. One source of truth, already invariant-checked, and
+nothing to keep in sync.</p>
+<p><strong>Enforcement point for the pin.</strong> <code>bind_theme_to_contract</code> asks an LLM for a <code>{SLOT_ID: value}</code>
+map. Personalizable slots are <strong>excluded from the bind request entirely</strong> (they are not offered to
+the model, so there is nothing to override) and their <code>default_binding</code> value is merged into the
+binding map afterwards, before <code>validate_slot_bindings</code> runs. Excluding rather than post-overriding
+matters: a post-bind override would leave a model-proposed value briefly present in the map, and
+would make the bind prompt's slot list disagree with the contract for no benefit.</p>
+<p><strong>One sharp interaction to handle: the <code>legacy_lexicon</code> check will false-reject the pinned value.</strong>
+<code>_semantic_slot_violations</code> (<code>validator/slots.py:634-643</code>) runs the legacy-lexicon leak check
+whenever <code>is_default=False</code>, which is every runtime bind (<code>slots.py:709-716</code>). But
+<code>legacy_lexicon</code> holds "the original theme's proper nouns and distinctive setting terms"
+(<code>theme_contract.py:93-97</code>), and <code>default_binding</code> <strong>is</strong> that original theme, which is exactly why
+<code>is_default=True</code> exists to skip the check. A personalizable slot pinned to its default on a real
+runtime bind therefore hits the check with a value that is legitimately in the lexicon, and fails.
+Fix: skip <code>legacy_lexicon</code> for <code>kind: "personalizable"</code> slots, for the identical reason
+<code>is_default</code> skips it. The check exists to stop a <em>new</em> theme reintroducing the old theme's
+identity; a slot pinned to a constant proposes nothing, so there is nothing to leak.</p>
+<p><code>ThemeContract._check_contract_invariants</code> (<code>theme_contract.py:120-134</code>) gains matching
+invariants: a <code>personalizable</code> slot's <code>personalization_field</code> must name an entry on ADR-023's
+include list, and a slot mapped to a real-person field must declare <code>role_safety</code>.</p>
+<p>Note for the implementer: no <code>.contract.json</code> in the catalog currently sets <code>constraints.pattern</code>,
+even though <code>SlotConstraints</code> declares it (<code>theme_contract.py:73</code>) and <code>validate_slot_bindings</code>
+enforces it (<code>src/cyo_adventure/validator/slots.py:645-653</code>). If the new slot kind wants a
+pattern-shaped constraint, it will be the first real user of that code path. Test it directly
+rather than assuming it is exercised.</p>
+<h3 id="23-sentinel-format-and-crucially-how-one-gets-into-the-prose">2.3 Sentinel format and, crucially, how one gets into the prose<a class="headerlink" href="#23-sentinel-format-and-crucially-how-one-gets-into-the-prose" title="Permanent link">&para;</a></h3>
+<p>An earlier draft of this plan specified the sentinel <em>checker</em> in detail and left the <em>producer</em>
+undesigned, hand-waving it as "add sentinels to the do-not-change list". That does not work, and
+the reason it does not work is worth stating before the fix: <code>fill_bound.md</code>'s do-not-change list
+(<code>:80-92</code>) protects <strong>structural JSON fields that are already present in the input</strong> (<code>id</code>,
+<code>target</code>, <code>condition</code>, <code>effects</code>, <code>variables</code>, ending <code>title</code>). Node bodies are not in that
+category. They arrive as <code>&lt;&lt;FILL role=... words=... beats='...'&gt;&gt;</code> directives and leave as
+<strong>freshly written prose</strong>, and the prompt explicitly instructs the model to re-imagine that prose
+in the theme's own vocabulary (<code>fill_bound.md:51-60</code>). You cannot "preserve" a token that was
+never in the input. The model has to be told to <strong>emit</strong> it.</p>
+<h4 id="231-which-surfaces-carry-sentinels-and-which-deliberately-do-not">2.3.1 Which surfaces carry sentinels, and which deliberately do not<a class="headerlink" href="#231-which-surfaces-carry-sentinels-and-which-deliberately-do-not" title="Permanent link">&para;</a></h4>
+<p><code>render_bound_skeleton</code> touches exactly three surfaces (<code>binding.py:10-15</code>, <code>:563-571</code>). Each one
+needs a separate answer:</p>
+<table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>Sentinels?</th>
+<th>Mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ending <code>title</code></td>
+<td><strong>Yes</strong></td>
+<td>Substituted at render time and preserved by an <strong>existing</strong> rule: "Ending <code>title</code> values are final; do not change them" (<code>fill_bound.md:90</code>). No new instruction needed. Highest-reliability surface</td>
+</tr>
+<tr>
+<td><code>beats='...'</code> inside <code>&lt;&lt;FILL&gt;&gt;</code>, producing body prose and dialogue</td>
+<td><strong>Yes</strong>, and this is the main event</td>
+<td>Substituted into the beats guidance at render time, then <strong>re-emitted by the model into the prose</strong> under a new prompt rule (2.3.3)</td>
+</tr>
+<tr>
+<td><code>choices[].label</code></td>
+<td><strong>No, deliberately</strong></td>
+<td><code>fill_bound.md:67</code> instructs "Phrase each choice label in this theme's own vocabulary; do not reuse a generic label phrasing that ignores the theme", and the Stage 1 label-intent review checks the frozen action-semantic. A verbatim-preservation rule would directly contradict a load-bearing diversity instruction, for a surface where a name adds little. Labels stay generic</td>
+</tr>
+</tbody>
+</table>
+<p>Saying "not choice labels" out loud is part of the design, not a gap. It also simplifies the
+checker: labels are excluded from the expected-token computation.</p>
+<h4 id="232-the-delimiter-worked-through-rather-than-deferred">2.3.2 The delimiter, worked through rather than deferred<a class="headerlink" href="#232-the-delimiter-worked-through-rather-than-deferred" title="Permanent link">&para;</a></h4>
+<p>Four constraints, and one shape satisfies all of them:</p>
+<ol>
+<li><strong>Must not match <code>SLOT_TOKEN_RE</code></strong> (<code>theme_contract.py:34</code>), which is
+   <code>\{([A-Z][A-Z0-9_]*)\}</code>. This is not stylistic: <code>render_bound_skeleton</code> post-condition 1
+   requires "zero <code>{SLOT}</code>-shaped tokens remain anywhere in the rendered document"
+   (<code>binding.py:576-578</code>), so a sentinel that looked like a slot token would fail the render.</li>
+<li><strong>Must not be forgeable from a slot value.</strong> <code>_charset_violations</code>
+   (<code>validator/slots.py:396-411</code>) already rejects <code>{</code>, <code>}</code>, <code>&lt;&lt;</code>, <code>&gt;&gt;</code> in any bound value.</li>
+<li><strong>Must not disturb the FILL directive grammar</strong> (<code>_FILL_RE</code>, <code>binding.py:71</code>).</li>
+<li><strong>Must degrade to correct prose</strong> when markers are stripped.</li>
+</ol>
+<p><strong>Proposed shape: <code>{~HERO:Explorer~}</code>.</strong> The reasoning:</p>
+<ul>
+<li>The outer braces make it forgery-proof for free, because braces are already banned in slot values
+  (constraint 2), so no value-side path can construct one.</li>
+<li>The interior begins with <code>~</code>, which is not <code>[A-Z]</code>, so <code>SLOT_TOKEN_RE</code> cannot match it at any
+  offset (constraint 1). Verified by inspection of the pattern: the only <code>{</code> in the token is at
+  offset 0, and the character after it is <code>~</code>.</li>
+<li>It contains no <code>&lt;&lt;</code>, <code>&gt;&gt;</code>, or <code>'</code>, so it cannot corrupt a directive (constraint 3). Note that
+  <code>render_bound_skeleton</code> reconstructs <code>role=</code>/<code>words=</code> from the parsed directive rather than
+  copying bytes, precisely so substituted text cannot corrupt the shape (<code>binding.py:563-567</code>),
+  and the CR-1 invariant (<code>binding.py:545-558</code>) proves it did not.</li>
+<li>Stripping <code>{~HERO:</code> and <code>~}</code> yields exactly <code>Explorer</code> (constraint 4). The slot id is carried
+  inline, so resolution needs no lookup and an unmatched slot id is self-evidently a defect.</li>
+<li>Practical point for LLM fidelity: a token containing a readable English word survives a
+  copy-verbatim instruction far better than an opaque id would. Do not "improve" this into a UUID.</li>
+</ul>
+<h4 id="233-the-prompt-instruction-change-the-actual-producer">2.3.3 The prompt-instruction change (the actual producer)<a class="headerlink" href="#233-the-prompt-instruction-change-the-actual-producer" title="Permanent link">&para;</a></h4>
+<p>Add to <code>fill_bound.md</code>, as its own section near the FILL Directive Syntax block:</p>
+<blockquote>
+<p><strong>Verbatim tokens.</strong> Some <code>beats='...'</code> guidance contains tokens of the form <code>{~NAME:Word~}</code>.
+These are placeholders a family may later personalise. For every distinct such token that appears
+in a node's <code>beats</code>, your prose for that node must contain that token <strong>at least once</strong>, copied
+character for character, including the braces and tildes. Place it where the word inside it would
+naturally go: in dialogue, in narration, or in an ending title. Do not translate it, do not
+re-theme it, do not add spaces inside it, and do not write the bare word instead of the token. It
+is the one thing in your prose that must be copied rather than re-imagined. Never place one
+inside a choice label.</p>
+</blockquote>
+<p>Two things make this workable rather than hopeful:</p>
+<ul>
+<li><strong>No new directive grammar.</strong> The token rides inside the existing <code>beats='...'</code> text, which
+  <code>render_bound_skeleton</code> already substitutes into. So <code>_FILL_RE</code> (<code>binding.py:71</code>),
+  <code>_FILL_WORDS_RE</code> (<code>validator/policy.py:44</code>), and the CR-1 role/words invariant all stay
+  untouched. The render's own docstring already scopes substitution this way: "substitution must be
+  confined to the beats text inside an unchanged 'role=...words=...' directive"
+  (<code>binding.py:555-557</code>).</li>
+<li><strong>It is a per-node contract</strong>, which is exactly what the P2 checker verifies per node. The
+  producer and the checker now describe the same object.</li>
+</ul>
+<h4 id="234-reading-level-scoring-must-strip-sentinels">2.3.4 Reading-level scoring must strip sentinels<a class="headerlink" href="#234-reading-level-scoring-must-strip-sentinels" title="Permanent link">&para;</a></h4>
+<p><code>check_reading_level</code> tokenizes with <code>_WORD_RE = [A-Za-z]+(?:['\-][A-Za-z]+)*</code>
+(<code>validator/reading_level.py:52</code>, used at <code>:106</code>). Against <code>{~HERO:Explorer~}</code> that yields <strong>two</strong>
+words, <code>HERO</code> and <code>Explorer</code>, inflating both the word count and the syllable count and skewing the
+Flesch-Kincaid grade. Since the gate runs over the stored, sentinel-bearing blob, the reading-level
+check must strip sentinels to their inner word before scoring. Add this to P1, not P3: it is a
+correctness bug in the gate, not a leak surface.</p>
+<p>Record the sentinel pattern in <strong>one</strong> constant, in one module, imported by the validator, the
+serializer, and the frontend resolver. See risk R9 for the cheapest cross-language enforcement.</p>
+<h3 id="24-what-must-not-change-in-p1">2.4 What must not change in P1<a class="headerlink" href="#24-what-must-not-change-in-p1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>src/cyo_adventure/generation/pii.py</code>: no change, no carve-out, no new parameter. This is the
+  invariant the whole design exists to preserve.</li>
+<li><code>src/cyo_adventure/story_requests/interpretation.py</code>: no change. Route A stays intact
+  (ADR-023 section 4).</li>
+<li><code>validate_slot_bindings</code> (<code>validator/slots.py:686</code>): no change to its signature or semantics. It
+  validates the generic binding, which is still a binding.</li>
+</ul>
+<h2 id="3-p2-the-sentinel-forgery-check">3. P2: the sentinel-forgery check<a class="headerlink" href="#3-p2-the-sentinel-forgery-check" title="Permanent link">&para;</a></h2>
+<h3 id="31-the-gap">3.1 The gap<a class="headerlink" href="#31-the-gap" title="Permanent link">&para;</a></h3>
+<p>Nothing today checks that a published blob contains exactly the sentinels its contract declared.
+The existing charset rule blocks <code>{</code>, <code>}</code>, <code>&lt;&lt;</code>, <code>&gt;&gt;</code> in a bound <strong>value</strong>
+(<code>validator/slots.py:396-411</code>), which is value-side forgery. Prose-side forgery is uncovered: the
+fill LLM writes node bodies freely, and could emit a mutated sentinel, an extra sentinel, a
+sentinel in a node that declared none, or drop one entirely. A dropped sentinel degrades quietly
+(the reader just sees generic text). An <strong>extra or mutated</strong> sentinel is the real risk: it is an
+unreviewed substitution point in prose a human approved believing it was static.</p>
+<h3 id="32-the-check">3.2 The check<a class="headerlink" href="#32-the-check" title="Permanent link">&para;</a></h3>
+<p>A new deterministic post-fill check, in the same spirit as the four fail-closed post-conditions
+<code>render_bound_skeleton</code> already carries (<code>binding.py:578-586</code>).</p>
+<p><strong>The expected set is computed per node from the pre-fill bound skeleton</strong>: for each node, the set
+of distinct sentinel tokens appearing in its <code>beats='...'</code> guidance, plus each ending title's own
+token. Choice labels are excluded (2.3.1). Given that expectation and the filled blob, assert:</p>
+<ul>
+<li>Per node, the <strong>set of distinct sentinel tokens</strong> in the emitted prose equals the expected set
+  for that node. Per-node matters: a sentinel that migrated from node A to node B changes what a
+  reader sees where.</li>
+<li>Note this is a <strong>set</strong>, not a multiset, and that is deliberate. The producer contract in 2.3.3
+  says "at least once", because a name may naturally recur in a passage and forcing an exact count
+  would reject good prose. What must be exact is <em>which</em> tokens appear and <em>that each is
+  well-formed</em>, not how many times.</li>
+<li>Every occurrence is byte-exact: the wrapped text equals the slot's <code>default_binding</code> value, the
+  slot id resolves to a declared personalizable slot, and no whitespace has crept inside the
+  braces. The LLM must not have "improved" the placeholder.</li>
+<li>No sentinel-shaped-but-malformed string appears anywhere in the blob. A near-miss is a stronger
+  signal of a problem than a clean absence.</li>
+<li>No sentinel appears in any choice label.</li>
+</ul>
+<p>Fail closed: a blob failing this check is discarded exactly as a schema-invalid or gate-failing
+repair candidate is today (<code>src/cyo_adventure/moderation/repair.py:7-13</code>). It must run <strong>before</strong>
+the blob can reach the human approval queue, so the artifact a guardian approves is the artifact
+that passed.</p>
+<p>Where it hooks in: alongside the existing gate call in <code>generation/worker.py</code> (see the
+<code>render_bound_skeleton</code> call at <code>worker.py:898</code> and the post-condition handling at <code>:867</code> and
+<code>:1601</code>) and in <code>generation/import_story.py:352</code>, the second <code>render_bound_skeleton</code> caller and the
+path the <code>cyo-author</code> skill uses.</p>
+<h3 id="33-rescreen-and-repair-interaction">3.3 Rescreen and repair interaction<a class="headerlink" href="#33-rescreen-and-repair-interaction" title="Permanent link">&para;</a></h3>
+<p><code>moderation/rescreen.py</code> re-reads published blobs and re-runs classifiers over them
+(<code>src/cyo_adventure/api/rescreen.py:1-8</code>). Sentinels will be present in that text. Two decisions to
+make explicitly rather than by accident: whether the classifier sees the sentinel markers or the
+stripped generic text (recommendation: <strong>stripped</strong>, so classifier scores stay comparable across
+the migration boundary and no classifier sees a token it has no training for), and whether a
+rescreen that rewrites nothing can still fail sentinel integrity (recommendation: <strong>yes</strong>, as a
+detection signal for corruption at rest).</p>
+<p><code>moderation/repair.py::attempt_repair</code> re-prompts the generator to revise prose. Sentinels must be
+added to its preserve-list, and the P2 check must re-run on the repaired blob, since
+<code>moderation/pipeline.py</code> already re-validates and re-gates a repair candidate before adopting it.</p>
+<h3 id="34-qa-and-measurement-will-sentinels-actually-survive-the-fill-llm">3.4 QA and measurement: will sentinels actually survive the fill LLM?<a class="headerlink" href="#34-qa-and-measurement-will-sentinels-actually-survive-the-fill-llm" title="Permanent link">&para;</a></h3>
+<p>This is the single biggest unknown in P1/P2 and it cannot be answered by design. It has to be
+measured, and the measurement has to happen <strong>before</strong> P4 onward is scheduled, because a bad
+survival rate changes the whole approach.</p>
+<p><strong>What to measure.</strong> Generate a fixed sample (suggested: 30 stories, spread across bands and
+across at least 5 skeletons, each with 3 to 6 personalizable slots) and record, per run:</p>
+<ul>
+<li><em>Clean-pass rate</em>: fraction of fills where the sentinel multiset matches exactly on the first
+  attempt. This is the number that matters.</li>
+<li><em>Failure taxonomy</em>: dropped, duplicated, relocated (right count, wrong node), mutated wrapper,
+  mutated inner text. These have different fixes. Dropping suggests the preserve-list needs
+  strengthening; mutation suggests the delimiter is being "corrected" by the model and should be
+  changed; relocation suggests the beats guidance is ambiguous about where the slot belongs.</li>
+<li><em>Per-provider variance</em>: run the same sample across at least two of the configured providers
+  (<code>generation/providers/</code>), because a survival rate that holds on one frontier model and collapses
+  on the fallback is a deployment risk, not a curiosity.</li>
+</ul>
+<p><strong>Targets, stated as a position rather than a measured fact.</strong> A clean-pass rate at or above
+roughly 95% makes a single retry cheap and the feature viable. Between roughly 80% and 95%, the
+feature still works but retries become a real cost line and the delimiter or prompt wording should
+be iterated first. Below roughly 80%, reconsider the approach: the fallback is to stop relying on
+the LLM to preserve a marker and instead <strong>re-insert sentinels deterministically after the fill</strong>,
+by matching the generic-default string in the filled prose. That fallback is less elegant (it can
+mis-target if the model used the default word elsewhere) but it removes the model from the
+integrity path entirely, and it is worth prototyping in parallel if early numbers are poor.</p>
+<p><strong>Retry policy when the check trips.</strong> One retry, with the failure fed back into the prompt in the
+same bounded shape <code>attempt_repair</code> already uses for soft-gate findings. A second failure fails the
+job rather than retrying again. The rationale is the same as the existing repair budget: an
+unbounded retry loop on a non-deterministic step is a cost sink with no convergence guarantee.</p>
+<p><strong>Cost impact, stated plainly.</strong> A fill is the most expensive call in the pipeline. At a 95%
+clean-pass rate a single retry adds roughly 5% to fill spend; at 80% it adds roughly 20%. That is
+not negligible and it should be visible in the decision to proceed, not discovered on a bill.
+Record actual measured numbers in <code>docs/planning/authoring-lessons-log.md</code> once PR #416's directive
+is live.</p>
+<h2 id="4-p3-leak-surface-guard-points">4. P3: leak-surface guard points<a class="headerlink" href="#4-p3-leak-surface-guard-points" title="Permanent link">&para;</a></h2>
+<p>Each of these is a concrete place where a sentinel token or a real value could escape. The
+architecture makes the <strong>real value</strong> case structurally impossible server-side; these guards are
+about the <strong>sentinel</strong> case (an ugly token reaching an external provider or a kid-facing list) and
+about defense in depth.</p>
+<table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>File</th>
+<th>Current behaviour</th>
+<th>Guard to add</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cover-art prompt</td>
+<td><code>src/cyo_adventure/covers/prompt.py:87-111</code></td>
+<td>Embeds blob <code>title</code>, a protagonist name, and a 240-char opening excerpt (<code>_opening_excerpt</code>, <code>:19-40</code>) and ships them to an external image provider</td>
+<td>Strip sentinels to their generic default before building the prompt. Assert in test that no sentinel marker can appear in a built prompt</td>
+</tr>
+<tr>
+<td>Recommendation payloads</td>
+<td><code>src/cyo_adventure/api/recommendations.py:79-94</code>, <code>:347</code></td>
+<td>Surfaces <code>blob["title"]</code> as the item title and <code>rater.display_name</code> as <code>recommender_name</code></td>
+<td>Strip sentinels from the title. Note: <code>recommender_name</code> is a separate, already-sanctioned disclosure (ADR-016, and PR #415's B6 decision); do not conflate the two</td>
+</tr>
+<tr>
+<td>Reading history</td>
+<td><code>src/cyo_adventure/api/reading_history.py:89</code>, <code>:323</code></td>
+<td>Its own <code>_book_title</code> helper, deliberately duplicated from recommendations</td>
+<td>Same strip. Because the helper is deliberately duplicated, apply it in both places or extract one shared helper</td>
+</tr>
+<tr>
+<td>Library lists</td>
+<td><code>src/cyo_adventure/api/library.py:284</code>, <code>:401</code></td>
+<td><code>GET /api/v1/library</code> and <code>GET /api/v1/storybooks/{id}/versions/{version}</code></td>
+<td>Same strip on any title field. The version fetch returns the raw blob and must <strong>not</strong> strip: that is the artifact the client resolves against</td>
+</tr>
+<tr>
+<td>Moderation and rescreen re-reads</td>
+<td><code>src/cyo_adventure/moderation/rescreen.py</code>, <code>moderation/classifiers.py</code></td>
+<td>Re-run classifiers over stored prose</td>
+<td>Strip before classification (see 3.3)</td>
+</tr>
+<tr>
+<td>Pipeline event log</td>
+<td><code>src/cyo_adventure/events/writer.py:17-19</code> and the <code>_PAYLOAD_ALLOWLIST</code> below it</td>
+<td>Per-event-type key allowlist enforcing the PII-free payload contract</td>
+<td>Add event types for consent grant, consent revoke, and toggle flip, each with a keys-only allowlist entry (<code>slot_type</code>, <code>ring</code>, <code>action</code>, and at ring 2 <code>connected_family_id</code>). <strong>No values, ever.</strong> The allowlist mechanism already prevents this if the new entries are written correctly</td>
+</tr>
+<tr>
+<td>Notification payloads</td>
+<td><code>src/cyo_adventure/api/notifications.py:121-133</code></td>
+<td>Serializes <code>title</code> and <code>body</code> free text on a guardian-only feed gated before any query runs (<code>:104-116</code>)</td>
+<td>Strip sentinels. Guardian-only, so the risk is cosmetic rather than a boundary crossing, but an unresolved token in a notification is a visible defect</td>
+</tr>
+<tr>
+<td>Admin review surfaces</td>
+<td><code>frontend/src/admin/ReviewDetailPage.tsx</code>, <code>ReviewCompare.tsx</code></td>
+<td>Render node bodies via <code>PassageText</code></td>
+<td>Deliberately <strong>do not</strong> strip and <strong>do not</strong> resolve. A reviewer should see which words a family can replace (ADR-023 section 10)</td>
+</tr>
+<tr>
+<td>Text-to-speech</td>
+<td><code>frontend/src/reader/useReadAloud.ts:34-99</code></td>
+<td>Uses the browser <code>window.speechSynthesis</code> API on already-substituted text</td>
+<td>Not a server guard. Record in the privacy model that on platforms with cloud-backed voices, a personalized passage read aloud may leave the device through a path the app does not control. Surface it in the guardian consent copy</td>
+</tr>
+<tr>
+<td>Save-state export and sync</td>
+<td><code>frontend/src/player/types.ts:71</code> (<code>ReadingState</code>)</td>
+<td>Carries node ids and variable state only</td>
+<td><strong>Already safe.</strong> No change; add a regression test so it stays that way</td>
+</tr>
+<tr>
+<td>Ring-3 aggregates</td>
+<td>Unbuilt (ADR-016, "Technical Debt")</td>
+<td>N/A</td>
+<td>Forward-binding constraint: when ring-3 aggregation is built, it must render fully generic. Land this as a test in that workstream, not only as a sentence in ADR-023</td>
+</tr>
+</tbody>
+</table>
+<p>Implementation note: prefer <strong>one shared strip helper</strong> applied at the serialization boundary over
+per-call-site strips. A per-call-site approach is exactly the pattern that gets forgotten on the
+29<sup>th</sup> router.</p>
+<h2 id="5-p4-data-model">5. P4: data model<a class="headerlink" href="#5-p4-data-model" title="Permanent link">&para;</a></h2>
+<p>Two of ADR-023's included slots already have a home (<code>child_profile.display_name</code> for the
+protagonist name, and a sibling reference is just another <code>child_profile.id</code>). <strong>Everything else
+is new collection</strong> and needs a real schema, write-time validation, an erasure path, and an export
+entry. That is what this section specifies.</p>
+<p>Migrations are Supabase CLI SQL under <code>supabase/migrations/</code> (ADR-012), not Alembic.</p>
+<h3 id="51-child_profile_personalization-the-slot-value-store">5.1 <code>child_profile_personalization</code>: the slot-value store<a class="headerlink" href="#51-child_profile_personalization-the-slot-value-store" title="Permanent link">&para;</a></h3>
+<p>One row per (profile, slot type), rather than a wide column set, because the taxonomy is expected
+to grow and because a per-row grain makes per-slot consent and per-slot erasure natural.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>child_profile_id</code></td>
+<td>UUID, FK -&gt; <code>child_profile</code>, <code>ondelete="CASCADE"</code></td>
+<td>Part of the composite PK</td>
+</tr>
+<tr>
+<td><code>slot_type</code></td>
+<td><code>String(32)</code></td>
+<td>Part of the composite PK; closed vocabulary matching ADR-023's include list</td>
+</tr>
+<tr>
+<td><code>value_text</code></td>
+<td><code>Text</code>, nullable</td>
+<td>Used only by free-text slots; today that is the pet name alone</td>
+</tr>
+<tr>
+<td><code>value_enum</code></td>
+<td><code>String(64)</code>, nullable</td>
+<td>Used by closed-enum slots (pet species, kinship label, home type, favourites)</td>
+</tr>
+<tr>
+<td><code>value_profile_id</code></td>
+<td>UUID, FK -&gt; <code>child_profile</code>, <code>ondelete="CASCADE"</code>, nullable</td>
+<td>Used by the sibling slot; a reference, never a copied name</td>
+</tr>
+<tr>
+<td><code>ring1_enabled</code></td>
+<td>bool, default <code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ring2_enabled</code></td>
+<td>bool, default <code>false</code></td>
+<td>Must be <code>false</code> for any slot whose taxonomy ceiling is ring 1</td>
+</tr>
+<tr>
+<td><code>created_at</code> / <code>updated_at</code></td>
+<td>TIMESTAMPTZ</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Constraints, all CHECK-enforced in the migration and mirrored on the ORM <code>__table_args__</code> (the
+repo has a schema-parity test comparing migration-built and ORM-built schemas, noted at
+<code>db/models.py:554-556</code>, so the two must agree):</p>
+<ul>
+<li>Exactly one of <code>value_text</code>, <code>value_enum</code>, <code>value_profile_id</code> is non-null.</li>
+<li><code>ring2_enabled</code> is false unless <code>slot_type</code> is in the ring-2-eligible set. Per ADR-023's settled
+  taxonomy that set is: protagonist name, sibling reference, pet species, pet name, kinship label,
+  favourites, home type. The two exclusions are <strong>pronouns</strong> (held back on outing risk) and the
+  <strong>dedication line</strong> (addressed to its own household by nature). Encoding the ceiling as a DB
+  CHECK rather than only as API validation is what makes ADR-023's ring ceilings structural rather
+  than advisory.</li>
+<li>The composite PK <code>(child_profile_id, slot_type)</code> gives at-most-one value per slot per profile,
+  the same shape <code>StorybookAssignment</code> uses (<code>db/models.py:830-849</code>).</li>
+</ul>
+<p>The protagonist-name pair <code>real_name_ring1_enabled</code> / <code>real_name_ring2_enabled</code> lives on
+<code>child_profile</code> itself as two booleans defaulting to <code>false</code>, alongside the existing guardian
+boolean controls (<code>tts_enabled:445</code>, <code>reduce_motion:449</code>), because its value is already a column on
+that table and inventing a personalization row that points back at <code>display_name</code> would be
+indirection for its own sake.</p>
+<p>Per-skeleton and per-story flags:</p>
+<ul>
+<li>On the storybook version (or the generation job, whichever is cheaper to query alongside the
+  blob): <code>personalization_eligible: bool</code>, <code>pronoun_parameterized: bool</code> (a <strong>separate</strong> flag per
+  ADR-023 section 5, off by default, set only by an explicit per-skeleton audit), and the declared
+  <strong>sentinel manifest</strong>, so the P2 check has something authoritative to compare against at rescreen
+  time without re-reading the contract from disk.</li>
+</ul>
+<h3 id="52-write-time-validation">5.2 Write-time validation<a class="headerlink" href="#52-write-time-validation" title="Permanent link">&para;</a></h3>
+<p><code>api/profiles.py</code> is already the sole writer for the loosely-typed JSONB column on this table, a
+discipline documented at <code>db/models.py:425-433</code>. Follow it exactly: one API-layer writer, no other
+path.</p>
+<p>Every value passes, at write time:</p>
+<ol>
+<li><code>validator/slots.py::structural_value_violations</code> (<code>slots.py:496-514</code>), the public wrapper that
+   exists precisely so a caller outside the slot gate can reuse the identical structural-injection
+   block. This covers non-emptiness, single-line/control characters, the charset and length rules,
+   and the untrusted-input fence-marker guard.</li>
+<li><code>validator/slots.py::denylisted_bundles</code> (<code>:282-310</code>) against
+   <code>band_mandatory_bundles(profile.age_band)</code> (<code>:229-240</code>), which is the band-mandatory floor
+   contract data cannot shrink.</li>
+<li>For enum slots, membership in the shipped closed vocabulary. For the sibling slot, that
+   <code>value_profile_id</code> names a profile in the <strong>same family</strong> (reusing <code>authorize_family</code>,
+   <code>api/deps.py:743-754</code>).</li>
+</ol>
+<p><code>display_name</code> gets the same two checks. It is currently length-bounded free text only
+(<code>api/schemas.py:1032-1034</code>, written straight to the row at <code>api/profiles.py:102-103</code> and <code>:286</code>),
+which is fine for a label and not fine for something rendered into story prose. Apply the checks
+<strong>both</strong> when the guardian sets the name <strong>and</strong> again at payload-build time, because names set
+before this feature shipped were never checked. See risk R4.</p>
+<h3 id="53-ring-2-disclosure-consent">5.3 Ring-2 disclosure consent<a class="headerlink" href="#53-ring-2-disclosure-consent" title="Permanent link">&para;</a></h3>
+<p>A separate table, because consent is per profile <strong>and</strong> per connection, and it enumerates the slot
+types it covers (ADR-023 section 3, "the ring-2 consent rule, stated once"):</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>UUID, surrogate PK</td>
+<td><code>UUIDPrimaryKeyMixin</code>, matching <code>FamilyConnection</code> and <code>ChildProfile</code>. Needed because the natural key is nullable after tombstoning (below)</td>
+</tr>
+<tr>
+<td><code>child_profile_id</code></td>
+<td>UUID, FK -&gt; <code>child_profile</code>, <code>ondelete="CASCADE"</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>family_connection_id</code></td>
+<td>UUID, FK -&gt; <code>family_connection</code>, <code>ondelete="SET NULL"</code>, nullable</td>
+<td>See the tombstone discussion below</td>
+</tr>
+<tr>
+<td><code>connected_family_label</code></td>
+<td><code>String(200)</code>, nullable</td>
+<td>Denormalized at signing time so the record stays legible after the connection row is gone</td>
+</tr>
+<tr>
+<td><code>covered_slot_types</code></td>
+<td>JSONB array of <code>slot_type</code></td>
+<td>The scope of this disclosure</td>
+</tr>
+<tr>
+<td><code>sibling_authority_attested</code></td>
+<td>bool, default <code>false</code></td>
+<td>Set only for a consent covering a sibling name; see 10.1</td>
+</tr>
+<tr>
+<td><code>consent_accepted_at</code></td>
+<td>TIMESTAMPTZ</td>
+<td></td>
+</tr>
+<tr>
+<td><code>consent_policy_version</code></td>
+<td><code>String(32)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>consent_signer_name</code></td>
+<td><code>String(200)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>consent_ip</code></td>
+<td><code>String(64)</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>revoked_at</code></td>
+<td>TIMESTAMPTZ, nullable</td>
+<td>Explicit revocation, distinct from deletion</td>
+</tr>
+</tbody>
+</table>
+<p><strong>PK choice, stated because this repo has both patterns.</strong> Use a <strong>surrogate UUID PK plus a partial
+unique index</strong> on <code>(child_profile_id, family_connection_id) WHERE family_connection_id IS NOT NULL</code>,
+not a composite PK. <code>StorybookAssignment</code> uses a composite PK (<code>db/models.py:830-849</code>) and
+<code>FamilyConnection</code> uses a surrogate plus <code>UniqueConstraint</code> (<code>:501</code>, <code>:543-545</code>); this table follows
+the latter, because tombstoning nulls half of what would otherwise be the composite key.</p>
+<p>Mirror the CHECK-enforced pairing already used on <code>User</code> (<code>db/models.py:305-308</code>: the four consent
+columns are all-null or all-populated together). That pairing is what makes the record evidentiary
+rather than decorative; copy it exactly.</p>
+<p>Re-consent <strong>supersedes in place</strong> on the same row, with a new timestamp and policy version.
+Narrowing <code>covered_slot_types</code> does <strong>not</strong> require re-signing, because it only shrinks the
+disclosure; the row keeps its original signature and the narrowed set. Note the consequence
+honestly: after a narrowing, the stored record is a signed superset with a subsequently reduced
+scope, so the audit answer to "what did they authorize" is the signature plus the current set, and
+the two can differ. If counsel wants the signed set to be immutable, narrowing has to append a new
+row rather than update, which is a different design. <strong>Resolved 2026-07-25 (owner choice,
+ADR-023 OD-5&copy;): narrowing updates in place and does not require re-signing.</strong> The residual noted
+above is accepted and belongs in the DPIA rather than in the schema.</p>
+<h4 id="the-connection-cascade-would-destroy-the-evidence-so-it-must-not-cascade">The connection cascade would destroy the evidence, so it must not cascade<a class="headerlink" href="#the-connection-cascade-would-destroy-the-evidence-so-it-must-not-cascade" title="Permanent link">&para;</a></h4>
+<p>An earlier draft had <code>family_connection_id</code> CASCADE on delete, reasoning that "consent cannot
+outlive the edge it was granted on". That is backwards for an <strong>evidentiary</strong> record, and it
+contradicted this plan's own 5.6, which says retention should follow the consent-evidence
+rationale. Connections are deliberately <strong>hard-deleted</strong>, not soft-deactivated
+(<code>api/family_connections.py:6-8</code>), so a CASCADE would erase the proof of authorization at exactly
+the moment disputes arise: after a relationship ends. GDPR Article 7(1) puts the burden on the
+controller to <em>demonstrate</em> consent was given, and COPPA 312.5 expects retrievable proof of
+verifiable parental consent. A record that self-destructs on revocation cannot do either.</p>
+<p>Use the pattern this project has already built for exactly this problem. The Article 17(3)
+balancing test for <code>pipeline_event</code> (<code>docs/compliance/coppa-gdpr-remediation-plan.md:389-455</code>) is
+the template: retain a <strong>scrubbed evidentiary tombstone</strong> justified under 17(3)(b) and (e),
+proportionate because the retained payload carries no content.</p>
+<p>Concretely, on connection deletion: <code>family_connection_id</code> goes NULL, <code>revoked_at</code> is stamped, and
+the row survives carrying only <em>that authorization happened and what it covered</em>. It never carried
+a slot <strong>value</strong> in the first place, which is what makes the tombstone proportionate: the evidence
+is the signature, the timestamp, the policy version, and the covered slot-type names, never the
+child's actual pet name or sibling. Two consequences: the values themselves live only in
+<code>child_profile_personalization</code>, which does still CASCADE on profile deletion, so an erasure request
+removes every actual detail while leaving the authorization record; and the tombstone must be added
+to the Article 17(3) justification in the remediation plan alongside <code>pipeline_event</code>, not
+justified ad hoc here. P11 carries that.</p>
+<h3 id="54-deletion-cascade-what-is-automatic-and-what-is-new-work">5.4 Deletion cascade: what is automatic and what is new work<a class="headerlink" href="#54-deletion-cascade-what-is-automatic-and-what-is-new-work" title="Permanent link">&para;</a></h3>
+<p>The established pattern is <code>ForeignKey(_FK_CHILD_PROFILE, ondelete="CASCADE")</code> and
+<code>ForeignKey(_FK_FAMILY, ondelete="CASCADE")</code>, applied across <code>ReadingState</code> (<code>:747-755</code>),
+<code>Completion</code> (<code>:784-788</code>), <code>Rating</code> (<code>:811-818</code>), and <code>StorybookAssignment</code> (<code>:851-858</code>), each
+carrying a <code>#CRITICAL: data-integrity: CASCADE (Phase 3a, GDPR/COPPA erasure)</code> marker.</p>
+<p>Both new tables FK to <code>child_profile</code> with <code>ondelete="CASCADE"</code>, so <strong>profile deletion and family
+deletion sweep every stored slot value automatically</strong>. No new cascade machinery is needed for the
+values.</p>
+<p>The one deliberate exception is the consent table's <code>family_connection_id</code>, which is <code>SET NULL</code>
+rather than <code>CASCADE</code> (5.3): connection deletion leaves an evidentiary tombstone, profile deletion
+still removes the whole row. Note the ordering that makes this coherent: erasure of the <strong>child</strong>
+removes the consent record entirely, because the data subject is gone; deletion of the
+<strong>connection</strong> keeps it, because the data subject still exists and may later dispute what was
+authorized.</p>
+<p>What <strong>is</strong> new work: <code>tests/integration/test_deletion_drill.py</code> asserts erasure table by table,
+explicitly (see <code>test_delete_profile_removes_child_linked_rows</code> at <code>:115</code> and
+<code>test_delete_my_family_removes_everything</code> at <code>:208</code>). Both tests must gain seed rows and
+assertions for the two new tables, or the cascade is untested and the drill silently under-claims.
+Add one more case the drill does not currently have a shape for: deleting a <strong>connection</strong> leaves
+the tombstone, and deleting the <strong>profile</strong> then removes it.</p>
+<h3 id="55-export">5.5 Export<a class="headerlink" href="#55-export" title="Permanent link">&para;</a></h3>
+<p><code>me.py::_assemble_family_export</code> (<code>:93-175</code>) is <strong>hand-assembled table by table</strong>, not reflective:
+it explicitly selects <code>ReadingState</code>, <code>Completion</code>, <code>Rating</code>, <code>StorybookAssignment</code>, and story
+requests, and builds a dict per row. New tables are therefore <strong>not</strong> picked up automatically.</p>
+<p><code>GET /api/v1/me/export</code> (<code>me.py:235</code>) must be extended to return, per profile:</p>
+<ul>
+<li>Every <code>child_profile_personalization</code> row: <code>slot_type</code>, the populated value, both ring flags,
+  and timestamps. Return the sibling slot as the referenced profile's id <strong>and</strong> display name, so
+  the export is human-readable rather than a UUID the guardian cannot interpret.</li>
+<li>The two ring toggles that live on <code>child_profile</code> itself, <code>real_name_ring1_enabled</code> and
+  <code>real_name_ring2_enabled</code>. Easy to miss because they are not in the new table, and omitting them
+  would make the export claim a narrower disclosure posture than the account actually holds.</li>
+<li>Every ring-2 consent row, <strong>including tombstoned ones</strong> (<code>family_connection_id IS NULL</code>): the
+  <code>connected_family_label</code>, <code>covered_slot_types</code>, <code>sibling_authority_attested</code>, the four consent
+  columns, and <code>revoked_at</code>. A guardian asking "who did I share what with, and is it still on"
+  should be answerable from the export alone, including for relationships that have since ended.</li>
+</ul>
+<h3 id="56-privacy-model-classification">5.6 Privacy-model classification<a class="headerlink" href="#56-privacy-model-classification" title="Permanent link">&para;</a></h3>
+<p><code>docs/planning/privacy-model.md</code> has a "Data Classification" section (<code>:36</code>) and an "If Shared
+Beyond Family" section (<code>:278</code>). Both need entries. Do not settle for a generic privacy-notice
+bullet:</p>
+<ul>
+<li><strong><code>child_profile_personalization</code></strong>: child-linked data, <strong>same tier as <code>child_profile</code> fields</strong>.
+  Guardian-supplied, never sent to a provider, never persisted into story content, delivered to
+  family devices as a values payload. Retention: life of the profile, purged by the existing
+  profile-deactivation grace window in the retention table
+  (<code>docs/compliance/coppa-gdpr-remediation-plan.md:712</code>).</li>
+<li><strong>Ring-2 disclosure consent</strong>: consent evidence, same tier as the <code>User</code> consent columns.
+  Retention should follow the consent-evidence rationale, not the reading-data rationale; flag for
+  the same counsel pass as ADR-018 D1.</li>
+<li><strong>The client-held values payload</strong>: child-linked data at rest on a device, in the same category
+  as the offline <code>reading_states</code> store already covered by the SEC-F5 sign-out purge
+  (<code>frontend/src/offline/db.ts:192-201</code>).</li>
+<li><strong>The "If Shared Beyond Family" section</strong> gains the ring-2 flow explicitly: which slot types can
+  cross, under which consent, and the prospective-not-retroactive revocation limit.</li>
+</ul>
+<h2 id="6-p5-api-surface-and-contract-regeneration">6. P5: API surface and contract regeneration<a class="headerlink" href="#6-p5-api-surface-and-contract-regeneration" title="Permanent link">&para;</a></h2>
+<p>New routes, all under the existing <code>/api/v1</code> prefix:</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Caller</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /api/v1/profiles/{profile_id}/personalization</code></td>
+<td>Guardian</td>
+<td>Read a profile's slot values and ring flags for the settings UI</td>
+</tr>
+<tr>
+<td><code>PUT /api/v1/profiles/{profile_id}/personalization</code></td>
+<td>Guardian</td>
+<td>Write slot values and ring flags; the sole writer, validated per 5.2</td>
+</tr>
+<tr>
+<td><code>GET /api/v1/storybooks/{storybook_id}/personalization-values</code></td>
+<td>Reader session (child, device, or guardian)</td>
+<td>The values payload for <strong>whichever ring applies</strong>, resolved server-side from the book's subject and the caller's family. One route for both rings; see 8.3 for why the client must not name the connection</td>
+</tr>
+<tr>
+<td><code>POST /api/v1/profiles/{profile_id}/ring2-consent</code></td>
+<td>Guardian in the <strong>sharer</strong> family</td>
+<td>Grant or supersede a ring-2 disclosure consent for a specific connection and slot-type set</td>
+</tr>
+<tr>
+<td><code>DELETE /api/v1/profiles/{profile_id}/ring2-consent/{connection_id}</code></td>
+<td>Guardian in the sharer family</td>
+<td>Revoke it</td>
+</tr>
+</tbody>
+</table>
+<p>Two routing notes:</p>
+<ul>
+<li>The values route deliberately returns the payload <strong>separately from the story</strong>, never embedded
+  in <code>GET /api/v1/storybooks/{id}/versions/{version}</code> (<code>library.py:401</code>). That separation is what
+  keeps the story response byte-identical for every viewer and the <code>id@version</code> cache key valid.</li>
+<li>The ring-2 consent routes are gated to the <strong>sharer-side</strong> guardian. Note that
+  <code>FamilyConnection</code> is directional with <code>family_id</code> as the <em>viewer</em> and <code>connected_family_id</code> as
+  the <em>sharer</em> (<code>db/models.py:501-507</code>), which is the opposite of the intuitive reading; get the
+  direction right or the consent will be collected from the wrong household.</li>
+</ul>
+<h3 id="61-request-and-response-shapes">6.1 Request and response shapes<a class="headerlink" href="#61-request-and-response-shapes" title="Permanent link">&para;</a></h3>
+<p>Route table entries are not schemas. Four shapes need pinning before P5 can be written, and one of
+them resolves a question the predicate in 8.4 implicitly raised.</p>
+<p><strong><code>PUT /api/v1/profiles/{profile_id}/personalization</code></strong> takes the whole personalization state for
+one profile, as a replace-not-patch body, because a partial patch over a per-slot table invites
+ambiguity about whether an absent key means "unchanged" or "cleared":</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>{
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  real_name_ring1_enabled: bool,
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  real_name_ring2_enabled: bool,
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  slots: [
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    { slot_type: str, value_text?: str, value_enum?: str,
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>      value_profile_id?: uuid, ring1_enabled: bool, ring2_enabled: bool }
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  ]
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>}
+</span></code></pre></div>
+<p><strong>The two <code>real_name_*</code> booleans are written through this route, not the existing profile-update
+route</strong>, even though they live on <code>child_profile</code> rather than the new table. The reasoning: they are
+personalization state semantically, and splitting one guardian screen's save across
+<code>PATCH /profiles/{id}</code> (<code>api/profiles.py:315</code>) and this route would make a partial failure leave a
+profile half-configured, with the name enabled and the slot rows not. One route, one transaction.
+<code>ProfileUpdateBody</code> gains nothing.</p>
+<p><strong><code>GET /api/v1/profiles/{profile_id}/personalization</code></strong> returns the same shape plus, per slot, a
+read-only <code>ring2_eligible</code> derived from the taxonomy ceiling, so the UI can grey out what the DB
+CHECK would reject anyway rather than reimplementing the ceiling list in TypeScript.</p>
+<p><strong><code>POST /api/v1/profiles/{profile_id}/ring2-consent</code></strong>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>{
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  family_connection_id: uuid,
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  covered_slot_types: [str],
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  policy_version: str,
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  signer_name: str,
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  accepted: true,
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  sibling_authority_attested?: bool   // required true when covered_slot_types includes the sibling slot
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>}
+</span></code></pre></div>
+<p><code>consent_ip</code> and <code>consent_accepted_at</code> are stamped server-side, never accepted from the client,
+mirroring how <code>POST /v1/onboarding</code> handles the ADR-018 D1 consent.</p>
+<p><strong><code>GET /api/v1/storybooks/{storybook_id}/personalization-values</code></strong> takes <strong>no</strong> requested-slot-type
+parameter. An earlier draft's predicate said "for each requested slot type", implying one; there
+should not be. The server returns every slot type the subject has enabled and consented for at the
+applicable ring, filtered by 8.4. Letting the client request a subset would add a parameter that
+can only ever narrow a result the server already computed, while giving an attacker a probe
+dimension. The client discards what it does not need.</p>
+<p>Response (both rings, identical shape):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>{ subject_profile_id: uuid, ring: 1 | 2, policy_version: str,
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  resolved_at: timestamp, values: { &lt;slot_type&gt;: str } }
+</span></code></pre></div>
+<p>An empty <code>values</code> object is the universal failure mode, per 8.4.</p>
+<h3 id="62-openapi-contract-regeneration-do-not-skip">6.2 OpenAPI contract regeneration (do not skip)<a class="headerlink" href="#62-openapi-contract-regeneration-do-not-skip" title="Permanent link">&para;</a></h3>
+<p>This repo's frontend has no hand-written request/response types; the axios client under
+<code>frontend/src/client/</code> is generated from the backend OpenAPI schema and <strong>committed to git</strong>. CI
+enforces it: the <code>contract</code> job in <code>.github/workflows/ci.yml:432</code> dumps the schema in-process
+(<code>:477</code>), regenerates the client (<code>:497</code>), and fails the build on any diff
+(<code>:501</code>, "Generated OpenAPI client is out of date").</p>
+<p>So every backend route or Pydantic model change above requires, in the same commit:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>frontend<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>generate-client<span class="w">   </span><span class="c1"># against a live backend, per frontend/README.md</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>add<span class="w"> </span>frontend/src/client
+</span></code></pre></div>
+<p>This is an explicit step in P5, not a cleanup afterwards. A P5 PR that adds routes without the
+regenerated client will fail CI.</p>
+<h2 id="7-p6-client-side-resolution-ring-1">7. P6: client-side resolution (ring 1)<a class="headerlink" href="#7-p6-client-side-resolution-ring-1" title="Permanent link">&para;</a></h2>
+<h3 id="71-where-it-lives">7.1 Where it lives<a class="headerlink" href="#71-where-it-lives" title="Permanent link">&para;</a></h3>
+<p><code>frontend/src/player/</code>, next to the existing engine (<code>engine.ts</code>, <code>evaluator.ts</code>, <code>machine.ts</code>,
+<code>series.ts</code>, <code>types.ts</code>). That directory already exists to mirror backend logic on the client and
+already carries the test discipline this needs. A new <code>personalization.ts</code> plus
+<code>personalization.test.ts</code> fits the established shape.</p>
+<p>The resolver is a pure function: <code>(text: string, values: ValuesPayload | null) =&gt; string</code>. Given
+<code>null</code> or a missing key it returns the generic default. It must be pure, total, and synchronous, so
+it can be called from render without a loading state and so a missing payload degrades to the
+generic experience rather than to an error.</p>
+<h3 id="72-where-it-is-applied">7.2 Where it is applied<a class="headerlink" href="#72-where-it-is-applied" title="Permanent link">&para;</a></h3>
+<p><code>frontend/src/reader/Reader.tsx</code> renders node bodies through
+<code>&lt;PassageText text={node?.body ?? ''} /&gt;</code> (<code>Reader.tsx:365</code>, <code>:419</code>) and passes body plus choice
+labels to read-aloud (<code>:96</code>, <code>:151</code>). Substitution is applied at those render sites, and to choice
+labels and ending titles, and nowhere else.</p>
+<p>Deliberately <strong>not</strong> substituted: the admin review surfaces, which use the same <code>PassageText</code>
+component (<code>frontend/src/admin/ReviewDetailPage.tsx</code>, <code>ReviewCompare.tsx</code>). An admin reviews the
+generic artifact, which is the artifact that was approved and stored. See ADR-023 section 10.</p>
+<h3 id="73-the-values-payload">7.3 The values payload<a class="headerlink" href="#73-the-values-payload" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>{
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  subject_profile_id: string,
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  ring: 1 | 2,
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  policy_version: string,
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>  resolved_at: timestamp,
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>  values: { &lt;slot_type&gt;: string }
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>}
+</span></code></pre></div>
+<p>Rules:</p>
+<ul>
+<li>Fetched per profile, <strong>never embedded in a story response</strong>.</li>
+<li>Small and bounded: at most one short string per included taxonomy entry.</li>
+<li>Stored in its own IndexedDB store keyed by <code>subject_profile_id</code>, so a single-key delete revokes
+  it. Do <strong>not</strong> put it in the <code>storybooks</code> store, which is deliberately device-wide and
+  profile-independent (<code>frontend/src/offline/db.ts:17-21</code>).</li>
+<li>Server-side validated at build time per 5.2; the client falls back to the generic default rather
+  than rendering anything malformed that arrives anyway.</li>
+</ul>
+<h3 id="74-offline-and-revocation-mechanics">7.4 Offline and revocation mechanics<a class="headerlink" href="#74-offline-and-revocation-mechanics" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The story cache is untouched.</strong> <code>cacheStorybook</code> keys by <code>`${story.id}@${story.version}`</code>
+  (<code>frontend/src/offline/db.ts:161-163</code>). Because the blob is identical for every reader, this
+  stays correct and siblings keep sharing one entry. This is the payoff of the whole architecture;
+  do not undo it by adding a profile dimension to that key.</li>
+<li><strong>A new store</strong> for values payloads, added as a <code>DB_VERSION</code> bump in the <code>upgrade</code> callback
+  (<code>db.ts:92-116</code>), following the existing <code>if (oldVersion &lt; N)</code> pattern. The existing
+  <code>blocking</code> / <code>blocked</code> / <code>terminated</code> handling (<code>db.ts:117-136</code>) exists because a version bump
+  can hang every tab; a bump is not free and should carry its own test, as the current ones do.</li>
+<li><strong>Purge triggers.</strong> Delete the values payload on: any ring flag flipping to off, ring-2 consent
+  revocation, ring-2 connection revocation, profile deactivation, guardian sign-out and device
+  handover (alongside the existing <code>clearReadingStates</code>, <code>db.ts:198-201</code>), and consent
+  policy-version change. Add these to <code>frontend/src/offline/revocation.ts</code> next to
+  <code>reconcileOfflineCache</code> (<code>:85</code>), but keep them <strong>separate</strong> from it: that function's <code>#CRITICAL</code>
+  contract is that it runs only after a successful authoritative library fetch (<code>:39-52</code>), and a
+  values purge has different, looser preconditions. Do not overload it.</li>
+<li><strong>The honest limit.</strong> A device offline at the moment of revocation keeps its payload until it
+  next opens the app and completes a fetch. <code>revocation.ts:16-25</code> already documents an analogous
+  mid-read gap for book revocation. Document this one the same way, in code, and make sure the
+  guardian-facing copy says "new readings" rather than implying retroactive erasure.</li>
+</ul>
+<h3 id="75-the-feature-flag">7.5 The feature flag<a class="headerlink" href="#75-the-feature-flag" title="Permanent link">&para;</a></h3>
+<p>P6 through P8 ship behind <code>VITE_FEATURE_PERSONALIZATION</code>, a build-time Vite env flag read once and
+threaded through a single <code>isPersonalizationEnabled()</code> helper, matching how the rest of the
+frontend reads <code>VITE_</code>-prefixed config. Off means: no values fetch, no resolver call, no settings
+UI, and the reader renders generic. The backend routes may exist while the flag is off; the
+server-side artifact is generic either way, so a half-deployed state is safe by construction.</p>
+<h2 id="8-p7-ring-2-cross-family-delivery">8. P7: ring-2 cross-family delivery<a class="headerlink" href="#8-p7-ring-2-cross-family-delivery" title="Permanent link">&para;</a></h2>
+<p>This is the section the design was missing. "Ring 2 is allowed" is a policy; this is the mechanism.</p>
+<h3 id="81-the-product-situation-concretely">8.1 The product situation, concretely<a class="headerlink" href="#81-the-product-situation-concretely" title="Permanent link">&para;</a></h3>
+<p>Two families, connected. The Ruiz family (Alex, age 9) and the Diaz family (Mateo, age 8). The
+guardians have an active <code>family_connection</code>.</p>
+<p><strong>Before this feature.</strong> A book generated for Alex is published. If its <code>visibility</code> is <code>catalog</code>,
+Mateo's guardian can assign it to Mateo, and Mateo reads it. Every reader, in both households, sees
+the generic protagonist ("Explorer"). Separately, Alex's 5-star rating on that book surfaces in
+Mateo's recommendation feed with "Alex" as <code>recommender_name</code>, which is the ring-2 attribution
+disclosure PR #415's B6 already sanctioned.</p>
+<p><strong>After this feature, with everything opted in.</strong> Alex's guardian enables
+<code>real_name_ring2_enabled</code> on Alex's profile and signs a ring-2 disclosure consent naming the Ruiz
+to Diaz connection and the slot types it covers. Now when Mateo opens that same book, Mateo's
+reader recognises that the book's personalization subject is a profile outside the Diaz family,
+fetches Alex's ring-2 values, and renders "Alex" where the sentinel sits. Mateo is reading a story
+about his cousin Alex, by name. The stored blob is still generic and still byte-identical to what
+every other family in the catalog receives.</p>
+<p><strong>With anything not opted in.</strong> Consent missing, ring-2 flag off, connection revoked, or the
+reading family simply unconnected: the values fetch returns empty and the reader renders
+"Explorer". No other enforcement is required anywhere.</p>
+<h3 id="82-the-personalization-subject">8.2 The personalization subject<a class="headerlink" href="#82-the-personalization-subject" title="Permanent link">&para;</a></h3>
+<p>The mechanism needs to know <em>whose</em> values a given book resolves against. Today a <code>Storybook</code>
+carries <code>family_id</code> (<code>db/models.py:640</code>) and a <code>StoryRequest</code> carries a nullable <code>profile_id</code>
+(<code>db/models.py:903-921</code>), which is set to NULL when the profile is deleted (asserted at
+<code>tests/integration/test_deletion_drill.py:183</code>). That nullable link is too weak to authorize on.</p>
+<p>Add an explicit <code>personalization_subject_profile_id</code> on the storybook, nullable, FK to
+<code>child_profile</code> with <code>ondelete="SET NULL"</code>. Set at generation time from the requesting profile.
+<code>SET NULL</code> rather than <code>CASCADE</code> is deliberate here and is the one place this feature deviates from
+the table-wide CASCADE pattern: deleting Alex's profile must not delete a book the Diaz family has
+on their shelf, but it must sever the personalization link so the book reverts to generic
+everywhere. That severing is the erasure mechanism described in 8.5.</p>
+<h3 id="83-discovery-the-client-cannot-name-what-it-cannot-see">8.3 Discovery: the client cannot name what it cannot see<a class="headerlink" href="#83-discovery-the-client-cannot-name-what-it-cannot-see" title="Permanent link">&para;</a></h3>
+<p>An earlier draft of this section specified a route taking <code>connection_id</code> and <code>profile_id</code>, without
+checking whether the reading client can obtain either. It cannot, and both halves fail:</p>
+<ul>
+<li><strong><code>connection_id</code> is unreachable from a child session.</strong> Every connection-listing and consent
+  route is guardian-gated: <code>_require_guardian</code> (<code>api/family_connections.py:241-256</code>) is called
+  first thing in <code>list_my_family_connections</code> (<code>:371</code>), <code>get_family_connection_consent</code> (<code>:406</code>),
+  <code>consent_family_connection</code>, and <code>revoke_family_connection_consent</code> (<code>:461</code>). A <code>Role.CHILD</code>
+  principal gets a 403 from all of them, correctly. There is no child-readable connection list and
+  there should not be one.</li>
+<li><strong><code>personalization_subject_profile_id</code> is in no response shape.</strong> Nothing the client can read
+  tells it whose values a book resolves against.</li>
+</ul>
+<p>The naive fix, surfacing the subject profile id on the book, is worse than the problem: a
+catalog-visible book is readable by <strong>every</strong> family, so putting a foreign <code>child_profile</code> UUID on
+it would leak the existence and identity of a subject to unconnected households, which is precisely
+the ring-3 boundary this design exists to hold.</p>
+<p><strong>Resolution: the server resolves the connection; the client never names it.</strong> The route drops
+<code>connection_id</code> entirely and is keyed on the book:</p>
+<p><code>GET /api/v1/storybooks/{storybook_id}/personalization-values</code></p>
+<p>The server derives everything from the caller's own principal and the book:</p>
+<ol>
+<li>Load the book, read its <code>personalization_subject_profile_id</code>.</li>
+<li>If the subject is in the <strong>caller's own family</strong>, this is the ring-1 path: apply the ring-1
+   gate and return.</li>
+<li>If the subject is in <strong>another</strong> family, look up a <code>FamilyConnection</code> where
+   <code>family_id == principal.family_id</code> and <code>connected_family_id == subject.family_id</code>. If none
+   exists, return an empty payload.</li>
+<li>Apply the ring-2 predicate in 8.4 against that resolved connection.</li>
+</ol>
+<p>This is strictly better on three counts. The client needs no knowledge it is not entitled to. One
+route serves both rings, so the reader has one call site and no branching on a fact it cannot
+determine. And an unconnected family calling it on a catalog book gets an empty payload that is
+indistinguishable from "this book has no personalization at all", so the route leaks nothing about
+whether a subject exists.</p>
+<p>The client's only new knowledge is a boolean already safe to publish: <code>personalization_eligible</code>
+on the library and version responses, which says "this book contains sentinels" and nothing about
+whose. The reader calls the values route only when that boolean is true, purely to avoid a pointless
+request.</p>
+<h3 id="84-the-endpoint-and-its-authorization-predicate">8.4 The endpoint and its authorization predicate<a class="headerlink" href="#84-the-endpoint-and-its-authorization-predicate" title="Permanent link">&para;</a></h3>
+<p><code>GET /api/v1/storybooks/{storybook_id}/personalization-values</code></p>
+<p>Returns a values payload, or an <strong>empty payload</strong> (not a 403) when any condition fails. Empty
+rather than an error is deliberate: a 403 distinguishes "consent exists but you cannot have it"
+from "no consent exists", which leaks the existence of a consent relationship. An empty payload
+renders generic and tells the caller nothing.</p>
+<p>The predicate, all of which must hold:</p>
+<ol>
+<li><strong>The caller is authenticated and belongs to the viewer family.</strong> <code>principal.family_id</code> equals
+   <code>connection.family_id</code>. Recall the direction: <code>family_id</code> is the viewer, <code>connected_family_id</code>
+   is the sharer (<code>db/models.py:501-507</code>).</li>
+<li><strong>The connection is active.</strong> Both <code>consented_by_viewer_user_id</code> and
+   <code>consented_by_sharer_user_id</code> are non-null. Reuse the existing <code>_is_dual_consented</code> shape from
+   <code>api/recommendations.py:178-196</code>, which deliberately applies the check as an explicit Python
+   boolean per row rather than as a SQL <code>WHERE</code> clause "a future edit could silently loosen"
+   (<code>recommendations.py:214-221</code>). Follow that convention exactly; it is the house style for this
+   check and it exists for a reason.</li>
+<li><strong>The subject profile belongs to the sharer family.</strong> <code>profile.family_id</code> equals
+   <code>connection.connected_family_id</code>. Without this, a connection to one family would authorize
+   reading values from any profile whose id you could guess.</li>
+<li><strong>The subject profile is live.</strong> <code>deactivated_at</code> <strong>and</strong> <code>processing_restricted_at</code> are both
+   NULL (<code>db/models.py:486</code>, <code>:498</code>). These are not decorative. <code>deactivated_at</code> is the
+   soft-remove that already excludes a profile from every picker listing and refuses a new child
+   session (<code>:480-486</code>); continuing to broadcast a deactivated child's name into another household
+   would contradict that directly. <code>processing_restricted_at</code> is the GDPR Article 18
+   restriction-of-processing state, described in its own comment as "keep the data, stop actively
+   processing it" (<code>:487-497</code>); a cross-family disclosure is unambiguously active processing, and
+   it is a broader one than the new-story-request block Article 18 currently gates. Omitting these
+   two checks would have made this endpoint the one place a restricted profile's data still flowed
+   outward.</li>
+<li><strong>The subject profile's ring-2 flag is on</strong> for each slot type in the requested set
+   (<code>real_name_ring2_enabled</code>, or <code>ring2_enabled</code> on the personalization row).</li>
+<li><strong>A ring-2 disclosure consent row exists</strong> for <code>(profile_id, connection_id)</code> and its
+   <code>covered_slot_types</code> includes the slot type. Slot types passing 5 but not 6 are omitted from the
+   payload individually; the payload is filtered, not all-or-nothing.</li>
+<li><strong>The slot type's taxonomy ceiling is ring 2.</strong> Belt and braces behind the DB CHECK from 5.1, so
+   a pronoun or a dedication can never be returned here even if a row were somehow flagged.</li>
+<li><strong>For the sibling slot only: the referenced child is separately cleared.</strong> An earlier draft said
+   "conditions 4 and 5 are additionally evaluated against <code>value_profile_id</code>", which was ambiguous
+   in a way that mattered. Read literally it is incoherent: re-evaluating the <em>sibling-reference</em>
+   slot type against B would consult B's own sibling row, which points at somebody else entirely.
+   The intended reading, now pinned:</li>
+</ol>
+<blockquote>
+<p>When resolving A's sibling slot, which holds B's name, the server evaluates conditions 3, 4,
+5, 6 and 7 against <strong>profile B</strong> for the <strong>protagonist-name slot type</strong>, on this same
+connection. B's name is disclosed under B's own name-sharing settings and B's own consent
+record, never under A's.</p>
+</blockquote>
+<p>Concretely: B must be in the sharer family, live and unrestricted, have
+   <code>real_name_ring2_enabled</code> true, and have a ring-2 consent row for this connection whose
+   <code>covered_slot_types</code> includes the protagonist name. If any fails, A's sibling slot alone is
+   omitted and the rest of A's payload is unaffected.</p>
+<p><strong>This stretches the consent, and the consent copy must stretch with it.</strong> B's guardian signed a
+   consent whose natural reading is "B's name may appear in B's shared stories." Using it to
+   authorize B's name appearing as a companion in <em>A's</em> book is a different context, and reading it
+   that way silently would be exactly the kind of scope creep a signed disclosure consent is
+   supposed to prevent. So this predicate is only defensible if the ceremony copy says so: the
+   ring-2 name consent must be worded to cover <strong>"this child's name appearing in any of this
+   family's stories shared with the connected family"</strong>, not only stories where they are the
+   protagonist. Section 10.1 carries that wording requirement. <strong>Confirmed as adequate 2026-07-25
+   (owner choice, ADR-023 OD-5(b)): no separate, narrower consent event is required for a companion
+   appearance</strong>, provided the ceremony wording covers it explicitly. Still flagged for counsel
+   alongside the rest of OD-5.</p>
+<p>Note the useful consequence for revocation: turning B's ring-2 name sharing off silently
+   degrades A's book to the generic companion name on the next fetch in the connected household,
+   with no action needed on A's profile.</p>
+<h3 id="85-who-actually-calls-it">8.5 Who actually calls it<a class="headerlink" href="#85-who-actually-calls-it" title="Permanent link">&para;</a></h3>
+<p>This is the part that needs care, because the intuitive answer is wrong.</p>
+<p>A <strong>child session</strong> (<code>Role.CHILD</code>) is profile-scoped: <code>Principal.profile_ids</code> lists only the
+profiles it may act on, and <code>authorize_profile</code> (<code>api/deps.py:721-733</code>) rejects anything outside
+that set. A <strong>device</strong> principal is even narrower: <code>profile_ids</code> is force-cleared in
+<code>__post_init__</code> because "a device grant authorizes a child-session mint and a profile listing, not
+any per-profile read/write" (<code>api/deps.py:160-163</code>). Neither can, or should, be handed a general
+"read another family's profile data" capability.</p>
+<p>The resolution: <strong>the endpoint does not authorize on the subject profile at all.</strong> It authorizes on
+the <em>connection</em>, which is a family-level fact, plus the caller's family membership. A child
+session in the Diaz family passes condition 1 because <code>Principal.family_id</code> is set for every
+principal including children, and it never needs <code>authorize_profile</code> against Alex's profile,
+because it is not acting on Alex's profile: it is reading a payload the Ruiz guardians published
+to that connection.</p>
+<p>That is a genuinely new authorization shape for this codebase, which is exactly why it needs
+stating. Every other cross-family gate here is <code>authorize_family</code> (<code>api/deps.py:743-754</code>), which
+compares <code>principal.family_id</code> to a resource's owner and rejects on mismatch. This endpoint
+deliberately permits a mismatch, under a named, revocable, dual-consented edge. It should therefore
+get its own helper (<code>authorize_via_connection</code>) rather than reusing or loosening
+<code>authorize_family</code>, and its own row in <code>tests/integration/test_authz_matrix.py</code>'s <code>ROUTE_TABLE</code>,
+which is where the repo pins per-route principal expectations.</p>
+<p>Enumeration note: after the 8.3 reshaping, the only client-supplied identifier is
+<code>storybook_id</code>, which the caller already had to possess to open the book. There are no
+connection or profile ids to probe, and every failure mode returns the same empty payload, so the
+route reveals nothing about whether a subject or a connection exists. It should still be counted
+against the caller's rate budget like any other.</p>
+<h3 id="86-does-the-receiving-family-need-their-own-consent-or-notice">8.6 Does the receiving family need their own consent or notice?<a class="headerlink" href="#86-does-the-receiving-family-need-their-own-consent-or-notice" title="Permanent link">&para;</a></h3>
+<p>Evaluated rather than assumed, because the predicate in 8.4 is entirely sharer-side: every
+condition protects Alex's household, and nothing anywhere asks the Diaz guardians whether they want
+their children reading another family's child's real details.</p>
+<p><strong>The case that they need one.</strong> The Diaz guardians consented to a <code>family_connection</code> whose entire
+documented purpose is recommendations: ADR-016 scopes ring 2 to "book reference, recommender
+display name, and rating/like", and the ORM docstring calls it "a directional cross-family opt-in
+for story recommendations" (<code>db/models.py:502</code>). Reading Alex's real first name, pet's name and
+sibling's name woven through a book their eight-year-old reads is not a recommendation. Stretching
+the viewer-side consent to cover it is the mirror image of the sibling-consent stretch this plan
+already refuses to make silently in 8.4 condition 8. Consistency alone argues for a gate.</p>
+<p><strong>The case that they do not.</strong> The receiving family incurs no privacy risk of their own; they are
+the recipients, not the subjects. Consent doctrine protects data subjects, and the Diaz children
+are not the subject here. A consent gate on the receiving side is really a <em>content preference</em>,
+not a consent, and dressing it as consent muddles both.</p>
+<p><strong>Conclusion: a viewer-side notice and control, deliberately not framed as consent.</strong> The receiving
+guardian gets (a) a one-time notice the first time a personalized cross-family book appears on one
+of their children's shelves, naming the connected family and what kind of details may appear, and
+(b) a persistent per-family off switch that makes their household render everything generic
+regardless of what the sharer enabled. No signature, no policy version, no evidentiary record: it
+is a preference, stored alongside their other family settings.</p>
+<p>Two reasons this is the right shape rather than a full consent ceremony. It respects the actual
+asymmetry, since the sharer bears the privacy risk and signs, while the viewer bears only an
+editorial one and merely chooses. And it closes the real gap, which is not legal exposure but the
+plain surprise of a guardian discovering their child is reading a book naming a real cousin without
+anyone having told them. A notice fixes surprise; a signature would not fix it any better.</p>
+<p>Implementation: one boolean on <code>Family</code> (default on, since the connection consent already implies
+willingness to receive from this household), one predicate condition evaluated viewer-side, and a
+dismissible first-encounter notice in the reader. Add it as condition 0 in 8.4's list when
+implementing, evaluated before any sharer-side lookup, so a household that has opted out never even
+causes a subject resolution.</p>
+<h3 id="87-cross-family-erasure-propagation">8.7 Cross-family erasure propagation<a class="headerlink" href="#87-cross-family-erasure-propagation" title="Permanent link">&para;</a></h3>
+<p>When the Ruiz family deletes Alex's profile (an ADR-018 erasure event, <code>DELETE /api/v1/profiles/{id}</code>),
+here is what happens to Alex's name already sitting on a Diaz device.</p>
+<p><strong>Server-side, immediately and completely.</strong> The profile row is deleted;
+<code>child_profile_personalization</code> and the ring-2 consent rows CASCADE (5.4);
+<code>storybook.personalization_subject_profile_id</code> goes NULL (8.2). The next values fetch from any Diaz
+device returns empty, because condition 3 cannot be satisfied by a profile that no longer exists.
+Every future render, in both households, is generic.</p>
+<p><strong>Client-side on the Diaz device, prospectively.</strong> A payload already in that device's IndexedDB
+survives until that device next opens the app and completes a fetch, at which point the empty
+response clears it. This is the same prospective-not-retroactive limit ADR-023 states for ordinary
+revocation, and it applies with more force here because the device belongs to a different
+household that this system cannot reach out and purge.</p>
+<p>Two things worth saying plainly rather than glossing:</p>
+<ul>
+<li>The severed link <strong>is</strong> a real signal. Because the values fetch is per-render and per-connection,
+  the connected family's very next online read reflects the erasure. This is materially better than
+  a design where the name was baked into the blob, where erasure would require re-issuing content
+  the other household has already downloaded.</li>
+<li>It is still <strong>not</strong> a retroactive claw-back, and an erasure response to a guardian must not claim
+  it is. The accurate statement is: "we have deleted it everywhere we control, and connected
+  families' devices revert the next time they connect." Draft that sentence into the erasure
+  response template in Phase 3 of the remediation plan rather than improvising it under a
+  one-month Article 12(3) clock.</li>
+</ul>
+<h3 id="88-tests-this-phase-must-carry">8.8 Tests this phase must carry<a class="headerlink" href="#88-tests-this-phase-must-carry" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Each of the eight predicate conditions, failing independently, returns an empty payload (or, for
+  condition 8, a payload with the sibling slot omitted and everything else intact).</li>
+<li>A revoked connection consent (either side) empties the payload on the next call, using the
+  existing <code>DELETE /api/v1/family-connections/{id}/consent</code> route
+  (<code>api/family_connections.py:437</code>).</li>
+<li>A subject profile with <code>deactivated_at</code> set, and separately one with <code>processing_restricted_at</code>
+  set, each return an empty payload while every other condition holds.</li>
+<li>A pronoun or dedication slot type is never returned across a ring-2 resolution, even with a
+  hand-forged row that has <code>ring2_enabled</code> set.</li>
+<li>The sibling case, all four combinations: A opted in and B opted in returns the name; A opted in
+  and B not omits the sibling slot only; B opted in and A not returns nothing; neither returns
+  nothing. Plus: B deactivated or restricted omits the sibling slot only.</li>
+<li>A child session in the viewer family succeeds; a child session in an unrelated family, and a
+  device principal, both get empty.</li>
+<li>An unconnected family reading the same catalog book gets a payload indistinguishable from that
+  of a book with no personalization at all (8.3's non-disclosure property).</li>
+<li>Profile deletion in the sharer family empties the payload on the next call. Deleting sibling B's
+  profile omits the sibling slot from A's payload while leaving A's own name intact.</li>
+</ul>
+<h2 id="9-p8-the-dedication-line-overlay">9. P8: the dedication-line overlay<a class="headerlink" href="#9-p8-the-dedication-line-overlay" title="Permanent link">&para;</a></h2>
+<p>ADR-023 row 8 is the one included slot that does not resolve a sentinel, because there is no
+sentinel in the blob for it: a dedication is not story prose. It was reconsidered for deferral on
+the theory that it is a separate mechanism; ADR-023's taxonomy note records why that theory does
+not hold, and this section is the concrete evidence. <strong>It adds one <code>slot_type</code> row, one boolean,
+and one component. Nothing else.</strong></p>
+<ul>
+<li><strong>No new storage.</strong> Its two parameters already exist: the name is <code>child_profile.display_name</code>
+  (taxonomy row 1) and the kinship label is a closed enum of exactly the shape row 5 already
+  stores. The dedication gets its own <code>slot_type</code> in <code>child_profile_personalization</code> (5.1) holding
+  a kinship label in <code>value_enum</code> plus its ring-1 flag, because the "from" kinship (who the book is
+  dedicated by) can legitimately differ from the in-story trusted-adult kinship. Same table, same
+  columns, same constraints. The composed string is <strong>never stored</strong>.</li>
+<li><strong>No new validation path.</strong> The name is already checked by 5.2 for row 1; the kinship label is
+  enum membership, identical to row 5. Nothing here calls a validator the other slots do not.</li>
+<li><strong>No new revocation path.</strong> It reads from the same values payload, so every purge trigger in 7.4
+  removes it with zero additional code.</li>
+<li><strong>No new server-side leak surface.</strong> No API serializes it, because there is nothing to
+  serialize: the payload carries a kinship enum and a name the payload already carried.</li>
+<li><strong>What is actually new</strong>: one React component. Render it as a title-page overlay on the reader's
+  opening screen, in <code>frontend/src/reader/</code> alongside <code>ReaderChrome.tsx</code>, composed from the fixed
+  template <code>For {NAME}, love {KINSHIP}</code>. It is a sibling of the passage, never part of it: it never
+  enters <code>node.body</code>, never reaches <code>PassageText</code>, and never appears in any title field.</li>
+<li><strong>Ring 1 only</strong>, enforced by the DB CHECK in 5.1 and predicate condition 7 in 8.4. This is not a
+  risk judgment; a dedication is addressed to its own household and means nothing in another one.</li>
+<li><strong>Template is fixed, not guardian-authored.</strong> A free-text dedication would be a new
+  unmoderated-prose surface on a kid-facing screen, which is the one thing this whole architecture
+  exists to avoid. If the product later wants free-text dedications, that is a separate feature
+  with its own moderation path, and it should not borrow this one's justification.</li>
+</ul>
+<p>Sequenced <strong>last</strong> among the included slots for exactly the reason it was almost cut: it shares
+nothing with the sentinel work, so it can slip a release without blocking anything, and it should
+be the first thing dropped if P1 through P7 run long.</p>
+<h2 id="10-p9-guardian-surfaces-and-the-child-facing-control">10. P9: guardian surfaces and the child-facing control<a class="headerlink" href="#10-p9-guardian-surfaces-and-the-child-facing-control" title="Permanent link">&para;</a></h2>
+<h3 id="101-guardian">10.1 Guardian<a class="headerlink" href="#101-guardian" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Toggle UI in the guardian profile editor (<code>frontend/src/guardian/</code>, alongside existing profile
+  management), everything default off, framed per ADR-023 section 8: the fictional-protagonist
+  experience is the recommended default, and real-name substitution is an escalation on top of it,
+  not a fix for a degraded state.</li>
+<li>Ring-2 consent capture reuses the <em>shape</em> of <code>GuardianConsentPage.tsx</code> (built for ADR-018 D1) but
+  is a <strong>separate flow with separately-worded copy</strong> and a separate record.</li>
+<li>The consent screen must be reached from the <strong>sharer</strong> side (see the direction warning in 6).</li>
+</ul>
+<h4 id="1011-what-the-ring-2-consent-ceremony-must-actually-say">10.1.1 What the ring-2 consent ceremony must actually say<a class="headerlink" href="#1011-what-the-ring-2-consent-ceremony-must-actually-say" title="Permanent link">&para;</a></h4>
+<p>Three requirements, each traceable to a specific design decision elsewhere in this plan rather than
+to general caution. Draft copy is counsel's to review; these are the constraints on it.</p>
+<ol>
+<li><strong>Enumerate the slot types by name, in plain language.</strong> The stored record carries
+   <code>covered_slot_types</code>, and the whole point of enumerating is that the scope of a past disclosure
+   is legible after the fact. A signature over "personalization details" would make the enumeration
+   decorative. Name them: "Maya's first name", "her pet's name", "her brother's first name". Also
+   state what is <strong>not</strong> covered, since pronouns are permanently ring 1 and a guardian will
+   reasonably wonder.</li>
+<li><strong>The name clause must cover companion appearances, not just protagonist ones.</strong> Predicate
+   condition 8 in 8.4 reads sibling B's own name consent to authorize B appearing as a companion in
+   sibling A's book. That is a real stretch of what "B's name may be shared" naturally means, and
+   the predicate is only defensible if the copy anticipates it. Required wording, in substance:
+   <strong>"[Child]'s first name may appear in any story this family shares with [connected family],
+   including stories about their brothers or sisters."</strong> Without this sentence, condition 8 is
+   authorizing a disclosure nobody agreed to, and it should be considered blocked.</li>
+<li><strong>A separate parental-authority attestation for the sibling case.</strong> This design leans on
+   "the same guardian holds parental responsibility for both children", which the system infers
+   from two profiles sharing a family account and has never verified or asked about. Taxonomy row 3
+   is titled "sibling <strong>or family-child</strong> name" and deliberately admits stepchildren, foster
+   placements, and extended-family arrangements where the account-holding adult may not hold legal
+   authority over the second child. So when <code>covered_slot_types</code> includes the sibling slot, the
+   ceremony adds a distinct checked attestation, recorded as <code>sibling_authority_attested</code>:
+   <strong>"I am the parent or legal guardian of [B], and I have authority to consent to sharing their
+   first name."</strong> It is a separate affirmation, not a clause buried in the main one, because it is a
+   different claim about a different child. <strong>Confirmed sufficient 2026-07-25 (owner choice,
+   ADR-023 OD-5(a)): the attestation is accepted and the sibling slot does not stay ring-1-only
+   pending independent verification of authority.</strong> Still flagged for counsel, since an attestation
+   is a self-declaration rather than a verification.</li>
+</ol>
+<p>The ceremony must also state, as ordinary copy: that revocation is prospective and takes effect on
+the connected household's next connection, not instantly; and that the value never reaches any AI
+provider and is never stored inside the story itself.</p>
+<h3 id="102-the-child-facing-control-and-what-one-way-actually-means">10.2 The child-facing control, and what "one-way" actually means<a class="headerlink" href="#102-the-child-facing-control-and-what-one-way-actually-means" title="Permanent link">&para;</a></h3>
+<p>Earlier drafts of this design described a "one-way veto", which was imprecise and read as though a
+child could switch personalization off and then be stuck. The real invariant is about the
+<strong>guardian-consent boundary</strong>, not about the switch:</p>
+<blockquote>
+<p>A child may turn substitution off and back on freely, <strong>within the envelope their guardian has
+already consented to</strong>. A child can never enable a slot type, or a ring, that the guardian has
+not enabled. Turning it off never requires an adult; turning it back on never widens the
+disclosure beyond what the guardian already granted.</p>
+</blockquote>
+<p>So the control is an ordinary on/off from the child's point of view, and the one-way property is
+the ceiling above it, which the child cannot raise. Concretely: the child's switch multiplies with
+the guardian's settings, it never adds to them.</p>
+<p>Implementation notes:</p>
+<ul>
+<li>Per profile, per device, persisted locally. It does not change the server-side toggle (a
+  guardian's consent is unchanged by a child's local preference) and it needs no network call, so
+  it works offline.</li>
+<li>It reads as a preference, not a warning: "Use my name in stories", with an on/off. Not "This book
+  contains your personal data."</li>
+<li><strong>Not rendered at all for the 3-5 band</strong>, and for practical purposes reviewed again for 5-8, per
+  ADR-023 section 9. A control a pre-reader cannot exercise is not a safeguard; rendering one
+  anyway would misrepresent the protection in a compliance review. For those bands the guardian
+  setting is the whole mechanism, and the guardian settings screen should say so in as many words.</li>
+</ul>
+<h2 id="11-p10-catalog-migration">11. P10: catalog migration<a class="headerlink" href="#11-p10-catalog-migration" title="Permanent link">&para;</a></h2>
+<p>Per ADR-023 section 6: existing catalog content is test and development material with no live
+child-linked production data, so there is no backward-compatibility obligation.</p>
+<ul>
+<li><strong>Replace by default.</strong> Regenerate stories onto the new sentinel-tagged standard. The volume is
+  small (61 skeletons, 45 with contracts) and it is test content.</li>
+<li><strong>Repair only where a specific story is expensive to reproduce.</strong> Repair here means a
+  purpose-built reprocessing pass, not <code>moderation/repair.py::attempt_repair</code>, which is a narrow
+  soft-gate re-prompt that "only produces the candidate revision; it does not decide whether to
+  adopt it" (<code>repair.py:6-7</code>). Reusing its shape is a deliberate build, not a reuse.</li>
+<li>Any story not migrated is simply <code>personalization_eligible = false</code> and renders exactly as it
+  does today. There is no forced migration deadline.</li>
+<li><strong>Pronoun audit is separate and per skeleton.</strong> Gendered pronouns are hardcoded in beats guidance
+  and choice labels: <code>skeletons/10-13/the-cinderwick-exchange.json:89</code> ("she tells {HERO} the
+  escapement is worn"), <code>skeletons/10-13/the-envoy-of-three-courts.json:135</code> ("See {COURIER} on his
+  way and snatch some sleep"), <code>:331</code>, <code>:582</code>, <code>:760</code>, <code>:862</code>. Every node body in the catalog is a
+  <code>&lt;&lt;FILL ...&gt;&gt;</code> directive, so this is an audit of authoring directives, not of stored prose. A
+  skeleton gets <code>pronoun_parameterized = true</code> only after someone has read its directives and
+  confirmed a pronoun swap produces coherent text.</li>
+<li><strong>Role-safety audit rides along</strong> (risk R11): while auditing pronouns, mark which slots may carry
+  a real person's name and which are antagonist or mishap roles.</li>
+</ul>
+<h2 id="12-p11-copy-erasure-and-compliance-artifacts">12. P11: copy, erasure, and compliance artifacts<a class="headerlink" href="#12-p11-copy-erasure-and-compliance-artifacts" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Route A messaging: the copy is drafted, the mechanism is not.</strong> Per ADR-023 OD-3 (decision
+  confirmed 2026-07-25), the replacement strings are already written and live in ADR-023's
+  coordination section, Ask 1b. This bullet is now about wiring, not wording. Also, while in this
+  file, fix the stale "Section 5 Decision 4" citation at <code>interpretation.py:174</code>.</li>
+</ul>
+<p><strong>Correction to a working assumption, because it changes the size of this task.</strong> The change was
+  described during review as a free branch, on the basis that "the disposition renderer already has
+  access to the requesting child's profile". It does not. <code>render_interpretation</code>
+  (<code>interpretation.py:1249-1257</code>) takes exactly <code>elements</code>, <code>band</code>, <code>layer</code>, <code>created_at</code>,
+  <code>skeleton_slug</code>, <code>contract_version</code>, and its docstring pins its purity ("Pure: builds <code>kid_text</code> /
+  <code>guardian_text</code> for every element from the template catalog (never model output) ... <code>created_at</code>
+  is supplied by the caller so the module reads no wall clock"). The catalog is keyed
+  <code>(disposition, reason, band_group)</code> (<code>interpretation.py:706</code>), with no profile or toggle axis.</p>
+<p>It is still a small change. It is three specific edits:</p>
+<ol>
+<li><strong>Catalog key gains a toggle axis.</strong> Extend the key to
+     <code>(disposition, reason, band_group, personalized: bool)</code>. <code>_register</code> (<code>:709-721</code>) takes three
+     optional extra <code>_TemplatePair</code>s (<code>young_personalized</code>, <code>middle_personalized</code>,
+     <code>teen_personalized</code>) that default to the standard ones, so <strong>only</strong> the
+     <code>IDENTITY_PROTECTION</code> registration supplies them and all ~10 other registrations are
+     untouched.</li>
+<li><strong><code>render_interpretation</code> gains one keyword-only parameter</strong>, <code>name_personalization_enabled:
+     bool = False</code>, forwarded to <code>_render_pair</code>. Pass a <strong>bool, not the profile object</strong>: the
+     module's purity discipline (stdlib and pydantic only, no ORM, no I/O) is load-bearing and
+     handing it a <code>ChildProfile</code> would break it for no gain. The default keeps every existing
+     caller and the five test call sites in <code>tests/unit/test_interpretation.py</code> compiling
+     unchanged.</li>
+<li><strong>Five production call sites thread the flag</strong>: <code>generation/worker.py:380</code>, <code>:433</code>, <code>:532</code>,
+     and <code>interpretation.py:1441</code>, <code>:1487</code>. Each of these already resolves the requesting profile
+     (or can, in the same query), so each passes <code>profile.real_name_ring1_enabled</code>.</li>
+</ol>
+<p>Note the flag is deliberately <strong>ring-1 only</strong>: the disposition message is shown to the requesting
+  child in their own family, so ring 2 is irrelevant to which variant they see.</p>
+<p><strong>Sequencing (ADR-023 OD-3, and repeated from section 1):</strong> this is a <strong>P9 exit criterion</strong>, not
+  a P11 cleanup. <code>VITE_FEATURE_PERSONALIZATION</code> must not be enabled anywhere a real family can
+  reach it until this has merged, or the app tells a child a made-up name was chosen and then shows
+  them their own.
+- <strong>Erasure response template.</strong> Per 8.5, the guardian-facing erasure response needs an accurate
+  sentence about connected families' already-synced copies. Add it to the Phase 3 erasure work in
+  <code>docs/compliance/coppa-gdpr-remediation-plan.md</code> rather than improvising it under an Article
+  12(3) clock.
+- <strong>Retention table row.</strong> The same plan's retention table (<code>:710-719</code>) needs a row for
+  personalization slot values and one for ring-2 consent evidence.
+- <strong>Privacy model.</strong> The four entries specified in 5.6.
+- <strong>ADR-018 / P7-08.</strong> This feature is a new processing purpose <strong>and</strong> new collection. It adds no
+  new provider counterparty, which is the good news, but it changes the privacy notice, the data
+  classification, and the App Store nutrition labels.
+- <strong>ADR-016 amendment.</strong> One edit, not two. PR #415's B6 wants a sentence recording ring-2
+  attribution granularity; this feature wants ring-2 personalization granularity recorded
+  alongside it. Whoever writes it writes both. A proposed-addendum block flagging exactly this is
+  already parked in ADR-016's ring-2 section.</p>
+<h2 id="13-risk-register">13. Risk register<a class="headerlink" href="#13-risk-register" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Risk</th>
+<th>Severity</th>
+<th>Mitigation</th>
+<th>Phase</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>R1</strong></td>
+<td><strong>Sentinel forgery in prose.</strong> The fill LLM emits an extra, mutated, or relocated sentinel; a human approves a blob containing an unreviewed substitution point</td>
+<td>High</td>
+<td>The P2 exact-multiset, per-node integrity check, fail-closed, run before the approval queue and again after any repair</td>
+<td>P2</td>
+</tr>
+<tr>
+<td><strong>R2</strong></td>
+<td><strong>A guard point is missed on a new surface.</strong> The 29<sup>th</sup> router serializes a blob title without stripping</td>
+<td>High</td>
+<td>One shared strip helper at the serialization boundary, not per-call-site strips; a test enumerating title-bearing response models</td>
+<td>P3</td>
+</tr>
+<tr>
+<td><strong>R3</strong></td>
+<td><strong>Offline cache poisoning across siblings.</strong> A future change adds a profile dimension to the story response and the shared <code>id@version</code> key starts serving one sibling's copy to another</td>
+<td>High</td>
+<td>The architecture prevents it, but nothing enforces it. Add a test asserting the story response is byte-identical for two profiles with different toggle states</td>
+<td>P6</td>
+</tr>
+<tr>
+<td><strong>R4</strong></td>
+<td><strong>Slot values are under-validated.</strong> <code>display_name</code> is length-bounded free text only (<code>api/schemas.py:1032-1034</code>), written straight to the row (<code>api/profiles.py:102-103</code>, <code>:286</code>), while sibling fields that reach a prompt are far stricter (<code>PinCode</code> at <code>:1038</code>, banned themes at <code>:1050-1051</code>)</td>
+<td>High</td>
+<td>Apply <code>structural_value_violations</code> plus the band-mandatory denylist floor <strong>twice</strong>: at write time and at payload-build time. The second is not redundant: names set before this feature shipped were never checked</td>
+<td>P4, P6</td>
+</tr>
+<tr>
+<td><strong>R5</strong></td>
+<td><strong>Revocation residue.</strong> A device retains a synced values payload after a flag flip or consent revocation</td>
+<td>Medium</td>
+<td>Purge on flip, revoke, deactivation, sign-out, and policy-version change. Document the offline-device window in code and keep guardian copy prospective</td>
+<td>P6</td>
+</tr>
+<tr>
+<td><strong>R6</strong></td>
+<td><strong>Ring-2 disclosure exceeds what the connection consented to.</strong> A guardian who consented to recommendation attribution finds their child's name throughout another household's story prose</td>
+<td>High</td>
+<td>A separate consent record per (profile, connection) enumerating covered slot types (5.3), enforced as predicate condition 6 (8.4). Model confirmed 2026-07-25 (ADR-023 OD-1); counsel sign-off still pending</td>
+<td>P4, P7, P9</td>
+</tr>
+<tr>
+<td><strong>R7</strong></td>
+<td><strong>Pronoun outing at ring 2.</strong> A pronoun disclosure reveals something about a child to extended family that the guardian did not intend</td>
+<td>High</td>
+<td>Pronouns are ring 1 only, enforced by a DB CHECK (5.1) <strong>and</strong> by predicate condition 7 (8.4), not by UI convention. Plus the child-facing off switch</td>
+<td>P4, P7, P9</td>
+</tr>
+<tr>
+<td><strong>R17</strong></td>
+<td><strong>A sibling's name crosses ring 2 against that sibling's own settings.</strong> Sibling B's name rides out inside sibling A's book because only A's consent was checked</td>
+<td>High</td>
+<td>Predicate condition 8 (8.4): the sibling slot resolves at ring 2 only if the <strong>referenced</strong> profile's own ring-2 enablement and consent cover that connection. Tested in all four A/B combinations (8.6)</td>
+<td>P7</td>
+</tr>
+<tr>
+<td><strong>R18</strong></td>
+<td><strong>The ring-2 slot set grows by drift.</strong> A future slot type is added with <code>ring2_enabled</code> allowed because the DB CHECK's set was widened casually</td>
+<td>Medium</td>
+<td>The ring-2-eligible set is a DB CHECK enumerating slot types (5.1), so widening it is a migration with a reviewer, not a config change. ADR-023's taxonomy section records the reasoning for each current ceiling so a change has something to argue against</td>
+<td>P4</td>
+</tr>
+<tr>
+<td><strong>R19</strong></td>
+<td><strong>An authz-predicate bug leaks a value to an unconnected family.</strong> A wrong join direction, a loosened condition, or a mis-resolved connection returns Alex's details to a household with no edge to the Ruiz family</td>
+<td>High</td>
+<td>Eight explicit conditions evaluated as Python booleans per row rather than as SQL a refactor can loosen (the house convention at <code>recommendations.py:214-221</code>); a dedicated <code>authorize_via_connection</code> helper never merged into <code>authorize_family</code>; a <code>ROUTE_TABLE</code> row in <code>tests/integration/test_authz_matrix.py</code>; and the 8.8 test asserting an unconnected family's response is indistinguishable from a non-personalized book. Note this route is the single highest-consequence authz surface the feature adds</td>
+<td>P7</td>
+</tr>
+<tr>
+<td><strong>R20</strong></td>
+<td><strong>Shared-device sibling access to another child's values.</strong> Two sibling payloads live in the same origin's IndexedDB, so a determined reader with devtools, or a sibling who switches profiles, can reach values the application would not render for them</td>
+<td>Medium</td>
+<td><strong>No mitigation is proposed in v1</strong>, and that is a decision the owner should make explicitly rather than inherit. The store holds compact per-child personal details, which is a different exposure from the existing device-wide <code>storybooks</code> cache (generic content, identical for everyone) even though both are origin-scoped. Options if it must be closed: per-profile encryption keyed on the profile PIN, or holding values in memory only and refetching per session. Recorded as still-open question 3</td>
+<td>P6</td>
+</tr>
+<tr>
+<td><strong>R8</strong></td>
+<td><strong>English-only morphology produces bad prose.</strong> "a Maya", possessive edge cases, and verb agreement break substituted sentences</td>
+<td>Medium</td>
+<td>v1 is English only and scoped to she/her and he/him (agreement-identical pairs). they/them is deferred because singular "they" changes verb conjugation ("she runs" vs "they run"), which a token swap cannot retrofit onto already-conjugated stored prose. Prefer name slots in dialogue and ending titles</td>
+<td>P1, P10</td>
+</tr>
+<tr>
+<td><strong>R9</strong></td>
+<td><strong>Two rendering implementations drift.</strong> The client resolver and the server-side strip helper disagree about what a sentinel is</td>
+<td>Medium</td>
+<td>One canonical sentinel definition. Carry it in the OpenAPI schema so the generated client picks it up and the CI <code>contract</code> job (<code>ci.yml:432</code>) fails on drift, rather than letting the frontend re-derive the regex</td>
+<td>P1, P3, P5, P6</td>
+</tr>
+<tr>
+<td><strong>R10</strong></td>
+<td><strong>Consent records leak values into the event log.</strong> A contributor adds the substituted name to a consent event payload for debuggability</td>
+<td>Medium</td>
+<td>The <code>_PAYLOAD_ALLOWLIST</code> mechanism (<code>events/writer.py:17-19</code>) already rejects unlisted keys. Write the new entries with keys only, and add a test asserting a value-bearing key is rejected</td>
+<td>P3, P4</td>
+</tr>
+<tr>
+<td><strong>R11</strong></td>
+<td><strong>A real name lands in an antagonist or comic-mishap role.</strong> A sibling name is bound to a <code>COMPANION</code>-style slot the skeleton later treats badly</td>
+<td>Medium</td>
+<td><code>role_safety</code> metadata on the slot spec (2.2), audited per skeleton alongside the pronoun audit</td>
+<td>P1, P10</td>
+</tr>
+<tr>
+<td><strong>R12</strong></td>
+<td><strong>Sentinels reach a rescreen classifier as unfamiliar tokens</strong> and shift scores against the pre-migration baseline</td>
+<td>Low</td>
+<td>Strip to generic default before classification (3.3), so scores stay comparable</td>
+<td>P3</td>
+</tr>
+<tr>
+<td><strong>R13</strong></td>
+<td><strong>The ADR-016 amendment gets written twice, racing.</strong> This workstream and PR #415's B6 residual both edit the same document</td>
+<td>Low</td>
+<td>Single owner, single edit covering both asks; the parked addendum in ADR-016 says so</td>
+<td>P11</td>
+</tr>
+<tr>
+<td><strong>R14</strong></td>
+<td><strong>Sentinel survival through the fill LLM is worse than assumed</strong>, making retries a real cost line or the approach unworkable</td>
+<td>High</td>
+<td>Measure before scheduling P4 onward (3.4), with a deterministic post-fill re-insertion fallback prototyped in parallel if early numbers are poor</td>
+<td>P2</td>
+</tr>
+<tr>
+<td><strong>R15</strong></td>
+<td><strong>The cross-family endpoint becomes the precedent for loosening <code>authorize_family</code>.</strong> A future contributor generalises <code>authorize_via_connection</code> into something broader</td>
+<td>Medium</td>
+<td>Keep it a separate, narrowly-named helper with its own <code>ROUTE_TABLE</code> row (8.4); never widen <code>authorize_family</code> itself</td>
+<td>P7</td>
+</tr>
+<tr>
+<td><strong>R16</strong></td>
+<td><strong>Ring-2 personalization has no book-delivery path narrower than the catalog.</strong> <code>Visibility</code> is <code>family</code> or <code>catalog</code> only (<code>publishing/state_machine.py:45-55</code>)</td>
+<td>Medium</td>
+<td>Not a blocker: the values gate protects the content regardless of book visibility, so a catalog book renders generic for everyone unconnected. <strong>Accepted for v1 on 2026-07-25 (owner choice, ADR-023 OD-4)</strong>: the catalog surface is the v1 delivery path and connection-scoped visibility is explicitly not a prerequisite</td>
+<td>P7</td>
+</tr>
+</tbody>
+</table>
+<h2 id="14-open-questions">14. Open questions<a class="headerlink" href="#14-open-questions" title="Permanent link">&para;</a></h2>
+<h3 id="closed-2026-07-25-by-owner-decision">Closed 2026-07-25 by owner decision<a class="headerlink" href="#closed-2026-07-25-by-owner-decision" title="Permanent link">&para;</a></h3>
+<p>Every owner-level question this plan was waiting on has been answered. Recorded here rather than
+deleted, so a reader who arrives via an older reference does not think they are still open. Full
+records are in ADR-023's "Owner decisions" section.</p>
+<ol>
+<li><strong>ADR-023 OD-1 through OD-5: all confirmed as designed (owner choice, 2026-07-25).</strong> Ring-2
+   separate disclosure consent (OD-1), pronouns stored not inferred and ring-1 only (OD-2), Route A
+   copy drafted by this ADR for #415 to adopt (OD-3), the catalog surface accepted for v1 with
+   connection-scoped visibility explicitly not a prerequisite (OD-4), and all three parts of the
+   sibling and pet-name raise (OD-5). <strong>Counsel confirmation on OD-1 and OD-5 remains outstanding</strong>
+   and is what keeps ADR-023 at Proposed; nothing in this plan is blocked on it, but P7 and P9
+   should not ship ahead of it.</li>
+<li><strong>Whether the 3-5 band should be offered personalization: confirmed as designed (owner choice,
+   2026-07-25).</strong> Offered, guardian-controlled, with no child-facing control rendered at that band.
+   No change to section 10.2.</li>
+<li><strong>Whether pronouns need a new profile field: answered by OD-2.</strong> They do. The value is an
+   explicit guardian-set field, deliberately <strong>stored rather than inferred</strong>, which is the safer of
+   the two given this app's standing posture against inferring anything about a child. That makes
+   it new child-data collection, so it needs its own privacy-model classification entry alongside
+   the others in 5.6, not a footnote on the disclosure question.</li>
+<li><strong>Whether narrowing a consent's scope requires re-signing: answered by OD-5&copy;.</strong> It does not.
+   Narrowing updates the signed record in place; only widening triggers re-consent. Section 5.3
+   already describes this behaviour and is now confirmed rather than provisional. The honest
+   residual, still worth stating in the DPIA, is that after a narrowing the stored artifact is a
+   signature over a superset of the current scope.</li>
+</ol>
+<h3 id="genuinely-still-open">Genuinely still open<a class="headerlink" href="#genuinely-still-open" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>PR #415 A11 shuffle semantics.</strong> Whether the shuffle changes what is stored or generated, or
+   is purely a cosmetic client-side choice among generic names. If it changes the stored bound
+   value it touches the same slot the personalization sentinel occupies, and P1 must be sequenced
+   against it. That plan lists this as an open user-testing question, not a decision, and OD-3
+   deliberately did not resolve it: the copy decision was settled, the shuffle question was not.</li>
+<li><strong>The exact sentinel delimiter.</strong> Section 2.3.2 now proposes <code>{~HERO:Explorer~}</code> and discharges
+   all four constraints against the live code, so this is a recommendation awaiting implementation
+   rather than an open design question. Confirm it in code when writing the P2 check.</li>
+<li><strong>Shared-device isolation of the values store (risk R20).</strong> Two siblings' values payloads live
+   in one origin's IndexedDB with no isolation beyond application logic. The plan currently accepts
+   this and says so in 7.4 and in ADR-023's success criteria, but "accepted" has still not been
+   decided by anyone: it was not part of the 2026-07-25 decision round. It needs a real answer:
+   accept it (a shared family device is a shared trust boundary, and the exposure is one sibling
+   learning another's pet name), or close it with per-profile encryption or in-memory-only values.
+   The comparison to the existing <code>storybooks</code> cache is <strong>not</strong> a justification: that cache holds
+   generic content identical for every reader, this store holds compact per-child personal details.
+   Still an owner call, tracked here rather than left as a footnote.</li>
+</ol>
+<h2 id="15-related">15. Related<a class="headerlink" href="#15-related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../adr/adr-023-story-personalization-slots/">ADR-023</a>: the decision record this plan
+  implements, including the closed slot taxonomy and the parallel-workstream coordination asks.</li>
+<li><a href="../adr/adr-016-recommendation-sharing-social-boundary/">ADR-016</a>: the three rings, the ring-3
+  exclusion, and the parked ring-2 granularity addendum.</li>
+<li><a href="../adr/adr-018-childrens-privacy-compliance/">ADR-018</a>: the consent-event pattern and P7-08.</li>
+<li><a href="../adr/adr-019-parameterized-skeletons-theme-contracts/">ADR-019</a>: the slot machinery P1
+  extends.</li>
+<li><a href="../adr/adr-014-device-authorized-kid-access/">ADR-014</a>: the device-grant and child-session
+  model section 8.4 works within.</li>
+<li><a href="../adr/adr-012-supabase-cli-migrations/">ADR-012</a>: migrations are Supabase CLI SQL, not
+  Alembic.</li>
+<li><a href="../../compliance/coppa-gdpr-remediation-plan/">coppa-gdpr-remediation-plan.md</a>: Section 2 bullet
+  3 and Section 5 "Self-naming" (Route A), the retention table, and the proposed messaging caveat.</li>
+<li><a href="../privacy-model/">privacy-model.md</a>: needs the four classification entries in 5.6.</li>
+<li><a href="../capability-register/">capability-register.md</a>: G18 and K20 (minted v1.8); flip both from ❌
+  when the work lands and link the covering tests.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 25, 2026 21:12:16 UTC">July 25, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 25, 2026 21:12:16 UTC">July 25, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

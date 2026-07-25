@@ -321,6 +321,10 @@
          <lastmod>2026-07-25</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/story-personalization-implementation-plan/</loc>
+         <lastmod>2026-07-25</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/tech-spec/</loc>
          <lastmod>2026-07-25</lastmod>
     </url>
@@ -482,6 +486,10 @@
     </url>
     <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-022-tiered-rls-scoping/</loc>
+         <lastmod>2026-07-25</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/adr/adr-023-story-personalization-slots/</loc>
          <lastmod>2026-07-25</lastmod>
     </url>
     <url>
