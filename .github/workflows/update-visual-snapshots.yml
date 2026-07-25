@@ -24,6 +24,9 @@
 # Baseline bump 2026-07-25: kid-surface UX polish (picker busy state, library
 # hero heading and branded loading, reader chrome clearance) changed the kid
 # picker, library, and reader visuals.
+#
+# Baseline bump 2026-07-25 (2): the library shelf gained the "Ask for a new
+# story" end-cap tile and the fresh-shelf "Pick a book!" heading.
 name: Update Visual Snapshots
 
 on:
