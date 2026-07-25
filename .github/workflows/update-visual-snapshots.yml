@@ -20,6 +20,10 @@
 #
 # Re-run trigger: touch this file (a comment bump is enough) and push to a
 # feature branch to regenerate after a UI change or a merge from main.
+#
+# Baseline bump 2026-07-25: kid-surface UX polish (picker busy state, library
+# hero heading and branded loading, reader chrome clearance) changed the kid
+# picker, library, and reader visuals.
 name: Update Visual Snapshots
 
 on:
