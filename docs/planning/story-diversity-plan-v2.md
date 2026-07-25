@@ -2,8 +2,9 @@
 schema_type: planning
 title: "Story Diversity Plan v2"
 description: "Rebuilt diversity plan, grounded only in measurements that survived a seven-reviewer adversarial
-  pass and a 98-document corpus survey. Thirteen near-term deliverables, six independent defects, eight items
-  deferred behind named prerequisites, one resolved disposition principle, and two open decisions. Replaces two superseded plans."
+  pass and a 98-document corpus survey. Fourteen near-term deliverables, six independent defects, eight items deferred
+  behind named prerequisites, four resolved owner decisions, and one confirmation outstanding. Replaces two
+  superseded plans."
 tags:
   - planning
   - generation
@@ -53,6 +54,8 @@ this document is treated as established.
 | **Go back ships, works at an ending node, and is disabled for continuation reads** | `engine.ts:325-347` (`back` has no ending guard, requires only `path.length > 1`); `engine.ts:288-297` fails closed when `path[0] !== start_node` |
 | Of the 73 shallow foreclosing terminals, **only 15 are escapable by a single Go back**; the other 58 are reached from single-choice corridors, so backing up one step re-presents the same fatal choice | per-terminal predecessor analysis |
 | **All 73 are within 3 Go-back hops** of a node offering a real alternative (15 need one hop, 58 need exactly three; max 3) | back-walk to nearest branching ancestor |
+| Across 58 production-eligible skeletons there are **2,668 decision nodes** (non-ending, 2+ choices). **144** have every option terminating, but those sit at **median 90% of the tree's max depth** and **88 of them offer a positive ending**: they are climaxes. **37** are all-negative-valence. **1** has every option a `death`/`capture` terminal (`the-quiet-harbor-protocol`) | per-node target classification |
+| Separately, **776 single-choice nodes** lead only to a `death`/`capture` terminal. These are not decisions; they are the corridor pattern A13 addresses | per-node scan |
 | `save_slots` is client-writable, server-persisted, and **omitted from `validate_reading_state`** | `schemas.py:80`, `reading.py:412`, `reading.py:168-175` |
 | **129 of 132 catalog themes pass the echo floor at band `3-5`** | ran the real `_echo_floor` at all six bands |
 | Reading telemetry does not exist: `ReadingState` is one mutable row with `path` overwritten; `Completion`'s key includes `ending_id` with one `found_at`, so re-reads and depth-at-terminal are unrecorded | `db/models.py:725-793` |
@@ -94,7 +97,8 @@ Each item traces to a fact in section 1. Effort: S under a day, M a few days, L 
 | **A10** | **Make the empty teen `short` cells fail gracefully or fill them.** A `13-16/short` or `16+/short` request has zero candidates today and 422s. Pending the decision in section 6.2. | M |
 | **A11** | **State the request restrictions before submission.** `RequestStory.tsx` shows one prompt and no restrictions. `_ELEMENT_MUST_BE_NULL` spans `SAFETY_POLICY`, `PERSONAL_DETAILS` and `IDENTITY_PROTECTION`, so for the three most surprising restrictions the WS-7 echo can name the reason but structurally cannot show what was dropped. Serve the restriction set from the API off `ReasonCode` / `band_profile` / the profile's `content_nogo`, never hand-written copy. Kid surface omits the `content_nogo` values entirely and its copy stays invariant to their contents. Note `capability-register.md:133` marks K19 delivered; update it. | M |
 | **A12** | **Enable Go back in continuation reads.** `replayRecordedPath` fails closed when `path[0] !== start_node`, disabling Go back in exactly the state-carrying series books where a reader has most to lose. A bug fix, not a feature. | M |
-| **A13** | **Make Go back walk to the nearest node with an untaken choice**, up to a small bound. Today it is single-step, and only **15 of 73** shallow foreclosing terminals are reached from a node offering an alternative; the other 58 sit at the end of single-choice corridors, so one hop re-presents the same fatal choice. **All 73 are within 3 hops.** This replaces a fail-depth floor plus 73 ending relocations with one player change and zero skeleton edits. Interacts with `runtime-semantics.md` section 6, so it needs B2's revision first. | M |
+| **A13** | **Make Go back walk to the nearest node with an untaken choice**, up to a small bound. Today it is single-step, and only **15 of 73** shallow foreclosing terminals are reached from a node offering an alternative; the other 58 sit at the end of single-choice corridors, so one hop re-presents the same fatal choice. **All 73 are within 3 hops.** This replaces a fail-depth floor plus 73 ending relocations with one player change and zero skeleton edits. **Bound: 3 hops** (owner, 2026-07-25), to be re-evaluated as stories are developed. Interacts with `runtime-semantics.md` section 6, so it needs B2's revision first. | M |
+| **A14** | **`PL-23`: no decision may offer only fatal options.** Owner rule (2026-07-25): every decision must leave at least one option that advances or loops back. `PL-23` is the next free policy ID (`PL-22` is the band-profile fail-closed guard). Scope per section 6.1: enforce that no decision node has **all** options leading to negative-valence terminals, which is **37** of 2,668 nodes today, and register the rule in `validator-rules.md` in the same PR. Pairs with A13: A14 governs decisions, A13 governs the 776 single-choice corridors that end fatally, which are not decisions and cannot be fixed by a rule about choice sets. | M |
 
 ## 4. Track B: defects found by the review, independent of this plan
 
@@ -107,7 +111,7 @@ Each stands on its own and does not wait on Track A.
 | **B3** | **SR-8** (the ID is free; `SR-7` is the current maximum): for `carries_state=true`, every satisfying-ending state of book N must be an admissible entry state for book N+1. L2 only ever walks from `start_node` with declared initials, so continuation entry state is outside every existing rule's view. | M |
 | **B4** | `machine.ts:108` resets to the start node with declared initials, so "Read again" in a continuation read fabricates `has_lantern=true` and `vigor=5` the reader never earned and discards carried state. | S |
 | **B5** | Escalate `series-stress-test-findings.md` **F3** from authoring guidance to a gate-detectable defect: book 2 with `has_lantern=false` returns `blocked=True` with two `L2-11` errors, and all four of book 1's win endings are reachable with it false. `vigor` is monotone in these books (68 `dec`, zero `inc`), so no restart can restore state never earned. | S |
-| **B6** | `recommendations.py:340` emits a real child `display_name` cross-family under dual consent with no ring-keyed redaction. Flag for a product decision; it is consistent with "nothing is keyed on audience" but is the mirror image. | S |
+| **B6** | **Closed as working-as-intended** (section 6): sharing a child's first name with a connected family is sanctioned by mutual guardian consent. Residual: add a sentence to ADR-016 recording ring-2 attribution granularity, which it does not currently specify. | S |
 
 ## 5. Deferred, each behind a named prerequisite
 
@@ -143,22 +147,29 @@ brass-lantern, and it has three consequences:
   that 422s is itself substandard. Still needs a call on sequencing, because this is content authoring with
   nothing to fix.
 
-Still open:
+**Resolved (owner, 2026-07-25): difficulty.** Adopt A13 with a **3-hop** bound, re-evaluated as stories are
+developed, rather than a fail-depth floor. And a new rule: **no decision may offer only fatal options; at least
+one must allow advancing or looping back.** That becomes A14 (`PL-23`).
 
-1. **Difficulty.** Not "is the catalog too hard" but: **adopt A13 (multi-step Go back) or a fail-depth floor?**
-   A13 fixes all 73 shallow foreclosing terminals with one player change and no skeleton edits; a floor would
-   require 73 ending relocations and needs a fraction for which no non-circular basis exists. A13 also helps every
-   deep terminal, not just shallow ones. Recommend A13. The residual question is the hop bound: 3 covers all 73
-   today, but a bound is a difficulty knob and there is no corpus guidance on it.
-2. **Ring-2 attribution granularity.** What crosses the family boundary is `child_profile.display_name`, which
-   `coppa-compliance-audit.md:129` defines as "a first name or nickname; the only stored child name", plus a star
-   rating. It reaches a family that has completed **mutual** connection consent, about a book that is already
-   catalog-visible, published, approved, and assigned to the recipient's own child. It is inventoried in both
-   `gdpr-compliance-review.md:160` and the COPPA audit. So this is **not a compliance gap**; it is an
-   unspecified granularity choice, because ADR-016 defines the three rings but never says what a ring-2
-   recommendation should be attributed to. Options: keep the nickname; show an initial or avatar only; or
-   attribute to "a reader in a connected family". The `ring` field is already computed at
-   `recommendations.py:339`, so any of the three is a rendering change.
+**Resolved (owner, 2026-07-25): ring-2 attribution.** Sharing the child's first name with a connected family is
+fine, because both guardians have agreed. Keep `display_name` as the attribution; B6 closes as
+working-as-intended. The basis is recorded here so it is not re-raised: mutual connection consent is the
+control, `coppa-compliance-audit.md:129` establishes that `display_name` is a first name or nickname and the
+only stored child name, and the disclosure is inventoried in `gdpr-compliance-review.md:160`. ADR-016 should
+gain a sentence stating ring-2 attribution granularity, since it currently defines the rings but not this.
+
+### 6.1 One confirmation needed on A14's scope
+
+The rule reads naturally as three different tests, and the measurement separates them:
+
+| Reading of "only fatal options" | Violations of 2,668 decisions | Assessment |
+| --- | --- | --- |
+| Every option is a `death`/`capture` terminal | **1** | The clear floor. Too narrow to be the whole rule. |
+| Every option is a **negative-valence** terminal (doomed whatever you pick) | **37** | **Recommended.** Matches the intent: the reader is offered a decision with no good outcome. |
+| Every option terminates at all | 144 | **Not implementable as stated.** These sit at median 90% of max tree depth and 88 of them offer a positive ending: they are climaxes. Forbidding them would make it impossible to end a story on a choice. |
+
+Recommend the middle reading, so A14 is scoped to 37 nodes. Confirm, and note the literal phrase "advancing or
+loop back" points at the third reading, which the climax finding rules out.
 
 ## 7. Method rules for this document
 
