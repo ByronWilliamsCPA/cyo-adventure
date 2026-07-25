@@ -55,16 +55,6 @@ _FORBIDDEN_VALUE_CHARS = frozenset("{}<>'~")
 # terminator unambiguous).
 SENTINEL_RE: re.Pattern[str] = re.compile(r"\{~([A-Z][A-Z0-9_]*):([^{}<>'~]+)~\}")
 
-# A permissive "sentinel-ish" pattern used only by `find_malformed_sentinels`
-# below: any non-nested brace-delimited span (an embedded `{` or `}` ends the
-# span early, so nested braces are not specially handled; this is a known,
-# documented simplification). A candidate is only ever treated as a sentinel
-# *attempt* if it also contains a tilde (see `find_malformed_sentinels`); that
-# extra check is what excludes an ordinary prose brace (e.g. a templating
-# placeholder like `{blank}`) that has nothing to do with the sentinel
-# format.
-_SENTINEL_LOOKALIKE_RE = re.compile(r"\{[^{}]*\}")
-
 
 def wrap(slot_id: str, value: str) -> str:
     """Build the canonical sentinel token for a slot id and generic value.
@@ -126,25 +116,78 @@ def find_sentinels(text: str) -> list[tuple[str, str]]:
     return [(match.group(1), match.group(2)) for match in SENTINEL_RE.finditer(text)]
 
 
+def _closer_end(text: str, start: int) -> int | None:
+    """Resolve the end of a candidate attempt's closer, from `start` onward.
+
+    The search is bounded by the next ``{~`` opener (if any), so an
+    unterminated attempt never swallows a later, independent one.
+
+    A well-formed ``~}`` terminator is preferred wherever it is found in
+    range, even when an ordinary brace pair (not itself an ``{~``/``~}``
+    marker) appears earlier in that range: that embedded brace is tolerated
+    as part of a forged value, not treated as ending the span (this is what
+    closes the brace-embedded-forgery blind spot in the previous, non-nested
+    brace-scan design). Only when no ``~}`` exists in range does a bare
+    ``}`` serve as the closer instead, marking a missing-closing-tilde near
+    miss (e.g. ``{~HERO:Explorer}``).
+
+    Args:
+        text: The full text being scanned.
+        start: The index immediately after the opening ``{~``.
+
+    Returns:
+        The exclusive end index of the closer, or ``None`` if neither a
+        ``~}`` nor a bare ``}`` exists before the next opener or the end of
+        text (the ``{`` is then ordinary prose, not an attempt).
+    """
+    next_opener = text.find("{~", start)
+    boundary = next_opener if next_opener != -1 else len(text)
+    tilde_close = text.find("~}", start, boundary)
+    if tilde_close != -1:
+        return tilde_close + 2
+    bare_close = text.find("}", start, boundary)
+    if bare_close != -1:
+        return bare_close + 1
+    return None
+
+
 def find_malformed_sentinels(text: str) -> list[str]:
     """Find every sentinel-shaped-but-malformed substring in text.
 
-    A "near miss" is a brace-delimited span (see `_SENTINEL_LOOKALIKE_RE`)
-    that contains a tilde, the shape signal that marks it as a sentinel
-    *attempt* rather than an ordinary prose brace, but that does not fully
-    match `SENTINEL_RE`. This is the canonical near-miss detector (plan risk
-    R9: keep all sentinel-format regex knowledge in this module); callers
-    such as `cyo_adventure.validator.sentinel_integrity` must import this
-    rather than write their own near-miss regex.
+    This is the canonical near-miss detector (plan risk R9: keep all
+    sentinel-format regex knowledge in this module); callers such as
+    `cyo_adventure.validator.sentinel_integrity` must import this rather
+    than write their own near-miss grammar.
 
-    Covers, at minimum: whitespace inside the braces (``{~ HERO:Explorer~}``,
-    ``{~HERO : Explorer~}``), a lowercase or otherwise malformed slot id
-    (``{~hero:Explorer~}``), a missing tilde on one side
-    (``{~HERO:Explorer}``, ``{HERO:Explorer~}``), a value containing a
-    forbidden character, and an empty value (``{~HERO:~}``).
+    **Grammar.** A near miss is anchored on the two sentinel-distinctive
+    markers, the opener ``{~`` and the closer ``~}``, rather than on generic
+    non-nested ``{...}`` brace spans (the previous design): a plain
+    templating brace with no tilde involved (``{blank}``) or a tilde-less
+    ``{SLOT}`` theme token is never a sentinel attempt and is never
+    reported, since neither marker is present.
 
-    A well-formed sentinel and an ordinary prose brace unrelated to a
-    sentinel (one containing no tilde) are never reported.
+    Scanning left to right:
+
+    - An ``{~`` opens a candidate attempt. Its closer is resolved by
+      `_closer_end`: the next ``~}`` before the next opener or end of text,
+      tolerating any embedded brace pair along the way (so a forged value
+      that itself embeds a literal brace, e.g. ``{~HERO:El{evated}~}``, is
+      still captured as one whole span, rather than being cut short at the
+      inner ``{``); or, when no ``~}`` exists in range, the nearest bare
+      ``}`` (a missing-closing-tilde near miss, e.g. ``{~HERO:Explorer}``).
+      When neither closer exists, the ``{`` is ordinary prose and scanning
+      resumes at the next character.
+    - A ``~}`` with no ``{~`` opener already claiming it is paired with the
+      nearest preceding, not-yet-claimed ``{`` (a missing-opening-tilde near
+      miss, e.g. ``{HERO:Explorer~}``). When no such ``{`` exists, the ``~``
+      is ordinary prose.
+
+    Every resolved candidate span is then tested against
+    ``SENTINEL_RE.fullmatch``; it is reported only when that full match
+    fails. This also covers whitespace inside the braces
+    (``{~ HERO:Explorer~}``, ``{~HERO : Explorer~}``), a lowercase or
+    otherwise malformed slot id (``{~hero:Explorer~}``), and a value
+    containing a forbidden character or empty (``{~HERO:~}``).
 
     Args:
         text: Text that may contain zero or more sentinel-shaped substrings.
@@ -154,11 +197,28 @@ def find_malformed_sentinels(text: str) -> list[str]:
             they appear in `text`. Empty if none are found.
     """
     hits: list[str] = []
-    for match in _SENTINEL_LOOKALIKE_RE.finditer(text):
-        candidate = match.group(0)
-        if "~" not in candidate:
-            continue
-        if SENTINEL_RE.fullmatch(candidate):
-            continue
-        hits.append(candidate)
+    index = 0
+    floor = 0
+    length = len(text)
+    while index < length:
+        if text.startswith("{~", index):
+            span_end = _closer_end(text, index + 2)
+            if span_end is None:
+                index += 1
+                continue
+            span = text[index:span_end]
+            if not SENTINEL_RE.fullmatch(span):
+                hits.append(span)
+            index = span_end
+            floor = index
+        elif text.startswith("~}", index):
+            open_index = text.rfind("{", floor, index)
+            if open_index == -1:
+                index += 1
+                continue
+            hits.append(text[open_index : index + 2])
+            index += 2
+            floor = index
+        else:
+            index += 1
     return hits

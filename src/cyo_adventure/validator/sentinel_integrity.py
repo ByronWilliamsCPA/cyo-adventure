@@ -282,8 +282,11 @@ def _node_token_map(blob: Mapping[str, object]) -> dict[str, frozenset[_Token]]:
     Returns:
         dict[str, frozenset[_Token]]: Node id to the distinct
             ``(slot_id, value)`` tokens found in that node's body and ending
-            title, unioned. A node with no sentinels does not appear in the
-            returned mapping.
+            title, unioned. A node with no sentinels still appears in the
+            returned mapping, mapped to an empty ``frozenset`` (via
+            ``setdefault``); `_diff_by_node` treats a missing key and an
+            empty set identically, so this is harmless, not a guarantee of
+            absence.
     """
     tokens_by_node: dict[str, set[_Token]] = {}
     for surface, node_id, text in _iter_surfaces(blob):
@@ -560,6 +563,29 @@ def _unknown_slot_violations(
     ]
 
 
+def _location_for_at_rest_check(surface: str) -> str:
+    """Resolve the violation location for a Variant B surface reading.
+
+    Mirrors `_location_for_full_check`'s choice-label awareness so a
+    malformed near-miss inside a choice label is tagged `<choice-label>`,
+    per the module docstring's "Violation location convention", instead of
+    always falling through to the generic `<global>` placeholder.
+
+    Args:
+        surface: The surface kind (``"body"``, ``"ending_title"``, or
+            ``"choice_label"``).
+
+    Returns:
+        `_CHOICE_LABEL_LOCATION` for a choice label; otherwise
+        `_GLOBAL_LOCATION`, since Variant B has no pre-fill reference to
+        scope a body/ending-title finding more specifically than
+        "somewhere in this published blob".
+    """
+    if surface == "choice_label":
+        return _CHOICE_LABEL_LOCATION
+    return _GLOBAL_LOCATION
+
+
 def _surface_violations_at_rest(
     blob: Mapping[str, object],
     personalizable_slot_ids: frozenset[str],
@@ -577,11 +603,10 @@ def _surface_violations_at_rest(
     """
     violations: list[IntegrityViolation] = []
     for surface, _node_id, text in _iter_surfaces(blob):
-        violations.extend(_malformed_violations(text, _GLOBAL_LOCATION))
+        location = _location_for_at_rest_check(surface)
+        violations.extend(_malformed_violations(text, location))
         if surface == "choice_label":
-            violations.extend(
-                _choice_label_sentinel_violations(text, _CHOICE_LABEL_LOCATION)
-            )
+            violations.extend(_choice_label_sentinel_violations(text, location))
         else:
             violations.extend(_unknown_slot_violations(text, personalizable_slot_ids))
     return violations

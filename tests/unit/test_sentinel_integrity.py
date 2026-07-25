@@ -229,6 +229,27 @@ class TestCheckSentinelIntegrityMutation:
         kinds = {(v.kind, v.token) for v in result.violations}
         assert kinds == {("dropped", _HERO), ("malformed", mangled)}
 
+    def test_embedded_brace_forgery_caught_as_malformed_and_dropped(self) -> None:
+        """A forged value containing a literal brace is caught as malformed.
+
+        Regression test for the review-found brace blind spot in
+        `find_malformed_sentinels`: the old non-nested brace scan never saw
+        this forgery at all, so it produced zero violations here. The
+        expected token is also dropped, since the forged text is not
+        well-formed and so never appears in the actual sentinel set either.
+        """
+        pre_fill = _blob(
+            [_node("n_a", f"<<FILL beats='{_HERO} walks.'>>", ending_title="Fixed")]
+        )
+        forged = "{~HERO:El{evated}~}"
+        filled = _blob(
+            [_node("n_a", f"{forged} walked generically.", ending_title="Fixed")]
+        )
+        result = check_sentinel_integrity(pre_fill, filled)
+        assert result.ok is False
+        kinds = {(v.kind, v.token) for v in result.violations}
+        assert kinds == {("dropped", _HERO), ("malformed", forged)}
+
 
 class TestCheckSentinelIntegrityChoiceLabel:
     """A sentinel emitted into a choice label is always a violation."""
@@ -383,3 +404,54 @@ class TestCheckSentinelIntegrityAtRest:
         violation = next(v for v in result.violations if v.kind == "in_choice_label")
         assert violation.token == _HERO
         assert violation.node_id == "<choice-label>"
+
+    def test_embedded_brace_forgery_reported_as_malformed(self) -> None:
+        """An embedded-brace forgery is caught even with no pre-fill reference.
+
+        Regression test for the review-found total blind spot in Variant B:
+        with no pre-fill skeleton to fall back on, this forgery previously
+        produced zero violations and ``ok=True``.
+        """
+        forged = "{~HERO:El{evated}~}"
+        blob = _blob([_node("n_a", f"{forged} stood alone.", ending_title="Fixed")])
+        result = check_sentinel_integrity_at_rest(blob, frozenset({"HERO"}))
+        assert result.ok is False
+        malformed = [v for v in result.violations if v.kind == "malformed"]
+        assert len(malformed) == 1
+        assert malformed[0].token == forged
+        assert malformed[0].node_id == "<global>"
+
+    def test_malformed_near_miss_in_choice_label_uses_choice_label_location(
+        self,
+    ) -> None:
+        """A malformed near-miss inside a choice label is tagged <choice-label>.
+
+        Regression test: `_surface_violations_at_rest` used to call
+        `_malformed_violations` unconditionally with the `<global>` location,
+        even for a choice-label surface, contradicting the module's own
+        documented "Violation location convention" (a malformed near-miss
+        located in a label must use `<choice-label>`, matching Variant A's
+        behavior).
+        """
+        mangled = "{~hero:Explorer~}"
+        blob = _blob(
+            [
+                _node(
+                    "n_a",
+                    "The hero stood alone.",
+                    choices=[
+                        {
+                            "id": "c_a",
+                            "label": f"Go toward {mangled}.",
+                            "target": "n_b",
+                        }
+                    ],
+                ),
+                _node("n_b", "The end.", ending_title="Fixed"),
+            ]
+        )
+        result = check_sentinel_integrity_at_rest(blob, frozenset({"HERO"}))
+        malformed = [v for v in result.violations if v.kind == "malformed"]
+        assert len(malformed) == 1
+        assert malformed[0].token == mangled
+        assert malformed[0].node_id == "<choice-label>"

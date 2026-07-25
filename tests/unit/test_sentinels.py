@@ -206,12 +206,12 @@ class TestFindSentinels:
 class TestFindMalformedSentinels:
     """find_malformed_sentinels detects sentinel-shaped near-misses (plan risk R9).
 
-    The near-miss grammar: any non-nested brace-delimited span (``{...}``,
-    via ``[^{}]*`` so an embedded ``{`` or ``}`` ends the span early) that
-    contains at least one tilde but does not fully match ``SENTINEL_RE``. The
-    tilde requirement is what excludes ordinary prose braces (e.g. a
-    templating placeholder like ``{blank}``) that have nothing to do with the
-    sentinel format.
+    The near-miss grammar anchors on the two sentinel-distinctive markers,
+    the opener ``{~`` and the closer ``~}``, rather than on generic
+    non-nested ``{...}`` brace spans. An ordinary prose brace with no tilde
+    involved (e.g. a templating placeholder like ``{blank}``, or a
+    tilde-less ``{SLOT}`` theme token) is never a sentinel attempt and is
+    never reported.
     """
 
     def test_clean_sentinel_reports_nothing(self) -> None:
@@ -231,6 +231,39 @@ class TestFindMalformedSentinels:
     def test_plain_text_with_no_braces_reports_nothing(self) -> None:
         """Text with no braces at all reports nothing."""
         assert find_malformed_sentinels("A perfectly ordinary sentence.") == []
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "Fill in the {HERO} form.",
+            "Fill in the {HERO_2} form.",
+        ],
+    )
+    def test_legitimate_slot_token_not_reported(self, text: str) -> None:
+        """A `{SLOT}`-style theme token (no tilde) is never a sentinel attempt.
+
+        Regression guard for the near-miss redesign: anchoring on the ``{~``
+        opener must not start flagging plain, tilde-less theme tokens that
+        `theme_contract.SLOT_TOKEN_RE` already legitimately matches.
+        """
+        assert find_malformed_sentinels(text) == []
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "It takes approx ~5 minutes to read this page.",
+            "Pack a set {a, b} of camping gear.",
+            "A stray { appears with no partner here.",
+            "A stray } appears with no partner here.",
+        ],
+    )
+    def test_lone_unrelated_marks_not_reported(self, text: str) -> None:
+        """A lone brace or tilde with no sentinel-attempt marker is ignored.
+
+        None of these strings contain either sentinel-distinctive marker
+        (``{~`` or ``~}``), so none is a candidate attempt.
+        """
+        assert find_malformed_sentinels(text) == []
 
     @pytest.mark.parametrize(
         ("label", "text", "expected_hit"),
@@ -295,3 +328,25 @@ class TestFindMalformedSentinels:
     def test_empty_string_reports_nothing(self) -> None:
         """An empty string reports no near-misses."""
         assert find_malformed_sentinels("") == []
+
+    @pytest.mark.parametrize(
+        ("label", "text"),
+        [
+            ("embedded brace in value", "{~HERO:El{evated}~}"),
+            ("angle bracket in value", "{~HERO:Ex<plorer~}"),
+        ],
+    )
+    def test_forbidden_char_near_miss_reported_whole_span(
+        self, label: str, text: str
+    ) -> None:
+        """A forged value with a forbidden char is reported, whole span.
+
+        Regression test for the review-found brace blind spot: the previous
+        non-nested ``{...}`` scan ended the span at the embedded ``{`` (or,
+        for a non-brace forbidden char, matched a shorter inner span), so
+        this forgery was never reported at all. The redesigned grammar
+        anchors on the ``{~``/``~}`` markers, tolerates the embedded brace in
+        between, and reports the full outer span.
+        """
+        embedded = f"The hero found {text} on the path."
+        assert find_malformed_sentinels(embedded) == [text], label
