@@ -1,0 +1,105 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_sunless_march",
+  "version": 1,
+  "title": "The Sunless March",
+  "start_node": "n_start",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.5,
+      "tolerance": 2.5
+    },
+    "tier": 2,
+    "themes": [
+      "adventure",
+      "loyalty",
+      "greed",
+      "monsters",
+      "mystery",
+      "sacrifice"
+    ],
+    "estimated_minutes": 40,
+    "ending_count": 0,
+    "content_flags": {
+      "violence": "moderate",
+      "scariness": "intense",
+      "peril": "intense"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true,
+    "series": {
+      "series_id": "wyrmreach",
+      "book_index": 2,
+      "series_entry_node": "n_start",
+      "is_final": false,
+      "carries_state": true
+    }
+  },
+  "variables": [
+    {
+      "name": "vigor",
+      "type": "int",
+      "initial": 5,
+      "min": 0,
+      "max": 6,
+      "description": "The condition of the company: wounds, sleep, and supply."
+    },
+    {
+      "name": "renown",
+      "type": "int",
+      "initial": 2,
+      "min": 0,
+      "max": 5,
+      "description": "Carried from Kar Duhn: the standing of the company that shut the first door."
+    },
+    {
+      "name": "iron_key",
+      "type": "bool",
+      "initial": true,
+      "description": "Carried: the ninth key-iron of Kar Duhn is in the company's keeping."
+    },
+    {
+      "name": "knows_compact",
+      "type": "bool",
+      "initial": true,
+      "description": "Carried: the company knows what the Compact is and what its doors hold."
+    },
+    {
+      "name": "second_iron",
+      "type": "bool",
+      "initial": false,
+      "description": "The ninth key-iron of the second door, under the mountains at Hollowmarch."
+    },
+    {
+      "name": "deep_charts",
+      "type": "bool",
+      "initial": false,
+      "description": "The dwarven route charts for the lower march and its lamp hours."
+    },
+    {
+      "name": "oath_sworn",
+      "type": "bool",
+      "initial": false,
+      "description": "The company swore the Deep Road oath to the Warden at Rell's Gate."
+    },
+    {
+      "name": "door_state",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 6,
+      "description": "What the company did at the second door: 0 nothing, 1 locked, 2 locked and the count kept, 3 opened, 4 drawn and reseated, 5 wedged, 6 the ninth iron carried out."
+    }
+  ],
+  "include": [
+    "book2.a0.json",
+    "book2.a1.json",
+    "book2.a2.json",
+    "book2.a3.json",
+    "book2.a4.json"
+  ]
+}

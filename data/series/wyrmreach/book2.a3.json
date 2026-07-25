@@ -1,0 +1,1228 @@
+[
+  {
+    "i": "a3_landing",
+    "r": "choice",
+    "w": 65,
+    "b": "the relay stair with lamps lit, two landings in four hundred steps, the wall carvings going from mason's work to gouges cut in a hurry, and on the second landing a stair-shrine with nine niches at eye height",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Stop at the shrine and read it.",
+        "a3_shrine"
+      ],
+      [
+        "Straight down past both landings.",
+        "a3_stairfoot"
+      ],
+      [
+        "Take twenty minutes on the first landing; they need it.",
+        "e_a3_landing_rest"
+      ]
+    ]
+  },
+  {
+    "i": "a3_dark_descent",
+    "r": "choice",
+    "w": 65,
+    "b": "four hundred steps in the dark with a hand on the wall, the carvings changing under the palm, and at the ninetieth step something coming up past the company on the outside of the stair, breathing on a nine-count",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Press flat to the wall and let it pass.",
+        "a3_stairfoot"
+      ],
+      [
+        "Strike a light; blind is worse than seen.",
+        "a3_lit"
+      ],
+      [
+        "Count the steps aloud to keep the company together.",
+        "e_a3_count_steps"
+      ],
+      [
+        "Take hold of it as it goes by.",
+        "e_a3_grab"
+      ]
+    ]
+  },
+  {
+    "i": "a3_scout_descent",
+    "r": "choice",
+    "w": 65,
+    "b": "the stair roped and Kettle a flight ahead on tugs, one for clear and two for wait and three for come, giving one, one, one, then two, and then the rope going slack with no signal at all",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go down fast on the last signal she gave.",
+        "a3_stairfoot"
+      ],
+      [
+        "Overtake the slack and take the lead yourself.",
+        "a3_overtake"
+      ],
+      [
+        "Haul the rope in and see what is on the end of it.",
+        "e_a3_slack"
+      ]
+    ]
+  },
+  {
+    "i": "a3_shrine",
+    "r": "choice",
+    "w": 65,
+    "b": "the stair-shrine, nine niches cut at eye height, eight holding dwarf tokens black with age and the ninth empty and warm from a foot away, its lip worn into a groove by something set down and taken back a great many times",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Leave the ninth niche empty and go down.",
+        "a3_stairfoot"
+      ],
+      [
+        "Set the relay iron in the empty niche.",
+        "a3_shrine_set",
+        "second_iron"
+      ],
+      [
+        "Take one of the eight tokens.",
+        "e_a3_shrine_take"
+      ]
+    ]
+  },
+  {
+    "i": "a3_shrine_set",
+    "r": "rising",
+    "w": 60,
+    "b": "the relay iron set in the warm niche, which takes it the way a lock takes its key, and the whole march going quiet for one breath before the count starts again below, slower, satisfied, and no longer interested in you",
+    "x": "second_iron=false",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Go down and see what you have bought.",
+        "a3_stairfoot"
+      ]
+    ]
+  },
+  {
+    "i": "a3_lit",
+    "r": "rising",
+    "w": 55,
+    "b": "a lamp struck on the stair, and the thing on the outside of the flight caught in it for one second: a Warden's cloak, a Warden's boots, and above the collar nothing a helmet would fit, going up past you without turning",
+    "s": [
+      "scary_imagery",
+      "peril"
+    ],
+    "c": [
+      [
+        "Go down before it comes back for a second look.",
+        "a3_stairfoot"
+      ]
+    ]
+  },
+  {
+    "i": "a3_overtake",
+    "r": "rising",
+    "w": 55,
+    "b": "the slack rope followed down two flights to Kettle, flat against the wall with her hand over her own mouth, alive and furious, pointing at the stairfoot where a Skree haulage gang is crossing in file with crates",
+    "c": [
+      [
+        "Wait for the file to pass and go down.",
+        "a3_stairfoot"
+      ]
+    ]
+  },
+  {
+    "i": "a3_stairfoot",
+    "r": "choice",
+    "w": 75,
+    "b": "the foot of the relay stair, a crossing of ways in warm moving air: a flooded haulage gallery with lamplight on the water, the deep pay-station ahead with its doors ajar, a chapel light to the right, a pump wheel turning somewhere below, a breach into an old road-shrine, a cutting-shop with a cold forge, and at the far end of it all a door",
+    "c": [
+      [
+        "Take the flooded haulage gallery.",
+        "a3_flood"
+      ],
+      [
+        "Open the pay-station doors.",
+        "a3_payhall"
+      ],
+      [
+        "Follow the chapel light.",
+        "a3_chapel"
+      ],
+      [
+        "Go and find the wheel that is turning.",
+        "a3_wheel"
+      ],
+      [
+        "Look into the breach in the wall.",
+        "a3_barrow"
+      ],
+      [
+        "Try the cutting-shop first.",
+        "a3_forge"
+      ],
+      [
+        "Straight down the hall to the door at the end.",
+        "a3_hall"
+      ],
+      [
+        "Hail the garrison; somebody down here must be Warden.",
+        "e_a3_shout"
+      ]
+    ]
+  },
+  {
+    "i": "a3_flood",
+    "r": "choice",
+    "w": 65,
+    "b": "the haulage gallery, chest-deep and warm as bathwater, lamplight further down it, and a flat-bottomed barge poling toward you with three Skree aboard and a crate lashed amidships that is not making crate noises",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Swim the gallery past them in the dark water.",
+        "a3_flood_swim"
+      ],
+      [
+        "Take the haulage ledge above the waterline.",
+        "a3_ledge"
+      ],
+      [
+        "Ambush the barge from both sides.",
+        "a3_ferry"
+      ],
+      [
+        "Go under and hole the barge from below.",
+        "e_a3_sink"
+      ]
+    ]
+  },
+  {
+    "i": "a3_flood_swim",
+    "r": "choice",
+    "w": 60,
+    "b": "sixty yards of warm black water with kit held overhead, the barge pole going by an arm's length away, and something long turning over in the depth beneath the company with the indifference of the very well fed",
+    "x": "vigor-1",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Get out at the far steps and keep going.",
+        "a3_hall"
+      ],
+      [
+        "Take a breath and see what is under you.",
+        "e_a3_swim"
+      ]
+    ]
+  },
+  {
+    "i": "a3_ledge",
+    "r": "choice",
+    "w": 60,
+    "b": "the haulage ledge above the waterline, eleven inches wide and cut for maintenance rather than for men in mail, with the barge passing below close enough to hear the crate being spoken to in numbers",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Work along it to the far end.",
+        "a3_hall"
+      ],
+      [
+        "Drop on the barge as it passes underneath.",
+        "a3_ferry"
+      ],
+      [
+        "Take the shortcut where the ledge is broken.",
+        "e_a3_ledge"
+      ]
+    ]
+  },
+  {
+    "i": "a3_ferry",
+    "r": "choice",
+    "w": 70,
+    "b": "eleven seconds of violence in waist-deep water, three Skree over the gunwale, and then the crate: eighteen inches of dwarf oak, air holes bored in a ring of nine, and inside it something that has stopped making noise in order to listen to you",
+    "x": "vigor-1,renown+1",
+    "s": [
+      "conflict",
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Open the crate.",
+        "a3_crate"
+      ],
+      [
+        "Leave it sealed and take the barge down the gallery.",
+        "a3_hall"
+      ],
+      [
+        "Free what is in it, whatever it is.",
+        "a3_free"
+      ],
+      [
+        "Take the gang's lamps and pass as the haulage file.",
+        "a3_gangpass"
+      ]
+    ]
+  },
+  {
+    "i": "a3_crate",
+    "r": "choice",
+    "w": 65,
+    "b": "the crate opened: a Warden of the Sixteen Mile garrison, alive, wrists bound in the Compact's knot, blindfolded, counting under his breath in the cadence Kettle set out on a table at Rell's Gate",
+    "s": [
+      "scary_imagery",
+      "sad_moment"
+    ],
+    "c": [
+      [
+        "Cut him loose, take him with you, and go.",
+        "a3_hall"
+      ],
+      [
+        "Ask him what he is counting toward.",
+        "e_a3_crate"
+      ]
+    ]
+  },
+  {
+    "i": "a3_free",
+    "r": "rising",
+    "w": 60,
+    "b": "the lid levered off and the bound Warden cut free and carried between two of you, dead weight and still counting, with Nyre holding his head and telling him steadily that the number is wrong",
+    "x": "vigor-1,renown+1",
+    "s": [
+      "sad_moment"
+    ],
+    "c": [
+      [
+        "Carry him and go on to the door.",
+        "a3_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_gangpass",
+    "r": "rising",
+    "w": 65,
+    "b": "three Skree lamps held at Skree height and the company poling a haulage barge down a flooded dwarf gallery in the middle of a file that never looks up, learning the hours, the stations, and what the crates are for",
+    "x": "deep_charts=true",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Tie up at the door steps and get off the water.",
+        "a3_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_payhall",
+    "r": "choice",
+    "w": 70,
+    "b": "the deep pay-station, ankle-deep and echoing: a rack on the far wall holding eight relay irons in eight sockets with a ninth standing empty, the shift bell on its stand, and the road-paymaster face down across his own desk with both sleeves empty from the elbow",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Turn the paymaster over.",
+        "a3_paymaster"
+      ],
+      [
+        "Take the eight irons off the rack.",
+        "a3_eight"
+      ],
+      [
+        "Read the tally cut into the wall behind the rack.",
+        "a3_walltally"
+      ],
+      [
+        "Ring the shift bell and see who still answers it.",
+        "e_a3_bell"
+      ]
+    ]
+  },
+  {
+    "i": "a3_paymaster",
+    "r": "choice",
+    "w": 70,
+    "b": "the paymaster turned over: no hands, no other injury, and in his coat a confession written by a man holding the pen in his teeth, that the ninth hand must be a hand that signs, that he signed for four years, and that he stopped",
+    "s": [
+      "scary_imagery",
+      "sad_moment"
+    ],
+    "c": [
+      [
+        "Take the confession and the irons.",
+        "a3_eight"
+      ],
+      [
+        "Take the confession and go straight to the door.",
+        "a3_hall"
+      ],
+      [
+        "Look for what happened to his hands.",
+        "e_a3_hands"
+      ]
+    ]
+  },
+  {
+    "i": "a3_eight",
+    "r": "choice",
+    "w": 65,
+    "b": "the rack up close: eight relay irons, each cut with a tally, each seated in a socket warmer than the iron, the ninth socket empty and worn bright, and the whole rack humming the way a bowstring hums before it is loosed",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Take one iron and leave the seven seated.",
+        "a3_one_iron"
+      ],
+      [
+        "Leave them all exactly where they are.",
+        "a3_hall"
+      ],
+      [
+        "Take all eight; the Warden can have the lot.",
+        "e_a3_eight_all"
+      ]
+    ]
+  },
+  {
+    "i": "a3_one_iron",
+    "r": "rising",
+    "w": 55,
+    "b": "one iron lifted out and the rack's hum climbing a tone as seven take the load of the eighth, and Ilsabet saying with great precision that the company now has eleven minutes of the march's patience and not a second more",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go to the door.",
+        "a3_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_walltally",
+    "r": "choice",
+    "w": 65,
+    "b": "the tally cut into the wall behind the rack, kept in nines, going back nine hundred years in nine hands and then further in a hand that is not dwarf work at all, with eight strokes cut in the final group and a ninth begun",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Stop reading and go to the door.",
+        "a3_hall"
+      ],
+      [
+        "Read it to the end; there is a name at the bottom.",
+        "e_a3_read_end"
+      ]
+    ]
+  },
+  {
+    "i": "a3_chapel",
+    "r": "choice",
+    "w": 70,
+    "b": "the courier chapel: nine benches, a wall of tally, and at a clerk's desk in front of them Ferrin Ostwyn, Reckoning priest, Nyre's brother, four months into the ninth hand's office, who stands up and greets his sister by name before he greets anybody else",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Hear the offer he means to make.",
+        "a3_offer"
+      ],
+      [
+        "Ask what the Compact actually pays, and to whom.",
+        "a3_terms3"
+      ],
+      [
+        "Put him down where he stands.",
+        "a3_attack"
+      ],
+      [
+        "Back out and go and find the wheel instead.",
+        "a3_wheel"
+      ],
+      [
+        "Put a lamp against his tally-wall and burn it.",
+        "e_a3_burn_wall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_terms3",
+    "r": "choice",
+    "w": 70,
+    "b": "Ferrin explains the arithmetic the way his order explains debt: the thing behind the door cannot be killed and cannot wake while the count holds, eight irons hold the lid, the ninth hand keeps the count and delivers what is owed, and the road has been paying that instalment since before the Reckoning existed",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Let him make his offer, then.",
+        "a3_offer"
+      ],
+      [
+        "Leave him talking and go to the door.",
+        "a3_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_offer",
+    "r": "choice",
+    "w": 70,
+    "b": "the offer, made plainly and without threat: Ferrin is forty-one and will not last another winter of it, the office falls vacant on his death, and for one of the five, named by the captain today, he will give up the iron, the road-book, the tower's arrears and nine more years of the road's peace",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Refuse, and go for the door.",
+        "a3_hall"
+      ],
+      [
+        "Counter: the company will settle this another way.",
+        "a3_counter"
+      ],
+      [
+        "Accept, and name one of them.",
+        "e_a3_accept"
+      ],
+      [
+        "Accept, and name yourself.",
+        "e_a3_accept_self"
+      ]
+    ]
+  },
+  {
+    "i": "a3_counter",
+    "r": "rising",
+    "w": 65,
+    "b": "the counter-offer put to him straight: nine irons seated and no hand at all keeping any count afterwards, and Ferrin's face doing something complicated, because his own order taught him that no debt simply ends and he has spent four years proving it",
+    "c": [
+      [
+        "Go to the door with his blessing, such as it is.",
+        "a3_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_attack",
+    "r": "choice",
+    "w": 70,
+    "b": "Ferrin does not defend himself, and does not need to, because the chapel does it: nine benches worth of dust standing up in the shapes of the people who sat on them, and Nyre's voice going up for the first time in two books",
+    "x": "vigor-1",
+    "s": [
+      "conflict",
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Finish him before the benches close.",
+        "a3_kill_vale"
+      ],
+      [
+        "Break off and run for the door.",
+        "a3_hall"
+      ],
+      [
+        "Take him hostage and walk him to the door.",
+        "e_a3_hostage"
+      ],
+      [
+        "Stand and fight the chapel.",
+        "e_a3_chapel_defends"
+      ]
+    ]
+  },
+  {
+    "i": "a3_kill_vale",
+    "r": "choice",
+    "w": 70,
+    "b": "Ferrin Ostwyn dead at his own desk in the time it takes to say a number, his sister standing over him, and the count stopping everywhere in the march at once, and eight irons audibly taking a load they were never asked to take alone",
+    "s": [
+      "conflict",
+      "peril"
+    ],
+    "c": [
+      [
+        "Run for the door now, while the silence lasts.",
+        "a3_hall"
+      ],
+      [
+        "Take his tally-book and his ring off the desk.",
+        "a3_valebook"
+      ],
+      [
+        "Wait and see what the count does without a keeper.",
+        "e_a3_vale_count"
+      ]
+    ]
+  },
+  {
+    "i": "a3_valebook",
+    "r": "rising",
+    "w": 65,
+    "b": "Ferrin's tally-book and the ninth hand's ring off a dead man's desk, the book eleven hundred pages in nine hands with the last four months in a hand Nyre has known all her life, and the ring warm and sized for whoever lifts it",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Take both and go to the door.",
+        "a3_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_wheel",
+    "r": "choice",
+    "w": 70,
+    "b": "the wheel-house under the pay-station: a dwarf pump the size of a barn with its wheel turning in a race of black water, three of its nine paddles hacked away, and a Skree crew working on the fourth with axes and no hurry at all",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Kill the crew and mend the paddles.",
+        "a3_pump"
+      ],
+      [
+        "Jam the wheel and flood the lower march yourselves.",
+        "a3_flood_deep"
+      ],
+      [
+        "Cross the wheel-race to the door gallery.",
+        "a3_race"
+      ],
+      [
+        "Ride the wheel down and see what it drains into.",
+        "e_a3_wheel"
+      ]
+    ]
+  },
+  {
+    "i": "a3_pump",
+    "r": "choice",
+    "w": 65,
+    "b": "a short brutal fight in a loud room and then an hour of carpentry, Dellach and Vurma holding a paddle while Ilsabet lashes it, the race dropping a hand's width, and the lower march staying dry a while longer",
+    "x": "vigor-1,renown+1",
+    "s": [
+      "conflict"
+    ],
+    "c": [
+      [
+        "Leave it running and go to the door.",
+        "a3_hall"
+      ],
+      [
+        "Stay and keep it running; somebody has to.",
+        "e_a3_pump_stay"
+      ]
+    ]
+  },
+  {
+    "i": "a3_flood_deep",
+    "r": "choice",
+    "w": 65,
+    "b": "the wheel jammed with a pick haft and the race backing up in minutes, water going the wrong way through nine hundred years of dwarf engineering and down into the lower hall where the crates are stacked and the file is still working",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Do it and run for the door on the high side.",
+        "a3_hall"
+      ],
+      [
+        "Do it now, while half the company is still below.",
+        "e_a3_drown_own"
+      ]
+    ]
+  },
+  {
+    "i": "a3_race",
+    "r": "choice",
+    "w": 60,
+    "b": "the wheel-race crossed on the axle housing with the wheel turning a foot behind your head, nine paddles coming round in an order you can learn, and the gap between them exactly as wide as one person who does not hesitate",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Cross one at a time on the count of the paddles.",
+        "a3_hall"
+      ],
+      [
+        "Cross together and quickly; the crew has seen you.",
+        "e_a3_race"
+      ]
+    ]
+  },
+  {
+    "i": "a3_barrow",
+    "r": "choice",
+    "w": 70,
+    "b": "the breach in the march wall, and behind it the road-shrine the dwarves cut past and thought they had merely cut past: nine road-wardens seated in stone around a tenth chair that is empty, their plaques legible, their hands all pointing the same way",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Read the wardens' plaques.",
+        "a3_plaques"
+      ],
+      [
+        "Close the breach with rubble and be done with it.",
+        "a3_close"
+      ],
+      [
+        "Go through the shrine to the door gallery.",
+        "a3_through"
+      ],
+      [
+        "Take the ring off the empty tenth chair.",
+        "e_a3_ring"
+      ]
+    ]
+  },
+  {
+    "i": "a3_plaques",
+    "r": "choice",
+    "w": 70,
+    "b": "nine plaques read in order, and they are not names but offices: the one who counts, the one who carries, the one who signs, on to the ninth, which is the one who is owed, and all nine stone hands pointing at the shrine's inner door",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Go to the door with that in your head.",
+        "a3_hall"
+      ],
+      [
+        "Follow where all nine hands are pointing.",
+        "a3_through"
+      ]
+    ]
+  },
+  {
+    "i": "a3_close",
+    "r": "rising",
+    "w": 60,
+    "b": "two hours of rubble and mortar dust and Dellach's shoulder against a slab, the breach closed as well as five people can close it, and everybody understanding without discussion that this is housekeeping and not a solution",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Go on to the door.",
+        "a3_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_through",
+    "r": "choice",
+    "w": 65,
+    "b": "through the shrine's inner chamber toward the door gallery, past nine empty stone chairs and one that is occupied by something that has been sitting there since before the dwarves cut the first gallery, and that does not turn its head as you pass",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Walk past it without looking and keep walking.",
+        "a3_hall"
+      ],
+      [
+        "Look at it properly, once, so you know.",
+        "e_a3_through"
+      ]
+    ]
+  },
+  {
+    "i": "a3_forge",
+    "r": "choice",
+    "w": 70,
+    "b": "the cutting-shop where the relay irons were made: a cold forge, a tally-die bolted to its anvil, racks of blanks gone to rust, the cutting-orders still pinned to the bench, and a dwarf smith folded under the bellows with his tools laid out in order",
+    "c": [
+      [
+        "Cut a blank into a ninth relay iron on the die.",
+        "a3_cut",
+        "!second_iron"
+      ],
+      [
+        "Take the tally-die off the anvil.",
+        "a3_die"
+      ],
+      [
+        "Read the cutting-orders on the bench.",
+        "a3_orders"
+      ],
+      [
+        "Light the forge; you need the heat and the light.",
+        "e_a3_forge_light"
+      ]
+    ]
+  },
+  {
+    "i": "a3_cut",
+    "r": "choice",
+    "w": 70,
+    "b": "three hours of cold work on a die that wants a striker and a smith, Ilsabet reading the order stroke by stroke while Dellach swings, and at the end of it a ninth relay iron that is nine parts right and one part yours",
+    "x": "second_iron=true,vigor-1",
+    "c": [
+      [
+        "Take it and go to the door.",
+        "a3_hall"
+      ],
+      [
+        "Cut a second one while the die is set.",
+        "e_a3_second"
+      ]
+    ]
+  },
+  {
+    "i": "a3_die",
+    "r": "rising",
+    "w": 55,
+    "b": "the tally-die unbolted and wrapped, forty pounds of dwarf steel that decides what any relay iron says, which Vurma calls the only thing down here worth carrying out and Ilsabet calls the only thing down here worth burying",
+    "c": [
+      [
+        "Carry it and go to the door.",
+        "a3_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_orders",
+    "r": "rising",
+    "w": 70,
+    "b": "the cutting-orders off the bench: nine irons commissioned at the founding of the road, eight cut with the holding tally and the ninth cut with a name left blank for the hand that would keep the count, and a note that the blank must never be cut twice",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Take the orders and go to the door.",
+        "a3_hall"
+      ]
+    ]
+  },
+  {
+    "i": "a3_door",
+    "r": "climax",
+    "w": 80,
+    "b": "the second door of the Compact, at Hollowmarch under the mountains: dwarf iron in a frame of older stone, nine sockets in a ring with eight filled and warm, the ninth empty and worn bright, the metal moving very slightly outward and back on a nine-count, and behind it, patient and enormous, the thing the whole road has been feeding",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Set the relay iron in its socket and lock the door.",
+        "a4_lock",
+        "second_iron"
+      ],
+      [
+        "Draw the eight irons and unmake the Compact.",
+        "a4_unmake"
+      ],
+      [
+        "Take the relay iron out of the march entirely.",
+        "a4_carry",
+        "second_iron"
+      ],
+      [
+        "Open the door a hand's width and look.",
+        "a4_open"
+      ],
+      [
+        "Withdraw. This is a Warden matter and an order's crime.",
+        "a4_withdraw"
+      ],
+      [
+        "Knock, the way you knocked at the gate.",
+        "e_a3_knock_door"
+      ],
+      [
+        "Walk out of the march and never speak of it again.",
+        "e_a3_leave"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_landing_rest",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|Twenty Minutes on the Stair",
+    "b": "twenty minutes on the first landing with boots off, which the schedule board warned about in chalk, and the stair's own traffic arriving on time to find a company sitting in a right of way nine hundred years in continuous use",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_shrine_take",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|One of the Eight",
+    "b": "a token lifted out of the second niche and the seven remaining turning a quarter turn in their sockets at once, and the stair below filling with the sound of somebody coming up two flights at a time to correct an error",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_count_steps",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|Counted on the Stair",
+    "b": "the steps counted aloud in the dark to keep five people together, which works to eight, and then a second voice taking over the counting from below without a break, and the company descending because the numbers keep being correct",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_grab",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|Taken Hold Of",
+    "b": "a hand put out to take hold of what is passing on the stair, which turns out to be entirely willing to be held, and to have been waiting a long time for somebody to begin the transaction rather than merely submit to it",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_slack",
+    "r": "failure",
+    "w": 60,
+    "e": "setback|negative|The End of the Rope",
+    "b": "the rope hauled in hand over hand and coming up cut clean at forty feet, and the company climbing four hundred steps back to a Warden tower to compose a letter to a fen family about somebody who always went down first",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a3_shout",
+    "r": "failure",
+    "w": 60,
+    "e": "capture|negative|Somebody Down Here Must Be Warden",
+    "b": "a hail sent down a dwarf hall in the Warden form and answered correctly from six directions at once in six voices the company heard reading a duty roster upstairs, and every lamp in the haulage gallery turning together toward the stair",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_sink",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|Holed From Below",
+    "b": "the barge holed from underneath and going down in eight feet of warm water with its crate, and the crate opening as it sinks, and whatever the Compact packed in it deciding that the nearest hands in the water will do",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_swim",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|What Was Under You",
+    "b": "one breath taken and one look down into warm black water with a lamp held under the surface, and the thing that has been turning over below the company all the way across turning over once more to look back up",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_ledge",
+    "r": "failure",
+    "w": 50,
+    "e": "death|negative|Where the Ledge Is Broken",
+    "b": "the broken span of the ledge taken as a shortcut on the assumption that dwarf stone fails slowly, which it does, except where nine hundred years of warm water have been working at the mortar from underneath",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a3_crate",
+    "r": "failure",
+    "w": 60,
+    "e": "capture|negative|What He Was Counting Toward",
+    "b": "the bound Warden asked what he is counting toward, and answering in detail, with dates, in a voice that becomes several voices, and every lamp down the gallery stopping work to listen while the company stands in the water",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_bell",
+    "r": "failure",
+    "w": 60,
+    "e": "capture|negative|Who Still Answers It",
+    "b": "the shift bell rung once in a deep station, which is what a shift bell is for, and the garrison answering it: nine from the barracks barricade, the paymaster's clerks out of the flooded gallery, all of them forming up in the old order to be paid",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_hands",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|Where His Hands Went",
+    "b": "a search for a dead paymaster's hands, which are found in the wall's tally-groove where they have been cutting the same nine strokes for four years, still working when the lamp finds them, and stopping the moment they are noticed",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_eight_all",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|All Eight",
+    "b": "eight relay irons out of eight warm sockets in under a minute, taken by a company that came down here for a road-book, and the second door doing exactly what nine irons and nine hands were arranged to prevent",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_read_end",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|The Name at the Bottom",
+    "b": "the wall-tally read to the bottom of the final group, where the ninth stroke has been begun and left unfinished, and a name cut beside it in fresh bright work that is not the paymaster's and not Ferrin's",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_burn_wall",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|The Tally-Wall Burns",
+    "b": "a lamp broken against nine hundred years of accounts, the chapel going up in a light that shows what is sitting on all nine benches, and Ferrin standing in the middle of it unharmed, apologising, explaining that the tally is not kept on the wall",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_accept",
+    "r": "failure",
+    "w": 65,
+    "e": "capture|negative|One of the Five",
+    "b": "a name spoken aloud in a warm chapel and written into the book without hurry, and the company walking out of the march four strong and rich with the road safe for nine years, which is a real thing that was really bought",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a3_accept_self",
+    "r": "failure",
+    "w": 65,
+    "e": "setback|negative|The Ninth Hand's Chair",
+    "b": "the captain's own name in the ninth hand's book, the company sent up the stair with the road-book and the iron and the arrears, and a new keeper sitting down at a clerk's desk to learn a count that has been running since before the road was cut",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a3_hostage",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|A Priest as Surety",
+    "b": "Ferrin Ostwyn walked to the second door at knifepoint as surety, cooperative and unsurprised, explaining on the way that a hostage is worth what the other party is unwilling to lose, and that this door has never been unwilling to lose anything",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a3_chapel_defends",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|Nine Benches Worth",
+    "b": "a stand made in a chapel against nine benches of standing dust, won for ninety seconds and then lost for the reason Ferrin did not think worth mentioning, which is that everybody who has ever sat in that room is still on the roll",
+    "s": [
+      "peril",
+      "conflict",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_vale_count",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|A Count Without a Keeper",
+    "b": "the silence after Ferrin's death waited out to see what a count does without a keeper, and the answer arriving from the direction of the door: it looks for the nearest hand that has held an iron today, and it is not particular about consent",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_wheel",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|What the Wheel Drains Into",
+    "b": "a ride down the wheel-race on a paddle to see where the water goes, which is a shaft, then a sump, then a chamber the dwarves pumped out for nine hundred years for a reason they wrote down in three places",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a3_pump_stay",
+    "r": "failure",
+    "w": 60,
+    "e": "setback|negative|Somebody Has to Run It",
+    "b": "the company staying at the pump because the lower march has to be kept dry and somebody has to do it, shifts worked on dwarf machinery, and the door left for the Wardens, who come in spring and find a wheel in good order with nobody at it"
+  },
+  {
+    "i": "e_a3_drown_own",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|Half the Company Below",
+    "b": "the wheel jammed on the captain's word with Kettle and Ossa still on the low side of the race, and nine hundred years of held water going where it has always wanted to go, faster than anybody can climb",
+    "s": [
+      "peril",
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a3_race",
+    "r": "failure",
+    "w": 50,
+    "e": "death|negative|Nine Paddles Coming Round",
+    "b": "the wheel-race crossed together and quickly because the crew has seen you, which puts two people in the gap at once, and the gap between paddles has always been exactly one person wide",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a3_ring",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|The Empty Tenth Chair",
+    "b": "a ring taken off the arm of a stone chair that has nobody sitting in it, and the nine road-wardens turning their heads together to see who has accepted the office, and the plaque under the tenth chair turning out to be a job description",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_through",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|Once, So You Know",
+    "b": "one long look at the occupied chair, taken deliberately so that at least one person in the company would know what was in the room, and the thing in the chair returning the courtesy in full and at length",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_forge_light",
+    "r": "failure",
+    "w": 55,
+    "e": "death|negative|The Forge Relit",
+    "b": "a dwarf forge lit for the first time in nine hundred years because the company wanted heat and working light, and its flue running straight up into the pay-station and straight down into the door gallery, announcing the work to everything that has ever worked here",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a3_second",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|Never Cut Twice",
+    "b": "a second ninth iron cut on a die whose own orders say twice that the blank must never be cut twice, and the march's arithmetic acquiring in one hammer stroke a tenth hand for which it has no socket and no tolerance",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_knock_door",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|Knocked, Again",
+    "b": "three knocks on the second door, since knocking worked so well at the gate, and the door answering them: three returned from the other side in the same rhythm, at a scale that takes dust off the ceiling and opinion out of everybody present",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a3_leave",
+    "r": "failure",
+    "w": 60,
+    "e": "setback|neutral|Never Speak of It",
+    "b": "four hundred steps back up, out through the gate leaf, up the Lamp Road, and into Rell's Gate by the second evening, with a report that says the march is unsafe and nothing else, and five people who will spend their lives not talking about the same afternoon"
+  },
+  {
+    "i": "a3_hall",
+    "r": "choice",
+    "w": 70,
+    "b": "the door gallery, the last hundred yards: nine niches with nine lamps trimmed, the air moving along the floor on a nine-count, and halfway along a pair of Warden's boots set neatly against the wall with the tags still in them",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Walk it, lamps up, and do not stop.",
+        "a3_door"
+      ],
+      [
+        "Put out your own lamps and walk it in the dark.",
+        "a3_door"
+      ],
+      [
+        "Take the tags out of the boots; somebody's family gets a name.",
+        "e_a3_tags"
+      ]
+    ]
+  },
+  {
+    "i": "e_a3_tags",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|Somebody's Family Gets a Name",
+    "b": "two Warden tags lifted out of a pair of boots set down neatly by their owner in a place where nothing is neat by accident, and the nine lamps of the gallery going out in order from the far end, and the boots being, on reflection, a place setting",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  }
+]

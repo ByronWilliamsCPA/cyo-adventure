@@ -1,0 +1,689 @@
+[
+  {
+    "i": "n_start",
+    "r": "setup",
+    "w": 75,
+    "b": "midwinter arrival at Rell's Gate, the last tower town before the Deep Road goes under the mountains; the company known now, the ninth iron of Kar Duhn in the captain's pack, snow on the gatehouse and a Warden's summons in hand",
+    "c": [
+      [
+        "Report to the Warden of the Deep Road.",
+        "a0_tower"
+      ],
+      [
+        "Take the company into the Lamp and Ladder first.",
+        "a0_taproom"
+      ],
+      [
+        "Walk the caravan yard and see who is going down.",
+        "a0_yard"
+      ],
+      [
+        "Go with Nyre to the Reckoning chapter house.",
+        "w0_ledger"
+      ],
+      [
+        "Ask Kettle why she has not unpacked.",
+        "w0_kettle"
+      ]
+    ]
+  },
+  {
+    "i": "a0_tower",
+    "r": "choice",
+    "w": 60,
+    "b": "Captain Sabinne Orr's commission: Sixteen Mile Tower has sent no lamp report for five weeks, the couriers are still running, and she wants the tower's road-book brought out",
+    "c": [
+      [
+        "Ask what her patrols found at Sixteen Mile.",
+        "a0_tower_q"
+      ],
+      [
+        "Press her for terms worth the walk.",
+        "a0_haggle"
+      ],
+      [
+        "Take the commission as offered.",
+        "a0_sign"
+      ]
+    ]
+  },
+  {
+    "i": "a0_tower_q",
+    "r": "rising",
+    "w": 50,
+    "b": "Orr's account: one patrol turned back at the Marchgate, the second lost a man who would not stop counting, and the Marchgate itself was found unbarred from the inside",
+    "c": [
+      [
+        "Press her for better terms now that you know.",
+        "a0_haggle"
+      ],
+      [
+        "Take it as offered; the road will not improve.",
+        "a0_sign"
+      ]
+    ]
+  },
+  {
+    "i": "a0_haggle",
+    "r": "choice",
+    "w": 55,
+    "b": "Orr has no coin and says so; what she has is the Deep Road oath, which makes the company Warden-sworn on her road and answerable on it",
+    "c": [
+      [
+        "Swear the oath and take her authority.",
+        "a0_charter"
+      ],
+      [
+        "Keep your hands free and take the coin instead.",
+        "a0_sign"
+      ],
+      [
+        "Refuse the road entirely and winter south.",
+        "e_a0_insult"
+      ]
+    ]
+  },
+  {
+    "i": "a0_charter",
+    "r": "rising",
+    "w": 45,
+    "b": "the oath sworn on the road-stone in front of the whole watch, the company written into the Deep Road roll, Dellach's face when the words land",
+    "x": "renown+1,oath_sworn=true",
+    "c": [
+      [
+        "Go and gather the company.",
+        "a0_sign"
+      ]
+    ]
+  },
+  {
+    "i": "a0_sign",
+    "r": "choice",
+    "w": 55,
+    "b": "the commission sealed, and Orr's condition given quietly: the road-book above everything, because the lamp hours in it are the only reason anybody walks that road alive",
+    "c": [
+      [
+        "Ask her for a guide who knows the hours.",
+        "a0_guide"
+      ],
+      [
+        "Ask to read the tower's last report.",
+        "a0_dispatch"
+      ],
+      [
+        "Go and gather your company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_guide",
+    "r": "choice",
+    "w": 50,
+    "b": "Ossa Vend, a lamp-lighter's daughter of nineteen who has walked the Lamp Road twice a week since she was twelve and wants a half share and her mother's debts cleared",
+    "c": [
+      [
+        "Take her on and clear the debts.",
+        "a0_guide_hired"
+      ],
+      [
+        "Refuse; Vurma can read a dwarf road well enough.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_guide_hired",
+    "r": "rising",
+    "w": 45,
+    "b": "Ossa hired, her mother paid off in front of witnesses, and the girl carrying her own lamp-pole because she will not have anybody else carry it",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_dispatch",
+    "r": "rising",
+    "w": 55,
+    "b": "the tower's last report and, folded inside it, the route charts: eleven lamp stations, the hours each is lit, and a pencil note in the tower captain's hand that the hours have changed",
+    "c": [
+      [
+        "Take the charts and gather the company.",
+        "a0_gather"
+      ]
+    ],
+    "x": "deep_charts=true"
+  },
+  {
+    "i": "a0_taproom",
+    "r": "choice",
+    "w": 60,
+    "b": "the Lamp and Ladder, half dwarf and half Warden and entirely underground, where a road-mason is drinking through what he saw at the ninth station and the Sable Guild has a table by the flue",
+    "c": [
+      [
+        "Buy the room a round and listen.",
+        "a0_rumors"
+      ],
+      [
+        "Corner the road-mason about the ninth station.",
+        "a0_lamps"
+      ],
+      [
+        "Step in before the Sable Guild starts on Dellach.",
+        "a0_brawl"
+      ],
+      [
+        "Take the company to the bunkroom; sleep first.",
+        "a0_rest"
+      ]
+    ]
+  },
+  {
+    "i": "a0_rumors",
+    "r": "choice",
+    "w": 55,
+    "b": "the room's version: couriers running the lower march in daylight now, two Reckoning priests gone down and not up, and a Ledger coach that came through in autumn with its curtains drawn",
+    "c": [
+      [
+        "Follow up the ninth station story.",
+        "a0_lamps"
+      ],
+      [
+        "That is enough for one night.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_lamps",
+    "r": "choice",
+    "w": 55,
+    "b": "the road-mason sober enough to be exact: at the ninth station the lamps are lit an hour early and the count runs backwards, and he walked out over the shoulder in snow rather than pass it",
+    "c": [
+      [
+        "Pay him for the whole account.",
+        "a0_lamps_full"
+      ],
+      [
+        "Write it off as drink and altitude.",
+        "a0_gather"
+      ],
+      [
+        "Have him take you up to the shoulder tonight to see it.",
+        "e_a0_moor_night"
+      ]
+    ]
+  },
+  {
+    "i": "a0_lamps_full",
+    "r": "rising",
+    "w": 50,
+    "b": "the rest of it: his mate went on down the Lamp Road to argue about the hours, and his kit came back up on a courier's barrow eight days later with the tools still wrapped",
+    "c": [
+      [
+        "Let him be and gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_brawl",
+    "r": "choice",
+    "w": 55,
+    "b": "a Sable Guild delver with an opinion about surface companies on dwarf roads, delivered at length in two languages, with Dellach already setting his cup down",
+    "s": [
+      "conflict"
+    ],
+    "c": [
+      [
+        "Let Dellach answer it with his hands.",
+        "a0_brawl_win"
+      ],
+      [
+        "Buy the table a round and end it.",
+        "a0_brawl_bought"
+      ],
+      [
+        "Draw steel in a Warden gatehouse.",
+        "e_a0_gaol"
+      ]
+    ]
+  },
+  {
+    "i": "a0_brawl_win",
+    "r": "rising",
+    "w": 50,
+    "b": "two exchanges, a broken bench, a delver sitting down hard, and the Guild's own foreman calling it fair in front of the room",
+    "x": "vigor-1,renown+1",
+    "s": [
+      "conflict"
+    ],
+    "c": [
+      [
+        "Get the company to the bunkroom.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_brawl_bought",
+    "r": "rising",
+    "w": 50,
+    "b": "a round bought, the delver's grievance heard out in full, and grudging directions to the drift entrance thrown in at the end of it",
+    "c": [
+      [
+        "Take the bunkroom and the quiet night.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_rest",
+    "r": "rising",
+    "w": 45,
+    "b": "a night in a dwarf bunkroom cut into rock, warm from the flue, with the company sleeping properly for the first time since Gallowmere",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Gather the company at the bell.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_yard",
+    "r": "choice",
+    "w": 60,
+    "b": "the caravan yard under snow, one Sable Guild train loading for the lower march, a Rooks banner over the covered bay, and a dwarf sitting on her own kit with no company at all",
+    "c": [
+      [
+        "Talk to the dwarf sitting alone.",
+        "a0_ilsabet"
+      ],
+      [
+        "Hire the two road-porters looking for a half share.",
+        "a0_spears"
+      ],
+      [
+        "Cross to the Rooks banner.",
+        "w0_rooks"
+      ],
+      [
+        "Hire nobody; five is enough to feed.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_ilsabet",
+    "r": "choice",
+    "w": 55,
+    "b": "Vurma Kell, pathfinder, put out of the Sable Guild for filing a report about the ninth station that her own foreman burned, and carrying the copy she made of it",
+    "c": [
+      [
+        "Take her on at a full share.",
+        "a0_ilsabet_full"
+      ],
+      [
+        "Offer her a half share and the copy.",
+        "a0_ilsabet_half"
+      ]
+    ]
+  },
+  {
+    "i": "a0_ilsabet_full",
+    "r": "rising",
+    "w": 50,
+    "b": "a full share agreed, the burned report's copy handed over unasked, and Ilsabet and Vurma arguing about dwarf orthography inside ten minutes and enjoying it",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_ilsabet_half",
+    "r": "rising",
+    "w": 50,
+    "b": "a half share taken flatly, the copy kept in her own coat, and a dwarf who will do exactly what she is paid for and not one yard further",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_spears",
+    "r": "rising",
+    "w": 50,
+    "b": "the road-porters, Halt and Weem, cheap and willing, who have carried for Guild trains as far as the fourth station and never once past it",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_rooks",
+    "r": "choice",
+    "w": 50,
+    "b": "Vasse Corrow under the covered bay with a Warden charter of her own now, bought with what she learned about Kar Duhn, offering to take the Sixteen Mile contract off your hands as a courtesy",
+    "c": [
+      [
+        "Refuse, and drink long enough to learn what she knows.",
+        "w0_rooks_drink"
+      ],
+      [
+        "Sell her the contract and winter in comfort.",
+        "e_a0_sell"
+      ]
+    ]
+  },
+  {
+    "i": "w0_rooks_drink",
+    "r": "rising",
+    "w": 50,
+    "b": "Corrow's account of her own autumn: eleven people down the Lamp Road, nine back, and a scout who came out of the drift counting in dwarf and died of it in a Reckoning bed",
+    "c": [
+      [
+        "Leave her the bay and gather your company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_ledger",
+    "r": "choice",
+    "w": 60,
+    "b": "the Reckoning chapter house cut into the gatehouse rock, Prior Enna Vask presiding, and on the duty board a name Nyre has not spoken since Gallowmere: Ferrin Ostwyn, her brother, posted down the road in autumn",
+    "c": [
+      [
+        "Have Nyre read the chapter's road account.",
+        "w0_account"
+      ],
+      [
+        "Draw kit and credit against the commission.",
+        "w0_kit"
+      ],
+      [
+        "Hear the offer Vask would rather make.",
+        "w0_indent"
+      ],
+      [
+        "Leave; this is Reckoning business.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_account",
+    "r": "rising",
+    "w": 55,
+    "b": "the chapter's road account in Nyre's flat voice: nine deliveries requisitioned down the Deep Road in nine months, every one signed by her brother, and the lamp hours copied out beside them",
+    "c": [
+      [
+        "Take the copy and gather the company.",
+        "a0_gather"
+      ]
+    ],
+    "x": "deep_charts=true"
+  },
+  {
+    "i": "w0_kit",
+    "r": "rising",
+    "w": 50,
+    "b": "credit spent properly: pitch, oil, dwarf candles, crampons, a second reservoir lamp, and a coil of wire rope that Vurma insists on and will not explain",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Load out and gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_indent",
+    "r": "choice",
+    "w": 50,
+    "b": "Vask's better offer, made kindly: leave the tower alone, bring the Reckoning her brother's own papers, and the chapter will carry the company's names and debts for nine years",
+    "c": [
+      [
+        "Sign what Vask is actually offering.",
+        "e_a0_indenture"
+      ],
+      [
+        "Refuse, and notice that she said nine.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_kettle",
+    "r": "choice",
+    "w": 55,
+    "b": "Kettle in the gatehouse arch with her pack still roped, refusing to unpack, because she has been under one mountain already this year and the Deep Road is nine hundred miles of it",
+    "c": [
+      [
+        "Press her, gently, until she says the rest.",
+        "w0_kettle_press"
+      ],
+      [
+        "Let her keep it; she has earned one silence.",
+        "a0_gather"
+      ],
+      [
+        "Tell Orr the company's scout will not go down.",
+        "w0_betray"
+      ]
+    ]
+  },
+  {
+    "i": "w0_kettle_press",
+    "r": "choice",
+    "w": 55,
+    "b": "what she says: the count she learned at eleven is the same count the couriers are using on this road, in the same cadence, and she has been hearing it through the floor since you arrived",
+    "c": [
+      [
+        "Ask her to give you the cadence.",
+        "w0_rhyme"
+      ],
+      [
+        "That is enough for tonight.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_rhyme",
+    "r": "rising",
+    "w": 50,
+    "b": "Kettle setting the cadence out on the table with three cups and a knife, the way the crews did it, so that everybody in the company can recognise it in the dark",
+    "c": [
+      [
+        "Sit with that a while, then gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "w0_betray",
+    "r": "rising",
+    "w": 50,
+    "b": "Orr informed that the company's scout is unfit for the road, a substitute offered from her own watch, and a note made in a Warden roll about a captain who reports",
+    "x": "renown+1",
+    "c": [
+      [
+        "Gather the company.",
+        "a0_gather"
+      ]
+    ]
+  },
+  {
+    "i": "a0_gather",
+    "r": "choice",
+    "w": 60,
+    "b": "the last hour in Rell's Gate: kit checked, the gate lamps lit for the ninth hour, and the mouth of the Deep Road standing open in the rock like a held breath",
+    "c": [
+      [
+        "Go down at the bell, light kit, good order.",
+        "a0_march_light"
+      ],
+      [
+        "Go down tonight, ahead of the Guild train.",
+        "a0_march_night"
+      ],
+      [
+        "Spend the advance properly before you move.",
+        "a0_supply"
+      ],
+      [
+        "Give the commission back and winter here.",
+        "e_a0_walk"
+      ]
+    ]
+  },
+  {
+    "i": "a0_march_light",
+    "r": "rising",
+    "w": 45,
+    "b": "out at the bell with the Guild train's dust ahead of you, the road-lamps burning at their proper hours, and eight miles of good dwarf paving underfoot",
+    "c": [
+      [
+        "Take the first junction.",
+        "a0_muster"
+      ]
+    ]
+  },
+  {
+    "i": "a0_march_night",
+    "r": "rising",
+    "w": 50,
+    "b": "a night start to steal a march on the Guild train, six miles in the dark on unlit paving, and the company arriving at the junction cold, blind and already spent",
+    "x": "vigor-1",
+    "c": [
+      [
+        "Take the first junction.",
+        "a0_muster"
+      ]
+    ]
+  },
+  {
+    "i": "a0_supply",
+    "r": "choice",
+    "w": 50,
+    "b": "the advance on a Warden table and one morning to spend it: Nyre wants a barrow, salt and lamp oil, Vurma wants a second wire line and a moor-iron pick",
+    "c": [
+      [
+        "Barrow, salt, oil and rope.",
+        "a0_supply_mule"
+      ],
+      [
+        "Wire line and a moor-iron pick.",
+        "a0_supply_blade"
+      ]
+    ]
+  },
+  {
+    "i": "a0_supply_mule",
+    "r": "rising",
+    "w": 45,
+    "b": "a hand-barrow, four stone of salt, two casks of oil and a spare reservoir, which is the most valuable load on the road and the slowest",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Take the first junction.",
+        "a0_muster"
+      ]
+    ]
+  },
+  {
+    "i": "a0_supply_blade",
+    "r": "rising",
+    "w": 45,
+    "b": "a moor-iron pick and forty feet of wire line, cold in the hand and worth the weight if the drift is as bad as the Guild says",
+    "c": [
+      [
+        "Take the first junction.",
+        "a0_muster"
+      ]
+    ]
+  },
+  {
+    "i": "a0_muster",
+    "r": "choice",
+    "w": 65,
+    "b": "the first junction of the Deep Road, eight miles under the mountain's shoulder: the Lamp Road going on straight and lit, the surface stair going up over the shoulder in snow, and the old drift going down and west into unlit dwarf work",
+    "c": [
+      [
+        "Stay on the lit Lamp Road.",
+        "a1_dyke"
+      ],
+      [
+        "Go up over the shoulder and rejoin below.",
+        "a1_moor"
+      ],
+      [
+        "Take the old drift and go under it all.",
+        "a1_deadroad"
+      ]
+    ]
+  },
+  {
+    "i": "e_a0_insult",
+    "r": "failure",
+    "w": 50,
+    "e": "setback|negative|Terms Refused",
+    "b": "the ride south from Rell's Gate with the oath unsworn, the tower left unreported, and Corrow's chartered company going down the Lamp Road in your place inside a week"
+  },
+  {
+    "i": "e_a0_moor_night",
+    "r": "failure",
+    "w": 60,
+    "e": "death|negative|Lit an Hour Early",
+    "b": "up the shoulder at night behind a drunk mason to look down at the ninth station, and the lamps below lit an hour early, and the count coming up the snow toward the two of you in the wrong direction",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a0_gaol",
+    "r": "failure",
+    "w": 55,
+    "e": "capture|negative|The Gate Cells",
+    "b": "steel drawn in a Warden gatehouse and the company in the gate cells by midnight, the commission struck and passed to the Rooks, and Orr reading the forfeiture through the bars without raising her voice",
+    "s": [
+      "conflict"
+    ]
+  },
+  {
+    "i": "e_a0_sell",
+    "r": "failure",
+    "w": 50,
+    "e": "setback|neutral|The Contract Sold",
+    "b": "the Sixteen Mile contract sold to Corrow for eighty crowns in a covered bay, and a company that winters warm and is finished as a company by spring",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a0_indenture",
+    "r": "failure",
+    "w": 55,
+    "e": "setback|negative|Signed in the Chapter House",
+    "b": "Vask's ink dry on nine years of the company's names, the tower left alone as agreed, and Nyre walking out of her own chapter house because she has read the clause about her brother and you have not"
+  },
+  {
+    "i": "e_a0_walk",
+    "r": "failure",
+    "w": 50,
+    "e": "setback|neutral|Wintered at the Gate",
+    "b": "the commission handed back over a Warden table with an honest reason and no argument, and a winter in Rell's Gate listening to couriers pass under the floor at the ninth hour every ninth night"
+  }
+]

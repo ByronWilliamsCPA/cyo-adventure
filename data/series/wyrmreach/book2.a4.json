@@ -1,0 +1,1062 @@
+[
+  {
+    "i": "a4_lock",
+    "r": "climax",
+    "w": 80,
+    "b": "the relay iron set into the ninth socket, which takes it the way a lock takes its key, and the door's breathing stopping mid-count: eight irons and a ninth, all nine warm, the frame taking the load, and nothing behind it moving for the first time in four months",
+    "x": "door_state=1",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Break the tally-die so no tenth iron can ever be cut.",
+        "a4_break_die"
+      ],
+      [
+        "Take the keeper's ring; a count still needs a hand.",
+        "a4_take_ring",
+        "oath_sworn"
+      ],
+      [
+        "Get everyone up the stair while it is quiet.",
+        "a4_out"
+      ],
+      [
+        "Drive it in crooked so the socket jams forever.",
+        "e_a4_jam_fail"
+      ]
+    ]
+  },
+  {
+    "i": "a4_break_die",
+    "r": "rising",
+    "w": 65,
+    "b": "the tally-die carried back to the cutting-shop and broken across its own anvil in four strokes, dwarf steel going in a way dwarf steel should not go, and Vurma on her knees afterwards checking the floor for fragments twice",
+    "x": "renown+1",
+    "c": [
+      [
+        "Go up the stair.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_take_ring",
+    "r": "choice",
+    "w": 70,
+    "b": "the ninth hand's ring on the desk beside Ferrin's book, warm and exactly sized, and the arithmetic laid out plainly: nine irons hold the lid without a keeper only until something tests it, and a count kept honestly by somebody who hates the work is the difference",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Put it on. Somebody has to keep the count.",
+        "a4_ring_on"
+      ],
+      [
+        "Leave it on the desk. Nobody in this company signs that.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_ring_on",
+    "r": "rising",
+    "w": 70,
+    "b": "the ring on, and the count arriving in the back of the skull like a schedule read aloud by a clerk, not a voice and not a compulsion but an obligation with dates in it, and a captain standing in a courier chapel understanding the shape of the rest of a life",
+    "x": "door_state=2",
+    "s": [
+      "scary_imagery",
+      "sad_moment"
+    ],
+    "c": [
+      [
+        "Take the company up the stair.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_unmake",
+    "r": "climax",
+    "w": 75,
+    "b": "the decision to unmake the Compact at the second door: eight irons in eight warm sockets, nine hundred years of instalments paid by people never consulted, and five people standing in front of the only working arrangement anybody has managed with what is on the other side",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Draw one iron and watch what the door does.",
+        "a4_one_at_a_time"
+      ],
+      [
+        "Draw all eight at once and run.",
+        "e_a4_unmade"
+      ],
+      [
+        "Draw them, then wedge the ring of sockets with the ninth.",
+        "a4_wedge",
+        "second_iron"
+      ],
+      [
+        "Change your mind and seat the ninth instead.",
+        "a4_lock",
+        "second_iron"
+      ]
+    ]
+  },
+  {
+    "i": "a4_one_at_a_time",
+    "r": "choice",
+    "w": 70,
+    "b": "one iron out and the door leans a quarter inch outward; two, and the frame's stone begins to sweat; three, and the door speaks in the road-paymaster's voice and asks with real courtesy whether the company has come to settle the account or to increase it",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Re-seat all three and step back from it.",
+        "a4_reseat"
+      ],
+      [
+        "Keep drawing. Finish what you started.",
+        "e_a4_opened"
+      ],
+      [
+        "Ask it what it is owed.",
+        "e_a4_asked"
+      ]
+    ]
+  },
+  {
+    "i": "a4_reseat",
+    "r": "rising",
+    "w": 65,
+    "b": "three irons back into three sockets by hands that are not steady, the door settling with the sound of a held breath let out slowly, and the paymaster's voice thanking the company by name, all five names, pronounced correctly",
+    "x": "door_state=4",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Get out of the march.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_wedge",
+    "r": "choice",
+    "w": 70,
+    "b": "the relay iron driven crosswise through the socket ring rather than into it, dwarf iron biting dwarf iron until the whole ring is one piece that no hand can draw and no keeper can count: crude, permanent, and in nobody's orders",
+    "x": "door_state=5",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Leave it wedged and go up the stair.",
+        "a4_out"
+      ],
+      [
+        "Test it first; put your weight on the door.",
+        "e_a4_wedge_fail"
+      ]
+    ]
+  },
+  {
+    "i": "a4_open",
+    "r": "climax",
+    "w": 75,
+    "b": "a hand's width of the second door held open on the pick haft with Dellach's boot braced against the frame, warm air coming out in a rhythm that is not wind, and light on the other side that is not lamplight and has no source",
+    "x": "door_state=3",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Look through it.",
+        "a4_looked"
+      ],
+      [
+        "Put a lamp through first and watch what happens to it.",
+        "a4_lamp_through"
+      ],
+      [
+        "Shut it again without looking. Nobody needs to know.",
+        "a4_closed_unlooked"
+      ],
+      [
+        "Speak through the gap.",
+        "e_a4_spoke"
+      ]
+    ]
+  },
+  {
+    "i": "a4_looked",
+    "r": "choice",
+    "w": 75,
+    "b": "what is behind the second door: not a beast in a lair but a hall the size of the mountain with something at the far end too large to resolve, and standing in rows in front of it in Warden cloaks and Reckoning habits and dwarf mail, four thousand people, counting",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Shut it and seat the relay iron.",
+        "a4_lock",
+        "second_iron"
+      ],
+      [
+        "Shut it and get out of the march.",
+        "a4_out"
+      ],
+      [
+        "Go in for them. Somebody has to.",
+        "e_a4_in_for_people"
+      ]
+    ]
+  },
+  {
+    "i": "a4_lamp_through",
+    "r": "choice",
+    "w": 65,
+    "b": "a lit lamp set through the gap on a rope and lowered a foot, burning steadily for four seconds, then going out from the wick downward, then coming back up the rope relit by nobody at all with the flame a better colour than before",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Look through it now that you have to know.",
+        "a4_looked"
+      ],
+      [
+        "Reach through and take the lamp back.",
+        "e_a4_lamp"
+      ]
+    ]
+  },
+  {
+    "i": "a4_closed_unlooked",
+    "r": "choice",
+    "w": 65,
+    "b": "the door eased shut on nothing seen, the haft withdrawn, the count resuming where it left off, and five people in a dwarf gallery deciding together not to know something each of them will privately want to know for the rest of their lives",
+    "c": [
+      [
+        "Go up the stair.",
+        "a4_out"
+      ],
+      [
+        "Withdraw properly and make it a Warden matter.",
+        "a4_withdraw"
+      ]
+    ]
+  },
+  {
+    "i": "a4_carry",
+    "r": "climax",
+    "w": 75,
+    "b": "the arithmetic from the other side: eight irons hold the lid as long as nobody tests it, but the ninth is the count, and a count that cannot be kept is a debt that cannot be collected, and Kar Duhn's ninth iron is already in your pack next to this one",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Wrap it deep and carry it out of the march.",
+        "a4_wrap_iron"
+      ],
+      [
+        "Seat it after all; a shut door is worth more than leverage.",
+        "a4_lock"
+      ],
+      [
+        "Carry it out and sink it in the cistern on the way up.",
+        "e_a4_moor"
+      ],
+      [
+        "Carry it in the open and let them come and ask for it.",
+        "e_a4_bait"
+      ]
+    ]
+  },
+  {
+    "i": "a4_wrap_iron",
+    "r": "rising",
+    "w": 70,
+    "b": "salt-cloth, oilcloth, the middle of the pack beside the first one, Ilsabet's chalk across the flap in two directions, and the whole march's attention settling on five people who now hold two of the nine counts in one bag",
+    "x": "door_state=6",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Up the stair, and quickly.",
+        "a4_out"
+      ]
+    ]
+  },
+  {
+    "i": "a4_withdraw",
+    "r": "choice",
+    "w": 70,
+    "b": "the honest option said out loud in front of the second door by Nyre, who has been assembling it since the chapel: this is nine hundred years old, it is a Warden matter and a crime by her own order, and five people with one commission do not get to be the hinge of it",
+    "c": [
+      [
+        "Out the way you came in, and no souvenirs.",
+        "a4_out"
+      ],
+      [
+        "Out, but take the road-book from the office.",
+        "a4_take_ledger"
+      ],
+      [
+        "Out, and burn the nine gate lamps behind you.",
+        "e_a4_burn_lamps"
+      ],
+      [
+        "Out, and sell what you know to Corrow instead.",
+        "e_a4_sell_knowledge"
+      ]
+    ]
+  },
+  {
+    "i": "a4_take_ledger",
+    "r": "choice",
+    "w": 65,
+    "b": "back up to the road office for four pounds of Warden record that Orr will read and the Reckoning will want burnt, the lamp above the desk still lit, and the clerk's cubby behind it with its plaster tally running to the ceiling",
+    "c": [
+      [
+        "Take the road-book and go.",
+        "a4_out"
+      ],
+      [
+        "Take the road-book and the clerk's tally off the plaster too.",
+        "e_a4_ledger_lingered"
+      ]
+    ]
+  },
+  {
+    "i": "a4_out",
+    "r": "choice",
+    "w": 75,
+    "b": "four hundred steps up, and the march has changed its mind about the company: the flights are longer than they were, the stair-shrine's ninth niche is warm again, all nine lamps in the tower gallery are lit and trimmed, and the gate leaf has come to within a thumb's width of shut",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Force the gate leaf with everything you have.",
+        "a4_force_gate"
+      ],
+      [
+        "Go out up the ventilation shaft.",
+        "a4_chute_out"
+      ],
+      [
+        "Go out by the mason's postern.",
+        "a4_postern_out"
+      ],
+      [
+        "Wait for the ninth hour and walk out with the file.",
+        "a4_file_out",
+        "knows_compact"
+      ],
+      [
+        "Sit down on the stair. You are finished.",
+        "e_a4_sat_down"
+      ]
+    ]
+  },
+  {
+    "i": "a4_force_gate",
+    "r": "choice",
+    "w": 70,
+    "b": "five people, a pick haft, a Warden's shield as a fulcrum and eleven minutes of the worst work any of them has done, the leaf giving an inch at a time against a pressure that is not weight and is not wind and does not negotiate",
+    "x": "vigor-1",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Get everyone through the moment it is wide enough.",
+        "a4_moorback"
+      ],
+      [
+        "Hold it and count them through by name.",
+        "e_a4_forced_shut"
+      ]
+    ]
+  },
+  {
+    "i": "a4_chute_out",
+    "r": "choice",
+    "w": 65,
+    "b": "the ventilation shaft from below, forty feet of dwarf cut with half its staples missing, the cistern room behind you filling, and the lamps in the tower gallery going out one at a time from the far end toward the stair",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go up in pairs, slowly, and take the skin off your hands.",
+        "a4_moorback"
+      ],
+      [
+        "Send the strongest up first to haul the rest.",
+        "e_a4_chute_out_fall"
+      ]
+    ]
+  },
+  {
+    "i": "a4_postern_out",
+    "r": "rising",
+    "w": 60,
+    "b": "out by the mason's postern into a Lamp Road night, the lead seal broken behind you, and the corridor beyond lighting itself politely one niche at a time all the way back to the stair, like a house showing a guest to the door",
+    "s": [
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Get out onto the paving.",
+        "a4_moorback"
+      ]
+    ]
+  },
+  {
+    "i": "a4_file_out",
+    "r": "choice",
+    "w": 70,
+    "b": "the ninth hour waited out in the oil store and then the file forming on the stair below, nine lamps lifted, the count starting, and the Ninth Sword walking out of Sixteen Mile in the middle of it with the rhythm right and nobody's hands where they can be seen",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ],
+    "c": [
+      [
+        "Break off at the gate and get clear.",
+        "a4_moorback"
+      ],
+      [
+        "Stay in the file to the end of the count; it is only nine.",
+        "e_a4_file_kept"
+      ]
+    ]
+  },
+  {
+    "i": "a4_moorback",
+    "r": "choice",
+    "w": 70,
+    "b": "the Lamp Road at the first hour with the Marchgate behind you and Rell's Gate half a day up the paving, the company carrying whatever it decided to carry, and Nyre asking the question that has to be settled before anybody speaks to a Warden",
+    "c": [
+      [
+        "Straight up the road to Rell's Gate.",
+        "a4_causeway"
+      ],
+      [
+        "Two days at the fourth station first; they are spent.",
+        "a4_bothy"
+      ],
+      [
+        "Put it to the company as a company. All five voices.",
+        "a4_council"
+      ],
+      [
+        "Go over the shoulder and away west with what you carry.",
+        "e_a4_south"
+      ]
+    ]
+  },
+  {
+    "i": "a4_bothy",
+    "r": "rising",
+    "w": 65,
+    "b": "two days at the fourth station with a working flue and no watch to keep, Kettle sleeping eleven hours, Dellach's hands coming back, Ilsabet writing the whole account out twice in case one copy burns",
+    "x": "vigor+1",
+    "c": [
+      [
+        "Walk into Rell's Gate on the third morning.",
+        "a4_causeway"
+      ]
+    ]
+  },
+  {
+    "i": "a4_council",
+    "r": "choice",
+    "w": 70,
+    "b": "the company council on a lamp-station bench: Dellach for the Warden and the written record, Nyre for her own order's hearing and the naming of Vask, Kettle for the west road and no names at all, Ilsabet for whichever choice keeps the fewest copies of the truth",
+    "c": [
+      [
+        "Take it to the Warden, all five names on it.",
+        "a4_causeway"
+      ],
+      [
+        "Take it in and let the record decide it, all five names on it.",
+        "a4_causeway"
+      ],
+      [
+        "Let them argue it out and then decide for yourself.",
+        "e_a4_split"
+      ]
+    ]
+  },
+  {
+    "i": "a4_boy",
+    "r": "choice",
+    "w": 70,
+    "b": "there is a promise to keep, made in a lamp gallery in front of witnesses and written in Nyre's book, and keeping it means going back down to Sixteen Mile for a Reckoning novice the company has just spent everything to leave behind",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Go in at the postern and get him out.",
+        "e_a4_win_boy"
+      ],
+      [
+        "Call him out from the gate and wait one hour, no more.",
+        "a4_tower"
+      ],
+      [
+        "Go in by the gate leaf because it is faster.",
+        "e_a4_boy_lost"
+      ]
+    ]
+  },
+  {
+    "i": "a4_gallowmere",
+    "r": "choice",
+    "w": 75,
+    "b": "Rell's Gate in a thaw, and everybody waiting: the Warden's tower with a lamp at the wrong hour, a Reckoning coach in the yard with southern horses, the Rooks pretending not to watch the road, and Prior Vask at the gate shrine lighting candles in nines for a brother nobody has reported dead",
+    "c": [
+      [
+        "Report to Orr, on the record, in full.",
+        "a4_tower"
+      ],
+      [
+        "Go to the Reckoning hearing and name Vask.",
+        "a4_name_halloway"
+      ],
+      [
+        "Write the report the Wardens will read in fifty years.",
+        "a4_record"
+      ],
+      [
+        "Go back down for the novice before anything else.",
+        "a4_boy",
+        "renown>=1"
+      ],
+      [
+        "Tell Prior Vask about her brother before you tell anyone else.",
+        "a4_mother",
+        "renown>=1"
+      ],
+      [
+        "Say the minimum, take the fee, and be gone by dark.",
+        "e_a4_fee"
+      ],
+      [
+        "Hear Corrow's price for your silence and your charts.",
+        "e_a4_bought"
+      ]
+    ]
+  },
+  {
+    "i": "a4_mother",
+    "r": "choice",
+    "w": 70,
+    "b": "Prior Vask at the gate shrine, told in a thawing street by a captain who has rehearsed the words for two days and gets them wrong regardless, and who discovers that she has known since autumn, and has been requisitioning the deliveries herself to keep the count from falling behind",
+    "s": [
+      "sad_moment"
+    ],
+    "c": [
+      [
+        "Take her with you to the Warden.",
+        "a4_report"
+      ],
+      [
+        "Stay with her until the candles burn out.",
+        "e_a4_mother_stay"
+      ]
+    ]
+  },
+  {
+    "i": "a4_report",
+    "r": "choice",
+    "w": 75,
+    "b": "Captain Sabinne Orr reads it twice, all of it, without asking a question, then squares the pages and asks the only three that matter to her: what is shut, what is loose, and what exactly is in the company's pack",
+    "c": [
+      [
+        "Ask for the Warden charter and a standing writ.",
+        "e_a4_win_charter",
+        "renown>=2"
+      ],
+      [
+        "Hand over the relay iron with the report.",
+        "e_a4_win_plain",
+        "second_iron"
+      ],
+      [
+        "Keep both irons, and have her write to the third door.",
+        "e_a4_completion",
+        "second_iron&iron_key"
+      ],
+      [
+        "Put Ferrin's book on the table and let her decide.",
+        "e_a4_win_book",
+        "knows_compact"
+      ],
+      [
+        "Tell her the door is shut and leave the rest out.",
+        "e_a4_silent"
+      ]
+    ]
+  },
+  {
+    "i": "a4_record",
+    "r": "choice",
+    "w": 75,
+    "b": "the written report, which will outlive everybody in the room: dated, signed by five hands, sealed to the Warden archive at Rell's Gate, and requiring the captain to set down in plain words what was done to the second door and by whom",
+    "c": [
+      [
+        "Write that the company now keeps the count.",
+        "e_a4_keeper_office",
+        "door_state==2"
+      ],
+      [
+        "Write that the door is open and how far.",
+        "e_a4_open_admitted",
+        "door_state==3"
+      ],
+      [
+        "Write that three irons were drawn and reseated.",
+        "e_a4_reseat_end",
+        "door_state==4"
+      ],
+      [
+        "Write that the sockets are wedged and ask for masons.",
+        "e_a4_wedge_win",
+        "door_state==5"
+      ],
+      [
+        "Write that the company did not go through the door.",
+        "e_a4_withdrew"
+      ]
+    ]
+  },
+  {
+    "i": "a4_name_halloway",
+    "r": "choice",
+    "w": 70,
+    "b": "the Reckoning hearing convened in the chapter house with three priors down from the south, Vask at the end of the table taking her own minutes, and Nyre standing up as a sister of the Reckoning to say that her brother did not act alone and that the requisitions are in her prior's hand",
+    "c": [
+      [
+        "Testify in full, everything, on the record.",
+        "e_a4_win_testify",
+        "deep_charts"
+      ],
+      [
+        "Testify, and hand the order the relay iron as surety.",
+        "e_a4_surety",
+        "second_iron"
+      ],
+      [
+        "Withdraw the accusation for what she is offering.",
+        "e_a4_bought"
+      ]
+    ]
+  },
+  {
+    "i": "e_a4_completion",
+    "r": "completion",
+    "w": 90,
+    "e": "completion|positive|The Second of Nine",
+    "b": "two irons kept, wrapped, and entered on the record as company property held in trust; Orr's letter going south over her own seal to the wardens of the spine; two of the Compact's nine counts now unkeepable by anybody; and Ferrin's book open on a Warden's table at the page listing the third door, under the spine of the Wyrmreach where the wyrm itself lies, with a date against it that falls at the thaw"
+  },
+  {
+    "i": "e_a4_win_charter",
+    "r": "completion",
+    "w": 75,
+    "e": "success|positive|The Charter and the Writ",
+    "b": "the Deep Road oath converted into a standing Warden charter with a company seal and a road writ, the Ninth Sword entered in the Warden roll as a name rather than a hire, and the first order under it reading, in Orr's hand, hold the march and report the hour of every lamp"
+  },
+  {
+    "i": "e_a4_win_plain",
+    "r": "completion",
+    "w": 70,
+    "e": "success|positive|The Contract, Kept",
+    "b": "the road-book delivered, the relay iron handed across a Warden table and locked in a Warden strongbox, the fee paid in full with the hazard added without argument, and a door under Hollowmarch that is shut tonight and will be shut in the morning"
+  },
+  {
+    "i": "e_a4_win_book",
+    "r": "completion",
+    "w": 75,
+    "e": "success|neutral|Ferrin's Book on the Table",
+    "b": "eleven hundred pages of instalments in nine hands laid on a Warden captain's desk, which makes them her problem and her career and no longer the company's, and Orr reading the last four months twice with the slow attention of somebody recognising a hand she has countersigned"
+  },
+  {
+    "i": "e_a4_win_testify",
+    "r": "completion",
+    "w": 75,
+    "e": "success|positive|Named in the Chapter House",
+    "b": "Prior Enna Vask named to her face in front of three southern priors, her own requisitions matched to the road account by Nyre in open hearing, and an order discovering that its frontier chapter has been settling debts in people for four years with excellent records"
+  },
+  {
+    "i": "e_a4_wedge_win",
+    "r": "completion",
+    "w": 70,
+    "e": "success|neutral|Wedged, and Written Down",
+    "b": "a socket ring locked into one piece by a relay iron driven crosswise, reported in plain words and copied twice, and a Warden request going south the same week for masons and a mining engineer, because what the company did cannot be undone and cannot be trusted forever"
+  },
+  {
+    "i": "e_a4_win_boy",
+    "r": "completion",
+    "w": 70,
+    "e": "success|positive|The Novice",
+    "b": "the promise kept: in at the postern at dusk, the lamp gallery empty with all nine lit, and Brother Cull found asleep in the oil store where he had been hiding for two days on half a loaf, carried out over Dellach's shoulder into thawing air"
+  },
+  {
+    "i": "e_a4_silent",
+    "r": "discovery",
+    "w": 70,
+    "e": "discovery|neutral|What She Was Told",
+    "b": "a short honest report that says the door is shut and stops there, the fee paid, the company thanked and released, and four people who each know that a decision was taken in a dwarf gallery to leave nine hundred years of arithmetic out of a Warden's file"
+  },
+  {
+    "i": "e_a4_surety",
+    "r": "discovery",
+    "w": 70,
+    "e": "discovery|neutral|Held as Surety",
+    "b": "the relay iron handed to the Reckoning as surety and entered in its register under a number, which is the safest place on the road and the one place the Compact has always been able to reach, and a receipt worth exactly what the paper is worth"
+  },
+  {
+    "i": "e_a4_keeper_office",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Somebody Has to Count",
+    "b": "written into a Warden file in the captain's own hand: the door is shut, all nine irons are seated, and the count is kept by the captain of the Ninth Sword, who will be at the Marchgate every ninth night for the rest of a life that now has a schedule attached",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a4_open_admitted",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|How Far It Is Open",
+    "b": "the truth entered in the record to the inch, the tower evacuated within the hour, Rell's Gate's own evacuation order posted by noon, and a company that did the honest thing sitting in the yard watching a road town load its carts"
+  },
+  {
+    "i": "e_a4_reseat_end",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|neutral|Drawn and Put Back",
+    "b": "three irons drawn and reseated, written down exactly like that, a Warden clerk copying it twice, and Orr asking the question nobody in the room can answer: whether a socket that has been emptied once holds the same as a socket that never has"
+  },
+  {
+    "i": "e_a4_withdrew",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|neutral|Did Not Go Through",
+    "b": "a file recording that the company reached the second door, described it accurately, touched nothing and came out, which is the most defensible sentence in the Rell's Gate archive and the one the Ninth Sword will be asked about in every station house for nine years"
+  },
+  {
+    "i": "e_a4_fee",
+    "r": "failure",
+    "w": 65,
+    "e": "setback|neutral|The Minimum, and the Fee",
+    "b": "the fee paid for the road-book with no questions invited and none asked, the company out of the gatehouse before dark with the money split five ways, and an understanding never spoken aloud that Hollowmarch is now somebody else's arithmetic"
+  },
+  {
+    "i": "e_a4_bought",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Corrow's Price",
+    "b": "the charts, the hours, the cadence and the company's silence sold to Corrow for three hundred crowns and a promise, and a chartered company going down the Lamp Road at the thaw with fifteen people who were told the easy version"
+  },
+  {
+    "i": "e_a4_south",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|neutral|Over the Shoulder, West",
+    "b": "Rell's Gate skirted and the west road taken over the shoulder with the pack still packed, no report and no fee and no charter, and two irons travelling further from their sockets every day in the luggage of five people who have agreed not to discuss it"
+  },
+  {
+    "i": "e_a4_split",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Five Voices, No Company",
+    "b": "an argument on a lamp-station bench allowed to run until it stops being an argument, Kettle west that afternoon, Nyre to her order with her own account, Dellach into the tower alone with his, and the Ninth Sword ending not at a door but in a disagreement about paperwork",
+    "s": [
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a4_mother_stay",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|neutral|Until the Candles Burn Out",
+    "b": "an afternoon at a gate shrine with a prior lighting candles in nines for a brother she was requisitioning deliveries for, which is the right place for a captain to be and the wrong place for this captain today, while Orr waits four hours and writes that the company did not present itself"
+  },
+  {
+    "i": "e_a4_jam_fail",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Driven In Crooked",
+    "b": "the relay iron hammered in at an angle to jam the socket forever, which works, and which cracks the socket's stone collar, and a ring of nine that has held for nine hundred years discovering that it is now a ring of eight and a wound",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a4_unmade",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|All Eight, and Run",
+    "b": "eight irons pulled in under a minute and a company running for a stair four hundred steps long, which is a plan that requires the door to open slowly, and the second door sees no reason at all to be slow about it",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_opened",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|Finish What You Started",
+    "b": "the fourth iron drawn while the paymaster's voice is still being courteous, and then the fifth, after which no further decisions are required of anybody in the gallery, because the arrangement has concluded and the accounts are being settled in the order they were opened",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_asked",
+    "r": "failure",
+    "w": 70,
+    "e": "capture|negative|What It Is Owed",
+    "b": "the question asked through three empty sockets and answered in full, itemised, with dates and running totals, and the figure being one that the company is standing inside of, and the door explaining without heat that a debt does not require the consent of the instalment",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_wedge_fail",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Testing the Wedge",
+    "b": "a shoulder put against a wedged door to see whether the work holds, which it does entirely, right up until the thing on the other side puts its own weight against the same door in the same second out of what can only be called curiosity",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a4_spoke",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|Spoken To",
+    "b": "one sentence spoken through a hand's width of open door, in common speech, politely, and the reply arriving not as sound but as arithmetic: the company counted, priced, scheduled and entered against an instalment recorded as falling due immediately",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_in_for_people",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|Somebody Has To",
+    "b": "the door pushed wide and five people walking into a hall the size of a mountain to bring out four thousand who are standing in rows counting, which is the most defensible decision anybody makes in this story, and which adds five to the rows and changes nothing else",
+    "s": [
+      "peril",
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a4_lamp",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Reaching For the Lamp",
+    "b": "an arm through the gap to take back a lamp relit by nobody, and the lamp handed over properly into the hand that reached for it by something that has been waiting nine hundred years for a transaction it did not have to begin itself",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_moor",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|The Cistern Dip",
+    "b": "the relay iron sunk in the cistern dip on the way up, which solves the problem for one winter, until the spring load drops the water line and a Guild train's water detail finds a strip of warm metal on the bottom and sells it at Rell's Gate for two coppers"
+  },
+  {
+    "i": "e_a4_bait",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|Come and Ask For It",
+    "b": "the relay iron carried openly up the Lamp Road as an invitation, on the theory that whatever wants it must come out into lamplight and negotiate, and the discovery on the second night that it does not have to come out at all and never has",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_burn_lamps",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Nine Lamps at the Gate",
+    "b": "nine lamps smashed and burning in the Marchgate arch as a gesture on the way out, and the road's answer arriving not that night but nine nights later at Rell's Gate, in a file that comes up the paving at the third hour with its own lamps and its own list"
+  },
+  {
+    "i": "e_a4_sell_knowledge",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Sold to the Rooks",
+    "b": "everything the company learned under the mountain sold to Vasse Corrow in a thawing yard for good coin and no receipt, the commission returned unfulfilled, and a chartered banner going down the Lamp Road a week later with people who were told the easy version"
+  },
+  {
+    "i": "e_a4_ledger_lingered",
+    "r": "failure",
+    "w": 70,
+    "e": "death|negative|The Clerk's Tally, Too",
+    "b": "the plaster tally chiselled off the cubby wall because it is evidence and evidence wins arguments with Wardens, which takes eleven minutes, which is about eight minutes longer than the clerk's own arrangement allowed for with whatever comes to read his wall on the hour",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_sat_down",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Sat Down on the Stair",
+    "b": "a captain sitting down on the two hundredth step because the legs have finished arguing, a company that will not leave without its captain, and a stair that has been getting longer all evening and is in no hurry whatsoever",
+    "s": [
+      "peril",
+      "sad_moment"
+    ]
+  },
+  {
+    "i": "e_a4_forced_shut",
+    "r": "failure",
+    "w": 70,
+    "e": "capture|negative|Counted Through By Name",
+    "b": "the gate leaf held on a shield fulcrum while five names are called through it in order, which is exactly what the shield's dead owner scratched a warning about on its inside face, and the fifth name answered from behind the leaf in the captain's own voice",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_chute_out_fall",
+    "r": "failure",
+    "w": 65,
+    "e": "death|negative|Strongest First",
+    "b": "the strongest sent up the shaft first to haul the rest, which puts one set of hands at the top and four sets of boots on staples that are half missing, and the fourth staple from the top has been waiting all day for exactly this weight",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a4_file_kept",
+    "r": "failure",
+    "w": 70,
+    "e": "capture|negative|It Is Only Nine",
+    "b": "the file stayed with to the end of the count because it is only nine and the rhythm is easy and the company is nearly out, and the ninth number arriving on the paving in open air with the Lamp Road visible and the count starting again from one without a gap",
+    "s": [
+      "peril",
+      "scary_imagery"
+    ]
+  },
+  {
+    "i": "e_a4_boy_lost",
+    "r": "failure",
+    "w": 70,
+    "e": "setback|negative|Faster By the Gate Leaf",
+    "b": "the gate leaf taken because it is faster and the novice needs an hour, and the leaf being wide enough for one and then not wide enough for anybody, and a company keeping its promise as far as the threshold and no further",
+    "s": [
+      "sad_moment",
+      "peril"
+    ]
+  },
+  {
+    "i": "e_a4_ambushed",
+    "r": "failure",
+    "w": 70,
+    "e": "capture|negative|Who Was Waiting at the Gate",
+    "b": "Kettle's report proving accurate in every particular, the Rooks in the yard and a Reckoning coach at the chapter house and eleven Warden cloaks that do not fit their men, and the company walking into Rell's Gate anyway because there is nowhere else on this road to walk",
+    "s": [
+      "peril"
+    ]
+  },
+  {
+    "i": "a4_causeway",
+    "r": "choice",
+    "w": 65,
+    "b": "the last mile of Lamp Road into Rell's Gate in a thaw, the gatehouse ahead, the tower lamp burning at an hour that means somebody is waiting up, and a Reckoning coach standing in the yard with its curtains drawn and its driver still on the box",
+    "c": [
+      [
+        "Walk in openly, up the middle, in your own colours.",
+        "a4_gallowmere"
+      ],
+      [
+        "Send Kettle ahead to see who is waiting at the gate.",
+        "a4_ahead"
+      ],
+      [
+        "Go round to the chapter house's back door and be quiet.",
+        "a4_gallowmere"
+      ]
+    ]
+  },
+  {
+    "i": "a4_ahead",
+    "r": "choice",
+    "w": 65,
+    "b": "Kettle back from the gate inside eleven minutes with a list, delivered flat and in order: the Rooks in the yard doing nothing badly, a Reckoning clerk taking names at the chapter door, and eleven Warden cloaks on the gate that do not fit the men inside them",
+    "s": [
+      "peril"
+    ],
+    "c": [
+      [
+        "Walk in anyway; there is nowhere else to walk.",
+        "a4_gallowmere"
+      ],
+      [
+        "Wait for full dark and go in over the gate wall.",
+        "e_a4_ambushed"
+      ]
+    ]
+  },
+  {
+    "i": "a4_tower",
+    "r": "choice",
+    "w": 70,
+    "b": "the Warden's anteroom at Rell's Gate, wet cloaks steaming on the pegs, the report copied fair in Ilsabet's hand and read through once more while a clerk pretends not to watch a pack that has not left the captain's shoulder since Hollowmarch",
+    "c": [
+      [
+        "Go in and give it to Orr straight.",
+        "a4_report"
+      ],
+      [
+        "Ask for the Reckoning prior to be present when you speak.",
+        "a4_report"
+      ],
+      [
+        "Leave the fair copy with the clerk and walk out of town.",
+        "e_a4_left_with_clerk"
+      ]
+    ]
+  },
+  {
+    "i": "e_a4_left_with_clerk",
+    "r": "failure",
+    "w": 65,
+    "e": "setback|neutral|Left With the Clerk",
+    "b": "a fair copy of everything left on a clerk's desk with five names on it and no witness to the handing over, read by Orr eleven days later, by which time the Reckoning coach has been back to the chapter house twice and left again"
+  }
+]
