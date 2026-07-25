@@ -101,6 +101,29 @@ identity, or connection-graph information may surface in or be inferable from a 
 recommendation. Kid-to-kid recommendation across unconnected families never happens, at any
 scale.
 
+> **PROPOSED ADDENDUM, pending coordination (added 2026-07-25; flags an open question, does not
+> resolve it).** Two in-flight workstreams both want a sentence added here recording **ring-2
+> granularity**, and they ask for different bars. They must be reconciled in one edit, not raced.
+>
+> 1. **Recommendation attribution** (PR #415 item B6, owner decision 2026-07-25): sharing a
+>    child's first name with a connected family via `display_name` next to a recommendation is
+>    working-as-intended, sanctioned by this ADR's mutual connection consent **alone**, with no
+>    additional disclosure consent layered on top. B6 asks that this ADR state that granularity
+>    explicitly, since it currently defines the rings but not what may cross ring 2.
+> 2. **Personalized story content** ([ADR-023](./adr-023-story-personalization-slots.md), status
+>    Proposed): render-time substitution of a child's real first name throughout story prose read
+>    in a connected household. ADR-023 proposes a **stricter** bar for this: a separate,
+>    separately-worded, timestamped, policy-versioned disclosure consent per profile, per slot
+>    type, per connection.
+>
+> The argument that the two legitimately differ is about bandwidth, not about the datum: an
+> attribution is a single low-bandwidth signal attached to a pointer, seen by a guardian who opted
+> into that feed, whereas a name substituted throughout full prose is a much larger and richer
+> disclosure, read repeatedly by the other family's children and compounded by whatever other
+> slots are substituted alongside it. That argument is not obviously decisive. Neither ADR-023 nor
+> this note picks a side; ADR-023 open decision OD-1 is the sign-off gate. Whoever writes the real
+> amendment sentence should cover both cases in a single change.
+
 ### The standing exclusions (unchanged in force, now precisely scoped)
 
 No messaging, chat, comments, or any free-text channel between users. No user or family

@@ -758,6 +758,28 @@ marked **(no default)** genuinely need your input.
    and matches your stated plan; Route B remains available later as a deliberate, separately
    scoped feature decision if the product calls for it.
 
+   > **PROPOSED ADDENDUM, pending coordination (added 2026-07-25; not authoritative until
+   > ADR-023 is Accepted).** [ADR-023](../planning/adr/adr-023-story-personalization-slots.md)
+   > proposes a third route the analysis above did not consider: guardian opt-in, **render-time,
+   > client-side** substitution over generic sentinels that the server always stores and always
+   > serves unchanged. Every Route B cost listed above is avoided by construction: no real name
+   > reaches any provider, none is persisted in `storybook_version.blob`, and the PII guard needs
+   > no carve-out. Route A's *mechanism* is therefore fully preserved and unmodified at the
+   > request and generation layers, including the `IDENTITY_PROTECTION` self-naming block in
+   > `story_requests/interpretation.py`.
+   >
+   > What does change, and what this addendum exists to flag, is Route A's **messaging**. The
+   > kid-facing copy ("Heroes in our stories always have made-up names") is an absolute that
+   > becomes false for an opted-in family, and at ring 2 becomes false on a connected family's
+   > devices as well. The claim that survives unchanged is narrower and is about egress and
+   > storage, not about what appears on a screen. If ADR-023 ships, this record and that copy
+   > need updating together; see ADR-023 open decision OD-3.
+   >
+   > Note also that this document has no numbered "Section 5 Decision 4", despite
+   > `story_requests/interpretation.py:174` citing one. The self-naming ruling is Section 2's
+   > third bullet and this Section 5 "Self-naming" entry. Correct the code comment or this
+   > document, but do not leave the two disagreeing.
+
 **Gates Phase 5 (processor paperwork):**
 
 - **ZDR terms.** **Zero-data-retention terms with OpenRouter and the other LLM/classifier
