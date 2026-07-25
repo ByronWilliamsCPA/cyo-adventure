@@ -8,7 +8,7 @@ tags:
   - planning
   - generation
   - diversity
-status: active
+status: superseded
 owner: core-maintainer
 authors:
   - name: "Byron Williams"
@@ -19,6 +19,24 @@ purpose: "Turn the remediation plan's design record into work that can be starte
 component: Strategy
 source: "story-diversity-remediation-plan.md (deliverable inventory D1-D56 and sections 1.1-1.13);
   story-diversity-analysis.md (findings 2.1-3.9); CLAUDE.md branch and quality-gate conventions."
+---
+
+> ## SUPERSEDED (2026-07-25)
+>
+> **Do not start work from this document.** A seven-reviewer adversarial pass and a 98-document corpus survey
+> found that its measurements hold but a substantial share of its reasoning does not, including: the 33%
+> fail-depth fraction (circular proxy), the per-topology SPM key (four of six classes empty, direction
+> reversed), the restart design (contradicts `runtime-semantics.md` section 6, an accepted normative rule, and
+> uses snapshots where four sources say path replay), the SR-8 retraction and SR-9 (misread `series.py`;
+> SR-9 contradicts ADR-011 section 8), the echo-safety premise (129 of 132 catalog themes echo at band `3-5`),
+> the dual-role mechanism (`admin-guardian-dual-roles-plan.md` already chose a different one), a false
+> compliance claim, a `PL-22` rule-ID collision across 37 references, and a fabricated source quotation.
+>
+> **[story-diversity-review-errata.md](story-diversity-review-errata.md) is the correction of record**, and its
+> section 6 states what a rebuild must carry forward. This document is retained for provenance only.
+>
+> Four defects this review surfaced are real and independent of the plan; see errata section 5.
+
 ---
 
 > **Read this with, not instead of, [story-diversity-remediation-plan.md](story-diversity-remediation-plan.md).**

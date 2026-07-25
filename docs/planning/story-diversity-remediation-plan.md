@@ -23,7 +23,7 @@ tags:
   - generation
   - diversity
   - privacy
-status: active
+status: superseded
 owner: core-maintainer
 authors:
   - name: "Byron Williams"
@@ -39,6 +39,24 @@ source: "story-diversity-analysis.md; review challenges on GDPR exposure of an o
   privacy-model.md, player/engine.py, api/reading.py, validator/policy.py::_check_min_to_complete (PL-20);
   BFS win-path and fail-path depth measurement over the 14 production-eligible gamebook skeletons
   (2026-07-25)."
+---
+
+> ## SUPERSEDED (2026-07-25)
+>
+> **Do not start work from this document.** A seven-reviewer adversarial pass and a 98-document corpus survey
+> found that its measurements hold but a substantial share of its reasoning does not, including: the 33%
+> fail-depth fraction (circular proxy), the per-topology SPM key (four of six classes empty, direction
+> reversed), the restart design (contradicts `runtime-semantics.md` section 6, an accepted normative rule, and
+> uses snapshots where four sources say path replay), the SR-8 retraction and SR-9 (misread `series.py`;
+> SR-9 contradicts ADR-011 section 8), the echo-safety premise (129 of 132 catalog themes echo at band `3-5`),
+> the dual-role mechanism (`admin-guardian-dual-roles-plan.md` already chose a different one), a false
+> compliance claim, a `PL-22` rule-ID collision across 37 references, and a fabricated source quotation.
+>
+> **[story-diversity-review-errata.md](story-diversity-review-errata.md) is the correction of record**, and its
+> section 6 states what a rebuild must carry forward. This document is retained for provenance only.
+>
+> Four defects this review surfaced are real and independent of the plan; see errata section 5.
+
 ---
 
 > **Execution schedule:** [story-diversity-execution-plan.md](story-diversity-execution-plan.md) re-sequences
@@ -985,12 +1003,12 @@ ending re-maps.
 | ID | Deliverable | Effort |
 | --- | --- | --- |
 | D23 | **Alternate beat phrasings.** Author two or three interchangeable beat variants per node sharing one *outcome contract* (same successor state, same choice semantics, same role and word target) but delivering it through a different scene. Selection draws a variant set per fill; the Stage 1 fidelity gate checks the fill against whichever variant was issued, so it keeps working unchanged. Needs a design doc and probably an ADR. | L |
-| D24 | Grow the small cells. Fourteen of eighteen cells hold exactly three trees, which is the root arithmetic constraint: a child reading four stories at one band and length must see a tree twice. WS-8's flywheel owns the automated path; this is the reminder that three-per-cell is the number to beat, and that D5 must gate every addition. | L |
+| D24 | Grow the small cells. Fifteen of eighteen non-empty cells hold exactly three trees, which is the root arithmetic constraint: a child reading four stories at one band and length must see a tree twice. WS-8's flywheel owns the automated path; this is the reminder that three-per-cell is the number to beat, and that D5 must gate every addition. | L |
 
 **Why D23 is the ceiling.** `beats=` is byte-identical across every fill of a skeleton, forever, and `fill.md`
 requires the prose to depict that exact beat with the Stage 1 gate enforcing it. So every fill of
-`the-cave-of-echoes` contains a two-way split where one branch looks inviting and one looks like a warning, at
-the same depth, with the same word budget. Pushing `fill.md` harder collides with the fidelity gate, and
+`the-cave-of-echoes` contains the same two-way split with the same pair of sensory lures, at the same depth,
+with the same word budget. (An earlier version misquoted this beat; see errata section 2.1.) Pushing `fill.md` harder collides with the fidelity gate, and
 fidelity wins because it is the blocking one. D23 is the only deliverable that lifts that cap: it makes
 `beats` a contract the pipeline checks rather than a string it freezes.
 

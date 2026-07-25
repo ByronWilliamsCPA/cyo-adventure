@@ -23,6 +23,12 @@ source: "Read of generation/skeleton_match.py, story_requests/authoring_plan.py,
   skeletons/ library (2026-07-25)."
 ---
 
+> **Adversarially reviewed (2026-07-25).** A seven-reviewer pass and a 98-document corpus survey re-derived every
+> measurement in this document (all held, with four numeric corrections applied in place) and refuted a number of
+> the inferences drawn from them, including one misquoted source beat.
+> [story-diversity-review-errata.md](story-diversity-review-errata.md) is the correction of record. The two
+> downstream plans are superseded.
+>
 > **Superseded in three places (2026-07-25).** Review challenge corrected this audit three times, and
 > [story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) section 1 carries the corrected
 > designs. **(a)** Section 3.1's fix as written is a privacy regression: the closed vocabulary is load-bearing
@@ -88,7 +94,7 @@ Selection is scoped to a `(band, length, style)` cell (`skeleton_match.candidate
 | 10-13 / medium | 3 | | |
 | 10-13 / long | 3 | | |
 
-Fourteen of eighteen cells hold exactly three trees. A child who reads four stories at one length and band
+Fifteen of eighteen non-empty cells hold exactly three trees. A child who reads four stories at one length and band
 **must** see a tree twice; it is arithmetic, not a tuning problem.
 
 ### 2.2 The repeat rate that implies
@@ -97,9 +103,9 @@ Monte Carlo over the shipped `select_skeleton_for_cell` (20,000 trials, 6 sequen
 
 | Cell size | Signal | P(story 2 reuses story 1's tree) | P(consecutive pair reuses) | Distinct trees over 6 |
 | --- | --- | --- | --- | --- |
-| 3 | recency only (today's real path) | **20.1%** | 24.7% | 2.95 / 3 |
+| 3 | recency only (today's real path) | **20.0%** | 24.7% | 2.95 / 3 |
 | 3 | + theme similarity (WS-4 active) | 9.2% | 19.7% | 3.00 / 3 |
-| 4 | recency only | 13.9% | 16.7% | 3.71 / 4 |
+| 4 | recency only | 14.3% | 16.7% | 3.71 / 4 |
 | 5 | recency only | 11.1% | 12.8% | 4.21 / 5 |
 
 WS-4's similarity blend roughly halves the immediate-repeat rate, which is exactly what it was built to do.
@@ -199,11 +205,15 @@ dissimilar, so the failure mode is over-diversifying instead of silently disabli
 `skeletons/13-16/the-sunken-temple.json` and `skeletons/13-16/the-harrowstone-keep.json` are the same tree:
 
 - Same cell: both `13-16 / long / gamebook`, both `production_eligible: true`.
-- 550 nodes, 152 endings, 801 choices, `max_depth` 58, 4 variables, 7 conditions, 49 effects: identical.
+- 550 nodes, 152 endings, 801 choices, `max_depth` 58, 4 variables, 7 conditions: identical. (`n_effects`
+  differs, 47 versus 49; an earlier version listed it as identical. That two-effect delta is the entire source
+  of the nonzero distance below.)
 - Identical ending-kind and valence multisets (`{setback: 54, death: 17, capture: 77, completion: 1,
   success: 3}` on both).
 - `structural_distance(...)` = **0.00095**, against a `TAU_CELL` anti-clone floor of **0.05** in
-  `mutation/floors.py`. Fifty times below the bar.
+  `mutation/floors.py`. Fifty times below the bar. Independently confirmed on stronger grounds than a feature
+  distance: a start-preserving, ending-kind-preserving graph isomorphism exists across all 550 nodes and 796
+  edges.
 - Node ids and beat text differ (1 of 550 bodies matches), so it reads as a re-guided variant of the same
   graph, consistent with the WS-5 re-guidance flow.
 
@@ -219,7 +229,7 @@ Two distinct problems:
 
 The reader-facing effect is worse than a plain repeat. WS-4, told to prefer a different slug, will happily
 move a family from one of these to the other and record that it delivered tree-level differentiation, while
-the child replays the identical 550-node decision graph with the identical 145-negative ending layout. The
+the child replays the identical 550-node decision graph with the identical 148-negative ending layout. The
 cell nominally holds five trees; it holds four.
 
 `13-16 / medium / gamebook` is also worth a look: minimum in-cell distance 0.091, under 2x the floor.
@@ -265,14 +275,19 @@ fill of a skeleton forever.
 Because the skeletons are already slot-parameterized, the armature is visible in the beat text itself:
 
 ```text
-the-cave-of-echoes / la_fork:
-  'the way splits into two tracks: on one side {A1_SIGN} catches the light,
-   on the other {A2_SIGN} deepens into a warning...'
+skeletons/8-11/the-cave-of-echoes.json / la_fork:
+  <<FILL role=choice words=100 beats='the way splits into two tracks: on one side
+  {A1_SIGN} catches the light, on the other {A2_SIGN} deepens into a warm, pulling sound'>>
 ```
 
-Every fill of this tree, for every theme, contains a two-way split where one branch looks inviting and the
-other looks like a warning, at the same depth, with the same word budget, in the same role sequence. The
-`{SLOT}` values and the prose change. The scene does not.
+**Correction (2026-07-25):** an earlier version misquoted this beat as ending "deepens into a warning", and built
+a claim on it about one branch inviting and one warning. The actual beat is above; both branches are inviting.
+See [story-diversity-review-errata.md](story-diversity-review-errata.md) section 2.1. The structural point below
+stands on the accurate beat, which illustrates it less vividly.
+
+Every fill of this tree, for every theme, contains the same two-way split with the same pair of sensory lures
+on either side, at the same depth, with the same word budget, in the same role sequence. The `{SLOT}` values and
+the prose change. The scene does not.
 
 This sets a hard ceiling on the anti-template guard. The ATG measures masked prose distance between two fills,
 but both fills are rendering an identical event at an identical beat. Push `fill.md` harder and it collides
