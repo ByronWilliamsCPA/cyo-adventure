@@ -264,6 +264,25 @@ def check_log(path: Path) -> list[str]:
         return [f"{path.name}: log table has a header but no rows"]
 
     problems: list[str] = []
+
+    # A blank line silently ends a markdown table, so an appended block separated
+    # from the table by one splits the log in two and every row after the gap
+    # stops being checked at all. The count still looks plausible, which is the
+    # dangerous part: this check exists because that failure passed once.
+    collected = {number for number, _ in rows}
+    orphans = [
+        number
+        for number, line in enumerate(lines, start=1)
+        if _ID_RE.match(_split_row(line)[0] if _split_row(line) else "")
+        and number not in collected
+    ]
+    if orphans:
+        listed = ", ".join(str(number) for number in orphans)
+        problems.append(
+            f"line(s) {listed}: lesson row(s) outside the checked table, usually a "
+            f"blank line splitting the table; every AL-NNN row must be contiguous "
+            f"with the header or it is silently unvalidated"
+        )
     for number, cells in rows:
         problems.extend(_check_row(number, cells))
     problems.extend(_check_id_sequence(rows))
