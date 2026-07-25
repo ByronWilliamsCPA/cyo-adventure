@@ -19,7 +19,10 @@ from cyo_adventure.storybook.models import (
     StoryMetadata,
     Topology,
     Valence,
+    Variable,
+    VariableType,
 )
+from cyo_adventure.validator.report import Severity
 from cyo_adventure.validator.series import validate_series
 
 
@@ -324,3 +327,86 @@ def test_real_chain_with_inconsistent_carry_flag_fails() -> None:
     report = validate_series([first, books[1], books[2]])
     assert not report.ok
     assert any("SR-7" in f.rule_id for f in report.findings)
+
+
+# ---------------------------------------------------------------------------
+# SR-8 carried-variable integrity (AL-038)
+# ---------------------------------------------------------------------------
+
+
+def _carry_book(
+    *, book_index: int, variables: list[Variable], is_final: bool = False
+) -> Storybook:
+    """A minimal state-carrying series book with an explicit variable set.
+
+    Books above index 1 declare an entry node so SR-3/SR-5 are satisfied and SR-8
+    is the only rule under test.
+    """
+    book = _book(
+        book_index=book_index,
+        is_final=is_final,
+        carries_state=True,
+        entry="n_win" if book_index > 1 else None,
+    )
+    return book.model_copy(update={"variables": variables})
+
+
+def _int_var(name: str, low: int, high: int) -> Variable:
+    return Variable(name=name, type=VariableType.INT, initial=low, min=low, max=high)
+
+
+@pytest.mark.unit
+def test_sr8_errors_when_a_receiving_range_narrows_the_senders() -> None:
+    """A narrowed carried range is silent data loss, so it blocks.
+
+    This is the defect that shipped in the real chain: the client clamps carried
+    ints into the receiving book's bounds, turning every low value into the floor.
+    """
+    books = [
+        _carry_book(book_index=1, variables=[_int_var("renown", 0, 5)]),
+        _carry_book(book_index=2, variables=[_int_var("renown", 3, 5)]),
+    ]
+    report = validate_series(books)
+    sr8 = [f for f in report.findings if f.rule_id == "SR-8"]
+    assert len(sr8) == 1
+    assert sr8[0].severity is Severity.ERROR
+    assert "must contain the sending range" in sr8[0].message
+    assert not report.ok, "an SR-8 range error must block the chain"
+
+
+@pytest.mark.unit
+def test_sr8_accepts_a_receiving_range_that_contains_the_senders() -> None:
+    """Widening, or matching, is fine."""
+    books = [
+        _carry_book(book_index=1, variables=[_int_var("renown", 0, 3)]),
+        _carry_book(book_index=2, variables=[_int_var("renown", 0, 5)]),
+    ]
+    assert not [f for f in validate_series(books).findings if f.rule_id == "SR-8"]
+
+
+@pytest.mark.unit
+def test_sr8_warns_when_a_carried_variable_is_dropped() -> None:
+    """A dropped variable is sometimes deliberate, so it warns rather than blocks."""
+    books = [
+        _carry_book(
+            book_index=1,
+            variables=[_int_var("renown", 0, 5), _int_var("charts", 0, 1)],
+        ),
+        _carry_book(book_index=2, variables=[_int_var("renown", 0, 5)]),
+    ]
+    report = validate_series(books)
+    sr8 = [f for f in report.findings if f.rule_id == "SR-8"]
+    assert len(sr8) == 1
+    assert sr8[0].severity is Severity.WARNING
+    assert "'charts'" in sr8[0].message
+    assert report.ok, "a dropped variable must not block the chain"
+
+
+@pytest.mark.unit
+def test_sr8_is_silent_on_an_episodic_chain() -> None:
+    """A chain that carries nothing cannot lose carried state."""
+    books = [
+        _book(book_index=1, carries_state=False),
+        _book(book_index=2, carries_state=False),
+    ]
+    assert not [f for f in validate_series(books).findings if f.rule_id == "SR-8"]

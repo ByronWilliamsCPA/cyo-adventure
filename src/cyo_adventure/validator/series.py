@@ -16,9 +16,10 @@ separately from ``run_gate``.
 
 from __future__ import annotations
 
+from itertools import pairwise
 from typing import TYPE_CHECKING
 
-from cyo_adventure.storybook.models import EndingKind
+from cyo_adventure.storybook.models import EndingKind, VariableType
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -28,7 +29,7 @@ from cyo_adventure.validator.report import (
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from cyo_adventure.storybook.models import Series, Storybook
+    from cyo_adventure.storybook.models import Series, Storybook, Variable
 
 # A satisfying continuation ending: a win the reader carries into the next book.
 # A fail-fast negative ending does not continue the campaign, matching PL-20.
@@ -61,6 +62,8 @@ def validate_series(books: Sequence[Storybook]) -> ValidationReport:
         _check_final_flags(series_books, report)
         _check_continuity(series_books, report)
     _check_state_carry(series_books, report)
+    if well_formed:
+        _check_carried_variables(series_books, report)
     return report
 
 
@@ -271,3 +274,108 @@ def _check_state_carry(series_books: list[_Book], report: ValidationReport) -> N
                 ),
             )
         )
+
+
+def _check_carried_variables(
+    series_books: list[_Book], report: ValidationReport
+) -> None:
+    """SR-8: a state-carrying chain must not lose reader state between books.
+
+    The client seeds a continuation by **variable name** and clamps carried ints
+    into the *receiving* book's declared bounds
+    (``frontend/src/player/engine.ts::startContinuation``), silently. Two
+    consequences, both of which shipped undetected in a real chain:
+
+    * A receiving range narrower than the sending book's rewrites every outcome
+      outside it. A book declaring ``renown`` 3..5 after a book that can end
+      anywhere in 0..5 turns every low-reputation playthrough into a
+      maximum-reputation one. That is data loss, so it is an ERROR.
+    * A variable the sender declares and the receiver does not is dropped without
+      trace. That is sometimes deliberate (a new jurisdiction, a closed
+      storyline), so it is a WARNING naming the variable rather than a block.
+
+    A type change is an ERROR: the client skips a wrong-typed carried value
+    entirely, so the receiving book silently runs on its own initial.
+
+    Only runs on a chain that declares ``carries_state``; an episodic chain
+    carries nothing by definition.
+
+    Args:
+        series_books: (story, series) pairs, already index-validated.
+        report: The report to append findings to.
+    """
+    ordered = sorted(series_books, key=lambda pair: pair[1].book_index)
+    if not ordered or not all(series.carries_state for _, series in ordered):
+        return
+    for (sender, sender_series), (receiver, receiver_series) in pairwise(ordered):
+        received = {var.name: var for var in receiver.variables}
+        for var in sender.variables:
+            target = received.get(var.name)
+            if target is None:
+                report.add(
+                    ValidationFinding(
+                        rule_id="SR-8",
+                        severity=Severity.WARNING,
+                        story_id=receiver.id,
+                        message=(
+                            f"SR-8 carry: book {receiver_series.book_index} "
+                            f"'{receiver.id}' does not declare '{var.name}', which "
+                            f"book {sender_series.book_index} declares, so that "
+                            f"carried value is dropped without trace"
+                        ),
+                    )
+                )
+                continue
+            if target.type is not var.type:
+                report.add(
+                    ValidationFinding(
+                        rule_id="SR-8",
+                        severity=Severity.ERROR,
+                        story_id=receiver.id,
+                        message=(
+                            f"SR-8 carry: '{var.name}' is {var.type.value} in book "
+                            f"{sender_series.book_index} and {target.type.value} in "
+                            f"book {receiver_series.book_index} '{receiver.id}'; a "
+                            f"wrong-typed carried value is skipped, so the receiving "
+                            f"book silently runs on its own initial"
+                        ),
+                    )
+                )
+                continue
+            _check_range_contains(
+                (var, sender_series), (target, receiver_series), receiver.id, report
+            )
+
+
+def _check_range_contains(
+    sender: tuple[Variable, Series],
+    receiver: tuple[Variable, Series],
+    receiver_id: str,
+    report: ValidationReport,
+) -> None:
+    """Flag a receiving int range that cannot hold every value the sender emits."""
+    sender_var, sender_series = sender
+    receiver_var, receiver_series = receiver
+    if sender_var.type is not VariableType.INT:
+        return
+    sender_lo, sender_hi = sender_var.min, sender_var.max
+    recv_lo, recv_hi = receiver_var.min, receiver_var.max
+    if sender_lo is None or sender_hi is None or recv_lo is None or recv_hi is None:
+        return
+    if int(recv_lo) <= int(sender_lo) and int(recv_hi) >= int(sender_hi):
+        return
+    report.add(
+        ValidationFinding(
+            rule_id="SR-8",
+            severity=Severity.ERROR,
+            story_id=receiver_id,
+            message=(
+                f"SR-8 carry: '{sender_var.name}' is [{int(sender_lo)},"
+                f"{int(sender_hi)}] in book {sender_series.book_index} but "
+                f"[{int(recv_lo)},{int(recv_hi)}] in book "
+                f"{receiver_series.book_index} '{receiver_id}'; the receiving range "
+                f"must contain the sending range or the client clamps carried "
+                f"outcomes away"
+            ),
+        )
+    )

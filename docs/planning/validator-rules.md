@@ -142,11 +142,13 @@ invoked by the publishing path (`publishing/service.py`) and by the offline chai
 | SR-5 | Series | **Continuity**: each non-final book must have a satisfying (win) ending, and the next book must declare an entry node, so the chain's declared initial state is reachable from a win. | `SR-5 series: non-final book {index} has no satisfying ending` |
 | SR-6 | Series | **Episodic bands**: a young-band or Tier-1 book is episodic and must not carry state. | `SR-6 series: book '{book_id}' is a young or Tier-1 story and must not declare carries_state` |
 | SR-7 | Series | **Carry uniformity**: every book in a chain must agree on `carries_state`; a chain cannot be half stateful. | `SR-7 series: chain disagrees on carries_state` |
+| SR-8 | Series | **Carried-variable integrity** (added 2026-07-25): on a `carries_state` chain, a variable declared by book N must survive into book N+1. The client seeds a continuation by variable **name** and clamps carried ints into the *receiving* book's bounds, silently, so a narrower receiving range rewrites every outcome outside it (ERROR: data loss), a changed type makes the carried value be skipped entirely (ERROR), and a variable the receiver does not declare is dropped without trace (WARNING, since a closed storyline is a legitimate authorial choice). | `SR-8 carry: '{var}' is [{lo},{hi}] in book {n} but [{lo2},{hi2}] in book {n2} '{book_id}'; the receiving range must contain the sending range or the client clamps carried outcomes away` |
 
-**Known gap** (AL-038, open): no SR rule compares *variable* declarations across a state-carrying
-chain. A continuation that narrows a carried integer's range below the sending book's, or omits a
-variable the previous book declared, silently loses reader state, because the client clamps carried
-ints into the receiving book's bounds and seeds only name-matched variables.
+**Remaining gap** (AL-038): SR-8 now covers the declaration side, but nothing yet records *which*
+carried values were clamped or dropped at read time. A per-variable carry audit in
+``startContinuation`` would make a corrupted carry visible to a reviewer rather than only detectable
+from the declarations, and the continuation offer is still not gated on reaching a satisfying ending,
+so a reader who loses book N can still be handed book N+1.
 
 ---
 
