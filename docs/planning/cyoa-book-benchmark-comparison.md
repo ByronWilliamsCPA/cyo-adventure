@@ -1,6 +1,6 @@
 ---
 title: "Published CYOA/Gamebook Benchmark Comparison"
-schema_type: common
+schema_type: planning
 status: draft
 owner: core-maintainer
 purpose: "Compares the Storybook schema/validator/condition-evaluator against structural mechanics used in real published choose-your-own-adventure and gamebooks, to surface strengths and gaps."
@@ -83,7 +83,7 @@ worth reading alongside this doc.
    reconvergence (no node with more than one incoming choice) and many
    terminal endings of mixed valence is exactly what Tier-1 (no variables)
    plus `time_cave` topology was built for. The largest genuine zero-
-   reconvergence skeleton actually in the catalog today is
+   reconvergence `time_cave`-tagged skeleton in the catalog today is
    `skeletons/8-11/the-river-of-small-boats.json` (127 nodes, 17/7/2
    positive/neutral/negative endings), which handles the shape without
    strain; a much larger story like *The Pale Road* (498 nodes) is tagged
@@ -228,7 +228,7 @@ uv run python scripts/check_skeleton.py \
 
 ## Recommendation
 
-No schema/validator changes are proposed here. Three of the four gaps above
+No schema/validator changes are proposed here. Three of the five gaps above
 (randomness, inventory-as-primitive, player-authored initial state) turn out
 to already have a scoped, gate-validated answer on file:
 `docs/planning/pathfinder-structure-exploration.md` (status: exploratory, not
