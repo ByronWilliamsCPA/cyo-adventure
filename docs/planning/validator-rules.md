@@ -14,7 +14,7 @@ source: "tech-spec.md section 'Validation gate (deterministic, no LLM)'"
 
 # Validation Rule Catalog
 
-> **Status**: Accepted | **Version**: 1.2 | **Updated**: 2026-07-16
+> **Status**: Accepted | **Version**: 1.3 | **Updated**: 2026-07-25
 > **Scope**: All stories (Layer 1, Policy); Tier-2 stories only (Layer 2); all stories
 > advisory (RL); all stories always-human (SAFE)
 
@@ -34,9 +34,10 @@ to this document.
 | Category | Behaviour | Blocks publish? |
 |----------|-----------|-----------------|
 | Layer 1 (L1) | Pass/fail | Yes |
-| Policy (PL) | Pass/fail (PL-19 story-mean sub-check is advisory) | Yes |
+| Policy (PL) | Pass/fail (PL-19 story-mean, PL-23 and PL-24 are advisory) | Yes |
 | Layer 2 (L2) | Pass/fail | Yes (Tier-2 only) |
 | Reading Level (RL) | Advisory | No (warns only) |
+| Series (SR) | Pass/fail | Yes (blocks publish of a chain) |
 | Safety (SAFE) | Always human-routed | Yes (routes to human review, not auto-rejected) |
 
 Layer 1, Policy, and Layer 2 are hard gates, run in that order (`validator/gate.py::run_gate`):
@@ -84,6 +85,7 @@ the closure of reachable configurations. The default configuration cap is 100,00
 | L2-10 | 2 | **Stateful termination and loop escape**: every reachable configuration must have at least one path to an ending configuration. Every reachable cycle must have at least one configuration in the cycle with a visible choice leading out of the cycle toward an ending. | `L2-10 escape: configuration ('{node_id}', {var_state}) has no path to any ending in story '{story_id}' (cycle with no escape / dead configuration chain)` |
 | L2-11 | 2 | **Conditional usefulness**: a conditional choice (one with a non-trivial `condition`) that is invisible in every reachable configuration is flagged as a dead branch. This is a warning elevated to a failure: a condition that is never satisfiable is either a generator bug or a story logic error. | `L2-11 dead-branch: choice '{choice_id}' on node '{node_id}' is never visible in any reachable configuration in story '{story_id}' (condition always false)` |
 | L2-12 | 2 | **Configuration cap**: if the reachable configuration set exceeds the ceiling (default 100,000), the walk aborts immediately and the story fails. This prevents unbounded validator runtime on pathological stories. | `L2-12 cap: reachable configuration set exceeded the ceiling of {cap} configurations in story '{story_id}' (state space too large; reduce variable count or tighten bounds)` |
+| L2-13 | 2 | **Hand-authoring scale advisory**: a Tier-2 story past the hand-authoring node ceiling (`layer2.HAND_AUTHORING_NODE_CEILING`, 460) is past the size a human reviewer can meaningfully check by eye, so the completed Layer-2 configuration walk becomes its sole correctness guarantee. WARNING only: it never blocks, and it is the expected output for a procedurally-generated or series-scale book (the ADR-011 cells marked `dagger`). Its presence means the walk must be treated as the acceptance test rather than a lint pass. | `L2-13 scale: Tier-2 story '{story_id}' has {nodes} nodes, past the hand-authoring ceiling of {ceiling}; the completed Layer-2 configuration walk is now its sole correctness guarantee (hand-review insufficient at this scale)` |
 
 ---
 
@@ -91,7 +93,7 @@ the closure of reachable configurations. The default configuration cap is 100,00
 
 | Rule ID | Layer | Description | Failure Message Template |
 |---------|-------|-------------|--------------------------|
-| RL-13 | Advisory | **Reading level**: Flesch-Kincaid grade (computed by textstat) for each node `body` is compared to `metadata.reading_level.target +/- tolerance`. Any node outside the tolerance range generates a warning. This check warns and logs; it never hard-fails, because FK scores are noisy at passage length and the parent makes the final call. | `RL-13 level: node '{node_id}' FK grade {actual:.1f} outside target {target} +/- {tolerance} in story '{story_id}' (advisory only)` |
+| RL-13 | Advisory | **Reading level**: Flesch-Kincaid grade for each node `body` is compared to `metadata.reading_level.target +/- tolerance`. Any node outside the tolerance range generates a warning. This check warns and logs; it never hard-fails, because FK scores are noisy at passage length and the parent makes the final call. The grade comes from a **vendored** implementation (`validator/reading_level.py::_flesch_kincaid_grade`), not from textstat, which is not a dependency: the formula needs only word/sentence/syllable counts, so vendoring avoids a heavy NLP dependency tree for a check that never blocks, and keeps scores version-stable. Two nodes are skipped silently: a body under `_MIN_WORDS_FOR_FK` (20) words, where FK is statistically unreliable, and an unfilled skeleton body carrying a `<<FILL` directive, which is a directive rather than prose (PL-19 skips the same marker). | `RL-13 level: node '{node_id}' FK grade {actual:.1f} outside target {target} +/- {tolerance} in story '{story_id}' (advisory only)` |
 
 ---
 
@@ -120,6 +122,31 @@ age-safety rule in its own right; it is defined below.
 | PL-17 | Policy | **Floors**: distinct endings must meet `min_endings`; decision nodes (non-ending nodes with >= 2 choices) must meet `min_decisions`, both possibly scaled and counted from the graph. | `PL-17 floor: {n} ending(s)/decision node(s) below {scope} minimum {min} in story '{story_id}'` |
 | PL-18 | Policy | **Topology verify**: declared `metadata.topology` must be admissible for the class inferred from graph metrics (networkx classifier). | `PL-18 topology: declared '{topology}' is not admissible for the graph (admissible: {admissible}) in story '{story_id}'` |
 | PL-22 | Policy | **Band profile fail-closed**: added 2026-07-16 per the owner ruling (fail closed). When a story's age band has no configured `BandProfile` (`validator/band_profile.py::profile_for` returns `None`), the gate emits this single blocking finding and returns immediately instead of silently skipping PL-15/16/17 for that band. Unreachable through any valid, enum-constrained `age_band` today (a lockstep test pins the `AgeBand` enum against the configured profiles), so this is a runtime backstop, not a normal-path rule. See `validator/policy.py::validate_policy` and `tests/unit/test_policy.py::test_validate_policy_fails_closed_when_profile_is_none`. | `PL-22 policy: band profile not configured for band '{age_band}' in story '{story_id}'; refusing to validate age safety` |
+| PL-23 | Policy | **Declared read time**: `metadata.estimated_minutes` is ADR-011 section 4's *fastest-finish* clock, the words on the shortest satisfying path divided by the band's `band_profile.reading_pace_wpm` anchor. A declared value differing from the derived one by more than 25% warns. Advisory: a rounded or deliberately padded editorial figure is legitimate, but the field is what a child sees when choosing a book, so a large mismatch is a broken promise. Skipped when the fastest-finish path is under `_MIN_PATH_WORDS_FOR_CLOCK` (200) words, where the derived clock is noise. | `PL-23 clock: declared estimated_minutes {declared} differs from the derived fastest-finish clock {derived} min ({words} words on the shortest satisfying path at {wpm} wpm) by {drift} in story '{story_id}' (advisory only)` |
+| PL-24 | Policy | **Ending mix**: two advisory shape checks over the ending set, which PL-15 (forbidden kinds) and PL-17 (ending count) do not cover. (a) No single `ending.kind` may exceed 60% of endings. (b) A winnability floor that is **style-aware**: prose must have at least 10% positive-valence endings, while a gamebook must have at least 3 distinct positive-valence endings. The gamebook rule is an absolute count, not a share, because a share floor calibrated against the committed corpus would flag every gamebook (all sit at 2-5% positive against prose's 15-70%); that spread is ADR-011 section 5's declared 'few wins and many fails' shape, not nine defects. | `PL-24 mix: ending kind '{kind}' is {n} of {total} endings ({share}), above the {ceiling} share ceiling in story '{story_id}' (advisory only)` |
+
+---
+
+## Series (Cross-Book Chain, Series Stories Only)
+
+Runs over a whole chain rather than one story (`validator/series.py::validate_series`), so it is
+invoked by the publishing path (`publishing/service.py`) and by the offline chain checker, not by
+`run_gate`. A chain is the set of books sharing one `series_id`.
+
+| Rule ID | Layer | Description | Failure Message Template |
+|---------|-------|-------------|--------------------------|
+| SR-1 | Series | **Series identity**: every book in the chain must declare `metadata.series`, and all books must share one `series_id`. | `SR-1 series: book '{book_id}' declares no series metadata` / `SR-1 series: chain spans multiple series ids {ids}` |
+| SR-2 | Series | **Index contiguity**: `book_index` values must form a contiguous `1..N` with no repeats. Note this checks contiguity only, not that indices reflect narrative order. | `SR-2 series: book_index values {indices} are not a contiguous 1..N` |
+| SR-3 | Series | **Entry node**: a declared `series_entry_node` must exist in the book's nodes, and any book above index 1 must declare one. | `SR-3 series: book '{book_id}' declares series_entry_node '{node}' which does not exist` |
+| SR-4 | Series | **Final flag**: a book below the highest index must not be `is_final`. A non-final top book is permitted, which is how a chain stays open for later books. | `SR-4 series: book {index} '{book_id}' is marked final but is not the highest index` |
+| SR-5 | Series | **Continuity**: each non-final book must have a satisfying (win) ending, and the next book must declare an entry node, so the chain's declared initial state is reachable from a win. | `SR-5 series: non-final book {index} has no satisfying ending` |
+| SR-6 | Series | **Episodic bands**: a young-band or Tier-1 book is episodic and must not carry state. | `SR-6 series: book '{book_id}' is a young or Tier-1 story and must not declare carries_state` |
+| SR-7 | Series | **Carry uniformity**: every book in a chain must agree on `carries_state`; a chain cannot be half stateful. | `SR-7 series: chain disagrees on carries_state` |
+
+**Known gap** (AL-038, open): no SR rule compares *variable* declarations across a state-carrying
+chain. A continuation that narrows a carried integer's range below the sending book's, or omits a
+variable the previous book declared, silently loses reader state, because the client clamps carried
+ints into the receiving book's bounds and seeds only name-matched variables.
 
 ---
 
@@ -128,10 +155,12 @@ age-safety rule in its own right; it is defined below.
 The validator applies rules in this order:
 
 1. L1-1 through L1-7 (graph; all stories). Stop if any L1 rule fails.
-2. PL-15 through PL-21, plus the PL-22 fail-closed guard (age-policy gate; all stories).
-   PL-19 is advisory; the rest block. PL-22 fires only when the band has no configured
+2. PL-15 through PL-21, the PL-22 fail-closed guard, and the PL-23/PL-24 advisories
+   (age-policy gate; all stories). PL-19's story-mean sub-check, PL-23 and PL-24 are
+   advisory; the rest block. PL-22 fires only when the band has no configured
    profile, in which case it is the sole finding and PL-15..PL-21 do not run.
-3. L2-8 through L2-12 (state-space; Tier-2 only). Stop if any L2 rule fails.
+3. L2-8 through L2-13 (state-space; Tier-2 only). Stop if any L2 rule fails; L2-13 is a
+   non-blocking scale advisory and never stops the run.
 4. RL-13 (advisory; all stories). Log warnings; continue.
 5. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
 

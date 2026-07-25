@@ -29,7 +29,9 @@ All failure-message templates match the exact strings specified in
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
+
+import networkx as nx
 
 from cyo_adventure.player.engine import StoryEngine
 from cyo_adventure.validator.report import (
@@ -44,7 +46,7 @@ if TYPE_CHECKING:
 
     from cyo_adventure.player.state import ReadingState
     from cyo_adventure.storybook.evaluator import VarValue
-    from cyo_adventure.storybook.models import Node, Storybook
+    from cyo_adventure.storybook.models import Storybook
     from cyo_adventure.validator.walk import ConfigKey, WalkResult
 
 
@@ -127,7 +129,7 @@ def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport
 
     dead_end_keys = _check_dead_ends(ctx, report)
     _check_loop_escape(ctx, dead_end_keys, report)
-    _check_dead_branches(ctx, story.nodes, report)
+    _check_dead_branches(ctx, story, report)
 
     return report
 
@@ -235,17 +237,140 @@ def _l2_10_finding(
     )
 
 
-def _l2_11_finding(story_id: str, node_id: str, choice_id: str) -> ValidationFinding:
-    """Build an L2-11 dead-branch finding.
+def _condition_var_names(condition: object) -> set[str]:
+    """Return every variable name referenced anywhere in a condition tree.
+
+    A condition is a plain nested dict whose variable references are
+    ``{"var": name}`` leaves (``storybook/condition.py``), so the walk is
+    structural and needs no evaluator.
+
+    Args:
+        condition: A condition dict, or any nested fragment of one.
+
+    Returns:
+        set[str]: The referenced variable names.
+    """
+    names: set[str] = set()
+    if isinstance(condition, dict):
+        typed = cast("dict[str, object]", condition)
+        for key, value in typed.items():
+            if key == "var" and isinstance(value, str):
+                names.add(value)
+            else:
+                names |= _condition_var_names(value)
+    elif isinstance(condition, list):
+        for item in cast("list[object]", condition):
+            names |= _condition_var_names(item)
+    return names
+
+
+def _dead_branch_cause(story: Storybook, node_id: str, condition: object) -> str | None:
+    """Return a plain-language cause for an unsatisfiable condition, if known.
+
+    Across a real series build every L2-11 had one of exactly two causes, and the
+    bare "condition always false" message pointed at neither. Both are
+    mechanically detectable from data the walk already has, and the hint also
+    reaches the Stage C repair prompt, which receives findings verbatim: a repair
+    model told the cause fixes the gate, while one told only the symptom tends to
+    delete the branch.
+
+    Args:
+        story: The parsed story, for variable declarations and effects.
+        node_id: The node owning the dead choice.
+        condition: The choice's condition tree.
+
+    Returns:
+        str | None: A cause clause to append, or ``None`` when neither pattern
+            matches and the generic message should stand alone.
+    """
+    referenced = _condition_var_names(condition)
+    if not referenced:
+        return None
+    declared = {var.name: var for var in story.variables}
+    mutated: set[str] = set()
+    for node in story.nodes:
+        for effect in node.on_enter:
+            mutated.add(effect.var)
+        for choice in node.choices:
+            for effect in choice.effects:
+                mutated.add(effect.var)
+
+    for name in sorted(referenced):
+        var = declared.get(name)
+        if var is None:
+            continue
+        # Carried-variable polarity: a continuation seeds a carried variable
+        # true and never unsets it, so any condition requiring it false is
+        # unsatisfiable by construction.
+        if var.initial is True and name not in mutated:
+            return (
+                f"variable '{name}' initialises true and no effect ever unsets it, "
+                f"so a condition requiring it false can never hold; carried state "
+                f"in a continuation is read-only"
+            )
+        # Grant order: the gate is reachable but no node that grants the
+        # variable precedes it, so the gate is checked before it can be earned.
+        if (
+            var.initial is False
+            and name in mutated
+            and _no_grant_precedes(story, node_id, name)
+        ):
+            return (
+                f"no node granting '{name}' precedes this one, so the gate is "
+                f"reached before the variable can be earned"
+            )
+    return None
+
+
+def _no_grant_precedes(story: Storybook, node_id: str, var_name: str) -> bool:
+    """Whether no node that mutates ``var_name`` can reach ``node_id``."""
+    granting = {
+        node.id for node in story.nodes for e in node.on_enter if e.var == var_name
+    } | {
+        node.id
+        for node in story.nodes
+        for choice in node.choices
+        for e in choice.effects
+        if e.var == var_name
+    }
+    graph = _forward_graph(story)
+    if node_id not in graph:
+        return False
+    return not any(
+        target != node_id and nx.has_path(graph, target, node_id)
+        for target in granting
+        if target in graph
+    )
+
+
+def _forward_graph(story: Storybook) -> nx.DiGraph[str]:
+    """Build the choice graph over node ids, ignoring conditions."""
+    graph: nx.DiGraph[str] = nx.DiGraph()
+    graph.add_nodes_from(node.id for node in story.nodes)
+    for node in story.nodes:
+        for choice in node.choices:
+            graph.add_edge(node.id, choice.target)
+    return graph
+
+
+def _l2_11_finding(
+    story_id: str,
+    node_id: str,
+    choice_id: str,
+    cause: str | None = None,
+) -> ValidationFinding:
+    """Build an L2-11 dead-branch finding, with a cause hint when one is known.
 
     Args:
         story_id: The story id.
         node_id: The node that owns the dead choice.
         choice_id: The choice id that is never visible.
+        cause: An optional plain-language cause clause.
 
     Returns:
         ValidationFinding: The formatted L2-11 finding.
     """
+    suffix = f" ({cause})" if cause else " (condition always false)"
     return ValidationFinding(
         rule_id="L2-11",
         severity=Severity.ERROR,
@@ -255,7 +380,7 @@ def _l2_11_finding(story_id: str, node_id: str, choice_id: str) -> ValidationFin
         message=(
             f"L2-11 dead-branch: choice '{choice_id}' on node '{node_id}' "
             f"is never visible in any reachable configuration in story "
-            f"'{story_id}' (condition always false)"
+            f"'{story_id}'{suffix}"
         ),
     )
 
@@ -427,7 +552,7 @@ def _reachable_node_ids(ctx: _WalkContext) -> set[str]:
 
 def _check_dead_branches(
     ctx: _WalkContext,
-    nodes: list[Node],
+    story: Storybook,
     report: ValidationReport,
 ) -> None:
     """L2-11: flag conditional choices that are never visible in any reachable config.
@@ -437,12 +562,12 @@ def _check_dead_branches(
 
     Args:
         ctx: The walk context (story id, result, engine).
-        nodes: The full node list from the story.
+        story: The parsed story, for its nodes and variable declarations.
         report: The report to append findings to.
     """
     reachable = _reachable_node_ids(ctx)
     ever_visible = _ever_visible_choice_ids(ctx)
-    node_map = {node.id: node for node in nodes}
+    node_map = {node.id: node for node in story.nodes}
 
     for node_id in reachable:
         node = node_map.get(node_id)
@@ -452,4 +577,5 @@ def _check_dead_branches(
             if choice.condition is None:
                 continue  # unconditional choices are never dead branches
             if choice.id not in ever_visible:
-                report.add(_l2_11_finding(ctx.story_id, node_id, choice.id))
+                cause = _dead_branch_cause(story, node_id, choice.condition)
+                report.add(_l2_11_finding(ctx.story_id, node_id, choice.id, cause))

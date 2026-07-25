@@ -296,6 +296,37 @@ _MIN_COMPLETE: dict[tuple[str, str, str], int] = {
 }
 
 
+# ADR-011 section 5 reading-pace anchors, in words per minute, used for the
+# fastest-finish and whole-world clocks. Approximate standard fluency norms, not
+# project-measured. This is the single source: mutation/identity.py's
+# recompute_estimated_minutes and the PL-23 advisory both read it, so a retune of
+# ADR-011 changes one table.
+_READING_PACE_WPM: dict[str, int] = {
+    "3-5": 100,
+    "5-8": 90,
+    "8-11": 120,
+    "10-13": 150,
+    "13-16": 190,
+    "16+": 220,
+}
+
+# Pace for a band with no configured anchor: the 8-11 core-research value, which
+# is the ADR's own baseline.
+_DEFAULT_PACE_WPM = 120
+
+
+def reading_pace_wpm(age_band: str) -> int:
+    """Return the ADR-011 reading-pace anchor for a band, in words per minute.
+
+    Args:
+        age_band: The band value (for example ``"16+"``).
+
+    Returns:
+        int: The band's anchor, or the 8-11 baseline for an unknown band.
+    """
+    return _READING_PACE_WPM.get(age_band, _DEFAULT_PACE_WPM)
+
+
 def min_complete_floor(age_band: str, length: str, narrative_style: str) -> int | None:
     """Return the fastest-finish arc floor (nodes) for a story-scale cell.
 
