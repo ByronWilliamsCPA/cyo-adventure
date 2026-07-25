@@ -98,6 +98,18 @@ jobs:
           mapfile -t changed_skeletons < changed-skeletons.txt
           uv run python scripts/check_promotion_bundle.py "${changed_skeletons[@]}"
 
+      # Adding a skeleton invalidates two committed derived artifacts, and both
+      # went stale unnoticed once already: the mutation-floor baseline (which
+      # left a required check red on main) and the generated skeleton catalog
+      # plus its diagrams (which is the index an author consults to ask what is
+      # already in a cell). This is the natural home for the guards, since the
+      # workflow already triggers on paths: skeletons/**.
+      - name: Derived artifacts must be current
+        if: ${{ steps.changed.outputs.count != '0' }}
+        run: |
+          uv run python scripts/calibrate_mutation_floors.py --check
+          uv run python scripts/render_skeleton_diagrams.py --check
+
   no-auto-merge:
     name: Enforce no auto-merge on skeleton-promotion
     runs-on: ubuntu-latest

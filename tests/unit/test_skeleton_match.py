@@ -13,6 +13,7 @@ from cyo_adventure.generation import skeleton_match
 from cyo_adventure.generation.skeleton_match import (
     candidates_for_cell,
     find_skeleton_metadata,
+    is_continuation_skeleton,
     resolve_skeleton_path,
     skeleton_matches_cell,
 )
@@ -528,3 +529,35 @@ def test_select_skeleton_for_cell_similar_usage_all_saturated_still_picks() -> N
         candidates, recent_usage, random.Random(0), similar_usage=similar_usage
     )
     assert selection.slug in candidates
+
+
+# ---------------------------------------------------------------------------
+# Continuation books are not standalone candidates (AL-045)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_continuation_book_is_not_a_cell_candidate() -> None:
+    """A mid-series book must never be drawn for an ordinary themed request.
+
+    A continuation opens on state it did not earn (book 2 of the wyrmreach chain
+    declares the book-1 artifact already held and its beats name it), so serving
+    it standalone hands the reader a protagonist from a story they never saw.
+    """
+    candidates = candidates_for_cell("16+", "medium", "gamebook")
+    assert "the-vault-of-nine-iron" in candidates, "book 1 is a valid entry point"
+    assert "the-sunless-march" not in candidates, "book 2 must not be standalone"
+    assert "the-ninth-hand" not in candidates_for_cell("16+", "long", "gamebook")
+
+
+@pytest.mark.unit
+def test_is_continuation_skeleton_only_flags_book_two_and_later() -> None:
+    """book_index 1 and a series-less skeleton are both entry points."""
+    for slug, expected in (
+        ("the-vault-of-nine-iron", False),
+        ("the-sunless-march", True),
+        ("the-ninth-hand", True),
+    ):
+        metadata = find_skeleton_metadata(slug)
+        assert metadata is not None, slug
+        assert is_continuation_skeleton(metadata) is expected, slug

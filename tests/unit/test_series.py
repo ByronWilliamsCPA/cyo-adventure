@@ -1,5 +1,12 @@
 """Unit tests for the cross-book series meta-validator (SR-1..SR-7)."""
 
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
 from cyo_adventure.storybook.models import (
     AgeBand,
     Choice,
@@ -249,3 +256,71 @@ def test_episodic_young_chain_passes():
     ]
     report = validate_series(books)
     assert report.ok
+
+
+# ---------------------------------------------------------------------------
+# The real three-book chain as a fixture (AL-048)
+# ---------------------------------------------------------------------------
+#
+# Every case above builds a synthetic 2-node book, a shape no author would ever
+# write. The wyrmreach trilogy is the repo's first real state-carrying chain, and
+# validating it costs ~0.02s because the meta-validator does not walk the state
+# space, so there is no reason for SR-1..SR-7 to be proven only on toys.
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+_WYRMREACH = (
+    "the-vault-of-nine-iron.filled.json",
+    "the-sunless-march.filled.json",
+    "the-ninth-hand.filled.json",
+)
+
+
+def _load_wyrmreach() -> list[Storybook]:
+    """Return the three real filled books, skipping if the corpus is absent."""
+    books: list[Storybook] = []
+    for name in _WYRMREACH:
+        path = _REPO_ROOT / "out" / name
+        if not path.is_file():
+            pytest.skip(f"{name} not present")
+        books.append(Storybook.model_validate(json.loads(path.read_text())))
+    return books
+
+
+@pytest.mark.unit
+def test_real_three_book_chain_validates() -> None:
+    """The committed wyrmreach trilogy passes every SR rule."""
+    report = validate_series(_load_wyrmreach())
+    assert report.ok, [f.message for f in report.findings]
+
+
+@pytest.mark.unit
+def test_real_chain_with_a_missing_middle_book_fails_contiguity() -> None:
+    """SR-2 must catch a gap in a real chain, not just a synthetic one."""
+    books = _load_wyrmreach()
+    report = validate_series([books[0], books[2]])
+    assert not report.ok
+    assert any("SR-2" in f.rule_id for f in report.findings)
+
+
+@pytest.mark.unit
+def test_real_chain_with_a_blank_entry_node_fails() -> None:
+    """SR-3 must catch an unresolvable entry node on a real multi-ending book."""
+    books = _load_wyrmreach()
+    third = books[2].model_copy(deep=True)
+    assert third.metadata.series is not None
+    third.metadata.series.series_entry_node = "n_does_not_exist"
+    report = validate_series([books[0], books[1], third])
+    assert not report.ok
+    assert any("SR-3" in f.rule_id for f in report.findings)
+
+
+@pytest.mark.unit
+def test_real_chain_with_inconsistent_carry_flag_fails() -> None:
+    """SR-7 must catch a chain that disagrees with itself about carrying state."""
+    books = _load_wyrmreach()
+    first = books[0].model_copy(deep=True)
+    assert first.metadata.series is not None
+    first.metadata.series.carries_state = False
+    report = validate_series([first, books[1], books[2]])
+    assert not report.ok
+    assert any("SR-7" in f.rule_id for f in report.findings)

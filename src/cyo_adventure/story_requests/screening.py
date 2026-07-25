@@ -110,6 +110,11 @@ async def screen_request_text(
             openai_key=openai_key,
             perspective_key=perspective_key,
             client=client,
+            # One item, and intake is documented fail-open with the guardian as
+            # the human gate, so a coverage FLAG here would only restate the
+            # degraded advisory above. The gating coverage check exists for the
+            # multi-node story screen, where partial screening is the hazard.
+            report_coverage=False,
         )
     blocked = any(f.verdict is Verdict.BLOCK for f in findings)
     if blocked:

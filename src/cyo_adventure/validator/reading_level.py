@@ -47,6 +47,13 @@ if TYPE_CHECKING:
 # for Flesch-Kincaid stability (roughly one paragraph of prose).
 _MIN_WORDS_FOR_FK: int = 20
 
+# A skeleton body is a ``<<FILL role=... words=N ...>>`` directive, not prose: it
+# is a single run-on clause and therefore always scores outside any band, so
+# scoring it emits one meaningless warning per node (746 for a ceiling-scale
+# book) and trains reviewers to ignore RL-13 entirely. PL-19 already special-
+# cases the same marker; this mirrors it.
+_FILL_MARKER = "<<FILL"
+
 # A "word" is a run of letters (optionally with internal apostrophes/hyphens).
 # Numbers and standalone punctuation are not counted as words.
 _WORD_RE = re.compile(r"[A-Za-z]+(?:['\-][A-Za-z]+)*")
@@ -128,7 +135,9 @@ def check_reading_level(story: Storybook) -> ValidationReport:
     emits ERROR findings.
 
     Nodes with fewer than ``_MIN_WORDS_FOR_FK`` words in their body are skipped
-    because FK scores are unreliable on very short passages.
+    because FK scores are unreliable on very short passages. Unfilled skeleton
+    bodies (those carrying a ``<<FILL`` directive) are skipped too: the directive
+    is not prose, so scoring it produces one guaranteed warning per node.
 
     Args:
         story: The validated Storybook to check.
@@ -145,6 +154,8 @@ def check_reading_level(story: Storybook) -> ValidationReport:
 
     for node in story.nodes:
         body = node.body
+        if _FILL_MARKER in body:
+            continue
         if len(body.split()) < _MIN_WORDS_FOR_FK:
             continue
         fk_grade = _flesch_kincaid_grade(body)

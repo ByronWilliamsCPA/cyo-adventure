@@ -70,6 +70,7 @@ from __future__ import annotations
 import copy
 from typing import TYPE_CHECKING, cast
 
+import anyio
 import httpx
 from fastapi import APIRouter
 from sqlalchemy import func, select
@@ -441,7 +442,13 @@ async def edit_node(
     # edited blob is re-validated, not just the touched node, because L1/L2
     # are graph-wide checks.
     # #VERIFY: tests/unit/test_node_edit.py::test_gate_failing_edit_rejected_422.
-    gate_result = run_gate(new_blob)
+    # #CRITICAL: timing: run_gate is pure synchronous CPU, measured at 3.7s on a
+    # 746-node story. Called inline in an async handler it stalls the whole event
+    # loop for that window, blocking every other in-flight request including a
+    # child mid-read (AL-035). anyio.to_thread keeps the loop responsive.
+    # #VERIFY: the handler's existing tests still pass; the gate is pure and
+    # holds no session, so running it off-loop is safe.
+    gate_result = await anyio.to_thread.run_sync(run_gate, new_blob)
     if gate_result.blocked:
         msg = "edited passage failed the validation gate"
         raise ValidationError(

@@ -11,13 +11,15 @@ bypasses the floor (a provider-flagged category is always recorded).
 
 from __future__ import annotations
 
+import asyncio
 import math
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, cast
 
 import httpx
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Awaitable, Callable, Sequence
 
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.utils.logging import get_logger
@@ -43,6 +45,28 @@ _ADVISORY_SCORE_FLOOR = 0.01
 # to the human reviewer, who otherwise cannot distinguish a clean report from
 # one produced with the classifiers off.
 _DEGRADED_CATEGORY = "classifier_degraded"
+
+# Category slug for incomplete bright-line coverage: some nodes were never
+# screened by a configured classifier. Unlike _DEGRADED_CATEGORY this is a FLAG,
+# because "we did not look at 93% of this book" is a gating fact, not a note.
+_INCOMPLETE_COVERAGE_CATEGORY = "classifier_coverage_incomplete"
+
+# A transient 429/5xx on one node must not cost the rest of the book its
+# bright-line screening, so each node's call is retried with backoff before the
+# node is recorded as unscreened. Kept short: the caller is inside a request or
+# a job, and the circuit breaker below is what handles a genuinely down provider.
+_RETRY_BACKOFF_SECONDS: tuple[float, ...] = (0.5, 2.0)
+
+# After this many CONSECUTIVE failures a classifier is treated as down and the
+# remaining nodes are recorded as unscreened rather than retried one by one. At
+# ceiling scale (746 nodes) hammering a rate-limited provider for every node is
+# both futile and hostile; the FLAG is what makes the shortfall visible.
+_MAX_CONSECUTIVE_FAILURES = 3
+
+# Number of unscreened node ids named in the coverage finding's message. The
+# full count is always reported; the ids are a sample so the message stays
+# readable when hundreds of nodes are affected.
+_COVERAGE_SAMPLE_SIZE = 10
 
 
 # Not an error state, a control-flow signal: N818 (error-suffix naming) does
@@ -74,6 +98,43 @@ def _degraded_finding(source: Source, reason: str) -> Finding:
     )
 
 
+def _incomplete_coverage_finding(
+    source: Source, unscreened: Sequence[str], total: int
+) -> Finding:
+    """Build the whole-story FLAG finding for incomplete bright-line coverage.
+
+    A ``FLAG`` rather than an ``ADVISORY`` on purpose: an advisory does not gate,
+    so a report produced with most of the book unscreened would reach
+    ``in_review`` looking exactly like a fully-screened clean one. The categories
+    Stage 0 exists to catch (sexual/minors, self-harm instructions,
+    illicit/violent) are precisely the ones that must not be sampled.
+
+    Args:
+        source: The classifier whose coverage fell short.
+        unscreened: Node ids that classifier never screened.
+        total: Total nodes that should have been screened.
+
+    Returns:
+        Finding: A whole-story soft-gating finding naming the shortfall.
+    """
+    sample = ", ".join(unscreened[:_COVERAGE_SAMPLE_SIZE])
+    if len(unscreened) > _COVERAGE_SAMPLE_SIZE:
+        sample += f", ... (+{len(unscreened) - _COVERAGE_SAMPLE_SIZE} more)"
+    return Finding(
+        stage=0,
+        source=source,
+        category=_INCOMPLETE_COVERAGE_CATEGORY,
+        node_id=None,
+        verdict=Verdict.FLAG,
+        score=None,
+        message=(
+            f"{source.value} screened {total - len(unscreened)} of {total} nodes; "
+            f"{len(unscreened)} node(s) were never bright-line screened and the "
+            f"report cannot be read as clean for them: {sample}"
+        ),
+    )
+
+
 # Bright-line OpenAI categories: any True flag is an immediate hard block.
 _OPENAI_BRIGHTLINE: frozenset[str] = frozenset(
     {
@@ -88,18 +149,90 @@ _OPENAI_BRIGHTLINE: frozenset[str] = frozenset(
 )
 
 
+@dataclass
+class _CoverageState:
+    """Per-classifier screening outcome across the whole story.
+
+    Attributes:
+        reason: The first failure reason seen, or ``None`` if the classifier
+            never failed. Drives the existing degraded advisory.
+        unscreened: Node ids this classifier never returned a verdict for,
+            whether because every retry failed or because the circuit breaker
+            had already opened.
+        consecutive_failures: Failure run length, reset by any success. The
+            circuit opens at ``_MAX_CONSECUTIVE_FAILURES``.
+    """
+
+    reason: str | None = None
+    unscreened: list[str] = field(default_factory=list)
+    consecutive_failures: int = 0
+
+    @property
+    def circuit_open(self) -> bool:
+        """Whether this classifier is being treated as down."""
+        return self.consecutive_failures >= _MAX_CONSECUTIVE_FAILURES
+
+
+async def _screen_one(
+    state: _CoverageState,
+    node_id: str,
+    call: Callable[[], Awaitable[list[Finding]]],
+) -> list[Finding]:
+    """Screen one node with one classifier, retrying a transient failure.
+
+    A node that cannot be screened is recorded in ``state.unscreened`` and the
+    loop moves on, so one bad call costs one node's coverage instead of the whole
+    remainder of the book. Once the circuit is open the call is skipped entirely
+    and the node is still recorded, which is what keeps the reported shortfall
+    honest for a provider that is genuinely down.
+
+    Args:
+        state: The classifier's coverage state, mutated in place.
+        node_id: The node being screened.
+        call: Zero-argument coroutine factory performing the classifier call.
+
+    Returns:
+        list[Finding]: Findings for this node, empty when it could not be screened.
+    """
+    if state.circuit_open:
+        state.unscreened.append(node_id)
+        return []
+    # One initial attempt plus one per backoff delay.
+    for attempt in range(len(_RETRY_BACKOFF_SECONDS) + 1):
+        try:
+            findings = await call()
+        except ClassifierUnavailable as exc:
+            state.reason = state.reason or exc.reason
+            if attempt < len(_RETRY_BACKOFF_SECONDS):
+                await asyncio.sleep(_RETRY_BACKOFF_SECONDS[attempt])
+                continue
+            state.consecutive_failures += 1
+            state.unscreened.append(node_id)
+            return []
+        else:
+            state.consecutive_failures = 0
+            return findings
+    # Unreachable: the loop either returns findings or records the node.
+    return []
+
+
 async def _screen_all_nodes(
     nodes: Sequence[tuple[str, str]],
     *,
     openai_key: str | None,
     perspective_key: str | None,
     client: httpx.AsyncClient,
-) -> tuple[list[Finding], str | None, str | None]:
+) -> tuple[list[Finding], _CoverageState, _CoverageState]:
     """Run OpenAI and Perspective over every node, one call per classifier.
 
     Extracted from :func:`run_classifiers` (S3776): isolates the per-node
     double try/except loop, the function's single biggest nesting
     contributor, behind one call.
+
+    A per-node failure no longer disables its classifier for the rest of the
+    book: each call is retried with backoff, an unscreenable node is recorded in
+    the returned coverage state, and only a run of consecutive failures opens the
+    circuit. The caller turns any shortfall into a gating finding.
 
     Args:
         nodes: ``(node_id, prose)`` pairs to screen.
@@ -108,27 +241,35 @@ async def _screen_all_nodes(
         client: An httpx async client (injected for testability).
 
     Returns:
-        tuple[list[Finding], str | None, str | None]: Findings collected
-            before either classifier failed, plus the OpenAI and Perspective
-            failure reasons (``None`` when that classifier never failed).
+        tuple[list[Finding], _CoverageState, _CoverageState]: All findings
+            produced, plus the OpenAI and Perspective coverage states (failure
+            reason, if any, and the node ids each classifier never screened).
     """
     findings: list[Finding] = []
-    openai_reason: str | None = None
-    perspective_reason: str | None = None
+    openai = _CoverageState()
+    perspective = _CoverageState()
     for node_id, prose in nodes:
-        if openai_key and openai_reason is None:
-            try:
-                findings.extend(await _run_openai(node_id, prose, openai_key, client))
-            except ClassifierUnavailable as exc:
-                openai_reason = exc.reason
-        if perspective_key and perspective_reason is None:
-            try:
-                findings.extend(
-                    await _run_perspective(node_id, prose, perspective_key, client)
+        if openai_key:
+            findings.extend(
+                await _screen_one(
+                    openai,
+                    node_id,
+                    lambda nid=node_id, text=prose: _run_openai(
+                        nid, text, openai_key, client
+                    ),
                 )
-            except ClassifierUnavailable as exc:
-                perspective_reason = exc.reason
-    return findings, openai_reason, perspective_reason
+            )
+        if perspective_key:
+            findings.extend(
+                await _screen_one(
+                    perspective,
+                    node_id,
+                    lambda nid=node_id, text=prose: _run_perspective(
+                        nid, text, perspective_key, client
+                    ),
+                )
+            )
+    return findings, openai, perspective
 
 
 async def run_classifiers(  # noqa: PLR0913
@@ -138,6 +279,7 @@ async def run_classifiers(  # noqa: PLR0913
     perspective_key: str | None,
     client: httpx.AsyncClient,
     require_classifiers: bool = False,
+    report_coverage: bool = True,
 ) -> list[Finding]:
     """Run available classifiers over each node's prose and collect findings.
 
@@ -150,12 +292,21 @@ async def run_classifiers(  # noqa: PLR0913
             key) also produces a degraded advisory. Deployed tiers pass True so
             a missing key is visible to the reviewer; local/dev leave it False,
             where an absent key is an intentional skip.
+        report_coverage: When True (the default, and what every child-facing
+            story screen uses), an unscreened node produces a gating
+            ``classifier_coverage_incomplete`` FLAG. The single-item intake
+            screen passes False: with one item the finding only restates the
+            degraded advisory, and request intake is documented fail-open with
+            the guardian as the human gate.
 
     Returns:
         A flat list of findings across all nodes and classifiers. A classifier
-        that fails on any node (HTTP/parse error) contributes exactly one
-        ``classifier_degraded`` advisory (whole-story) instead of failing
-        silently, and is not retried for the remaining nodes.
+        that fails contributes exactly one ``classifier_degraded`` advisory
+        (whole-story) instead of failing silently, and additionally a
+        ``classifier_coverage_incomplete`` **FLAG** naming every node it never
+        screened, so a partially-screened report cannot be mistaken for a clean
+        one. Individual failures are retried with backoff, and only a run of
+        consecutive failures stops the classifier for the remaining nodes.
     """
     # #CRITICAL: external-resource: classifier APIs are network calls; a failure
     # of one classifier must not crash the pipeline (the LLM stages still gate).
@@ -166,26 +317,42 @@ async def run_classifiers(  # noqa: PLR0913
     # #VERIFY: test_openai_http_error_yields_degraded_advisory,
     # test_perspective_http_error_yields_degraded_advisory,
     # test_require_classifiers_flags_unset_keys.
-    findings, openai_reason, perspective_reason = await _screen_all_nodes(
+    # #CRITICAL: security: incomplete bright-line coverage must GATE, not merely
+    # annotate. Before this, the first failure disabled a classifier for every
+    # remaining node and the only trace was one ADVISORY, so a report with 93% of
+    # a 746-node book unscreened was indistinguishable from a clean one and both
+    # submit() and approve() passed it.
+    # #VERIFY: test_partial_failure_flags_incomplete_coverage and
+    # test_unscreened_nodes_are_named_in_the_coverage_finding.
+    findings, openai, perspective = await _screen_all_nodes(
         nodes,
         openai_key=openai_key,
         perspective_key=perspective_key,
         client=client,
     )
 
-    if openai_reason is None and require_classifiers and openai_key is None:
-        openai_reason = "not configured"
-    if perspective_reason is None and require_classifiers and perspective_key is None:
-        perspective_reason = "not configured"
+    if openai.reason is None and require_classifiers and openai_key is None:
+        openai.reason = "not configured"
+    if perspective.reason is None and require_classifiers and perspective_key is None:
+        perspective.reason = "not configured"
 
-    if openai_reason is not None:
-        _logger.warning("classifier_degraded", source="openai", reason=openai_reason)
-        findings.append(_degraded_finding(Source.OPENAI, openai_reason))
-    if perspective_reason is not None:
-        _logger.warning(
-            "classifier_degraded", source="perspective", reason=perspective_reason
-        )
-        findings.append(_degraded_finding(Source.PERSPECTIVE, perspective_reason))
+    total = len(nodes)
+    for source, state in ((Source.OPENAI, openai), (Source.PERSPECTIVE, perspective)):
+        if state.reason is not None:
+            _logger.warning(
+                "classifier_degraded", source=source.value, reason=state.reason
+            )
+            findings.append(_degraded_finding(source, state.reason))
+        if state.unscreened and report_coverage:
+            _logger.error(
+                "classifier_coverage_incomplete",
+                source=source.value,
+                unscreened=len(state.unscreened),
+                total=total,
+            )
+            findings.append(
+                _incomplete_coverage_finding(source, state.unscreened, total)
+            )
     return findings
 
 

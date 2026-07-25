@@ -32,6 +32,7 @@ import logging
 import uuid
 from typing import TYPE_CHECKING, Literal, cast
 
+import anyio
 from fastapi import APIRouter, BackgroundTasks
 from rq.exceptions import DuplicateJobError
 from sqlalchemy import func, select
@@ -629,7 +630,12 @@ async def validate_storybook_version(
         msg = f"version {version} of storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
 
-    result = run_gate(sv.blob)
+    # #CRITICAL: timing: this route is guardian-reachable and run_gate is a
+    # multi-second synchronous CPU burn on a large story, so calling it inline
+    # let any guardian stall the entire API on demand (AL-035).
+    # #VERIFY: existing validate_version tests; behaviour is unchanged apart
+    # from yielding the event loop.
+    result = await anyio.to_thread.run_sync(run_gate, sv.blob)
     return ValidateResponse(
         blocked=result.blocked,
         report=result.report.to_dict(),
