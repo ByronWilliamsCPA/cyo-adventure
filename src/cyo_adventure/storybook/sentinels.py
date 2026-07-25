@@ -34,6 +34,7 @@ machinery, the integrity checker, the frontend resolver) must import
 from __future__ import annotations
 
 import re
+from typing import NamedTuple
 
 # The slot id grammar, matching the existing `[A-Z][A-Z0-9_]*` shape used by
 # `cyo_adventure.storybook.theme_contract.SLOT_ID_PATTERN`. Quoted here
@@ -116,39 +117,76 @@ def find_sentinels(text: str) -> list[tuple[str, str]]:
     return [(match.group(1), match.group(2)) for match in SENTINEL_RE.finditer(text)]
 
 
-def _closer_end(text: str, start: int) -> int | None:
-    """Resolve the end of a candidate attempt's closer, from `start` onward.
+class _CloserScan(NamedTuple):
+    """Result of scanning for a candidate attempt's closer.
 
-    The search is bounded by the next ``{~`` opener (if any), so an
-    unterminated attempt never swallows a later, independent one.
+    Attributes:
+        end: The exclusive end index of the resolved span. When
+            ``terminated`` is ``False``, this is the scan boundary (the next
+            ``{~`` opener, or end of text), not a genuine closer.
+        terminated: ``True`` if the scan found a genuine closer (``~}`` or a
+            bare ``}``) before the boundary; ``False`` if the opener is
+            unterminated (no closer exists before the boundary).
+    """
 
-    A well-formed ``~}`` terminator is preferred wherever it is found in
-    range, even when an ordinary brace pair (not itself an ``{~``/``~}``
-    marker) appears earlier in that range: that embedded brace is tolerated
-    as part of a forged value, not treated as ending the span (this is what
-    closes the brace-embedded-forgery blind spot in the previous, non-nested
-    brace-scan design). Only when no ``~}`` exists in range does a bare
-    ``}`` serve as the closer instead, marking a missing-closing-tilde near
-    miss (e.g. ``{~HERO:Explorer}``).
+    end: int
+    terminated: bool
+
+
+def _closer_end(text: str, start: int) -> _CloserScan:
+    """Resolve a candidate attempt's closer via a left-to-right depth scan.
+
+    The scan is bounded by the next ``{~`` opener (if any) or the end of
+    text, so an unterminated attempt never swallows a later, independent
+    one; scanning resumes at that boundary rather than at ``start + 1``.
+
+    Scanning character by character from `start`:
+
+    - ``~}`` closes the span immediately (checked first, since ``~}``
+      contains ``}``).
+    - A bare ``{`` increments an embedded-brace depth counter and is
+      otherwise skipped, tolerating a forged value that itself embeds a
+      literal brace (e.g. ``{~HERO:El{evated}~}``) as part of the span
+      rather than ending the span at the inner ``{`` (this is what closes
+      the brace-embedded-forgery blind spot in the previous, non-nested
+      brace-scan design).
+    - A bare ``}`` at depth 0 closes the span as a missing-closing-tilde near
+      miss (e.g. ``{~HERO:Explorer}``); at depth > 0 it balances an embedded
+      brace pair and is skipped instead.
+    - Any other character is skipped.
+
+    If the scan reaches the boundary with no closer found, the opener is
+    unterminated: the caller must report the whole ``[start - 2, boundary)``
+    span (the ``{~`` opener through the boundary) as malformed, since no
+    well-formed sentinel can be unterminated.
 
     Args:
         text: The full text being scanned.
         start: The index immediately after the opening ``{~``.
 
     Returns:
-        The exclusive end index of the closer, or ``None`` if neither a
-        ``~}`` nor a bare ``}`` exists before the next opener or the end of
-        text (the ``{`` is then ordinary prose, not an attempt).
+        _CloserScan: The resolved end index and whether a genuine closer was
+            found before the boundary.
     """
     next_opener = text.find("{~", start)
     boundary = next_opener if next_opener != -1 else len(text)
-    tilde_close = text.find("~}", start, boundary)
-    if tilde_close != -1:
-        return tilde_close + 2
-    bare_close = text.find("}", start, boundary)
-    if bare_close != -1:
-        return bare_close + 1
-    return None
+    depth = 0
+    position = start
+    while position < boundary:
+        if text[position : position + 2] == "~}":
+            return _CloserScan(end=position + 2, terminated=True)
+        if text[position] == "{":
+            depth += 1
+            position += 1
+        elif text[position] == "}":
+            if depth > 0:
+                depth -= 1
+                position += 1
+            else:
+                return _CloserScan(end=position + 1, terminated=True)
+        else:
+            position += 1
+    return _CloserScan(end=boundary, terminated=False)
 
 
 def find_malformed_sentinels(text: str) -> list[str]:
@@ -169,25 +207,37 @@ def find_malformed_sentinels(text: str) -> list[str]:
     Scanning left to right:
 
     - An ``{~`` opens a candidate attempt. Its closer is resolved by
-      `_closer_end`: the next ``~}`` before the next opener or end of text,
-      tolerating any embedded brace pair along the way (so a forged value
+      `_closer_end`'s left-to-right, depth-tracking scan: a genuine closer is
+      either ``~}``, or (when no ``~}`` is found first) a bare ``}`` at
+      embedded-brace depth 0, marking a missing-closing-tilde near miss
+      (e.g. ``{~HERO:Explorer}``). An embedded, balanced brace pair is
+      tolerated as part of a forged value along the way (so a forged value
       that itself embeds a literal brace, e.g. ``{~HERO:El{evated}~}``, is
       still captured as one whole span, rather than being cut short at the
-      inner ``{``); or, when no ``~}`` exists in range, the nearest bare
-      ``}`` (a missing-closing-tilde near miss, e.g. ``{~HERO:Explorer}``).
-      When neither closer exists, the ``{`` is ordinary prose and scanning
-      resumes at the next character.
+      inner ``{``). Because the scan is strictly left to right, a nearer
+      bare ``}`` always closes the span before a farther ``~}`` is ever
+      considered, so a missing-closing-tilde attempt followed by an
+      unrelated stray ``~}`` does not swallow that unrelated text into an
+      over-broad span.
+
+      When the scan reaches the next ``{~`` opener (or end of text) with no
+      closer found, the opener is unterminated: the whole span from the
+      opener to that boundary is reported unconditionally (it can never be
+      a well-formed sentinel), and scanning resumes at the boundary, so a
+      later, independent, well-formed attempt starting there is still
+      evaluated on its own rather than being swallowed by the truncated one.
     - A ``~}`` with no ``{~`` opener already claiming it is paired with the
       nearest preceding, not-yet-claimed ``{`` (a missing-opening-tilde near
       miss, e.g. ``{HERO:Explorer~}``). When no such ``{`` exists, the ``~``
       is ordinary prose.
 
-    Every resolved candidate span is then tested against
-    ``SENTINEL_RE.fullmatch``; it is reported only when that full match
-    fails. This also covers whitespace inside the braces
+    Every candidate span resolved via a genuine closer is then tested
+    against ``SENTINEL_RE.fullmatch``; it is reported only when that full
+    match fails. This also covers whitespace inside the braces
     (``{~ HERO:Explorer~}``, ``{~HERO : Explorer~}``), a lowercase or
     otherwise malformed slot id (``{~hero:Explorer~}``), and a value
-    containing a forbidden character or empty (``{~HERO:~}``).
+    containing a forbidden character or empty (``{~HERO:~}``). An
+    unterminated span is always reported, with no fullmatch check needed.
 
     Args:
         text: Text that may contain zero or more sentinel-shaped substrings.
@@ -202,14 +252,11 @@ def find_malformed_sentinels(text: str) -> list[str]:
     length = len(text)
     while index < length:
         if text.startswith("{~", index):
-            span_end = _closer_end(text, index + 2)
-            if span_end is None:
-                index += 1
-                continue
-            span = text[index:span_end]
-            if not SENTINEL_RE.fullmatch(span):
+            scan = _closer_end(text, index + 2)
+            span = text[index : scan.end]
+            if not scan.terminated or not SENTINEL_RE.fullmatch(span):
                 hits.append(span)
-            index = span_end
+            index = scan.end
             floor = index
         elif text.startswith("~}", index):
             open_index = text.rfind("{", floor, index)

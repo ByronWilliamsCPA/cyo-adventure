@@ -421,6 +421,28 @@ class TestCheckSentinelIntegrityAtRest:
         assert malformed[0].token == forged
         assert malformed[0].node_id == "<global>"
 
+    def test_unterminated_opener_before_declared_slot_reported_as_malformed(
+        self,
+    ) -> None:
+        """A truncated `{~` opener is caught even when a later slot is clean.
+
+        Regression test for round-2 Defect 1 (critical false negative): for
+        this at-rest variant, which has no pre-fill reference to fall back
+        on, a silently-dropped unterminated opener previously meant this
+        corrupted blob returned ``ok=True`` even though PRIZE is a declared
+        slot: a missed forgery in a fail-closed gate.
+        """
+        text = (
+            "The hero {~HERO:starts an adventure that never quite finishes "
+            f"and then {_PRIZE} appears."
+        )
+        blob = _blob([_node("n_a", text, ending_title="Fixed")])
+        result = check_sentinel_integrity_at_rest(blob, frozenset({"HERO", "PRIZE"}))
+        assert result.ok is False
+        malformed = [v for v in result.violations if v.kind == "malformed"]
+        assert len(malformed) == 1
+        assert "{~HERO:starts" in malformed[0].token
+
     def test_malformed_near_miss_in_choice_label_uses_choice_label_location(
         self,
     ) -> None:

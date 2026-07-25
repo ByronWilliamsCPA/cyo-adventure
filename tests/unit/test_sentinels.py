@@ -350,3 +350,55 @@ class TestFindMalformedSentinels:
         """
         embedded = f"The hero found {text} on the path."
         assert find_malformed_sentinels(embedded) == [text], label
+
+    def test_unterminated_opener_reports_truncated_fragment_not_later_sentinel(
+        self,
+    ) -> None:
+        """An unterminated `{~` opener is reported, not silently dropped.
+
+        Regression test for round-2 Defect 1 (critical false negative): the
+        previous `_closer_end` returned `None` when neither `~}` nor a bare
+        `}` appeared before the next `{~` opener, and the caller then treated
+        the opener as ordinary prose, producing zero violations even though a
+        truncated, never-closed sentinel-shaped opener was present. The fix
+        must report the truncated fragment up to the next independent opener,
+        and must still recognize that next opener as its own, separate, clean
+        attempt.
+        """
+        text = (
+            "The hero {~HERO:starts an adventure that never quite finishes "
+            f"and then {wrap('PRIZE', 'Gem')} appears."
+        )
+        opener_index = text.index("{~HERO")
+        prize_opener_index = text.index("{~PRIZE")
+        expected_fragment = text[opener_index:prize_opener_index]
+        hits = find_malformed_sentinels(text)
+        assert hits == [expected_fragment]
+        assert wrap("PRIZE", "Gem") not in hits
+
+    def test_unterminated_opener_at_end_of_text_reports_to_end(self) -> None:
+        """A truncated opener with no closer anywhere in the text is reported.
+
+        Regression test for round-2 Defect 1: with no later `{~` opener and
+        no closer at all, the unterminated span must run to the end of text.
+        """
+        text = "The hero found {~HERO:blah"
+        opener_index = text.index("{~HERO")
+        assert find_malformed_sentinels(text) == [text[opener_index:]]
+
+    def test_missing_closing_tilde_then_stray_closer_reports_only_near_span(
+        self,
+    ) -> None:
+        """A nearer bare `}` closer is preferred over a farther stray `~}`.
+
+        Regression test for round-2 Defect 2 (over-broad span): the previous
+        `_closer_end` preferred the first `~}` found anywhere in range over a
+        nearer bare `}`, so a missing-closing-tilde near miss followed by an
+        unrelated stray `~}` produced one over-broad span swallowing
+        unrelated text. The fix must resolve the closer via a strict
+        left-to-right scan, so the nearer bare `}` closes the span first and
+        the trailing stray `~}` is left unpaired (no preceding unclaimed `{`
+        remains once the floor advances past it).
+        """
+        text = "{~HERO:Explorer} some unrelated ~} marker."
+        assert find_malformed_sentinels(text) == ["{~HERO:Explorer}"]
