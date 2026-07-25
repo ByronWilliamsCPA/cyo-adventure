@@ -31,7 +31,8 @@ largest cell in the matrix, at 746 of its 750 permitted nodes. All three are Tie
 | Words | 16,995 (mean 55.7/node) | 18,138 (mean 59.5/node) | **42,085** (mean 56.4/node) |
 | Reachable configurations | 30,416 (cap 100,000) | 56,739 | 36,781 |
 | Variables | vigor, renown, iron_key, knows_compact, door_state | + second_iron, deep_charts, oath_sworn | vigor, renown, iron_key, second_iron, knows_compact, crown_iron, wyrm_pact, door_state |
-| Estimated read | 40 minutes | 40 | 90 |
+| `estimated_minutes` (fastest finish) | 8 | 8 | 14 |
+| Whole-world clock (derived) | 77 min | 82 min | 3.2 hr |
 | Gate result | **0 findings** | **0 findings** | **1 finding**: the expected L2-13 scale advisory |
 
 Total authored content across the chain: **1,356 passages, 77,218 words** of prose, plus 1,356 skeleton
@@ -161,13 +162,18 @@ signature". Existing `main` commits show the same verification failure locally b
 `gpg.ssh.allowedSignersFile` is unset. Signing has to happen where a real key is available; the commits
 here will need re-signing (or a squash-and-sign) if the branch protection requires it.
 
-### N5 (import path): a series book still cannot be imported with its linkage in one step
+### N5 (import path): the series-linked import exists; it was the untested leg here
 
-Confirming F1 of the 13-16 stress test from the other side: `import_filled_story` has no `--series-id`
-option, so importing these three books through `generation.import_cli` would persist them as standalone
-stories and require `assign_book_index` + `embed_series_block` to be run separately. No database was
-available in this environment, so the import and approve-and-publish legs were not exercised here; the
-offline gate, the chain validator and the player engine were.
+An earlier revision of this note claimed `--series-id` was missing, citing F1 of the 13-16 stress
+test. That is out of date: `generation/import_cli.py` accepts `--series-id`, which assigns the next
+`book_index` and writes the embedded Series block via `generation/series_link.py`
+(`link_series_position`, `assign_book_index`, `embed_series_block`). F1 has been closed.
+
+What remains true is narrower: no database was available in this environment, so the import and the
+approve-and-publish legs were **not exercised** for these three books. The offline gate, the chain
+validator and the player engine were. Importing the chain in order with `--series-id` is the first
+thing to run once a database is available, since `assign_book_index` allocating the next index means
+import order determines `book_index`, and the specs already declare 1, 2 and 3.
 
 ### N6 (scale): L2-13 is the expected output past 460 nodes, and it is the right design
 
@@ -257,6 +263,22 @@ uv run python scripts/check_skeleton.py skeletons/16+/the-ninth-hand.json \
 uv run python scripts/build_series_book.py --series out/the-vault-of-nine-iron.filled.json \
     out/the-sunless-march.filled.json out/the-ninth-hand.filled.json
 ```
+
+### N10 (metadata): `estimated_minutes` is the fastest-finish clock, and nothing checks it
+
+All three books originally declared `estimated_minutes` as engagement time (40 / 40 / 90). ADR-011
+section 4 defines the field as the **fastest-finish** clock, which
+`mutation/identity.py::recompute_estimated_minutes` already computes exactly (shortest satisfying
+path words / band pace anchor). The correct values are **8 / 8 / 14**, and the specs now declare
+them. Nothing in the gate compares the declared value against the derivation, so on any
+hand-authored or imported book the field is simply whatever the author typed.
+
+Related: authoring to PL-19's advisory *floor* (55 words/node) rather than the cell *target* (80)
+is what pulls the fastest-finish clock down, and it puts books 1 and 2 below their cell's intended
+whole-world range (77 and 82 minutes against ~110-175). Both points, and the question of what the
+library card should actually show for a 14-minute-to-finish, 3.2-hour-to-explore gamebook, are
+worked through in
+[story-quality-lessons-2026-07.md](./story-quality-lessons-2026-07.md) findings B and D.
 
 ## 6. Adding book 4
 
