@@ -15,7 +15,7 @@ source: "Fresh-look capability review session, 2026-07-16"
 
 # Capability Register
 
-> **Status**: Active | **Version**: 1.7 | **Created**: 2026-07-16 | **Updated**: 2026-07-20
+> **Status**: Active | **Version**: 1.8 | **Created**: 2026-07-16 | **Updated**: 2026-07-25
 > (v1.4: note corrections and ruling queue from the full traceability review, see
 > [traceability-review-2026-07-16.md](./traceability-review-2026-07-16.md);
 > v1.5: owner rulings applied: K18 and A16 minted, back button ratified, ADR-007
@@ -26,7 +26,11 @@ source: "Fresh-look capability review session, 2026-07-16"
 > update below was never propagated into the per-row Docs column: K6, K15, G9 flipped
 > ❌->✅, K12/G10/S9 flipped ❌->🟡 (each shipped in PR #270 per its own banner note,
 > just not synced into the table), with file-level evidence added to each row's note;
-> see the 2026-07-20 plan-audit summary in roadmap.md for the full cross-doc reconciliation)
+> see the 2026-07-20 plan-audit summary in roadmap.md for the full cross-doc reconciliation;
+> v1.8 (2026-07-25): **G18** and **K20** minted for guardian opt-in story personalization
+> ([ADR-023](./adr/adr-023-story-personalization-slots.md), status Proposed), with scope notes
+> added to G4, G17, K19, S10, S11, and S12; see the ruling entry under "Unregistered scope" for
+> why two new IDs rather than cross-references alone)
 
 > **Delivery update (2026-07-17, M4b-d execution on branch
 > claude/app-capabilities-review-wm6gt3)**: the following capabilities moved to DELIVERED
@@ -130,7 +134,8 @@ initiate (K11 | G4 | A10)
 | K16 | Pick "me" from a picker: name and avatar, no password or email; sibling shelves and progress never collide | ✅ | Profile picker, per-profile PIN, ADR-014 device grants, IDOR suite |
 | K17 | Give and receive structured book recommendations within the family and across guardian-connected families (cousins); a recommendation is a book pointer plus rating, never a message | ✅ | ADR-016 records the policy; PR #267 shipped the connection substrate, and PR #270 (2026-07-17) shipped the kid-facing recommendation chips ("made for you by / cousin X loved this") over `/v1/recommendations`, gated by G17's enforced consent guard; K18 ratings are the payload substrate |
 | K18 | Rate a finished book (1-5 stars): the enjoyment signal that feeds S12 aggregate scoring and K17 recommendation payloads | ✅ | RULED 2026-07-16: owner's variant of thumbs up/down for aggregate ratings; shipped (kid widget, `Rating` table, `api/ratings.py`); debt item U6 (cannot clear a rating) folds here; distinct from K15, which remains the safety-flag signal |
-| K19 | Request interpretation and expectation-setting: when a child submits a free-form story idea, the app reflects it back in kid terms before generation, what it understood and will build into the story versus what it set aside and why (outside the age band, not safe, or not part of this kind of story), so the child knows what to expect from their wish | ✅ | DELIVERED 2026-07-20 (WS-7 D1-D8): the interpretation core (`story_requests/interpretation.py`), the persisted `story_request.interpretation` column, the submission-time general layer, the contract-grounded refined layer (interpret-and-bind + worker wiring), the CANNOT_CARRY rejection surface, and the D8 API contract (`RequestInterpretationView` on the story-request view) are built, tested, and merged. Added 2026-07-18 (owner directive). Design record: [story-flexibility-plan.md](./story-flexibility-plan.md) WS-7 and [ws7-request-interpretation-design.md](./ws7-request-interpretation-design.md). Gated by K13 (never echo unsafe input back); complements K11 (express a request) and K12 (kid-friendly states). The guardian-console view is the G-side companion surface |
+| K19 | Request interpretation and expectation-setting: when a child submits a free-form story idea, the app reflects it back in kid terms before generation, what it understood and will build into the story versus what it set aside and why (outside the age band, not safe, or not part of this kind of story), so the child knows what to expect from their wish | ✅ | DELIVERED 2026-07-20 (WS-7 D1-D8): the interpretation core (`story_requests/interpretation.py`), the persisted `story_request.interpretation` column, the submission-time general layer, the contract-grounded refined layer (interpret-and-bind + worker wiring), the CANNOT_CARRY rejection surface, and the D8 API contract (`RequestInterpretationView` on the story-request view) are built, tested, and merged. Added 2026-07-18 (owner directive). Design record: [story-flexibility-plan.md](./story-flexibility-plan.md) WS-7 and [ws7-request-interpretation-design.md](./ws7-request-interpretation-design.md). Gated by K13 (never echo unsafe input back); complements K11 (express a request) and K12 (kid-friendly states). The guardian-console view is the G-side companion surface. **Copy dependency added 2026-07-25**: this capability's kid-facing Route A line ("Heroes in our stories always have made-up names") becomes false for a family that enables **G18**, so ADR-023 makes rewording it a precondition on that feature's flag, not a follow-up; the wording also has to stay consistent with PR #415's A11 hero-name copy |
+| K20 | Read a story that uses my own details: my name, and a small closed set of other things my grown-up has turned on (a pet, a brother or sister, what I call my grandma), appearing in the story itself; plus my own switch to turn that off and back on for my books | ❌ | Proposed 2026-07-25 in [ADR-023](./adr/adr-023-story-personalization-slots.md) (status Proposed, not yet Accepted). The kid-facing half of G18. Distinct from K16 (picking "me" from a picker is identity *in the app*; this is identity *in the story*) and from K11/K19 (what a child may *ask for* is unchanged: Route A's self-naming block stays fully in force, and this capability is reached only through a guardian setting, never by asking). The child's switch narrows within the guardian's envelope and can never widen it. **Not offered at the 3-5 band**: a control a pre-reader cannot exercise is not a safeguard, so for the youngest band this is guardian-controlled with no child-side surface (ADR-023 section 9) |
 
 ## G: Guardian capabilities
 
@@ -139,7 +144,7 @@ initiate (K11 | G4 | A10)
 | G1 | One account, multiple child profiles; each profile's age band and reading level actually changes what the child sees | ✅ | `child_profile` caps enforced in library filtering |
 | G2 | Per-child content controls: allowed and banned themes, content flags, family-specific exclusions (phobias, no-magic, no-weapons) | ✅ | Schema-deep only: `allowed_content_flags` and `content_nogo` exist in the data model, but the intake UI hardcodes empty lists and the profile form has no theme controls. RULED 2026-07-16: build confirmed, scheduling open |
 | G3 | Per-child permissions and limits: whether the child may initiate story requests (including pre-authorized auto-allow), screen-time norms if any | 🟡 | Pre-authorization envelope shipped 2026-07-17 in PR #270 (`request_auto_approve`, `monthly_request_envelope` on `child_profile`; form UI in `ProfileFormDialog.tsx`/`ProfilesPage.tsx`); screen-time norms remain unspecced and out of scope |
-| G4 | Initiate story requests themselves, including personalized stories ("one about our camping trip for Maya") | ✅ | Concept-brief intake; PII rules keep real names out of prompts |
+| G4 | Initiate story requests themselves, including personalized stories ("one about our camping trip for Maya") | ✅ | Concept-brief intake; PII rules keep real names out of prompts. Note the tension this row's own example carries: it names a real child, while the mechanism deliberately cannot. **G18** (proposed 2026-07-25, ADR-023) resolves it at a different layer, by substituting at render time on the family's own devices rather than at generation time, so G4's guarantee here is unchanged |
 | G5 | Fast review of a generated story without reading every path: summary, themes, flagged passages, branch structure | ✅ | Structure summaries shipped 2026-07-17 in PR #270 (per its delivery banner: "G5 structure summaries"); approval itself is on the admin surface (A6) |
 | G6 | Edit or reject a generated story (prose tweaks, veto) with re-review on edit | 🟡 | Shipped 2026-07-17 in PR #270: `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}` (`src/cyo_adventure/api/node_edit.py`) re-runs the validation gate and moderation on edit, `needs_revision` exists; admin-side editor is built, a dedicated guardian-facing review/edit surface still awaits |
 | G7 | Cost gate: a story request spends generation budget only with guardian consent; per-child auto-allow is a guardian setting | ✅ | Consent step shipped (guardian request approval precedes any concept/GenerationJob, WS-B); budget/credit debiting completed 2026-07-17 in PR #270 (per its delivery banner: "G7 complete: consent debits quota on ALL spend paths incl. the legacy intake gate"); pre-auth envelopes are G3 |
@@ -152,7 +157,8 @@ initiate (K11 | G4 | A10)
 | G14 | Standard adult auth; multi-guardian households (two parents, a grandparent) | 🟡 | Supabase OIDC solid; multi-guardian implied by the data model, never specced |
 | G15 | Device management: authorize and revoke devices, see which books are downloaded where, storage use | 🟡 | ADR-014 grants list/revoke ✅; download/storage visibility ❌ |
 | G16 | Browse the curated catalog and assign books to their own children | ✅ | WS-E catalog visibility + assignment gate |
-| G17 | Approve, decline, and revoke family connections for their own family, in each direction (share out and receive in); connections activate nothing without this consent | ✅ | ADR-016 requires dual-guardian consent; shipped 2026-07-17 in PR #270: paired consent columns (`db/models.py` `FamilyConnection`), `POST`/`DELETE /family-connections/{id}/consent`, and an enforced guard at the read path (`api/recommendations.py::_is_dual_consented()` requires both `consented_by_viewer_user_id` and `consented_by_sharer_user_id` before a connection is treated as active), superseding the prior holds-by-omission state |
+| G17 | Approve, decline, and revoke family connections for their own family, in each direction (share out and receive in); connections activate nothing without this consent | ✅ | ADR-016 requires dual-guardian consent; shipped 2026-07-17 in PR #270: paired consent columns (`db/models.py` `FamilyConnection`), `POST`/`DELETE /family-connections/{id}/consent`, and an enforced guard at the read path (`api/recommendations.py::_is_dual_consented()` requires both `consented_by_viewer_user_id` and `consented_by_sharer_user_id` before a connection is treated as active), superseding the prior holds-by-omission state Scope note (2026-07-25): this consent covers **recommendations** crossing ring 2, which is what ADR-016 and the substrate were built for. It is deliberately NOT read as consent to a child's real details appearing in story content in the connected household; **G18** adds a separate signed disclosure consent for that. |
+| G18 | Opt a child's real details into their stories, per child and per slot, scoped by ring: within our own family (ring 1) or additionally with a specific connected family (ring 2, behind its own signed disclosure consent); and revoke either at any time | ❌ | Proposed 2026-07-25 in [ADR-023](./adr/adr-023-story-personalization-slots.md) (status Proposed, not yet Accepted; OD-1 and OD-5 gate the ring-2 half). Everything defaults **off**. Extends G4 ("personalized stories") with a mechanism G4's own note could not offer: substitution happens client-side at render time, so the S10 invariant ("no child PII to providers") is preserved rather than traded away. The ring-2 consent is layered **on top of** G17's connection consent, never merged into it: G17 consents to recommendations crossing the boundary, G18 consents to a child's real details appearing in story content read in another household. Revocation is prospective (effective on the connected household's next connection), not a retroactive claw-back |
 
 ## A: Admin capabilities
 
@@ -188,9 +194,9 @@ initiate (K11 | G4 | A10)
 | S7 | Independent safety pipeline: moderation independent of the generator; no path to a child bypasses the automated gates plus the human gate | ✅ | ADR-005, ADR-010, prompt-injection defenses |
 | S8 | End-to-end request flow: initiate (K/G/A) -> guardian cost gate -> generation -> validation/moderation -> admin gate -> shelf, with honest async status | 🟡 | Flow shipped end to end (WS-A..G: request -> guardian approve -> admin authoring plan -> pipeline -> admin release) except budget accounting at consent and kid-facing status; ADR-015 is the foundational record |
 | S9 | Notification/event delivery infrastructure underlying K12, G10, and admin alerts | 🟡 | Shipped 2026-07-17 in PR #270: `notifications/service.py` projects the append-only `pipeline_event` log into the K12/G10 feeds. Delivery is poll-based only (no WebSocket/SSE push, no scheduled digest job) - the "infrastructure" is a read projection, not a push transport |
-| S10 | Privacy architecture: no child PII to providers, data minimization, deletion-readiness, no third-party trackers in the kid context | ✅ | Privacy model, PII guard, ADR-007/008/009 |
-| S11 | Social boundary enforcement: no messaging or free text between users, no user/family discovery, no kid contact outside active parental approval; cross-family flows exist only through ring-2 connections | ✅ | ADR-016 + vision v1.3; enforcement is structural (no such surfaces exist) plus the ADR-016 validation criteria |
-| S12 | System recommendations from anonymized aggregate book scores (ring 3): no identity in or inferable from a global recommendation; minimum-population threshold before aggregates surface | 🟡 | Named as permitted future scope in ADR-016; no design |
+| S10 | Privacy architecture: no child PII to providers, data minimization, deletion-readiness, no third-party trackers in the kid context | ✅ | Privacy model, PII guard, ADR-007/008/009. **Materially extended, not merely touched, by G18/K20** (ADR-023, proposed 2026-07-25): the "no PII to providers" invariant is preserved by construction, but the feature adds a new child-linked data category (per-child slot values), a new client-held payload at rest on devices, and a new cross-family flow, all of which the classification, retention schedule, and deletion drill must cover |
+| S11 | Social boundary enforcement: no messaging or free text between users, no user/family discovery, no kid contact outside active parental approval; cross-family flows exist only through ring-2 connections | ✅ | ADR-016 + vision v1.3; enforcement is structural (no such surfaces exist) plus the ADR-016 validation criteria. **G18 adds a second kind of ring-2 flow** (personalization values, alongside recommendations) and is the first one whose enforcement is a runtime authorization predicate rather than the absence of a surface; ADR-023's implementation plan section 8.4 is where that predicate lives, and it is the highest-consequence authz surface the boundary now depends on |
+| S12 | System recommendations from anonymized aggregate book scores (ring 3): no identity in or inferable from a global recommendation; minimum-population threshold before aggregates surface | 🟡 | Named as permitted future scope in ADR-016; no design. **Forward-binding constraint added 2026-07-25 (ADR-023)**: any story reachable through a ring-3 surface must render fully generic regardless of every G18 toggle. Story *content* satisfies this for free (the stored blob is always generic); the values *payload* path does not, and whoever builds S12 must land that as a test rather than assume it |
 
 ## Known doc debt this register supersedes or exposes
 
@@ -241,6 +247,32 @@ RULED by the owner later the same day:
 - **G2 content controls**: RULED, will be built; scheduling open.
 - **Admin child-PIN set/reset** (PR #267): still open, recommend naming in A12 with an
   ADR-014 cross-reference at PR review time.
+Added 2026-07-25 by the ADR-023 authorship pass:
+
+- **Guardian opt-in story personalization** (render-time substitution of a child's real details
+  into story content, ring-scoped): **registered as K20 and G18**, with scope notes on G4, G17,
+  K19, S10, S11, and S12. Recorded in
+  [ADR-023](./adr/adr-023-story-personalization-slots.md) (status Proposed).
+
+  *Why two new IDs and not cross-references alone*, since that was the live question. Three
+  existing rows are adjacent and none of them covers it. G4 already promises "personalized
+  stories" and its example even names a child, but its whole mechanism is generation-time with
+  real names kept out of prompts; this feature is a different layer reaching a different outcome,
+  so folding it into G4 would make one row mean two incompatible things. S10 and S11 are
+  *extended* by it (new data category, new cross-family flow) but are cross-cutting system
+  guarantees, not the capability itself; a feature cannot be checked off against "privacy
+  architecture". K16 is identity in the app, not in the story. So without a new ID, the single
+  most user-visible thing this feature does would trace to nothing, which is exactly the failure
+  maintenance rule 3 exists to catch.
+
+  *Why two and not more.* Two personas genuinely gain a capability: a guardian who can opt in and
+  scope it (G18), and a child who sees their own details and holds a switch over them (K20). The
+  admin side does **not** need one: an admin reviewing marker-bearing prose is a presentation
+  detail of A6's existing approval gate, not a new authority. Nor does the system side: the
+  sentinel and render architecture is an *implementation of* S10's invariant, not a new
+  cross-cutting guarantee, so S10/S11/S12 get extended notes instead of new IDs. Both new rows sit
+  at ❌ and stay there until ADR-023 is Accepted and the work lands.
+
 - **Planned items lacking a design element** (not schedulable until one exists): Android
   release, web direct-billing channel, education/teacher persona, i18n catalog. Still
   open as a batch.
