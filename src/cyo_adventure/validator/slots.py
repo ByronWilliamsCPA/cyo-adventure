@@ -610,7 +610,12 @@ def _semantic_slot_violations(  # noqa: PLR0913
             reintroducing the ORIGINAL theme's identity terms; the contract's
             own `default_binding` IS that original theme, so those terms
             (the hero name, the setting) belong in `legacy_lexicon` yet must
-            not fail the default binding against its own contract.
+            not fail the default binding against its own contract. The
+            `legacy_lexicon` leak check is ALSO skipped, regardless of
+            `is_default`, for any slot whose `kind` is `"personalizable"`
+            (ADR-023 P1b): that slot's value is always the contract's own
+            pinned `default_binding[slot.id]`, never an LLM proposal, so
+            there is nothing new to leak.
 
     Returns:
         Zero or more semantic violations.
@@ -631,7 +636,8 @@ def _semantic_slot_violations(  # noqa: PLR0913
     violations.extend(_forbid_violations(contract, slot, normalized_value))
     violations.extend(_distinct_from_violations(slot, normalized_value, bindings))
 
-    if not is_default and any(
+    skip_legacy_lexicon = is_default or slot.kind == "personalizable"
+    if not skip_legacy_lexicon and any(
         _contains_stem(normalized_value, term) for term in contract.legacy_lexicon
     ):
         violations.append(

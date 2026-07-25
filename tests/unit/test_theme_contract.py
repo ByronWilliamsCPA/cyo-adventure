@@ -5,6 +5,8 @@ from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.theme_contract import (
+    PERSONALIZATION_FIELDS,
+    REAL_PERSON_PERSONALIZATION_FIELDS,
     SLOT_TOKEN_RE,
     SlotConstraints,
     SlotScope,
@@ -163,3 +165,130 @@ def test_max_words_bounds_are_enforced():
     with pytest.raises(PydanticValidationError):
         SlotConstraints(max_words=17)
     assert SlotConstraints(max_words=16).max_words == 16
+
+
+# ---------------------------------------------------------------------------
+# SlotSpec.kind (P1b, ADR-023)
+# ---------------------------------------------------------------------------
+
+
+def test_slot_kind_defaults_to_theme():
+    slot = _slot("HERO")
+    assert slot.kind == "theme"
+    assert slot.personalization_field is None
+    assert slot.role_safety is None
+
+
+def test_personalization_fields_vocabulary_is_closed():
+    assert (
+        frozenset(
+            {
+                "protagonist_first_name",
+                "pronoun_set",
+                "sibling_name",
+                "pet_species",
+                "pet_name",
+                "kinship_label",
+                "favorite",
+                "home_type",
+                "dedication",
+            }
+        )
+        == PERSONALIZATION_FIELDS
+    )
+    assert (
+        frozenset({"protagonist_first_name", "sibling_name"})
+        == REAL_PERSON_PERSONALIZATION_FIELDS
+    )
+    # Every real-person field must itself be a member of the full vocabulary.
+    assert REAL_PERSON_PERSONALIZATION_FIELDS <= PERSONALIZATION_FIELDS
+
+
+def test_personalizable_slot_with_valid_field_and_no_role_safety_needed():
+    slot = SlotSpec(
+        id="PET_NAME",
+        scope=SlotScope.GLOBAL,
+        meaning="the pet's name",
+        kind="personalizable",
+        personalization_field="pet_name",
+    )
+    assert slot.kind == "personalizable"
+    assert slot.personalization_field == "pet_name"
+
+
+def test_personalizable_slot_requires_a_personalization_field():
+    slots = [_slot("HERO", constraints=SlotConstraints())]
+    slots[0] = slots[0].model_copy(update={"kind": "personalizable"})
+    with pytest.raises(PydanticValidationError, match="personalization_field"):
+        _contract(slots, {"HERO": "Priya"})
+
+
+def test_personalizable_slot_rejects_an_unknown_personalization_field():
+    slot = SlotSpec(
+        id="HERO",
+        scope=SlotScope.GLOBAL,
+        meaning="m",
+        kind="personalizable",
+        personalization_field="not_a_real_field",
+    )
+    with pytest.raises(PydanticValidationError, match="personalization_field"):
+        _contract([slot], {"HERO": "Priya"})
+
+
+def test_real_person_field_requires_role_safety():
+    slot = SlotSpec(
+        id="HERO",
+        scope=SlotScope.GLOBAL,
+        meaning="m",
+        kind="personalizable",
+        personalization_field="protagonist_first_name",
+    )
+    with pytest.raises(PydanticValidationError, match="role_safety"):
+        _contract([slot], {"HERO": "Priya"})
+
+
+def test_real_person_field_with_role_safety_set_passes():
+    slot = SlotSpec(
+        id="HERO",
+        scope=SlotScope.GLOBAL,
+        meaning="m",
+        kind="personalizable",
+        personalization_field="protagonist_first_name",
+        role_safety="protagonist",
+    )
+    contract = _contract([slot], {"HERO": "Priya"})
+    assert contract.slots[0].role_safety == "protagonist"
+
+
+def test_non_real_person_field_does_not_require_role_safety():
+    slot = SlotSpec(
+        id="PET_NAME",
+        scope=SlotScope.GLOBAL,
+        meaning="m",
+        kind="personalizable",
+        personalization_field="pet_name",
+    )
+    contract = _contract([slot], {"PET_NAME": "Buddy"})
+    assert contract.slots[0].role_safety is None
+
+
+def test_theme_slot_rejects_personalization_field():
+    slot = SlotSpec(
+        id="HERO",
+        scope=SlotScope.GLOBAL,
+        meaning="m",
+        personalization_field="pet_name",
+    )
+    with pytest.raises(PydanticValidationError, match="kind='theme'"):
+        _contract([slot], {"HERO": "Priya"})
+
+
+def test_theme_slot_rejects_role_safety():
+    slot = SlotSpec(
+        id="HERO",
+        scope=SlotScope.GLOBAL,
+        meaning="m",
+        role_safety="companion",
+    )
+    with pytest.raises(PydanticValidationError, match="kind='theme'"):
+        _contract([slot], {"HERO": "Priya"})

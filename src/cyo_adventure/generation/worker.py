@@ -895,7 +895,12 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         theme_brief_dict=theme_brief_dict,
         ctx=ctx,
     )
-    bound = render_bound_skeleton(result.skeleton, result.bindings)
+    personalizable_slots = frozenset(
+        slot.id for slot in result.contract.slots if slot.kind == "personalizable"
+    )
+    bound = render_bound_skeleton(
+        result.skeleton, result.bindings, personalizable_slots
+    )
 
     outcome = await fill_skeleton(
         bound,

@@ -239,7 +239,9 @@ async def test_parameterized_skeleton_uses_bound_skeleton_as_stage1_reference(
     def _fake_load_contract_for(_path, _skeleton):
         return _CONTRACT
 
-    def _fake_render_bound_skeleton(skeleton, bindings):
+    def _fake_render_bound_skeleton(
+        skeleton, bindings, _personalizable_slots=frozenset()
+    ):
         render_calls.append((skeleton, bindings))
         return bound_skeleton
 
@@ -279,7 +281,9 @@ async def test_recorded_slot_bindings_are_preferred_over_default_binding(
 
     render_calls: list[tuple[object, object]] = []
 
-    def _fake_render_bound_skeleton(skeleton, bindings):
+    def _fake_render_bound_skeleton(
+        skeleton, bindings, _personalizable_slots=frozenset()
+    ):
         render_calls.append((skeleton, bindings))
         return {"nodes": [], "bound": True}
 
@@ -317,7 +321,9 @@ async def test_legacy_skeleton_resume_reference_is_unchanged(monkeypatch) -> Non
 
     render_called = False
 
-    def _fake_render_bound_skeleton(skeleton, bindings):
+    def _fake_render_bound_skeleton(
+        skeleton, bindings, _personalizable_slots=frozenset()
+    ):
         nonlocal render_called
         render_called = True
         return skeleton
@@ -367,7 +373,7 @@ async def test_contract_render_error_degrades_to_needs_review(monkeypatch) -> No
         stage1_called = True
         return []
 
-    def _raise_render_error(_skeleton, _bindings):
+    def _raise_render_error(_skeleton, _bindings, _personalizable_slots=frozenset()):
         msg = "stale binding no longer satisfies its slot constraints"
         raise ValidationError(msg)
 

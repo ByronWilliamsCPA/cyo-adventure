@@ -60,6 +60,38 @@ def _contract() -> ThemeContract:
     )
 
 
+def _contract_with_personalizable_slot() -> ThemeContract:
+    """A contract adding one ``personalizable`` slot (PROTAGONIST) to `_contract`."""
+    return ThemeContract(
+        contract_version=1,
+        skeleton_slug="s_test_bind_personalizable",
+        age_band="8-11",
+        legacy_lexicon=["Maya"],
+        default_binding={
+            "HERO": "Priya",
+            "A1_GATE": "the jammed hatch",
+            "PROTAGONIST": "Ada",
+        },
+        slots=[
+            _slot("HERO", constraints=SlotConstraints(max_words=4, forbid=["weapon"])),
+            _slot(
+                "A1_GATE",
+                scope=SlotScope.TRACK,
+                constraints=SlotConstraints(max_words=8, forbid=["lethal"]),
+            ),
+            SlotSpec(
+                id="PROTAGONIST",
+                scope=SlotScope.GLOBAL,
+                meaning="the reader's own child, personalized",
+                guidance="",
+                kind="personalizable",
+                personalization_field="protagonist_first_name",
+                role_safety="protagonist",
+            ),
+        ],
+    )
+
+
 def _empty_pii() -> PiiContext:
     return PiiContext(child_names=frozenset())
 
@@ -232,3 +264,62 @@ async def test_bind_pii_guard_fires_and_provider_never_called() -> None:
         await bind_theme_to_contract(contract, brief, provider, pii)
 
     assert provider.calls == []
+
+
+# ---------------------------------------------------------------------------
+# ADR-023: personalizable slots are excluded from the prompt and pinned
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_bind_never_offers_personalizable_slot_to_the_model() -> None:
+    """A personalizable slot's id and meaning never reach the bind prompt."""
+    contract = _contract_with_personalizable_slot()
+    # The model is never asked about PROTAGONIST, so a conforming response
+    # only needs to cover the two theme slots.
+    response = json.dumps({"HERO": "Priya", "A1_GATE": "the jammed hatch"})
+    provider = MockProvider(responses=[response])
+
+    result = await bind_theme_to_contract(contract, _brief(), provider, _empty_pii())
+
+    assert "PROTAGONIST" not in provider.calls[0]
+    assert "the reader's own child, personalized" not in provider.calls[0]
+    assert result == {
+        "HERO": "Priya",
+        "A1_GATE": "the jammed hatch",
+        "PROTAGONIST": "Ada",
+    }
+
+
+@pytest.mark.asyncio
+async def test_bind_pins_default_even_if_model_supplies_a_value_for_it() -> None:
+    """A model-supplied value for a personalizable slot is discarded; the pin wins.
+
+    The model should never even see the slot (proven separately), but this
+    proves the merge itself is a hard override, not a fallback-if-missing:
+    even an adversarial or hallucinated response cannot smuggle a different
+    value into a personalizable slot.
+    """
+    contract = _contract_with_personalizable_slot()
+    response = json.dumps(
+        {
+            "HERO": "Priya",
+            "A1_GATE": "the jammed hatch",
+            "PROTAGONIST": "SomeOtherName",
+        }
+    )
+    provider = MockProvider(responses=[response])
+
+    result = await bind_theme_to_contract(contract, _brief(), provider, _empty_pii())
+
+    assert result["PROTAGONIST"] == "Ada"
+
+
+@pytest.mark.asyncio
+async def test_bind_with_no_personalizable_slots_is_unchanged() -> None:
+    """A contract with zero personalizable slots behaves exactly as before P1b."""
+    provider = MockProvider(responses=[_VALID_RESPONSE])
+
+    result = await bind_theme_to_contract(_contract(), _brief(), provider, _empty_pii())
+
+    assert result == _VALID_BINDING

@@ -348,8 +348,14 @@ def _stage1_reference_skeleton(
     bindings = (
         recorded_bindings if recorded_bindings is not None else contract.default_binding
     )
+    personalizable_slots = frozenset(
+        slot.id for slot in contract.slots if slot.kind == "personalizable"
+    )
     try:
-        return render_bound_skeleton(original_skeleton, bindings), None
+        return (
+            render_bound_skeleton(original_skeleton, bindings, personalizable_slots),
+            None,
+        )
     except ValidationError as exc:
         return None, str(exc)
 

@@ -91,6 +91,17 @@ changing. The output must be the full Storybook JSON, not a diff or patch.
 
 Changing any of these fields will cause validation to fail after you respond.
 
+### Verbatim tokens
+
+**Verbatim tokens.** Some `beats='...'` guidance contains tokens of the form `{~NAME:Word~}`.
+These are placeholders a family may later personalise. For every distinct such token that appears
+in a node's `beats`, your prose for that node must contain that token **at least once**, copied
+character for character, including the braces and tildes. Place it where the word inside it would
+naturally go: in dialogue, in narration, or in an ending title. Do not translate it, do not
+re-theme it, do not add spaces inside it, and do not write the bare word instead of the token. It
+is the one thing in your prose that must be copied rather than re-imagined. Never place one
+inside a choice label.
+
 ## Output
 
 Respond with valid JSON only. Do not include prose before or after the JSON.
