@@ -43,6 +43,36 @@ describe('useOnlineStatus', () => {
     await waitFor(() => expect(result.current).toBe(true))
   })
 
+  it('drops a stale in-flight probe that resolves after a newer offline event', async () => {
+    // Hold the mount probe open so we can force out-of-order resolution: a
+    // slow "online" probe must not overwrite a fresher "offline" result.
+    let resolveProbe: (value: { ok: boolean }) => void = () => {}
+    const probePromise = new Promise<{ ok: boolean }>((resolve) => {
+      resolveProbe = resolve
+    })
+    vi.stubGlobal('fetch', vi.fn().mockReturnValueOnce(probePromise))
+
+    setOnLine(true)
+    const { result } = renderHook(() => useOnlineStatus())
+    // Seeded online from navigator.onLine; the mount probe is still pending.
+    expect(result.current).toBe(true)
+
+    // A newer offline event lands first (synchronous, authoritative path).
+    act(() => {
+      setOnLine(false)
+      window.dispatchEvent(new Event('offline'))
+    })
+    await waitFor(() => expect(result.current).toBe(false))
+
+    // The stale mount probe finally resolves ok=true. The sequence guard must
+    // discard it so it cannot revert the fresher offline state.
+    await act(async () => {
+      resolveProbe({ ok: true })
+      await probePromise
+    })
+    expect(result.current).toBe(false)
+  })
+
   it('defaults to online when navigator is unavailable (SSR-style environment)', () => {
     // The initial-state seed guards `typeof navigator === 'undefined'` so the
     // hook is safe outside a browser. Stub navigator to undefined so that arm

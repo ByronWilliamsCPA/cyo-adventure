@@ -21,13 +21,21 @@ export function useOnlineStatus(): boolean {
 
   useEffect(() => {
     let cancelled = false
+    // #ASSUME: concurrency: online/offline events can fire faster than a probe
+    // resolves, so refresh() calls overlap. #VERIFY: each call claims a
+    // monotonically increasing sequence number and only writes state if it is
+    // still the most recent call; without this, a slow stale probe could
+    // resolve after a newer one and overwrite the fresher result during a
+    // network handoff.
+    let latest = 0
     const refresh = async () => {
+      const seq = ++latest
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
-        if (!cancelled) setOnline(false)
+        if (!cancelled && seq === latest) setOnline(false)
         return
       }
       const reachable = await probeConnectivity(`${PROBE_URL}?t=${Date.now()}`, PROBE_TIMEOUT_MS)
-      if (!cancelled) setOnline(reachable)
+      if (!cancelled && seq === latest) setOnline(reachable)
     }
     const handler = () => void refresh()
     void refresh()
