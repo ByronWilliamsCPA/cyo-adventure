@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { KidShell } from './KidShell'
 import { KID_PICKER_PATH } from '../routes'
 import { ThemeProvider } from '../theme/ThemeProvider'
+import { _resetKidProfileFetch } from './useKidProfile'
 
 /**
  * Route-gating coverage for KidShell (mirrors ReaderLeave.test.tsx's
@@ -54,10 +55,7 @@ function renderShellAt(path: string) {
           <Route element={<KidShell />}>
             <Route path={KID_PICKER_PATH.slice(1)} element={<div>Picker Page</div>} />
             <Route path="library/:profileId" element={<div>Library Page</div>} />
-            <Route
-              path="read/:profileId/:storybookId/:version"
-              element={<div>Reader Page</div>}
-            />
+            <Route path="read/:profileId/:storybookId/:version" element={<div>Reader Page</div>} />
           </Route>
         </Routes>
       </MemoryRouter>
@@ -68,6 +66,7 @@ function renderShellAt(path: string) {
 beforeEach(() => {
   mockGet.mockReset()
   mockGet.mockResolvedValue({ data: { profiles: PROFILES } })
+  _resetKidProfileFetch()
 })
 
 describe('KidShell route gating', () => {
@@ -78,6 +77,17 @@ describe('KidShell route gating', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /switch reader/i })).toBeInTheDocument()
     expect(screen.getByText('Library Page')).toBeInTheDocument()
+  })
+
+  it('shares one profiles fetch between the shell and the nav on a library view', async () => {
+    renderShellAt('/library/p1')
+    // Both consumers have rendered from the lookup: the nav shows the name,
+    // and the shell has stamped the band attribute.
+    expect(await screen.findByText('Mia')).toBeInTheDocument()
+    expect(document.querySelector('.kid-shell')).toHaveAttribute('data-age-band', '5-8')
+    // KidShell and KidNav each run useKidProfile, but the in-flight request
+    // is shared, so the API sees a single GET /v1/profiles.
+    expect(mockGet).toHaveBeenCalledTimes(1)
   })
 
   it('does not render KidNav on the picker route (/kids)', () => {

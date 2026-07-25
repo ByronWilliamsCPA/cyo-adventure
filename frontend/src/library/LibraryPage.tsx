@@ -8,11 +8,7 @@ import { useApi } from '../hooks/useApi'
 import { Mascot } from '../kid/Mascot'
 import { reconcileOfflineCache } from '../offline/revocation'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
-import {
-  cacheLibraryList,
-  getCachedLibraryList,
-  getCachedStorybook,
-} from '../offline/db'
+import { cacheLibraryList, getCachedLibraryList, getCachedStorybook } from '../offline/db'
 import { BookCard } from './BookCard'
 import { makeLibraryApi, type LibraryItemView, type ReadingHistoryItem } from './libraryApi'
 import { pickHero } from './pickHero'
@@ -90,6 +86,11 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const recommendationsApi = useMemo(() => makeRecommendationsApi(api), [api])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
   const [continueAnchor, setContinueAnchor] = useState<ContinueAnchor | null>(null)
+  // Bumped by the shelf's "Ask for a new story" end-cap tile; RequestStory
+  // opens on the bump and the effect below brings the form into view. A
+  // counter (not a boolean) so every tap re-triggers, even with the form
+  // already open.
+  const [requestOpenSignal, setRequestOpenSignal] = useState(0)
   const requestStoryRef = useRef<HTMLDivElement>(null)
 
   const askForNextBook = useCallback(
@@ -97,6 +98,23 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
     []
   )
   const clearContinueAnchor = useCallback(() => setContinueAnchor(null), [])
+  const askForNewStory = useCallback(() => setRequestOpenSignal((signal) => signal + 1), [])
+
+  // Smooth only when nothing asks for reduced motion: the OS-level media
+  // query OR the guardian-set profile flag (data-reduce-motion on the kid
+  // shell, band-tokens.css), mirroring Reader.tsx's passage scroll.
+  const scrollRequestIntoView = useCallback(() => {
+    const reduceMotion =
+      (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false) ||
+      Boolean(requestStoryRef.current?.closest('[data-reduce-motion="true"]'))
+    // Optional-call scrollIntoView: it is absent under jsdom (test env) and
+    // guarding keeps the focus move working there without a test shim.
+    requestStoryRef.current?.scrollIntoView?.({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'start',
+    })
+    requestStoryRef.current?.focus()
+  }, [])
 
   // #ASSUME: UI state: tapping "Ask for the next book" opens the RequestStory
   // form at the top of the page with no visual cue near the tapped card;
@@ -106,12 +124,18 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   // scrolled into view and receives focus.
   useEffect(() => {
     if (continueAnchor !== null) {
-      // Optional-call scrollIntoView: it is absent under jsdom (test env) and
-      // guarding keeps the focus move working there without a test shim.
-      requestStoryRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
-      requestStoryRef.current?.focus()
+      scrollRequestIntoView()
     }
-  }, [continueAnchor])
+  }, [continueAnchor, scrollRequestIntoView])
+
+  // The end-cap tile's twin of the anchor effect above: same wayfinding rule
+  // (opening something far away must move the reader there), keyed on its
+  // own signal so clearing an anchor never re-scrolls.
+  useEffect(() => {
+    if (requestOpenSignal > 0) {
+      scrollRequestIntoView()
+    }
+  }, [requestOpenSignal, scrollRequestIntoView])
 
   // #ASSUME: timing dependencies: the "Try again" button calls `load()`
   // directly and discards its cleanup, so `cancelled` alone cannot stop a
@@ -279,10 +303,14 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
 
   if (!profileId) return null
   if (state.status === 'loading') {
+    // Branded, kid-facing loading state (Pip + short reassurance), matching
+    // the reader's "Opening your story…" pattern so every wait on the kid
+    // surface looks like the same friendly app, not a bare system message.
     return (
-      <p className="library__status" role="status" aria-live="polite">
-        Loading your books…
-      </p>
+      <div className="library__loading" role="status" aria-live="polite">
+        <Mascot size={96} className="library__loading-mascot" />
+        <p className="library__loading-text">Loading your books…</p>
+      </div>
     )
   }
   if (state.status === 'unauthenticated') {
@@ -328,6 +356,7 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
         <EmptyState
           title="We lost the bookshelf"
           description="Something went wrong loading your books."
+          icon={<Mascot size={96} />}
           actions={
             <>
               <Button variant="primary" size="lg" onClick={load}>
@@ -384,6 +413,12 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
   const shelf = items
     .filter((item) => item.id !== hero?.id)
     .sort((a, b) => a.title.localeCompare(b.title))
+  // Requesting (a new story, or a series continuation) needs the network:
+  // offline, the form and the "Ask for the next book" taps could only end in
+  // a failure message, so neither affordance renders then. readOnly (guardian
+  // preview) suppresses them for the write-isolation reasons documented on
+  // LibraryPageProps.
+  const canRequest = !readOnly && !offline
   return (
     <div className="library">
       <h1 className="library__heading">My Books</h1>
@@ -394,14 +429,22 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
       ) : null}
       {hero ? (
         <section aria-label="Continue Reading">
+          {/* A visible name for the hero spot (the section aria-label alone
+              gave sighted kids no cue why this book is big). A finished hero
+              stays the most recent activity, so its invitation flips to a
+              replay nudge instead of a nonsensical "keep reading". */}
+          <h2 className="library__shelf-heading">
+            {hero.progress?.completed ? 'Read it again?' : 'Keep reading'}
+          </h2>
           <BookCard
             item={hero}
             profileId={profileId}
             hero
             onRate={rate}
-            onContinue={readOnly ? undefined : askForNextBook}
+            onContinue={canRequest ? askForNextBook : undefined}
             downloaded={isDownloaded(hero)}
             readOnly={readOnly}
+            ratable={!offline}
             endings={endingsFor(hero)}
             recommendation={recommendationFor(hero)}
           />
@@ -409,7 +452,12 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
       ) : null}
       {shelf.length > 0 ? (
         <section aria-label="More to Explore">
-          <h2 className="library__shelf-heading">More to Explore</h2>
+          {/* With a hero above, the grid really is "more"; on a fresh shelf
+              (nothing started, no hero) it is the whole page, so the heading
+              becomes the call to action instead. Visible text only: the
+              region's accessible name stays "More to Explore" so assistive
+              tech and the e2e suite keep one stable landmark name. */}
+          <h2 className="library__shelf-heading">{hero ? 'More to Explore' : 'Pick a book!'}</h2>
           <ul className="library__shelf">
             {shelf.map((item) => (
               <li key={item.id}>
@@ -417,14 +465,35 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
                   item={item}
                   profileId={profileId}
                   onRate={rate}
-                  onContinue={readOnly ? undefined : askForNextBook}
+                  onContinue={canRequest ? askForNextBook : undefined}
                   downloaded={isDownloaded(item)}
                   readOnly={readOnly}
+                  ratable={!offline}
                   endings={endingsFor(item)}
                   recommendation={recommendationFor(item)}
                 />
               </li>
             ))}
+            {/* End-cap "Ask for a new story" tile: the request box lives
+                below the shelf and falls under the fold once a family has a
+                few books, so the invitation also appears where a browsing
+                child's eyes already are, as the shelf's last slot. Tapping
+                it opens the form (openSignal) and scrolls there. Same gate
+                as the form itself: never in guardian preview or offline. */}
+            {canRequest ? (
+              <li>
+                <button
+                  type="button"
+                  className="book-card book-card--request"
+                  onClick={askForNewStory}
+                >
+                  <span className="book-card__tile book-card__tile--request" aria-hidden="true">
+                    ✨
+                  </span>
+                  <span className="book-card__request-label">Ask for a new story</span>
+                </button>
+              </li>
+            ) : null}
           </ul>
         </section>
       ) : null}
@@ -433,17 +502,20 @@ export function LibraryPage({ readOnly = false }: LibraryPageProps = {}) {
           Omitted entirely in guardian preview mode (readOnly): a guardian
           previewing their child's shelf has their own request flow already
           (guardian console), and this form would otherwise submit a request
-          under the previewed child's identity. */}
-      {readOnly ? null : (
+          under the previewed child's identity. Also omitted on the offline
+          shelf (canRequest): sending an idea needs the network, and inviting
+          one only to answer with "Something went wrong" is a dead end. */}
+      {canRequest ? (
         <div ref={requestStoryRef} tabIndex={-1} className="library__request">
           <RequestStory
             profileId={profileId}
             anchor={continueAnchor}
             onClearAnchor={clearContinueAnchor}
             libraryTitles={items.map((item) => item.title)}
+            openSignal={requestOpenSignal}
           />
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

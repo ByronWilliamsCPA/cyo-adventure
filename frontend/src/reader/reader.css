@@ -16,10 +16,25 @@
   top: 0;
   z-index: 1;
   display: flex;
+  /* The full control set (Leave, Tell a grown-up, Listen, progress, text
+     size) outgrows a phone row; wrapping keeps every control on screen and
+     tappable instead of sliding off the right edge. */
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) 0;
   background: var(--color-parchment);
+}
+
+/* Below ~48rem the centered 40rem shell's right edge runs under the fixed
+   theme toggle (.kid-shell__theme-toggle: 44px + var(--space-3) inset), which
+   otherwise floats over the A/A+/A++ picker's last button; reserve the
+   toggle's zone only at the widths where the two actually meet, so wide
+   screens keep the full chrome row. */
+@media (max-width: 48rem) {
+  .reader-chrome {
+    padding-right: calc(44px + var(--space-2, 0.5rem));
+  }
 }
 
 .reader-chrome .cyo-progress {
@@ -444,8 +459,7 @@
   .reader .cyo-passage,
   .reader-ending .cyo-passage {
     font-size: calc(
-      max(var(--text-xl), var(--band-reader-text, var(--text-base))) *
-        var(--reader-font-scale, 1)
+      max(var(--text-xl), var(--band-reader-text, var(--text-base))) * var(--reader-font-scale, 1)
     );
   }
 }
@@ -456,4 +470,14 @@
   .reader-ending__mascot--celebrate {
     animation: none;
   }
+}
+
+/* Guardian-set per-profile reduce_motion (data-reduce-motion on the kid
+   shell, see band-tokens.css) must still the same decorative motion the
+   OS-level preference does; these animations use concrete durations rather
+   than the --band-motion-* tokens, so they need explicit twins. */
+[data-reduce-motion='true'] .reader-loading__mascot,
+[data-reduce-motion='true'] .reader-ending__stars--celebrate > span,
+[data-reduce-motion='true'] .reader-ending__mascot--celebrate {
+  animation: none;
 }

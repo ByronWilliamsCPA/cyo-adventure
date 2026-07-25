@@ -457,7 +457,7 @@ export function ReaderPage({
     return (
       <div data-testid="loading" className="reader-loading" role="status" aria-live="polite">
         <Mascot size={96} className="reader-loading__mascot" />
-        <p className="reader-loading__text">Opening your story...</p>
+        <p className="reader-loading__text">Opening your story…</p>
       </div>
     )
   }

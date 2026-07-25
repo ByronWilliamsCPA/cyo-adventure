@@ -74,6 +74,11 @@ export function ProfilePickerPage() {
   const navigate = useNavigate()
   const [state, setState] = useState<PickerState>({ status: 'loading' })
   const [reloadKey, setReloadKey] = useState(0)
+  // UX-K8: which pin-less tile is mid-mint, so the tap has visible feedback
+  // (tile pulse + "Opening your books…") instead of a dead second on a slow
+  // connection. Latched like pickInFlightRef: every pick path ends in
+  // navigation, which unmounts this page, so it is never cleared.
+  const [pickingId, setPickingId] = useState<string | null>(null)
   // The typed PIN lives ONLY in this transient state: cleared after every
   // attempt and never written to localStorage, sessionStorage, or anywhere
   // else (setChildSession stores the minted token, not the PIN).
@@ -127,6 +132,7 @@ export function ProfilePickerPage() {
     async (profile: ProfileView) => {
       if (pickInFlightRef.current) return
       pickInFlightRef.current = true
+      setPickingId(profile.id)
       // #CRITICAL: security: clear any prior child session BEFORE minting.
       // Otherwise a failed mint for THIS profile would leave a still-valid
       // session for a PREVIOUSLY picked profile in storage, and useApi's
@@ -247,9 +253,7 @@ export function ProfilePickerPage() {
   }, [profilesApi, reloadKey])
 
   if (state.status === 'loading') {
-    return (
-      <LoadingStatus className="picker-loading">Loading profiles…</LoadingStatus>
-    )
+    return <LoadingStatus className="picker-loading">Loading profiles…</LoadingStatus>
   }
 
   if (state.status === 'unauthenticated') {
@@ -292,6 +296,7 @@ export function ProfilePickerPage() {
         <EmptyState
           title="Oops, we hit a snag"
           description="We could not load your profiles right now."
+          icon={<Mascot size={96} />}
           actions={
             <>
               <button
@@ -345,7 +350,11 @@ export function ProfilePickerPage() {
           </label>
           {/* type=password keeps siblings from shoulder-reading; numeric
               inputMode brings up the digit pad; autoComplete=off so no
-              browser or password manager ever offers to store the PIN. */}
+              browser or password manager ever offers to store the PIN.
+              autoFocus (UX-K8): the prompt exists only because the child just
+              tapped this profile, so the caret (and the mobile digit pad)
+              should be ready without a second tap on the box; focus lands on
+              a properly labelled field, so the prompt is also announced. */}
           <input
             id="picker-pin-input"
             className="picker-pin__input"
@@ -353,7 +362,9 @@ export function ProfilePickerPage() {
             inputMode="numeric"
             pattern="[0-9]*"
             autoComplete="off"
+            enterKeyHint="go"
             maxLength={8}
+            autoFocus
             value={pin}
             onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, ''))}
             disabled={busy}
@@ -391,7 +402,10 @@ export function ProfilePickerPage() {
               Go back
             </button>
             <button type="submit" className="picker-retry" disabled={busy || pin.length < 4}>
-              Let&apos;s read!
+              {/* Swaps to a busy label while the check is in flight so the
+                  tap visibly did something (UX-K8); disabled alone reads as
+                  broken to a child. */}
+              {busy ? 'One moment…' : "Let's read!"}
             </button>
           </div>
         </form>
@@ -405,59 +419,90 @@ export function ProfilePickerPage() {
         <Mascot size={88} />
         <h1 className="picker__title">Who&apos;s reading?</h1>
       </div>
+      {/* UX-K8: one always-present polite live region announces the pick;
+          the visible copy of the same text inside the tapped tile below is
+          aria-hidden so the tile's accessible name never changes mid-mint. */}
+      <span className="picker__status-live" role="status" aria-live="polite">
+        {pickingId !== null ? 'Opening your books…' : ''}
+      </span>
       <ul className="picker__grid">
-        {state.profiles.map((profile) => (
-          <li key={profile.id}>
-            <Link
-              className="picker-tile"
-              to={`/library/${profile.id}`}
-              // P6-07: a PIN-locked tile announces the gate up front. The
-              // label starts with the visible name so voice-control users
-              // can still say the name they see; PIN-less tiles keep their
-              // contents-derived name (AvatarCircle is aria-hidden, so that
-              // is just the display name).
-              aria-label={profile.has_pin ? `${profile.display_name} needs a PIN` : undefined}
-              // A profile pick must mint a child session BEFORE navigating
-              // (see pickProfile above), so the default immediate Link
-              // navigation is suppressed in favor of the async flow; `to`
-              // is kept so the tile still renders a real, inspectable href.
-              // A PIN-protected profile (P6-07) detours through the PIN
-              // prompt instead of minting straight away.
-              onClick={(e) => {
-                // Preserve the browser's native open-in-new-tab/window
-                // affordances: a modified or non-primary click must fall
-                // through to the real href instead of being hijacked into the
-                // async mint-then-navigate flow (which only drives the current
-                // tab). Only a plain left click runs the mint.
-                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
-                  return
+        {state.profiles.map((profile) => {
+          const picking = pickingId === profile.id
+          const waiting = pickingId !== null && !picking
+          return (
+            <li key={profile.id}>
+              <Link
+                className={
+                  picking
+                    ? 'picker-tile picker-tile--picking'
+                    : waiting
+                      ? 'picker-tile picker-tile--waiting'
+                      : 'picker-tile'
                 }
-                e.preventDefault()
-                if (profile.has_pin) {
-                  setPin('')
-                  setPinPrompt({ profile, status: 'idle' })
-                } else {
-                  void pickProfile(profile)
-                }
-              }}
-            >
-              <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
-              <span className="picker-tile__name">{profile.display_name}</span>
-              {/* P6-07: a PIN-locked profile shows a corner padlock so the
+                aria-busy={picking || undefined}
+                to={`/library/${profile.id}`}
+                // P6-07: a PIN-locked tile announces the gate up front. The
+                // label starts with the visible name so voice-control users
+                // can still say the name they see; PIN-less tiles keep their
+                // contents-derived name (AvatarCircle is aria-hidden, so that
+                // is just the display name).
+                aria-label={profile.has_pin ? `${profile.display_name} needs a PIN` : undefined}
+                // A profile pick must mint a child session BEFORE navigating
+                // (see pickProfile above), so the default immediate Link
+                // navigation is suppressed in favor of the async flow; `to`
+                // is kept so the tile still renders a real, inspectable href.
+                // A PIN-protected profile (P6-07) detours through the PIN
+                // prompt instead of minting straight away.
+                onClick={(e) => {
+                  // Preserve the browser's native open-in-new-tab/window
+                  // affordances: a modified or non-primary click must fall
+                  // through to the real href instead of being hijacked into the
+                  // async mint-then-navigate flow (which only drives the current
+                  // tab). Only a plain left click runs the mint.
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+                    return
+                  }
+                  e.preventDefault()
+                  if (profile.has_pin) {
+                    setPin('')
+                    setPinPrompt({ profile, status: 'idle' })
+                  } else {
+                    void pickProfile(profile)
+                  }
+                }}
+              >
+                <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
+                <span className="picker-tile__name">{profile.display_name}</span>
+                {/* UX-K8: visible mint feedback; decorative because the live
+                  region above already carries the announcement. */}
+                {picking ? (
+                  <span className="picker-tile__opening" aria-hidden="true">
+                    Opening your books…
+                  </span>
+                ) : null}
+                {/* P6-07: a PIN-locked profile shows a corner padlock so the
                   PIN prompt is anticipated, not a surprise. The glyph is
                   decorative (aria-hidden); the aria-label above carries the
                   "needs a PIN" hint for assistive tech. */}
-              {profile.has_pin ? (
-                <span className="picker-tile__pin" aria-hidden="true">
-                  🔒
-                </span>
-              ) : null}
-            </Link>
-          </li>
-        ))}
+                {profile.has_pin ? (
+                  <span className="picker-tile__pin" aria-hidden="true">
+                    🔒
+                  </span>
+                ) : null}
+              </Link>
+            </li>
+          )
+        })}
         {guardianSignedIn ? (
           <li>
-            <Link className="picker-tile picker-tile--add" to="/guardian/profiles">
+            <Link
+              className={
+                pickingId !== null
+                  ? 'picker-tile picker-tile--add picker-tile--waiting'
+                  : 'picker-tile picker-tile--add'
+              }
+              to="/guardian/profiles"
+            >
               <AvatarCircle avatar={null} name="+" />
               <span className="picker-tile__name">Add Child</span>
             </Link>

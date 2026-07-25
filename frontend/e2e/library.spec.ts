@@ -197,7 +197,9 @@ test('shelf grid does not overflow the viewport on a phone screen', async ({ pag
 
   const shelfCards = page.locator('.library__shelf > li')
   const count = await shelfCards.count()
-  expect(count).toBe(2)
+  // Two shelf books plus the "Ask for a new story" end-cap tile, which is a
+  // grid cell like any book and must obey the same no-overflow rule below.
+  expect(count).toBe(3)
   for (let i = 0; i < count; i += 1) {
     const box = await shelfCards.nth(i).boundingBox()
     expect(box).not.toBeNull()

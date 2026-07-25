@@ -124,16 +124,31 @@ export function defineResponsiveChecks(): void {
     await expect(page.getByRole('heading', { name: 'My Books' })).toBeVisible()
     await assertNoHorizontalOverflow(page, 'library')
 
-    // Regression guard for the auto-fill/auto-fit shelf bug: a single
-    // "More to Explore" book must span the shelf's own width, not leave a
-    // reserved-but-empty track beside it.
+    // Regression guard for the auto-fill/auto-fit shelf bug: the grid's
+    // cells (a lone book plus the "Ask for a new story" end-cap tile) must
+    // collectively span the shelf's own width, not leave a
+    // reserved-but-empty track beside them. Asserted via the edges: the
+    // first cell starts at the shelf's left edge and the last cell ends at
+    // its right edge, which holds whether the two cells share one row
+    // (tablet/desktop) or stack (phone).
     const shelf = page.locator('.library__shelf')
-    const book = shelf.locator('> li').first()
-    const [shelfBox, bookBox] = await Promise.all([shelf.boundingBox(), book.boundingBox()])
-    if (shelfBox && bookBox) {
-      expect(bookBox.width, 'a lone shelf book should fill the shelf width').toBeGreaterThan(
-        shelfBox.width * 0.9
-      )
+    const cells = shelf.locator('> li')
+    const first = cells.first()
+    const last = cells.last()
+    const [shelfBox, firstBox, lastBox] = await Promise.all([
+      shelf.boundingBox(),
+      first.boundingBox(),
+      last.boundingBox(),
+    ])
+    if (shelfBox && firstBox && lastBox) {
+      expect(
+        Math.abs(firstBox.x - shelfBox.x),
+        'the first shelf cell should start at the shelf left edge'
+      ).toBeLessThan(2)
+      expect(
+        lastBox.x + lastBox.width,
+        'the last shelf cell should reach the shelf right edge'
+      ).toBeGreaterThan(shelfBox.x + shelfBox.width * 0.98 - 1)
     }
   })
 

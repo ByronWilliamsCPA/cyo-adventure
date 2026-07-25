@@ -302,6 +302,50 @@ describe('ProfilePickerPage child session mint (G1 / P6-04)', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/library/p1')
   })
 
+  it('shows busy feedback on the picked tile while the mint is in flight (UX-K8)', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({
+      data: {
+        profiles: [
+          ...ONE_PROFILE.profiles,
+          {
+            id: 'p2',
+            display_name: 'Reader B',
+            age_band: '5-8',
+            reading_level_cap: 99,
+            avatar: null,
+            tts_enabled: false,
+            created_at: '2026-07-02T00:00:00Z',
+          },
+        ],
+      },
+    })
+    // A mint that never settles inside this test keeps the busy state visible.
+    let resolveMint!: (value: unknown) => void
+    mockPost.mockReturnValue(
+      new Promise((resolve) => {
+        resolveMint = resolve
+      })
+    )
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+
+    // The tapped tile is marked busy and says what is happening; the sibling
+    // tile quiets down so the tap visibly "took". The visible tile copy is
+    // decorative; the live region carries the same text for assistive tech.
+    expect(tile).toHaveAttribute('aria-busy', 'true')
+    expect(screen.getByRole('status')).toHaveTextContent('Opening your books…')
+    expect(screen.getByRole('link', { name: /Reader B/ })).toHaveClass('picker-tile--waiting')
+    expect(mockNavigate).not.toHaveBeenCalled()
+
+    resolveMint({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/library/p1'))
+  })
+
   it('caches the profile tts_enabled flag (K7) for the reader route to read back, on a pick', async () => {
     const user = userEvent.setup()
     mockGet.mockResolvedValue({
@@ -572,6 +616,32 @@ describe('ProfilePickerPage PIN gate (P6-07)', () => {
     await waitFor(() =>
       expect(mockPost).toHaveBeenCalledWith('/v1/child-sessions', { profile_id: 'p1' })
     )
+  })
+
+  it('focuses the PIN input as soon as the prompt opens (UX-K8)', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+
+    expect(input).toHaveFocus()
+  })
+
+  it('shows a busy label on the submit button while the PIN check is in flight (UX-K8)', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    // A mint that never settles inside this test keeps the checking state visible.
+    mockPost.mockReturnValue(new Promise(() => undefined))
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    await user.type(input, '4321')
+    await user.click(screen.getByRole('button', { name: /let's read/i }))
+
+    const busyButton = screen.getByRole('button', { name: 'One moment…' })
+    expect(busyButton).toBeDisabled()
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 
   it('mints with the typed PIN and navigates on success', async () => {

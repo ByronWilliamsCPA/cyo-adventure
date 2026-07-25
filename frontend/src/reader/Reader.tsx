@@ -50,10 +50,7 @@ export interface ReaderProps {
   onLeave?: () => void
   /** Resolves the next readable series book; when provided, a satisfying
    * ending of a non-final series book offers "Continue the series". */
-  fetchSeriesNext?: (
-    profileId: string,
-    storybookId: string
-  ) => Promise<SeriesNextBookInfo | null>
+  fetchSeriesNext?: (profileId: string, storybookId: string) => Promise<SeriesNextBookInfo | null>
   /**
    * The profile's `tts_enabled` flag (K7 / Phase 4b read-aloud), threaded in
    * from `ReaderRoute` via `readAloudPreference.ts`. Defaults to false so a
@@ -150,7 +147,10 @@ export function Reader({
     if (readAloud.speaking) {
       readAloud.stop()
     } else {
-      readAloud.speak(node?.body ?? '', choices.map((choice) => choice.label))
+      readAloud.speak(
+        node?.body ?? '',
+        choices.map((choice) => choice.label)
+      )
     }
   }
 
@@ -170,8 +170,12 @@ export function Reader({
     // #EDGE: browser-compat: jsdom implements neither matchMedia nor a real
     // scrollTo; optional-call both (same guard as scrollIntoView elsewhere)
     // and treat a missing matchMedia as "no reduced-motion preference".
+    // The guardian-set per-profile reduce_motion flag rides in as
+    // data-reduce-motion on the kid shell (see band-tokens.css), so honor it
+    // alongside the OS preference for this one JS-driven animation too.
     const reduceMotion =
-      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+      (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false) ||
+      Boolean(passageRef.current?.closest('[data-reduce-motion="true"]'))
     window.scrollTo?.({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
     passageRef.current?.focus?.({ preventScroll: true })
   }, [reading.current_node])
@@ -213,6 +217,9 @@ export function Reader({
   // there is nothing to undo: at the start node, and for states the engine
   // cannot faithfully replay (continuation reads). canGoBack replays the path
   // to answer, so memoize it per reading state rather than per render.
+  // Labelled "Go back a page" (not bare "Go back"): on the ending screen it
+  // sits beside "Back to my books", and two unqualified "back"s left a young
+  // reader guessing which one stays in the story.
   const canUndo = useMemo(() => canGoBack(story, reading), [story, reading])
   const goBackButton = canUndo ? (
     <Button
@@ -235,7 +242,7 @@ export function Reader({
           d="M15 5 L8 12 L15 19"
         />
       </svg>
-      Go back
+      Go back a page
     </Button>
   ) : null
 
@@ -289,9 +296,7 @@ export function Reader({
         <section className="reader-error" role="alert">
           <Mascot size={96} className="reader-error__mascot" />
           <h2 className="reader-error__title">Hmm, that page got stuck.</h2>
-          <p className="reader-error__body">
-            Let&apos;s start this story over so it works right.
-          </p>
+          <p className="reader-error__body">Let&apos;s start this story over so it works right.</p>
           <div className="reader-error__actions">
             <Button
               variant="primary"

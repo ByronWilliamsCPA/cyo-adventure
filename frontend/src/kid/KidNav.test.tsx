@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { KidNav } from './KidNav'
+import { _resetKidProfileFetch } from './useKidProfile'
 
 const mockGet = vi.fn()
 const fakeApi = { get: mockGet }
@@ -32,6 +33,7 @@ const PROFILES = [
 
 beforeEach(() => {
   mockGet.mockReset()
+  _resetKidProfileFetch()
 })
 
 describe('KidNav', () => {
