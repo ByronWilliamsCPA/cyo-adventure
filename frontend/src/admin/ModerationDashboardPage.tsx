@@ -203,14 +203,14 @@ export function ModerationDashboardPage() {
       {refreshError ? (
         <p role="alert" className="console__notice cyo-text-muted">
           {refreshError}{' '}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             className="moderation-dashboard__button"
             onClick={() => setRefreshError(null)}
             aria-label="Dismiss"
           >
             Dismiss
-          </button>
+          </Button>
         </p>
       ) : null}
       {actionError ? <ErrorBanner className="console__error">{actionError}</ErrorBanner> : null}
@@ -248,8 +248,8 @@ export function ModerationDashboardPage() {
                     cancel tests (cancel fires no PUT; confirm fires exactly
                     one).
                   */}
-                  <button
-                    type="button"
+                  <Button
+                    variant="primary"
                     className="moderation-dashboard__button"
                     disabled={applying.has(key)}
                     aria-label={`Apply: raise ${suggestion.category} (${suggestion.age_band}) to ${suggestion.suggested_min_verdict}`}
@@ -258,7 +258,7 @@ export function ModerationDashboardPage() {
                     {applying.has(key)
                       ? 'Applying…'
                       : `Apply: raise to ${suggestion.suggested_min_verdict}`}
-                  </button>
+                  </Button>
                 </li>
               )
             })}

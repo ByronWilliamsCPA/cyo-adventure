@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { Button } from '@ds/components/Button'
 import { classifyApiError } from '../hooks/classifyApiError'
 import type { FamilyConnectionView, FamilyView } from '../client/types.gen'
 import type { UserManagementApi } from './userManagementApi'
@@ -92,13 +93,13 @@ export function ConnectionsTab({ api, families, connections, onChanged }: Connec
                 <td>{conn.family_name}</td>
                 <td>{conn.connected_family_name}</td>
                 <td>
-                  <button
-                    type="button"
+                  <Button
+                    variant="danger"
                     disabled={busyId === conn.id}
                     onClick={() => void remove(conn.id)}
                   >
                     Remove
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -137,9 +138,9 @@ export function ConnectionsTab({ api, families, connections, onChanged }: Connec
         {viewerId.length > 0 && viewerId === sourceId ? (
           <ErrorBanner className="console__error">A family cannot connect to itself.</ErrorBanner>
         ) : null}
-        <button type="submit" disabled={!canCreate}>
+        <Button type="submit" variant="primary" disabled={!canCreate}>
           Create connection
-        </button>
+        </Button>
       </form>
     </section>
   )

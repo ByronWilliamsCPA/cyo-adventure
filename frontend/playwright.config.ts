@@ -78,6 +78,21 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      // Mobile-web viewport tier: the same mocked e2e specs, but at an iPhone
+      // viewport, so fluid layouts and the no-breakpoint stylesheets are
+      // exercised at a real narrow width. Run: npm run test:e2e:mobile.
+      //
+      // Runs on real WebKit: devices['iPhone 13'] defaults to WebKit, the
+      // engine iOS Safari and the R2 Capacitor WKWebView actually use, and
+      // WebKit's Linux system libraries are now installed here. This tier
+      // still does not emulate env(safe-area-inset-*) (A8); that needs a
+      // real device.
+      name: 'mobile-safari',
+      testDir: './e2e',
+      testMatch: /mobile-viewport\.spec\.ts/,
+      use: { ...devices['iPhone 13'] },
+    },
+    {
       // Runs scripts/reset_e2e_real_state.py (via e2e-real/_reset.setup.ts)
       // before the real-backend project's specs, so a second consecutive
       // `npm run test:e2e:real` is deterministic (Phase 4.2): it reverts the

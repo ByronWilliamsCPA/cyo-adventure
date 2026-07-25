@@ -7,6 +7,7 @@
   margin: 0 auto;
   padding: var(--space-4);
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--color-parchment);
   color: var(--color-ink);
 }
@@ -22,7 +23,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) 0;
+  padding: max(var(--space-2), env(safe-area-inset-top)) 0 var(--space-2);
   background: var(--color-parchment);
 }
 
@@ -37,8 +38,10 @@
   }
 }
 
+/* The progress bar takes the remaining row width, but keeps a sane floor so it
+   never collapses to nothing when the controls wrap onto their own line. */
 .reader-chrome .cyo-progress {
-  flex: 1;
+  flex: 1 1 12rem;
 }
 
 /* UX-K2: A / A+ / A++ text-size picker in the reader top bar. */
@@ -61,9 +64,14 @@
   cursor: pointer;
 }
 
-.reader-textsize__button:hover,
 .reader-textsize__button:focus-visible {
   border-color: var(--color-amber, #e07f2e);
+}
+
+@media (hover: hover) {
+  .reader-textsize__button:hover {
+    border-color: var(--color-amber, #e07f2e);
+  }
 }
 
 .reader-textsize__button--active {
@@ -90,10 +98,16 @@
   cursor: pointer;
 }
 
-.reader-leave:hover,
 .reader-leave:focus-visible {
   border-color: var(--color-amber);
   background: var(--color-amber-subtle);
+}
+
+@media (hover: hover) {
+  .reader-leave:hover {
+    border-color: var(--color-amber);
+    background: var(--color-amber-subtle);
+  }
 }
 
 /* Read-aloud toggle (K7): same pill shape as the Leave control so the two
@@ -117,10 +131,16 @@
   cursor: pointer;
 }
 
-.reader-tts-toggle:hover,
 .reader-tts-toggle:focus-visible {
   border-color: var(--color-amber);
   background: var(--color-amber-subtle);
+}
+
+@media (hover: hover) {
+  .reader-tts-toggle:hover {
+    border-color: var(--color-amber);
+    background: var(--color-amber-subtle);
+  }
 }
 
 .reader-tts-toggle--speaking {
@@ -129,10 +149,16 @@
   color: var(--color-parchment);
 }
 
-.reader-tts-toggle--speaking:hover,
 .reader-tts-toggle--speaking:focus-visible {
   border-color: var(--color-amber-deep);
   background: var(--color-amber-deep);
+}
+
+@media (hover: hover) {
+  .reader-tts-toggle--speaking:hover {
+    border-color: var(--color-amber-deep);
+    background: var(--color-amber-deep);
+  }
 }
 
 /* Tell a grown-up (K15): same pill shape as the Leave/Listen controls so it
@@ -156,10 +182,16 @@
   cursor: pointer;
 }
 
-.reader-flag-toggle:hover,
 .reader-flag-toggle:focus-visible {
   border-color: var(--color-amber);
   background: var(--color-amber-subtle);
+}
+
+@media (hover: hover) {
+  .reader-flag-toggle:hover {
+    border-color: var(--color-amber);
+    background: var(--color-amber-subtle);
+  }
 }
 
 .reader-flag-prompt {
@@ -221,9 +253,14 @@
   cursor: pointer;
 }
 
-.replay-failed-banner__ok:hover,
 .replay-failed-banner__ok:focus-visible {
   background: var(--color-parchment);
+}
+
+@media (hover: hover) {
+  .replay-failed-banner__ok:hover {
+    background: var(--color-parchment);
+  }
 }
 
 /* Branded loading state while a story is fetched (Pip + short reassurance),

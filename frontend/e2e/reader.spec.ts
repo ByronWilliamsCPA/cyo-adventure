@@ -106,6 +106,22 @@ test('the reader column has no horizontal scroll at 390px', async ({ page }) => 
   expect(overflow).toBe(false)
 })
 
+test('the reader chrome does not overflow at 320px with the offline badge shown', async ({
+  page,
+  context,
+}) => {
+  await page.setViewportSize({ width: 320, height: 640 })
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('reader')).toBeVisible()
+  // Force the connection badge into the chrome (a realistic mobile combo).
+  await context.setOffline(true)
+  await expect(page.getByText('No internet')).toBeVisible()
+  const overflow = await page.locator('.reader-chrome').evaluate(
+    (el) => el.scrollWidth > el.clientWidth
+  )
+  expect(overflow).toBe(false)
+})
+
 test('choice buttons meet the 44px tap target', async ({ page }) => {
   await page.goto(READER_PATH)
   await expect(page.getByTestId('reader')).toBeVisible()

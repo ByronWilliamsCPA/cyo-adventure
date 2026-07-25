@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { Button } from '@ds/components/Button'
 import { classifyApiError } from '../hooks/classifyApiError'
 import type { FamilyView, UserView } from '../client/types.gen'
 import type { UserManagementApi } from './userManagementApi'
@@ -210,11 +211,11 @@ export function UsersTab({ api, families, users, onChanged }: UsersTabProps) {
                 <td>
                   {editingId === user.id ? (
                     <>
-                      <button type="button" disabled={busy} onClick={() => void saveEdit(user.id)}>
+                      <Button variant="primary" disabled={busy} onClick={() => void saveEdit(user.id)}>
                         Save
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
+                        variant="ghost"
                         disabled={busy}
                         onClick={() => {
                           setEditingId(null)
@@ -222,21 +223,21 @@ export function UsersTab({ api, families, users, onChanged }: UsersTabProps) {
                         }}
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </>
                   ) : (
                     <>
-                      <button type="button" disabled={busy} onClick={() => startEdit(user)}>
+                      <Button variant="ghost" disabled={busy} onClick={() => startEdit(user)}>
                         Edit
-                      </button>
+                      </Button>
                       {user.status !== 'pending' ? (
-                        <button
-                          type="button"
+                        <Button
+                          variant={user.status === 'active' ? 'danger' : 'ghost'}
                           disabled={busy}
                           onClick={() => void toggleStatus(user)}
                         >
                           {user.status === 'active' ? 'Deactivate' : 'Reactivate'}
-                        </button>
+                        </Button>
                       ) : null}
                     </>
                   )}
@@ -293,9 +294,9 @@ export function UsersTab({ api, families, users, onChanged }: UsersTabProps) {
           />
           Also grant admin capability
         </label>
-        <button type="submit" disabled={!canCreate}>
+        <Button type="submit" variant="primary" disabled={!canCreate}>
           Send invite
-        </button>
+        </Button>
       </form>
     </section>
   )

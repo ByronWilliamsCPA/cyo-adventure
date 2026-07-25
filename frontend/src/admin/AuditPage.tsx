@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
 import { LoadingStatus } from '@ds/components/LoadingStatus'
+import { Button } from '@ds/components/Button'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeAuditApi, type AuditEventView, type AuditListView } from './auditApi'
@@ -223,9 +224,9 @@ export function AuditPage() {
             aria-label="Filter events until this date"
           />
         </label>
-        <button type="submit">Apply filters</button>
-        <button
-          type="button"
+        <Button type="submit" variant="primary">Apply filters</Button>
+        <Button
+          variant="ghost"
           onClick={() => {
             setFilters(EMPTY_FILTERS)
             setAppliedFilters(EMPTY_FILTERS)
@@ -233,7 +234,7 @@ export function AuditPage() {
           }}
         >
           Clear filters
-        </button>
+        </Button>
       </form>
 
       {state.kind === 'loading' ? <LoadingStatus /> : null}
@@ -243,9 +244,9 @@ export function AuditPage() {
       {refreshError ? (
         <p role="alert" className="console__notice cyo-text-muted">
           {refreshError}{' '}
-          <button type="button" onClick={() => setRefreshError(null)} aria-label="Dismiss">
+          <Button variant="ghost" onClick={() => setRefreshError(null)} aria-label="Dismiss">
             Dismiss
-          </button>
+          </Button>
         </p>
       ) : null}
 
@@ -284,20 +285,20 @@ export function AuditPage() {
             </tbody>
           </table>
           <p>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               disabled={!canGoPrevious}
               onClick={() => setOffset((prev) => Math.max(0, prev - PAGE_SIZE))}
             >
               Previous page
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="ghost"
               disabled={!canGoNext}
               onClick={() => setOffset((prev) => prev + PAGE_SIZE)}
             >
               Next page
-            </button>
+            </Button>
           </p>
         </>
       ) : null}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { ErrorBanner } from '@ds/components/ErrorBanner'
+import { Button } from '@ds/components/Button'
 import { classifyApiError } from '../hooks/classifyApiError'
 import type { FamilyView } from '../client/types.gen'
 import type { UserManagementApi } from './userManagementApi'
@@ -129,29 +130,29 @@ export function FamiliesTab({ api, families, onChanged }: FamiliesTabProps) {
                 <td>
                   {editingId === family.id ? (
                     <>
-                      <button
-                        type="button"
+                      <Button
+                        variant="primary"
                         disabled={busy || editName.trim().length === 0}
                         onClick={() => void saveEdit(family.id)}
                       >
                         Save
-                      </button>
-                      <button type="button" disabled={busy} onClick={() => setEditingId(null)}>
+                      </Button>
+                      <Button variant="ghost" disabled={busy} onClick={() => setEditingId(null)}>
                         Cancel
-                      </button>
+                      </Button>
                     </>
                   ) : (
                     <>
-                      <button type="button" disabled={busy} onClick={() => startEdit(family)}>
+                      <Button variant="ghost" disabled={busy} onClick={() => startEdit(family)}>
                         Rename
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
+                        variant={family.status === 'active' ? 'danger' : 'ghost'}
                         disabled={busy}
                         onClick={() => void toggleStatus(family)}
                       >
                         {family.status === 'active' ? 'Deactivate' : 'Reactivate'}
-                      </button>
+                      </Button>
                     </>
                   )}
                 </td>
@@ -171,9 +172,9 @@ export function FamiliesTab({ api, families, onChanged }: FamiliesTabProps) {
           Name
           <input value={name} onChange={(e) => setName(e.target.value)} required />
         </label>
-        <button type="submit" disabled={creating || name.trim().length === 0}>
+        <Button type="submit" variant="primary" disabled={creating || name.trim().length === 0}>
           Create family
-        </button>
+        </Button>
       </form>
     </section>
   )

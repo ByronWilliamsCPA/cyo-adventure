@@ -122,6 +122,20 @@ relate to the Supabase project constraints.
   a signal to investigate rather than a block; it can be promoted to required
   once its per-PR flakiness rate is known. The same spec also runs under
   `real-backend` in the nightly (one spec, two projects).
+- **Mobile-web tap targets (Task A7, mobile-safari)**:
+  `frontend/e2e/admin-touch-targets.spec.ts` — asserts every action button in
+  the six admin CRUD surfaces migrated to the `@ds` `Button` (FamiliesTab,
+  KidsTab, ConnectionsTab, UsersTab, ProviderAllowlistPage, AuditPage) plus the
+  two moderation pages' trigger/submit buttons clears the 44px minimum height
+  (WCAG 2.5.5) at a phone viewport, scoped per `main section` content container
+  so the regression stays pinned to the migrated buttons rather than chrome.
+- **Mobile-web narrow-width overflow sweep (Task A12, mobile-safari)**:
+  `frontend/e2e/mobile-viewport.spec.ts` — runs under the `mobile-safari`
+  project (`npm run test:e2e:mobile`); asserts zero horizontal overflow at real
+  phone widths across landing, kid picker/library, and guardian surfaces. Guards
+  fluid-layout overflow only; Playwright device profiles do not emulate
+  `env(safe-area-inset-*)`, so notch/home-indicator overlap (Task A8) needs a
+  real device or the Capacitor build.
 
 ---
 
@@ -507,6 +521,13 @@ in their journey sections instead.
   `frontend/src/theme/ThemeProvider.test.tsx` (provider state, `<html
   data-theme>` sync, OS-preference and cross-tab `storage` re-resolution, and
   the ThemeToggle three-way cycle plus its per-mode accessible label)
+- Connectivity / offline infrastructure (mobile-web readiness, Phase A):
+  `frontend/src/hooks/probeConnectivity.test.ts` (the active fetch-based
+  reachability probe behind `useOnlineStatus`: an ok response resolves true, a
+  reject or timeout resolves false, and a no-fetch runtime assumes reachable)
+  and `frontend/src/offline/persist.test.ts` (`requestPersistentStorage()`: an
+  absent Storage API resolves false, and it skips the `persist()` request when
+  storage is already persisted)
 
 ## Keeping this matrix current
 

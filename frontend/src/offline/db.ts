@@ -70,8 +70,25 @@ function stateKey(profileId: string, storybookId: string): string {
 
 let _db: Promise<IDBPDatabase<ReaderDB>> | null = null
 
+/**
+ * Ask the browser to exempt this origin from best-effort storage eviction, so
+ * downloaded stories survive iOS Safari's storage-pressure purges. Idempotent
+ * and safe to call on every open: it no-ops when already granted or unsupported.
+ */
+export async function requestPersistentStorage(): Promise<boolean> {
+  const storage = typeof navigator === 'undefined' ? undefined : navigator.storage
+  if (!storage?.persist) return false
+  if (await storage.persisted?.()) return true
+  return storage.persist()
+}
+
 /** Open (or reuse) the reader IndexedDB database. */
 export function getDb(): Promise<IDBPDatabase<ReaderDB>> {
+  if (_db === null) {
+    // Best-effort: ask for durable storage the first time we touch IndexedDB.
+    // Fire-and-forget; a rejection or unsupported browser must not block opening.
+    void requestPersistentStorage()
+  }
   _db ??= openDB<ReaderDB>(DB_NAME, DB_VERSION, {
     // #ASSUME: data-integrity: idb's upgrade callback receives the OLD
     // version (0 for a brand-new database), and each `if` runs the schema

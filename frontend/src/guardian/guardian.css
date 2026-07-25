@@ -25,6 +25,7 @@
 
 .guardian-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(120% 80% at 12% 0%, var(--color-amber-subtle) 0%, transparent 55%),
     var(--color-parchment, #f8f3e8);
@@ -36,8 +37,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: var(--space-4, 1rem);
   padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
+  padding-top: max(var(--space-3, 0.75rem), env(safe-area-inset-top));
   background: var(--color-parchment-dark, #ede6d0);
   border-bottom: 2px solid var(--color-parchment-deeper, #e0d5b8);
   position: sticky;
@@ -460,7 +463,7 @@
   border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
   border-radius: 8px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
   gap: 0.5rem;
 }
 
@@ -1017,6 +1020,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   margin-top: 1.5rem;
   background: var(--color-parchment-dark, #ede6d0);
   border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
@@ -1819,8 +1823,9 @@
 /* ============================================================================
    Mobile breakpoint (~640px): guardian surfaces are managed from a phone as
    often as a desktop. Desktop layouts above are left untouched; this block
-   only relaxes the row/action layouts that would otherwise overflow or
-   crush controls on a narrow screen. */
+   adjusts layouts for narrow screens: relaxing row/action/table layouts that
+   would otherwise overflow (various surfaces), reading cards (G9), and
+   notification panel positioning (G10). */
 @media (max-width: 640px) {
   /* #ASSUME: layout: the header's three action controls (ThemeToggle,
      NotificationBell, sign-out) plus the brand no longer fit on one row at
