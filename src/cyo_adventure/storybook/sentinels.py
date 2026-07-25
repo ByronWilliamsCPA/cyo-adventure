@@ -60,18 +60,22 @@ def wrap(slot_id: str, value: str) -> str:
 
     Args:
         slot_id: The slot id. Must match ``[A-Z][A-Z0-9_]*``.
-        value: The pinned generic default value. May contain spaces but must
-            not contain any of ``{ } < > ' ~``.
+        value: The pinned generic default value. Must be non-empty; may contain
+            spaces but must not contain any of ``{ } < > ' ~``.
 
     Returns:
         str: The canonical ``{~SLOTID:GenericWord~}`` sentinel token.
 
     Raises:
-        ValueError: If ``slot_id`` does not match ``[A-Z][A-Z0-9_]*``, or if
-            ``value`` contains any of ``{ } < > ' ~``.
+        ValueError: If ``slot_id`` does not match ``[A-Z][A-Z0-9_]*``, if
+            ``value`` is empty, or if ``value`` contains any of
+            ``{ } < > ' ~``.
     """
     if not _SLOT_ID_RE.match(slot_id):
         msg = f"invalid slot id {slot_id!r}: must match [A-Z][A-Z0-9_]*"
+        raise ValueError(msg)
+    if not value:
+        msg = "invalid sentinel value: must not be empty"
         raise ValueError(msg)
     found = _FORBIDDEN_VALUE_CHARS.intersection(value)
     if found:

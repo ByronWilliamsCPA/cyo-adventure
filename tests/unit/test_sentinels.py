@@ -121,6 +121,11 @@ class TestWrap:
         with pytest.raises(ValueError, match="value"):
             wrap("HERO", bad_value)
 
+    def test_wrap_rejects_empty_value(self) -> None:
+        """wrap raises ValueError when value is empty."""
+        with pytest.raises(ValueError, match="empty"):
+            wrap("HERO", "")
+
 
 class TestStripSentinels:
     """strip_sentinels replaces every sentinel with its inner value."""
