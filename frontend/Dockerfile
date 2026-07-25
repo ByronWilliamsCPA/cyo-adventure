@@ -20,7 +20,7 @@
 # Docker's actual builder variant (shell + npm); only this build-only stage
 # needs it, the shipped image below still comes from dhi-nginx.
 # #VERIFY the production stage never FROMs the -dev tag.
-FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:d79d09abf199ae85fbcf730e64c5eb251b3591bc925fea3c5d3d0d74b3ed06e8 AS deps
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:8754ae16d324ab8d4be1a8172ea1fc1aaa4a84a8dbb7aaf435a3e318e9f6ca81 AS deps
 
 WORKDIR /app
 
@@ -37,7 +37,7 @@ RUN npm ci --only=production=false
 # Stage 2: Builder
 # =============================================================================
 # Same -dev rationale as the deps stage above: `npm run build` needs a shell.
-FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:d79d09abf199ae85fbcf730e64c5eb251b3591bc925fea3c5d3d0d74b3ed06e8 AS builder
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:8754ae16d324ab8d4be1a8172ea1fc1aaa4a84a8dbb7aaf435a3e318e9f6ca81 AS builder
 
 WORKDIR /app
 
@@ -140,7 +140,7 @@ CMD ["-g", "daemon off;"]
 # Same -dev rationale as the deps stage above: `npm ci` / `npm run dev` need a
 # shell, and this stage runs interactively in docker-compose dev, not just at
 # build time, so the shell also has to be there at container runtime.
-FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:d79d09abf199ae85fbcf730e64c5eb251b3591bc925fea3c5d3d0d74b3ed06e8 AS development
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:8754ae16d324ab8d4be1a8172ea1fc1aaa4a84a8dbb7aaf435a3e318e9f6ca81 AS development
 
 WORKDIR /app
 
