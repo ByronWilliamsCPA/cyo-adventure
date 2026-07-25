@@ -2,7 +2,7 @@
 schema_type: planning
 title: "Story Diversity Remediation and Enhancement Plan"
 description: "Phased plan to close the nine gaps in story-diversity-analysis.md and raise book diversity
-  further. Records twelve review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because
+  further. Records thirteen review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because
   the closed vocabulary is load-bearing for the WS-7 echo surface; the gamebook cells' 98% negative share is
   ADR-011-intended with PL-20 working as designed, the real gap being a shallow fail-path tail PL-20 leaves
   out of scope; expanding the curated vocabulary is the better fix and it exposes a symmetric-Jaccard defect
@@ -16,7 +16,8 @@ description: "Phased plan to close the nine gaps in story-diversity-analysis.md 
   exposes two series-continuity gaps. Identifies the root cause of the gamebook symptoms: ADR-011's
   restart-on-fail primitive is specified, unrepresentable in the schema, and half-built in the player, so every
   terminal is a hard stop. The resulting two-tier restart model (setbacks auto-loop, foreclosing terminals offer
-  a choice) then narrows PL-22 from 178 endings to 73 and retracts the SR-8 series rule entirely."
+  a choice) then narrows PL-22 from 178 endings to 73 and retracts the SR-8 series rule entirely, and an opt-in
+  challenge mode adds a series reset on death for the two teen bands."
 tags:
   - planning
   - generation
@@ -48,12 +49,12 @@ source: "story-diversity-analysis.md; review challenges on GDPR exposure of an o
 
 ## 1. Corrections and refinements from review
 
-Twelve items, each from a review challenge and each changing the work. They are recorded here rather than
+Thirteen items, each from a review challenge and each changing the work. They are recorded here rather than
 silently patched into the audit, because each rests on a fact the audit did not establish. 1.1 and 1.2 correct
 errors; 1.3 through 1.10 are owner direction and resolved decisions that reshape the approach. 1.6 also
 corrects an earlier claim about offline revocation, and 1.9 replaces a deliverable that measured the wrong
-thing, 1.11 identifies the root cause the P4 measurements were symptoms of, and 1.12 simplifies three
-deliverables and retracts one.
+thing, 1.11 identifies the root cause the P4 measurements were symptoms of, 1.12 simplifies three
+deliverables and retracts one, and 1.13 adds an opt-in challenge mode.
 
 ### 1.1 The open-vocabulary theme signature is unsafe as drafted
 
@@ -788,6 +789,77 @@ safe point or node 1 and can still reach the continuable ending, which SR-5 alre
 the inherited state intact, and only this book's own progress discarded. The API needs to distinguish
 "book-local reset" from "series reset", and offering the latter to a reader at all is a product decision.
 
+### 1.13 Opt-in challenge mode: permadeath as a campaign reset
+
+Owner direction (2026-07-25): in gameplay style, killing the character would traditionally send the reader back
+to book 1, node 1. That should be something a reader can **opt into** to increase the complexity if they wish.
+
+This adds a third tier above section 1.12's two: with the mode enabled, a `death` ending resets the whole
+series rather than returning the reader to a safe point. Opt-in, never default.
+
+**The band gate comes free from existing policy.** No new rule is needed to decide where this may be offered:
+
+| Band | `forbidden_ending_kinds` | ADR-011 restart-on-fail | Challenge mode offerable? |
+| --- | --- | --- | --- |
+| 3-5, 5-8 | `death`, `capture` | none / soft try-again only | No: there is no `death` ending to trigger it |
+| 8-11 | `death` | failure/entrapment, no death | No: same reason |
+| 10-13 | none | "yes, logical" | No: `death` exists but lethal restart is not sanctioned |
+| 13-16, 16+ | none | **"yes, lethal (gamebook)"** | **Yes** |
+
+ADR-011 already says restart-on-fail is "lethal only from `13-16` up", and the two lower bands have no `death`
+ending for the mode to act on. So the mode is offerable at 13-16 and 16+ and nowhere else, derived from policy
+already in place.
+
+**It resolves section 1.12's open question by contrast.** There are now two distinct resets, and they are not
+the same operation:
+
+- **Book-local node-1 restart** (section 1.12, the normal-mode option on a foreclosing terminal): returns to
+  *this book's* start node and **preserves** state inherited from book N-1, which the reader earned there.
+- **Series reset** (this section, the challenge-mode consequence of `death`): returns to **book 1, node 1** and
+  discards carried state.
+
+So a series reset is a *consequence the reader opted into*, not a menu item offered casually. That is a better
+answer than offering both resets side by side, and it closes the question 1.12 raised.
+
+**Nothing exists to hold the mode flag.** There is a catalog-level `Series` table, but **no per-profile series
+progress table**: series progress is implicit in the per-book `ReadingState` rows plus `Completion` rows, and
+`get_series_next` resolves the next book on demand each time. So this feature needs one new per-(profile,
+series) row to carry the mode. That is the only schema addition it requires, and it is worth noting that it also
+gives series progress a home it currently lacks.
+
+**A series reset is a multi-row destructive operation, and that is the risky part.** It resets every
+`ReadingState` row for that profile across the series' books. Three requirements follow:
+
+1. **Atomic and server-authoritative.** It must not be applied optimistically on-device. A death that happens
+   offline and arrives through `offline/sync.ts` could otherwise destroy a run during conflict resolution, and
+   resolving that conflict wrongly costs the reader hours rather than minutes.
+2. **`Completion` rows must survive.** `api/reading.py::list_completions` tracks "every ending a child profile
+   has completed" as an achievement log, not as progress. A permadeath reset should clear reading state and keep
+   the collected endings, or the mode punishes the reader twice and erases the collection loop that makes
+   re-reading worthwhile.
+3. **It must interact correctly with `state_revision`** optimistic concurrency across every affected row, not
+   just the book the death occurred in.
+
+**Mode locking is a genuine decision.** If a reader can switch to normal mode after dying, the challenge is
+void; if they are locked in, a child can be trapped in an experience they no longer want. Recommend: allow a
+downgrade from challenge to normal at any time, but never retroactively undo a death that has already reset the
+run. The consequence stands, the mode does not trap them.
+
+**Guardian visibility.** A mode that destroys hours of progress is worth surfacing to the guardian, consistent
+with the existing G-series controls: reader-selectable, band-gated, guardian-visible. Whether a guardian can
+withdraw availability is a product decision rather than a safety one.
+
+**State the consequence before opt-in.** This is section 1.8's principle applied to a new surface: "if your
+character dies, you start again at the very beginning of book 1" must be stated plainly at the point of
+enabling, not discovered on the first death. Unlike the request-page restrictions, this one *can* be explained
+afterwards, but by then it has already cost the reader the run.
+
+**One honest tension with the diversity objective.** Challenge mode increases replay volume, which surfaces more
+distinct leaves; but it also forces repeated re-reading of the shared opening funnel, which is exactly the
+perceived-sameness failure PL-22 exists to prevent. For a mode the reader deliberately chose, that trade is
+acceptable. It is another reason the mode must never be the default, and it raises rather than lowers the value
+of D48's checkpoint placement for normal mode.
+
 ---
 
 ## 2. Objective and constraints
@@ -993,6 +1065,11 @@ addresses the cause rather than the symptoms P4 measures. Needs an ADR amendment
 | D49 | **Amend ADR-011** to record that `restart-on-fail` is a player-level loop over hard terminals rather than a graph edge, since `Node` forbids choices on an ending node and that invariant is worth keeping. The ADR currently implies a graph edge ("negative ending -> start/checkpoint"), which is not implementable as written. | S |
 | D50 | **Re-shape D18's floor as a session-level measure** once D47 ships: cumulative satisfying rate per session across restarts, with structural per-walk SPM retained as the design gate. Without this, D18 would floor a metric that restart-on-fail deliberately makes unrepresentative. | S |
 | D51 | Audit whether `save_slots` should stay unwritable until D46 lands. It is currently correct plumbing with no producer, which is harmless but invites a future contributor to assume checkpoints work. Either document it as reserved-for-D47 or gate it behind the same decision. | S |
+| D52 | **Per-(profile, series) mode row.** The one schema addition challenge mode needs: nothing currently holds per-profile series state, since progress is implicit in per-book `ReadingState` plus `Completion` rows. Carries the mode flag and gives series progress a home it currently lacks. Band-gated to 13-16 and 16+ per section 1.13. | M |
+| D53 | **Series-reset operation:** atomic, server-authoritative, resetting every `ReadingState` row for the profile across the series' books while **preserving `Completion` rows**, and correct against `state_revision` on every affected row. Never applied optimistically on-device: a death arriving through `offline/sync.ts` must not destroy a run during conflict resolution. | M |
+| D54 | **Opt-in surface with the consequence stated up front** ("if your character dies, you start again at the very beginning of book 1"), guardian-visible, at the point of enabling rather than on first death. Section 1.8's principle on a new surface. | S |
+| D55 | **Mode-change policy:** allow a downgrade from challenge to normal at any time, but never retroactively undo a death that has already reset the run. Preserves the challenge without trapping a child in an experience they no longer want. | S |
+| D56 | Decide whether a guardian may withdraw challenge-mode availability for a profile. A product decision rather than a safety one, since the mode cannot expose content the band forbids. | S |
 
 ---
 
@@ -1015,6 +1092,7 @@ P7 (visibility: D25 -> D26, D27, D28 -> D29..D32, D34)   independent; D25 unbloc
 P8 (expectation setting: D36 -> D37, D38, D39, D40)   independent; no open decisions
 P9 (series: D42 -> D41, D43; D44 shares D17's remediation pass; D45)
 P10 (restart-on-fail: D46 -> D47 -> D48, D50; D49, D51)   root cause; ADR-011 amendment first
+     challenge mode: D52 -> D53 -> D54, D55; D56   opt-in, 13-16 and 16+ only
 ```
 
 P1 before P3: escalation cannot act on a signal that does not fire. P1 before any metric claim: until the
@@ -1049,6 +1127,7 @@ Beyond the WS-0 suite:
 | Ending-mass concentration | Share of terminal mass on the top-k endings, and how many declared endings are ever reached | D18 |
 | Satisfying-ending rate | Real share of readers reaching a `success`/`completion` ending per storybook; the SPM floor's calibration input | D16, D18 |
 | Session satisfying rate | Cumulative share of reading *sessions* reaching a `success`/`completion` ending across restarts; supersedes per-walk SPM as the floor once D47 ships | D50 |
+| Challenge-mode adoption and survival | Share of eligible profiles enabling it, and runs reaching book N before a series reset; tells us whether the mode is tuned or punishing | D52, D54 |
 | Series continuation admissibility | Non-final series books with zero continuation-foreclosing endings | D41, D44 |
 | Outcome-mix spread | Per cell, spread of negative-ending share across candidates | D19 |
 | Escalated ATG lift | ATG masked distance at `LEAF` escalation minus the same pair at `TREE` | D11 |
@@ -1074,6 +1153,8 @@ doing anything, however good the code looks.
 | Should gamebook fails be terminal? | **No: many paths should be setbacks, not end-of-story.** ADR-011 already specifies `restart-on-fail`; the schema forbids the edge and the checkpoint mechanism has no producer. Root cause of the P4 symptoms. | 1.11, built by P10 |
 | Series end points | **Every ending must allow the next book's single start point**, satisfied by restart-on-fail rather than by restricting ending kinds. SR-8 retracted; `brass-lantern` needs no continuity remediation. | 1.10, 1.12 |
 | Restart behaviour | **Two tiers.** A `setback` auto-loops to the last safe point; a foreclosing terminal offers last-safe-point or node 1. Safe point = most recent visited multi-choice node with an untaken choice, derived from persisted state. | 1.12, built by D46/D47 |
+| Opt-in challenge mode | **Yes: a `death` resets the series to book 1, node 1, opt-in and never default.** Offerable at 13-16 and 16+ only, gated by existing policy (`death` is forbidden below 10-13; ADR-011 makes lethal restart-on-fail "13-16 up"). | 1.13, built by D52-D56 |
+| What does "restart from node 1" mean in a state-carrying series? | **Two distinct resets.** Book-local node-1 restart preserves state inherited from book N-1; the series reset (book 1, node 1) discards it and is the challenge-mode consequence of `death`, not a casual menu item. | 1.13 |
 | Does `capture` foreclose continuation? | **No, and neither does `death`**, given restart. Both foreclose an attempt. | 1.12 |
 | Open vs curated vocabulary | **Expand the curated closed list**; the open-vocabulary variant drops to a fallback (D7) that may never be needed. | 1.3 |
 
@@ -1082,10 +1163,9 @@ doing anything, however good the code looks.
 - **Does the similarity signature need a DPIA addendum?** Only relevant if D7 is ever built. The design adds no
   personal data at rest and no new export, which is the basis for arguing no. A DPO or legal call, not an
   engineering one. D7 raises it; it does not answer it.
-- **What does "restart from node 1" mean in a state-carrying series?** For `carries_state: true` chains
-  (`brass-lantern` is one), a node-1 restart should not reset state inherited from book N-1, since the reader
-  earned it there. The API needs to distinguish a book-local reset from a series reset, and whether to offer the
-  latter to a reader at all is a product decision. **The last open product decision in this plan.**
+- **May a guardian withdraw challenge-mode availability for a profile?** D56. A product decision rather than a
+  safety one, since the mode cannot expose content the band forbids. **The last open product decision in this
+  plan.**
 - **Should PL-22 become `max(0.33 * min_complete, funnel_clearing_depth)`?** One skeleton
   (`the-smugglers-cut`) has a funnel deeper than its 33% floor. Start with the constant plus a per-cell
   override; revisit on D16's telemetry.
