@@ -1,0 +1,247 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_benchmark_salvage_run",
+  "version": 1,
+  "title": "The Salvage Run (benchmark seed)",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 3.5,
+      "tolerance": 1.5
+    },
+    "tier": 2,
+    "themes": [
+      "exploration",
+      "problem-solving"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 4,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "branch_and_bottleneck",
+    "production_eligible": false
+  },
+  "variables": [
+    {
+      "name": "has_light",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the diver bought the underwater lantern before diving"
+    },
+    {
+      "name": "jewel_count",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "Number of jewels recovered across the two wreck sites"
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=140 beats='At the dockside dive shop, the reader can buy an underwater lantern, save the money and dive without one, or decide the sea looks too rough and go home instead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_lantern",
+          "label": "Buy the underwater lantern before you dive.",
+          "target": "n_reef_wreck",
+          "effects": [
+            {
+              "op": "set",
+              "var": "has_light",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_start_noequip",
+          "label": "Save your money and dive without it.",
+          "target": "n_reef_wreck"
+        },
+        {
+          "id": "c_start_leave",
+          "label": "Decide the sea is too rough today and go home.",
+          "target": "n_surface_empty"
+        }
+      ]
+    },
+    {
+      "id": "n_reef_wreck",
+      "body": "<<FILL role=rising words=140 beats='The reader reaches a reef wreck; a jewel is half-buried in the sand near a moray eel; grabbing it costs time and nerve, passing it by is safer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reef_grab",
+          "label": "Reach past the eel and grab the jewel.",
+          "target": "n_hub",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "jewel_count",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_reef_pass",
+          "label": "Leave the jewel and swim on.",
+          "target": "n_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_hub",
+      "body": "<<FILL role=rising words=130 beats='Air is still plentiful; the reader can dive once more toward a dark cave wreck, or surface now and end the salvage run early'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hub_cave",
+          "label": "Dive once more, toward the dark cave wreck.",
+          "target": "n_cave_wreck"
+        },
+        {
+          "id": "c_hub_surface",
+          "label": "Surface now and end the dive.",
+          "target": "n_final_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_cave_wreck",
+      "body": "<<FILL role=rising words=140 beats='Inside the cave wreck a second jewel sits in a lightless chamber; with the lantern the reader can see well enough to take it safely, without it the dark forces a careful retreat empty-handed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cave_grab",
+          "label": "Use the lantern to spot and take the jewel.",
+          "target": "n_final_hub",
+          "condition": {
+            "==": [
+              {
+                "var": "has_light"
+              },
+              true
+            ]
+          },
+          "effects": [
+            {
+              "op": "inc",
+              "var": "jewel_count",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_cave_no_light",
+          "label": "Feel around blindly, then retreat rather than risk it.",
+          "target": "n_final_hub",
+          "condition": {
+            "==": [
+              {
+                "var": "has_light"
+              },
+              false
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "n_final_hub",
+      "body": "<<FILL role=choice words=120 beats='Back on the boat deck, the reader empties the dive bag; how the trip is remembered depends on how many jewels came up with them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_result_treasure",
+          "label": "Count two jewels in the bag.",
+          "target": "n_end_treasure",
+          "condition": {
+            ">=": [
+              {
+                "var": "jewel_count"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_result_partial",
+          "label": "Count one jewel in the bag.",
+          "target": "n_end_partial",
+          "condition": {
+            "==": [
+              {
+                "var": "jewel_count"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_result_empty",
+          "label": "Find the bag empty.",
+          "target": "n_end_empty",
+          "condition": {
+            "==": [
+              {
+                "var": "jewel_count"
+              },
+              0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "n_end_treasure",
+      "body": "<<FILL role=completion words=90 beats='Two jewels catch the sunlight on deck; the salvage run pays off completely and the reader heads home with a full share'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_treasure",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Two Jewels Recovered"
+      }
+    },
+    {
+      "id": "n_end_partial",
+      "body": "<<FILL role=ending words=90 beats='One jewel is better than none; the reader is proud of the single find even while wondering what was left behind in the cave'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_partial",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "A Single Find"
+      }
+    },
+    {
+      "id": "n_end_empty",
+      "body": "<<FILL role=failure words=90 beats='The bag is empty; the reader surfaces safe but with nothing to show for the dive, resolving to come back better prepared next time'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_empty",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Empty-Handed"
+      }
+    },
+    {
+      "id": "n_surface_empty",
+      "body": "<<FILL role=ending words=90 beats='The reader never dives at all; the sea stays rough all afternoon, and there is always tomorrow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_no_dive",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Another Day"
+      }
+    }
+  ]
+}
