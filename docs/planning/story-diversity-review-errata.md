@@ -129,6 +129,17 @@ semantically incompatible, not merely confusing. The next free policy ID is **`P
 the registry and source: `PL-22`, `SR-7`, `L1-7`, `L2-13`, `RL-13` -- so the proposed `SR-8`/`SR-9` did not
 collide.
 
+> **Amendment (2026-07-26), and a defect in the check above.** Those maxima were correct against `main` and are
+> still correct against `main` after PR #418 merged. They were never sufficient, because they were measured only
+> against merged state: **open PR #416 claims `SR-8`, `PL-23` and `PL-24`.** So `PL-23` is not free and
+> `SR-8` is taken. The live plan now specifies `SR-9` for its continuation-state rule and `PL-25` for the
+> deferred fail-depth floor, and `L2-14` remains free because #416's "adds L2-13" is a catalog entry for a rule
+> already shipped in `layer2.py`. The method rule this failure produced is recorded as rule 5's amendment in
+> `story-diversity-plan-v2.md` section 7: state whether a rule-ID claim rests on `main` or on `main` plus the
+> open PR set. The historical `SR-8`/`SR-9` names elsewhere in this document refer to the *retracted* proposals
+> from the superseded plans and are left as written, since renaming them would falsify the record of what was
+> refuted.
+
 ### 2.5 The restart design (sections 1.11, 1.12; D46, D47, D48, D51)
 
 Four independent sources say the mechanism should be path replay, and snapshots were chosen against all four.
@@ -330,7 +341,7 @@ were read.
 | `authorization-matrix.md` | Admin-authored requests into any family are an intended, documented capability |
 | `series-stress-test-findings.md` F1-F3 | The `has_lantern` inversion, absent series linkage on import, and auto-repair replacing imported content |
 | `r1-deferred-debt-register.md` U5 | The reading-history gap D16 depends on, with a phase and an owner |
-| `validator-rules.md` | The rule registry; `PL-22` taken, `PL-23` free |
+| `validator-rules.md` | The rule registry; `PL-22` taken, `PL-23` free **on `main`** (but claimed by open PR #416, see the 2026-07-26 amendment in section 2.4) |
 | `docs/compliance/coppa-gdpr-remediation-plan.md` | Route A self-naming policy, the document claimed to be missing |
 
 **Any future rule ID, ADR reference, or "this is unaddressed" claim must be checked against the registry and the

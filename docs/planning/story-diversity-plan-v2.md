@@ -2,10 +2,10 @@
 schema_type: planning
 title: "Story Diversity Plan v2"
 description: "Rebuilt diversity plan, grounded only in measurements that survived a seven-reviewer adversarial
-  pass and a 98-document corpus survey. Eighteen near-term deliverables, six independent defects, eight items deferred
-  behind named prerequisites, five resolved owner decisions, a child-reader review folded in, and a
-  development-stage section re-ordering the work for a catalog with one author and one test household. Replaces two
-  superseded plans."
+  pass and a 98-document corpus survey. Nineteen near-term deliverables, six independent defects, eight items deferred
+  behind named prerequisites, five resolved owner decisions, a child-reader review folded in, a
+  development-stage section re-ordering the work for a catalog with one author and one test household, and a
+  reconciliation section against merged PR #418 (ADR-023) and open PR #416. Replaces two superseded plans."
 tags:
   - planning
   - generation
@@ -21,7 +21,9 @@ component: Strategy
 source: "story-diversity-analysis.md (measurements, as corrected); story-diversity-review-errata.md (the
   refutations and the corpus survey); runtime-semantics.md; validator-rules.md; pathfinder-structure-exploration.md;
   admin-guardian-dual-roles-plan.md; authorization-matrix.md; series-stress-test-findings.md;
-  r1-deferred-debt-register.md; docs/compliance/coppa-gdpr-remediation-plan.md; PR #413. 2026-07-25."
+  r1-deferred-debt-register.md; docs/compliance/coppa-gdpr-remediation-plan.md; PR #413. 2026-07-25.
+  Reconciled 2026-07-26 against adr/adr-023-story-personalization-slots.md and capability-register.md v1.8
+  (both merged in PR #418) and against open PR #416; see section 8."
 ---
 
 > **Replaces** [story-diversity-remediation-plan.md](story-diversity-remediation-plan.md) and
@@ -42,11 +44,16 @@ That does not make the plan smaller. It **re-orders** it, and in a direction wor
 the intuitive reading is backwards.
 
 **Do the catalog-quality rules now, precisely because enforcement is currently free.** A8 (in-cell clone audit),
-A14 (`L2-14`), B3 (`SR-8`) and A16-as-a-rule are all validator or CI gates over authored content. Today there
+A14 (`L2-14`), B3 (`SR-9`) and A16-as-a-rule are all validator or CI gates over authored content. Today there
 are 58 skeletons, no published cross-family content to grandfather, no external author to coordinate with, and
 no reader to disrupt. Every month of authoring makes each of these strictly more expensive to adopt, because the
 violating set grows and the fix list grows with it. The 37 `L2-14` violations and the one clone pair are the
 owner's own work to fix, which is the cheapest possible remediation posture. **These get more urgent, not less.**
+
+**A19 (added post-#418) belongs in that list for a different reason: it is free because the defect is dormant.**
+No theme contract declares a personalizable slot yet, so no fill carries a sentinel, so stripping them out of the
+ATG tokeniser changes no current output and needs no baseline re-derivation. That window closes the first time a
+contract opts a slot in.
 
 **A9 is unblocked.** The clone pair can be retired and replaced outright with no migration concern, because the
 only progress recorded against it is test data belonging to the owner's family.
@@ -105,7 +112,10 @@ this document is treated as established.
 | Across 58 production-eligible skeletons there are **2,668 decision nodes** (non-ending, 2+ choices). **144** have every option terminating, but those sit at **median 90% of the tree's max depth** and **88 of them offer a positive ending**: they are climaxes. **37** are all-negative-valence. **1** has every option a `death`/`capture` terminal (`the-quiet-harbor-protocol`) | per-node target classification |
 | Separately, **776 single-choice nodes** lead only to a `death`/`capture` terminal. These are not decisions; they are the corridor pattern A13 addresses | per-node scan |
 | `save_slots` is client-writable, server-persisted, and **omitted from `validate_reading_state`** | `schemas.py:80`, `reading.py:412`, `reading.py:168-175` |
-| **129 of 132 catalog themes pass the echo floor at band `3-5`** | ran the real `_echo_floor` at all six bands |
+| **129 of 132 catalog themes pass the echo floor at band `3-5`** | ran the real `sanitize_element` (`story_requests/interpretation.py`) at all six bands; re-run unchanged after PR #418, same three withheld (`lethal checkpoints`, `lethal missteps`, `the drowned descent`) |
+| **45 of 61 skeletons have a `.contract.json`; 39 of those 45 declare a `HERO` slot**, so 16 skeletons have no contract at all | enumeration of `skeletons/**/*.contract.json`; independently stated in ADR-023 and reproduced here |
+| Beats hardcode character pronouns, so a slot value cannot vary gender: `the-cinderwick-exchange.json:89` "the retired clocksmith who tends the lo[ck]", `the-envoy-of-three-courts.json:135` "See {COURIER} on **his** way and snatch some sleep" | direct file read |
+| The ATG has **no sentinel awareness**: `strip_sentinels` is imported by `validator/reading_level.py`, `moderation/pipeline.py` and `moderation/rescreen.py`, and by nothing under `diversity/`. `mask_tokens` on a `{~HERO:Friend~}` body emits `hero` as a content token that the stripped body does not | import scan; live tokeniser run (see A19) |
 | Reading telemetry does not exist: `ReadingState` is one mutable row with `path` overwritten; `Completion`'s key includes `ending_id` with one `found_at`, so re-reads and depth-at-terminal are unrecorded | `db/models.py:725-793` |
 | Difficulty, win-arc count, and reading telemetry are unspecified corpus-wide | 98-document survey |
 
@@ -143,11 +153,12 @@ Each item traces to a fact in section 1. Effort: S under a day, M a few days, L 
 | **A8** | **In-cell clone audit in CI**, using `structural_distance` (not `structure_fingerprint`, which cannot see a renamed clone) against the **loaded** `TAU_CELL` from `ws5_floor_baseline.json`, not a hardcoded 0.05. `floors.py:62-64` documents `TAU_CELL` as the anti-duplication floor, so it is the right threshold. | S |
 | **A9** | **Resolve the in-cell duplicate** under the disposition principle in section 6, fix-or-replace with no series exemption. Bound by A16: `the-harrowstone-keep` and `the-sunken-temple` are brass-lantern books 1 and 2, a deliberate series stress-test artifact, so "retire one" is not available. | M |
 | **A10** | **Make the empty teen `short` cells fail gracefully or fill them.** A `13-16/short` or `16+/short` request has zero candidates today and 422s. Per the disposition principle in section 6, authoring is preferred over degrading the surface. | M |
-| **A11** | **Set expectations on the request page, affirmatively, and drop two of the three restrictions.** `RequestStory.tsx` is one prompt and a 500-character box today. Per the child-reader review (section 6.1): **drop** the fixed-structure statement from the kid surface (no child under about eleven has that model; keep it on guardian intake) and **drop** "some themes are off for this family" (unnameable on the kid surface, so it is a pre-emptive accusation with nothing to act on; the existing blocked-status copy handles the real event kindly). **Reshape** the naming rule from a prohibition into a mechanism: a "Who's the hero?" field pre-filled with a made-up name and a shuffle control, which sets the expectation without ever saying "you cannot be the hero" -- the project already has the right sentence in `interpretation.py` ("Heroes in our stories always have made-up names, so we chose one for you!"). One affirmative line covers PII: "Everyone in the story gets a made-up name, even your friends." **Add** the expectation the review found matters most to a child and that was on nobody's list: "A grown-up reads your idea first. Then it takes a little while to write your book." Net effect is zero new blocks of rules text. Serve the guardian-facing set from the API off `ReasonCode` / `band_profile` / `content_nogo`; the kid-surface response still omits `content_nogo` values entirely. Update `capability-register.md:133`, which marks K19 delivered. | M |
+| **A11** | **Set expectations on the request page, affirmatively, and drop two of the three restrictions.** `RequestStory.tsx` is one prompt and a 500-character box today. Per the child-reader review (section 6.1): **drop** the fixed-structure statement from the kid surface (no child under about eleven has that model; keep it on guardian intake) and **drop** "some themes are off for this family" (unnameable on the kid surface, so it is a pre-emptive accusation with nothing to act on; the existing blocked-status copy handles the real event kindly). **Reshape** the naming rule from a prohibition into a mechanism: a "Who's the hero?" field pre-filled with a made-up name and a shuffle control, which sets the expectation without ever saying "you cannot be the hero". **Copy superseded by ADR-023 (merged in PR #418); adopt its wording, do not draft alternative text.** The child-reader review's suggestion to reuse `interpretation.py`'s "Heroes in our stories always have made-up names" is **withdrawn**: ADR-023 section 4 is replacing that exact sentence, because it becomes false for a family that enables G18, and the affirmative PII line this row previously proposed ("Everyone in the story gets a made-up name, even your friends") is false in the same state. ADR-023 section 4 Ask 1 supplies the replacement and asks this plan to adopt it rather than converge separately; the load-bearing change is "starts with", which is unconditionally true because *generation* always uses a placeholder, and which stops implying the separate claim about what a reader *sees*. Kid surface: "Everyone in the story starts with a made-up name, even your friends. Ask your grown-up if you want your own name to show up when you read." Guardian help text as given in that section. **Add** the expectation the review found matters most to a child and that was on nobody's list: "A grown-up reads your idea first. Then it takes a little while to write your book." Net effect is zero new blocks of rules text. Serve the guardian-facing set from the API off `ReasonCode` / `band_profile` / `content_nogo`; the kid-surface response still omits `content_nogo` values entirely. **Shuffle semantics (ADR-023 Ask 2, answered here): display-only, among generic names, with no effect on what is generated or stored.** The field picks a label for the request surface; the skeleton's `HERO` slot is bound by the fill, and under ADR-023 personalization is a render-time substitution on the family's own devices. Making the shuffle write a stored bound value would put it on the same slot the personalization sentinel occupies and force the two to be sequenced; keeping it cosmetic leaves them orthogonal and needing no coordination. This also keeps the naive-UX question in section 0 ("toy or restriction?") a pure copy question. Update `capability-register.md` K19 (line 137), whose row already records this copy dependency as a precondition on G18's flag, and note that K20/G18 are minted (register v1.8) so the hero-name surface must stay consistent with them. | M |
 | **A12** | **Enable Go back in continuation reads.** `replayRecordedPath` fails closed when `path[0] !== start_node`, disabling Go back in exactly the state-carrying series books where a reader has most to lose. A bug fix, not a feature. | M |
 | **A13a** | **Leave the in-story Go back exactly as it is: one step, always available.** `Reader.tsx:210` states its purpose, "Kids mis-tap constantly; Go back undoes just the last choice." A multi-hop rewind bound to that button would move a mis-tapping 4-year-old three passages upstream and erase prose they were enjoying. At 3-5 and 5-8 that is pure loss, since `_PROFILES` forbids `death` and `capture` at both bands so there is no fatal corridor to rescue, and a 3-5 story is 10-45 nodes, making 3 hops up to a third of the book. **No change to `back()` or `canGoBack()`.** | none |
 | **A13b** | **Add a second, separately labelled affordance at the ending screen only: "Try a different way."** Walks up to **3 hops** to the last node where the reader had a real pick, and **falls back to one step when there is none**. Availability stays exactly today's `path.length > 1` and replayable: it must never become "an untaken choice exists within 3 hops", because that hides the button at precisely the 88 preserved climaxes (take option A, die, go back, take option B, win: on that second ending there is no untaken fork nearby and a button the child just learned would vanish). "Untaken" is defined against the current read only, and the walk stops at the **first branching ancestor** regardless of whether its other options were used, so the destination is always "the last place you got to pick" rather than a distance that varies per press. Captures the full measured benefit (the 58 corridor terminals) without repurposing a learned affordance. | M |
-| **A14** | **`L2-14`: no decision may offer only fatal options, band-scoped, and stated so it cannot be dodged.** Owner rule: a reader must never be shown option A and option B where both end in death. Two corrections from the child-reader review (section 6.2). **(a) Band-scope it.** `Valence.NEGATIVE` includes `setback`, so a single negative-valence rule would forbid a 15-year-old from ever facing a lose-lose dilemma, which is exactly what a `gauntlet` reader seeks and what ADR-011 sanctions from 13-16 up. Enforce the negative-valence reading at **8-11 and 10-13**, and the `death`/`capture` reading at **13-16 and 16+**. **(b) State it over the reader-visible decision unit, not the node**, or an author can comply by splitting an all-fatal decision into two single-choice corridors that each end fatally: the rule passes and the child now gets a page with one button that kills them. So: no reachable branching node may have every downstream path reach a forbidden terminal without an intervening visible choice. That also folds in the 776 single-choice fatal corridors, which are the larger agency problem and which the node-scoped rule missed entirely. Layer 2 (`L2-14`) because it is about visible choices in reachable configurations. | M |
+| **A14** | **`L2-14`: no decision may offer only fatal options, band-scoped, and stated so it cannot be dodged.** Owner rule: a reader must never be shown option A and option B where both end in death. Two corrections from the child-reader review (section 6.2). **(a) Band-scope it.** `Valence.NEGATIVE` includes `setback`, so a single negative-valence rule would forbid a 15-year-old from ever facing a lose-lose dilemma, which is exactly what a `gauntlet` reader seeks and what ADR-011 sanctions from 13-16 up. Enforce the negative-valence reading at **8-11 and 10-13**, and the `death`/`capture` reading at **13-16 and 16+**. **(b) State it over the reader-visible decision unit, not the node**, or an author can comply by splitting an all-fatal decision into two single-choice corridors that each end fatally: the rule passes and the child now gets a page with one button that kills them. So: no reachable branching node may have every downstream path reach a forbidden terminal without an intervening visible choice. That also folds in the 776 single-choice fatal corridors, which are the larger agency problem and which the node-scoped rule missed entirely. Layer 2 (`L2-14`) because it is about visible choices in reachable configurations. `L2-14` is still free: `main` is at `L2-13` and open PR #416 does not mint a new L2 rule (its "adds L2-13" is a catalog entry for a rule already shipped in `layer2.py`), but re-check against #416's branch before claiming the ID. | M |
+| **A19** | **Make the anti-template guard strip personalization sentinels before tokenising.** New, from the PR #418 review, and the cheapest it will ever be. `strip_sentinels` is wired into `validator/reading_level.py:154`, `moderation/pipeline.py:736` and `moderation/rescreen.py:438`, but nothing under `diversity/` or `moderation/leaf_diversity.py` imports it (zero occurrences of "sentinel" in either file). Verified against the live tokeniser: `mask_tokens('{~HERO:Friend~} stepped into the hall and the lamp guttered.', frozenset())` yields `['hero', 'friend', 'stepped', ...]`, so `content_tokens` keeps `hero`, while the stripped body yields `['friend', 'stepped', ...]`. The slot **id** leaks in as a content token and is never an entity, so `extract_entities` cannot mask it. Every fill of a given skeleton carries the identical sentinel-derived token set, which inflates the pairwise intersection, deflates masked leaf distance, and biases a distance-floor verdict toward FAIL. The fix is one call at the tokenising boundary plus a regression test that a sentinel-bearing and a stripped-equivalent fill score identically. **Do it now**: no `.contract.json` declares a personalizable slot yet, so the defect is dormant and the change is unobservable in current output; once fills carry sentinels it becomes a live false-positive source in a gate the plan is about to start relying on (A8, and the deferred ATG-against-k-nearest item). | S |
 | **A15** | **Triggered, not scheduled (section 0).** **Retire-for-quality must not delete a child's progress.** `archive` is the only exit from `published`, `library.py` filters on published status, `reconcileOfflineCache` purges the local copy, and `reading_history.py::_history_item` degrades a version-less book to a storybook **id** as its title with `total_endings = 0`. So a retired book takes the shelf card, the in-progress read, the offline copy and the "6 of 7 endings found" badge with it, silently. Distinguish **unsafe** (archive now, the urgency justifies it) from **substandard** (no new readers: stop assigning, keep it readable for any profile with progress or completions, let it age out). Interim before the deferred visibility work exists: unassign only from profiles with no activity. Fix `_history_item`'s degraded row to show a friendly retired label, not a UUID. | M |
 | **A16** | **Adopt as a written rule now, enforce when triggered (section 0).** **Never retire a non-final series book before its replacement ships in the same release.** `Reader.tsx:313-320` offers "Continue the series" on a satisfying ending of a non-final book; if book 2 changes or goes, that promise goes quiet with no in-product account, after a teen spent hours in a 550-node book and earned carried state. The replacement must accept book 1's carried state, which is exactly what B3 gates. If it cannot, re-cut book 1 to `is_final` so the continuation is never promised. Binds A9. | S |
 | **A17** | **Triggered, not scheduled (section 0).** **A retired book leaves a tombstone, not a hole**: title, endings the child found, and one line ("This one has gone back to the workshop. Your 6 endings are still yours."). Children infer causes, and a card that vanishes next to a `StarRating` they cannot clear invites "did I lose it because I rated it 2 stars?". | S |
@@ -161,10 +172,10 @@ Each stands on its own and does not wait on Track A.
 | --- | --- | --- |
 | **B1** | `save_slots` is the only reading-state field omitted from `validate_reading_state` (`reading.py:168-175`), defeating the `#CRITICAL` anti-forgery intent two lines above. Inert while nothing restores from a slot; a forged slot becomes a state-restoration input the moment anything does. Validate it or remove it from the PUT body. | M |
 | **B2** | `runtime-semantics.md` section 6 states there is no back button in v1 and that any implementation "requires a revision to this document and an ADR". `Reader.tsx:210` ships one. File the revision and the ADR. | S |
-| **B3** | **SR-8** (the ID is free; `SR-7` is the current maximum): for `carries_state=true`, every satisfying-ending state of book N must be an admissible entry state for book N+1. L2 only ever walks from `start_node` with declared initials, so continuation entry state is outside every existing rule's view. | M |
+| **B3** | **`SR-9`** (see the rule-ID note in section 8: `SR-7` is the maximum on `main`, but open PR #416 takes `SR-8`): for `carries_state=true`, every satisfying-ending state of book N must be an admissible entry state for book N+1. L2 only ever walks from `start_node` with declared initials, so continuation entry state is outside every existing rule's view. **Check for overlap with #416 before building**: its `SR-8` is carried-*variable declaration* integrity (range narrowing, type change, dropped variable) between adjacent books, which is a static comparison of two declaration blocks. B3 is the *reachable-state* question that declaration compatibility does not answer. If #416's `authoring-lessons-log.md` AL-038 ("still open: the read-time carry audit and gating the continuation offer on a satisfying ending") is taken up there instead, B3 folds into it and this row closes as a duplicate. | M |
 | **B4** | `machine.ts:108` resets to the start node with declared initials, so "Read again" in a continuation read fabricates `has_lantern=true` and `vigor=5` the reader never earned and discards carried state. | S |
 | **B5** | Escalate `series-stress-test-findings.md` **F3** from authoring guidance to a gate-detectable defect: book 2 with `has_lantern=false` returns `blocked=True` with two `L2-11` errors, and all four of book 1's win endings are reachable with it false. `vigor` is monotone in these books (68 `dec`, zero `inc`), so no restart can restore state never earned. | S |
-| **B6** | **Closed as working-as-intended** (section 6): sharing a child's first name with a connected family is sanctioned by mutual guardian consent. Residual: add a sentence to ADR-016 recording ring-2 attribution granularity, which it does not currently specify. | S |
+| **B6** | **Closed as working-as-intended** (section 6): sharing a child's first name with a connected family is sanctioned by mutual guardian consent. Residual **re-scoped by PR #418**: ADR-016 now carries a proposed addendum that already names this item, and ADR-023 section 4 requires that ADR-016 be amended in **one** edit covering both ring-2 *attribution* granularity (this item) and ring-2 *personalization* granularity (ADR-023 section 3), which sets a deliberately stricter bar for the same datum. So the residual is no longer "add a sentence"; it is **participate in that single reconciliation edit and do not race it**. Whoever writes the amendment writes both halves or neither. The asymmetry is recorded as intended, not as an inconsistency to resolve: an attribution line is one low-bandwidth fact rendered once to a receiving *guardian*, while a name substituted through story prose is the same datum delivered continuously to another household's *children* and compounded with other slot values. | S |
 
 ## 5. Deferred, each behind a named prerequisite
 
@@ -173,8 +184,8 @@ Not "later" in the abstract. Each has one thing that must happen first.
 | Item | Prerequisite |
 | --- | --- |
 | Reading telemetry (depth reached, early-exit rate, real satisfying rate) | A schema design for durable per-session reading data plus a child-behaviour privacy review. `r1-deferred-debt-register.md` U5 already registers this as Phase 4b with an owner; extend that, do not duplicate it. |
-| A fail-depth floor (`PL-23` is free; `PL-22` is taken) | **Probably not needed at all** if A13 lands: a multi-step Go back fixes all 73 shallow foreclosing terminals with no skeleton edits, where a floor needs 73 relocations and a fraction with no non-circular basis. Revisit only if A13 is rejected or telemetry shows a residual problem. |
-| An outcome-mix floor keyed on the fail-kind mix | Telemetry. Do not key it on topology. |
+| A fail-depth floor (`PL-25` if it is ever built; `PL-22` is the maximum on `main` and open PR #416 takes `PL-23` and `PL-24`) | **Probably not needed at all** if A13 lands: a multi-step Go back fixes all 73 shallow foreclosing terminals with no skeleton edits, where a floor needs 73 relocations and a fraction with no non-circular basis. Revisit only if A13 is rejected or telemetry shows a residual problem. |
+| An outcome-mix floor keyed on the fail-kind mix | Telemetry. Do not key it on topology. **Partly overtaken by PR #416's `PL-24`** (advisory ending-mix shape: a 60% single-kind ceiling plus a style-aware winnability floor). That covers the *distributional* half of this item without telemetry, so the residual here is only the fail-kind-mix keying, which still needs telemetry. #416's own calibration note is the more valuable carry-forward: a flat 5% positive-valence floor fired on all nine gamebooks and no prose story, so it was replaced with an absolute distinct-winnable-endings floor for gamebooks. That is section 7 rule 2 arrived at independently. |
 | Challenge mode / permadeath | B2's ADR, since it is a backtracking-semantics change; plus a per-(profile, series) row, which does not exist. |
 | Alternate beat phrasings | Its own design doc and ADR. The evidence for it is weaker than stated (the illustrating quotation was wrong), though the byte-frozen-beat constraint is real. Also bounded by the `L2-12` 100,000-configuration cap, which permanently caps declared variables near five. |
 | Per-reader (`profile_id`) scoping, and ATG against the k nearest same-tree fills with calibrated thresholds | A1 through A5, since both consume the similarity signal. |
@@ -185,7 +196,14 @@ Not "later" in the abstract. Each has one thing that must happen first.
 
 **Resolved (owner, 2026-07-25): catalog disposition.** No book or skeleton is required to be kept. Retire and
 replace, or fix; substandard work is not carried. This is a standing principle, not a one-off ruling on
-brass-lantern, and it has three consequences:
+brass-lantern. **Convergent, narrower support from ADR-023 section 6, merged in PR #418**: deciding its own
+migration posture for existing content, it lands on "**Replace by default**, given the low volume and the fact
+that it is test content; repair only where a specific story is expensive to reproduce"
+(`adr-023-story-personalization-slots.md:327-328`). That is the same reasoning from the same premises, reached
+independently. Two honest bounds on how much weight it carries: ADR-023 is `status: proposed` pending counsel
+sign-off, not accepted, and its ruling is scoped to migrating content onto sentinels rather than to keep-or-retire
+generally. So it corroborates the principle; it does not ratify it. The principle still rests on the owner
+instruction. It has three consequences:
 
 - **A9** takes the fix-or-replace path. A same-series exemption from the in-cell clone rule is **off the table**:
   two books of one series sharing an isomorphic tree is substandard regardless of the narrative continuity that
@@ -266,5 +284,54 @@ Carried from the errata, because the previous plans failed on all six.
 4. A later section may not quietly erase an earlier section's evidence. If it does, the earlier section is
    edited, not left standing.
 5. Rule IDs, ADR numbers, and "this is unaddressed" claims are checked against `validator-rules.md` and the
-   98-document corpus before being written.
+   98-document corpus before being written. **Amended 2026-07-26**: checking `main` is not sufficient. A rule ID is
+   free only if no *open* PR has claimed it. B3's `SR-8` was correct against `main` and wrong against PR #416.
+   Check `main` and the open PR set, and say which basis the claim rests on.
 6. Source text is quoted verbatim with its file path, or not quoted.
+7. **Added 2026-07-26**: an ADR's status is quoted with its citation. A `proposed` ADR corroborates; it does not
+   ratify. This document overclaimed ADR-023 as ratifying the disposition principle before checking its front
+   matter.
+
+## 8. Reconciliation with PR #418 (merged) and PR #416 (open)
+
+Review dated 2026-07-26, after merging `origin/main` at `bbf6ddb` (which contains PR #418,
+"opt-in story personalization P1+P2 with fail-closed sentinel integrity (ADR-023)", and the v0.36.0 release
+commit) into this branch. No conflicts.
+
+**The plan's foundations survive intact.** PR #418 touched none of `skeletons/`, `diversity/`,
+`generation/skeleton_match.py`, `fill.md`, `validator/{policy,series,band_profile}.py`,
+`storybook/models.py`, `frontend/src/player/engine.ts`, `frontend/src/reader/Reader.tsx`, or `api/reading.py`.
+Every measurement in section 1 was re-derived on the merged tree and is unchanged: 61 skeletons / 58
+production-eligible, cell sizes `{3: 15, 4: 2, 5: 1}`, the clone pair at `structural_distance` 0.00095 with
+unequal fingerprints, 2,668 decision nodes, and the echo floor at 132 themes / 129 passing at band `3-5` with the
+same three withheld.
+
+**What changed, and where it landed:**
+
+| Change | Effect on this plan |
+| --- | --- |
+| ADR-023 section 4 replaces the Route A hero-name copy | **A11 rewritten.** Adopt ADR-023's wording; the child-reader review's proposal to reuse "Heroes in our stories always have made-up names" is withdrawn, because that is the sentence being replaced. |
+| ADR-023 Ask 2 (shuffle semantics) | **Answered in A11**: display-only among generic names, no stored or generated effect, so it stays orthogonal to the sentinel mechanism. |
+| ADR-023 section 3 sets a stricter ring-2 bar than B6 | **B6 re-scoped** from "add a sentence to ADR-016" to "participate in the single reconciliation edit ADR-023 requires". |
+| Sentinels now exist in `node.body`, and the ATG never strips them | **New deliverable A19.** The only genuinely new defect this review found. |
+| ADR-023 catalog facts (45 of 61 contracts, `HERO` in 39 of 45; pronouns hardcoded in beats) | **Added to section 1.** The pronoun examples independently corroborate the frozen-beat constraint that bounds the deferred alternate-phrasings item. |
+| ADR-023 section 6 "Replace by default" | Corroborates the disposition principle in section 6, with the two bounds stated there. |
+| Capability register at v1.8: **G18** and **K20** minted, K19 carries a copy dependency | **Noted in A11.** K19's row already records the rewording as a precondition on G18's flag and requires consistency with A11, so the two are already coupled in the register. |
+
+**The rule-ID note.** On `main` today the maxima are `SR-7`, `L2-13`, `PL-22` (enumerated from
+`src/cyo_adventure/validator/`). ADR-023 flags an `SR-8` collision and attributes it to PR #416, not #418; that
+attribution is correct, and the apparent contradiction with this plan's "`SR-7` is the current maximum" is that
+the two claims have different bases. Both are true. Open PR #416 claims `SR-8`, `PL-23` and `PL-24`. Its
+"adds L2-13" is a catalog entry for a rule already shipped in `layer2.py`, not a new ID, so `L2-14` stays free
+for A14. Net: B3 becomes `SR-9`, the deferred fail-depth floor becomes `PL-25`, A14 keeps `L2-14`, and all three
+should be re-checked against #416's branch immediately before implementation rather than trusted from here.
+
+**Two standing obligations inherited from #416, which will bind this work once it merges:**
+
+1. Its new `CLAUDE.md` "Authoring Lessons Requirement" directive mandates appending to
+   `docs/planning/authoring-lessons-log.md`, validated by `scripts/check_lessons_log.py`, for any authoring or
+   validator work. A8, A14, A19 and B3 are all validator work by that definition.
+2. Its AL-014/AL-044 report that the anti-clone floor is unreachable for hand-authored shells, with two withheld
+   books at structural distance 0.0139 against a 0.05 floor. That is **independent corroboration of A8's finding
+   from a different corpus**, and it sharpens the section 6 threshold decision: the failing set is larger than the
+   one clone pair this plan measured, so measure it across both corpora before picking `TAU_CELL` or `TAU_STRUCT`.
