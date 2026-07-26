@@ -85,6 +85,7 @@ from cyo_adventure.story_requests.interpretation import (
 )
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
 from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
@@ -768,6 +769,11 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             no sidecar contract), or its sidecar fails to bind/render -- both
             fail closed, propagating unchanged into the caller's pipeline-
             exception handling. No fill provider call is made in either case.
+            Also raised (ADR-023 plan section 3.2) when the filled blob fails
+            :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`
+            against the pre-fill bound skeleton: a forged, mutated, migrated,
+            or dropped sentinel fails the job closed, with the violation list
+            logged structurally before the raise.
     """
     authoring = ctx.authoring
     skeleton_slug = authoring.get(SKELETON_SLUG_KEY)
@@ -911,6 +917,49 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         prep_model=ctx.prep_model,
         slot_bindings=result.bindings,
     )
+
+    # #CRITICAL: security: a personalizable slot's sentinel-wrapped value
+    # (rendered into `bound` above) is the ONLY marker standing between the
+    # fill LLM's free-text output and a family's later personalization
+    # resolve; a forged, mutated, migrated, or dropped sentinel in the filled
+    # blob is an unreviewed substitution point that must never reach a
+    # guardian/admin's approval queue looking like ordinary prose (ADR-023
+    # plan section 3.2, "Fail closed"). This check runs on every skeleton
+    # fill, not only personalizable ones: `personalizable_slot_ids` is empty
+    # for every contract on disk today (Task 2 added the slot KIND; nothing
+    # declares it yet), so `check_sentinel_integrity` derives an empty
+    # expected set and returns `ok=True` with zero violations for all
+    # existing content -- this wiring is a no-op until a personalizable
+    # contract exists. Fails closed on the FIRST trip: the section 3.4
+    # one-retry policy is explicitly out of scope here (Task 4b). Skipped
+    # when `outcome.storybook` is `None` (the gate blocked with no
+    # salvageable doc, `_build_outcome`'s "failed, no doc" branch): there is
+    # no blob to check or persist in that case.
+    # #VERIFY: test_run_skeleton_fill_sentinel_integrity_dormant_for_non_personalizable_fill,
+    # test_run_skeleton_fill_sentinel_integrity_passes_verbatim_copy, and
+    # test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_closed
+    # in tests/unit/test_worker.py.
+    if outcome.storybook is not None:
+        integrity_result = check_sentinel_integrity(bound, outcome.storybook)
+        if not integrity_result.ok:
+            violation_details = [
+                {"node_id": v.node_id, "kind": v.kind, "token": v.token}
+                for v in integrity_result.violations
+            ]
+            logger.error(
+                "generation_job.sentinel_integrity_violation",
+                skeleton_slug=skeleton_slug,
+                violations=violation_details,
+            )
+            msg = (
+                f"filled blob for skeleton '{skeleton_slug}' failed sentinel "
+                f"integrity: {len(violation_details)} violation(s)"
+            )
+            raise ValidationError(
+                msg,
+                field="sentinel_integrity",
+                details={"sentinel_integrity_violations": violation_details},
+            )
 
     # WS-2 design section 7: the audit block a reviewer needs to see exactly
     # what the theme changed. `bind_attempts` is deliberately omitted:
