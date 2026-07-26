@@ -45,7 +45,7 @@ against the **committed** catalog (section 1), and ADR-020's amendment already f
 
 **Landing A8 first means it gates #416's story push, which is the correct order.** #416's AL-014/AL-044 report two
 withheld books at `structural_distance` 0.0139 against the 0.05 floor. Those books are not in `skeletons/` yet, so
-they are absent from this plan's 100-pair measurement; both facts are true over different corpora. When #416's
+they are absent from this plan's 67-pair measurement; both facts are true over different corpora. When #416's
 story artifacts arrive they will fail A8, which is exactly what the gate is for. Building A8 now is what makes
 that catch happen rather than discovering it after import.
 
@@ -71,8 +71,9 @@ Measured while sequencing. Each is applied in plan v2 as well; recorded here bec
 | Finding | Effect |
 | --- | --- |
 | **A14's fix list is 1 node, not 37.** All 37 all-negative-valence decisions sit at **13-16 (4) and 16+ (33)**, zero at 8-11 or 10-13. A14 applies the negative-valence reading only at 8-11/10-13, so there it is preventive with nothing to fix; the `death`/`capture` reading at 13-16/16+ catches exactly **1** (`the-quiet-harbor-protocol`) | A14 drops M to S, lands blocking on day one, and the "fix 37 nodes" work item disappears |
-| **A8 at `TAU_CELL` = 0.05 fails exactly 1 of 100 in-cell pairs** (the known clone at 0.00095; next-lowest 0.09123, median 0.3859) | A8 lands blocking immediately, no advisory-then-flip phase, no calibration risk |
-| **A `TAU_STRUCT` gate is rejected**: it would fail 27 of 100 pairs across 19 of 28 cells, and ADR-020's amendment already made `TAU_STRUCT` documentation-only | Closes the open threshold decision in plan v2 section 6 |
+| **A8 at `TAU_CELL` = 0.05 fails exactly 1 of 67 in-cell pairs** (the known clone at 0.00095; next-lowest 0.09123, median 0.3956) | A8 lands blocking immediately, no advisory-then-flip phase, no calibration risk |
+| **A `TAU_STRUCT` gate is rejected**: it would fail 17 of 67 pairs (25%) across 12 of 18 populated cells, and ADR-020's amendment already made `TAU_STRUCT` documentation-only | Closes the open threshold decision in plan v2 section 6 |
+| **My first pair count was inflated by duplicates.** I originally reported 100 pairs across 28 cells. `skeleton_matches_cell` treats narrative style as meaningful only at `13-16` and `16+`, so below those bands both styles return the same candidate list and every lower-band pair was measured twice. The 28-cell figure also contradicted this plan's own established "15 of 18 non-empty cells" and should have been caught then | Deduplicated in `diversity/incell.py` and pinned by a test. Corrected counts: **67** pairs across **18** cells. Every conclusion survives: `TAU_CELL` still flags exactly 1 |
 | **B2 is a blocker, not a parallel docs chore.** `runtime-semantics.md` section 6 forbids a back button and requires "a revision to this document and an ADR" for any Phase-1 implementation. A12 enables that button in more states and A13b extends it to multi-hop | B2 moves ahead of A12, A13b and A18 instead of alongside them |
 | **A12 is not a bug fix, and is deferred.** Found while writing B2's ADR. A continuation read's replay origin is retained nowhere: not on `ReadingState`, not on `Completion`, and only transiently in router state that `series.ts` documents as untrusted. Enabling it needs new durable state, a schema/API/OpenAPI change, and server-side validation of that state, because a replay origin is a state-restoration input | A12 leaves S5 and is reclassified L, deferred. ADR-024 Decision 6 records it as unauthorized with the bar any future decision must meet |
 
