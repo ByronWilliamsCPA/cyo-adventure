@@ -450,6 +450,16 @@ Carried from the errata, because the previous plans failed on all six.
    `.puml` only: the `.svg` files, which are what `story-skeletons.md` actually links, are ungated and need
    `graphviz` installed locally, so a machine without `dot` silently renders 61 *empty* SVGs and reports success.
    Verify a re-render kept its node groups (`grep -c 'g id='`) before staging any SVG.
+   **Amended 2026-07-26**: the diagrams are not the only catalog-derived artifact.
+   `docs/planning/ws5_floor_baseline.json` is computed from the whole catalog by
+   `scripts/calibrate_mutation_floors.py` and gated by
+   `tests/unit/test_skeleton_mutation_floors.py`, so a one-line skeleton edit can make it stale too: adding a single
+   effect to `the-sunken-temple` moved the observed same-cell minimum 0.000947 -> 0.000469 and shifted two
+   state-space statistics. Regenerate it in the same commit, and **diff it rather than trusting it**: confirm the
+   three thresholds (`TAU_STRUCT`, `TAU_CELL`, `TAU_STATE`) are unchanged and only observed statistics moved, since
+   a threshold shift would silently re-baseline the gates that load this file. The general rule: after touching
+   `skeletons/`, run the full suite before claiming done. Both stale-artifact failures in this workstream were found
+   by a full run and by nothing else.
 
 ## 8. Reconciliation with PR #418 (merged) and PR #416 (open)
 

@@ -1,7 +1,7 @@
 {
   "baseline_version": 2,
   "clamps": [
-    "TAU_CELL is the fixed anti-duplication floor 0.05 (ADR-020 floor-recalibration amendment); it rejects the observed same-cell minimum pair at 0.000947 with margin. The raw observed minimum is no longer shipped as the floor."
+    "TAU_CELL is the fixed anti-duplication floor 0.05 (ADR-020 floor-recalibration amendment); it rejects the observed same-cell minimum pair at 0.000469 with margin. The raw observed minimum is no longer shipped as the floor."
   ],
   "derivation": {
     "tau_cell": "owner-chosen fixed anti-duplication floor (ADR-020 floor-recalibration amendment, docs/planning/ws8-floor-recalibration-proposal.md): the minimum structural_distance a mutant must hold from EVERY in-cell tree INCLUDING its parent. Replaces the retired mutant parent-distance-vs-TAU_STRUCT clause, which mis-applied a same-cell SIBLING-PAIR percentile to the parent distance and rejected ~every bounded mutant.",
@@ -11,8 +11,8 @@
   "generated_by": "scripts/calibrate_mutation_floors.py",
   "stats": {
     "cross_tier2_state": {
-      "max": 230.993602,
-      "median": 85.268962,
+      "max": 231.993602,
+      "median": 85.768962,
       "min": 35.904505,
       "n_pairs": 78,
       "p05": 48.211541,
@@ -21,7 +21,7 @@
     "same_cell_structural": {
       "max": 0.57661,
       "median": 0.395598,
-      "min": 0.000947,
+      "min": 0.000469,
       "n_pairs": 67,
       "p05": 0.2306,
       "p25": 0.332507
