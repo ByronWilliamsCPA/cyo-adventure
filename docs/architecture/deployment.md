@@ -152,6 +152,15 @@ Container images are pinned by tag, never `latest` in production (per `CLAUDE.md
 ADR-004). The `cyo-backend:latest` and `cyo-worker:latest` tags above denote the local
 development convention; CI produces versioned tags aligned with SemVer releases.
 
+Whichever host runs `moderation/pipeline.py::run_moderation_pipeline` (the `cyo-worker`
+container for the automated generation path, or wherever an offline `import_cli`/
+`import_catalog` import is executed) needs read access to the skeleton catalog
+(`skeletons/`): repair adoption resolves the story's personalizable-slot contract from
+that catalog at moderation time and fails closed (routes to human review) if it is
+unreadable. The shared `Dockerfile`'s `COPY . .` already bundles `skeletons/` into both
+the `cyo-backend` and `cyo-worker` images, so this holds today; it would break only if a
+future image build were narrowed to copy just `src/`.
+
 ## Observability
 
 - **Structured logging:** `utils/logging.py` (structlog) emits JSON logs with

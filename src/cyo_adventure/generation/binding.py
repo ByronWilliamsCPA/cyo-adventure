@@ -32,6 +32,7 @@ from cyo_adventure.generation.prompts import (
     build_interpret_bind_prompt,
 )
 from cyo_adventure.story_requests.interpretation import RawElement
+from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.storybook.theme_contract import (
     SLOT_TOKEN_RE,
     ThemeContract,
@@ -52,8 +53,17 @@ __all__ = [
     "contract_path_for",
     "interpret_and_bind",
     "load_contract_for",
+    "personalizable_slot_ids",
     "render_bound_skeleton",
 ]
+
+# The shared empty-frozenset default for `personalizable_slots` parameters
+# below. A bare `frozenset()` call in a parameter default expression trips
+# BasedPyright's `reportCallInDefaultInitializer` (it cannot prove a fresh
+# call in a default position is side-effect-free); a frozen, already-built
+# module-level constant sidesteps that without changing behavior, since
+# `frozenset` is immutable and safe to share across every call.
+_NO_PERSONALIZABLE: frozenset[str] = frozenset()
 
 # The interpret-and-bind element decomposition is advisory, not load-bearing:
 # it is capped so a malformed or adversarial response can never balloon the
@@ -438,18 +448,41 @@ def _substitute_choice_labels(
 
 
 def _substitute_slotted_surfaces(
-    bound: dict[str, object], bindings: Mapping[str, str]
+    bound: dict[str, object],
+    bindings: Mapping[str, str],
+    personalizable_slots: frozenset[str] = _NO_PERSONALIZABLE,
 ) -> None:
     """Substitute bound values into ``bound``'s three slotted surfaces, in place.
+
+    Builds one derived ``wrapped`` map: every ``personalizable_slots`` value
+    is sentinel-wrapped (:func:`cyo_adventure.storybook.sentinels.wrap`); every
+    other value passes through unchanged. ``wrapped`` feeds the beats and
+    ending-title surfaces; choice labels ALWAYS receive the bare ``bindings``
+    map, since a sentinel must never appear in a choice label (ADR-023 plan
+    section 2.3.2).
 
     Args:
         bound: A skeleton dict (mutated in place; caller must pass a copy,
             never the original).
         bindings: The proposed/validated slot-value map.
+        personalizable_slots: The ids of every slot whose value must render
+            as a sentinel rather than its bare value. Defaults to empty, so
+            existing (non-personalizable) content renders byte-identically.
+
+    Raises:
+        ValidationError: If ``wrap`` rejects a personalizable slot's value
+            (e.g. an empty ``default_binding`` entry). ``wrap`` raises a
+            project ``ValidationError``, so this propagates through the
+            generation pipeline's ``except ValidationError`` handlers rather
+            than escaping as a built-in ``ValueError``.
     """
+    wrapped = {
+        slot_id: (wrap(slot_id, value) if slot_id in personalizable_slots else value)
+        for slot_id, value in bindings.items()
+    }
     for node in _iter_nodes(bound):
-        _substitute_body(node, bindings)
-        _substitute_ending_title(node, bindings)
+        _substitute_body(node, wrapped)
+        _substitute_ending_title(node, wrapped)
         _substitute_choice_labels(node, bindings)
 
 
@@ -558,7 +591,9 @@ def _assert_fill_invariant_preserved(
 
 
 def render_bound_skeleton(
-    skeleton: dict[str, object], bindings: Mapping[str, str]
+    skeleton: dict[str, object],
+    bindings: Mapping[str, str],
+    personalizable_slots: frozenset[str] = _NO_PERSONALIZABLE,
 ) -> dict[str, object]:
     """Substitute validated slot values into the three slotted surfaces only.
 
@@ -570,11 +605,23 @@ def render_bound_skeleton(
     ``choices[].label``. Node prose is never constructed here: a node body
     that is not a ``<<FILL ...>>`` directive is left completely untouched.
 
+    Every slot id in ``personalizable_slots`` renders as a sentinel
+    (:func:`cyo_adventure.storybook.sentinels.wrap`) in the beats guidance and
+    ending title surfaces instead of its bare value, so a client can later
+    resolve it to a family's chosen personalization (ADR-023 plan section 2).
+    Choice labels ALWAYS carry the bare value, never a sentinel. Defaults to
+    an empty set, so a caller that never passes it renders every existing
+    (non-personalizable) skeleton byte-identically to before this parameter
+    existed.
+
     Four post-conditions are checked, in order, each raising
     :class:`~cyo_adventure.core.exceptions.ValidationError` (fail closed) on
     failure:
 
     1. Zero ``{SLOT}``-shaped tokens remain anywhere in the rendered document.
+       A sentinel (``{~SLOTID:Value~}``) never matches this token shape (its
+       interior starts with ``~``, not an uppercase letter), so it survives
+       this check by construction.
     2. ``structure_fingerprint(bound) == structure_fingerprint(skeleton)``.
     3. ``run_gate(bound)`` is not blocked.
     4. **CR-1** (design section 13.2): the ``{node_id: (role, words)}`` map
@@ -590,6 +637,8 @@ def render_bound_skeleton(
             post-conditions independently fail closed on a bad map (e.g. a
             binding missing a declared slot leaves a residual token and is
             rejected by post-condition 1).
+        personalizable_slots: The ids of every slot on ``skeleton``'s contract
+            whose ``kind`` is ``"personalizable"``. Defaults to empty.
 
     Returns:
         The rendered ("bound") skeleton: a new dict, still full of
@@ -597,7 +646,12 @@ def render_bound_skeleton(
         :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`.
 
     Raises:
-        ValidationError: If any post-condition fails.
+        ValidationError: If any post-condition fails, or if ``wrap`` rejects a
+            personalizable slot's value (e.g. an empty ``default_binding``
+            entry; see :func:`cyo_adventure.storybook.sentinels.wrap`). Both
+            paths raise a project ``ValidationError``, never a built-in
+            ``ValueError``, so the generation pipeline's ``except
+            ValidationError`` handlers catch either.
     """
     # #CRITICAL: data-integrity: substitution is limited to the three leaf
     # surfaces (beats guidance, ending titles, choice labels) AND every FILL
@@ -606,7 +660,7 @@ def render_bound_skeleton(
     # #VERIFY: test_binding_render.py.
     before_fill_map = _fill_role_words_map(skeleton)
     bound = copy.deepcopy(skeleton)
-    _substitute_slotted_surfaces(bound, bindings)
+    _substitute_slotted_surfaces(bound, bindings, personalizable_slots)
 
     _assert_no_residual_tokens(bound)
     _assert_fingerprint_unchanged(skeleton, bound)
@@ -649,6 +703,143 @@ def _parse_bind_response(raw: str) -> dict[str, str] | None:
     return cast("dict[str, str]", parsed_map)
 
 
+def personalizable_slot_ids(contract: ThemeContract) -> frozenset[str]:
+    """Return the ids of the contract's ``kind == "personalizable"`` slots.
+
+    The single source of truth for this set: :func:`bind_theme_to_contract`
+    and :func:`interpret_and_bind` (below) both call it, and so do
+    :mod:`cyo_adventure.generation.worker` and
+    :mod:`cyo_adventure.generation.import_story`, which import it from here
+    rather than re-deriving the ``{slot.id for slot in contract.slots if
+    slot.kind == "personalizable"}`` comprehension at each call site.
+
+    Args:
+        contract: The theme contract to inspect.
+
+    Returns:
+        The frozenset of personalizable slot ids; empty when the contract
+        declares none (the common case for contracts predating ADR-023).
+    """
+    return frozenset(
+        slot.id for slot in contract.slots if slot.kind == "personalizable"
+    )
+
+
+def _request_contract(
+    contract: ThemeContract, personalizable_ids: frozenset[str]
+) -> ThemeContract:
+    """Build the contract view sent to the LLM, excluding personalizable slots.
+
+    A personalizable slot's value is never proposed by the model (ADR-023): it
+    is pinned to ``contract.default_binding[slot_id]`` and merged back in by
+    :func:`_merge_personalizable_defaults` after parsing, before validation.
+    Excluding it here means it never appears in the bind/interpret-bind slot
+    table (``prompts.py``'s ``_slot_table`` iterates ``contract.slots``
+    unfiltered), so a real-person field (e.g. a sibling's name) never reaches
+    the provider prompt.
+
+    Uses ``model_copy(update=...)``, which does not re-run validators, so the
+    resulting view (fewer slots than ``default_binding`` has keys) never trips
+    ``_check_default_binding_keys``.
+
+    Args:
+        contract: The full theme contract.
+        personalizable_ids: The ids of its personalizable slots.
+
+    Returns:
+        ``contract`` unchanged when ``personalizable_ids`` is empty (the
+        common case); otherwise a shallow copy with those slots removed from
+        ``.slots``.
+    """
+    if not personalizable_ids:
+        return contract
+    return contract.model_copy(
+        update={
+            "slots": [
+                slot for slot in contract.slots if slot.id not in personalizable_ids
+            ]
+        }
+    )
+
+
+def _merge_personalizable_defaults(
+    contract: ThemeContract,
+    parsed: dict[str, str],
+    personalizable_ids: frozenset[str],
+) -> dict[str, str]:
+    """Merge each personalizable slot's pinned default into a parsed binding.
+
+    Runs AFTER parsing but BEFORE
+    :func:`~cyo_adventure.validator.slots.validate_slot_bindings`, per
+    ADR-023: the model never proposed these slots (see
+    :func:`_request_contract`), so the full, contract-complete binding map
+    only exists once this merge has run. ``_completeness_violations`` requires
+    an exact key-set match against every declared slot, so a personalizable
+    slot omitted (or a stray model-supplied value for it) must be resolved
+    here, before that check runs. The default always wins: any value the
+    model supplied for a personalizable slot id is discarded.
+
+    Args:
+        contract: The full theme contract (its ``default_binding`` provides
+            the pinned value).
+        parsed: The provider's parsed binding map, over the request
+            contract's (excluded) slot set.
+        personalizable_ids: The ids of the contract's personalizable slots.
+
+    Returns:
+        A new mapping: ``parsed`` plus ``contract.default_binding[slot_id]``
+        for each id in ``personalizable_ids``.
+    """
+    return {
+        **parsed,
+        **{
+            slot_id: contract.default_binding[slot_id] for slot_id in personalizable_ids
+        },
+    }
+
+
+def _drop_personalizable_violations(
+    violations: list[SlotViolation], personalizable_ids: frozenset[str]
+) -> list[SlotViolation]:
+    """Drop every violation naming a personalizable slot, defense in depth.
+
+    :meth:`~cyo_adventure.storybook.theme_contract.ThemeContract._check_personalizable_defaults`
+    already rejects, at contract-construction time, a personalizable slot
+    whose pinned default fails any of its *static* per-value constraints
+    (non-emptiness, charset, ``max_words``, ``forbid``, ``pattern``), so
+    those checks can never produce a violation here. ``distinct_from`` is the
+    one remaining *dynamic* constraint: it compares a slot's value against
+    whatever value its declared sibling currently holds, and a personalizable
+    slot's sibling can be a ``theme`` slot the model just proposed, whose
+    value differs on every attempt. A contract-time check cannot see that
+    value, so a personalizable slot's own ``distinct_from`` violation can, in
+    that one case, still reach this point.
+
+    Filtering it out here (rather than only from the retry prompt) closes
+    both halves of the leak (design review Finding 1): the personalizable
+    slot's id never reaches :func:`~cyo_adventure.generation.prompts.build_bind_prompt`'s
+    violation feedback (the model was never shown that slot and could never
+    act on it), and the futile retry loop this would otherwise cause (the
+    same theme brief re-sent, hitting the same collision, until
+    ``max_attempts`` is exhausted for no fixable reason) never starts,
+    because the violation no longer counts against the attempt's pass/fail
+    decision either.
+
+    Args:
+        violations: The raw violations from
+            :func:`~cyo_adventure.validator.slots.validate_slot_bindings`.
+        personalizable_ids: The ids of the contract's personalizable slots.
+
+    Returns:
+        ``violations`` with every entry whose ``slot_id`` is in
+        ``personalizable_ids`` removed; unchanged when ``personalizable_ids``
+        is empty (the common case for contracts predating ADR-023).
+    """
+    if not personalizable_ids:
+        return violations
+    return [v for v in violations if v.slot_id not in personalizable_ids]
+
+
 async def bind_theme_to_contract(  # noqa: PLR0913
     contract: ThemeContract,
     theme_brief: Mapping[str, object],
@@ -671,6 +862,19 @@ async def bind_theme_to_contract(  # noqa: PLR0913
     Non-JSON or non-``dict[str, str]`` output counts as a failed attempt (it
     mirrors ``_run_one_stage``'s parse posture) rather than raising
     immediately, so a single malformed response still gets its retry.
+
+    Any ``kind == "personalizable"`` slot (ADR-023) is excluded from the
+    prompt entirely (:func:`_request_contract`): its value is never proposed
+    by the model. Its pinned ``contract.default_binding[slot_id]`` value is
+    merged into the parsed map (:func:`_merge_personalizable_defaults`) AFTER
+    parsing but BEFORE ``validate_slot_bindings`` runs, so the completeness
+    check always sees a full, contract-complete binding. Any violation
+    ``validate_slot_bindings`` still reports against a personalizable slot id
+    is then dropped (:func:`_drop_personalizable_violations`, defense in
+    depth alongside the contract-construction-time check in
+    :meth:`~cyo_adventure.storybook.theme_contract.ThemeContract._check_personalizable_defaults`):
+    that slot's id must never reach the retry-feedback prompt, since the
+    model was never shown it and could never act on the feedback.
 
     Args:
         contract: The theme contract to bind against.
@@ -701,13 +905,15 @@ async def bind_theme_to_contract(  # noqa: PLR0913
     # call.
     # #VERIFY: test_bind_step.py.
     guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
+    personalizable_ids = personalizable_slot_ids(contract)
+    request_contract = _request_contract(contract, personalizable_ids)
 
     violations: list[SlotViolation] = []
     parse_failed = False
 
     for _attempt in range(max_attempts):
         stage_prompt = build_bind_prompt(
-            contract, theme_brief, violations=violations or None
+            request_contract, theme_brief, violations=violations or None
         )
         raw = await guarded_provider.complete(
             system=stage_prompt.system,
@@ -722,9 +928,12 @@ async def bind_theme_to_contract(  # noqa: PLR0913
             continue
 
         parse_failed = False
-        violations = validate_slot_bindings(contract, parsed)
+        merged = _merge_personalizable_defaults(contract, parsed, personalizable_ids)
+        violations = _drop_personalizable_violations(
+            validate_slot_bindings(contract, merged), personalizable_ids
+        )
         if not violations:
-            return parsed
+            return merged
 
     if parse_failed and not violations:
         msg = (
@@ -921,13 +1130,15 @@ async def interpret_and_bind(  # noqa: PLR0913
     # each screened by PiiGuardedProvider before any network call.
     # #VERIFY: test_interpret_bind.py.
     guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
+    personalizable_ids = personalizable_slot_ids(contract)
+    request_contract = _request_contract(contract, personalizable_ids)
 
     violations: list[SlotViolation] = []
     parse_failed = False
 
     for _attempt in range(max_attempts):
         stage_prompt = build_interpret_bind_prompt(
-            contract, theme_brief, violations=violations or None
+            request_contract, theme_brief, violations=violations or None
         )
         raw = await guarded_provider.complete(
             system=stage_prompt.system,
@@ -935,7 +1146,7 @@ async def interpret_and_bind(  # noqa: PLR0913
             max_tokens=_MAX_TOKENS_BIND,
         )
 
-        parsed = _parse_interpret_bind_response(raw, contract)
+        parsed = _parse_interpret_bind_response(raw, request_contract)
         if parsed is None:
             parse_failed = True
             violations = []
@@ -943,9 +1154,12 @@ async def interpret_and_bind(  # noqa: PLR0913
 
         bindings, elements = parsed
         parse_failed = False
-        violations = validate_slot_bindings(contract, bindings)
+        merged = _merge_personalizable_defaults(contract, bindings, personalizable_ids)
+        violations = _drop_personalizable_violations(
+            validate_slot_bindings(contract, merged), personalizable_ids
+        )
         if not violations:
-            return bindings, elements
+            return merged, elements
 
     if parse_failed and not violations:
         msg = (

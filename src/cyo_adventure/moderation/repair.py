@@ -36,8 +36,12 @@ _logger = get_logger(__name__)
 _REPAIR_SYSTEM = (
     "You revise a children's choose-your-own-adventure story to address review "
     "findings. Preserve the exact node ids, choices, and branching structure. "
-    "Only revise prose. Return ONLY the full revised story JSON, same schema."
-    + _UNTRUSTED_SUFFIX
+    "Only revise prose. Some prose may contain verbatim tokens of the form "
+    "{~NAME:Word~}: a family may later personalise these. Every such token must "
+    "be preserved character for character, including the braces and tildes: do "
+    "not reword it, re-space it, translate it, or drop it, and never move one "
+    "into a choice label or the story title. Return ONLY the full revised story "
+    "JSON, same schema." + _UNTRUSTED_SUFFIX
 )
 
 

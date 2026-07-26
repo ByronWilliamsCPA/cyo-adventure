@@ -33,6 +33,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -144,7 +145,13 @@ def check_reading_level(story: Storybook) -> ValidationReport:
     upper = target + tolerance
 
     for node in story.nodes:
-        body = node.body
+        # A raw `{~SLOTID:GenericWord~}` sentinel would otherwise tokenize as
+        # two words (the slot id and the value), inflating word and syllable
+        # counts and skewing the FK grade. Stripping to the inner value
+        # before both the word-count floor and the grade computation scores
+        # a sentinel-bearing body identically to the same body with its
+        # sentinels already resolved.
+        body = strip_sentinels(node.body)
         if len(body.split()) < _MIN_WORDS_FOR_FK:
             continue
         fk_grade = _flesch_kincaid_grade(body)

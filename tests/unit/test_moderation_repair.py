@@ -116,6 +116,20 @@ def test_repair_system_carries_instruction_hierarchy() -> None:
     assert _REPAIR_SYSTEM.endswith(_UNTRUSTED_SUFFIX)
 
 
+# ---------------------------------------------------------------------------
+# ADR-023 plan 3.3 (Task 4b sub-task 1): the repair prompt must instruct the
+# generator to preserve a personalization sentinel verbatim, mirroring the
+# producer instruction generation/templates/fill_bound.md's "Verbatim tokens"
+# section already carries for the fill step.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_repair_system_instructs_verbatim_sentinel_preservation() -> None:
+    assert "{~NAME:Word~}" in _REPAIR_SYSTEM
+    assert "choice label" in _REPAIR_SYSTEM
+
+
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_repair_prompt_wraps_story_json_in_untrusted_delimiter() -> None:

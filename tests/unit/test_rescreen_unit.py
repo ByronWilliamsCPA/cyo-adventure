@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import copy
 import uuid
+from typing import cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -36,6 +37,8 @@ from cyo_adventure.generation.provider import _CANNED_STORY
 from cyo_adventure.moderation import rescreen as rescreen_mod
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.thresholds import Threshold, ThresholdPolicy
+from cyo_adventure.storybook.models import Storybook as StoryModel
+from cyo_adventure.storybook.sentinels import wrap
 
 pytestmark = [pytest.mark.unit, pytest.mark.asyncio]
 
@@ -151,6 +154,15 @@ def _block_finding(category: str = "sexual") -> Finding:
         score=0.99,
         message="bright-line hit",
     )
+
+
+def _with_sentinel_in_body(blob: dict[str, object], sentinel: str) -> dict[str, object]:
+    """Return a deep copy of ``blob`` with ``sentinel`` appended to n_start's body."""
+    modified = copy.deepcopy(blob)
+    nodes = cast("list[dict[str, object]]", modified["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    start_node["body"] = f"{start_node['body']} {sentinel}"
+    return modified
 
 
 # ---------------------------------------------------------------------------
@@ -415,6 +427,179 @@ async def test_missing_version_row_yields_error(
 
     assert summary.errored == 1
     assert summary.results[0].error == "published version row is missing"
+
+
+# ---------------------------------------------------------------------------
+# ADR-023 plan 3.3 (Task 4b sub-task 3): strip-before-classify (3a, plan R12,
+# MANDATORY) and the contract-free sentinel corruption-at-rest scan (3b).
+# ---------------------------------------------------------------------------
+
+
+async def test_classifier_input_is_stripped_of_sentinels(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """(3a) A published body carrying a sentinel is stripped to its generic
+    value before it reaches the classifiers; the stored blob is untouched.
+    """
+    _patch_threshold_policy(monkeypatch)
+    classifiers = AsyncMock(return_value=[])
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", classifiers)
+    book = _book()
+    sentinel = wrap("HERO", "Ada")
+    tainted_blob = _with_sentinel_in_body(_blob(), sentinel)
+    version_row = _version_row("s1", 1, tainted_blob)
+    _wire_session(mock_async_session, books=[book], versions={("s1", 1): version_row})
+
+    await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    classifiers.assert_awaited_once()
+    assert classifiers.await_args is not None
+    nodes = dict(classifiers.await_args.kwargs["nodes"])
+    assert "{~" not in nodes["n_start"]
+    assert nodes["n_start"].endswith("Ada")
+
+    # The stored blob is never mutated: the sentinel survives at rest.
+    stored_nodes = cast("list[dict[str, object]]", version_row.blob["nodes"])
+    stored_start = next(n for n in stored_nodes if n["id"] == "n_start")
+    assert sentinel in cast("str", stored_start["body"])
+
+
+async def test_sentinel_free_body_is_unaffected_by_strip(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A sentinel-free body reaches the classifier byte-identical (dormancy
+    fact): stripping a sentinel-free string is a documented no-op.
+    """
+    _patch_threshold_policy(monkeypatch)
+    classifiers = AsyncMock(return_value=[])
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", classifiers)
+    book = _book()
+    clean_blob = _blob()
+    version_row = _version_row("s1", 1, clean_blob)
+    _wire_session(mock_async_session, books=[book], versions={("s1", 1): version_row})
+
+    await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    assert classifiers.await_args is not None
+    nodes = dict(classifiers.await_args.kwargs["nodes"])
+    stored_nodes = cast("list[dict[str, object]]", clean_blob["nodes"])
+    for node in stored_nodes:
+        assert nodes[cast("str", node["id"])] == node["body"]
+
+
+async def test_malformed_sentinel_flags_rescreen(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """(3b) A malformed sentinel-shaped near-miss in a published body flags
+    the book, even though the deterministic gate and classifiers see nothing
+    wrong (a near-miss is valid, non-empty prose to both of those).
+    """
+    _patch_threshold_policy(monkeypatch)
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", AsyncMock(return_value=[]))
+    book = _book()
+    near_miss = "{~HERO:Explorer}"  # missing the closing tilde
+    corrupted_blob = _with_sentinel_in_body(_blob(), near_miss)
+    _wire_session(
+        mock_async_session,
+        books=[book],
+        versions={("s1", 1): _version_row("s1", 1, corrupted_blob)},
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    assert summary.flagged == 1
+    result = summary.results[0]
+    assert any("malformed" in r for r in result.reasons)
+
+
+async def test_sentinel_in_choice_label_flags_rescreen(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """(3b) A well-formed sentinel that leaked into a choice label flags the
+    book: a choice label must never carry personalization content (Task 2).
+    """
+    _patch_threshold_policy(monkeypatch)
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", AsyncMock(return_value=[]))
+    book = _book()
+    corrupted_blob = _blob()
+    nodes = cast("list[dict[str, object]]", corrupted_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    choices = cast("list[dict[str, object]]", start_node["choices"])
+    choices[0]["label"] = f"{choices[0]['label']} {wrap('HERO', 'Ada')}"
+    _wire_session(
+        mock_async_session,
+        books=[book],
+        versions={("s1", 1): _version_row("s1", 1, corrupted_blob)},
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    assert summary.flagged == 1
+    result = summary.results[0]
+    assert any("choice label" in r for r in result.reasons)
+
+
+async def test_sentinel_in_title_flags_rescreen(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """(Task 6a) A well-formed sentinel that leaked into the top-level title
+    flags the book: the title is kid-facing (library listings) and never a
+    personalizable location, so it must never carry sentinel content.
+    """
+    _patch_threshold_policy(monkeypatch)
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", AsyncMock(return_value=[]))
+    book = _book()
+    corrupted_blob = _blob()
+    corrupted_blob["title"] = f"{corrupted_blob['title']} {wrap('HERO', 'Ada')}"
+    _wire_session(
+        mock_async_session,
+        books=[book],
+        versions={("s1", 1): _version_row("s1", 1, corrupted_blob)},
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    assert summary.flagged == 1
+    result = summary.results[0]
+    assert any("title" in r for r in result.reasons)
+
+
+async def test_malformed_sentinel_in_title_flagged_by_scan() -> None:
+    """(Task 6a) A malformed near-miss in the top-level title is caught by
+    the direct `_sentinel_corruption_reasons` scan, mirroring the body/label
+    near-miss coverage above.
+    """
+    blob = _blob()
+    blob["title"] = f"{blob['title']} {{~HERO:Explorer}}"
+    story = StoryModel.model_validate(blob)
+
+    reasons = rescreen_mod._sentinel_corruption_reasons(story)
+
+    assert any("malformed" in r and "title" in r for r in reasons)
+
+
+async def test_clean_blob_is_not_flagged_by_sentinel_scan() -> None:
+    """(3b) A clean, sentinel-free published blob contributes zero reasons
+    from the sentinel-corruption scan (dormancy fact): with no malformed
+    near-miss and no well-formed sentinel anywhere in the blob (body, ending
+    title, or a choice label), `_sentinel_corruption_reasons` finds nothing
+    to report, so it never contributes a reason toward a "flagged" outcome.
+    """
+    story = StoryModel.model_validate(_blob())
+
+    reasons = rescreen_mod._sentinel_corruption_reasons(story)
+
+    assert reasons == []
 
 
 # ---------------------------------------------------------------------------

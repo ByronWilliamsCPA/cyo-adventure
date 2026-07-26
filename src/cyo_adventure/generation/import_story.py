@@ -23,7 +23,11 @@ from cyo_adventure.generation.authoring_metadata import (
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
 )
-from cyo_adventure.generation.binding import load_contract_for, render_bound_skeleton
+from cyo_adventure.generation.binding import (
+    load_contract_for,
+    personalizable_slot_ids,
+    render_bound_skeleton,
+)
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
@@ -31,12 +35,21 @@ from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.moderation import run_moderation_pipeline
+from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNSET,
+    PersonalizableSlotsArg,
+    personalizable_slot_ids_for_job,
+)
+from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
 
 if TYPE_CHECKING:
     import uuid
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = get_logger(__name__)
 
 # Every job resumed by resume_manual_fill produces a fresh Storybook, so its
 # sole version is 1, mirroring generation/worker.py's _FIRST_VERSION.
@@ -81,12 +94,27 @@ class ImportRequest:
     skeleton_slug: str | None = None
 
 
-async def import_filled_story(session: AsyncSession, request: ImportRequest) -> str:
+async def import_filled_story(
+    session: AsyncSession,
+    request: ImportRequest,
+    *,
+    personalizable_slots: PersonalizableSlotsArg = PERSONALIZABLE_SLOTS_UNSET,
+) -> str:
     """Validate a filled story and persist it if the gate does not block.
 
     Args:
         session: Open async session; caller owns the transaction.
         request: The grouped import inputs (see :class:`ImportRequest`).
+        personalizable_slots: Task 6c pass-through to
+            :func:`~cyo_adventure.moderation.pipeline.run_moderation_pipeline`'s
+            own same-named parameter. Left at its default for every caller
+            except :func:`resume_manual_fill`, which resolves this itself
+            (see that function's docstring) and threads the result through
+            here so the moderation-entry backstop uses the identical slot
+            set the resume path's own pre-persist check used, instead of
+            re-resolving it from the database (where, at this point in
+            :func:`resume_manual_fill`'s call sequence, the job is not yet
+            linked to ``story_id``).
 
     Returns:
         The persisted story id (the blob's ``id``). The story leaves ``draft``
@@ -164,6 +192,7 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         generation_provider=build_provider(_default_settings),
         pii=pii,
         review_model_override=request.review_model_override,
+        personalizable_slots=personalizable_slots,
     )
 
     return story_id
@@ -348,8 +377,12 @@ def _stage1_reference_skeleton(
     bindings = (
         recorded_bindings if recorded_bindings is not None else contract.default_binding
     )
+    personalizable_slots = personalizable_slot_ids(contract)
     try:
-        return render_bound_skeleton(original_skeleton, bindings), None
+        return (
+            render_bound_skeleton(original_skeleton, bindings, personalizable_slots),
+            None,
+        )
     except ValidationError as exc:
         return None, str(exc)
 
@@ -373,7 +406,18 @@ class _ResumeStage1Context:
             loaded.
         skeleton_load_error: The load failure message, only meaningful when
             ``original_skeleton`` is ``None``.
-        band: The age-band directory segment the skeleton was resolved from.
+        reference_skeleton: The Stage 1 fidelity reference (see
+            :func:`_stage1_reference_skeleton`), already computed by the
+            caller (:func:`resume_manual_fill`) BEFORE the story was
+            persisted -- this is the same artifact the new pre-persist
+            sentinel-integrity check (Task 6b) reuses, so it is threaded
+            through rather than recomputed a second time here. ``None`` when
+            ``original_skeleton`` is ``None``, or when the contract/render
+            step itself failed.
+        reference_error: The reference-build failure message, only
+            meaningful when ``reference_skeleton`` is ``None`` and
+            ``original_skeleton`` is not ``None`` (a contract/render
+            failure, as opposed to a skeleton-load failure).
         blob: The filled Storybook JSON being resumed.
     """
 
@@ -381,7 +425,8 @@ class _ResumeStage1Context:
     skeleton_slug: str | None
     original_skeleton: dict[str, object] | None
     skeleton_load_error: str | None
-    band: str
+    reference_skeleton: dict[str, object] | None
+    reference_error: str | None
     blob: dict[str, object]
 
 
@@ -434,26 +479,26 @@ async def _finalize_resume(session: AsyncSession, ctx: _ResumeStage1Context) -> 
     # #CRITICAL: data-integrity: for a WS-2 parameterized skeleton, the
     # Stage 1 reference must be the BOUND skeleton, not the raw
     # {SLOT}-bearing one just loaded above (see _stage1_reference_skeleton's
-    # docstring); a legacy skeleton is unaffected. A ``(None, error)`` return
-    # means the contract/render step itself failed (e.g. a stale recorded
-    # binding) -- degrade to needs_review exactly like the missing-skeleton-
-    # file branch above, never crash or strand this already-persisted,
-    # already-moderated resume.
+    # docstring); a legacy skeleton is unaffected. ``ctx.reference_skeleton``
+    # is ``None`` when the contract/render step itself failed (e.g. a stale
+    # recorded binding) -- degrade to needs_review exactly like the missing-
+    # skeleton-file branch above, never crash or strand this already-
+    # persisted, already-moderated resume. This reference was already
+    # computed once, before the story was persisted, by
+    # :func:`resume_manual_fill` (Task 6b): reused here rather than
+    # recomputed, so a resume never does the contract/render step twice.
     # #VERIFY: tests/unit/test_resume_manual_fill_stage1.py (see the helper's
     # own docstring for the full test list).
-    reference_skeleton, reference_error = _stage1_reference_skeleton(
-        ctx.band, ctx.skeleton_slug, ctx.original_skeleton, job
-    )
-    if reference_skeleton is None:
+    if ctx.reference_skeleton is None:
         job.status = "needs_review"
-        job.error = f"could not build Stage 1 reference: {reference_error}"[:512]
+        job.error = f"could not build Stage 1 reference: {ctx.reference_error}"[:512]
         await session.commit()
         return "needs_review"
 
     pii = PiiContext(child_names=frozenset())
     review_stage1_model = _str_meta(job.authoring_metadata, "review_stage1_model")
     violations = await run_stage1_gate(
-        reference_skeleton,
+        ctx.reference_skeleton,
         ctx.blob,
         review_stage1_model=review_stage1_model,
         prep_model=job.model,
@@ -488,9 +533,16 @@ async def resume_manual_fill(
 ) -> tuple[str, str]:
     """Resume a skill-authored skeleton fill parked at "awaiting_manual_fill".
 
-    Loads the job's concept for its family_id, then delegates to
-    :func:`import_filled_story` for the same gate + persist + moderation
-    pipeline every other import uses, threading the job's own
+    Loads the job's concept for its family_id, then, when the job carries a
+    ``skeleton_slug`` and its matched skeleton loaded successfully, computes
+    the Stage 1 fidelity reference (:func:`_stage1_reference_skeleton`) and
+    runs the full pre-fill-vs-filled sentinel-integrity check
+    (:func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`,
+    Task 6b) against it BEFORE persisting anything: a violation (a dropped,
+    forged, migrated, or malformed sentinel) marks the job "failed" and
+    raises, so the blob is never persisted. Only then does this function
+    delegate to :func:`import_filled_story` for the same gate + persist +
+    moderation pipeline every other import uses, threading the job's own
     ``authoring_metadata.get("review_stage2_model")`` override through as
     ``ImportRequest.review_model_override``. On success the job is marked
     "passed" and linked to the new storybook. If the job carries a
@@ -534,6 +586,29 @@ async def resume_manual_fill(
     instead of being stranded: the story already exists and passed moderation,
     it just cannot be re-verified against its origin skeleton.
 
+    Task 6c (whole-branch review findings I1/I2/M1): this function also
+    resolves the story's declared personalizable-slot set itself, from the
+    in-memory ``job`` and the band already resolved above
+    (:func:`_resolve_resume_band`'s brief-band fallback), and threads it
+    through :func:`import_filled_story` into
+    :func:`~cyo_adventure.moderation.pipeline.run_moderation_pipeline`'s
+    entry-level sentinel-integrity backstop. Resolving it here, rather than
+    letting that backstop resolve it from the database as it does for every
+    other caller, closes two gaps the Task 6a backstop introduced on this
+    path specifically: the backstop's own ``GenerationJob`` lookup is keyed
+    on ``storybook_id``, which this function does not set until AFTER
+    :func:`import_filled_story` (and thus the moderation pass) returns (I1:
+    without this fix, the backstop would always see "no job" here and
+    silently pass an empty slot set, which would wrongly reject a legitimate
+    personalizable sentinel as an ``unknown_slot`` the moment a real
+    personalizable contract ships); and the backstop's own band recovery
+    reads only the raw ``authoring_metadata`` key, not this function's own
+    brief-band fallback (I2). A resolution of ``None`` (the contract is
+    genuinely uncomputable, as opposed to merely a render/binding failure)
+    is threaded through unchanged and makes the moderation entry fail closed
+    on this resume (M1), rather than the story silently persisting clean
+    with no entry-level check at all.
+
     Args:
         session: Open async session; the story/version write still follows
             import_filled_story's own transaction contract, but this
@@ -551,8 +626,12 @@ async def resume_manual_fill(
     Raises:
         ResourceNotFoundError: If the job or its concept does not exist.
         StateTransitionError: If the job is not "awaiting_manual_fill".
-        ValidationError: Propagated from import_filled_story if the gate
-            blocks the filled story (the job is marked "failed" first).
+        ValidationError: Raised BEFORE persisting if the pre-persist sentinel-
+            integrity check (Task 6b) finds a dropped, forged, migrated, or
+            malformed sentinel (the job is marked "failed" first); also
+            propagated from import_filled_story if the validation gate
+            blocks the filled story (the job is marked "failed" first,
+            same as the sentinel-integrity case).
         ProjectBaseError: Propagated from the moderation pipeline on failure,
             same as import_filled_story (not intercepted here).
     """
@@ -588,7 +667,7 @@ async def resume_manual_fill(
     skeleton_load_error: str | None = None
     # Initialized unconditionally (rather than only inside the `if` below) so
     # it is never "possibly unbound" at its second use further down (the
-    # reference-selection block), which re-enters under the identical
+    # reference-computation block), which re-enters under the identical
     # `skeleton_slug is not None` guard; the "" default is never actually read
     # since that guard is always true whenever band is used again.
     band = ""
@@ -599,6 +678,108 @@ async def resume_manual_fill(
         except (ResourceNotFoundError, ValidationError) as exc:
             skeleton_load_error = str(exc)
 
+    # #CRITICAL: security: Task 6c (I1/I2). The moderation-entry Variant B
+    # backstop (moderation/pipeline.py::run_moderation_pipeline) resolves the
+    # story's declared personalizable-slot set via a `GenerationJob` lookup
+    # keyed on `storybook_id`; on THIS path that link is not written until
+    # `job.storybook_id = story_id` below, AFTER `import_filled_story` (and
+    # thus the moderation pass) has already run. Resolving via that lookup
+    # inside the pipeline would therefore always see "no job" and answer an
+    # empty set (I1) -- fail-open for a legitimate sentinel the instant a real
+    # personalizable contract ships. Resolved HERE instead, directly from the
+    # in-memory `job` and the band this function has ALREADY correctly
+    # resolved (`_resolve_resume_band`'s brief-band fallback, not the raw
+    # `authoring_metadata` key alone, closing I2), then threaded through
+    # `import_filled_story` into the moderation entry below, so it uses the
+    # exact answer `personalizable_slot_ids_for_story` would have produced
+    # for this job had it been linked in time -- never a guess. A `None`
+    # result (contract genuinely uncomputable) is threaded through verbatim
+    # too: the moderation entry backstop then fails closed on this resume
+    # (M1), rather than the pre-Task-6c gap where an uncomputable contract
+    # here silently persisted a clean-looking version with no entry-level
+    # check at all.
+    # #VERIFY: tests/unit/test_resume_manual_fill_personalizable_slots.py.
+    personalizable_slots = personalizable_slot_ids_for_job(job, band=band)
+
+    # #CRITICAL: security: a personalizable slot's sentinel-wrapped value is
+    # the ONLY marker standing between an authored fill's free-text output
+    # and a family's later personalization resolve; a dropped or forged
+    # sentinel in a skill-authored/imported fill must not reach the
+    # guardian/admin approval queue looking like ordinary prose (ADR-023 plan
+    # section 3.2, "Fail closed"). Task 6a's moderation-entry Variant B
+    # backstop (run_moderation_pipeline) is blob-only and CANNOT catch a
+    # DROPPED sentinel: a filled node simply missing a token it should carry
+    # looks like ordinary prose with no per-node expected map to compare
+    # against. Only Variant A (this call), which compares the SAME pre-fill
+    # bound reference `_finalize_resume`'s own Stage 1 gate uses, catches a
+    # drop. Computed and checked HERE, before `import_filled_story` (and thus
+    # before its `persist_storybook` call) runs, so a violating blob is NEVER
+    # persisted -- unlike generation/worker.py's own check (Task 4a), which
+    # runs on a fill still in memory pre-persist by construction, the
+    # resume/import path's pre-fill reference and the filled blob previously
+    # only coexisted in `_finalize_resume`, which runs AFTER persist; this is
+    # the reorder that closes that gap. Reuses the EXISTING reference-
+    # skeleton production (`_stage1_reference_skeleton`, the same artifact
+    # `_finalize_resume`'s Stage 1 fidelity gate consumes below) rather than
+    # a second binding/contract-load path. This pre-persist check itself is
+    # skipped (not run) when `reference_skeleton` cannot be computed
+    # (skeleton unreadable, or a contract/render failure): that
+    # already-existing degrade-to-needs_review case is left exactly as it
+    # was pre-Task-6b (see `_finalize_resume`), which still runs and can
+    # still downgrade the job's status. As of Task 6c (M1), a skeleton- or
+    # contract-load failure specifically (not a render/binding failure -- see
+    # `personalizable_slots`'s own resolution above, which fails closed only
+    # when the CONTRACT itself is unrecoverable) is no longer silently
+    # persisted clean either: `personalizable_slots` resolves `None` in that
+    # same failure mode, and the moderation-entry backstop this function
+    # threads it into (below) fails closed on it instead. Also dormant, like
+    # the worker's own check, whenever
+    # `personalizable_slot_ids` resolves empty (every contract on disk
+    # today): `check_sentinel_integrity` then derives zero expected
+    # sentinels, so its dropped/forged/migrated/unknown-slot checks all pass.
+    # Its malformed-near-miss scan still runs unconditionally, but fires only
+    # on genuinely sentinel-shaped tokens ordinary prose never contains, so
+    # this stays byte-neutral for all real sentinel-free content.
+    # #VERIFY: test_resume_dropped_sentinel_rejected_pre_persist,
+    # test_resume_forged_sentinel_rejected_pre_persist, and
+    # test_resume_clean_sentinel_free_import_persists_unchanged in
+    # tests/unit/test_resume_manual_fill_sentinel_integrity.py.
+    reference_skeleton: dict[str, object] | None = None
+    reference_error: str | None = None
+    if skeleton_slug is not None and original_skeleton is not None:
+        reference_skeleton, reference_error = _stage1_reference_skeleton(
+            band, skeleton_slug, original_skeleton, job
+        )
+        if reference_skeleton is not None:
+            integrity_result = check_sentinel_integrity(reference_skeleton, blob)
+            if not integrity_result.ok:
+                # Redact the raw sentinel token from the log payload as
+                # defense-in-depth; node_id + kind fully classify+locate each
+                # violation, and the token holds only a generic default
+                # server-side, never resolved child data.
+                violation_details = [
+                    {"node_id": v.node_id, "kind": v.kind}
+                    for v in integrity_result.violations
+                ]
+                logger.error(
+                    "resume_manual_fill.sentinel_integrity_violation",
+                    job_id=str(job_id),
+                    skeleton_slug=skeleton_slug,
+                    violations=violation_details,
+                )
+                msg = (
+                    f"filled story for job {job_id} failed sentinel integrity: "
+                    f"{len(violation_details)} violation(s)"
+                )
+                job.status = "failed"
+                job.error = msg[:512]
+                await session.commit()
+                raise ValidationError(
+                    msg,
+                    field="sentinel_integrity",
+                    details={"sentinel_integrity_violations": violation_details},
+                )
+
     review_stage2_model = _str_meta(job.authoring_metadata, "review_stage2_model")
     request = ImportRequest(
         blob=blob,
@@ -608,7 +789,9 @@ async def resume_manual_fill(
         skeleton_slug=skeleton_slug,
     )
     try:
-        story_id = await import_filled_story(session, request)
+        story_id = await import_filled_story(
+            session, request, personalizable_slots=personalizable_slots
+        )
     except ValidationError as exc:
         # #CRITICAL: data-integrity: record the gate-block on the job row
         # before re-raising, mirroring worker.py's failure-commit-then-reraise
@@ -637,7 +820,8 @@ async def resume_manual_fill(
             skeleton_slug=skeleton_slug,
             original_skeleton=original_skeleton,
             skeleton_load_error=skeleton_load_error,
-            band=band,
+            reference_skeleton=reference_skeleton,
+            reference_error=reference_error,
             blob=blob,
         ),
     )

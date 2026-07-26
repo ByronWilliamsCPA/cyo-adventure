@@ -331,6 +331,51 @@ def test_is_default_binding_skips_only_the_legacy_lexicon_check():
     assert not any(v.rule == "legacy_lexicon" for v in default_violations)
 
 
+def test_personalizable_slot_pinned_to_default_skips_legacy_lexicon_leak():
+    """A personalizable slot pinned to its default_binding value never leaks.
+
+    The pin value legitimately reuses a legacy_lexicon term (its
+    ``default_binding`` IS the original theme's value), so the leak check
+    must be skipped for a ``kind='personalizable'`` slot on a runtime bind
+    (``is_default=False``), the same rationale ``is_default=True`` already
+    gets for the whole binding.
+    """
+    contract = _make_contract()
+    slots = [
+        slot.model_copy(
+            update={
+                "kind": "personalizable",
+                "personalization_field": "pet_name",
+            }
+        )
+        if slot.id == "COMPANION"
+        else slot
+        for slot in contract.slots
+    ]
+    contract = contract.model_copy(update={"slots": slots})
+    bindings = dict(contract.default_binding)
+    # "Maya" is in legacy_lexicon; pin COMPANION to it, as the merge step in
+    # bind_theme_to_contract would.
+    bindings["COMPANION"] = "Maya"
+
+    violations = validate_slot_bindings(contract, bindings, is_default=False)
+
+    assert not any(
+        v.rule == "legacy_lexicon" and v.slot_id == "COMPANION" for v in violations
+    )
+
+
+def test_theme_slot_reintroducing_a_legacy_term_still_fails():
+    """A non-personalizable (theme) slot is unaffected: the leak check still fires."""
+    contract = _make_contract()
+    bindings = dict(contract.default_binding)
+    bindings["HERO"] = "Maya"
+
+    violations = validate_slot_bindings(contract, bindings, is_default=False)
+
+    assert any(v.rule == "legacy_lexicon" and v.slot_id == "HERO" for v in violations)
+
+
 def test_distinct_from_handles_both_sibling_values_blank():
     """Both siblings blank exercises the empty-token-set Jaccard branch."""
     contract = _make_contract()

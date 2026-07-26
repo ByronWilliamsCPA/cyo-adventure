@@ -52,6 +52,7 @@ from cyo_adventure.generation.binding import (
     contract_path_for,
     interpret_and_bind,
     load_contract_for,
+    personalizable_slot_ids,
     render_bound_skeleton,
 )
 from cyo_adventure.generation.concept import ConceptBrief
@@ -84,6 +85,7 @@ from cyo_adventure.story_requests.interpretation import (
 )
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
 from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
@@ -767,6 +769,11 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             no sidecar contract), or its sidecar fails to bind/render -- both
             fail closed, propagating unchanged into the caller's pipeline-
             exception handling. No fill provider call is made in either case.
+            Also raised (ADR-023 plan section 3.2) when the filled blob fails
+            :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity`
+            against the pre-fill bound skeleton: a forged, mutated, migrated,
+            or dropped sentinel fails the job closed, with the violation list
+            logged structurally before the raise.
     """
     authoring = ctx.authoring
     skeleton_slug = authoring.get(SKELETON_SLUG_KEY)
@@ -895,7 +902,10 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         theme_brief_dict=theme_brief_dict,
         ctx=ctx,
     )
-    bound = render_bound_skeleton(result.skeleton, result.bindings)
+    personalizable_slots = personalizable_slot_ids(result.contract)
+    bound = render_bound_skeleton(
+        result.skeleton, result.bindings, personalizable_slots
+    )
 
     outcome = await fill_skeleton(
         bound,
@@ -907,6 +917,53 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         prep_model=ctx.prep_model,
         slot_bindings=result.bindings,
     )
+
+    # #CRITICAL: security: a personalizable slot's sentinel-wrapped value
+    # (rendered into `bound` above) is the ONLY marker standing between the
+    # fill LLM's free-text output and a family's later personalization
+    # resolve; a forged, mutated, migrated, or dropped sentinel in the filled
+    # blob is an unreviewed substitution point that must never reach a
+    # guardian/admin's approval queue looking like ordinary prose (ADR-023
+    # plan section 3.2, "Fail closed"). This check runs on every skeleton
+    # fill, not only personalizable ones: `personalizable_slot_ids` is empty
+    # for every contract on disk today (Task 2 added the slot KIND; nothing
+    # declares it yet), so `check_sentinel_integrity` derives an empty
+    # expected set: the dropped/forged/migrated/unknown-slot checks all pass
+    # for existing content. The malformed-near-miss scan does run
+    # unconditionally (it is not gated on the expected set), but it fires only
+    # on genuinely sentinel-shaped tokens (`{~...~}` near-misses) that ordinary
+    # prose never contains, so this wiring stays byte-neutral for all real
+    # sentinel-free content until a personalizable contract exists. Fails
+    # closed on the FIRST trip: the section 3.4
+    # one-retry policy is explicitly out of scope here (Task 4b). Skipped
+    # when `outcome.storybook` is `None` (the gate blocked with no
+    # salvageable doc, `_build_outcome`'s "failed, no doc" branch): there is
+    # no blob to check or persist in that case.
+    # #VERIFY: test_run_skeleton_fill_sentinel_integrity_dormant_for_non_personalizable_fill,
+    # test_run_skeleton_fill_sentinel_integrity_passes_verbatim_copy, and
+    # test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_closed
+    # in tests/unit/test_worker.py.
+    if outcome.storybook is not None:
+        integrity_result = check_sentinel_integrity(bound, outcome.storybook)
+        if not integrity_result.ok:
+            violation_details = [
+                {"node_id": v.node_id, "kind": v.kind, "token": v.token}
+                for v in integrity_result.violations
+            ]
+            logger.error(
+                "generation_job.sentinel_integrity_violation",
+                skeleton_slug=skeleton_slug,
+                violations=violation_details,
+            )
+            msg = (
+                f"filled blob for skeleton '{skeleton_slug}' failed sentinel "
+                f"integrity: {len(violation_details)} violation(s)"
+            )
+            raise ValidationError(
+                msg,
+                field="sentinel_integrity",
+                details={"sentinel_integrity_violations": violation_details},
+            )
 
     # WS-2 design section 7: the audit block a reviewer needs to see exactly
     # what the theme changed. `bind_attempts` is deliberately omitted:
@@ -1607,11 +1664,32 @@ async def _handle_pipeline_failure(
     # #VERIFY: the bind-failure worker test asserts the violation detail
     # lands in the persisted report/error.
     violations: object | None = None
+    # #CRITICAL: data-integrity: a Task 4a/4b fail-closed sentinel-integrity
+    # ValidationError (_run_skeleton_fill's LIVE check_sentinel_integrity
+    # call) already carries its own violation list in
+    # exc.details["sentinel_integrity_violations"], but before Task 6a that
+    # detail reached only the structured log line above, never job.report:
+    # an admin debugging a failed job saw a truncated error count, not
+    # node_id/kind/token. Stamped under its OWN key here, distinct from
+    # slot_binding_violations, per the Task 4a distinct-details-key
+    # discipline (this is observability only; the fail-closed decision
+    # itself is unchanged).
+    # #VERIFY: tests/unit/test_worker.py::
+    # test_run_generation_job_sentinel_integrity_failure_records_violations_on_job_report
+    # asserts the key is present and slot_binding_violations is absent (no
+    # cross-contamination) for a sentinel-integrity failure.
+    sentinel_violations: object | None = None
     if isinstance(exc, ValidationError):
         violations = exc.details.get("violations")
+        sentinel_violations = exc.details.get("sentinel_integrity_violations")
     report: dict[str, object] | None = None
     if violations is not None:
         report = {"slot_binding_violations": violations}
+    if sentinel_violations is not None:
+        report = {
+            **(report or {}),
+            "sentinel_integrity_violations": sentinel_violations,
+        }
 
     # WS-7 D7 (design 6.1, 6.3): a bound-path skeleton-fill job that fails its
     # bind gets an honest CANNOT_CARRY interpretation on BOTH the failed job

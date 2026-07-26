@@ -33,13 +33,21 @@ from cyo_adventure.core.exceptions import (
     StateTransitionError,
     ValidationError,
 )
-from cyo_adventure.db.models import PipelineEvent, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    GenerationJob,
+    PipelineEvent,
+    Storybook,
+    StorybookVersion,
+)
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
+from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.validator.gate import GateResult
 from cyo_adventure.validator.report import Severity, ValidationFinding, ValidationReport
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+    from sqlalchemy import Select
 
 pytestmark = pytest.mark.unit
 
@@ -97,9 +105,26 @@ def _wire_session(
     version_row: StorybookVersion,
     latest_version: int = 1,
     child_names: list[str] | None = None,
+    job: GenerationJob | None = None,
 ) -> None:
-    """Wire a mock session for edit_node's load sequence."""
-    session.execute = AsyncMock(return_value=_execute_result(story))
+    """Wire a mock session for edit_node's load sequence.
+
+    ``session.execute`` now serves two distinct ``select(...)`` statements:
+    the storybook row lookup (``_load_edit_target``) and, since Task 6a's
+    at-rest sentinel re-check, the ``GenerationJob`` provenance lookup inside
+    ``personalizable_slot_ids_for_story``. The two are distinguished by
+    which ORM entity they target, mirroring
+    tests/unit/test_moderation_pipeline.py::_load. Default ``job=None``
+    (no job on record) resolves an empty personalizable-slot set: today's
+    dormant default for every test that does not explicitly wire a job.
+    """
+
+    def _execute_side_effect(stmt: Select[tuple[object]]) -> MagicMock:
+        if stmt.column_descriptions[0]["type"] is GenerationJob:
+            return _execute_result(job)
+        return _execute_result(story)
+
+    session.execute = AsyncMock(side_effect=_execute_side_effect)
     session.scalar = AsyncMock(return_value=latest_version)
     session.get = AsyncMock(return_value=version_row)
     session.scalars = AsyncMock(return_value=_scalars_result(child_names or []))
@@ -474,6 +499,140 @@ async def test_gate_failing_edit_rejected_with_unchanged_blob(
     # The stored blob is untouched: the mutation happened on a discarded copy.
     assert version_row.blob is original_blob
     session.add.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Sentinel-integrity at-rest re-check (Task 6a): an edit that injects, forges,
+# or mislocates a sentinel is rejected fail-closed, mirroring the gate cap
+# above (422, stored blob left byte-for-byte unchanged).
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_edit_injecting_forged_sentinel_rejected_and_blob_unchanged() -> None:
+    """A body edit that injects a well-formed sentinel is rejected.
+
+    No ``GenerationJob`` is wired, so the story's personalizable-slot set
+    resolves to the dormant default (empty, per ``_wire_session``'s
+    docstring): ANY well-formed sentinel in the edited body is therefore an
+    ``unknown_slot`` violation under ``check_sentinel_integrity_at_rest``,
+    exactly as it would be for a real story with no personalizable contract.
+    """
+    story = _story("in_review")
+    version_row = _version_row()
+    original_blob = version_row.blob
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row)
+    ctx = _ctx("admin", session)
+
+    body = NodeEditBody(body=f"You step onto a path marked {wrap('HERO', 'Ada')}.")
+    with pytest.raises(ValidationError, match="sentinel"):
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+
+    # The stored blob is untouched: the mutation happened on a discarded copy.
+    assert version_row.blob is original_blob
+    session.add.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_edit_leaving_sentinel_in_choice_label_rejected() -> None:
+    """A choice-label edit that leaves a well-formed sentinel in place is
+    rejected, even though the slot id would otherwise be declared: a choice
+    label is never a legal sentinel surface (mirrors the title case in
+    sentinel_integrity.py).
+    """
+    story = _story("in_review")
+    version_row = _version_row()
+    original_blob = version_row.blob
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row)
+    ctx = _ctx("admin", session)
+
+    body = NodeEditBody(choice_labels={_CHOICE_ID: wrap("HERO", "Ada")})
+    with pytest.raises(ValidationError, match="sentinel"):
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+
+    assert version_row.blob is original_blob
+    session.add.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_edit_contract_unrecoverable_with_sentinel_rejected() -> None:
+    """An UNRECOVERABLE contract still fails closed when the edited blob bears a
+    sentinel: with no declared slots, any well-formed sentinel is an
+    ``unknown_slot`` violation, so a forged/injected sentinel is rejected
+    exactly as it would be under a recovered contract.
+
+    A ``GenerationJob`` with a skeleton_slug but no recoverable band leaves
+    the personalizable-slot set unrecoverable (``None``), which degrades to an
+    empty declared-slot set for the at-rest check.
+    """
+    story = _story("in_review")
+    version_row = _version_row()
+    original_blob = version_row.blob
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug"},  # no skeleton_band
+    )
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row, job=job)
+    ctx = _ctx("admin", session)
+
+    body = NodeEditBody(body=f"You reach the gate marked {wrap('HERO', 'Ada')}.")
+    with pytest.raises(ValidationError, match="sentinel"):
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+
+    assert version_row.blob is original_blob
+    session.add.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_edit_contract_unrecoverable_sentinel_free_succeeds() -> None:
+    """An UNRECOVERABLE contract must NOT permanently block a sentinel-free edit.
+
+    Regression: a story whose personalizable-slot contract cannot be recovered
+    (a ``GenerationJob`` with a skeleton_slug but no recoverable band) used to
+    fail closed on EVERY node edit, locking the entire (dormant, sentinel-free)
+    existing catalog out of editing. With no sentinel in the edited blob there
+    is nothing for the at-rest check to validate against the contract, so the
+    edit proceeds; fail-closed is preserved only for blobs that actually carry
+    a sentinel (see the sibling ``..._with_sentinel_rejected`` test).
+    """
+    story = _story("in_review")
+    version_row = _version_row()
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug"},  # no skeleton_band
+    )
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row, job=job)
+    ctx = _ctx("admin", session)
+
+    result = await node_edit.edit_node(
+        "s1", 1, _NODE_ID, NodeEditBody(body="A perfectly ordinary edit."), ctx
+    )
+
+    assert result.status == "in_review"
+    assert version_row.blob["nodes"][0]["body"] == "A perfectly ordinary edit."  # type: ignore[index]
+
+
+@pytest.mark.asyncio
+async def test_edit_sentinel_free_still_succeeds() -> None:
+    """Dormancy: a normal sentinel-free edit is unaffected by the new check."""
+    story = _story("in_review")
+    version_row = _version_row()
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row)
+    ctx = _ctx("admin", session)
+
+    result = await node_edit.edit_node(
+        "s1", 1, _NODE_ID, NodeEditBody(body="A perfectly ordinary edit."), ctx
+    )
+
+    assert result.status == "in_review"
+    assert version_row.blob["nodes"][0]["body"] == "A perfectly ordinary edit."  # type: ignore[index]
 
 
 @pytest.mark.asyncio

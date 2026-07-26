@@ -47,6 +47,7 @@ from cyo_adventure.generation.worker import (
     _SkeletonFillContext,
 )
 from cyo_adventure.storybook.models import AgeBand, Storybook
+from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.storybook.theme_contract import (
     SlotConstraints,
     SlotScope,
@@ -56,6 +57,7 @@ from cyo_adventure.storybook.theme_contract import (
 from cyo_adventure.validator.slots import DENYLIST_VERSION
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
 
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -1518,6 +1520,280 @@ async def test_run_skeleton_fill_sidecar_present_binds_renders_then_fills(
     assert "bind_attempts" not in audit
 
 
+# ---------------------------------------------------------------------------
+# Task 4a (ADR-023 plan 3.2): LIVE, fail-closed sentinel-integrity check in
+# _run_skeleton_fill. `_personalizable_dispatch_contract`/`_skeleton` extend
+# the WS-2 dispatch fixtures above with one `kind="personalizable"` PROTAGONIST
+# slot, so `render_bound_skeleton` renders a real sentinel into `bound` and the
+# check is exercised live rather than dormantly.
+# ---------------------------------------------------------------------------
+
+
+def _personalizable_dispatch_contract() -> ThemeContract:
+    """`_bound_dispatch_contract` plus one ``kind="personalizable"`` slot.
+
+    PROTAGONIST's value is pinned via ``default_binding`` ("Ada") and is
+    never proposed by the mocked bind response (see
+    ``_request_contract``/``_merge_personalizable_defaults``), matching
+    real bind behavior for a personalizable slot.
+    """
+    base = _bound_dispatch_contract()
+    return ThemeContract(
+        contract_version=base.contract_version,
+        skeleton_slug=base.skeleton_slug,
+        age_band=base.age_band,
+        legacy_lexicon=base.legacy_lexicon,
+        default_binding={**base.default_binding, "PROTAGONIST": "Ada"},
+        slots=[
+            *base.slots,
+            SlotSpec(
+                id="PROTAGONIST",
+                scope=SlotScope.GLOBAL,
+                meaning="the reader's own child, personalized",
+                guidance="",
+                kind="personalizable",
+                personalization_field="protagonist_first_name",
+                role_safety="protagonist",
+            ),
+        ],
+    )
+
+
+def _personalizable_dispatch_skeleton() -> dict[str, object]:
+    """`_bound_dispatch_skeleton` with a ``{PROTAGONIST}`` token added to n_start."""
+    skeleton = _bound_dispatch_skeleton()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    start_node = nodes[0]
+    assert start_node["id"] == "n_start"
+    start_node["body"] = (
+        "<<FILL role=setup words=40 beats='The hero, {HERO}, joined by "
+        "{PROTAGONIST}, arrives at {A1_GATE} and must choose a path.'>>"
+    )
+    return skeleton
+
+
+def _personalizable_filled_storybook(protagonist_surface: str) -> dict[str, object]:
+    """A filled storybook whose n_start body embeds ``protagonist_surface``.
+
+    Args:
+        protagonist_surface: The exact text standing in for PROTAGONIST's
+            rendered value in the finished prose: a verbatim sentinel copy
+            (pass case), a mutated sentinel (fail case), or a bare word with
+            no sentinel at all (dropped case).
+
+    Returns:
+        A raw filled-blob mapping shaped like a real fill_skeleton result:
+        three nodes matching `_personalizable_dispatch_skeleton`'s ids.
+    """
+    return {
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": (
+                    f"Priya stood before the jammed hatch, joined by "
+                    f"{protagonist_surface}, and had to choose."
+                ),
+                "choices": [
+                    {
+                        "id": "c_a",
+                        "label": "Approach a glinting tide pool.",
+                        "target": "n_end_a",
+                    },
+                    {
+                        "id": "c_b",
+                        "label": "Turn back toward home.",
+                        "target": "n_end_b",
+                    },
+                ],
+            },
+            {
+                "id": "n_end_a",
+                "body": "Priya claimed the prize and celebrated.",
+                "ending": {"id": "e_a", "title": "Glass Starfish"},
+                "choices": [],
+            },
+            {
+                "id": "n_end_b",
+                "body": "Priya returned home safely.",
+                "ending": {"id": "e_b", "title": "Home Again"},
+                "choices": [],
+            },
+        ]
+    }
+
+
+def _stub_returning(storybook: dict[str, object]) -> Callable[..., object]:
+    """Build a `fill_skeleton` stub coroutine function that always returns `storybook`."""
+
+    async def _fake_fill_skeleton(
+        *_args: object, **_kwargs: object
+    ) -> GenerationOutcome:
+        return GenerationOutcome(
+            status="passed",
+            storybook=storybook,
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+
+    return _fake_fill_skeleton
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_sentinel_integrity_dormant_for_non_personalizable_fill(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Dormancy proof (Task 4a brief): a non-personalizable fill is unaffected.
+
+    No contract on disk declares a personalizable slot yet, so
+    ``personalizable_slot_ids(contract)`` is empty here (mirroring every real
+    skeleton today): `bound`'s beats/ending-title text carries plain
+    substituted values, never a sentinel, so the expected sentinel set is
+    empty and a sentinel-free filled blob passes the LIVE check with zero
+    violations, exactly as it would have with no check at all.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(
+        _bound_dispatch_contract().model_dump_json().encode("utf-8")
+    )
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _bound_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+    filled_storybook = _personalizable_filled_storybook("Priya's companion")
+    monkeypatch.setattr(
+        worker_module, "fill_skeleton", _stub_returning(filled_storybook)
+    )
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.storybook == filled_storybook
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_sentinel_integrity_passes_verbatim_copy(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A personalizable fill that copies its sentinel verbatim passes (3.2).
+
+    PROTAGONIST is a ``kind="personalizable"`` slot, so `bound`'s beats
+    guidance carries ``wrap("PROTAGONIST", "Ada")``; a conforming fill copies
+    that exact sentinel into the finished prose and the LIVE check lets it
+    through with zero violations.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = _personalizable_dispatch_contract()
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _personalizable_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+    filled_storybook = _personalizable_filled_storybook(wrap("PROTAGONIST", "Ada"))
+    monkeypatch.setattr(
+        worker_module, "fill_skeleton", _stub_returning(filled_storybook)
+    )
+
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "themed-slug",
+                "theme_brief": {"premise": "a fox"},
+            },
+            brief=_dispatch_brief(),
+            effective_provider=provider,
+            pii=_dispatch_pii(),
+        )
+    )
+
+    assert outcome.status == "passed"
+    assert outcome.storybook == filled_storybook
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_closed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A mutated personalizable sentinel is rejected fail-closed (3.2, 3.4).
+
+    A dropped-plus-forged (mutated inner value) sentinel must fail the job
+    closed with NO retry (the section 3.4 one-retry policy is Task 4b's job,
+    out of scope here): the LIVE `check_sentinel_integrity` call raises
+    ``ValidationError``, which propagates unchanged out of
+    ``_run_skeleton_fill`` so the caller's pipeline-exception handling records
+    the job failed and no storybook is ever persisted for this outcome.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = _personalizable_dispatch_contract()
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _personalizable_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+    mutated_sentinel = wrap("PROTAGONIST", "Champion")
+    filled_storybook = _personalizable_filled_storybook(mutated_sentinel)
+    monkeypatch.setattr(
+        worker_module, "fill_skeleton", _stub_returning(filled_storybook)
+    )
+
+    fill_context = _SkeletonFillContext(
+        authoring={
+            "skeleton_slug": "themed-slug",
+            "theme_brief": {"premise": "a fox"},
+        },
+        brief=_dispatch_brief(),
+        effective_provider=provider,
+        pii=_dispatch_pii(),
+    )
+    with pytest.raises(ValidationError) as exc_info:
+        await _run_skeleton_fill(fill_context)
+
+    exc = exc_info.value
+    assert exc.details.get("field") == "sentinel_integrity"
+    violations = cast(
+        "list[dict[str, object]]", exc.details["sentinel_integrity_violations"]
+    )
+    kinds = {v["kind"] for v in violations}
+    assert kinds == {"dropped", "forged"}
+
+
 @pytest.mark.asyncio
 async def test_run_skeleton_fill_bind_failure_fails_closed_no_fill_call(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -1699,6 +1975,90 @@ async def test_run_generation_job_bind_failure_records_violations_on_job_report(
         for e in elements
     )
     assert not any(e["reason"] == "personal_details" for e in elements)
+
+
+@pytest.mark.asyncio
+async def test_run_generation_job_sentinel_integrity_failure_records_violations_on_job_report(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """(Task 6a) A fail-closed sentinel-integrity violation surfaces through
+    run_generation_job's own pipeline-exception handling under its OWN
+    ``sentinel_integrity_violations`` key: an admin debugging a failed job
+    sees node_id/kind/token detail, not just a truncated ``job.error``
+    string, and this key is never collapsed into (or confused with) the
+    sibling ``slot_binding_violations`` key a WS-2 bind failure uses.
+
+    This pins the worker.py change to `_handle_pipeline_failure`, not just
+    `_run_skeleton_fill` in isolation
+    (test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_closed
+    already covers the raise itself).
+    """
+    import uuid as uuid_mod
+
+    from cyo_adventure.db.models import Concept, GenerationJob
+
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = _personalizable_dispatch_contract()
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _personalizable_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    mutated_sentinel = wrap("PROTAGONIST", "Champion")
+    filled_storybook = _personalizable_filled_storybook(mutated_sentinel)
+    monkeypatch.setattr(
+        worker_module, "fill_skeleton", _stub_returning(filled_storybook)
+    )
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+
+    job_id = uuid_mod.uuid4()
+    concept_id = uuid_mod.uuid4()
+    job = GenerationJob(
+        id=job_id,
+        concept_id=concept_id,
+        status="queued",
+        authoring_metadata={
+            "skeleton_slug": "themed-slug",
+            "theme_brief": {"premise": "a fox"},
+        },
+    )
+    concept = Concept(id=concept_id, family_id=uuid_mod.uuid4(), brief=_FRESHGEN_BRIEF)
+    session_ctx = _ThemeContractBindFailureSession(job, concept)
+
+    def factory() -> object:
+        class _Ctx:
+            async def __aenter__(self) -> _ThemeContractBindFailureSession:
+                return session_ctx
+
+            async def __aexit__(self, *exc: object) -> None:
+                return None
+
+        return _Ctx()
+
+    with pytest.raises(ValidationError):
+        await worker_module.run_generation_job(
+            job_id, provider=provider, session_factory=factory
+        )
+
+    assert job.status == "failed"
+    assert job.report is not None
+    violations = cast(
+        "list[dict[str, object]]", job.report["sentinel_integrity_violations"]
+    )
+    kinds = {v["kind"] for v in violations}
+    assert kinds == {"dropped", "forged"}
+    # No cross-contamination: this is a sentinel-integrity failure, not a
+    # slot-binding one, so the sibling key must be absent.
+    assert "slot_binding_violations" not in job.report
 
 
 # ---------------------------------------------------------------------------

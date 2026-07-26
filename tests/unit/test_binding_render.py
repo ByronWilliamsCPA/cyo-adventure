@@ -26,6 +26,7 @@ from cyo_adventure.generation.binding import (
     load_contract_for,
     render_bound_skeleton,
 )
+from cyo_adventure.storybook.sentinels import SENTINEL_RE, wrap
 from cyo_adventure.storybook.theme_contract import (
     SLOT_TOKEN_RE,
     SlotConstraints,
@@ -238,6 +239,180 @@ def test_render_substitutes_regex_metacharacters_literally() -> None:
 
 
 # ---------------------------------------------------------------------------
+# render_bound_skeleton: personalizable slots (P1b, ADR-023)
+# ---------------------------------------------------------------------------
+
+
+def test_render_wraps_personalizable_slot_in_beats_and_ending_title() -> None:
+    """A personalizable slot's value is sentinel-wrapped in beats and ending title."""
+    skeleton = _tiny_skeleton()
+    bound = render_bound_skeleton(
+        skeleton, _FULL_BINDINGS, personalizable_slots=frozenset({"HERO", "PRIZE"})
+    )
+
+    start = _node_by_id(bound, "n_start")
+    assert wrap("HERO", "Priya") in cast("str", start["body"])
+    # A non-personalizable slot in the same beats string stays bare.
+    assert "the jammed hatch" in cast("str", start["body"])
+
+    end_a = _node_by_id(bound, "n_end_a")
+    assert _ending(end_a)["title"] == "The " + wrap("PRIZE", "Glass Starfish")
+
+
+def test_render_never_wraps_a_personalizable_slot_in_a_choice_label() -> None:
+    """Choice labels always carry the BARE value, even for a personalizable slot."""
+    skeleton = _tiny_skeleton()
+    bound = render_bound_skeleton(
+        skeleton, _FULL_BINDINGS, personalizable_slots=frozenset({"A1_OFFER"})
+    )
+    start = _node_by_id(bound, "n_start")
+    choices = _choices(start)
+    assert choices[0]["label"] == "Approach a glinting tide pool."
+    assert "{~" not in cast("str", choices[0]["label"])
+
+
+def test_render_with_no_personalizable_slots_is_byte_identical_to_before() -> None:
+    """Passing an empty (or omitted) ``personalizable_slots`` changes nothing."""
+    skeleton = _tiny_skeleton()
+    explicit_empty = render_bound_skeleton(
+        skeleton, _FULL_BINDINGS, personalizable_slots=frozenset()
+    )
+    omitted = render_bound_skeleton(skeleton, _FULL_BINDINGS)
+    assert explicit_empty == omitted
+
+
+def test_render_sentinel_leaves_no_residual_slot_token() -> None:
+    """A sentinel-wrapped personalizable value never trips the residual-token check."""
+    skeleton = _tiny_skeleton()
+    bound = render_bound_skeleton(
+        skeleton, _FULL_BINDINGS, personalizable_slots=frozenset({"HERO"})
+    )
+    serialized = json.dumps(bound)
+    assert not SLOT_TOKEN_RE.findall(serialized)
+    assert SENTINEL_RE.search(serialized) is not None
+
+
+def test_render_personalizable_slot_with_non_empty_default_succeeds() -> None:
+    """A personalizable slot with a non-empty default_binding value renders cleanly."""
+    skeleton = _tiny_skeleton()
+    bound = render_bound_skeleton(
+        skeleton, _FULL_BINDINGS, personalizable_slots=frozenset({"HERO"})
+    )
+    start = _node_by_id(bound, "n_start")
+    assert wrap("HERO", "Priya") in cast("str", start["body"])
+
+
+def test_render_personalizable_slot_with_empty_default_raises() -> None:
+    """`wrap` rejects an empty value; an empty personalizable default must raise.
+
+    Edge case flagged by the P1b brief: a personalizable slot requires a
+    non-empty `default_binding` value, or render fails (via `wrap`'s own
+    empty-value guard) rather than silently emitting a malformed sentinel.
+    """
+    skeleton = _tiny_skeleton()
+    empty_bindings = dict(_FULL_BINDINGS)
+    empty_bindings["HERO"] = ""
+    personalizable_slots = frozenset({"HERO"})
+    with pytest.raises(ValidationError, match="must not be empty"):
+        render_bound_skeleton(skeleton, empty_bindings, personalizable_slots)
+
+
+def test_validator_gate_accepts_sentinel_bearing_final_prose() -> None:
+    """CRITICAL verification (P1b brief): the gate accepts a sentinel in final prose.
+
+    After ``render_bound_skeleton`` wraps a personalizable slot, the sentinel
+    ``{~SLOTID:Value~}`` is copied verbatim into a node's FINAL prose by the
+    fill LLM, per ``generation/templates/fill_bound.md``'s "Verbatim tokens"
+    instruction. This is a small hand-built ALREADY-FILLED (no ``<<FILL...>>``
+    directive) storybook -- the artifact that actually reaches storage after
+    Stage B' -- with a sentinel embedded in a node body and an ending title
+    (never a choice label, per design). Proves no existing charset, topology,
+    or schema rule anywhere in the combined gate (layer1 schema/logic, policy,
+    layer2 walk, reading-level, safety) rejects ``{``, ``}``, or ``~`` in
+    stored node prose. If this ever fails, the correct response is to STOP
+    and report BLOCKED with the exact rule, never to weaken the rule.
+    """
+    sentinel = wrap("HERO", "Explorer")
+    filled: dict[str, object] = {
+        "schema_version": "2.0",
+        "id": "s_test_sentinel_gate",
+        "version": 1,
+        "title": "Test Story",
+        "metadata": {
+            "age_band": "3-5",
+            "reading_level": {
+                "scheme": "flesch_kincaid",
+                "target": 1.0,
+                "tolerance": 1.0,
+            },
+            "tier": 1,
+            "themes": ["adventure"],
+            "estimated_minutes": 5,
+            "ending_count": 2,
+            "topology": "time_cave",
+            "content_flags": {
+                "violence": "none",
+                "scariness": "none",
+                "peril": "none",
+            },
+        },
+        "variables": [],
+        "start_node": "n_start",
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": (
+                    f"{sentinel} stood at the gate, wondering which path to take next."
+                ),
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": "c_a",
+                        "label": "Go toward the light.",
+                        "target": "n_end_a",
+                    },
+                    {
+                        "id": "c_b",
+                        "label": "Turn back toward home.",
+                        "target": "n_end_b",
+                    },
+                ],
+            },
+            {
+                "id": "n_end_a",
+                "body": f"{sentinel} celebrated finding the prize at last.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_a",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": f"The Triumph of {sentinel}",
+                },
+                "choices": [],
+            },
+            {
+                "id": "n_end_b",
+                "body": f"{sentinel} returned home safely for supper.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_b",
+                    "valence": "neutral",
+                    "kind": "completion",
+                    "title": "Home Again",
+                },
+                "choices": [],
+            },
+        ],
+    }
+
+    result = run_gate(filled)
+
+    assert result.blocked is False, "; ".join(
+        f"{finding.rule_id}: {finding.message}" for finding in result.report.errors
+    )
+
+
+# ---------------------------------------------------------------------------
 # render_bound_skeleton: post-conditions
 # ---------------------------------------------------------------------------
 
@@ -284,9 +459,11 @@ def test_render_fingerprint_mismatch_raises(monkeypatch: pytest.MonkeyPatch) -> 
     real_substitute = binding._substitute_slotted_surfaces
 
     def _target_swapping_substitute(
-        bound: dict[str, object], bindings: Mapping[str, str]
+        bound: dict[str, object],
+        bindings: Mapping[str, str],
+        personalizable_slots: frozenset[str] = frozenset(),
     ) -> None:
-        real_substitute(bound, bindings)
+        real_substitute(bound, bindings, personalizable_slots)
         start = _node_by_id(bound, "n_start")
         choices = _choices(start)
         choices[0]["target"], choices[1]["target"] = (
@@ -352,9 +529,11 @@ def test_render_rejects_mangled_words(monkeypatch: pytest.MonkeyPatch) -> None:
     real_substitute = binding._substitute_slotted_surfaces
 
     def _corrupting_substitute(
-        bound: dict[str, object], bindings: Mapping[str, str]
+        bound: dict[str, object],
+        bindings: Mapping[str, str],
+        personalizable_slots: frozenset[str] = frozenset(),
     ) -> None:
-        real_substitute(bound, bindings)
+        real_substitute(bound, bindings, personalizable_slots)
         nodes = _nodes(bound)
         nodes[0]["body"] = (
             "<<FILL role=setup words=4 beats='The hero, Priya, arrives at "
@@ -374,9 +553,11 @@ def test_render_rejects_fill_directive_degraded_to_prose(
     real_substitute = binding._substitute_slotted_surfaces
 
     def _degrading_substitute(
-        bound: dict[str, object], bindings: Mapping[str, str]
+        bound: dict[str, object],
+        bindings: Mapping[str, str],
+        personalizable_slots: frozenset[str] = frozenset(),
     ) -> None:
-        real_substitute(bound, bindings)
+        real_substitute(bound, bindings, personalizable_slots)
         nodes = _nodes(bound)
         nodes[0]["body"] = "Priya arrives at the jammed hatch."
 
