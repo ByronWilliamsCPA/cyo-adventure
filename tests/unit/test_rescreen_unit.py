@@ -37,6 +37,7 @@ from cyo_adventure.generation.provider import _CANNED_STORY
 from cyo_adventure.moderation import rescreen as rescreen_mod
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.thresholds import Threshold, ThresholdPolicy
+from cyo_adventure.storybook.models import Storybook as StoryModel
 from cyo_adventure.storybook.sentinels import wrap
 
 pytestmark = [pytest.mark.unit, pytest.mark.asyncio]
@@ -544,6 +545,20 @@ async def test_sentinel_in_choice_label_flags_rescreen(
     assert summary.flagged == 1
     result = summary.results[0]
     assert any("choice label" in r for r in result.reasons)
+
+
+async def test_clean_blob_is_not_flagged_by_sentinel_scan() -> None:
+    """(3b) A clean, sentinel-free published blob contributes zero reasons
+    from the sentinel-corruption scan (dormancy fact): with no malformed
+    near-miss and no well-formed sentinel anywhere in the blob (body, ending
+    title, or a choice label), `_sentinel_corruption_reasons` finds nothing
+    to report, so it never contributes a reason toward a "flagged" outcome.
+    """
+    story = StoryModel.model_validate(_blob())
+
+    reasons = rescreen_mod._sentinel_corruption_reasons(story)
+
+    assert reasons == []
 
 
 # ---------------------------------------------------------------------------

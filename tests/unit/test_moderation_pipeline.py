@@ -957,6 +957,71 @@ async def test_repair_contract_unrecoverable_is_discarded(
 
 
 @pytest.mark.unit
+async def test_repair_contract_file_missing_is_discarded_and_routes_to_human_review(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+    tmp_path: Path,
+) -> None:
+    """A ``GenerationJob`` naming a ``skeleton_slug``/``skeleton_band`` whose
+    skeleton file has since moved or been deleted must fail closed like
+    every other unrecoverable-contract case, not crash the moderation pass.
+
+    ``load_skeleton`` (generation/skeleton.py) does
+    ``json.loads(path.read_text(...))``, which raises a raw
+    ``FileNotFoundError`` (NOT ``CoreValidationError``) when the file the
+    stale ``authoring_metadata`` points at no longer exists. Before the fix,
+    ``_personalizable_slot_ids_for_story`` only caught ``CoreValidationError``
+    and this exception propagated uncaught through
+    ``_attempt_and_adopt_repair``/``run_moderation_pipeline``, crashing the
+    whole moderation pass. Mirrors
+    ``generation/import_story.py::_load_resume_skeleton``'s handling of the
+    same resolve-then-load chain.
+    """
+    story, version = _story(), _version()
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={
+            "skeleton_slug": "themed-slug",
+            "skeleton_band": "8-11",
+        },
+    )
+    _load(mock_session, story, version, job=job)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    missing_path = tmp_path / "themed-slug.json"
+    monkeypatch.setattr(
+        pipeline_mod, "resolve_skeleton_path", lambda _band, _slug: missing_path
+    )
+
+    revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
+    generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["repaired"] is False
+    assert version.blob == _BLOB
+
+
+@pytest.mark.unit
 async def test_review_model_override_reaches_build_review_provider(
     mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:

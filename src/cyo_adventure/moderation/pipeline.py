@@ -459,7 +459,7 @@ def _repair_is_adoptable(
         test_repair_failing_gate_is_discarded_and_routes_to_human_review,
         ::test_repair_identity_mismatch_is_discarded,
         ::test_repair_passing_gate_is_adopted, and
-        ::test_repair_sentinel_violation_is_discarded_and_routes_to_human_review
+        ::test_repair_forged_sentinel_is_discarded_and_routes_to_human_review
         assert all four branches.
     """
     gate_result = run_gate(revised)
@@ -552,7 +552,18 @@ async def _personalizable_slot_ids_for_story(
         skeleton_path = resolve_skeleton_path(band, slug)
         skeleton = load_skeleton(skeleton_path)
         contract = load_contract_for(skeleton_path, skeleton)
-    except CoreValidationError as exc:
+    # #CRITICAL: external-resources: load_skeleton (generation/skeleton.py)
+    # does json.loads(path.read_text(...)), which raises a raw
+    # FileNotFoundError/OSError/JSONDecodeError (a ValueError subclass), NOT
+    # a CoreValidationError, when the skeleton file a stale
+    # GenerationJob.authoring_metadata points at has since moved or been
+    # corrupted. Broadened here to mirror
+    # generation/import_story.py::_load_resume_skeleton's handling of this
+    # same resolve_skeleton_path -> load_skeleton chain, so a missing/corrupt
+    # sidecar fails this function closed (None) instead of crashing the
+    # entire moderation pass.
+    # #VERIFY: test_repair_contract_file_missing_is_discarded_and_routes_to_human_review.
+    except (FileNotFoundError, OSError, ValueError, CoreValidationError) as exc:
         _logger.warning(
             "moderation.repair_contract_load_failed",
             story_id=story_id,
