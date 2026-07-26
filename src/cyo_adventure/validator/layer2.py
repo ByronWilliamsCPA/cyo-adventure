@@ -48,7 +48,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
 
     from cyo_adventure.player.state import ReadingState
-    from cyo_adventure.storybook.evaluator import VarValue
+    from cyo_adventure.storybook.evaluator import VarState, VarValue
     from cyo_adventure.storybook.models import Ending, Node, Storybook
     from cyo_adventure.validator.walk import ConfigKey, WalkResult
 
@@ -85,7 +85,12 @@ class _WalkContext:
 HAND_AUTHORING_NODE_CEILING = 460
 
 
-def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport:
+def validate_layer2(
+    story: Storybook,
+    *,
+    cap: int = 100_000,
+    carried: VarState | None = None,
+) -> ValidationReport:
     """Run every Layer-2 rule over a Tier-2 story's reachable configuration space.
 
     Returns an empty report immediately for Tier-1 stories; Layer-2 rules are
@@ -96,6 +101,12 @@ def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport
         cap: Maximum number of distinct configurations the walk may enumerate
             before aborting. Defaults to 100 000. When the walk caps, exactly
             one L2-12 finding is returned and no other Layer-2 rules are run.
+        carried: Carried variable values to seed the start configuration with,
+            for validating a series continuation entry rather than a fresh read.
+            ``None`` validates the ordinary declared-initial start. SR-9 uses
+            this to ask whether a predecessor's win state leaves the receiving
+            book sound, which is a question no other rule can pose because every
+            other walk begins at the declared initials.
 
     Returns:
         ValidationReport: All findings from the Layer-2 rules. ``report.ok``
@@ -107,7 +118,7 @@ def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport
     if story.metadata.tier == 1:
         return report
 
-    result = walk_configurations(story, cap=cap)
+    result = walk_configurations(story, cap=cap, carried=carried)
 
     # L2-12: configuration space too large. Return immediately -- partial results
     # are unreliable for the remaining rules.
