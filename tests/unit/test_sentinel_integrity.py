@@ -45,8 +45,13 @@ def _node(
     return node
 
 
-def _blob(nodes: list[dict[str, object]]) -> dict[str, object]:
-    return {"nodes": nodes}
+def _blob(
+    nodes: list[dict[str, object]], *, title: str | None = None
+) -> dict[str, object]:
+    blob: dict[str, object] = {"nodes": nodes}
+    if title is not None:
+        blob["title"] = title
+    return blob
 
 
 # ---------------------------------------------------------------------------
@@ -322,6 +327,62 @@ class TestCheckSentinelIntegrityChoiceLabel:
         assert malformed[0].node_id == "<choice-label>"
 
 
+class TestCheckSentinelIntegrityTitle:
+    """The top-level story title is never a legal sentinel surface (Task 6a).
+
+    Unlike a node body or ending title, the top-level ``title`` has no
+    personalizable-slot expectation at all: it is kid-facing (library
+    listings) and authored fresh by the fill LLM, so ANY sentinel content
+    there, well-formed or malformed, is illegal.
+    """
+
+    def test_forged_sentinel_in_title_reported(self) -> None:
+        pre_fill = _blob(
+            [_node("n_a", "<<FILL beats='The hero walks.'>>", ending_title="Fixed")],
+            title="The Forest Path",
+        )
+        filled = _blob(
+            [_node("n_a", "The hero walked generically.", ending_title="Fixed")],
+            title=f"The Path of {_HERO}",
+        )
+        result = check_sentinel_integrity(pre_fill, filled)
+        assert result.ok is False
+        title_violations = [v for v in result.violations if v.kind == "in_title"]
+        assert len(title_violations) == 1
+        assert title_violations[0].token == _HERO
+        assert title_violations[0].node_id == "<title>"
+
+    def test_malformed_near_miss_in_title_reported(self) -> None:
+        mangled = "{~HERO:~}"
+        pre_fill = _blob(
+            [_node("n_a", "<<FILL beats='The hero walks.'>>", ending_title="Fixed")],
+            title="The Forest Path",
+        )
+        filled = _blob(
+            [_node("n_a", "The hero walked generically.", ending_title="Fixed")],
+            title=f"The Path of {mangled}",
+        )
+        result = check_sentinel_integrity(pre_fill, filled)
+        assert result.ok is False
+        malformed = [v for v in result.violations if v.kind == "malformed"]
+        assert len(malformed) == 1
+        assert malformed[0].token == mangled
+        assert malformed[0].node_id == "<title>"
+
+    def test_clean_title_unaffected(self) -> None:
+        """Dormancy: a title with no sentinel content passes exactly as before."""
+        pre_fill = _blob(
+            [_node("n_a", "<<FILL beats='The hero walks.'>>", ending_title="Fixed")],
+            title="The Forest Path",
+        )
+        filled = _blob(
+            [_node("n_a", "The hero walked generically.", ending_title="Fixed")],
+            title="The Forest Path",
+        )
+        result = check_sentinel_integrity(pre_fill, filled)
+        assert result == IntegrityResult(ok=True, violations=[])
+
+
 # ---------------------------------------------------------------------------
 # Variant B: check_sentinel_integrity_at_rest
 # ---------------------------------------------------------------------------
@@ -477,3 +538,52 @@ class TestCheckSentinelIntegrityAtRest:
         assert len(malformed) == 1
         assert malformed[0].token == mangled
         assert malformed[0].node_id == "<choice-label>"
+
+
+class TestCheckSentinelIntegrityAtRestTitle:
+    """Variant B also treats the top-level title as a never-legal surface."""
+
+    def test_well_formed_sentinel_in_title_reported_even_if_slot_declared(
+        self,
+    ) -> None:
+        """A well-formed, DECLARED sentinel in the title is still illegal.
+
+        Unlike a body/ending-title surface, a title sentinel is never legal
+        regardless of whether its slot id is personalizable for this story:
+        it must be reported as ``in_title``, not silently accepted because
+        the slot id happens to be declared (which `_unknown_slot_violations`
+        alone would do).
+        """
+        blob = _blob(
+            [_node("n_a", "The hero stood alone.", ending_title="Fixed")],
+            title=f"The Path of {_HERO}",
+        )
+        result = check_sentinel_integrity_at_rest(blob, frozenset({"HERO"}))
+        assert result.ok is False
+        title_violations = [v for v in result.violations if v.kind == "in_title"]
+        assert len(title_violations) == 1
+        assert title_violations[0].token == _HERO
+        assert title_violations[0].node_id == "<title>"
+        assert not any(v.kind == "unknown_slot" for v in result.violations)
+
+    def test_malformed_near_miss_in_title_reported(self) -> None:
+        mangled = "{~HERO:~}"
+        blob = _blob(
+            [_node("n_a", "The hero stood alone.", ending_title="Fixed")],
+            title=f"The Path of {mangled}",
+        )
+        result = check_sentinel_integrity_at_rest(blob, frozenset({"HERO"}))
+        assert result.ok is False
+        malformed = [v for v in result.violations if v.kind == "malformed"]
+        assert len(malformed) == 1
+        assert malformed[0].token == mangled
+        assert malformed[0].node_id == "<title>"
+
+    def test_clean_title_unaffected(self) -> None:
+        """Dormancy: a title with no sentinel content passes exactly as before."""
+        blob = _blob(
+            [_node("n_a", "The hero stood alone.", ending_title="Fixed")],
+            title="The Forest Path",
+        )
+        result = check_sentinel_integrity_at_rest(blob, frozenset({"HERO"}))
+        assert result == IntegrityResult(ok=True, violations=[])

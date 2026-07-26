@@ -547,6 +547,47 @@ async def test_sentinel_in_choice_label_flags_rescreen(
     assert any("choice label" in r for r in result.reasons)
 
 
+async def test_sentinel_in_title_flags_rescreen(
+    mock_async_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """(Task 6a) A well-formed sentinel that leaked into the top-level title
+    flags the book: the title is kid-facing (library listings) and never a
+    personalizable location, so it must never carry sentinel content.
+    """
+    _patch_threshold_policy(monkeypatch)
+    monkeypatch.setattr(rescreen_mod, "run_classifiers", AsyncMock(return_value=[]))
+    book = _book()
+    corrupted_blob = _blob()
+    corrupted_blob["title"] = f"{corrupted_blob['title']} {wrap('HERO', 'Ada')}"
+    _wire_session(
+        mock_async_session,
+        books=[book],
+        versions={("s1", 1): _version_row("s1", 1, corrupted_blob)},
+    )
+
+    summary = await rescreen_mod.rescreen_published_books(
+        mock_async_session, settings=_settings(), actor=_actor()
+    )
+
+    assert summary.flagged == 1
+    result = summary.results[0]
+    assert any("title" in r for r in result.reasons)
+
+
+async def test_malformed_sentinel_in_title_flagged_by_scan() -> None:
+    """(Task 6a) A malformed near-miss in the top-level title is caught by
+    the direct `_sentinel_corruption_reasons` scan, mirroring the body/label
+    near-miss coverage above.
+    """
+    blob = _blob()
+    blob["title"] = f"{blob['title']} {{~HERO:Explorer}}"
+    story = StoryModel.model_validate(blob)
+
+    reasons = rescreen_mod._sentinel_corruption_reasons(story)
+
+    assert any("malformed" in r and "title" in r for r in reasons)
+
+
 async def test_clean_blob_is_not_flagged_by_sentinel_scan() -> None:
     """(3b) A clean, sentinel-free published blob contributes zero reasons
     from the sentinel-corruption scan (dormancy fact): with no malformed

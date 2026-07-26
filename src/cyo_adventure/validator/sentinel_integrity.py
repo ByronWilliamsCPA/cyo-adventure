@@ -40,8 +40,13 @@ the two variants have different scoping guarantees):
   choice labels must never carry sentinel content at all (Task 2), so
   pinpointing the owning node adds no actionable detail over "a choice
   label somewhere in this blob".
-- Every Variant B violation that is not a choice-label finding uses the
-  fixed placeholder ``"<global>"``, because Variant B has no pre-fill
+- A violation found in the top-level story title (`"in_title"`, or a
+  malformed near-miss located there) always uses the fixed placeholder
+  ``"<title>"`` (Task 6a): the title is not node-scoped, and, like a choice
+  label, is never a legal sentinel location regardless of which slots this
+  story declares personalizable.
+- Every Variant B violation that is not a choice-label or title finding uses
+  the fixed placeholder ``"<global>"``, because Variant B has no pre-fill
   reference to scope a finding to "the node where content changed"; it can
   only say "somewhere in this published blob".
 """
@@ -63,6 +68,7 @@ if TYPE_CHECKING:
 # Fixed location placeholders (see module docstring, "Violation location
 # convention").
 _CHOICE_LABEL_LOCATION = "<choice-label>"
+_TITLE_LOCATION = "<title>"
 _GLOBAL_LOCATION = "<global>"
 
 # A sentinel token, represented as its (slot_id, value) pair. Per plan 3.2,
@@ -72,7 +78,9 @@ _GLOBAL_LOCATION = "<global>"
 _Token = tuple[str, str]
 
 # One surface reading: (surface kind, owning node id or None, raw text).
-# Surface kind is one of "body", "ending_title", "choice_label".
+# Surface kind is one of "body", "ending_title", "choice_label", "title".
+# The "title" surface is never node-scoped (node id is always None): it is
+# the top-level story title, read once per blob.
 _Surface = tuple[str, "str | None", str]
 
 
@@ -247,21 +255,45 @@ def _choice_label_surfaces(
             yield ("choice_label", node_id, label)
 
 
-def _iter_surfaces(blob: Mapping[str, object]) -> Iterator[_Surface]:
-    """Yield every sentinel-bearing surface in a blob, tagged by kind and node id.
+def _title_surface(blob: Mapping[str, object]) -> Iterator[_Surface]:
+    """Yield the story's top-level title as a ``"title"`` surface, if a string.
 
-    The three surfaces are exactly the ones sentinels can legally (bodies,
-    ending titles) or illegally (choice labels) appear in.
+    The top-level title is never a personalizable location (Task 6a): it is
+    kid-facing (library listings) and authored fresh by the fill LLM, so any
+    sentinel content there, well-formed or malformed, is illegal, regardless
+    of which slots this story declares personalizable. It is not node-scoped,
+    so the yielded node id is always ``None``.
 
     Args:
         blob: A raw story mapping (a pre-fill skeleton or a filled blob).
 
     Yields:
-        ``(surface, node_id, text)`` for every node body, ending title, and
-        choice label found. ``surface`` is one of ``"body"``,
-        ``"ending_title"``, or ``"choice_label"``. ``node_id`` is the owning
-        node's id, or ``None`` if the node has no string id.
+        One ``("title", None, title)`` tuple, or nothing when the blob has no
+        string ``title``.
     """
+    title = blob.get("title")
+    if isinstance(title, str):
+        yield ("title", None, title)
+
+
+def _iter_surfaces(blob: Mapping[str, object]) -> Iterator[_Surface]:
+    """Yield every sentinel-bearing surface in a blob, tagged by kind and node id.
+
+    The four surfaces are exactly the ones sentinels can legally (bodies,
+    ending titles) or illegally (choice labels, the top-level title) appear
+    in.
+
+    Args:
+        blob: A raw story mapping (a pre-fill skeleton or a filled blob).
+
+    Yields:
+        ``(surface, node_id, text)`` for the top-level title (if present) and
+        every node body, ending title, and choice label found. ``surface``
+        is one of ``"title"``, ``"body"``, ``"ending_title"``, or
+        ``"choice_label"``. ``node_id`` is the owning node's id, ``None`` for
+        the title surface, or ``None`` if a node has no string id.
+    """
+    yield from _title_surface(blob)
     for node in _iter_nodes(blob):
         node_id = _node_id_of(node)
         yield from _body_surface(node, node_id)
@@ -272,9 +304,13 @@ def _iter_surfaces(blob: Mapping[str, object]) -> Iterator[_Surface]:
 def _node_token_map(blob: Mapping[str, object]) -> dict[str, frozenset[_Token]]:
     """Return each node's distinct sentinel token set (body and ending title only).
 
-    Choice labels are deliberately excluded here: they are never a legal home
-    for a sentinel (Task 2), so they are checked separately, not folded into
-    the per-node expected/actual comparison.
+    Choice labels and the top-level title are deliberately excluded here:
+    neither is ever a legal home for a sentinel (Task 2, Task 6a), so both
+    are checked separately (via `_choice_label_sentinel_violations` and
+    `_title_sentinel_violations`), not folded into the per-node
+    expected/actual comparison. The title is excluded automatically, since
+    its surface reading always carries ``node_id=None`` and this function
+    skips ``node_id is None`` readings.
 
     Args:
         blob: A raw story mapping (a pre-fill skeleton or a filled blob).
@@ -332,6 +368,30 @@ def _choice_label_sentinel_violations(
     return [
         IntegrityViolation(
             node_id=location, kind="in_choice_label", token=wrap(slot_id, value)
+        )
+        for slot_id, value in find_sentinels(text)
+    ]
+
+
+def _title_sentinel_violations(text: str, location: str) -> list[IntegrityViolation]:
+    """Build an ``"in_title"`` violation for every well-formed sentinel in ``text``.
+
+    The top-level story title is never a personalizable location (Task 6a),
+    so this reports every well-formed sentinel found unconditionally, unlike
+    `_unknown_slot_violations`, which only flags a sentinel whose slot id is
+    not declared: a title sentinel is illegal even when its slot id happens
+    to be a declared personalizable slot for this story.
+
+    Args:
+        text: The story's top-level title text.
+        location: The location to attribute each violation to.
+
+    Returns:
+        One violation per well-formed sentinel found; empty if none.
+    """
+    return [
+        IntegrityViolation(
+            node_id=location, kind="in_title", token=wrap(slot_id, value)
         )
         for slot_id, value in find_sentinels(text)
     ]
@@ -438,31 +498,37 @@ def _location_for_full_check(surface: str, node_id: str | None) -> str | None:
     """Resolve the violation location for a Variant A surface reading.
 
     Args:
-        surface: The surface kind (``"body"``, ``"ending_title"``, or
-            ``"choice_label"``).
+        surface: The surface kind (``"title"``, ``"body"``,
+            ``"ending_title"``, or ``"choice_label"``).
         node_id: The owning node's id, or ``None``.
 
     Returns:
-        ``_CHOICE_LABEL_LOCATION`` for a choice label; otherwise ``node_id``
-        (which may be ``None`` when the node has no string id, in which case
-        the caller must skip this surface).
+        ``_CHOICE_LABEL_LOCATION`` for a choice label, ``_TITLE_LOCATION``
+        for the title; otherwise ``node_id`` (which may be ``None`` when the
+        node has no string id, in which case the caller must skip this
+        surface).
     """
     if surface == "choice_label":
         return _CHOICE_LABEL_LOCATION
+    if surface == "title":
+        return _TITLE_LOCATION
     return node_id
 
 
 def _surface_violations_full(
     filled_blob: Mapping[str, object],
 ) -> list[IntegrityViolation]:
-    """Build checks 3 and 4 (malformed near-misses, sentinels in choice labels).
+    """Build checks 3, 4, and 5.
+
+    Malformed near-misses, sentinels in choice labels, and sentinels in the
+    top-level title.
 
     Args:
         filled_blob: The raw filled blob mapping.
 
     Returns:
-        Every malformed-near-miss and in-choice-label violation found across
-        the whole blob.
+        Every malformed-near-miss, in-choice-label, and in-title violation
+        found across the whole blob.
     """
     violations: list[IntegrityViolation] = []
     for surface, node_id, text in _iter_surfaces(filled_blob):
@@ -472,6 +538,8 @@ def _surface_violations_full(
         violations.extend(_malformed_violations(text, location))
         if surface == "choice_label":
             violations.extend(_choice_label_sentinel_violations(text, location))
+        elif surface == "title":
+            violations.extend(_title_sentinel_violations(text, location))
     return violations
 
 
@@ -502,9 +570,12 @@ def check_sentinel_integrity(
        simply not equal to any expected token and is caught by (1) (see
        `IntegrityViolation.kind` for the dropped+forged pair this produces).
     3. No sentinel-shaped-but-malformed near-miss appears anywhere in the
-       filled blob (any node body, ending title, or choice label); see
+       filled blob (any node body, ending title, choice label, or the
+       top-level title); see
        `cyo_adventure.storybook.sentinels.find_malformed_sentinels`.
     4. No well-formed sentinel appears in any choice label.
+    5. No well-formed sentinel appears in the top-level story title (Task
+       6a): the title is kid-facing and never a personalizable location.
 
     Args:
         pre_fill_skeleton: The raw pre-fill skeleton mapping (node bodies
@@ -566,23 +637,26 @@ def _unknown_slot_violations(
 def _location_for_at_rest_check(surface: str) -> str:
     """Resolve the violation location for a Variant B surface reading.
 
-    Mirrors `_location_for_full_check`'s choice-label awareness so a
-    malformed near-miss inside a choice label is tagged `<choice-label>`,
-    per the module docstring's "Violation location convention", instead of
-    always falling through to the generic `<global>` placeholder.
+    Mirrors `_location_for_full_check`'s choice-label and title awareness so
+    a malformed near-miss inside either surface is tagged with its own
+    fixed placeholder, per the module docstring's "Violation location
+    convention", instead of always falling through to the generic
+    `<global>` placeholder.
 
     Args:
-        surface: The surface kind (``"body"``, ``"ending_title"``, or
-            ``"choice_label"``).
+        surface: The surface kind (``"title"``, ``"body"``,
+            ``"ending_title"``, or ``"choice_label"``).
 
     Returns:
-        `_CHOICE_LABEL_LOCATION` for a choice label; otherwise
-        `_GLOBAL_LOCATION`, since Variant B has no pre-fill reference to
-        scope a body/ending-title finding more specifically than
-        "somewhere in this published blob".
+        `_CHOICE_LABEL_LOCATION` for a choice label, `_TITLE_LOCATION` for
+        the title; otherwise `_GLOBAL_LOCATION`, since Variant B has no
+        pre-fill reference to scope a body/ending-title finding more
+        specifically than "somewhere in this published blob".
     """
     if surface == "choice_label":
         return _CHOICE_LABEL_LOCATION
+    if surface == "title":
+        return _TITLE_LOCATION
     return _GLOBAL_LOCATION
 
 
@@ -598,8 +672,8 @@ def _surface_violations_at_rest(
             this story.
 
     Returns:
-        Every malformed, in-choice-label, and unknown-slot violation found
-        across the whole blob.
+        Every malformed, in-choice-label, in-title, and unknown-slot
+        violation found across the whole blob.
     """
     violations: list[IntegrityViolation] = []
     for surface, _node_id, text in _iter_surfaces(blob):
@@ -607,6 +681,13 @@ def _surface_violations_at_rest(
         violations.extend(_malformed_violations(text, location))
         if surface == "choice_label":
             violations.extend(_choice_label_sentinel_violations(text, location))
+        elif surface == "title":
+            # A title sentinel is illegal even when its slot id is declared
+            # personalizable for this story (Task 6a): unlike a body or
+            # ending-title surface, the title has no legitimate placement,
+            # so this must not fall through to `_unknown_slot_violations`
+            # (which would silently accept a declared slot id).
+            violations.extend(_title_sentinel_violations(text, location))
         else:
             violations.extend(_unknown_slot_violations(text, personalizable_slot_ids))
     return violations
@@ -634,6 +715,10 @@ def check_sentinel_integrity_at_rest(
       blob (``"malformed"``).
     - No well-formed sentinel appears in any choice label
       (``"in_choice_label"``).
+    - No well-formed sentinel appears in the top-level story title
+      (``"in_title"``, Task 6a), even when its slot id is declared
+      personalizable for this story: the title is never a legal sentinel
+      location.
 
     A rescreen that rewrites nothing can still fail this check (plan 3.3):
     that is a detection signal that the blob was already corrupt at rest, not

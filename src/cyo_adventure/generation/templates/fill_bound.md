@@ -100,7 +100,7 @@ character for character, including the braces and tildes. Place it where the wor
 naturally go: in dialogue, in narration, or in an ending title. Do not translate it, do not
 re-theme it, do not add spaces inside it, and do not write the bare word instead of the token. It
 is the one thing in your prose that must be copied rather than re-imagined. Never place one
-inside a choice label.
+inside a choice label or the story's top-level title.
 
 ## Output
 

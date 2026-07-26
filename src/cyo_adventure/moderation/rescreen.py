@@ -263,6 +263,23 @@ def _choice_label_sentinel_reasons(
     return reasons
 
 
+def _title_sentinel_reasons(title: str) -> list[str]:
+    """Return reasons for a top-level title carrying malformed or well-formed sentinels.
+
+    The top-level story title must never carry a sentinel, well-formed or
+    not (Task 6a): it is kid-facing (library listings) and never a
+    personalizable location, so both a near-miss and a genuine token are
+    reported, mirroring `_choice_label_sentinel_reasons`.
+    """
+    location = "title"
+    reasons = _malformed_sentinel_reasons(title, location)
+    reasons.extend(
+        f"sentinel in title (slot {slot_id})"
+        for slot_id, _value in find_sentinels(title)
+    )
+    return reasons
+
+
 def _node_sentinel_corruption_reasons(node: Node) -> list[str]:
     """Return every sentinel-corruption reason found within one node.
 
@@ -295,18 +312,21 @@ def _sentinel_corruption_reasons(story: StoryModel) -> list[str]:
     Scans every node body, ending title, and choice label for a malformed
     sentinel-shaped near-miss, and every choice label for a well-formed
     sentinel (which must never appear there). See the membership-check
-    deferral note above this function.
+    deferral note above this function. Also scans the top-level story title
+    for both a malformed near-miss and a well-formed sentinel (Task 6a): the
+    title is kid-facing (library listings) and never a personalizable
+    location, so it must never carry sentinel content at all.
 
     Args:
         story: The parsed published story.
 
     Returns:
-        list[str]: One reason string per malformed near-miss or
-        in-choice-label sentinel found; empty if the blob carries no
+        list[str]: One reason string per malformed near-miss, in-choice-label
+        sentinel, or in-title sentinel found; empty if the blob carries no
         sentinel corruption (including, trivially, a blob with no
         sentinels at all).
     """
-    reasons: list[str] = []
+    reasons: list[str] = [*_title_sentinel_reasons(story.title)]
     for node in story.nodes:
         reasons.extend(_node_sentinel_corruption_reasons(node))
     return reasons
