@@ -668,7 +668,7 @@
         },
         {
           "id": "c_cv_stories",
-          "label": "Ask for every story about Gran, all of them.",
+          "label": "Ask for every story about {ANCESTOR}, all of them.",
           "target": "e_disc_stories"
         }
       ]

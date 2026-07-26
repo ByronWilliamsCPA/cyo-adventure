@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import copy
 import json
-import re
 from typing import TYPE_CHECKING, cast
 
 from pydantic import ValidationError as PydanticValidationError
@@ -33,6 +32,10 @@ from cyo_adventure.generation.prompts import (
 )
 from cyo_adventure.story_requests.interpretation import RawElement
 from cyo_adventure.storybook.sentinels import wrap
+from cyo_adventure.storybook.slotted_surfaces import (
+    FILL_DIRECTIVE_RE,
+    slot_tokens_in_surfaces,
+)
 from cyo_adventure.storybook.theme_contract import (
     SLOT_TOKEN_RE,
     ThemeContract,
@@ -42,7 +45,7 @@ from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.slots import SlotViolation, validate_slot_bindings
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Iterator, Mapping
+    from collections.abc import Iterator, Mapping
     from pathlib import Path
 
     from cyo_adventure.generation.pii import PiiContext
@@ -73,12 +76,11 @@ _NO_PERSONALIZABLE: frozenset[str] = frozenset()
 _MAX_INTERPRET_ELEMENTS = 12
 _MAX_ELEMENT_PHRASE_CHARS = 120
 
-# The production FILL directive parse, reused verbatim from the pilot
-# (`out/pilot/_neutralize.py:337`) and matching `fill.md:32-36` and the
-# words-target parse in `validator/policy.py:43-44`. DOTALL so a beats segment
-# spanning an escaped/embedded quote or newline-free long sentence still
-# matches as one group.
-_FILL_RE = re.compile(r"^<<FILL role=(\w+) words=(\d+) beats='(.*)'>>$", re.DOTALL)
+# The production FILL directive parse. Now the single shared definition in
+# `storybook/slotted_surfaces.py` (A21 found four private copies of the
+# slotted-surface walk, which is how one pass checked a surface another
+# missed); aliased here so this module's substitution sites read unchanged.
+_FILL_RE = FILL_DIRECTIVE_RE
 
 # The bind step emits one small JSON object ({SLOT_ID: value}); no story prose
 # is ever produced by this call, so a small ceiling is correct and cheap.
@@ -142,68 +144,6 @@ def _iter_nodes(skeleton: Mapping[str, object]) -> Iterator[dict[str, object]]:
             yield node
 
 
-def _body_slot_tokens(node: dict[str, object]) -> Iterable[str]:
-    """Return the ``{SLOT}`` tokens in a node's ``beats='...'`` FILL segment.
-
-    Args:
-        node: One raw node dict.
-
-    Returns:
-        The slot tokens found; empty when the body is not a ``<<FILL ...>>``
-        directive.
-    """
-    body = node.get("body")
-    if not isinstance(body, str):
-        return ()
-    match = _FILL_RE.match(body)
-    if match is None:
-        return ()
-    return SLOT_TOKEN_RE.findall(match.group(3))
-
-
-def _ending_slot_tokens(node: dict[str, object]) -> Iterable[str]:
-    """Return the ``{SLOT}`` tokens in a node's ending ``title``.
-
-    Args:
-        node: One raw node dict.
-
-    Returns:
-        The slot tokens found; empty when there is no ending or its
-        ``title`` is not a string.
-    """
-    ending = _as_dict_str_object(node.get("ending"))
-    if ending is None:
-        return ()
-    title = ending.get("title")
-    if not isinstance(title, str):
-        return ()
-    return SLOT_TOKEN_RE.findall(title)
-
-
-def _choice_slot_tokens(node: dict[str, object]) -> Iterable[str]:
-    """Return the ``{SLOT}`` tokens across a node's choice ``label`` fields.
-
-    Args:
-        node: One raw node dict.
-
-    Returns:
-        The slot tokens found across every choice label; empty when the
-        node has no ``choices`` list.
-    """
-    choices = _as_list_object(node.get("choices"))
-    if choices is None:
-        return ()
-    tokens: list[str] = []
-    for raw_choice in choices:
-        choice = _as_dict_str_object(raw_choice)
-        if choice is None:
-            continue
-        label = choice.get("label")
-        if isinstance(label, str):
-            tokens.extend(SLOT_TOKEN_RE.findall(label))
-    return tokens
-
-
 def _slotted_surface_tokens(skeleton: Mapping[str, object]) -> frozenset[str]:
     """Return every ``{SLOT}`` token found in the three slotted surfaces.
 
@@ -211,18 +151,19 @@ def _slotted_surface_tokens(skeleton: Mapping[str, object]) -> frozenset[str]:
     legal home for a slot token: the ``beats='...'`` segment of a ``<<FILL
     ...>>`` node body, an ending's ``title``, and a choice's ``label``.
 
+    Delegates to :func:`cyo_adventure.storybook.slotted_surfaces.
+    slot_tokens_in_surfaces`, the shared definition of that surface set (A21).
+    The three per-surface token readers this module used to own were deleted
+    with that move: the substitution path has its own ``_substitute_*``
+    helpers and never read them, so delegating left them dead.
+
     Args:
         skeleton: The raw skeleton dict to scan.
 
     Returns:
         The set of slot ids referenced anywhere in those three surfaces.
     """
-    tokens: set[str] = set()
-    for node in _iter_nodes(skeleton):
-        tokens.update(_body_slot_tokens(node))
-        tokens.update(_ending_slot_tokens(node))
-        tokens.update(_choice_slot_tokens(node))
-    return frozenset(tokens)
+    return slot_tokens_in_surfaces(skeleton)
 
 
 def _fill_role_words_map(

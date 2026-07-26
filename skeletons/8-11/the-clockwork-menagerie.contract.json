@@ -114,7 +114,8 @@
     "SEC_CABINET_KEYS": "the tiny keys on the master ring",
     "SEC_RABBIT": "a small worn brass rabbit",
     "DAWN_NOTE": "a keeper pad",
-    "DAWN_CLEANER": "the early cleaner"
+    "DAWN_CLEANER": "the early cleaner",
+    "COMPANION_NAME": "Tock"
   },
   "slots": [
     {
@@ -1515,6 +1516,21 @@
         "max_words": 8,
         "forbid": [],
         "distinct_from": []
+      }
+    },
+    {
+      "id": "COMPANION_NAME",
+      "scope": "global",
+      "meaning": "The companion's bare name, for choice labels that must stay short.",
+      "guidance": "Just the name COMPANION is called by, with no species or article, so a label reads 'Follow <name>.' rather than repeating the full description.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO"
+        ]
       }
     }
   ]

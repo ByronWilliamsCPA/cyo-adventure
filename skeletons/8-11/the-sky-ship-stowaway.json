@@ -399,7 +399,7 @@
     },
     {
       "id": "c_nest_b2",
-      "body": "<<FILL role=rising words=95 beats='the inner passage is snug and lamplit; the wind is only a memory now, and a small hopeful mewing echoes along the corridor, drawing her toward the middle of the Cirrus'>>",
+      "body": "<<FILL role=rising words=95 beats='the inner passage is snug and lamplit; the wind is only a memory now, and a small hopeful mewing echoes along the corridor, drawing her toward the middle of {SHIP_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -533,7 +533,7 @@
     },
     {
       "id": "d_salon_b2",
-      "body": "<<FILL role=rising words=95 beats='the corridor turns snug and dim, warmed by the engines below; a small mewing drifts to her on the smell of oil and bread, leading her steadily toward the middle of the Cirrus'>>",
+      "body": "<<FILL role=rising words=95 beats='the corridor turns snug and dim, warmed by the engines below; a small mewing drifts to her on the smell of oil and bread, leading her steadily toward the middle of {SHIP_NAME}'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1316,7 +1316,7 @@
         "id": "e_win_save_ship",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Cirrus Sails On"
+        "title": "Safe Aboard {SHIP_NAME}"
       }
     },
     {
@@ -1389,7 +1389,7 @@
       "choices": [
         {
           "id": "c_free_ok",
-          "label": "Help ease Nimbus out to the open air.",
+          "label": "Help ease {SECRET_NAME} out to the open air.",
           "target": "b_free_ok"
         },
         {
@@ -1418,7 +1418,7 @@
       "choices": [
         {
           "id": "c_free_win",
-          "label": "Follow Nimbus toward safe harbour.",
+          "label": "Follow {SECRET_NAME} toward safe harbour.",
           "target": "e_win_free"
         }
       ]
@@ -1441,7 +1441,7 @@
       "choices": [
         {
           "id": "c_free_alt_win",
-          "label": "Settle Nimbus safe for the voyage.",
+          "label": "Settle {SECRET_NAME} safe for the voyage.",
           "target": "e_win_friend"
         }
       ]

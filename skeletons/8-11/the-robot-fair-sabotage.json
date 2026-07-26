@@ -238,7 +238,7 @@
     },
     {
       "id": "m_watch",
-      "body": "<<FILL role=rising words=95 beats='{HERO} trails {SUSPECT_MARCUS} between classes; he keeps checking over his shoulder and carrying {SERVO_BOX} as if it were made of eggshells, and at break he heads straight for the Room 12 corridor and hovers outside the workshop window looking miserable'>>",
+      "body": "<<FILL role=rising words=95 beats='{HERO} trails {SUSPECT_MARCUS} between classes; he keeps checking over his shoulder and carrying {SERVO_BOX} as if it were made of eggshells, and at break he heads straight for {ENTRANCE} and hovers outside its window looking miserable'>>",
       "is_ending": false,
       "choices": [
         {

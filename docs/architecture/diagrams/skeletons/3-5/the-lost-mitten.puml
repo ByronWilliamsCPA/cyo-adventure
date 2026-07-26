@@ -25,29 +25,29 @@ state n_cocoa #D1C4E9
 n_cocoa : rising · 80w
 state n_found #C8E6C9
 n_found : completion (positive)
-n_found : "The Red Mitten"
+n_found : "The {ITEM_COLOR} {LOST_ITEM}"
 state n_together #C8E6C9
 n_together : completion (positive)
 n_together : "Found Together"
 state n_surprise #C8E6C9
 n_surprise : success (positive)
 n_surprise : "A Cozy Surprise"
-n_start --> n_pine : Look under the big pine tree.
-n_start --> n_rabbit : Ask Hoppy the rabbit.
-n_start --> n_sled : Check the sledding track.
-n_pine --> n_creek : Follow the footprints to the creek.
-n_pine --> n_start : Go back to the snowy hill.
-n_rabbit --> n_creek : Hop down to the creek.
-n_rabbit --> n_start : Look again on the hill.
-n_sled --> n_creek : Follow the red thread to the creek.
-n_sled --> n_start : Try the hill one more time.
-n_creek --> n_found : Reach for the red thing in the snow.
-n_creek --> n_birds : Look up at the chirping birds.
-n_creek --> n_cocoa : Follow the smell of cocoa home.
-n_birds --> n_found : Gently lift the mitten down.
+n_start --> n_pine : Look under the big {LANDMARK_A}.
+n_start --> n_rabbit : Ask {FRIEND} the {FRIEND_KIND}.
+n_start --> n_sled : Check the {LANDMARK_B}.
+n_pine --> n_creek : Follow the footprints to the {MEETING_PL...
+n_pine --> n_start : Go back to the {PLAY_PLACE}.
+n_rabbit --> n_creek : Hop down to the {MEETING_PLACE}.
+n_rabbit --> n_start : Look again on the {PLAY_PLACE}.
+n_sled --> n_creek : Follow the {ITEM_COLOR} thread to the {M...
+n_sled --> n_start : Try the {PLAY_PLACE} one more time.
+n_creek --> n_found : Reach for the {ITEM_COLOR} thing in the ...
+n_creek --> n_birds : Look up at the chirping {HELPERS}.
+n_creek --> n_cocoa : Follow the smell of {HOME_TREAT} home.
+n_birds --> n_found : Gently lift the {LOST_ITEM} down.
 n_birds --> n_help : Call your friends to help.
-n_help --> n_together : Reach the mitten together.
-n_cocoa --> n_surprise : See what fell out of the boot.
+n_help --> n_together : Reach the {LOST_ITEM} together.
+n_cocoa --> n_surprise : See what fell out of the {OUTER_GEAR_ONE...
 n_found --> [*]
 n_together --> [*]
 n_surprise --> [*]

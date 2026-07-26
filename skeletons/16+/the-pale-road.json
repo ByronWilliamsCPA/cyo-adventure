@@ -106,7 +106,7 @@
     },
     {
       "id": "c01_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Threshold Crust the road closes: the runner-thin lid folds you into the cold black beneath it and closes white again over the place; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C01_HAZARD} the road closes: the runner-thin lid folds you into the cold black beneath it and closes white again over the place; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c01_f0_end",
@@ -142,7 +142,7 @@
     },
     {
       "id": "c01_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Threshold Crust the road closes: the salt water is very old and very still and it keeps what falls into it without a sound; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C01_HAZARD} the road closes: the salt water is very old and very still and it keeps what falls into it without a sound; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c01_f1_end",
@@ -166,7 +166,7 @@
     },
     {
       "id": "c01_f2_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Threshold Crust: the white lid tilts and the black water shows at its edge, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C01_HAZARD}: the white lid tilts and the black water shows at its edge, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -178,7 +178,7 @@
     },
     {
       "id": "c01_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Threshold Crust the road closes: delay is death on the crust: it does not dry, it softens, and the ground you trusted is water by the time you move; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C01_HAZARD} the road closes: delay is death on the crust: it does not dry, it softens, and the ground you trusted is water by the time you move; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c01_f2_end",
@@ -214,7 +214,7 @@
     },
     {
       "id": "c01_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Threshold Crust the road closes: the crust takes the clever the same as the careless, slowly and without any cruelty drawn out; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C01_HAZARD} the road closes: the crust takes the clever the same as the careless, slowly and without any cruelty drawn out; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c01_f3_end",
@@ -297,7 +297,7 @@
     },
     {
       "id": "c01_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Threshold Crust on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C01_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -321,25 +321,25 @@
     },
     {
       "id": "c01_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Threshold Crust the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C01_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c01_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Threshold Crust"
+        "title": "The Pressed Gamble at {C01_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c01_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Threshold Crust, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C01_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c01_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Threshold Crust"
+        "title": "Turned from the Road at {C01_HAZARD}"
       },
       "choices": []
     },
@@ -381,7 +381,7 @@
     },
     {
       "id": "c02_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Weighing House the road closes: the pan takes the overladen; you cannot rise under the weight you would not leave behind; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C02_HAZARD} the road closes: the pan takes the overladen; you cannot rise under the weight you would not leave behind; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c02_f0_end",
@@ -417,7 +417,7 @@
     },
     {
       "id": "c02_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Weighing House the road closes: the waste drinks the light-travelling exactly as promised, and there is no second well behind you; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C02_HAZARD} the road closes: the waste drinks the light-travelling exactly as promised, and there is no second well behind you; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c02_f1_end",
@@ -453,7 +453,7 @@
     },
     {
       "id": "c02_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Weighing House the road closes: the road does not read charms; it reads water, and yours ran out where the charm said it would not; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C02_HAZARD} the road closes: the road does not read charms; it reads water, and yours ran out where the charm said it would not; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c02_f2_end",
@@ -477,7 +477,7 @@
     },
     {
       "id": "c02_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Weighing House: the skin at your side is wrong by the weight of a life, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C02_HAZARD}: the skin at your side is wrong by the weight of a life, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -489,7 +489,7 @@
     },
     {
       "id": "c02_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Weighing House the road closes: delay is death at the Weighing: the measure is for the road, not for sitting, and you empty it going nowhere; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C02_HAZARD} the road closes: delay is death at the Weighing: the measure is for the road, not for sitting, and you empty it going nowhere; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c02_f3_end",
@@ -572,7 +572,7 @@
     },
     {
       "id": "c02_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Weighing House on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C02_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -596,25 +596,25 @@
     },
     {
       "id": "c02_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Weighing House the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C02_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c02_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Weighing House"
+        "title": "The Pressed Gamble at {C02_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c02_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Weighing House, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C02_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c02_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Weighing House"
+        "title": "Turned from the Road at {C02_HAZARD}"
       },
       "choices": []
     },
@@ -656,7 +656,7 @@
     },
     {
       "id": "c03_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Noon the road closes: the White Noon takes the eyes first and the pilgrim after, for the blind wander off the road and are not found; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C03_HAZARD} the road closes: the {C03_HAZARD} takes the eyes first and the pilgrim after, for the blind wander off the road and are not found; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c03_f0_end",
@@ -692,7 +692,7 @@
     },
     {
       "id": "c03_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Noon the road closes: the noon glare does not give the eyes back; you stand blind on a road you can no longer see; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C03_HAZARD} the road closes: the noon glare does not give the eyes back; you stand blind on a road you can no longer see; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c03_f1_end",
@@ -728,7 +728,7 @@
     },
     {
       "id": "c03_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Noon the road closes: the pan is wider than your speed; the doubled noon finds the hurrying and puts them down; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C03_HAZARD} the road closes: the pan is wider than your speed; the doubled noon finds the hurrying and puts them down; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c03_f2_end",
@@ -752,7 +752,7 @@
     },
     {
       "id": "c03_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the White Noon: the white comes up into your eyes and does not leave them, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C03_HAZARD}: the white comes up into your eyes and does not leave them, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -764,13 +764,13 @@
     },
     {
       "id": "c03_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Noon the road closes: delay is death at the noon: the still on the open salt are cooked where they wait, eyes shut or open; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C03_HAZARD} the road closes: delay is death at the noon: the still on the open salt are cooked where they wait, eyes shut or open; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c03_f3_end",
         "valence": "negative",
         "kind": "death",
-        "title": "Still at White Noon"
+        "title": "Still at {C03_HAZARD}"
       },
       "choices": []
     },
@@ -847,7 +847,7 @@
     },
     {
       "id": "c03_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the White Noon on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C03_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -871,25 +871,25 @@
     },
     {
       "id": "c03_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Noon the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C03_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c03_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at White Noon"
+        "title": "The Pressed Gamble at {C03_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c03_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the White Noon, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C03_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c03_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at White Noon"
+        "title": "Turned from the Road at {C03_HAZARD}"
       },
       "choices": []
     },
@@ -931,7 +931,7 @@
     },
     {
       "id": "c04_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Scouring Wind the road closes: the standing are flayed and then driven down, and the wind buries what it puts down; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C04_HAZARD} the road closes: the standing are flayed and then driven down, and the wind buries what it puts down; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c04_f0_end",
@@ -955,7 +955,7 @@
     },
     {
       "id": "c04_f1_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Scouring Wind: the wind finds every bared inch and files it away, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C04_HAZARD}: the wind finds every bared inch and files it away, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -967,7 +967,7 @@
     },
     {
       "id": "c04_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Scouring Wind the road closes: delay is death in the scour: it does not blow itself out, it blows you under, one buried inch at a time; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C04_HAZARD} the road closes: delay is death in the scour: it does not blow itself out, it blows you under, one buried inch at a time; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c04_f1_end",
@@ -1003,7 +1003,7 @@
     },
     {
       "id": "c04_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Scouring Wind the road closes: the scour drives the running clear off the line and scours the line away behind them; there is no road left to find; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C04_HAZARD} the road closes: the scour drives the running clear off the line and scours the line away behind them; there is no road left to find; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c04_f2_end",
@@ -1039,7 +1039,7 @@
     },
     {
       "id": "c04_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Scouring Wind the road closes: the scour takes the unwrapped through the mouth; the salt packs the breath and there is no more of it; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C04_HAZARD} the road closes: the scour takes the unwrapped through the mouth; the salt packs the breath and there is no more of it; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c04_f3_end",
@@ -1075,7 +1075,7 @@
     },
     {
       "id": "c04_f4_end",
-      "body": "<<FILL role=failure words=68 beats='at the Scouring Wind the road closes: the wind builds the drifts and the drifts take the sheltering; the salt closes the little hollow you made; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C04_HAZARD} the road closes: the wind builds the drifts and the drifts take the sheltering; the salt closes the little hollow you made; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c04_f4_end",
@@ -1163,7 +1163,7 @@
     },
     {
       "id": "c04_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Scouring Wind on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C04_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1187,25 +1187,25 @@
     },
     {
       "id": "c04_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Scouring Wind the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C04_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c04_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Scouring Wind"
+        "title": "The Pressed Gamble at {C04_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c04_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Scouring Wind, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C04_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c04_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Scouring Wind"
+        "title": "Turned from the Road at {C04_HAZARD}"
       },
       "choices": []
     },
@@ -1247,7 +1247,7 @@
     },
     {
       "id": "c05_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Brine Sink the road closes: the brine sink is bottomless and patient; it takes you straight down and shows a smooth white face again; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C05_HAZARD} the road closes: the brine sink is bottomless and patient; it takes you straight down and shows a smooth white face again; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c05_f0_end",
@@ -1283,7 +1283,7 @@
     },
     {
       "id": "c05_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Brine Sink the road closes: the sink lets the light staff lie and swallows the weight behind it; the black brine has no floor to find; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C05_HAZARD} the road closes: the sink lets the light staff lie and swallows the weight behind it; the black brine has no floor to find; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c05_f1_end",
@@ -1307,7 +1307,7 @@
     },
     {
       "id": "c05_f2_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Brine Sink: the smooth white gives and there is nothing under it but cold going down, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C05_HAZARD}: the smooth white gives and there is nothing under it but cold going down, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1319,7 +1319,7 @@
     },
     {
       "id": "c05_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Brine Sink the road closes: delay is death at the sink: the brine never sets, and the pilgrim who waits for it wastes into the night at its lip; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C05_HAZARD} the road closes: delay is death at the sink: the brine never sets, and the pilgrim who waits for it wastes into the night at its lip; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c05_f2_end",
@@ -1355,7 +1355,7 @@
     },
     {
       "id": "c05_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Brine Sink the road closes: the sink is narrow only where it wants to be; your short leap ends in the cold that has no bottom; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C05_HAZARD} the road closes: the sink is narrow only where it wants to be; your short leap ends in the cold that has no bottom; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c05_f3_end",
@@ -1438,7 +1438,7 @@
     },
     {
       "id": "c05_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Brine Sink on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C05_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1462,25 +1462,25 @@
     },
     {
       "id": "c05_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Brine Sink the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C05_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c05_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Brine Sink"
+        "title": "The Pressed Gamble at {C05_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c05_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Brine Sink, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C05_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c05_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Brine Sink"
+        "title": "Turned from the Road at {C05_HAZARD}"
       },
       "choices": []
     },
@@ -1522,7 +1522,7 @@
     },
     {
       "id": "c06_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bone Field the road closes: the bone field keeps those who leave the line; you walk until you do not, and become a marker; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C06_HAZARD} the road closes: the bone field keeps those who leave the line; you walk until you do not, and become a marker; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c06_f0_end",
@@ -1558,7 +1558,7 @@
     },
     {
       "id": "c06_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bone Field the road closes: the field is jealous of its dead and it keeps the ones who rob them; you go down with your hands full; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C06_HAZARD} the road closes: the field is jealous of its dead and it keeps the ones who rob them; you go down with your hands full; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c06_f1_end",
@@ -1594,7 +1594,7 @@
     },
     {
       "id": "c06_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bone Field the road closes: the fresher pilgrim left the line too; his tracks lead you to his bones and then to your own; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C06_HAZARD} the road closes: the fresher pilgrim left the line too; his tracks lead you to his bones and then to your own; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c06_f2_end",
@@ -1618,7 +1618,7 @@
     },
     {
       "id": "c06_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Bone Field: the bones underfoot are pilgrims who left the line, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C06_HAZARD}: the bones underfoot are pilgrims who left the line, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1630,7 +1630,7 @@
     },
     {
       "id": "c06_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bone Field the road closes: delay is death in the bone field: the ones who rest here do not rise, and the line waits for no one who stops on it; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C06_HAZARD} the road closes: delay is death in the bone field: the ones who rest here do not rise, and the line waits for no one who stops on it; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c06_f3_end",
@@ -1713,7 +1713,7 @@
     },
     {
       "id": "c06_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Bone Field on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C06_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1737,25 +1737,25 @@
     },
     {
       "id": "c06_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bone Field the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C06_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c06_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Bone Field"
+        "title": "The Pressed Gamble at {C06_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c06_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Bone Field, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C06_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c06_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Bone Field"
+        "title": "Turned from the Road at {C06_HAZARD}"
       },
       "choices": []
     },
@@ -1797,7 +1797,7 @@
     },
     {
       "id": "c07_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Mirage Lake the road closes: the mirage takes the thirsting to a lake that is not there; you wander its dry edge until you are dry yourself; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C07_HAZARD} the road closes: the mirage takes the thirsting to a lake that is not there; you wander its dry edge until you are dry yourself; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c07_f0_end",
@@ -1833,7 +1833,7 @@
     },
     {
       "id": "c07_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Mirage Lake the road closes: the false water fills nothing and empties the pilgrim; you chase its edge until there is no water left in you; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C07_HAZARD} the road closes: the false water fills nothing and empties the pilgrim; you chase its edge until there is no water left in you; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c07_f1_end",
@@ -1869,7 +1869,7 @@
     },
     {
       "id": "c07_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Mirage Lake the road closes: the mirage's green shore is the oldest lie of the pale road; it leads the thirsting out and out until they stop; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C07_HAZARD} the road closes: the mirage's green shore is the oldest lie of the pale road; it leads the thirsting out and out until they stop; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c07_f2_end",
@@ -1893,7 +1893,7 @@
     },
     {
       "id": "c07_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Mirage Lake: the shining you walked toward is dry salt when you reach it, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C07_HAZARD}: the shining you walked toward is dry salt when you reach it, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -1905,7 +1905,7 @@
     },
     {
       "id": "c07_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Mirage Lake the road closes: delay is death at the mirage: the water will never be real, and the time you spend watching it is water you no longer have; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C07_HAZARD} the road closes: delay is death at the mirage: the water will never be real, and the time you spend watching it is water you no longer have; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c07_f3_end",
@@ -1988,7 +1988,7 @@
     },
     {
       "id": "c07_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Mirage Lake on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C07_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2012,25 +2012,25 @@
     },
     {
       "id": "c07_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Mirage Lake the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C07_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c07_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Mirage Lake"
+        "title": "The Pressed Gamble at {C07_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c07_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Mirage Lake, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C07_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c07_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Mirage Lake"
+        "title": "Turned from the Road at {C07_HAZARD}"
       },
       "choices": []
     },
@@ -2072,7 +2072,7 @@
     },
     {
       "id": "c08_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Needle Flats the road closes: the sharp field opens the ones who shoulder through it; the salt closes over the opened and keeps them; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C08_HAZARD} the road closes: the sharp field opens the ones who shoulder through it; the salt closes over the opened and keeps them; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c08_f0_end",
@@ -2108,7 +2108,7 @@
     },
     {
       "id": "c08_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Needle Flats the road closes: the spires take the climber down onto themselves; there is no soft place in the whole sharp field; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C08_HAZARD} the road closes: the spires take the climber down onto themselves; there is no soft place in the whole sharp field; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c08_f1_end",
@@ -2144,7 +2144,7 @@
     },
     {
       "id": "c08_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Needle Flats the road closes: the needle flats take the running the hardest, for a fall at speed onto the spires is not survived; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C08_HAZARD} the road closes: the needle flats take the running the hardest, for a fall at speed onto the spires is not survived; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c08_f2_end",
@@ -2180,7 +2180,7 @@
     },
     {
       "id": "c08_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Needle Flats the road closes: the field will not be hacked; it takes the staff and then the arm and then the pilgrim behind them; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C08_HAZARD} the road closes: the field will not be hacked; it takes the staff and then the arm and then the pilgrim behind them; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c08_f3_end",
@@ -2263,7 +2263,7 @@
     },
     {
       "id": "c08_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Needle Flats on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C08_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2287,25 +2287,25 @@
     },
     {
       "id": "c08_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Needle Flats the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C08_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c08_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Needle Flats"
+        "title": "The Pressed Gamble at {C08_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c08_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Needle Flats, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C08_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c08_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Needle Flats"
+        "title": "Turned from the Road at {C08_HAZARD}"
       },
       "choices": []
     },
@@ -2347,7 +2347,7 @@
     },
     {
       "id": "c09_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the First Night the road closes: the first night takes the walker off the road and then out of the world; the dawn shows nothing where you were; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C09_HAZARD} the road closes: the first night takes the walker off the road and then out of the world; the dawn shows nothing where you were; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c09_f0_end",
@@ -2371,7 +2371,7 @@
     },
     {
       "id": "c09_f1_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the First Night: the cold comes down like a stone and does not lift, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C09_HAZARD}: the cold comes down like a stone and does not lift, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2383,7 +2383,7 @@
     },
     {
       "id": "c09_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the First Night the road closes: delay is death in the freeze: to stop unsheltered on the open salt is to sleep, and the sleep here has no morning; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C09_HAZARD} the road closes: delay is death in the freeze: to stop unsheltered on the open salt is to sleep, and the sleep here has no morning; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c09_f1_end",
@@ -2419,7 +2419,7 @@
     },
     {
       "id": "c09_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the First Night the road closes: the little fire cannot hold off the night; it dies and leaves you colder and without the staff the road demands; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C09_HAZARD} the road closes: the little fire cannot hold off the night; it dies and leaves you colder and without the staff the road demands; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c09_f2_end",
@@ -2455,7 +2455,7 @@
     },
     {
       "id": "c09_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the First Night the road closes: the night takes the stripped in an hour; the cold owns the bare skin and there is nothing between it and you; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C09_HAZARD} the road closes: the night takes the stripped in an hour; the cold owns the bare skin and there is nothing between it and you; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c09_f3_end",
@@ -2538,7 +2538,7 @@
     },
     {
       "id": "c09_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the First Night on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C09_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2562,25 +2562,25 @@
     },
     {
       "id": "c09_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the First Night the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C09_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c09_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at First Night"
+        "title": "The Pressed Gamble at {C09_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c09_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the First Night, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C09_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c09_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at First Night"
+        "title": "Turned from the Road at {C09_HAZARD}"
       },
       "choices": []
     },
@@ -2622,7 +2622,7 @@
     },
     {
       "id": "c10_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Thirst Ridge the road closes: the dry ridge is longer than a full skin drunk early; you top out with nothing and the down side is dry too; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C10_HAZARD} the road closes: the dry ridge is longer than a full skin drunk early; you top out with nothing and the down side is dry too; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c10_f0_end",
@@ -2658,7 +2658,7 @@
     },
     {
       "id": "c10_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Thirst Ridge the road closes: the thirst ridge takes the hasty; the sun on the dry climb drinks you faster than you can climb it; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C10_HAZARD} the road closes: the thirst ridge takes the hasty; the sun on the dry climb drinks you faster than you can climb it; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c10_f1_end",
@@ -2694,7 +2694,7 @@
     },
     {
       "id": "c10_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Thirst Ridge the road closes: the ridge keeps the ones who shed their skins on it; the climb is nothing, the dry beyond it is everything; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C10_HAZARD} the road closes: the ridge keeps the ones who shed their skins on it; the climb is nothing, the dry beyond it is everything; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c10_f2_end",
@@ -2718,7 +2718,7 @@
     },
     {
       "id": "c10_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Thirst Ridge: the last of the skin is gone and the top is not near, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C10_HAZARD}: the last of the skin is gone and the top is not near, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2730,7 +2730,7 @@
     },
     {
       "id": "c10_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Thirst Ridge the road closes: delay is death below the ridge: you cannot store the cool, only spend the water, and it is gone before you start; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C10_HAZARD} the road closes: delay is death below the ridge: you cannot store the cool, only spend the water, and it is gone before you start; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c10_f3_end",
@@ -2813,7 +2813,7 @@
     },
     {
       "id": "c10_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Thirst Ridge on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C10_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -2837,25 +2837,25 @@
     },
     {
       "id": "c10_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Thirst Ridge the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C10_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c10_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Thirst Ridge"
+        "title": "The Pressed Gamble at {C10_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c10_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Thirst Ridge, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C10_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c10_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Thirst Ridge"
+        "title": "Turned from the Road at {C10_HAZARD}"
       },
       "choices": []
     },
@@ -2897,7 +2897,7 @@
     },
     {
       "id": "c11_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bitter Wells the road closes: the poison salt folds the pilgrim quietly; the bitter well keeps the thirst that could not wait to taste; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C11_HAZARD} the road closes: the poison salt folds the pilgrim quietly; the bitter well keeps the thirst that could not wait to taste; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c11_f0_end",
@@ -2933,7 +2933,7 @@
     },
     {
       "id": "c11_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bitter Wells the road closes: the bitter wells take the desperate first; the salt that kills tastes like relief to a dry enough mouth; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C11_HAZARD} the road closes: the bitter wells take the desperate first; the salt that kills tastes like relief to a dry enough mouth; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c11_f1_end",
@@ -2969,7 +2969,7 @@
     },
     {
       "id": "c11_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bitter Wells the road closes: the wells do not forgive the clever thirst; a little poison in much water is still the poison, and it works; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C11_HAZARD} the road closes: the wells do not forgive the clever thirst; a little poison in much water is still the poison, and it works; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c11_f2_end",
@@ -3005,7 +3005,7 @@
     },
     {
       "id": "c11_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bitter Wells the road closes: the slow poison of the wells is sure; the pilgrim who drinks the bitter over a day dies over a day; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C11_HAZARD} the road closes: the slow poison of the wells is sure; the pilgrim who drinks the bitter over a day dies over a day; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c11_f3_end",
@@ -3088,7 +3088,7 @@
     },
     {
       "id": "c11_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Bitter Wells on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C11_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3112,25 +3112,25 @@
     },
     {
       "id": "c11_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Bitter Wells the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C11_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c11_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Bitter Wells"
+        "title": "The Pressed Gamble at {C11_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c11_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Bitter Wells, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C11_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c11_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Bitter Wells"
+        "title": "Turned from the Road at {C11_HAZARD}"
       },
       "choices": []
     },
@@ -3172,7 +3172,7 @@
     },
     {
       "id": "c12_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Crust Bridge the road closes: the crust bridge drops the running into the black fissure; the fall is long and the salt closes quiet above it; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C12_HAZARD} the road closes: the crust bridge drops the running into the black fissure; the fall is long and the salt closes quiet above it; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c12_f0_end",
@@ -3208,7 +3208,7 @@
     },
     {
       "id": "c12_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Crust Bridge the road closes: the span will bear a careful crossing but not a challenge; you asked it and it gave you the fissure; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C12_HAZARD} the road closes: the span will bear a careful crossing but not a challenge; you asked it and it gave you the fissure; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c12_f1_end",
@@ -3244,7 +3244,7 @@
     },
     {
       "id": "c12_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Crust Bridge the road closes: the bridge takes the overladen down; the fissure keeps the pilgrim and the pack both, without preference; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C12_HAZARD} the road closes: the bridge takes the overladen down; the fissure keeps the pilgrim and the pack both, without preference; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c12_f2_end",
@@ -3268,7 +3268,7 @@
     },
     {
       "id": "c12_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Crust Bridge: the arch under your foot answers with a crack, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C12_HAZARD}: the arch under your foot answers with a crack, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3280,7 +3280,7 @@
     },
     {
       "id": "c12_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Crust Bridge the road closes: delay is death at the span: it does not strengthen with watching, it rots in the sun, and your turn never firms; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C12_HAZARD} the road closes: delay is death at the span: it does not strengthen with watching, it rots in the sun, and your turn never firms; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c12_f3_end",
@@ -3363,7 +3363,7 @@
     },
     {
       "id": "c12_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Crust Bridge on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C12_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3387,25 +3387,25 @@
     },
     {
       "id": "c12_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Crust Bridge the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C12_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c12_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Crust Bridge"
+        "title": "The Pressed Gamble at {C12_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c12_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Crust Bridge, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C12_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c12_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Crust Bridge"
+        "title": "Turned from the Road at {C12_HAZARD}"
       },
       "choices": []
     },
@@ -3447,7 +3447,7 @@
     },
     {
       "id": "c13_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Pillars the road closes: the pillars fall on those who lean where the wind leans; the tall one comes down and the salt does not soften the fall; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C13_HAZARD} the road closes: the pillars fall on those who lean where the wind leans; the tall one comes down and the salt does not soften the fall; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c13_f0_end",
@@ -3483,7 +3483,7 @@
     },
     {
       "id": "c13_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Pillars the road closes: the salt forest closes on the pilgrim who trusts the wind's pause; the gust is not a promise and it does not keep you; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C13_HAZARD} the road closes: the salt forest closes on the pilgrim who trusts the wind's pause; the gust is not a promise and it does not keep you; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c13_f1_end",
@@ -3519,7 +3519,7 @@
     },
     {
       "id": "c13_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Pillars the road closes: the pillars keep the ones who climb them; up is the one direction the crosswind will not let a pillar hold; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C13_HAZARD} the road closes: the pillars keep the ones who climb them; up is the one direction the crosswind will not let a pillar hold; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c13_f2_end",
@@ -3543,7 +3543,7 @@
     },
     {
       "id": "c13_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Salt Pillars: a pillar goes over somewhere in the wind, then another, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C13_HAZARD}: a pillar goes over somewhere in the wind, then another, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3555,7 +3555,7 @@
     },
     {
       "id": "c13_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Pillars the road closes: delay is death among the pillars: waiting only lets the wind work another one loose, and the loose one finds the waiting; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C13_HAZARD} the road closes: delay is death among the pillars: waiting only lets the wind work another one loose, and the loose one finds the waiting; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c13_f3_end",
@@ -3638,7 +3638,7 @@
     },
     {
       "id": "c13_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Salt Pillars on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C13_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3662,25 +3662,25 @@
     },
     {
       "id": "c13_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Pillars the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C13_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c13_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Salt Pillars"
+        "title": "The Pressed Gamble at {C13_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c13_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Salt Pillars, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C13_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c13_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Salt Pillars"
+        "title": "Turned from the Road at {C13_HAZARD}"
       },
       "choices": []
     },
@@ -3722,7 +3722,7 @@
     },
     {
       "id": "c14_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Basin the road closes: the white basin cooks the ones who cross its floor; the heat has no wind and no shade and it does not let the crossing out; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C14_HAZARD} the road closes: the white basin cooks the ones who cross its floor; the heat has no wind and no shade and it does not let the crossing out; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c14_f0_end",
@@ -3746,7 +3746,7 @@
     },
     {
       "id": "c14_f1_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the White Basin: the air in the bowl is an oven with the door shut, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C14_HAZARD}: the air in the bowl is an oven with the door shut, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3758,7 +3758,7 @@
     },
     {
       "id": "c14_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Basin the road closes: delay is death in the basin: to stop on the kiln-floor is to be fired where you sit, and the still cook fastest; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C14_HAZARD} the road closes: delay is death in the basin: to stop on the kiln-floor is to be fired where you sit, and the still cook fastest; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c14_f1_end",
@@ -3794,7 +3794,7 @@
     },
     {
       "id": "c14_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Basin the road closes: the basin takes the runner through the breath; the oven air is not made to be gulped, and it puts the hasty down; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C14_HAZARD} the road closes: the basin takes the runner through the breath; the oven air is not made to be gulped, and it puts the hasty down; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c14_f2_end",
@@ -3830,7 +3830,7 @@
     },
     {
       "id": "c14_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Basin the road closes: the basin drinks the drinkers dry; the water spent against its heat only leaves you emptier in the kiln; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C14_HAZARD} the road closes: the basin drinks the drinkers dry; the water spent against its heat only leaves you emptier in the kiln; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c14_f3_end",
@@ -3913,7 +3913,7 @@
     },
     {
       "id": "c14_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the White Basin on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C14_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -3937,25 +3937,25 @@
     },
     {
       "id": "c14_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the White Basin the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C14_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c14_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at White Basin"
+        "title": "The Pressed Gamble at {C14_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c14_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the White Basin, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C14_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c14_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at White Basin"
+        "title": "Turned from the Road at {C14_HAZARD}"
       },
       "choices": []
     },
@@ -3997,7 +3997,7 @@
     },
     {
       "id": "c15_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Drifting Dunes the road closes: the dunes swallow the ones who trust the soft side; the salt pours over the fallen and the dune moves on; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C15_HAZARD} the road closes: the dunes swallow the ones who trust the soft side; the salt pours over the fallen and the dune moves on; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c15_f0_end",
@@ -4021,7 +4021,7 @@
     },
     {
       "id": "c15_f1_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Drifting Dunes: the slope pours away and starts to take you with it, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C15_HAZARD}: the slope pours away and starts to take you with it, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4033,7 +4033,7 @@
     },
     {
       "id": "c15_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Drifting Dunes the road closes: delay is death in the dunes: the hollow that shelters you fills while you rest, and the drift is a patient grave; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C15_HAZARD} the road closes: delay is death in the dunes: the hollow that shelters you fills while you rest, and the drift is a patient grave; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c15_f1_end",
@@ -4069,7 +4069,7 @@
     },
     {
       "id": "c15_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Drifting Dunes the road closes: the drifting dunes give back nothing to the digger; the road is under them and so are the ones who dig for it; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C15_HAZARD} the road closes: the drifting dunes give back nothing to the digger; the road is under them and so are the ones who dig for it; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c15_f2_end",
@@ -4093,7 +4093,7 @@
     },
     {
       "id": "c15_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Drifting Dunes: the slope pours away and starts to take you with it, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C15_HAZARD}: the slope pours away and starts to take you with it, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4105,7 +4105,7 @@
     },
     {
       "id": "c15_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Drifting Dunes the road closes: delay is death by the dunes: they do not come to rest, and the pilgrim who waits for stillness is overtaken by the drift; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C15_HAZARD} the road closes: delay is death by the dunes: they do not come to rest, and the pilgrim who waits for stillness is overtaken by the drift; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c15_f3_end",
@@ -4188,7 +4188,7 @@
     },
     {
       "id": "c15_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Drifting Dunes on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C15_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4212,25 +4212,25 @@
     },
     {
       "id": "c15_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Drifting Dunes the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C15_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c15_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Drifting Dunes"
+        "title": "The Pressed Gamble at {C15_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c15_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Drifting Dunes, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C15_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c15_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Drifting Dunes"
+        "title": "Turned from the Road at {C15_HAZARD}"
       },
       "choices": []
     },
@@ -4272,7 +4272,7 @@
     },
     {
       "id": "c16_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Cairn Maze the road closes: the cairn maze keeps the ones who trust any stone; the false markers lead out into the waste and stop there; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C16_HAZARD} the road closes: the cairn maze keeps the ones who trust any stone; the false markers lead out into the waste and stop there; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c16_f0_end",
@@ -4308,7 +4308,7 @@
     },
     {
       "id": "c16_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Cairn Maze the road closes: the maze rewards the eye that trusts size; the great false cairn draws the pilgrim out where nothing waits but the sun; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C16_HAZARD} the road closes: the maze rewards the eye that trusts size; the great false cairn draws the pilgrim out where nothing waits but the sun; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c16_f1_end",
@@ -4344,7 +4344,7 @@
     },
     {
       "id": "c16_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Cairn Maze the road closes: the maze is where a straight line kills; the true road turns and the pilgrim who will not read the stones walks off it; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C16_HAZARD} the road closes: the maze is where a straight line kills; the true road turns and the pilgrim who will not read the stones walks off it; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c16_f2_end",
@@ -4368,7 +4368,7 @@
     },
     {
       "id": "c16_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Cairn Maze: the stone you followed leads to another, and another, into nothing, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C16_HAZARD}: the stone you followed leads to another, and another, into nothing, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4380,7 +4380,7 @@
     },
     {
       "id": "c16_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Cairn Maze the road closes: delay is death in the maze: the cairns will not tell you which is true, and the day you spend asking is the day the waste takes; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C16_HAZARD} the road closes: delay is death in the maze: the cairns will not tell you which is true, and the day you spend asking is the day the waste takes; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c16_f3_end",
@@ -4463,7 +4463,7 @@
     },
     {
       "id": "c16_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Cairn Maze on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C16_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4487,25 +4487,25 @@
     },
     {
       "id": "c16_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Cairn Maze the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C16_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c16_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Cairn Maze"
+        "title": "The Pressed Gamble at {C16_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c16_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Cairn Maze, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C16_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c16_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Cairn Maze"
+        "title": "Turned from the Road at {C16_HAZARD}"
       },
       "choices": []
     },
@@ -4547,7 +4547,7 @@
     },
     {
       "id": "c17_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Caustic Rime the road closes: the rime takes the crawler through the lungs; the low air is the poison air and it does not give the breath back; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C17_HAZARD} the road closes: the rime takes the crawler through the lungs; the low air is the poison air and it does not give the breath back; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c17_f0_end",
@@ -4571,7 +4571,7 @@
     },
     {
       "id": "c17_f1_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Caustic Rime: the low air bites the lungs and will not let them go, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C17_HAZARD}: the low air bites the lungs and will not let them go, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4583,7 +4583,7 @@
     },
     {
       "id": "c17_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Caustic Rime the road closes: delay is death in the rime: to lie in it is to fill with it, and the resting do not get up from the burning ground; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C17_HAZARD} the road closes: delay is death in the rime: to lie in it is to fill with it, and the resting do not get up from the burning ground; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c17_f1_end",
@@ -4619,7 +4619,7 @@
     },
     {
       "id": "c17_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Caustic Rime the road closes: the rime poisons the cloth that touches it; you cooled your face with the very thing the field kills with; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C17_HAZARD} the road closes: the rime poisons the cloth that touches it; you cooled your face with the very thing the field kills with; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c17_f2_end",
@@ -4655,7 +4655,7 @@
     },
     {
       "id": "c17_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Caustic Rime the road closes: the rime takes the runner deepest, for haste draws the caustic down into the chest where it cannot be coughed out; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C17_HAZARD} the road closes: the rime takes the runner deepest, for haste draws the caustic down into the chest where it cannot be coughed out; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c17_f3_end",
@@ -4738,7 +4738,7 @@
     },
     {
       "id": "c17_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Caustic Rime on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C17_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4762,25 +4762,25 @@
     },
     {
       "id": "c17_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Caustic Rime the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C17_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c17_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Caustic Rime"
+        "title": "The Pressed Gamble at {C17_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c17_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Caustic Rime, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C17_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c17_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Caustic Rime"
+        "title": "Turned from the Road at {C17_HAZARD}"
       },
       "choices": []
     },
@@ -4822,7 +4822,7 @@
     },
     {
       "id": "c18_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Razor Pan the road closes: the razor pan flays the ones who walk it like any ground; the opened foot cannot go on and the pan keeps what stops; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C18_HAZARD} the road closes: the razor pan flays the ones who walk it like any ground; the opened foot cannot go on and the pan keeps what stops; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c18_f0_end",
@@ -4846,7 +4846,7 @@
     },
     {
       "id": "c18_f1_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Razor Pan: the crust cuts up through the sole and the foot will not bear you, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C18_HAZARD}: the crust cuts up through the sole and the foot will not bear you, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4858,7 +4858,7 @@
     },
     {
       "id": "c18_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Razor Pan the road closes: delay is death on the razor pan: there is no safe place to stop and wrap, and the standing bleed onto the crust; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C18_HAZARD} the road closes: delay is death on the razor pan: there is no safe place to stop and wrap, and the standing bleed onto the crust; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c18_f1_end",
@@ -4894,7 +4894,7 @@
     },
     {
       "id": "c18_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Razor Pan the road closes: the razor pan is sharpest where no one has worn it; the straight line across it is the line that flays; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C18_HAZARD} the road closes: the razor pan is sharpest where no one has worn it; the straight line across it is the line that flays; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c18_f2_end",
@@ -4930,7 +4930,7 @@
     },
     {
       "id": "c18_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Razor Pan the road closes: the pan takes the running feet to the bone; haste on the blades is not less time on them, it is more of them; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C18_HAZARD} the road closes: the pan takes the running feet to the bone; haste on the blades is not less time on them, it is more of them; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c18_f3_end",
@@ -5013,7 +5013,7 @@
     },
     {
       "id": "c18_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Razor Pan on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C18_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5037,25 +5037,25 @@
     },
     {
       "id": "c18_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Razor Pan the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C18_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c18_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Razor Pan"
+        "title": "The Pressed Gamble at {C18_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c18_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Razor Pan, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C18_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c18_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Razor Pan"
+        "title": "Turned from the Road at {C18_HAZARD}"
       },
       "choices": []
     },
@@ -5097,7 +5097,7 @@
     },
     {
       "id": "c19_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Hollow Ground the road closes: the hollow ground takes the pilgrim into the dry void below; the shell closes and there is no climbing the fall; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C19_HAZARD} the road closes: the hollow ground takes the pilgrim into the dry void below; the shell closes and there is no climbing the fall; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c19_f0_end",
@@ -5133,7 +5133,7 @@
     },
     {
       "id": "c19_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Hollow Ground the road closes: the hollow answers the stamp by opening; you asked the thin crust for solid and it gave you the drop instead; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C19_HAZARD} the road closes: the hollow answers the stamp by opening; you asked the thin crust for solid and it gave you the drop instead; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c19_f1_end",
@@ -5169,7 +5169,7 @@
     },
     {
       "id": "c19_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Hollow Ground the road closes: the void keeps the overladen; the crust that would bear a careful pilgrim caves under a laden one and holds him under; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C19_HAZARD} the road closes: the void keeps the overladen; the crust that would bear a careful pilgrim caves under a laden one and holds him under; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c19_f2_end",
@@ -5193,7 +5193,7 @@
     },
     {
       "id": "c19_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Hollow Ground: the ground sounds hollow and then it is not there, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C19_HAZARD}: the ground sounds hollow and then it is not there, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5205,7 +5205,7 @@
     },
     {
       "id": "c19_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Hollow Ground the road closes: delay is death on the hollow ground: the shell only weakens with time and heat, and the waiting break it by standing; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C19_HAZARD} the road closes: delay is death on the hollow ground: the shell only weakens with time and heat, and the waiting break it by standing; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c19_f3_end",
@@ -5288,7 +5288,7 @@
     },
     {
       "id": "c19_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Hollow Ground on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C19_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5312,25 +5312,25 @@
     },
     {
       "id": "c19_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Hollow Ground the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C19_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c19_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Hollow Ground"
+        "title": "The Pressed Gamble at {C19_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c19_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Hollow Ground, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C19_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c19_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Hollow Ground"
+        "title": "Turned from the Road at {C19_HAZARD}"
       },
       "choices": []
     },
@@ -5372,7 +5372,7 @@
     },
     {
       "id": "c20_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Last Water the road closes: the last water takes the ones who leave it early; the end is closer than the road is short, and the dry between kills; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C20_HAZARD} the road closes: the last water takes the ones who leave it early; the end is closer than the road is short, and the dry between kills; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c20_f0_end",
@@ -5408,7 +5408,7 @@
     },
     {
       "id": "c20_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Last Water the road closes: the last spring drowns the greedy on dry land; the water meant to carry you puts you down before you carry it anywhere; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C20_HAZARD} the road closes: the last spring drowns the greedy on dry land; the water meant to carry you puts you down before you carry it anywhere; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c20_f1_end",
@@ -5444,7 +5444,7 @@
     },
     {
       "id": "c20_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Last Water the road closes: the last stretch keeps the ones who trust a guess over the mark; full skins do not save an untrue line; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C20_HAZARD} the road closes: the last stretch keeps the ones who trust a guess over the mark; full skins do not save an untrue line; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c20_f2_end",
@@ -5468,7 +5468,7 @@
     },
     {
       "id": "c20_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Last Water: the skins are wrong and the last dry mile is ahead, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C20_HAZARD}: the skins are wrong and the last dry mile is ahead, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5480,7 +5480,7 @@
     },
     {
       "id": "c20_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Last Water the road closes: delay is death at the last water: safe is not arrived, and the pilgrim who stops here for good never makes the dry end; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C20_HAZARD} the road closes: delay is death at the last water: safe is not arrived, and the pilgrim who stops here for good never makes the dry end; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c20_f3_end",
@@ -5563,7 +5563,7 @@
     },
     {
       "id": "c20_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Last Water on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C20_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5587,25 +5587,25 @@
     },
     {
       "id": "c20_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Last Water the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C20_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c20_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Last Water"
+        "title": "The Pressed Gamble at {C20_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c20_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Last Water, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C20_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c20_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Last Water"
+        "title": "Turned from the Road at {C20_HAZARD}"
       },
       "choices": []
     },
@@ -5647,7 +5647,7 @@
     },
     {
       "id": "c21_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Rim Ascent the road closes: the rim ascent drops the ones who climb it fast; the salt face comes down all at once and takes the climber with it; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C21_HAZARD} the road closes: the rim ascent drops the ones who climb it fast; the salt face comes down all at once and takes the climber with it; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c21_f0_end",
@@ -5683,7 +5683,7 @@
     },
     {
       "id": "c21_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Rim Ascent the road closes: the loose salt keeps the ones who trust the shine; the block that looked best had nothing behind it but the fall; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C21_HAZARD} the road closes: the loose salt keeps the ones who trust the shine; the block that looked best had nothing behind it but the fall; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c21_f1_end",
@@ -5707,7 +5707,7 @@
     },
     {
       "id": "c21_f2_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Rim Ascent: the hold you trusted comes away in your hand, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C21_HAZARD}: the hold you trusted comes away in your hand, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5719,7 +5719,7 @@
     },
     {
       "id": "c21_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Rim Ascent the road closes: delay is death on the ascent: to stop on the face is to load a hold longer than it can bear, and the rotten ledge goes; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C21_HAZARD} the road closes: delay is death on the ascent: to stop on the face is to load a hold longer than it can bear, and the rotten ledge goes; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c21_f2_end",
@@ -5755,7 +5755,7 @@
     },
     {
       "id": "c21_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Rim Ascent the road closes: the escarpment keeps the ones who jump its top; the crumbling lip gives nothing to hold and the fall has the rest; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C21_HAZARD} the road closes: the escarpment keeps the ones who jump its top; the crumbling lip gives nothing to hold and the fall has the rest; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c21_f3_end",
@@ -5838,7 +5838,7 @@
     },
     {
       "id": "c21_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Rim Ascent on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C21_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -5862,25 +5862,25 @@
     },
     {
       "id": "c21_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Rim Ascent the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C21_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c21_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Rim Ascent"
+        "title": "The Pressed Gamble at {C21_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c21_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Rim Ascent, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C21_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c21_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Rim Ascent"
+        "title": "Turned from the Road at {C21_HAZARD}"
       },
       "choices": []
     },
@@ -5922,7 +5922,7 @@
     },
     {
       "id": "c22_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pilgrim Pass the road closes: the pass wedges the ones who go in full; held upright in the cold throat you cannot draw the breath to shout or the room to move; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C22_HAZARD} the road closes: the pass wedges the ones who go in full; held upright in the cold throat you cannot draw the breath to shout or the room to move; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c22_f0_end",
@@ -5958,7 +5958,7 @@
     },
     {
       "id": "c22_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pilgrim Pass the road closes: the pilgrim pass keeps the ones who will not shed the pack; jammed in the throat behind it, you go no further and come no back; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C22_HAZARD} the road closes: the pilgrim pass keeps the ones who will not shed the pack; jammed in the throat behind it, you go no further and come no back; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c22_f1_end",
@@ -5994,7 +5994,7 @@
     },
     {
       "id": "c22_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pilgrim Pass the road closes: the pass takes the ones who try its roof; the crumbling top gives way and the throat below is no gentler for the fall; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C22_HAZARD} the road closes: the pass takes the ones who try its roof; the crumbling top gives way and the throat below is no gentler for the fall; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c22_f2_end",
@@ -6018,7 +6018,7 @@
     },
     {
       "id": "c22_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Pilgrim Pass: the walls close on your chest and will not give it back, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C22_HAZARD}: the walls close on your chest and will not give it back, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6030,7 +6030,7 @@
     },
     {
       "id": "c22_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pilgrim Pass the road closes: delay is death in the pass: the narrows never open, and the cold that gathers in the throat takes the pilgrim who lingers there; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C22_HAZARD} the road closes: delay is death in the pass: the narrows never open, and the cold that gathers in the throat takes the pilgrim who lingers there; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c22_f3_end",
@@ -6113,7 +6113,7 @@
     },
     {
       "id": "c22_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Pilgrim Pass on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C22_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6137,25 +6137,25 @@
     },
     {
       "id": "c22_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pilgrim Pass the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C22_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c22_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Pilgrim Pass"
+        "title": "The Pressed Gamble at {C22_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c22_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Pilgrim Pass, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C22_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c22_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Pilgrim Pass"
+        "title": "Turned from the Road at {C22_HAZARD}"
       },
       "choices": []
     },
@@ -6197,7 +6197,7 @@
     },
     {
       "id": "c23_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Veil the road closes: the salt veil keeps the ones who trust their ears in it; turned around in the choking white, you wander its edge until you fall; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C23_HAZARD} the road closes: the salt veil keeps the ones who trust their ears in it; turned around in the choking white, you wander its edge until you fall; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c23_f0_end",
@@ -6233,7 +6233,7 @@
     },
     {
       "id": "c23_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Veil the road closes: the veil takes the runners a stride short of through; the fog is wider than a breath and it fills the one who empties too soon; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C23_HAZARD} the road closes: the veil takes the runners a stride short of through; the fog is wider than a breath and it fills the one who empties too soon; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c23_f1_end",
@@ -6257,7 +6257,7 @@
     },
     {
       "id": "c23_f2_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Salt Veil: the white fog closes and the bell is nowhere in it, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C23_HAZARD}: the white fog closes and the bell is nowhere in it, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6269,7 +6269,7 @@
     },
     {
       "id": "c23_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Veil the road closes: delay is death at the veil: the fog is fixed and the pilgrim who waits for it to clear waits past the end of what he carries; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C23_HAZARD} the road closes: delay is death at the veil: the fog is fixed and the pilgrim who waits for it to clear waits past the end of what he carries; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c23_f2_end",
@@ -6305,7 +6305,7 @@
     },
     {
       "id": "c23_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Veil the road closes: the veil chokes the ones who cry out in it; the shrine does not answer sound, only the rope, and the caller falls unheard; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C23_HAZARD} the road closes: the veil chokes the ones who cry out in it; the shrine does not answer sound, only the rope, and the caller falls unheard; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c23_f3_end",
@@ -6388,7 +6388,7 @@
     },
     {
       "id": "c23_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Salt Veil on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C23_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6412,25 +6412,25 @@
     },
     {
       "id": "c23_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Salt Veil the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C23_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c23_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Salt Veil"
+        "title": "The Pressed Gamble at {C23_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c23_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Salt Veil, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C23_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c23_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Salt Veil"
+        "title": "Turned from the Road at {C23_HAZARD}"
       },
       "choices": []
     },
@@ -6472,7 +6472,7 @@
     },
     {
       "id": "c24_f0_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pale Mile the road closes: the pale mile takes the ones who run its end; the shrine is in sight the whole way down, and it is the last thing they see; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C24_HAZARD} the road closes: the pale mile takes the ones who run its end; the shrine is in sight the whole way down, and it is the last thing they see; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c24_f0_end",
@@ -6508,7 +6508,7 @@
     },
     {
       "id": "c24_f1_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pale Mile the road closes: the last mile keeps the ones who spend it all at the sight of the end; a stride short of the steps is as far as forever; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C24_HAZARD} the road closes: the last mile keeps the ones who spend it all at the sight of the end; a stride short of the steps is as far as forever; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c24_f1_end",
@@ -6544,7 +6544,7 @@
     },
     {
       "id": "c24_f2_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pale Mile the road closes: the pale mile drowns the ones who cut its heart; the soft center is the oldest trap on the road, set within sight of the shrine; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C24_HAZARD} the road closes: the pale mile drowns the ones who cut its heart; the soft center is the oldest trap on the road, set within sight of the shrine; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c24_f2_end",
@@ -6568,7 +6568,7 @@
     },
     {
       "id": "c24_f3_c1",
-      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the Pale Mile: the shrine is right there and your legs are done, and the time you spent waiting is the thing that kills you'>>",
+      "body": "<<FILL role=rising words=62 beats='there is a moment here you could still move, and then it is gone; delay is death at the {C24_HAZARD}: the shrine is right there and your legs are done, and the time you spent waiting is the thing that kills you'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6580,7 +6580,7 @@
     },
     {
       "id": "c24_f3_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pale Mile the road closes: delay is death on the pale mile: so many stop here, so close, and do not rise; the end in sight is not the end reached; the salt keeps it, quick and without dwelling'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C24_HAZARD} the road closes: delay is death on the pale mile: so many stop here, so close, and do not rise; the end in sight is not the end reached; the salt keeps it, quick and without dwelling'>>",
       "is_ending": true,
       "ending": {
         "id": "c24_f3_end",
@@ -6663,7 +6663,7 @@
     },
     {
       "id": "c24_fd_c0",
-      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the Pale Mile on nerve alone and the salt was only waiting for it'>>",
+      "body": "<<FILL role=rising words=64 beats='the mistake lands: you drive deeper into the {C24_HAZARD} on nerve alone and the salt was only waiting for it'>>",
       "is_ending": false,
       "choices": [
         {
@@ -6687,25 +6687,25 @@
     },
     {
       "id": "c24_fd_end",
-      "body": "<<FILL role=failure words=68 beats='at the Pale Mile the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
+      "body": "<<FILL role=failure words=68 beats='at the {C24_HAZARD} the pressed luck fails: the road closes on the pilgrim who would not take the safe line; the salt keeps it, quick and grave'>>",
       "is_ending": true,
       "ending": {
         "id": "c24_fd_end",
         "valence": "negative",
         "kind": "death",
-        "title": "The Pressed Gamble at Pale Mile"
+        "title": "The Pressed Gamble at {C24_HAZARD}"
       },
       "choices": []
     },
     {
       "id": "c24_lost",
-      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the Pale Mile, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
+      "body": "<<FILL role=failure words=64 beats='you turn from the pale road at the {C24_HAZARD}, and off the line there is only the waste; unmade by the salt, you become one more the desert kept, without cruelty and without return'>>",
       "is_ending": true,
       "ending": {
         "id": "c24_lost",
         "valence": "negative",
         "kind": "death",
-        "title": "Turned from the Road at Pale Mile"
+        "title": "Turned from the Road at {C24_HAZARD}"
       },
       "choices": []
     },

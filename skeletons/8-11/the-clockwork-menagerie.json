@@ -136,7 +136,7 @@
       "choices": [
         {
           "id": "c_av_a3",
-          "label": "Follow Tock.",
+          "label": "Follow {COMPANION_NAME}.",
           "target": "av_a4"
         }
       ]
@@ -208,7 +208,7 @@
       "choices": [
         {
           "id": "c_av_b4",
-          "label": "Follow Tock.",
+          "label": "Follow {COMPANION_NAME}.",
           "target": "av_conv"
         }
       ]
@@ -378,7 +378,7 @@
       "choices": [
         {
           "id": "c_sv_a3",
-          "label": "Follow Tock.",
+          "label": "Follow {COMPANION_NAME}.",
           "target": "sv_a4"
         }
       ]
@@ -450,7 +450,7 @@
       "choices": [
         {
           "id": "c_sv_b4",
-          "label": "Follow Tock.",
+          "label": "Follow {COMPANION_NAME}.",
           "target": "sv_conv"
         }
       ]
@@ -620,7 +620,7 @@
       "choices": [
         {
           "id": "c_ds_a3",
-          "label": "Follow Tock.",
+          "label": "Follow {COMPANION_NAME}.",
           "target": "ds_a4"
         }
       ]
@@ -692,7 +692,7 @@
       "choices": [
         {
           "id": "c_ds_b4",
-          "label": "Follow Tock.",
+          "label": "Follow {COMPANION_NAME}.",
           "target": "ds_conv"
         }
       ]
@@ -862,7 +862,7 @@
       "choices": [
         {
           "id": "c_cg_a3",
-          "label": "Follow Tock.",
+          "label": "Follow {COMPANION_NAME}.",
           "target": "cg_a4"
         }
       ]
@@ -934,7 +934,7 @@
       "choices": [
         {
           "id": "c_cg_b4",
-          "label": "Follow Tock.",
+          "label": "Follow {COMPANION_NAME}.",
           "target": "cg_conv"
         }
       ]
@@ -1190,7 +1190,7 @@
         },
         {
           "id": "c_spring_c",
-          "label": "Dig where Tock is scratching.",
+          "label": "Dig where {COMPANION_NAME} is scratching.",
           "target": "s_c1"
         }
       ]
@@ -1482,7 +1482,7 @@
         },
         {
           "id": "c_hub_sec",
-          "label": "Follow keeper Fettle\u2019s secret.",
+          "label": "Follow {CARETAKER}’s secret.",
           "target": "fh_sec1"
         },
         {
@@ -1509,7 +1509,7 @@
         },
         {
           "id": "c_rw_cl",
-          "label": "Try Fettle\u2019s clever trick.",
+          "label": "Try {CARETAKER}’s clever trick.",
           "target": "fh_rw_cl1"
         }
       ]
@@ -1538,7 +1538,7 @@
         },
         {
           "id": "c_rw_quiet",
-          "label": "Set them to wake when Fettle returns.",
+          "label": "Set them to wake when {CARETAKER} returns.",
           "target": "e_win_all_quiet"
         }
       ]

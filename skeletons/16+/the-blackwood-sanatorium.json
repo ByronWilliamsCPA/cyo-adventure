@@ -97,7 +97,7 @@
         },
         {
           "id": "c_hub_abandon",
-          "label": "Cut your losses and leave Blackwood while you still can.",
+          "label": "Cut your losses and leave {THRESHOLD} while you still can.",
           "target": "e_abandon"
         }
       ]

@@ -745,10 +745,22 @@ evidence):
 4. `render_bound_skeleton(default_binding)` passes all post-conditions.
 5. One committed new-theme sample fill: `check_fill_integrity.py` ok against its
    bound skeleton, `run_story_gate.py` `blocked=False safety_flagged=False`.
+6. (Added by A21, 2026-07-26) `residual_theme_leaks(skeleton, contract) == ()`:
+   the parameterized skeleton's own beats guidance, ending titles, and choice
+   labels name no proper noun from `legacy_lexicon`. Check 3 evaluates
+   `legacy_lexicon` only against a *proposed slot value* (section 14.1), and
+   nothing here looked at the skeleton's own text, so the first 45 migrations
+   passed checks 1-5 while leaving **273 retired-theme proper nouns hardcoded
+   across 11 skeletons** that no binding could ever displace. Restricted to
+   proper nouns because a lexicon legitimately contains generic words (`salt`,
+   `Register`), and matched case-sensitively because capitalization is the only
+   signal separating the character `Alder` from an alder tree, or the librarian
+   `Ms. Kettle` from a kettle on a desk. See `validator/theme_leak.py`.
 
 A lightweight repo test (`test_skeleton_contracts.py`) iterates every
-`*.contract.json` on disk and asserts checks 1-4, so post-migration drift (a
-skeleton edited without its contract) fails CI permanently.
+`*.contract.json` on disk and asserts checks 1-4 and 6, so post-migration drift
+(a skeleton edited without its contract, or a re-theme that reintroduces a
+hardcoded name) fails CI permanently.
 
 ### 9.4 Coverage and quality gates
 

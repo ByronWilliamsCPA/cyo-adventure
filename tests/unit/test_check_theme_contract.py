@@ -1,19 +1,21 @@
 """Unit tests for scripts/check_theme_contract.py.
 
-Covers the six migration acceptance checks from
+Covers the seven migration acceptance checks from
 ``docs/planning/ws2-parameterized-catalog-design.md`` sections 8.4 and 9.3:
 a good skeleton/contract pair passes everything; an unknown ``forbid``
 bundle id fails check 3; a ``default_binding`` that violates its own
 contract fails check 4; and a contract whose target ``_GATE`` slot does not
 declare ``lethal`` (and sits at a band with no mandatory floor) fails check
 5, proving the synthesized-lethal-binding check actually exercises the
-contract's own constraints rather than always passing.
+contract's own constraints rather than always passing. Check 7 (A21) is
+covered by a skeleton that hardcodes a ``legacy_lexicon`` proper noun in its
+own beats, which no earlier check can see.
 """
 
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.diversity.structure import structure_fingerprint
 from cyo_adventure.generation.binding import contract_path_for
@@ -255,7 +257,37 @@ def test_a_well_configured_contract_passes_every_check(
     assert exit_code == 0
     out = capsys.readouterr().out
     assert "FAIL" not in out
-    assert out.count("PASS") == 6
+    # 7 since A21 added the residual retired-theme leak scan as check 7.
+    assert out.count("PASS") == 7
+
+
+def test_a_hardcoded_retired_theme_name_fails_check_7(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A21: a proper noun left in the skeleton's own text must fail the runner.
+
+    Leaves "Tock" hardcoded in the setup node's beats while ``{HERO}`` is
+    correctly slotted alongside it, so nothing but check 7 can see the defect.
+    That is precisely the blind spot the first 45 migrations passed through.
+    """
+    skeleton = _tiny_skeleton()
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    body = cast("str", nodes[0]["body"])
+    nodes[0]["body"] = body.replace("The hero, ", "The hero, Tock and ")
+    contract = _well_configured_contract().model_copy(
+        update={"legacy_lexicon": ["Tock"]}
+    )
+    skeleton_path = _write_pair(tmp_path, skeleton, contract)
+
+    exit_code = ctc.main([str(skeleton_path)])
+
+    assert exit_code == 1
+    out = capsys.readouterr().out
+    assert "FAIL 7." in out
+    assert "'Tock' in beats n_start" in out
+    # Sanity: only 7 is broken; the leak is invisible to every earlier check.
+    for label in ("PASS 1.", "PASS 2.", "PASS 3.", "PASS 4.", "PASS 6."):
+        assert label in out
 
 
 def test_unknown_forbid_bundle_id_fails_check_3(

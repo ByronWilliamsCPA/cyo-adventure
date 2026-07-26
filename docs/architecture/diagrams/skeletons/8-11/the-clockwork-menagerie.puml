@@ -377,13 +377,13 @@ av_deep --> av_a1 : Visit {A1_ZONE}.
 av_deep --> av_b1 : Approach {A2_ZONE}.
 av_a1 --> av_a2 : Go on.
 av_a2 --> av_a3 : Press deeper.
-av_a3 --> av_a4 : Follow Tock.
+av_a3 --> av_a4 : Follow {COMPANION_NAME}.
 av_a4 --> av_a5 : Keep going.
 av_a5 --> av_conv : Step forward.
 av_b1 --> av_b2 : Move along.
 av_b2 --> av_b3 : Go on.
 av_b3 --> av_b4 : Press deeper.
-av_b4 --> av_conv : Follow Tock.
+av_b4 --> av_conv : Follow {COMPANION_NAME}.
 av_conv --> av_conv2 : Keep going.
 av_conv2 --> av_conv3 : Step forward.
 av_conv3 --> n_key : Enter the central rotunda.
@@ -398,13 +398,13 @@ sv_deep --> sv_a1 : Approach {B1_ZONE}.
 sv_deep --> sv_b1 : Enter {B2_ZONE}.
 sv_a1 --> sv_a2 : Go on.
 sv_a2 --> sv_a3 : Press deeper.
-sv_a3 --> sv_a4 : Follow Tock.
+sv_a3 --> sv_a4 : Follow {COMPANION_NAME}.
 sv_a4 --> sv_a5 : Keep going.
 sv_a5 --> sv_conv : Step forward.
 sv_b1 --> sv_b2 : Move along.
 sv_b2 --> sv_b3 : Go on.
 sv_b3 --> sv_b4 : Press deeper.
-sv_b4 --> sv_conv : Follow Tock.
+sv_b4 --> sv_conv : Follow {COMPANION_NAME}.
 sv_conv --> sv_conv2 : Keep going.
 sv_conv2 --> sv_conv3 : Step forward.
 sv_conv3 --> n_key : Enter the central rotunda.
@@ -419,13 +419,13 @@ ds_deep --> ds_a1 : Open {C1_ZONE}.
 ds_deep --> ds_b1 : Peer into {C2_ZONE}.
 ds_a1 --> ds_a2 : Go on.
 ds_a2 --> ds_a3 : Press deeper.
-ds_a3 --> ds_a4 : Follow Tock.
+ds_a3 --> ds_a4 : Follow {COMPANION_NAME}.
 ds_a4 --> ds_a5 : Keep going.
 ds_a5 --> ds_conv : Step forward.
 ds_b1 --> ds_b2 : Move along.
 ds_b2 --> ds_b3 : Go on.
 ds_b3 --> ds_b4 : Press deeper.
-ds_b4 --> ds_conv : Follow Tock.
+ds_b4 --> ds_conv : Follow {COMPANION_NAME}.
 ds_conv --> ds_conv2 : Keep going.
 ds_conv2 --> ds_conv3 : Step forward.
 ds_conv3 --> n_key : Enter the central rotunda.
@@ -440,13 +440,13 @@ cg_deep --> cg_a1 : Enter {D1_ZONE}.
 cg_deep --> cg_b1 : Visit {D2_ZONE}.
 cg_a1 --> cg_a2 : Go on.
 cg_a2 --> cg_a3 : Press deeper.
-cg_a3 --> cg_a4 : Follow Tock.
+cg_a3 --> cg_a4 : Follow {COMPANION_NAME}.
 cg_a4 --> cg_a5 : Keep going.
 cg_a5 --> cg_conv : Step forward.
 cg_b1 --> cg_b2 : Move along.
 cg_b2 --> cg_b3 : Go on.
 cg_b3 --> cg_b4 : Press deeper.
-cg_b4 --> cg_conv : Follow Tock.
+cg_b4 --> cg_conv : Follow {COMPANION_NAME}.
 cg_conv --> cg_conv2 : Keep going.
 cg_conv2 --> cg_conv3 : Step forward.
 cg_conv3 --> n_key : Enter the central rotunda.
@@ -469,7 +469,7 @@ k_c2 --> k_c3 : Follow the low passage.
 k_c3 --> n_spring : Climb down to the works.
 n_spring --> s_a1 : Open {S_A_ZONE}.
 n_spring --> s_b1 : Search {S_B_ZONE}.
-n_spring --> s_c1 : Dig where Tock is scratching.
+n_spring --> s_c1 : Dig where {COMPANION_NAME} is scratching...
 s_a1 --> s_a2 : Follow the keeper sign.
 s_a2 --> s_a3 : Follow the keeper sign.
 s_a3 --> n_shop : Follow the keeper sign.
@@ -495,14 +495,14 @@ p_c2 --> p_c3 : Set the spring down.
 p_c3 --> n_hub : Turn to the great spring.
 n_hub --> fh_rw1 : Change the great spring and rewind them ...
 n_hub --> fh_fx1 : Mend one beloved creature.
-n_hub --> fh_sec1 : Follow keeper Fettle’s secret.
+n_hub --> fh_sec1 : Follow {CARETAKER}’s secret.
 n_hub --> fh_dawn1 : Keep the museum safe until dawn.
 fh_rw1 --> fh_rw_c1 : Work slow and careful by the manual.
 fh_rw1 --> fh_rw_b1 : Work bold and fast to beat the dawn.
-fh_rw1 --> fh_rw_cl1 : Try Fettle’s clever trick.
+fh_rw1 --> fh_rw_cl1 : Try {CARETAKER}’s clever trick.
 fh_rw_c1 --> fh_rw_c2 : Fit the master key to the shaft.
 fh_rw_c2 --> e_win_all : Wind it fully and wake them all for dawn...
-fh_rw_c2 --> e_win_all_quiet : Set them to wake when Fettle returns.
+fh_rw_c2 --> e_win_all_quiet : Set them to wake when {CARETAKER} return...
 fh_rw_b1 --> fh_rw_b_ok : Stop and reseat it properly.
 fh_rw_b1 --> e_set_rw : Wind it now and hope.
 fh_rw_b_ok --> e_win_most : Wind the museum awake.

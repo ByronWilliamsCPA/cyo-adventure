@@ -597,7 +597,7 @@
     },
     {
       "id": "hb_office",
-      "body": "<<FILL role=choice words=105 beats='The harbor office: kettle, charts, a VHF murmuring the shipping weather, and Mr. Okafor the harbormaster keeping the pre-dawn watch; on his desk lies a pad of penciled five-figure groups in a neat old-fashioned hand, tonight's {BROADCAST}, copied; write his greeting warm and general so it lands the same on a first knock of the night or on a return visit'>>",
+      "body": "<<FILL role=choice words=105 beats='The harbor office: kettle, charts, a VHF murmuring the shipping weather, and {ROUTE_C_KEEPER} keeping the pre-dawn watch; on his desk lies a pad of penciled five-figure groups in a neat old-fashioned hand, tonight's {BROADCAST}, copied; write his greeting warm and general so it lands the same on a first knock of the night or on a return visit'>>",
       "is_ending": false,
       "choices": [
         {
@@ -724,7 +724,7 @@
     },
     {
       "id": "e_hb_stories",
-      "body": "<<FILL role=ending words=100 beats='The cocoa goes down and the stories come out: the night {CLUB_NAME} counted a trawler home through fog by bell-rings, the Christmas net with paper hats over headphones, the way {ANCESTOR} could tune a signal out of pure noise like coaxing a cat off a roof; the day man arrives with the gulls and the sky already pearl-gray, {DEADLINE} spent, {ROUTE_C_LURE} unopened; but the club is alive in the telling, and Mr. Okafor shakes both their hands like colleagues; they will be back, and he will be listening'>>",
+      "body": "<<FILL role=ending words=100 beats='The cocoa goes down and the stories come out: the night {CLUB_NAME} counted a trawler home through fog by bell-rings, the Christmas net with paper hats over headphones, the way {ANCESTOR} could tune a signal out of pure noise like coaxing a cat off a roof; the day man arrives with the gulls and the sky already pearl-gray, {DEADLINE} spent, {ROUTE_C_LURE} unopened; but the club is alive in the telling, and {ROUTE_C_KEEPER} shakes both their hands like colleagues; they will be back, and he will be listening'>>",
       "is_ending": true,
       "ending": {
         "id": "end_hb_stories",
@@ -851,7 +851,7 @@
     },
     {
       "id": "e_lb_alarm",
-      "body": "<<FILL role=failure words=90 beats='The handle turns a quarter-inch and the {ROUTE_D_GATE} goes off like a tin thunderstorm over their heads; a light comes on in the librarian's cottage across the green; they stand and wait, honest, while Ms. Kettle arrives in dressing gown and slippers, silences the {ROUTE_D_GATE} with one practiced whack, and hears them out; she is kinder than her {ROUTE_D_GATE} but firm: {ROUTE_D_LURE} by daylight, with her, and {GUARDIAN} hears about tonight from you and no one else; a red-eared walk home'>>",
+      "body": "<<FILL role=failure words=90 beats='The handle turns a quarter-inch and the {ROUTE_D_GATE} goes off like a tin thunderstorm over their heads; a light comes on in the librarian's cottage across the green; they stand and wait, honest, while {ROUTE_D_KEEPER} arrives in dressing gown and slippers, silences the {ROUTE_D_GATE} with one practiced whack, and hears them out; she is kinder than her {ROUTE_D_GATE} but firm: {ROUTE_D_LURE} by daylight, with her, and {GUARDIAN} hears about tonight from you and no one else; a red-eared walk home'>>",
       "is_ending": true,
       "ending": {
         "id": "end_lb_alarm",
