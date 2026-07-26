@@ -244,6 +244,27 @@ then. Confirm no `PL-23`/`PL-24`/`SR-8` reference crept in.
 Re-verify against #416's branch immediately before claiming any of these, per plan v2's amended method rule 5:
 `main` alone is not a sufficient basis.
 
+### 4.1 When #416 does merge: its three conflicts and their resolution
+
+Measured 2026-07-26. #416 is behind `main` and GitHub refuses its branch update with
+`422 merge conflict between base and head`. All three conflicts are **complementary, not competing**, and the
+resolution was worked and verified before #416 was deferred. Recorded so it is not re-derived:
+
+1. **`src/cyo_adventure/validator/reading_level.py`** (the substantive one, and the same RL-13 loop A19 concerns).
+   `main` (#418) sets `body = strip_sentinels(node.body)`; #416 sets `body = node.body` and adds
+   `if _FILL_MARKER in body: continue`. **Keep both**, stripping first and then checking the marker. Safe in that
+   order because `SENTINEL_RE` excludes `<` and `>` from its value charclass, so a `<<FILL ...>>` can never sit
+   inside a sentinel and stripping can neither create nor destroy a marker.
+2. **`tests/unit/test_reading_level.py`**: purely additive on both sides (#416 adds one function, #418 adds a
+   two-test class). **Keep both.** Verified: 15 pass together, which is the direct proof that resolution 1 is right.
+3. **`docs/planning/capability-register.md`**: #416 never touched S10 or S11, so the conflict there is adjacency
+   only and **`main`'s versions win outright**. The one real overlap is **S12**, where both sides added different
+   notes (#416's aggregate-substrate design, #418's ADR-023 ring-3 forward-binding constraint). **Keep both**, with
+   a sentence boundary at the splice.
+
+`ruff check` and `ruff format --check` were clean on the result. This resolution belongs to whoever merges #416; it
+is not work this plan performs.
+
 ---
 
 ## 5. Explicitly not in this plan
