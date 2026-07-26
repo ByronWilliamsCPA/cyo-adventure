@@ -147,9 +147,13 @@ async def run_moderation_pipeline(
     # violation, using the SAME BLOCK-verdict Finding mechanism the
     # existing invalid-blob path (below) uses to force auto_reject: never
     # auto-adopt or auto-publish a blob whose sentinel content cannot be
-    # proven safe. Variant B cannot catch a DROPPED sentinel (only a
-    # sibling task's Variant A reorder on the import path can); this is a
+    # proven safe. Variant B cannot catch a DROPPED sentinel: this is a
     # forged/unknown/malformed/in-label/in-title backstop, not a full check.
+    # A dropped sentinel on the cyo-author import/resume path is instead
+    # caught pre-persist by the Variant A reorder in
+    # generation/import_story.py::resume_manual_fill (Task 6b), which
+    # compares the pre-fill bound reference against the filled blob before
+    # anything is persisted; that closes the gap this backstop cannot.
     # #VERIFY: tests/unit/test_moderation_pipeline.py::
     # test_entry_forged_sentinel_in_clean_blob_routes_to_human_review,
     # ::test_entry_contract_unrecoverable_routes_to_human_review, and
