@@ -151,6 +151,17 @@ ahead of it.
 *Verification*: `uv run pytest`, `ruff check`, `basedpyright src/`, plus a full-catalog gate run showing exactly
 the expected failure set (1 for A14, 1 pair for A8, 0 new for A19).
 
+> **Correction to A8's commit message (2026-07-26).** That message said "yamllint is unchanged on `ci.yml` (no
+> long lines added)". The parenthetical is true and was verified, but the sentence reads as though the check
+> passes, and it does not: the hook runs `yamllint --strict`, so warnings fail it, and `ci.yml` carries three
+> pre-existing warnings (line 10 `on:` read as a truthy value, and long lines at 110 and 501). Verified precisely:
+> the finding set is **byte-identical** before and after the A8 edit, and the edit's longest added line is 79
+> characters, so nothing here was introduced by this work. Left unfixed deliberately rather than silently: the
+> `on:` warning is the well-known GitHub Actions false positive whose fix changes a workflow key, and
+> `.pre-commit-config.yaml`'s own comment records this hook as deferred to pre-push precisely to avoid "gating
+> every commit on `--strict` warnings across the generated workflow files". Fixing it is a separate, non-diversity
+> change and should not ride along here.
+
 ### S2: similarity signal correctness (parallel to S1)
 
 Pure code correctness, independent of catalog scale. Order is fixed: A1 and A2 change the vocabulary and the
