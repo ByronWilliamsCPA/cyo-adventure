@@ -4534,7 +4534,7 @@
     },
     {
       "id": "c22_drown_a",
-      "body": "<<FILL role=rising words=50 beats='the lungs are already empty and the deep run is longer than empty can cross'>>",
+      "body": "<<FILL role=rising words=50 beats='the lungs are already empty and the deep run is longer than empty can cross; the line back up is the only thing left'>>",
       "is_ending": false,
       "choices": [
         {
@@ -4546,13 +4546,13 @@
     },
     {
       "id": "c22_drown_e",
-      "body": "<<FILL role=failure words=56 beats='you go into the throat with nothing in your lungs and the throat is very long; the deep keeps you, quiet and without cruelty'>>",
+      "body": "<<FILL role=failure words=56 beats='with nothing left in the lungs the throat is not crossable and the diver knows it; they signal and are hauled back up the line, the descent abandoned and the hoard left where it lies; survival without the prize, quiet and without cruelty'>>",
       "is_ending": true,
       "ending": {
         "id": "c22_drown_e",
         "valence": "negative",
-        "kind": "death",
-        "title": "No Breath for the Deep Run"
+        "kind": "setback",
+        "title": "Turned Back at the Deep Lock"
       },
       "choices": []
     },

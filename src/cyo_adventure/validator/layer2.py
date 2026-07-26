@@ -515,8 +515,8 @@ def _check_dead_branches(
 # includes `setback`. A single negative-valence rule applied at the teen bands
 # would forbid a 15-year-old from ever facing a lose-lose dilemma, which is
 # exactly what a `gauntlet` reader seeks and what ADR-011 section 5 sanctions
-# from 13-16 up. So the teen bands get the narrow `death`/`capture` reading and
-# everything below gets the broad negative-valence one.
+# from 13-16 up. So the teen bands get the narrow `death` reading and everything
+# below gets the broad negative-valence one.
 #
 # Scope note: plan v2 item A14 specified the negative-valence reading at 8-11
 # and 10-13 only. It is applied at 3-5 and 5-8 as well, deliberately: measured
@@ -527,7 +527,27 @@ def _check_dead_branches(
 # over-constraining teens, never for leaving the youngest unguarded.
 _NEGATIVE_VALENCE_BANDS = frozenset({"3-5", "5-8", "8-11", "10-13"})
 _FATAL_KIND_BANDS = frozenset({"13-16", "16+"})
-_FATAL_KINDS = frozenset({"death", "capture"})
+
+# #CRITICAL: security: "fatal" at the teen bands means DEATH, not every grim
+# outcome. Narrowed 2026-07-26 after measuring what the wider reading cost.
+#
+# The owner's rule is specific: avoid "a scenario where a user is presented
+# option A and B and both result in death." An earlier revision of this rule also
+# treated `capture` as fatal. That was an implementation choice, not the stated
+# instruction, and measuring it showed the choice was doing real damage: it
+# flagged 5 nodes across 4 skeletons, of which **3 existed only because of the
+# capture inclusion**. Those three are deliberately authored espionage climaxes
+# whose own beats read "Nothing between her and the closing dark", and each one
+# offers a `capture` option, so the reader survives without winning. Capture is
+# the signature ending of that genre rather than a death, and forbidding it would
+# have rewritten four of the catalog's climaxes to satisfy a rule nobody asked
+# for.
+#
+# Narrowing to `death` leaves exactly the two nodes that genuinely present a
+# reader with options that all kill them.
+# #VERIFY: tests/unit/test_layer2_validator.py::
+# test_l2_14_capture_is_not_fatal_at_a_teen_band
+_FATAL_KINDS = frozenset({"death"})
 
 
 def _forbidden_ending_predicate(band: str) -> Callable[[Ending], bool] | None:

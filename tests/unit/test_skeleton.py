@@ -54,35 +54,25 @@ _DEMO_SKELETONS = [
     "skeletons/16+/the-sunken-signal.json",
 ]
 
-# L2-14 quarantine (A14, 2026-07-26). These skeletons offer a reader a decision
-# where every visible option reaches a forbidden ending with no further choice on
-# the way, which the owner's rule forbids outright: "no decision should only have
-# fatal node options. At least one needs to allow advancing or loop back."
+# L2-14 quarantine (A14). EMPTY as of 2026-07-26: all four skeletons that once
+# offered a reader a decision whose every option ended in death now pass.
 #
-# All five nodes were inspected and are genuine, not rule artifacts:
-#   the-quiet-harbor-protocol  b_lo_final  4 options, all direct death/capture
-#   the-cinder-bazaar          bg_hi_final capture + 2 corridors to death
-#   the-cinder-bazaar          bg_lo_final 2 corridors to death + capture
-#   the-serpent-vaults         c22_gate    the survivable option is CONDITIONAL,
-#                                          so when its condition is false the
-#                                          reader sees 4 options that all corridor
-#                                          into death
-#   the-sunken-signal          n_ascent    at air=0, both options kill
+# Two of the four never needed a content change at all. The rule originally
+# treated `capture` as fatal, which was an implementation choice rather than the
+# owner's instruction ("both result in death"), and narrowing it to `death`
+# cleared `the-quiet-harbor-protocol` and `the-cinder-bazaar`, whose deliberately
+# authored "closing dark" climaxes each offer a survivable capture.
 #
-# Quarantined rather than silently fixed, because rewriting a teen gamebook's
-# climax is a creative decision belonging to the catalog owner and to slice S4,
-# not a side effect of landing a validator rule. Marked **strict** so fixing one
-# forces this list to be pruned in the same change: the list can only shrink.
+# The remaining two were real and were fixed in the content:
+#   the-sunken-signal  n_collapse  the survive-but-fail ending the author had
+#                                  already written was gated behind equipment;
+#                                  the gate now also opens at air=0.
+#   the-serpent-vaults c22_drown_e death -> setback, so running the deep lock dry
+#                                  ends the descent instead of the diver.
 #
-# Tracked by: story-diversity-implementation-plan.md slice S4.
-_L2_14_QUARANTINE: frozenset[str] = frozenset(
-    {
-        "skeletons/16+/the-quiet-harbor-protocol.json",
-        "skeletons/16+/the-cinder-bazaar.json",
-        "skeletons/13-16/the-serpent-vaults.json",
-        "skeletons/16+/the-sunken-signal.json",
-    }
-)
+# The mechanism is kept, not deleted: it is strict, so a re-added entry that
+# stops failing forces its own removal, and S4 has further catalog work to come.
+_L2_14_QUARANTINE: frozenset[str] = frozenset()
 
 
 def _param(rel: str) -> object:

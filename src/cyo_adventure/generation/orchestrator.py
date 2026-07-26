@@ -780,6 +780,13 @@ async def fill_skeleton(
             (:func:`~cyo_adventure.generation.prompts.build_bound_fill_prompt`)
             instead of the free-text variant. ``None`` (default) preserves the
             byte-identical legacy prompt for every existing caller.
+        differentiation_directive: The trusted differentiation block (A6/A7) from
+            :func:`~cyo_adventure.generation.prompts.build_differentiation_directive`,
+            carrying this family's escalation level, the drawn craft axis, and the
+            titles of prior stories on this same skeleton. Empty by default, in
+            which case the prompt renders its explicit no-context block; it is
+            never left as an unfilled template token. Only reaches the free-text
+            fill variant, since the bound-fill prompt has its own template.
 
     Returns:
         A :class:`GenerationOutcome` describing the final status, the last

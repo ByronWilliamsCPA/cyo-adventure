@@ -46,22 +46,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 _LEGACY_TITLES = (
     "The Lost Mitten",
     "The Clocktower Cipher",
-    # L2-14 quarantine (A14, 2026-07-26). The reference skeleton this fill
-    # normalizes against, skeletons/16+/the-sunken-signal.json, has an all-fatal
-    # decision at node `n_ascent`: with `air` at 0 both visible options end in
-    # death, which the owner's rule forbids outright. The normalization recipe
-    # this test exercises is unaffected; it is the underlying story content that
-    # fails, and rewriting a 16+ gamebook's ascent is a creative decision for
-    # slice S4 rather than a side effect of landing a validator rule. Strict, so
-    # fixing the content forces this mark to be removed in the same change.
-    # Tracked by: story-diversity-implementation-plan.md slice S4.
-    pytest.param(
-        "The Sunken Signal",
-        marks=pytest.mark.xfail(
-            strict=True,
-            reason="L2-14: all-fatal decision at n_ascent, quarantined pending S4",
-        ),
-    ),
+    "The Sunken Signal",
 )
 
 

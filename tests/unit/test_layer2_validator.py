@@ -942,8 +942,10 @@ def test_l2_14_follows_single_choice_corridors() -> None:
             },
             {"id": "hall", "body": "A hall.", "choices": [_choice("h", "d1")]},
             {"id": "stair", "body": "A stair.", "choices": [_choice("s", "d2")]},
+            # Both deaths: `capture` is deliberately NOT fatal at this band, so
+            # using it here would make the test pass for the wrong reason.
             _ending("d1", "death", "negative"),
-            _ending("d2", "capture", "negative"),
+            _ending("d2", "death", "negative"),
         ],
         start="fork",
         variables=[{"name": "v", "type": "bool", "initial": True}],
@@ -997,6 +999,56 @@ def test_l2_14_setback_is_not_fatal_at_a_teen_band() -> None:
             },
             _ending("s1", "setback", "negative"),
             _ending("s2", "setback", "negative"),
+        ],
+        start="fork",
+        variables=[{"name": "v", "type": "bool", "initial": True}],
+        age_band="16+",
+        ending_count=2,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == []
+
+
+@pytest.mark.unit
+def test_l2_14_capture_is_not_fatal_at_a_teen_band() -> None:
+    """ "Fatal" means death, not every grim outcome.
+
+    The owner's rule is specific: avoid "a scenario where a user is presented
+    option A and B and both result in death." An earlier revision also treated
+    ``capture`` as fatal, which was an implementation choice, and measuring it
+    showed the cost: 3 of 5 catalog violations existed only because of it, all in
+    deliberately authored espionage climaxes that each offer a survivable
+    capture. Capture is that genre's signature ending, not a death.
+    """
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [_choice("c1", "d1"), _choice("c2", "cap")],
+            },
+            _ending("d1", "death", "negative"),
+            _ending("cap", "capture", "negative"),
+        ],
+        start="fork",
+        variables=[{"name": "v", "type": "bool", "initial": True}],
+        age_band="16+",
+        ending_count=2,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == []
+
+
+@pytest.mark.unit
+def test_l2_14_all_capture_is_also_permitted_at_a_teen_band() -> None:
+    """Two capture options is grim, survivable, and allowed at 16+."""
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [_choice("c1", "cap1"), _choice("c2", "cap2")],
+            },
+            _ending("cap1", "capture", "negative"),
+            _ending("cap2", "capture", "negative"),
         ],
         start="fork",
         variables=[{"name": "v", "type": "bool", "initial": True}],

@@ -59,6 +59,16 @@ owner's own work to fix, which is the cheapest possible remediation posture. **T
 > (`the-quiet-harbor-protocol`). So A14's real fix list is one node, which drops its effort from M to S and makes
 > it safe to land blocking on day one rather than advisory-then-flip.
 >
+> **Third correction (2026-07-26, on fixing it): the fix list is 2 nodes across 2 skeletons, and the reduction came
+> from narrowing my own rule.** The teen-band reading treated `capture` as fatal alongside `death`. That was an
+> implementation choice, not the owner's instruction, which is specific: "a scenario where a user is presented
+> option A and B and both result in death." Measured, the choice was doing real damage: **3 of the 5 violations
+> existed only because of it**, and all three are deliberately authored espionage climaxes whose own beats read
+> "Nothing between her and the closing dark", each offering a survivable `capture`. Capture is that genre's
+> signature ending, not a death, and forbidding it would have rewritten four of the catalog's climaxes to satisfy
+> a rule nobody asked for. Narrowed to `death`, which leaves exactly the two genuine cases, both
+> resource-exhausted bottlenecks. **Both are now fixed and the quarantine is empty** (see A9's row for how).
+>
 > **Second correction (2026-07-26, on implementing it): the fix list is 5 nodes across 4 skeletons, not 1.** Both
 > figures above came from a *static, direct-terminal* scan: a decision every one of whose options is itself a
 > forbidden ending node. The rule as A14 actually specifies it follows single-choice corridors and runs over the
