@@ -1977,6 +1977,90 @@ async def test_run_generation_job_bind_failure_records_violations_on_job_report(
     assert not any(e["reason"] == "personal_details" for e in elements)
 
 
+@pytest.mark.asyncio
+async def test_run_generation_job_sentinel_integrity_failure_records_violations_on_job_report(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """(Task 6a) A fail-closed sentinel-integrity violation surfaces through
+    run_generation_job's own pipeline-exception handling under its OWN
+    ``sentinel_integrity_violations`` key: an admin debugging a failed job
+    sees node_id/kind/token detail, not just a truncated ``job.error``
+    string, and this key is never collapsed into (or confused with) the
+    sibling ``slot_binding_violations`` key a WS-2 bind failure uses.
+
+    This pins the worker.py change to `_handle_pipeline_failure`, not just
+    `_run_skeleton_fill` in isolation
+    (test_run_skeleton_fill_sentinel_integrity_mutated_sentinel_fails_closed
+    already covers the raise itself).
+    """
+    import uuid as uuid_mod
+
+    from cyo_adventure.db.models import Concept, GenerationJob
+
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract = _personalizable_dispatch_contract()
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(contract.model_dump_json().encode("utf-8"))
+
+    monkeypatch.setattr(
+        worker_module, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    original_skeleton = _personalizable_dispatch_skeleton()
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: original_skeleton)
+
+    mutated_sentinel = wrap("PROTAGONIST", "Champion")
+    filled_storybook = _personalizable_filled_storybook(mutated_sentinel)
+    monkeypatch.setattr(
+        worker_module, "fill_skeleton", _stub_returning(filled_storybook)
+    )
+
+    provider = MockProvider(
+        responses=[_interpret_bind_response(_BOUND_DISPATCH_BINDINGS)]
+    )
+
+    job_id = uuid_mod.uuid4()
+    concept_id = uuid_mod.uuid4()
+    job = GenerationJob(
+        id=job_id,
+        concept_id=concept_id,
+        status="queued",
+        authoring_metadata={
+            "skeleton_slug": "themed-slug",
+            "theme_brief": {"premise": "a fox"},
+        },
+    )
+    concept = Concept(id=concept_id, family_id=uuid_mod.uuid4(), brief=_FRESHGEN_BRIEF)
+    session_ctx = _ThemeContractBindFailureSession(job, concept)
+
+    def factory() -> object:
+        class _Ctx:
+            async def __aenter__(self) -> _ThemeContractBindFailureSession:
+                return session_ctx
+
+            async def __aexit__(self, *exc: object) -> None:
+                return None
+
+        return _Ctx()
+
+    with pytest.raises(ValidationError):
+        await worker_module.run_generation_job(
+            job_id, provider=provider, session_factory=factory
+        )
+
+    assert job.status == "failed"
+    assert job.report is not None
+    violations = cast(
+        "list[dict[str, object]]", job.report["sentinel_integrity_violations"]
+    )
+    kinds = {v["kind"] for v in violations}
+    assert kinds == {"dropped", "forged"}
+    # No cross-contamination: this is a sentinel-integrity failure, not a
+    # slot-binding one, so the sibling key must be absent.
+    assert "slot_binding_violations" not in job.report
+
+
 # ---------------------------------------------------------------------------
 # WS-7 D5/D6: refined and degraded interpretation on the worker report, and
 # the request-row projection (design sections 5.3, 5.4, 5.5).

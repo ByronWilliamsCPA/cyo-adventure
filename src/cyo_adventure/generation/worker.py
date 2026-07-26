@@ -1660,11 +1660,32 @@ async def _handle_pipeline_failure(
     # #VERIFY: the bind-failure worker test asserts the violation detail
     # lands in the persisted report/error.
     violations: object | None = None
+    # #CRITICAL: data-integrity: a Task 4a/4b fail-closed sentinel-integrity
+    # ValidationError (_run_skeleton_fill's LIVE check_sentinel_integrity
+    # call) already carries its own violation list in
+    # exc.details["sentinel_integrity_violations"], but before Task 6a that
+    # detail reached only the structured log line above, never job.report:
+    # an admin debugging a failed job saw a truncated error count, not
+    # node_id/kind/token. Stamped under its OWN key here, distinct from
+    # slot_binding_violations, per the Task 4a distinct-details-key
+    # discipline (this is observability only; the fail-closed decision
+    # itself is unchanged).
+    # #VERIFY: tests/unit/test_worker.py::
+    # test_run_generation_job_sentinel_integrity_failure_records_violations_on_job_report
+    # asserts the key is present and slot_binding_violations is absent (no
+    # cross-contamination) for a sentinel-integrity failure.
+    sentinel_violations: object | None = None
     if isinstance(exc, ValidationError):
         violations = exc.details.get("violations")
+        sentinel_violations = exc.details.get("sentinel_integrity_violations")
     report: dict[str, object] | None = None
     if violations is not None:
         report = {"slot_binding_violations": violations}
+    if sentinel_violations is not None:
+        report = {
+            **(report or {}),
+            "sentinel_integrity_violations": sentinel_violations,
+        }
 
     # WS-7 D7 (design 6.1, 6.3): a bound-path skeleton-fill job that fails its
     # bind gets an honest CANNOT_CARRY interpretation on BOTH the failed job
