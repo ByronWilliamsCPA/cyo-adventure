@@ -160,6 +160,12 @@ async def _validate_against_pinned_version(
     # #ASSUME: security: choice_path is optional this slice; absent it, only the
     # structural floor runs (tracked as C5 in
     # docs/planning/r1-deferred-debt-register.md).
+    # #CRITICAL: security: save_slots is passed too, closing the one field this
+    # gate used to omit. It was client-writable and persisted straight onto the
+    # row below with no content check at all, which defeated the anti-forgery
+    # intent stated immediately above. validate_reading_state now refuses any
+    # non-empty slot map (B1).
+    # #VERIFY: tests/unit/test_replay.py::test_non_empty_save_slots_rejected.
     # #VERIFY: player/replay.py validate_reading_state; missing version -> 404.
     version_row = await ctx.session.get(StorybookVersion, (storybook_id, body.version))
     if version_row is None:
@@ -172,6 +178,7 @@ async def _validate_against_pinned_version(
         path=body.path,
         visit_set=body.visit_set,
         choice_path=body.choice_path,
+        save_slots=body.save_slots,
     )
 
 

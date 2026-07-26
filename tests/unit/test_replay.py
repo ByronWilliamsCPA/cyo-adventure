@@ -74,6 +74,7 @@ def test_structural_floor_accepts_start_state_without_choice_path() -> None:
         path=["n_start"],
         visit_set=["n_start"],
         choice_path=None,
+        save_slots={},
     )
     assert result is None
 
@@ -91,6 +92,7 @@ def test_unknown_current_node_rejected() -> None:
             path=["n_start"],
             visit_set=["n_start"],
             choice_path=None,
+            save_slots={},
         )
 
 
@@ -107,6 +109,7 @@ def test_unknown_path_node_rejected() -> None:
             path=["n_start", "n_ghost"],
             visit_set=["n_start"],
             choice_path=None,
+            save_slots={},
         )
 
 
@@ -123,6 +126,7 @@ def test_undeclared_var_key_rejected() -> None:
             path=["n_start"],
             visit_set=["n_start"],
             choice_path=None,
+            save_slots={},
         )
 
 
@@ -137,6 +141,7 @@ def test_out_of_bounds_int_rejected() -> None:
             path=["n_start"],
             visit_set=["n_start"],
             choice_path=None,
+            save_slots={},
         )
 
 
@@ -149,6 +154,7 @@ def test_replay_accepts_genuine_state() -> None:
         path=["n_start", "n_end"],
         visit_set=["n_start", "n_end"],
         choice_path=["c_go"],
+        save_slots={},
     )
     assert result is None
 
@@ -167,6 +173,7 @@ def test_replay_rejects_forged_var_state() -> None:
             path=["n_start", "n_end"],
             visit_set=["n_start", "n_end"],
             choice_path=["c_go"],
+            save_slots={},
         )
 
 
@@ -183,6 +190,7 @@ def test_replay_rejects_illegal_choice_id() -> None:
             path=["n_start", "n_end"],
             visit_set=["n_start", "n_end"],
             choice_path=["c_nope"],
+            save_slots={},
         )
 
 
@@ -199,6 +207,7 @@ def test_corrupt_blob_rejected_generically() -> None:
             path=["n_start"],
             visit_set=["n_start"],
             choice_path=None,
+            save_slots={},
         )
 
 
@@ -218,6 +227,7 @@ def test_corrupt_blob_error_does_not_leak_schema_detail() -> None:
             path=["n_start"],
             visit_set=["n_start"],
             choice_path=None,
+            save_slots={},
         )
     detail = str(exc_info.value)
     assert (
@@ -242,6 +252,7 @@ def test_current_node_path_mismatch_rejected() -> None:
             path=["n_start", "n_end"],
             visit_set=["n_start", "n_end"],
             choice_path=None,
+            save_slots={},
         )
 
 
@@ -259,6 +270,7 @@ def test_missing_declared_variable_rejected() -> None:
             path=["n_start"],
             visit_set=["n_start"],
             choice_path=None,
+            save_slots={},
         )
 
 
@@ -282,6 +294,7 @@ def test_unbounded_int_var_above_float64_safe_range_rejected() -> None:
             path=["n_start"],
             visit_set=["n_start"],
             choice_path=None,
+            save_slots={},
         )
 
 
@@ -297,6 +310,7 @@ def test_unbounded_int_var_at_float64_safe_bound_accepted() -> None:
         path=["n_start"],
         visit_set=["n_start"],
         choice_path=None,
+        save_slots={},
     )
     assert result is None
 
@@ -318,6 +332,7 @@ def test_visit_set_only_forgery_rejected() -> None:
             path=["n_start"],
             visit_set=["n_start", "n_end"],
             choice_path=[],
+            save_slots={},
         )
 
 
@@ -358,6 +373,7 @@ def test_bool_variable_accepts_boolean_value() -> None:
         path=["n_start"],
         visit_set=["n_start"],
         choice_path=None,
+        save_slots={},
     )
     assert result is None
 
@@ -373,6 +389,7 @@ def test_bool_variable_rejects_non_boolean_value() -> None:
             path=["n_start"],
             visit_set=["n_start"],
             choice_path=None,
+            save_slots={},
         )
 
 
@@ -447,5 +464,85 @@ def test_replay_accepts_looping_conformance_fixture() -> None:
         path=["n_start", "n_loop", "n_start", "n_loop", "n_end"],
         visit_set=["n_start", "n_loop", "n_end"],
         choice_path=["c_advance", "c_back", "c_advance", "c_finish"],
+        save_slots={},
     )
     assert result is None
+
+
+# ---------------------------------------------------------------------------
+# B1: save_slots was the one persisted field this gate did not cover
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_empty_save_slots_accepted() -> None:
+    """The only value any real client sends today."""
+    result = validate_reading_state(
+        _blob(),
+        current_node="n_start",
+        var_state={"courage": 0},
+        path=["n_start"],
+        visit_set=["n_start"],
+        choice_path=None,
+        save_slots={},
+    )
+    assert result is None
+
+
+@pytest.mark.unit
+def test_non_empty_save_slots_rejected() -> None:
+    """A slot must not be persisted while nothing can validate or consume one.
+
+    save_slots was client-writable, assigned straight onto the JSONB column, and
+    the only reading-state field this gate omitted, which defeated the
+    anti-forgery intent stated two lines above the call site. No producer or
+    consumer exists, so the field was attack surface with no function.
+    """
+    with pytest.raises(ValidationError, match="save_slots must be empty"):
+        validate_reading_state(
+            _blob(),
+            current_node="n_start",
+            var_state={"courage": 0},
+            path=["n_start"],
+            visit_set=["n_start"],
+            choice_path=None,
+            save_slots={"checkpoint": {"current_node": "n_start"}},
+        )
+
+
+@pytest.mark.unit
+def test_save_slots_rejection_names_the_offending_slot() -> None:
+    """The error identifies a slot, so a client can tell which key was refused."""
+    with pytest.raises(ValidationError) as excinfo:
+        validate_reading_state(
+            _blob(),
+            current_node="n_start",
+            var_state={"courage": 0},
+            path=["n_start"],
+            visit_set=["n_start"],
+            choice_path=None,
+            save_slots={"zulu": {}, "alpha": {}},
+        )
+    assert excinfo.value.details["field"] == "save_slots"
+    # Deterministically the first key in sorted order, so the message is stable.
+    assert excinfo.value.details["value"] == "alpha"
+
+
+@pytest.mark.unit
+def test_a_forged_slot_is_refused_before_the_structural_floor_runs() -> None:
+    """Slot refusal precedes the node/variable checks.
+
+    Ordering matters for the error a client sees: a body that forges both a slot
+    and a bad node should be told about the slot, since that is the field with no
+    legitimate non-empty value at all.
+    """
+    with pytest.raises(ValidationError, match="save_slots must be empty"):
+        validate_reading_state(
+            _blob(),
+            current_node="does_not_exist",
+            var_state={"courage": 0},
+            path=["does_not_exist"],
+            visit_set=["does_not_exist"],
+            choice_path=None,
+            save_slots={"forged": {}},
+        )

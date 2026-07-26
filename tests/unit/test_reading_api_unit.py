@@ -990,6 +990,43 @@ class TestPutReadingState:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
+    async def test_put_forwards_save_slots_and_rejects_a_forged_slot(self) -> None:
+        """A non-empty body.save_slots must reach the gate and be refused (B1).
+
+        save_slots was the one persisted reading-state field
+        ``validate_reading_state`` did not receive, so a forged slot went straight
+        onto the JSONB column unchecked. This proves the field now reaches the
+        gate rather than being silently dropped, which is the same property the
+        choice_path tests above establish for replay.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("s_syn", family_id)
+        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        session = _FakeSession(
+            get_map={
+                (Storybook, "s_syn"): book,
+                (StorybookVersion, ("s_syn", 1)): version,
+            },
+            scalar_result=None,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+        body = ReadingStateBody(
+            version=1,
+            current_node="n_start",
+            var_state={"courage": 0},
+            path=["n_start"],
+            visit_set=["n_start"],
+            state_revision=0,
+            save_slots={
+                "forged": {"current_node": "n_end", "var_state": {"courage": 9}}
+            },
+        )
+        with pytest.raises(ValidationError, match="save_slots must be empty"):
+            await put_reading_state(str(profile_id), "s_syn", body, ctx)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
     async def test_put_forwards_choice_path_and_rejects_forged_replay(self) -> None:
         """A forged var_state that is in-bounds (so the structural floor alone
         would accept it) must still be rejected once body.choice_path is

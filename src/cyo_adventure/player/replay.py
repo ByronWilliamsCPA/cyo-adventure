@@ -22,6 +22,8 @@ from cyo_adventure.player import StoryEngine
 from cyo_adventure.storybook.models import Storybook, VariableType
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from cyo_adventure.storybook.evaluator import VarState
     from cyo_adventure.storybook.models import Variable
 
@@ -41,6 +43,7 @@ def validate_reading_state(
     path: list[str],
     visit_set: list[str],
     choice_path: list[str] | None,
+    save_slots: Mapping[str, object],
 ) -> None:
     """Validate a reading-state save against its pinned version blob.
 
@@ -51,11 +54,13 @@ def validate_reading_state(
         path: The submitted ordered node path.
         visit_set: The submitted visited-node ids.
         choice_path: The ordered choice ids taken, or ``None`` to skip replay.
+        save_slots: The submitted named save-slot map. Must be empty; see
+            :func:`_check_save_slots`.
 
     Raises:
         ValidationError: If the blob is corrupt at rest, the state is structurally
-            invalid, or (when ``choice_path`` is given) a replay does not reproduce
-            the submitted state.
+            invalid, a save slot is present, or (when ``choice_path`` is given) a
+            replay does not reproduce the submitted state.
     """
     # #CRITICAL: data integrity: this is the ONLY gate on the reading-state write
     # path; without it a client could persist an arbitrary node id or variable key
@@ -63,9 +68,53 @@ def validate_reading_state(
     # #VERIFY: structural floor runs unconditionally; replay runs when choice_path
     # is present. Tests in tests/unit/test_replay.py.
     story = _parse(blob)
+    _check_save_slots(save_slots)
     _check_structure(story, current_node, var_state, path, visit_set)
     if choice_path is not None:
         _check_replay(story, current_node, var_state, path, visit_set, choice_path)
+
+
+def _check_save_slots(save_slots: Mapping[str, object]) -> None:
+    """Reject any save slot, because nothing can produce or consume one yet.
+
+    ``save_slots`` was the only field of the persisted reading state that this
+    gate did not cover, which left it client-writable, server-persisted, and
+    entirely unvalidated. It has no producer and no consumer: the client
+    initialises it to ``{}`` and only ever copies it through
+    (``frontend/src/player/engine.ts``, and ``ReaderPage.tsx`` records that "the
+    engine never mutates it today"), and the server only round-trips it. So the
+    field is attack surface with no function.
+
+    Fail closed rather than invent a shape. ``runtime-semantics.md`` section 5
+    specifies the field normatively as "slot name to snapshot" but never fixes
+    the snapshot's shape, and no producer exists to conform to, so validating
+    slot *contents* would mean inventing a schema here and pinning future work to
+    it. Refusing a non-empty map costs nothing today and turns the moment slots
+    become live into a loud 422 pointing at this function, instead of silently
+    admitting forged state.
+
+    This is the bar ADR-024 Decision 6 sets for any state-restoration input: such
+    a value must be server-validated, not merely persisted.
+
+    Args:
+        save_slots: The submitted named save-slot map.
+
+    Raises:
+        ValidationError: If any slot is present.
+    """
+    # #CRITICAL: security: a slot is a state-restoration input the instant
+    # anything restores from one, and this gate is the only thing standing
+    # between a forged slot and the JSONB column it is written to
+    # (api/reading.py assigns body.save_slots straight onto the row). Whoever
+    # makes slots live must replace this refusal with real per-slot validation,
+    # not delete it.
+    # #VERIFY: tests/unit/test_replay.py::test_non_empty_save_slots_rejected.
+    if save_slots:
+        msg = (
+            "save_slots must be empty: no producer or consumer exists yet, so a "
+            "slot cannot be validated and must not be persisted"
+        )
+        raise ValidationError(msg, field="save_slots", value=sorted(save_slots)[0])
 
 
 def _parse(blob: dict[str, object]) -> Storybook:
