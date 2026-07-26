@@ -48,8 +48,16 @@ the intuitive reading is backwards.
 A14 (`L2-14`), B3 (`SR-9`) and A16-as-a-rule are all validator or CI gates over authored content. Today there
 are 58 skeletons, no published cross-family content to grandfather, no external author to coordinate with, and
 no reader to disrupt. Every month of authoring makes each of these strictly more expensive to adopt, because the
-violating set grows and the fix list grows with it. The 37 `L2-14` violations and the one clone pair are the
+violating set grows and the fix list grows with it. The `L2-14` violation and the one clone pair are the
 owner's own work to fix, which is the cheapest possible remediation posture. **These get more urgent, not less.**
+
+> **Correction (2026-07-26).** An earlier revision of this paragraph said "the 37 `L2-14` violations". That
+> conflated the unscoped count with A14's own band-scoping and overstated the fix list by 36. Re-measured by band:
+> all 37 all-negative-valence decisions sit at **13-16 (4) and 16+ (33)**, and **zero** at 8-11 or 10-13. A14
+> applies the negative-valence reading only at 8-11 and 10-13, where it is therefore **preventive with nothing to
+> fix**, and the `death`/`capture` reading at 13-16 and 16+, where exactly **1** node violates
+> (`the-quiet-harbor-protocol`). So A14's real fix list is one node, which drops its effort from M to S and makes
+> it safe to land blocking on day one rather than advisory-then-flip.
 
 **A19 (added post-#418) belongs in that list for a different reason: it is free because the defect is dormant.**
 No theme contract declares a personalizable slot yet, so no fill carries a sentinel, so stripping them out of the
@@ -221,12 +229,20 @@ instruction. It has three consequences:
 - **A9** takes the fix-or-replace path. A same-series exemption from the in-cell clone rule is **off the table**:
   two books of one series sharing an isomorphic tree is substandard regardless of the narrative continuity that
   explains it.
-- **A8 gains teeth.** The audit may require replacement rather than negotiate an exemption, which makes a
-  stricter threshold viable: `TAU_CELL` (0.05) is the anti-duplication floor, while `TAU_STRUCT` (0.33 in the
-  committed baseline) is described in `floors.py` as the bar for "a genuinely new tree". Under this principle,
-  auditing hand-authored trees at `TAU_STRUCT` is defensible; note `13-16/medium/gamebook` sits at 0.091 and
-  would fail it. Recommend starting at `TAU_CELL` to fix the known duplicate, then evaluating the `TAU_STRUCT`
-  bar as a separate decision with the failing set measured first.
+- **A8 gains teeth.** The audit may require replacement rather than negotiate an exemption.
+  **Threshold decision closed 2026-07-26, on measurement: use `TAU_CELL` = 0.05, blocking, and do not pursue a
+  `TAU_STRUCT` gate.** All 100 in-cell hand-authored pairs across the 28 populated cells were measured with
+  `structural_distance`. At `TAU_CELL` exactly **one** pair fails, the known clone pair at 0.00095, with the
+  next-lowest at 0.09123 and a median of 0.3859. So `TAU_CELL` flags precisely what A9 already intends to fix and
+  nothing else, which means A8 can land blocking immediately with no calibration risk. A `TAU_STRUCT` (0.332507)
+  gate is rejected on two independent grounds: it would fail **27 of 100 pairs across 19 of 28 cells**, which is
+  the whole-class-failure anti-pattern PR #416's AL-051 warns against, and ADR-020's floor-recalibration
+  amendment already made `TAU_STRUCT` **documentation only** ("No longer gates mutants; the anti-clone guarantee
+  is `TAU_CELL` against parent + siblings"), so gating on it would contradict a ratified amendment. Note the
+  baseline's own `clamps` entry already records the 0.000947 pair as the observed same-cell minimum that
+  `TAU_CELL` is set to reject, so A8 is implementing an intent the baseline states rather than choosing a new bar.
+  One scope note: `TAU_CELL` currently gates generated **mutants**; A8's delta is extending it to hand-authored
+  in-cell pairs.
 - **A10** leans to authoring the missing teen `short` skeletons rather than degrading the surface, since a cell
   that 422s is itself substandard. Still needs a call on sequencing, because this is content authoring with
   nothing to fix.
