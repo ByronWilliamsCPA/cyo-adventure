@@ -48,6 +48,7 @@ from cyo_adventure.moderation.stages import (
 )
 from cyo_adventure.publishing import service
 from cyo_adventure.storybook.models import Storybook as StoryModel
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
@@ -134,6 +135,69 @@ async def run_moderation_pipeline(
             )
         )
 
+    # #CRITICAL: security: universal at-rest sentinel-integrity backstop
+    # (Task 6a). Before this check, Variant B ran ONLY inside
+    # _repair_is_adoptable (the repair path), so a cleanly-moderating blob
+    # (e.g. a cyo-author import that never soft-flags) got ZERO automated
+    # sentinel checks. Resolve the story's personalizable-slot set ONCE,
+    # here, against the ORIGINAL blob, before any staging/adoption decision;
+    # REUSE this same resolution for the repair gate below rather than
+    # re-resolving it (avoids a second DB/file lookup per moderation pass).
+    # Fail closed on either an unrecoverable contract (`None`) or a
+    # violation, using the SAME BLOCK-verdict Finding mechanism the
+    # existing invalid-blob path (below) uses to force auto_reject: never
+    # auto-adopt or auto-publish a blob whose sentinel content cannot be
+    # proven safe. Variant B cannot catch a DROPPED sentinel (only a
+    # sibling task's Variant A reorder on the import path can); this is a
+    # forged/unknown/malformed/in-label/in-title backstop, not a full check.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_entry_forged_sentinel_in_clean_blob_routes_to_human_review,
+    # ::test_entry_contract_unrecoverable_routes_to_human_review, and
+    # ::test_clean_story_routes_to_submit (dormancy: a sentinel-free blob
+    # with no GenerationJob on record, `_load`'s default, adds no finding).
+    personalizable_slots = await _personalizable_slot_ids_for_story(session, story_id)
+    if personalizable_slots is None:
+        _logger.warning(
+            "moderation.entry_sentinel_integrity_violation",
+            story_id=story_id,
+            reason="contract_unrecoverable",
+        )
+        report.add(
+            Finding(
+                stage=0,
+                source=Source.PIPELINE,
+                category="sentinel_integrity_violation",
+                verdict=Verdict.BLOCK,
+                message=(
+                    "personalizable-slot contract could not be recovered; "
+                    "failing closed"
+                ),
+            )
+        )
+    else:
+        entry_integrity = check_sentinel_integrity_at_rest(
+            version_row.blob, personalizable_slots
+        )
+        if not entry_integrity.ok:
+            _logger.warning(
+                "moderation.entry_sentinel_integrity_violation",
+                story_id=story_id,
+                reason="violations_found",
+                violations=[
+                    {"node_id": v.node_id, "kind": v.kind, "token": v.token}
+                    for v in entry_integrity.violations
+                ],
+            )
+            report.add(
+                Finding(
+                    stage=0,
+                    source=Source.PIPELINE,
+                    category="sentinel_integrity_violation",
+                    verdict=Verdict.BLOCK,
+                    message="sentinel integrity violated at moderation entry",
+                )
+            )
+
     # #CRITICAL: data-integrity: a corrupted stored blob must not crash the worker
     # and strand the story in draft; an invalid story is force-blocked so it routes
     # to auto_reject (needs_revision) below, preserving the submit-or-reject invariant.
@@ -172,7 +236,21 @@ async def run_moderation_pipeline(
     )
 
     # Soft gate: one bounded auto-repair, then re-moderate once.
-    if report.has_soft_flag and not report.has_hard_block:
+    # #ASSUME: data-integrity: `personalizable_slots is not None` is, in
+    # practice, always true here: a `None` resolution already added a
+    # BLOCK finding above, making `not report.has_hard_block` False. The
+    # explicit check is kept anyway as a second, independent fail-closed
+    # guard (belt-and-suspenders) and to narrow the type for
+    # `_attempt_and_adopt_repair` without a bare `assert` (Bandit B101 in
+    # `src/`).
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_entry_contract_unrecoverable_routes_to_human_review confirms the
+    # repair path is never entered when personalizable_slots is None.
+    if (
+        report.has_soft_flag
+        and not report.has_hard_block
+        and personalizable_slots is not None
+    ):
         report = await _attempt_and_adopt_repair(
             session=session,
             story_id=story_id,
@@ -184,6 +262,7 @@ async def run_moderation_pipeline(
             guarded_review=guarded_review,
             pii=pii,
             independent=independent,
+            personalizable_slots=personalizable_slots,
         )
 
     version_row.moderation_report = report.to_dict()
@@ -233,6 +312,7 @@ async def _attempt_and_adopt_repair(
     guarded_review: ReviewProvider,
     pii: PiiContext,
     independent: bool,
+    personalizable_slots: frozenset[str],
 ) -> ModerationReport:
     """Attempt one bounded auto-repair and adopt it if it re-passes moderation.
 
@@ -251,6 +331,14 @@ async def _attempt_and_adopt_repair(
         guarded_review: The PII-guarded review provider for re-moderation.
         pii: PII context for the egress guard on repair and review prompts.
         independent: Whether the review backend is independent of the generator.
+        personalizable_slots: The story's declared personalizable slot ids,
+            already resolved ONCE by the caller (:func:`run_moderation_pipeline`,
+            Task 6a) via :func:`_personalizable_slot_ids_for_story` for the
+            entry-level sentinel-integrity backstop; reused here rather than
+            re-resolved, so a moderation pass never does the GenerationJob/
+            contract lookup twice. The caller only enters this function when
+            that resolution was non-``None`` (see the caller's own fail-closed
+            guard), so this parameter is never a placeholder guess.
 
     Returns:
         ModerationReport: ``report`` unchanged when no repair was produced,
@@ -267,21 +355,6 @@ async def _attempt_and_adopt_repair(
         max_tokens=_MAX_REPAIR_TOKENS,
     )
     if revised is None:
-        return report
-
-    # #CRITICAL: security: a repair pass must not introduce or relocate a
-    # sentinel a human approved as static (ADR-023 plan 3.3); proving that
-    # needs the story's REAL personalizable-slot-id set, never a guessed
-    # empty one (an empty set would false-flag every genuine sentinel as
-    # `unknown_slot`). When the contract genuinely cannot be recovered, fail
-    # closed: discard the repair exactly like a gate rejection rather than
-    # risk under-flagging a real sentinel.
-    # #VERIFY: _personalizable_slot_ids_for_story's docstring enumerates the
-    # legitimate-empty vs cannot-recover branches; tests/unit/
-    # test_moderation_pipeline.py::test_repair_contract_unrecoverable_is_discarded.
-    personalizable_slots = await _personalizable_slot_ids_for_story(session, story_id)
-    if personalizable_slots is None:
-        _logger.warning("moderation.repair_contract_unrecoverable", story_id=story_id)
         return report
 
     # Re-moderate into a separate report; only adopt it (and persist the
@@ -653,7 +726,21 @@ async def _run_all_stages(
     # #VERIFY: run_moderation_pipeline wraps both calls in try/except ValidationError
     # (initial -> hard-block + auto_reject; repair -> discard the revision).
     story = StoryModel.model_validate(blob)
-    nodes = [(node.id, node.body) for node in story.nodes]
+    # #CRITICAL: data-integrity: strip any personalization sentinel from the
+    # text fed to the classifiers and LLM review stages below (Task 6a),
+    # mirroring moderation/rescreen.py's own strip. Without this, the FIRST
+    # moderation pass would score sentinel-noisy text (`{~SLOTID:Value~}`
+    # literally present in the prompt) while a later rescreen of the same
+    # published content scores stripped text, the exact comparability break
+    # rescreen's strip exists to prevent. This copy is used ONLY for the
+    # classifier/review calls below; `blob` (and thus the persisted
+    # `version_row.blob` the caller holds) is never touched here.
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_classifier_and_review_stage_receive_stripped_sentinel_text asserts
+    # no `{~` reaches either the classifier HTTP body or the review prompts;
+    # dormancy (sentinel-free text) is covered by every other pre-existing
+    # test in this module, which are all unmodified by this change.
+    nodes = [(node.id, strip_sentinels(node.body)) for node in story.nodes]
 
     # #CRITICAL: security: the classifier calls below are a distinct egress path
     # from the LLM review stages (which are protected structurally by

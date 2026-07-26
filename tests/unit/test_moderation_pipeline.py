@@ -261,6 +261,13 @@ async def test_pipeline_locks_storybook_row_for_update(
     so losing the lock here reopens the #129-style race for the worker path:
     a concurrent transition on the same story could read a stale in-memory
     status and clobber the other's write.
+
+    Since Task 6a, ``session.execute`` is awaited a SECOND time on every
+    pass (the entry-level sentinel-integrity backstop's ``GenerationJob``
+    lookup, ``_personalizable_slot_ids_for_story``, now runs unconditionally
+    rather than only inside the repair path), so this locates the STORYBOOK
+    select specifically by its target entity rather than assuming a single
+    ``execute`` call.
     """
     story, version = _story(), _version()
     _load(mock_session, story, version)
@@ -276,8 +283,12 @@ async def test_pipeline_locks_storybook_row_for_update(
         pii=_pii(),
     )
 
-    mock_session.execute.assert_awaited_once()
-    stmt = mock_session.execute.await_args.args[0]
+    assert mock_session.execute.await_count == 2
+    stmt = next(
+        call.args[0]
+        for call in mock_session.execute.await_args_list
+        if call.args[0].column_descriptions[0]["type"] is Storybook
+    )
     where = str(stmt.whereclause)
     assert "storybook" in where.lower()
 
@@ -531,6 +542,169 @@ async def test_invalid_blob_routes_to_auto_reject(
     submit.assert_not_awaited()
     assert bad_version.moderation_report is not None
     assert bad_version.moderation_report["summary"]["hard_block"] is True
+
+
+@pytest.mark.unit
+async def test_entry_forged_sentinel_in_clean_blob_routes_to_human_review(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """(Task 6a) The universal at-rest sentinel-integrity backstop at
+    moderation entry catches a well-formed-but-undeclared sentinel in a
+    CLEANLY-MODERATING blob (no soft flag at all, e.g. a cyo-author import):
+    before this change, Variant B ran only inside the repair path, so a blob
+    that never soft-flags got ZERO automated sentinel checks. No
+    ``GenerationJob`` is wired (``_load``'s dormant default), so the declared
+    personalizable-slot set resolves to the empty set, matching every real
+    skeleton today: the sentinel below is necessarily forged against it.
+    """
+    story, version = _story(), _version()
+    tainted_blob = copy.deepcopy(_BLOB)
+    nodes = cast("list[dict[str, object]]", tainted_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    start_node["body"] = f"{start_node['body']} {wrap('HERO', 'Ada')}"
+    version.blob = tainted_blob
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())  # no soft flag: an otherwise-clean pass
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    assert moderation_report["summary"]["hard_block"] is True
+    categories = {
+        f["category"]
+        for f in cast("list[dict[str, object]]", moderation_report["findings"])
+    }
+    assert "sentinel_integrity_violation" in categories
+    # Never auto-adopted/auto-published: the stored blob is untouched.
+    assert version.blob == tainted_blob
+
+
+@pytest.mark.unit
+async def test_entry_contract_unrecoverable_routes_to_human_review(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """(Task 6a) An unrecoverable personalizable-slot contract (a
+    ``GenerationJob`` naming a ``skeleton_slug`` but missing its
+    ``skeleton_band``) fails the moderation entry closed even for an
+    otherwise completely clean, sentinel-free blob: ``None`` means the entry
+    check cannot prove the blob's sentinel content is safe, so it must never
+    auto-adopt/auto-publish, exactly mirroring the repair gate's own
+    fail-closed posture on the same resolver result.
+    """
+    story, version = _story(), _version()
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug"},  # no skeleton_band
+    )
+    _load(mock_session, story, version, job=job)
+    review_seam(_verdict_review_provider())  # no soft flag: an otherwise-clean pass
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    categories = {
+        f["category"]
+        for f in cast("list[dict[str, object]]", moderation_report["findings"])
+    }
+    assert "sentinel_integrity_violation" in categories
+    assert version.blob == _BLOB
+
+
+@pytest.mark.unit
+async def test_classifier_and_review_stage_receive_stripped_sentinel_text(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """(Task 6a) A node body carrying a sentinel is stripped before it
+    reaches the Stage-0 classifiers AND the LLM review stages, mirroring
+    ``moderation/rescreen.py``'s existing strip. Before this change, initial
+    classifier/review scores were computed on sentinel-noisy text while a
+    later rescreen scored the same content stripped, the exact comparability
+    break rescreen's own strip exists to prevent. The STORED blob is left
+    with the sentinel intact: only the classifier/review INPUT copy is
+    stripped.
+    """
+    story, version = _story(), _version()
+    tainted_blob = copy.deepcopy(_BLOB)
+    nodes = cast("list[dict[str, object]]", tainted_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    start_node["body"] = f"{start_node['body']} {wrap('HERO', 'Ada')}"
+    version.blob = tainted_blob
+    _load(mock_session, story, version)
+
+    captured_classifier_bodies: list[bytes] = []
+
+    def _handler(request: httpx.Request) -> httpx.Response:
+        captured_classifier_bodies.append(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "results": [{"flagged": False, "categories": {}, "category_scores": {}}]
+            },
+        )
+
+    _install_canned_classifier_http(monkeypatch, _handler)
+    provider = _verdict_review_provider()
+    review_seam(provider)
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=Settings(review_provider="mock", openai_api_key="k"),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    assert captured_classifier_bodies, "the classifier HTTP call was never made"
+    for body in captured_classifier_bodies:
+        assert b"{~" not in body
+    for prompt in provider.calls:
+        assert "{~" not in prompt
+    # The stored blob is untouched: only the classifier/review input copy
+    # was stripped, never the persisted blob.
+    assert version.blob == tainted_blob
 
 
 @pytest.mark.unit
@@ -920,6 +1094,13 @@ async def test_repair_contract_unrecoverable_is_discarded(
     fail-closed discarded rather than guessing an empty personalizable-slot
     set, per the brief's NEEDS_CONTEXT posture: an empty guess would falsely
     treat a genuine sentinel as forged.
+
+    Since Task 6a, ``_personalizable_slot_ids_for_story`` is resolved ONCE at
+    moderation entry and reused for the repair gate; the SAME ``None``
+    result that discards the repair now also fails the entry-level backstop
+    closed, so this story routes to ``auto_reject``, not ``submit`` (the
+    pre-Task-6a routing, when only the repair path ever saw this resolver's
+    result).
     """
     story, version = _story(), _version()
     job = GenerationJob(
@@ -947,8 +1128,8 @@ async def test_repair_contract_unrecoverable_is_discarded(
         pii=_pii(),
     )
 
-    submit.assert_awaited_once()
-    auto_reject.assert_not_awaited()
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
     moderation_report = version.moderation_report
     assert moderation_report is not None
     summary = cast("dict[str, object]", moderation_report["summary"])
@@ -977,6 +1158,10 @@ async def test_repair_contract_file_missing_is_discarded_and_routes_to_human_rev
     whole moderation pass. Mirrors
     ``generation/import_story.py::_load_resume_skeleton``'s handling of the
     same resolve-then-load chain.
+
+    Since Task 6a, this same ``None`` resolution also fails the entry-level
+    backstop closed (it is resolved once and reused), so this story routes
+    to ``auto_reject``, not ``submit``.
     """
     story, version = _story(), _version()
     job = GenerationJob(
@@ -1012,8 +1197,8 @@ async def test_repair_contract_file_missing_is_discarded_and_routes_to_human_rev
         pii=_pii(),
     )
 
-    submit.assert_awaited_once()
-    auto_reject.assert_not_awaited()
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
     moderation_report = version.moderation_report
     assert moderation_report is not None
     summary = cast("dict[str, object]", moderation_report["summary"])
