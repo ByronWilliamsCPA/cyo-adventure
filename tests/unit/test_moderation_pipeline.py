@@ -597,6 +597,68 @@ async def test_entry_forged_sentinel_in_clean_blob_routes_to_human_review(
 
 
 @pytest.mark.unit
+async def test_stage0_classifiers_skipped_when_already_hard_blocked_at_entry(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """(Task 6b, Minor efficiency carried from the 6a review) A report that is
+    ALREADY hard-blocked before ``_run_all_stages`` runs (here, the Task 6a
+    moderation-entry sentinel-integrity backstop firing on a forged sentinel
+    in an otherwise-clean blob) must skip the Stage-0 external classifier
+    calls entirely: the verdict is already fixed at auto_reject, so an
+    OpenAI Moderation / Google Perspective call here would be a wasted paid
+    request. ``openai_api_key`` is configured (unlike the sibling entry-
+    backstop tests) precisely so the classifier WOULD be invoked here if the
+    short-circuit were missing or broken.
+    """
+    story, version = _story(), _version()
+    tainted_blob = copy.deepcopy(_BLOB)
+    nodes = cast("list[dict[str, object]]", tainted_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    start_node["body"] = f"{start_node['body']} {wrap('HERO', 'Ada')}"
+    version.blob = tainted_blob
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+
+    classifier_called = {"count": 0}
+
+    def _handler(_request: httpx.Request) -> httpx.Response:
+        classifier_called["count"] += 1
+        return httpx.Response(
+            200,
+            json={
+                "results": [{"flagged": False, "categories": {}, "category_scores": {}}]
+            },
+        )
+
+    _install_canned_classifier_http(monkeypatch, _handler)
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=Settings(review_provider="mock", openai_api_key="k"),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    assert classifier_called["count"] == 0, (
+        "Stage 0 classifiers must not run once a hard block already exists"
+    )
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    assert moderation_report["summary"]["hard_block"] is True
+
+
+@pytest.mark.unit
 async def test_entry_contract_unrecoverable_routes_to_human_review(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,
@@ -659,6 +721,15 @@ async def test_classifier_and_review_stage_receive_stripped_sentinel_text(
     break rescreen's own strip exists to prevent. The STORED blob is left
     with the sentinel intact: only the classifier/review INPUT copy is
     stripped.
+
+    ``_personalizable_slot_ids_for_story`` is patched to declare ``HERO``
+    personalizable (Task 6b): without a declared slot, this fixture's
+    sentinel trips the moderation-entry Variant B backstop (Task 6a) as an
+    ``unknown_slot`` hard block, and Task 6b's Stage-0 short-circuit would
+    then legitimately skip the classifier call this test wants to inspect,
+    which is exactly the case the dedicated
+    ``test_stage0_classifiers_skipped_when_already_hard_blocked_at_entry``
+    test covers instead.
     """
     story, version = _story(), _version()
     tainted_blob = copy.deepcopy(_BLOB)
@@ -667,6 +738,11 @@ async def test_classifier_and_review_stage_receive_stripped_sentinel_text(
     start_node["body"] = f"{start_node['body']} {wrap('HERO', 'Ada')}"
     version.blob = tainted_blob
     _load(mock_session, story, version)
+    monkeypatch.setattr(
+        pipeline_mod,
+        "_personalizable_slot_ids_for_story",
+        AsyncMock(return_value=frozenset({"HERO"})),
+    )
 
     captured_classifier_bodies: list[bytes] = []
 

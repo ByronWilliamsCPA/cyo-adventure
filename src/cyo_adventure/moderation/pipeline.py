@@ -725,6 +725,29 @@ async def _run_all_stages(
             caught here; propagates like a ``guarded_review`` PII trip does,
             so the caller's job-failure/retry handling applies uniformly.
     """
+    # Efficiency (Task 6b, carried from the 6a review): a report that is
+    # ALREADY hard-blocked when this function is entered (e.g. the
+    # moderation-entry sentinel-integrity backstop, Task 6a, or a repeat
+    # invocation on a second pass) has already decided auto_reject; nothing
+    # below this point can change that verdict. Mirrors the
+    # `if report.has_hard_block: return` short-circuit already used between
+    # the LLM stages further down, but applied at entry so the Stage 0
+    # classifier calls (OpenAI Moderation / Google Perspective, real network
+    # egress) are never made for a verdict that is already fixed. Skips the
+    # WHOLE function, not only the classifier loop, since schema validation
+    # and the PII egress check below feed only the classifiers/LLM stages
+    # this skips anyway. Behavior-preserving for the verdict: still
+    # auto_reject either way. Dormant until a hard block can exist before
+    # this call (i.e. once a personalizable contract is live and Task 6a's
+    # backstop can fire).
+    # #VERIFY: tests/unit/test_moderation_pipeline.py::
+    # test_stage0_classifiers_skipped_when_already_hard_blocked_at_entry
+    # asserts the classifier HTTP transport is never reached; the pre-existing
+    # ::test_hard_block_routes_to_auto_reject proves Stage 0 still runs as
+    # before when there is no pre-existing hard block.
+    if report.has_hard_block:
+        return
+
     # #ASSUME: data-integrity: blob was persisted as a valid Storybook JSON;
     # model_validate raises ValidationError if the schema was corrupted at rest.
     # #VERIFY: run_moderation_pipeline wraps both calls in try/except ValidationError
