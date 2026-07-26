@@ -7,8 +7,10 @@ mask, and theme-tag normalization for request-time similarity matching
 (WS-0 design doc section 2.1; supervisor Adjustment 1).
 
 Pure module: stdlib plus ``cyo_adventure.storybook.models`` /
-``cyo_adventure.core.exceptions`` only. Never imports ``db``, ``generation``,
-or ``sqlalchemy`` (WS-0 design doc section 1.1 import rule).
+``cyo_adventure.storybook.sentinels`` / ``cyo_adventure.core.exceptions``
+only. Never imports ``db``, ``generation``, or ``sqlalchemy`` (WS-0 design
+doc section 1.1 import rule). ``storybook.sentinels`` is admitted under the
+same rule: it imports only ``re``, ``typing``, and ``core.exceptions``.
 """
 
 from __future__ import annotations
@@ -22,6 +24,7 @@ from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.storybook.sentinels import strip_sentinels
 
 # Deliberately crude: only needs to identify sentence-initial vs
 # sentence-medial capitalization, not linguistic sentence boundaries
@@ -420,11 +423,29 @@ def extract_entities(
     model = coerce_storybook(story)
     bodies = [node.body for node in model.nodes]
     bodies.extend(choice.label for node in model.nodes for choice in node.choices)
-    return _medial_caps_tokens(bodies) | _brief_declared_entities(brief)
+    # #ASSUME: data integrity: a personalization sentinel's SLOT ID must never
+    # enter the entity set. `{~HERO:Robin~}` tokenizes to `HERO` then `Robin`,
+    # and `HERO` is uppercase at a sentence-medial position, so the medial-caps
+    # scan would otherwise adopt the slot id as if it were a character name.
+    # That is masking a synthetic token instead of a real one, and it displaces
+    # a genuine entity from the set. Stripping to the inner value first makes a
+    # sentinel-bearing fill produce the same entity set as the same fill with
+    # its sentinels already resolved.
+    # #VERIFY: tests/unit/test_diversity_sentinels.py, which asserts entity-set
+    # and distance equality between a sentinel-bearing pair and its resolved
+    # equivalent.
+    stripped = [strip_sentinels(body) for body in bodies]
+    return _medial_caps_tokens(stripped) | _brief_declared_entities(brief)
 
 
 def mask_tokens(text: str, entities: frozenset[str]) -> list[str]:
     """Lowercase, tokenize, and mask every entity token to one placeholder.
+
+    Personalization sentinels are resolved to their inner generic word before
+    tokenizing, so a stored fill carrying ``{~HERO:Robin~}`` yields the same
+    token sequence as the same prose with its sentinels already substituted
+    (ADR-023). Without this, each sentinel contributes an extra ``HERO`` token
+    that shifts every bigram spanning it.
 
     Args:
         text: The prose to mask (typically one node body).
@@ -435,8 +456,14 @@ def mask_tokens(text: str, entities: frozenset[str]) -> list[str]:
         list[str]: Lowercased tokens, with every token whose lowercase form
             is in ``entities`` replaced by :data:`ENTITY_PLACEHOLDER`.
     """
+    # #ASSUME: data integrity: every diversity consumer that tokenizes prose
+    # funnels through here, namely the leaf, lexical and aggregate modules, so
+    # this is the single boundary at which sentinels must be resolved. The
+    # reading-level validator and both moderation entry points already strip at
+    # their own boundaries; diversity was the remaining gate that did not.
+    # #VERIFY: tests/unit/test_diversity_sentinels.py.
     masked: list[str] = []
-    for token in tokenize(text):
+    for token in tokenize(strip_sentinels(text)):
         lowered = token.lower()
         masked.append(ENTITY_PLACEHOLDER if lowered in entities else lowered)
     return masked
