@@ -162,7 +162,20 @@ async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:
     )
     assert result.job.status == "awaiting_manual_fill"
     assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
-    assert result.job.authoring_metadata == {
+    metadata = result.job.authoring_metadata
+    assert metadata is not None
+    # A6/A7: the differentiation signal is persisted so it can reach the fill
+    # prompt. Before this it stopped at a warning string and a log line, so
+    # escalating a request changed nothing about the prose. The axis is drawn
+    # deterministically from the request id, so it is stable per request but not
+    # asserted to a literal here (the library may grow).
+    assert metadata.pop("differentiation_level") == "tree"
+    assert isinstance(metadata.pop("variation_axis"), str)
+    # A first story for this family has no priors to differ from, and carries no
+    # prior premise ever: only published titles and closed-vocabulary tags.
+    assert metadata.pop("prior_titles") == []
+    assert metadata.pop("prior_theme_tags") == []
+    assert metadata == {
         "skeleton_slug": result.skeleton_slug,
         "skeleton_band": "8-11",
         # WS-7 D7: auto-pick persists the in-cell alternatives for the re-route.
@@ -205,7 +218,16 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
     )
     assert result.job.status == "queued"
     assert result.skeleton_slug in _CELL_8_11_SHORT_PROSE
-    assert result.job.authoring_metadata == {
+    metadata = result.job.authoring_metadata
+    assert metadata is not None
+    # A6/A7, same contract as the skill path above: the automated provider must
+    # persist the differentiation signal too, or the fill it queues cannot act
+    # on it.
+    assert metadata.pop("differentiation_level") == "tree"
+    assert isinstance(metadata.pop("variation_axis"), str)
+    assert metadata.pop("prior_titles") == []
+    assert metadata.pop("prior_theme_tags") == []
+    assert metadata == {
         "provider": "anthropic",
         "model": "claude-sonnet-4-6",
         "skeleton_slug": result.skeleton_slug,

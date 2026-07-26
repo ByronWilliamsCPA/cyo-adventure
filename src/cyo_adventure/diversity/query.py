@@ -70,14 +70,18 @@ class StoryNeighbor:
         storybook_id: The prior story's id.
         version: The specific version authored.
         skeleton_slug: The skeleton it was filled from, or None.
-        theme_similarity: Jaccard similarity vs the request's theme
-            signature.
+        theme_similarity: **Containment** of the request's signature by this
+            story's (A2), not Jaccard: of what the reader asked for, how much
+            this story already gives them. Asymmetric, so it is not a distance.
+        title: The published title, carried so a later fill can be told what to
+            differ FROM without being told what those stories said (A6).
     """
 
     storybook_id: str
     version: int
     skeleton_slug: str | None
     theme_similarity: float
+    title: str = ""
 
 
 class DifferentiationLevel(StrEnum):
@@ -161,6 +165,7 @@ def score_history(
             version=entry.version,
             skeleton_slug=entry.skeleton_slug,
             theme_similarity=similarity,
+            title=entry.title,
         )
         for entry, similarity in ranked[:_MAX_NEIGHBORS]
     )

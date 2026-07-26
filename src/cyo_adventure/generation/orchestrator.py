@@ -723,6 +723,7 @@ async def fill_skeleton(
     review_stage1_model: str | None = None,
     prep_model: str | None = None,
     slot_bindings: Mapping[str, str] | None = None,
+    differentiation_directive: str = "",
 ) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Stage B': Fill -> Repair).
 
@@ -821,7 +822,11 @@ async def fill_skeleton(
             json.dumps(theme_brief),
         )
         if slot_bindings is not None
-        else build_fill_prompt(json.dumps(skeleton), json.dumps(theme_brief))
+        else build_fill_prompt(
+            json.dumps(skeleton),
+            json.dumps(theme_brief),
+            differentiation_directive,
+        )
     )
     current_doc, gate_result = await _run_one_stage(
         fill_prompt, provider=guarded_provider, max_tokens=_MAX_TOKENS_PROSE

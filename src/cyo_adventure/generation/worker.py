@@ -44,9 +44,13 @@ from cyo_adventure.db.models import (
 from cyo_adventure.diversity.normalize import theme_signature
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.authoring_metadata import (
+    DIFFERENTIATION_LEVEL_KEY,
+    PRIOR_THEME_TAGS_KEY,
+    PRIOR_TITLES_KEY,
     SKELETON_ALTERNATIVES_KEY,
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
+    VARIATION_AXIS_KEY,
 )
 from cyo_adventure.generation.binding import (
     contract_path_for,
@@ -63,6 +67,7 @@ from cyo_adventure.generation.orchestrator import (
 )
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.prompts import build_differentiation_directive
 from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.generation.series_link import (
     embed_series_block,
@@ -70,6 +75,7 @@ from cyo_adventure.generation.series_link import (
 )
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
+from cyo_adventure.generation.variation import axis_for_key
 from cyo_adventure.middleware.correlation import (
     generate_correlation_id,
     set_correlation_id,
@@ -736,6 +742,51 @@ async def _bind_or_reroute(
     )
 
 
+def _differentiation_directive(authoring: Mapping[str, object]) -> str:
+    """Build the trusted fill directive from a job's authoring metadata (A6, A7).
+
+    Reads only pipeline-written keys. In particular it never reads a prior
+    story's premise, because no such key is persisted: the plan deliberately
+    stores published titles and closed-vocabulary theme tags, so one child's
+    request text can never become an input to another child's fill.
+
+    Args:
+        authoring: The job's ``authoring_metadata``.
+
+    Returns:
+        str: The rendered directive. A job written before these keys existed
+            yields the explicit no-context block rather than an empty string, so
+            an old queued job still renders a complete prompt.
+    """
+    level = authoring.get(DIFFERENTIATION_LEVEL_KEY)
+    axis_key = authoring.get(VARIATION_AXIS_KEY)
+    axis = axis_for_key(axis_key) if isinstance(axis_key, str) else None
+    raw_titles = authoring.get(PRIOR_TITLES_KEY)
+    raw_tags = authoring.get(PRIOR_THEME_TAGS_KEY)
+    titles = [t for t in _as_str_list(raw_titles) if t]
+    tags = [t for t in _as_str_list(raw_tags) if t]
+    return build_differentiation_directive(
+        level=level if isinstance(level, str) else None,
+        axis_instruction=axis.instruction if axis is not None else None,
+        prior_titles=titles,
+        prior_theme_tags=tags,
+    )
+
+
+def _as_str_list(value: object) -> list[str]:
+    """Coerce a JSONB value to a list of strings, dropping anything else.
+
+    Args:
+        value: A loosely-typed ``authoring_metadata`` entry.
+
+    Returns:
+        list[str]: The string members, or ``[]`` for any other shape.
+    """
+    if not isinstance(value, list):
+        return []
+    return [item for item in cast("list[object]", value) if isinstance(item, str)]
+
+
 async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Stage B') for one job.
 
@@ -805,6 +856,10 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     review_stage1_model = (
         review_stage1_model if isinstance(review_stage1_model, str) else None
     )
+    # A6/A7: the differentiation signal, which before this reached a warning
+    # string, a log line, and the flywheel trigger, and then stopped. The fill
+    # that could act on it never saw it.
+    differentiation_directive = _differentiation_directive(authoring)
 
     # #CRITICAL: data-integrity: dispatch on sidecar presence (WS-2 design
     # section 5.1). A legacy skeleton (no `<slug>.contract.json`) takes the
@@ -843,6 +898,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             settings=_default_settings,
             review_stage1_model=review_stage1_model,
             prep_model=ctx.prep_model,
+            differentiation_directive=differentiation_directive,
         )
         degraded = _degraded_interpretation(
             theme_brief=theme_brief_dict,
@@ -914,6 +970,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         ctx.pii,
         settings=_default_settings,
         review_stage1_model=review_stage1_model,
+        differentiation_directive=differentiation_directive,
         prep_model=ctx.prep_model,
         slot_bindings=result.bindings,
     )

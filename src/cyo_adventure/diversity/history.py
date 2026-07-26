@@ -49,6 +49,10 @@ class HistoryEntry:
             ``metadata.themes``.
         created_at: When this version was authored (drives recency
             ordering and the ATG nearest-partner selection in ``query.py``).
+        title: The published story title, read from the blob already selected
+            for its themes. Safe to surface into a later fill prompt (A6): it is
+            content the family already holds, unlike the prior request text,
+            which is another child's words and must never travel.
     """
 
     storybook_id: str
@@ -56,6 +60,7 @@ class HistoryEntry:
     skeleton_slug: str | None
     theme_sig: frozenset[str]
     created_at: datetime
+    title: str = ""
 
 
 def _as_mapping_str_object(value: object) -> Mapping[str, object] | None:
@@ -74,6 +79,22 @@ def _as_mapping_str_object(value: object) -> Mapping[str, object] | None:
             ``None`` when it is not one.
     """
     return cast("Mapping[str, object]", value) if isinstance(value, Mapping) else None
+
+
+def _title_from_blob(blob: object) -> str:
+    """Return the story's published title from its version blob.
+
+    Args:
+        blob: The loosely-typed ``StorybookVersion.blob``.
+
+    Returns:
+        str: The title, or ``""`` when the blob is malformed. Degrades rather
+            than raising, matching how themes are handled two functions down.
+    """
+    if not isinstance(blob, dict):
+        return ""
+    title = cast("dict[str, object]", blob).get("title")
+    return title if isinstance(title, str) else ""
 
 
 def _themes_from_blob(blob: object) -> list[str]:
@@ -187,6 +208,7 @@ async def load_family_history(
                 storybook_id=storybook_id,
                 version=version,
                 skeleton_slug=skeleton_slug,
+                title=_title_from_blob(blob),
                 theme_sig=similarity_signature(
                     _brief_mapping(brief), _themes_from_blob(blob)
                 ),

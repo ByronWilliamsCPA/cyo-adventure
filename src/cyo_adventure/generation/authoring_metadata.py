@@ -25,6 +25,21 @@ SKELETON_BAND_KEY = "skeleton_band"
 # WS-7 D7: the in-cell alternatives the worker's bounded re-route iterates.
 SKELETON_ALTERNATIVES_KEY = "skeleton_alternatives"
 
+# A6/A7: the differentiation signal, persisted so it reaches the fill prompt.
+# Before this, `DifferentiationLevel` reached a warning string, a log line, and
+# the flywheel trigger, and then stopped: the fill that could have acted on it
+# never saw it, which is why escalation had no effect on the prose.
+#
+# PRIOR_TITLES_KEY carries published titles only. It must never carry a prior
+# story's premise or request text: that is another child's words, and routing a
+# sibling's request into this fill's prompt would make one child's phrasing an
+# input to another child's story. Theme tags come from the closed similarity
+# vocabulary, so they are not free text either.
+DIFFERENTIATION_LEVEL_KEY = "differentiation_level"
+VARIATION_AXIS_KEY = "variation_axis"
+PRIOR_TITLES_KEY = "prior_titles"
+PRIOR_THEME_TAGS_KEY = "prior_theme_tags"
+
 
 class SkeletonAuthoringMetadata(TypedDict, total=False):
     """Typed shape of a GenerationJob.authoring_metadata dict.
