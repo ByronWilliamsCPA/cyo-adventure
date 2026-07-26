@@ -68,7 +68,13 @@ from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.report import Finding, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.publishing.state_machine import Status
+from cyo_adventure.storybook.models import Node
 from cyo_adventure.storybook.models import Storybook as StoryModel
+from cyo_adventure.storybook.sentinels import (
+    find_malformed_sentinels,
+    find_sentinels,
+    strip_sentinels,
+)
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import GateResult, run_gate
 
@@ -216,6 +222,96 @@ def _newly_surfaced_reasons(surfaced: list[Finding]) -> list[str]:
     return [f"classifier {f.source.value}/{f.category}: {reason}" for f in surfaced]
 
 
+# #CRITICAL: security: this is a CONTRACT-FREE subset of
+# `check_sentinel_integrity_at_rest` (ADR-023 plan 3.3, sub-task 3b). It
+# detects a malformed near-miss sentinel and a well-formed sentinel misplaced
+# in a choice label, but deliberately does NOT check that a well-formed
+# sentinel's slot id is a declared personalizable slot of this story (the
+# `unknown_slot` check that Variant B's full form performs): rescreen re-reads
+# an already-PUBLISHED blob with no skeleton/contract reference on this path,
+# and the authoritative personalizable-slot declaration for a published book
+# is deferred to the future sentinel manifest (plan line ~434, a later
+# phase), which this task explicitly does not build. When that manifest
+# lands, this function should be replaced by a call to the full
+# `check_sentinel_integrity_at_rest`.
+# #VERIFY: tests/unit/test_rescreen_unit.py::
+# test_malformed_sentinel_flags_rescreen,
+# ::test_sentinel_in_choice_label_flags_rescreen, and
+# ::test_clean_blob_is_not_flagged_by_sentinel_scan.
+def _malformed_sentinel_reasons(text: str, location: str) -> list[str]:
+    """Return one reason string per malformed sentinel-shaped near-miss in ``text``."""
+    return [
+        f"sentinel malformed in {location}: {near_miss!r}"
+        for near_miss in find_malformed_sentinels(text)
+    ]
+
+
+def _choice_label_sentinel_reasons(
+    label: str, *, node_id: str, choice_id: str
+) -> list[str]:
+    """Return reasons for a choice label carrying malformed or well-formed sentinels.
+
+    A choice label must never carry a sentinel, well-formed or not (Task 2),
+    so both a near-miss and a genuine token are reported.
+    """
+    location = f"node {node_id} choice {choice_id} label"
+    reasons = _malformed_sentinel_reasons(label, location)
+    reasons.extend(
+        f"sentinel in choice label: node {node_id} choice {choice_id} (slot {slot_id})"
+        for slot_id, _value in find_sentinels(label)
+    )
+    return reasons
+
+
+def _node_sentinel_corruption_reasons(node: Node) -> list[str]:
+    """Return every sentinel-corruption reason found within one node.
+
+    Args:
+        node: A parsed node from the published story.
+
+    Returns:
+        list[str]: Reasons from the node's body, ending title (if any), and
+        every choice label; empty if the node carries no sentinel corruption.
+    """
+    reasons = _malformed_sentinel_reasons(node.body, f"node {node.id} body")
+    if node.ending is not None:
+        reasons.extend(
+            _malformed_sentinel_reasons(
+                node.ending.title, f"node {node.id} ending title"
+            )
+        )
+    for choice in node.choices:
+        reasons.extend(
+            _choice_label_sentinel_reasons(
+                choice.label, node_id=node.id, choice_id=choice.id
+            )
+        )
+    return reasons
+
+
+def _sentinel_corruption_reasons(story: StoryModel) -> list[str]:
+    """Return reason strings for sentinel corruption-at-rest in a published blob.
+
+    Scans every node body, ending title, and choice label for a malformed
+    sentinel-shaped near-miss, and every choice label for a well-formed
+    sentinel (which must never appear there). See the membership-check
+    deferral note above this function.
+
+    Args:
+        story: The parsed published story.
+
+    Returns:
+        list[str]: One reason string per malformed near-miss or
+        in-choice-label sentinel found; empty if the blob carries no
+        sentinel corruption (including, trivially, a blob with no
+        sentinels at all).
+    """
+    reasons: list[str] = []
+    for node in story.nodes:
+        reasons.extend(_node_sentinel_corruption_reasons(node))
+    return reasons
+
+
 @dataclass(frozen=True, slots=True)
 class _SweepContext:
     """Bundles the sweep-wide, per-book-invariant collaborators into one value.
@@ -308,7 +404,18 @@ async def _rescreen_one(
                     error=f"story blob failed schema validation: {exc}"[:500],
                 )
         else:
-            nodes = [(node.id, node.body) for node in story.nodes]
+            # #CRITICAL: security: a personalizable sentinel (ADR-023 plan
+            # 3.3, ``{~SLOTID:GenericWord~}``) must never reach a classifier
+            # trained on ordinary prose: an unstripped token would read as
+            # unfamiliar noise and could skew a score in either direction,
+            # breaking score comparability across the personalization
+            # migration boundary (plan risk R12, MANDATORY). Only the copy
+            # fed to classification is stripped here; ``version_row.blob``
+            # (the stored, published content) is never mutated.
+            # #VERIFY: tests/unit/test_rescreen_unit.py::
+            # test_classifier_input_is_stripped_of_sentinels and
+            # ::test_sentinel_free_body_is_unaffected_by_strip.
+            nodes = [(node.id, strip_sentinels(node.body)) for node in story.nodes]
             # #CRITICAL: external-resources: run_classifiers is the same
             # helper moderation/pipeline.py uses; a missing key skips that
             # classifier entirely (both None -> []), and a per-call HTTP
@@ -335,6 +442,7 @@ async def _rescreen_one(
             )
             reasons.extend(_classifier_block_reasons(classifier_findings))
             reasons.extend(_newly_surfaced_reasons(surfaced))
+            reasons.extend(_sentinel_corruption_reasons(story))
 
         outcome: Outcome = "flagged" if reasons else "passed"
         block_count = sum(1 for f in classifier_findings if f.verdict is Verdict.BLOCK)

@@ -14,10 +14,18 @@ from pydantic import ValidationError
 from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import ResourceNotFoundError
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.core.exceptions import ValidationError as CoreValidationError
+from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
 from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.generation.authoring_metadata import (
+    SKELETON_BAND_KEY,
+    SKELETON_SLUG_KEY,
+)
+from cyo_adventure.generation.binding import load_contract_for, personalizable_slot_ids
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.pii import assert_prompt_pii_safe
+from cyo_adventure.generation.skeleton import load_skeleton
+from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.leaf_diversity import run_leaf_diversity_check
 from cyo_adventure.moderation.repair import attempt_repair
@@ -42,6 +50,7 @@ from cyo_adventure.publishing import service
 from cyo_adventure.storybook.models import Storybook as StoryModel
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -260,6 +269,21 @@ async def _attempt_and_adopt_repair(
     if revised is None:
         return report
 
+    # #CRITICAL: security: a repair pass must not introduce or relocate a
+    # sentinel a human approved as static (ADR-023 plan 3.3); proving that
+    # needs the story's REAL personalizable-slot-id set, never a guessed
+    # empty one (an empty set would false-flag every genuine sentinel as
+    # `unknown_slot`). When the contract genuinely cannot be recovered, fail
+    # closed: discard the repair exactly like a gate rejection rather than
+    # risk under-flagging a real sentinel.
+    # #VERIFY: _personalizable_slot_ids_for_story's docstring enumerates the
+    # legitimate-empty vs cannot-recover branches; tests/unit/
+    # test_moderation_pipeline.py::test_repair_contract_unrecoverable_is_discarded.
+    personalizable_slots = await _personalizable_slot_ids_for_story(session, story_id)
+    if personalizable_slots is None:
+        _logger.warning("moderation.repair_contract_unrecoverable", story_id=story_id)
+        return report
+
     # Re-moderate into a separate report; only adopt it (and persist the
     # revised blob) if the repair is schema-valid AND passes the deterministic
     # validation gate. A malformed or gate-failing repair is discarded so the
@@ -288,7 +312,10 @@ async def _attempt_and_adopt_repair(
     # through to the pre-repair report's own verdict. Never silently accepts a
     # broken or swapped repair, never auto-publishes.
     if not _repair_is_adoptable(
-        revised=revised, original=version_row.blob, story_id=story_id
+        revised=revised,
+        original=version_row.blob,
+        story_id=story_id,
+        personalizable_slot_ids=personalizable_slots,
     ):
         return report
 
@@ -381,11 +408,15 @@ def _repair_preserves_identity(
 
 
 def _repair_is_adoptable(
-    *, revised: dict[str, object], original: dict[str, object], story_id: str
+    *,
+    revised: dict[str, object],
+    original: dict[str, object],
+    story_id: str,
+    personalizable_slot_ids: frozenset[str],
 ) -> bool:
     """Return ``True`` only if a repaired blob may replace the pre-repair one.
 
-    Two provider-agnostic gates, either failing rejects the swap:
+    Three provider-agnostic gates, any one failing rejects the swap:
 
     1. **Structure re-proven.** The repair prompt asks the generator to preserve
        node ids, choices, and branching structure while revising prose, but
@@ -400,6 +431,13 @@ def _repair_is_adoptable(
        is the exact unreachable-version hazard import_story.py warns about
        (storybook.id no longer matching version.blob.id) and breaks series
        approval (SR-6) when a Tier-1 stub lands in a carries_state chain.
+    3. **Sentinel integrity re-proven (ADR-023 plan 3.3).** The repair prompt
+       (``moderation/repair.py``'s ``_REPAIR_SYSTEM``) asks the generator to
+       preserve any ``{~NAME:Word~}`` sentinel verbatim, but nothing enforces
+       that promise either. A repair that drops, mutates, migrates, forges, or
+       relocates a sentinel into a choice label must be rejected exactly like a
+       gate failure: a human already approved the pre-repair sentinel as
+       static, and a repair pass must never silently alter it.
 
     Rejection is logged and returns ``False``; the caller then keeps the
     pre-repair report and blob, routing to the human guardian intact.
@@ -408,15 +446,21 @@ def _repair_is_adoptable(
         revised: The candidate repaired blob.
         original: The pre-repair blob being protected.
         story_id: The story id, for structured rejection logging.
+        personalizable_slot_ids: The story's declared personalizable slot ids
+            (see :func:`_personalizable_slot_ids_for_story`), passed to
+            :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity_at_rest`.
 
     Returns:
-        ``True`` when the revised blob passes the gate and preserves identity.
+        ``True`` when the revised blob passes the gate, preserves identity,
+        and preserves sentinel integrity.
 
     Notes:
         tests/unit/test_moderation_pipeline.py::
         test_repair_failing_gate_is_discarded_and_routes_to_human_review,
-        ::test_repair_identity_mismatch_is_discarded, and
-        ::test_repair_passing_gate_is_adopted assert all three branches.
+        ::test_repair_identity_mismatch_is_discarded,
+        ::test_repair_passing_gate_is_adopted, and
+        ::test_repair_sentinel_violation_is_discarded_and_routes_to_human_review
+        assert all four branches.
     """
     gate_result = run_gate(revised)
     if gate_result.blocked:
@@ -429,7 +473,97 @@ def _repair_is_adoptable(
     if not _repair_preserves_identity(original, revised):
         _logger.warning("moderation.repair_identity_mismatch", story_id=story_id)
         return False
+    # #CRITICAL: security: a repair pass must not introduce or relocate a
+    # sentinel a human approved as static.
+    # #VERIFY: check_sentinel_integrity_at_rest fail-closed here, mirroring
+    # the fail-closed posture Task 4a wired into
+    # generation/worker.py::_run_skeleton_fill for the fresh-fill path.
+    integrity_result = check_sentinel_integrity_at_rest(
+        revised, personalizable_slot_ids
+    )
+    if not integrity_result.ok:
+        _logger.warning(
+            "moderation.repair_failed_sentinel_integrity",
+            story_id=story_id,
+            violations=[
+                {"node_id": v.node_id, "kind": v.kind, "token": v.token}
+                for v in integrity_result.violations
+            ],
+        )
+        return False
     return True
+
+
+async def _personalizable_slot_ids_for_story(
+    session: AsyncSession, story_id: str
+) -> frozenset[str] | None:
+    """Resolve a story's declared personalizable slot ids for the repair re-check.
+
+    ``StorybookVersion`` carries ``skeleton_slug`` but no band, so the story's
+    matched skeleton is recovered via its ``GenerationJob`` row, mirroring the
+    same provenance chain :func:`~cyo_adventure.generation.worker._run_skeleton_fill`
+    and :mod:`cyo_adventure.generation.import_story` already use.
+    ``GenerationJob.storybook_id`` is not a FK (see that model's docstring);
+    this uses the same degrade-on-missing pattern already established by
+    :mod:`cyo_adventure.story_requests.anchoring` and
+    :mod:`cyo_adventure.covers.service` (oldest job first, ``None`` on no match).
+
+    Args:
+        session: The pipeline's own open async session.
+        story_id: The persisted storybook id under moderation.
+
+    Returns:
+        frozenset[str] | None: The declared personalizable slot ids. An EMPTY
+            frozenset is returned (not a guess) whenever no personalizable
+            slot could legitimately exist for this story: no ``GenerationJob``
+            on record, a ``fresh_generation`` job (no ``skeleton_slug``), or a
+            legacy skeleton with no theme-contract sidecar
+            (:func:`~cyo_adventure.generation.binding.load_contract_for`
+            returns ``None``). ``None`` is returned only when the job DOES
+            carry a ``skeleton_slug`` (so a contract may genuinely declare
+            personalizable slots) but the contract cannot be recovered (a
+            missing ``skeleton_band``, or the skeleton/contract sidecar
+            failing to load): the caller must fail closed rather than risk
+            treating a real sentinel as forged with a guessed empty set.
+    """
+    job = (
+        await session.execute(
+            select(GenerationJob)
+            .where(GenerationJob.storybook_id == story_id)
+            .order_by(GenerationJob.created_at)
+            .limit(1)
+        )
+    ).scalar_one_or_none()
+    if job is None:
+        return frozenset()
+    authoring = (
+        job.authoring_metadata if isinstance(job.authoring_metadata, dict) else {}
+    )
+    slug = authoring.get(SKELETON_SLUG_KEY)
+    if not isinstance(slug, str):
+        return frozenset()
+    band = authoring.get(SKELETON_BAND_KEY)
+    if not isinstance(band, str):
+        _logger.warning(
+            "moderation.repair_contract_band_missing", story_id=story_id, slug=slug
+        )
+        return None
+    try:
+        skeleton_path = resolve_skeleton_path(band, slug)
+        skeleton = load_skeleton(skeleton_path)
+        contract = load_contract_for(skeleton_path, skeleton)
+    except CoreValidationError as exc:
+        _logger.warning(
+            "moderation.repair_contract_load_failed",
+            story_id=story_id,
+            slug=slug,
+            band=band,
+            error=str(exc)[:500],
+        )
+        return None
+    if contract is None:
+        return frozenset()
+    return personalizable_slot_ids(contract)
 
 
 def _overall_verdict(report: ModerationReport) -> str:

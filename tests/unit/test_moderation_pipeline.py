@@ -34,7 +34,7 @@ from sqlalchemy.dialects import postgresql
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import ValidationError as CoreValidationError
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
 from cyo_adventure.diversity.history import HistoryEntry
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
@@ -43,9 +43,15 @@ from cyo_adventure.moderation import pipeline as pipeline_mod
 from cyo_adventure.moderation.leaf_diversity import (
     run_leaf_diversity_check as _real_run_leaf_diversity_check,
 )
+from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.sentinels import wrap
+from cyo_adventure.storybook.theme_contract import SlotScope, SlotSpec, ThemeContract
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
+
+    from sqlalchemy import Select
 
 pytestmark = pytest.mark.asyncio
 
@@ -92,13 +98,29 @@ def _execute_result(value: object) -> MagicMock:
     return result
 
 
-def _load(session: AsyncMock, story: Storybook, version_row: object) -> None:
+def _load(
+    session: AsyncMock,
+    story: Storybook,
+    version_row: object,
+    job: GenerationJob | None = None,
+) -> None:
     """Wire a mock session for the pipeline's locked-load pattern.
 
     The storybook now loads via ``session.execute(...).scalar_one_or_none()``
     (SELECT ... FOR UPDATE); the version row still loads via ``session.get``.
+    ``session.execute`` now also serves the repair path's ``GenerationJob``
+    lookup (``_personalizable_slot_ids_for_story``): the two ``select(...)``
+    statements are distinguished by which ORM entity they target, so a test
+    that never triggers repair is unaffected, and one that does gets ``job``
+    (default ``None``: no job on record, today's dormant default).
     """
-    session.execute = AsyncMock(return_value=_execute_result(story))
+
+    def _execute_side_effect(stmt: Select[tuple[object]]) -> MagicMock:
+        if stmt.column_descriptions[0]["type"] is GenerationJob:
+            return _execute_result(job)
+        return _execute_result(story)
+
+    session.execute = AsyncMock(side_effect=_execute_side_effect)
     session.get = AsyncMock(return_value=version_row)
 
 
@@ -693,6 +715,245 @@ async def test_repair_passing_gate_is_adopted(
     assert version.moderation_report is not None
     assert version.moderation_report["summary"]["repaired"] is True
     assert version.blob == revised_blob
+
+
+# ---------------------------------------------------------------------------
+# ADR-023 plan 3.3 (Task 4b sub-task 2): the repair re-check must not adopt a
+# repair that forges an undeclared sentinel, must fail closed when the
+# story's contract genuinely cannot be recovered, and must still adopt a
+# repair that preserves a genuinely declared sentinel verbatim, using the
+# story's REAL personalizable-slot-id set (never an empty placeholder).
+# ---------------------------------------------------------------------------
+
+
+def _personalizable_contract() -> ThemeContract:
+    """A minimal contract declaring one ``kind="personalizable"`` HERO slot."""
+    return ThemeContract(
+        contract_version=1,
+        skeleton_slug="themed-slug",
+        age_band=AgeBand.BAND_8_11,
+        legacy_lexicon=[],
+        default_binding={"HERO": "Ada"},
+        slots=[
+            SlotSpec(
+                id="HERO",
+                scope=SlotScope.GLOBAL,
+                meaning="the reader's own child, personalized",
+                kind="personalizable",
+                personalization_field="protagonist_first_name",
+                role_safety="protagonist",
+            ),
+        ],
+    )
+
+
+def _personalizable_skeleton() -> dict[str, object]:
+    """A skeleton whose ``{HERO}`` beats token matches `_personalizable_contract`."""
+    return {
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": (
+                    "<<FILL role=setup words=40 beats='The hero, {HERO}, "
+                    "arrives and must choose a path.'>>"
+                ),
+                "choices": [],
+            },
+        ],
+    }
+
+
+def _wire_personalizable_job(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> GenerationJob:
+    """Write a real contract sidecar to ``tmp_path`` and wire the loader seam.
+
+    Mirrors tests/unit/test_worker.py's
+    ``_personalizable_dispatch_contract``/``_personalizable_dispatch_skeleton``
+    pattern: ``resolve_skeleton_path``/``load_skeleton`` are monkeypatched (so
+    no real skeleton file is needed), but ``load_contract_for``'s own sidecar
+    read is the REAL function reading a REAL file, so the contract-loading
+    chain ``_personalizable_slot_ids_for_story`` drives is genuinely exercised
+    end to end, not stubbed out.
+
+    Returns:
+        A ``GenerationJob`` row whose ``authoring_metadata`` names the wired
+        skeleton, ready to pass to ``_load(..., job=...)``.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(
+        _personalizable_contract().model_dump_json().encode("utf-8")
+    )
+
+    monkeypatch.setattr(
+        pipeline_mod, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    monkeypatch.setattr(
+        pipeline_mod, "load_skeleton", lambda _path: _personalizable_skeleton()
+    )
+    return GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={
+            "skeleton_slug": "themed-slug",
+            "skeleton_band": "8-11",
+        },
+    )
+
+
+@pytest.mark.unit
+async def test_repair_preserving_declared_sentinel_is_adopted(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+    tmp_path: Path,
+) -> None:
+    """A repair that copies a declared personalizable sentinel verbatim is
+    still adopted: the new sentinel-integrity re-check (gate 3 of
+    ``_repair_is_adoptable``) must not reject a genuine, unmutated sentinel
+    resolved from the story's REAL contract.
+    """
+    job = _wire_personalizable_job(monkeypatch, tmp_path)
+    sentinel = wrap("HERO", "Ada")
+    original_blob = copy.deepcopy(_BLOB)
+    nodes = cast("list[dict[str, object]]", original_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    start_node["body"] = f"{start_node['body']} {sentinel}"
+
+    story = _story()
+    version = StorybookVersion(
+        storybook_id="s1", version=1, blob=original_blob, model="gen-model"
+    )
+    _load(mock_session, story, version, job=job)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    revised_blob = copy.deepcopy(original_blob)
+    revised_nodes = cast("list[dict[str, object]]", revised_blob["nodes"])
+    revised_start = next(n for n in revised_nodes if n["id"] == "n_start")
+    revised_start["body"] = f"{revised_start['body']} (revised)"
+    generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["repaired"] is True
+    assert version.blob == revised_blob
+    assert sentinel in revised_start["body"]
+
+
+@pytest.mark.unit
+async def test_repair_forged_sentinel_is_discarded_and_routes_to_human_review(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A repair that introduces a well-formed sentinel with NO declared
+    personalizable slot for this story is rejected as ``unknown_slot``,
+    exactly like a gate failure: the pre-repair report and blob are preserved
+    and the job routes to human review, never silent acceptance.
+
+    No ``GenerationJob`` is wired (``_load``'s dormant default), so
+    ``personalizable_slot_ids`` resolves to the empty set, matching every real
+    skeleton today (dormancy fact): any well-formed sentinel a repair
+    introduces is necessarily forged against that empty set.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    revised_blob = copy.deepcopy(_BLOB)
+    nodes = cast("list[dict[str, object]]", revised_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    start_node["body"] = f"{start_node['body']} {wrap('HERO', 'Ada')}"
+    generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["repaired"] is False
+    assert version.blob == _BLOB
+
+
+@pytest.mark.unit
+async def test_repair_contract_unrecoverable_is_discarded(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A ``GenerationJob`` that names a ``skeleton_slug`` but is missing its
+    ``skeleton_band`` cannot be traced to a contract; the repair is
+    fail-closed discarded rather than guessing an empty personalizable-slot
+    set, per the brief's NEEDS_CONTEXT posture: an empty guess would falsely
+    treat a genuine sentinel as forged.
+    """
+    story, version = _story(), _version()
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug"},  # no skeleton_band
+    )
+    _load(mock_session, story, version, job=job)
+    review_seam(_verdict_review_provider(readability_flags_first_pass=True))
+
+    revised_blob: dict[str, object] = {**_BLOB, "title": "The Forest Path (revised)"}
+    generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=generation_provider,
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    summary = cast("dict[str, object]", moderation_report["summary"])
+    assert summary["repaired"] is False
+    assert version.blob == _BLOB
 
 
 @pytest.mark.unit
