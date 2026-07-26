@@ -63,9 +63,16 @@ FLOOR_BASELINE = Path("docs/planning/ws5_floor_baseline.json")
 # #VERIFY: tests/unit/test_incell_clone_audit.py::test_stale_allowlist_entry_fails
 ALLOWLIST: Mapping[tuple[str, str], str] = {
     ("the-harrowstone-keep", "the-sunken-temple"): (
-        "A9: graph-isomorphic brass-lantern books 1 and 2 (550 nodes, 796 "
-        "edges). Bound by ADR-011 section 8's series-retirement addendum, so the "
-        "fix is repair-or-replace-the-series, not retire-one."
+        "A9: brass-lantern books 1 and 2 are structural twins. Measured "
+        "2026-07-26: every `structure_features` field is identical (550 nodes, "
+        "152 endings, 801 choices, max_depth 58, same ending-kind and valence "
+        "histograms, same topology) except `n_effects`, 49 vs 48. Their PROSE is "
+        "not duplicated: 1326 of 1503 slotted surfaces differ, and the "
+        "`structure_fingerprint`s are unequal, so this is a re-skinned skeleton, "
+        "not a copied story. The defect is therefore shape, not text, and the "
+        "resolution is to restructure book 2 while keeping its prose rather than "
+        "to replace it. Bound by ADR-011 section 8's series-retirement addendum, "
+        "so retire-one is unavailable regardless."
     ),
 }
 
