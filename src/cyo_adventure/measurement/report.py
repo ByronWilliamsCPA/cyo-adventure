@@ -244,17 +244,25 @@ def render_markdown(data: ReportData, *, providers: Sequence[str]) -> str:
     if dry_run:
         lines.append(f"**{_DRY_RUN_BANNER}**")
         lines.append(
-            "This run used only the deterministic `mock` provider, which echoes a "
-            "fixed canned story unrelated to any specimen's structure. It proves the "
-            "fixtures -> fill -> integrity-check -> taxonomy -> report pipeline runs "
-            "end to end without a paid call; the numbers below carry no information "
-            "about a real model's sentinel-preservation behavior."
+            " ".join(
+                [
+                    "This run used only the deterministic `mock` provider, which echoes a",
+                    "fixed canned story unrelated to any specimen's structure. It proves the",
+                    "fixtures -> fill -> integrity-check -> taxonomy -> report pipeline runs",
+                    "end to end without a paid call; the numbers below carry no information",
+                    "about a real model's sentinel-preservation behavior.",
+                ]
+            )
         )
         lines.append("")
 
     lines.append(
-        f"Overall first-attempt clean-pass rate: **{data.clean_pass_rate:.1%}** "
-        f"({data.clean_runs}/{data.total_runs}) -> threshold band: **{data.threshold_band}**"
+        " ".join(
+            [
+                f"Overall first-attempt clean-pass rate: **{data.clean_pass_rate:.1%}**",
+                f"({data.clean_runs}/{data.total_runs}) -> threshold band: **{data.threshold_band}**",
+            ]
+        )
     )
     lines.append("")
     lines.append(
@@ -267,8 +275,12 @@ def render_markdown(data: ReportData, *, providers: Sequence[str]) -> str:
     lines.append("| Provider | Clean | Total | Clean-pass rate |")
     lines.append("| --- | --- | --- | --- |")
     lines.extend(
-        f"| {stats.provider} | {stats.clean} | {stats.total} | "
-        f"{stats.clean_pass_rate:.1%} |"
+        " ".join(
+            [
+                f"| {stats.provider} | {stats.clean} | {stats.total} |",
+                f"{stats.clean_pass_rate:.1%} |",
+            ]
+        )
         for stats in data.per_provider
     )
     lines.append("")

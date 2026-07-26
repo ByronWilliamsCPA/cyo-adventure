@@ -104,6 +104,69 @@ def test_malformed_skeletons_argument_errors(
 
 
 @pytest.mark.unit
+def test_unrecognized_provider_exits_cleanly(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """An unrecognized --providers name errors cleanly, not a raw traceback.
+
+    ``build_provider`` raises ``cyo_adventure.core.exceptions.ConfigurationError``
+    (not a ``ValueError`` subclass) for an unrecognized provider name; this
+    exercises the dedicated try/except around the ``_run_all`` fill call.
+    """
+    exit_code = main(
+        [
+            "--providers",
+            "mocks",
+            "--out-dir",
+            str(tmp_path / "results"),
+            "--skeletons",
+            "3-5:puddle-jumping-day",
+            "--count",
+            "1",
+        ]
+    )
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert "error:" in captured.err
+
+
+@pytest.mark.unit
+def test_malformed_skeleton_file_exits_cleanly(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A skeleton file that is not a JSON object errors cleanly.
+
+    ``load_pair`` raises ``TypeError`` for a skeleton file whose JSON root is
+    not an object; this exercises the widened fixture-building except clause
+    (``(OSError, ValueError, ValidationError, TypeError)``).
+    """
+    skeletons_root = tmp_path / "skeletons"
+    band_dir = skeletons_root / "3-5"
+    band_dir.mkdir(parents=True)
+    (band_dir / "bad-skeleton.json").write_text("[]", encoding="utf-8")
+    (band_dir / "bad-skeleton.contract.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(
+        "scripts.measure_sentinel_survival._SKELETONS_ROOT", skeletons_root
+    )
+
+    exit_code = main(
+        [
+            "--providers",
+            "mock",
+            "--out-dir",
+            str(tmp_path / "results"),
+            "--skeletons",
+            "3-5:bad-skeleton",
+        ]
+    )
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert "error:" in captured.err
+
+
+@pytest.mark.unit
 def test_select_fixture_pairs_band_filter() -> None:
     """--band restricts the default fixture set to matching bands only."""
     pairs = _select_fixture_pairs(None, ["3-5", "8-11"])

@@ -57,6 +57,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.config import settings as _default_settings
+from cyo_adventure.core.exceptions import ConfigurationError, ValidationError
 from cyo_adventure.generation.orchestrator import fill_skeleton
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
@@ -282,8 +283,13 @@ async def _run_all(
             record = await _run_trial(specimen, provider, max_repairs=max_repairs)
             if record is None:
                 sys.stderr.write(
-                    f"warning: {provider_name}/{specimen.slug} produced no "
-                    "document; skipped (not a sentinel-survival data point)\n"
+                    " ".join(
+                        [
+                            f"warning: {provider_name}/{specimen.slug} produced no",
+                            "document; skipped (not a sentinel-survival data point)",
+                        ]
+                    )
+                    + "\n"
                 )
                 continue
             trials.append(
@@ -330,14 +336,18 @@ def main(argv: list[str] | None = None) -> int:
             slots_per_story=cast("int", args.slots_per_story),
             count=cast("int", args.count),
         )
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, ValidationError, TypeError) as exc:
         sys.stderr.write(f"error: {exc}\n")
         return 1
 
     providers = cast("list[str]", args.providers)
-    trials = asyncio.run(
-        _run_all(specimens, providers, max_repairs=cast("int", args.max_repairs))
-    )
+    try:
+        trials = asyncio.run(
+            _run_all(specimens, providers, max_repairs=cast("int", args.max_repairs))
+        )
+    except (ConfigurationError, ValidationError) as exc:
+        sys.stderr.write(f"error: {exc}\n")
+        return 1
     if not trials:
         sys.stderr.write("error: no trials produced a fill result\n")
         return 1
@@ -354,8 +364,13 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     sys.stdout.write(
-        f"sentinel-survival: {data.clean_runs}/{data.total_runs} clean "
-        f"({data.clean_pass_rate:.1%}) [{data.threshold_band}] -> {run_dir}\n"
+        " ".join(
+            [
+                f"sentinel-survival: {data.clean_runs}/{data.total_runs} clean",
+                f"({data.clean_pass_rate:.1%}) [{data.threshold_band}] -> {run_dir}",
+            ]
+        )
+        + "\n"
     )
     return 0
 
