@@ -57,7 +57,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.config import settings as _default_settings
-from cyo_adventure.core.exceptions import ConfigurationError, ValidationError
+from cyo_adventure.core.exceptions import (
+    ConfigurationError,
+    ProviderError,
+    ValidationError,
+)
 from cyo_adventure.generation.orchestrator import fill_skeleton
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
@@ -280,7 +284,26 @@ async def _run_all(
     for provider_name in providers:
         provider = build_provider(_default_settings, provider_override=provider_name)
         for specimen in specimens:
-            record = await _run_trial(specimen, provider, max_repairs=max_repairs)
+            try:
+                record = await _run_trial(specimen, provider, max_repairs=max_repairs)
+            # #EDGE: external-resources: a live provider can raise ProviderError
+            # (network/API failure, rate limit) mid-run. Catch it per trial so
+            # one flaky call skips just this specimen instead of aborting the
+            # whole multi-provider run and discarding every trial gathered so
+            # far. The deterministic mock provider never raises this.
+            # #VERIFY: watch stderr for these skips on a live-provider run.
+            except ProviderError as exc:
+                sys.stderr.write(
+                    " ".join(
+                        [
+                            f"warning: {provider_name}/{specimen.slug} provider",
+                            f"error: {exc}; skipped (not a sentinel-survival",
+                            "data point)",
+                        ]
+                    )
+                    + "\n"
+                )
+                continue
             if record is None:
                 sys.stderr.write(
                     " ".join(

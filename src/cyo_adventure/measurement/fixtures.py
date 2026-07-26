@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, cast
 
 from pydantic import ValidationError as PydanticValidationError
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.binding import (
     personalizable_slot_ids,
     render_bound_skeleton,
@@ -245,7 +246,16 @@ def build_specimen(
 
     Returns:
         Specimen: The pre-fill, sentinel-bearing specimen.
+
+    Raises:
+        ValidationError: If ``slots_per_story`` is less than 1. A zero or
+            negative count would flip no slots and yield a specimen with no
+            personalizable sentinels, a degenerate data point that would
+            silently count as a clean pass (nothing to survive).
     """
+    if slots_per_story < 1:
+        msg = "slots_per_story must be a positive integer"
+        raise ValidationError(msg, field="slots_per_story", value=slots_per_story)
     personalized_contract = _personalize_contract(
         contract, slots_per_story=slots_per_story
     )

@@ -101,9 +101,11 @@ class IntegrityViolation:
             blob), ``"malformed"`` (a sentinel-shaped near-miss; see
             `cyo_adventure.storybook.sentinels.find_malformed_sentinels`),
             ``"unknown_slot"`` (Variant B only: a well-formed sentinel whose
-            slot id is not a declared personalizable slot of this story), or
+            slot id is not a declared personalizable slot of this story),
             ``"in_choice_label"`` (a well-formed sentinel found in a choice
-            label, which must never carry one).
+            label, which must never carry one), or ``"in_title"`` (a
+            well-formed sentinel found in the top-level story title, which
+            must never carry one either).
         token: The offending token or text: the full canonical sentinel
             string (``{~SLOTID:Value~}``) for a well-formed token, or the raw
             near-miss substring for a malformed one.
@@ -494,7 +496,7 @@ def _set_diff_violations(
     return violations
 
 
-def _location_for_full_check(surface: str, node_id: str | None) -> str | None:
+def _location_for_full_check(surface: str, node_id: str | None) -> str:
     """Resolve the violation location for a Variant A surface reading.
 
     Args:
@@ -504,15 +506,18 @@ def _location_for_full_check(surface: str, node_id: str | None) -> str | None:
 
     Returns:
         ``_CHOICE_LABEL_LOCATION`` for a choice label, ``_TITLE_LOCATION``
-        for the title; otherwise ``node_id`` (which may be ``None`` when the
-        node has no string id, in which case the caller must skip this
-        surface).
+        for the title; otherwise the node's id, or ``_GLOBAL_LOCATION`` when
+        the node has no string id. An id-less node is still SCANNED (never
+        skipped): falling back to ``<global>`` mirrors the at-rest Variant B
+        resolver and closes a coverage hole where a malformed sentinel in an
+        id-less node would otherwise go unreported. Well-formed blobs always
+        carry a node id, so this is behavior-neutral for every real story.
     """
     if surface == "choice_label":
         return _CHOICE_LABEL_LOCATION
     if surface == "title":
         return _TITLE_LOCATION
-    return node_id
+    return node_id if node_id is not None else _GLOBAL_LOCATION
 
 
 def _surface_violations_full(
@@ -533,8 +538,6 @@ def _surface_violations_full(
     violations: list[IntegrityViolation] = []
     for surface, node_id, text in _iter_surfaces(filled_blob):
         location = _location_for_full_check(surface, node_id)
-        if location is None:
-            continue
         violations.extend(_malformed_violations(text, location))
         if surface == "choice_label":
             violations.extend(_choice_label_sentinel_violations(text, location))

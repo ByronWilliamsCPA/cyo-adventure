@@ -928,9 +928,13 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     # fill, not only personalizable ones: `personalizable_slot_ids` is empty
     # for every contract on disk today (Task 2 added the slot KIND; nothing
     # declares it yet), so `check_sentinel_integrity` derives an empty
-    # expected set and returns `ok=True` with zero violations for all
-    # existing content -- this wiring is a no-op until a personalizable
-    # contract exists. Fails closed on the FIRST trip: the section 3.4
+    # expected set: the dropped/forged/migrated/unknown-slot checks all pass
+    # for existing content. The malformed-near-miss scan does run
+    # unconditionally (it is not gated on the expected set), but it fires only
+    # on genuinely sentinel-shaped tokens (`{~...~}` near-misses) that ordinary
+    # prose never contains, so this wiring stays byte-neutral for all real
+    # sentinel-free content until a personalizable contract exists. Fails
+    # closed on the FIRST trip: the section 3.4
     # one-retry policy is explicitly out of scope here (Task 4b). Skipped
     # when `outcome.storybook` is `None` (the gate blocked with no
     # salvageable doc, `_build_outcome`'s "failed, no doc" branch): there is

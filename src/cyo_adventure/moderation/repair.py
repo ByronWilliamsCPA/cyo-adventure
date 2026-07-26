@@ -40,8 +40,8 @@ _REPAIR_SYSTEM = (
     "{~NAME:Word~}: a family may later personalise these. Every such token must "
     "be preserved character for character, including the braces and tildes: do "
     "not reword it, re-space it, translate it, or drop it, and never move one "
-    "into a choice label. Return ONLY the full revised story JSON, same schema."
-    + _UNTRUSTED_SUFFIX
+    "into a choice label or the story title. Return ONLY the full revised story "
+    "JSON, same schema." + _UNTRUSTED_SUFFIX
 )
 
 
