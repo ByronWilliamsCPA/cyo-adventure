@@ -89,6 +89,7 @@ from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.moderation.classifiers import run_classifiers
+from cyo_adventure.moderation.pipeline import _personalizable_slot_ids_for_story
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.review_provider import (
     build_review_provider,
@@ -99,6 +100,7 @@ from cyo_adventure.moderation.thresholds import load_admin_noise_floor
 from cyo_adventure.publishing.state_machine import Status
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
+from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity_at_rest
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -447,6 +449,40 @@ async def edit_node(
         raise ValidationError(
             msg,
             details={"findings": [f.to_dict() for f in gate_result.report.errors]},
+        )
+
+    # #CRITICAL: security: an admin/guardian edit can drop, forge, or
+    # relocate a personalization sentinel on an already-approved story
+    # undetected (register G6 originally only re-ran the sentinel-blind
+    # deterministic gate above). Re-resolve the story's declared
+    # personalizable-slot set (Task 6a; the SAME resolver the moderation
+    # pipeline's entry backstop and repair gate reuse) and re-check the
+    # EDITED blob at rest. `None` (contract unrecoverable) and a non-ok
+    # result both fail closed here, exactly like the gate-block cap above:
+    # the edit is rejected before anything is persisted, and the mutation
+    # happened on a local copy (`new_blob`) that is simply discarded.
+    # #VERIFY: tests/unit/test_node_edit.py::
+    # test_edit_injecting_forged_sentinel_rejected_and_blob_unchanged,
+    # ::test_edit_leaving_sentinel_in_choice_label_rejected,
+    # ::test_edit_contract_unrecoverable_rejected,
+    # ::test_edit_sentinel_free_still_succeeds (dormancy).
+    personalizable_slots = await _personalizable_slot_ids_for_story(
+        ctx.session, storybook_id
+    )
+    if personalizable_slots is None:
+        msg = "personalizable-slot contract could not be recovered; failing closed"
+        raise ValidationError(msg, details={"reason": "contract_unrecoverable"})
+    integrity_result = check_sentinel_integrity_at_rest(new_blob, personalizable_slots)
+    if not integrity_result.ok:
+        msg = "edited passage introduced a sentinel-integrity violation"
+        raise ValidationError(
+            msg,
+            details={
+                "violations": [
+                    {"node_id": v.node_id, "kind": v.kind, "token": v.token}
+                    for v in integrity_result.violations
+                ]
+            },
         )
 
     # #CRITICAL: external-resources: the review call is network I/O to the
