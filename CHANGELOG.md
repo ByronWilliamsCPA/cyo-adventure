@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.36.0] - 2026-07-26
+
+### Features
+
+- Opt-in story personalization P1+P2 with fail-closed sentinel integrity (ADR-023)
+  ([#418](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/418),
+  [`d99e26d`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/d99e26d93a1f432ada747b5a4a506f1f7e7edbbc))
+
+
 ## [0.35.0] - 2026-07-25
 
 ### Features
@@ -2670,6 +2679,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.36.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.33.1...v0.34.0
 [0.33.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.33.0...v0.33.1
