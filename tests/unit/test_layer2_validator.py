@@ -21,7 +21,7 @@ import pytest
 from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator import layer2
 from cyo_adventure.validator.layer2 import validate_layer2
-from cyo_adventure.validator.report import Severity
+from cyo_adventure.validator.report import Severity, ValidationReport
 
 # ---------------------------------------------------------------------------
 # Fixture helpers
@@ -77,6 +77,7 @@ def _tier2_story(
     variables: list[dict[str, object]],
     story_id: str = "s_tier2",
     ending_count: int = 1,
+    age_band: str = "10-13",
 ) -> Storybook:
     """Build a minimal Tier-2 Storybook."""
     data: dict[str, object] = {
@@ -85,7 +86,7 @@ def _tier2_story(
         "version": 1,
         "title": "Tier-2 Test",
         "metadata": {
-            "age_band": "10-13",
+            "age_band": age_band,
             "reading_level": {"scheme": "flesch_kincaid", "target": 5.0},
             "tier": 2,
             "themes": ["test"],
@@ -845,3 +846,258 @@ def test_l2_13_not_emitted_for_tier1(monkeypatch: pytest.MonkeyPatch) -> None:
     )
     report = validate_layer2(story)
     assert report.findings == []
+
+
+# ---------------------------------------------------------------------------
+# L2-14: no decision may offer only forbidden outcomes
+# ---------------------------------------------------------------------------
+
+
+def _ending(node_id: str, kind: str, valence: str) -> dict[str, object]:
+    """Build an ending node."""
+    return {
+        "id": node_id,
+        "body": "The end.",
+        "is_ending": True,
+        "choices": [],
+        "ending": {
+            "id": f"e_{node_id}",
+            "valence": valence,
+            "kind": kind,
+            "title": "Done",
+        },
+    }
+
+
+def _choice(choice_id: str, target: str, **extra: object) -> dict[str, object]:
+    """Build a choice."""
+    return {"id": choice_id, "label": "Go.", "target": target, **extra}
+
+
+def _l2_14_ids(report: ValidationReport) -> list[str]:
+    """Return the node ids of every L2-14 finding in a report."""
+    return [
+        finding.node_id
+        for finding in report.findings
+        if finding.rule_id == "L2-14" and finding.node_id is not None
+    ]
+
+
+@pytest.mark.unit
+def test_l2_14_all_fatal_decision_is_flagged_at_a_teen_band() -> None:
+    """Two visible options, both death: exactly the owner's forbidden shape."""
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [_choice("c1", "d1"), _choice("c2", "d2")],
+            },
+            _ending("d1", "death", "negative"),
+            _ending("d2", "death", "negative"),
+        ],
+        start="fork",
+        variables=[{"name": "v", "type": "bool", "initial": True}],
+        age_band="16+",
+        ending_count=2,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == ["fork"]
+
+
+@pytest.mark.unit
+def test_l2_14_passes_when_one_option_survives() -> None:
+    """One non-forbidden outcome is enough; the rule is a floor, not a quota."""
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [_choice("c1", "d1"), _choice("c2", "win")],
+            },
+            _ending("d1", "death", "negative"),
+            _ending("win", "success", "positive"),
+        ],
+        start="fork",
+        variables=[{"name": "v", "type": "bool", "initial": True}],
+        age_band="16+",
+        ending_count=2,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == []
+
+
+@pytest.mark.unit
+def test_l2_14_follows_single_choice_corridors() -> None:
+    """A forced corridor to death is not an escape.
+
+    This is what folds the single-choice fatal corridors into the rule and what
+    closes the split-into-corridors loophole: a node-scoped rule would pass this
+    story, and the reader would still be dead either way.
+    """
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [_choice("c1", "hall"), _choice("c2", "stair")],
+            },
+            {"id": "hall", "body": "A hall.", "choices": [_choice("h", "d1")]},
+            {"id": "stair", "body": "A stair.", "choices": [_choice("s", "d2")]},
+            _ending("d1", "death", "negative"),
+            _ending("d2", "capture", "negative"),
+        ],
+        start="fork",
+        variables=[{"name": "v", "type": "bool", "initial": True}],
+        age_band="16+",
+        ending_count=2,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == ["fork"]
+
+
+@pytest.mark.unit
+def test_l2_14_an_intervening_choice_clears_the_finding() -> None:
+    """If the reader gets another real say, the first decision is not a trap."""
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [_choice("c1", "hall"), _choice("c2", "d2")],
+            },
+            {
+                "id": "hall",
+                "body": "A hall.",
+                "choices": [_choice("h1", "d1"), _choice("h2", "win")],
+            },
+            _ending("d1", "death", "negative"),
+            _ending("d2", "death", "negative"),
+            _ending("win", "success", "positive"),
+        ],
+        start="fork",
+        variables=[{"name": "v", "type": "bool", "initial": True}],
+        age_band="16+",
+        ending_count=3,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == []
+
+
+@pytest.mark.unit
+def test_l2_14_setback_is_not_fatal_at_a_teen_band() -> None:
+    """A lose-lose dilemma is legitimate teen design (ADR-011 section 5).
+
+    ``Valence.NEGATIVE`` includes ``setback``, so an unscoped negative-valence
+    rule would forbid a 15-year-old from ever facing one. The teen bands get the
+    narrow death/capture reading precisely to allow this.
+    """
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [_choice("c1", "s1"), _choice("c2", "s2")],
+            },
+            _ending("s1", "setback", "negative"),
+            _ending("s2", "setback", "negative"),
+        ],
+        start="fork",
+        variables=[{"name": "v", "type": "bool", "initial": True}],
+        age_band="16+",
+        ending_count=2,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == []
+
+
+@pytest.mark.unit
+def test_l2_14_setback_is_fatal_at_a_younger_band() -> None:
+    """Below 13-16 the broad negative-valence reading applies."""
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [_choice("c1", "s1"), _choice("c2", "s2")],
+            },
+            _ending("s1", "setback", "negative"),
+            _ending("s2", "setback", "negative"),
+        ],
+        start="fork",
+        variables=[{"name": "v", "type": "bool", "initial": True}],
+        age_band="8-11",
+        ending_count=2,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == ["fork"]
+
+
+@pytest.mark.unit
+def test_l2_14_fires_only_in_the_configuration_where_the_escape_is_gated() -> None:
+    """The gated case, which a declared-choice scan cannot see.
+
+    Mirrors ``the-serpent-vaults`` node ``c22_gate``: the survivable option is
+    conditional, so the reader sees an all-fatal decision exactly when its
+    condition is false. This is why the rule is stated over configurations.
+    """
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [
+                    _choice(
+                        "c_safe",
+                        "win",
+                        condition={"==": [{"var": "has_key"}, True]},
+                    ),
+                    _choice("c1", "d1"),
+                    _choice("c2", "d2"),
+                ],
+            },
+            _ending("win", "success", "positive"),
+            _ending("d1", "death", "negative"),
+            _ending("d2", "death", "negative"),
+        ],
+        start="fork",
+        variables=[{"name": "has_key", "type": "bool", "initial": False}],
+        age_band="16+",
+        ending_count=3,
+    )
+    # has_key is false at the start node, so the survivable option is invisible.
+    assert _l2_14_ids(validate_layer2(story)) == ["fork"]
+
+
+@pytest.mark.unit
+def test_l2_14_single_choice_node_is_not_a_decision() -> None:
+    """A corridor is not a decision, so it is not this rule's concern.
+
+    A one-option node offers no choice to get wrong. The corridor problem is
+    addressed by folding corridors into the *decision* that leads into them, not
+    by flagging each corridor node.
+    """
+    story = _tier2_story(
+        nodes=[
+            {"id": "corridor", "body": "Onward.", "choices": [_choice("c1", "d1")]},
+            _ending("d1", "death", "negative"),
+        ],
+        start="corridor",
+        variables=[{"name": "v", "type": "bool", "initial": True}],
+        age_band="16+",
+        ending_count=1,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == []
+
+
+@pytest.mark.unit
+def test_l2_14_does_not_run_on_tier1() -> None:
+    """Layer 2 is Tier-2 only; the rule inherits that gate."""
+    story = _tier1_story(
+        nodes=[
+            {
+                "id": "fork",
+                "body": "Choose.",
+                "choices": [_choice("c1", "d1"), _choice("c2", "d2")],
+            },
+            _ending("d1", "death", "negative"),
+            _ending("d2", "death", "negative"),
+        ],
+        start="fork",
+        ending_count=2,
+    )
+    assert _l2_14_ids(validate_layer2(story)) == []

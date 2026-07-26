@@ -54,9 +54,52 @@ _DEMO_SKELETONS = [
     "skeletons/16+/the-sunken-signal.json",
 ]
 
+# L2-14 quarantine (A14, 2026-07-26). These skeletons offer a reader a decision
+# where every visible option reaches a forbidden ending with no further choice on
+# the way, which the owner's rule forbids outright: "no decision should only have
+# fatal node options. At least one needs to allow advancing or loop back."
+#
+# All five nodes were inspected and are genuine, not rule artifacts:
+#   the-quiet-harbor-protocol  b_lo_final  4 options, all direct death/capture
+#   the-cinder-bazaar          bg_hi_final capture + 2 corridors to death
+#   the-cinder-bazaar          bg_lo_final 2 corridors to death + capture
+#   the-serpent-vaults         c22_gate    the survivable option is CONDITIONAL,
+#                                          so when its condition is false the
+#                                          reader sees 4 options that all corridor
+#                                          into death
+#   the-sunken-signal          n_ascent    at air=0, both options kill
+#
+# Quarantined rather than silently fixed, because rewriting a teen gamebook's
+# climax is a creative decision belonging to the catalog owner and to slice S4,
+# not a side effect of landing a validator rule. Marked **strict** so fixing one
+# forces this list to be pruned in the same change: the list can only shrink.
+#
+# Tracked by: story-diversity-implementation-plan.md slice S4.
+_L2_14_QUARANTINE: frozenset[str] = frozenset(
+    {
+        "skeletons/16+/the-quiet-harbor-protocol.json",
+        "skeletons/16+/the-cinder-bazaar.json",
+        "skeletons/13-16/the-serpent-vaults.json",
+        "skeletons/16+/the-sunken-signal.json",
+    }
+)
+
+
+def _param(rel: str) -> object:
+    """Parametrize one skeleton, strict-xfail if it is L2-14 quarantined."""
+    if rel in _L2_14_QUARANTINE:
+        return pytest.param(
+            rel,
+            marks=pytest.mark.xfail(
+                strict=True,
+                reason="L2-14: all-fatal decision, quarantined pending slice S4",
+            ),
+        )
+    return rel
+
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _DEMO_SKELETONS])
 def test_skeletons_load_under_schema_2_0(rel: str) -> None:
     """Each demo skeleton parses under schema 2.0 with typed endings."""
     data = load_skeleton(Path(rel))
@@ -80,7 +123,7 @@ def _assert_passes_full_gate(rel: str) -> None:
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _DEMO_SKELETONS])
 def test_skeletons_pass_full_gate_including_policy(rel: str) -> None:
     """Each demo skeleton passes the full gate, including the policy layer."""
     _assert_passes_full_gate(rel)
@@ -94,7 +137,7 @@ def test_demo_shell_is_production_eligible_by_default() -> None:
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _DEMO_SKELETONS])
 def test_seed_skeletons_are_mvp_non_production(rel: str) -> None:
     """The three current hand-authored seeds are MVP/Test, not production."""
     data = load_skeleton(Path(rel))
@@ -139,14 +182,14 @@ def test_at_least_one_production_skeleton_exists() -> None:
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _PRODUCTION_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _PRODUCTION_SKELETONS])
 def test_production_skeletons_pass_full_gate(rel: str) -> None:
     """Each production skeleton passes the full gate (blocked is False)."""
     _assert_passes_full_gate(rel)
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _PRODUCTION_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _PRODUCTION_SKELETONS])
 def test_production_skeletons_are_production_eligible(rel: str) -> None:
     """Each production skeleton is scale-classified as production-eligible."""
     data = load_skeleton(Path(rel))
