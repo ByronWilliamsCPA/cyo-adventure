@@ -244,6 +244,34 @@ Update `validator-rules.md` (the catalog is lockstep-tested, so this is not opti
 (K19's copy dependency, and A11's delivered state), and append to `authoring-lessons-log.md` if #416 has merged by
 then. Confirm no `PL-23`/`PL-24`/`SR-8` reference crept in.
 
+> **S6 DELIVERED 2026-07-26, with two corrections to this paragraph.**
+>
+> **First: "the catalog is lockstep-tested" was false.** No test existed. The only reference to
+> `validator-rules.md` anywhere in the suite was a docstring line in `test_fixtures_validate.py`. That is precisely
+> how the drift below was able to accumulate unnoticed, so the durable fix is not the doc edit but the missing test:
+> `tests/unit/test_validator_rules_catalog.py` now asserts both directions, and a rule id can no longer be enforced
+> in `validator/` while absent from the catalog.
+>
+> **Second: the gap was far larger than L2-14 and SR-9.** Measured, the catalog was missing **L2-13, L2-14, and the
+> entire SR family (SR-1 through SR-7 and SR-9), eight rules and one whole family**, all enforced in code. The SR
+> family is blocking at publish (`publishing/service.py` raises `BusinessLogicError(rule="series_validation")`), so
+> the catalog was silent about a gate that can refuse a book. All are now catalogued, in a new **Series** section,
+> with SR's out-of-`run_gate` position stated in the Pass/Fail table and the rule-application order. Catalog bumped
+> to v1.3.
+>
+> Two other findings fell out of writing the test. **`L2-8` is catalogued but no code emits it**: its named failure
+> is unreachable rather than unimplemented, because `run_gate` early-returns on any L1 error, L1-6 already validates
+> condition operators and types, and `validator/walk.py` has no raise path. Its row now carries **NO ID EMITTED**
+> with that reasoning, and the test accepts that shape alongside **RESERVED**. And the register's `A11` collides
+> with this plan's `A11`: the register's is corpus quality tooling (now part-delivered, still 🟡 because
+> corpus-level *reading-level* drift tooling does not exist), while K19's copy dependency names *this plan's* A11,
+> a `RequestStory.tsx` change that is unstarted. Both are now disambiguated in the register, and the copy dependency
+> is recorded as still open.
+>
+> `PL-23`/`PL-24` confirmed absent from code and catalog. `SR-8` appears only as an explicitly RESERVED row naming
+> PR #416 as its holder. `authoring-lessons-log.md` is **correctly not created**: #416 has not merged, so its
+> precondition is unmet.
+
 ---
 
 ## 4. Rule-ID reservations
