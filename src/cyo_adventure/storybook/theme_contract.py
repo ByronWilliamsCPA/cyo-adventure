@@ -41,6 +41,7 @@ from typing import TYPE_CHECKING, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.storybook.models import AgeBand
 from cyo_adventure.storybook.sentinels import wrap
 from cyo_adventure.validator.slots import validate_slot_bindings
@@ -369,7 +370,13 @@ class ThemeContract(BaseModel):
         for slot_id in sorted(personalizable_ids):
             try:
                 wrap(slot_id, self.default_binding[slot_id])
-            except ValueError as exc:
+            # ``wrap`` now raises ``core.exceptions.ValidationError`` (the
+            # project's domain error), not a built-in ``ValueError``; catch that
+            # exact type here so a bad pinned default is still folded into this
+            # validator's accumulated ``errors`` and re-raised below as the
+            # ``ValueError`` Pydantic v2 requires a ``model_validator`` to raise
+            # (which Pydantic then packages into its own ``ValidationError``).
+            except ValidationError as exc:
                 errors.append(_personalizable_wrap_error_message(slot_id, exc))
         if errors:
             raise ValueError("; ".join(errors))
@@ -392,12 +399,12 @@ def _personalizable_constraint_error_message(violation: SlotViolation) -> str:
     return f"slot {violation.slot_id!r} is kind='personalizable' but its default_binding value violates rule {violation.rule!r}: {violation.message}"
 
 
-def _personalizable_wrap_error_message(slot_id: str, exc: ValueError) -> str:
+def _personalizable_wrap_error_message(slot_id: str, exc: ValidationError) -> str:
     """Return the error message for a `wrap`-rejected personalizable default.
 
     Args:
         slot_id: The personalizable slot whose default value `wrap` rejected.
-        exc: The `ValueError` `wrap` raised.
+        exc: The `ValidationError` `wrap` raised.
 
     Returns:
         A human-readable error message naming the slot and `wrap`'s reason.

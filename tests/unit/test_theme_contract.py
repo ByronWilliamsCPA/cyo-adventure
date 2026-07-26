@@ -19,6 +19,11 @@ from cyo_adventure.storybook.theme_contract import (
     slot_ids,
 )
 
+# Mark every test in this module as a unit test, consistent with the sibling
+# unit-test modules, so it is selected by a `-m unit` run (this file is all
+# synchronous, so no asyncio marker interaction applies).
+pytestmark = pytest.mark.unit
+
 
 def _slot(
     slot_id: str,

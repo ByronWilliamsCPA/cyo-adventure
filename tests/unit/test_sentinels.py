@@ -9,6 +9,7 @@ API's round-trip and validation behavior.
 
 import pytest
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.storybook.sentinels import (
     SENTINEL_RE,
     find_malformed_sentinels,
@@ -102,8 +103,8 @@ class TestWrap:
         ],
     )
     def test_wrap_rejects_bad_slot_id(self, bad_slot_id: str) -> None:
-        """wrap raises ValueError for any slot id not matching [A-Z][A-Z0-9_]*."""
-        with pytest.raises(ValueError, match="slot"):
+        """wrap raises ValidationError for a slot id not matching [A-Z][A-Z0-9_]*."""
+        with pytest.raises(ValidationError, match="slot"):
             wrap(bad_slot_id, "Explorer")
 
     @pytest.mark.parametrize(
@@ -118,24 +119,24 @@ class TestWrap:
         ],
     )
     def test_wrap_rejects_bad_value(self, bad_value: str) -> None:
-        """wrap raises ValueError when value contains a forbidden character."""
-        with pytest.raises(ValueError, match="value"):
+        """wrap raises ValidationError when value contains a forbidden char."""
+        with pytest.raises(ValidationError, match="value"):
             wrap("HERO", bad_value)
 
     def test_wrap_rejects_empty_value(self) -> None:
-        """wrap raises ValueError when value is empty."""
-        with pytest.raises(ValueError, match="empty"):
+        """wrap raises ValidationError when value is empty."""
+        with pytest.raises(ValidationError, match="empty"):
             wrap("HERO", "")
 
     def test_wrap_rejects_trailing_newline_slot_id(self) -> None:
-        """wrap raises ValueError for slot id with trailing newline.
+        """wrap raises ValidationError for slot id with trailing newline.
 
         Regression test for regex anchor bypass: Python's $ matches before a
         trailing newline without re.MULTILINE, so .match("HERO\\n") would
         previously succeed. This must be rejected to prevent unstripped
         sentinels leaking to readers.
         """
-        with pytest.raises(ValueError, match="slot"):
+        with pytest.raises(ValidationError, match="slot"):
             wrap("HERO\n", "Explorer")
 
     def test_wrap_output_always_round_trips(self) -> None:
@@ -264,6 +265,36 @@ class TestFindMalformedSentinels:
         (``{~`` or ``~}``), so none is a candidate attempt.
         """
         assert find_malformed_sentinels(text) == []
+
+    @pytest.mark.parametrize(
+        ("label", "text"),
+        [
+            (
+                "balanced brace pair precedes a stray closer",
+                "Pack {a, b} of gear ~} here",
+            ),
+            (
+                "clean sentinel then balanced brace then stray closer",
+                "A {~X:y~} B {bad} C ~}",
+            ),
+            (
+                "two balanced brace pairs then stray closer",
+                "Use {a} and {b} then ~} done",
+            ),
+        ],
+    )
+    def test_balanced_brace_before_stray_closer_not_reported(
+        self, label: str, text: str
+    ) -> None:
+        """A `~}` after a closed `{...}` pair is prose, not a near-miss.
+
+        Regression guard: the missing-opening-tilde branch must pair a `~}`
+        only with a `{` that is not already closed by a plain `}` before the
+        `~}`. Without the guard, brace-bearing prose false-positives, which
+        would let the at-rest near-miss check newly block a legitimately
+        sentinel-free story and break the dormancy invariant.
+        """
+        assert find_malformed_sentinels(text) == [], label
 
     @pytest.mark.parametrize(
         ("label", "text", "expected_hit"),

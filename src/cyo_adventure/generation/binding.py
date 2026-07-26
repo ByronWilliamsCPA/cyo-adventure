@@ -470,8 +470,11 @@ def _substitute_slotted_surfaces(
             existing (non-personalizable) content renders byte-identically.
 
     Raises:
-        ValueError: If ``wrap`` rejects a personalizable slot's value (e.g.
-            an empty ``default_binding`` entry).
+        ValidationError: If ``wrap`` rejects a personalizable slot's value
+            (e.g. an empty ``default_binding`` entry). ``wrap`` raises a
+            project ``ValidationError``, so this propagates through the
+            generation pipeline's ``except ValidationError`` handlers rather
+            than escaping as a built-in ``ValueError``.
     """
     wrapped = {
         slot_id: (wrap(slot_id, value) if slot_id in personalizable_slots else value)
@@ -643,10 +646,12 @@ def render_bound_skeleton(
         :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`.
 
     Raises:
-        ValidationError: If any post-condition fails.
-        ValueError: If ``wrap`` rejects a personalizable slot's value (e.g.
-            an empty ``default_binding`` entry; see
-            :func:`cyo_adventure.storybook.sentinels.wrap`).
+        ValidationError: If any post-condition fails, or if ``wrap`` rejects a
+            personalizable slot's value (e.g. an empty ``default_binding``
+            entry; see :func:`cyo_adventure.storybook.sentinels.wrap`). Both
+            paths raise a project ``ValidationError``, never a built-in
+            ``ValueError``, so the generation pipeline's ``except
+            ValidationError`` handlers catch either.
     """
     # #CRITICAL: data-integrity: substitution is limited to the three leaf
     # surfaces (beats guidance, ending titles, choice labels) AND every FILL

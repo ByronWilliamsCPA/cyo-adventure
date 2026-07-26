@@ -36,6 +36,8 @@ from __future__ import annotations
 import re
 from typing import NamedTuple
 
+from cyo_adventure.core.exceptions import ValidationError
+
 # The slot id grammar, matching the existing `[A-Z][A-Z0-9_]*` shape used by
 # `cyo_adventure.storybook.theme_contract.SLOT_ID_PATTERN`. Quoted here
 # (rather than imported) to keep this module dependency-light, since later
@@ -69,20 +71,24 @@ def wrap(slot_id: str, value: str) -> str:
         str: The canonical ``{~SLOTID:GenericWord~}`` sentinel token.
 
     Raises:
-        ValueError: If ``slot_id`` does not match ``[A-Z][A-Z0-9_]*``, if
+        ValidationError: If ``slot_id`` does not match ``[A-Z][A-Z0-9_]*``, if
             ``value`` is empty, or if ``value`` contains any of
-            ``{ } < > ' ~``.
+            ``{ } < > ' ~``. A project ``ValidationError`` (not a built-in
+            ``ValueError``) is raised so callers such as
+            :func:`~cyo_adventure.generation.binding.render_bound_skeleton`
+            surface the failure through the same ``except ValidationError``
+            path the rest of the generation pipeline uses.
     """
     if not _SLOT_ID_RE.fullmatch(slot_id):
         msg = f"invalid slot id {slot_id!r}: must match [A-Z][A-Z0-9_]*"
-        raise ValueError(msg)
+        raise ValidationError(msg, field="slot_id", value=slot_id)
     if not value:
         msg = "invalid sentinel value: must not be empty"
-        raise ValueError(msg)
+        raise ValidationError(msg, field="value")
     found = _FORBIDDEN_VALUE_CHARS.intersection(value)
     if found:
         msg = f"invalid sentinel value {value!r}: must not contain {sorted(found)}"
-        raise ValueError(msg)
+        raise ValidationError(msg, field="value", value=value)
     return "{~" + slot_id + ":" + value + "~}"
 
 
@@ -260,7 +266,16 @@ def find_malformed_sentinels(text: str) -> list[str]:
             floor = index
         elif text.startswith("~}", index):
             open_index = text.rfind("{", floor, index)
-            if open_index == -1:
+            # Pair the closer with the nearest preceding `{` only when that
+            # `{` is not already closed by a plain `}` before this `~}`. A
+            # `{...}` brace pair that closes before the `~}` (e.g. ordinary
+            # prose like "Pack {a, b} of gear ~}") is balanced templating,
+            # not a missing-opening-tilde sentinel attempt, so the `~}` is
+            # treated as ordinary text. Without this guard the scan
+            # false-positives on brace-bearing prose, which would let the
+            # at-rest near-miss check newly block a legitimately
+            # sentinel-free story (breaking the dormancy invariant).
+            if open_index == -1 or "}" in text[open_index + 1 : index]:
                 index += 1
                 continue
             hits.append(text[open_index : index + 2])

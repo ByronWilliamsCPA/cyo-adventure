@@ -313,7 +313,7 @@ def test_render_personalizable_slot_with_empty_default_raises() -> None:
     empty_bindings = dict(_FULL_BINDINGS)
     empty_bindings["HERO"] = ""
     personalizable_slots = frozenset({"HERO"})
-    with pytest.raises(ValueError, match="must not be empty"):
+    with pytest.raises(ValidationError, match="must not be empty"):
         render_bound_skeleton(skeleton, empty_bindings, personalizable_slots)
 
 
