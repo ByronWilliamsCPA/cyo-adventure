@@ -99,13 +99,23 @@ whether a book with their own name in it feels new.
 > a from-scratch slotting pass over every beat, ending title, and theme-specific choice label it owns. The
 > distribution is extremely uneven, which is the one piece of good news, because it means the item is divisible:
 > `the-tenfold-siege` is 677 nodes and `the-sunken-temple`/`the-harrowstone-keep` are 550 each (and those two are
-> A9's clone pair, so A9 subsumes their share), while the four smallest are 105, 32, 25, and 11. **One skeleton is
-> delivered:** `the-lost-mitten`, the smallest at 11 nodes, now has a 16-slot contract and passes all six
-> acceptance checks in `scripts/check_theme_contract.py`. It was chosen to prove the toolchain end to end before
-> committing to the large trees, and it did: `scripts/parameterize_skeleton.py` applied the slotting plan with the
-> structural fingerprint unchanged and the gate unblocked. **15 skeletons and 4,330 nodes remain.** This does not
-> change A20's priority argument above; it changes what scheduling it honestly costs, and it should be planned per
-> skeleton rather than as one item.
+> A9's clone pair, so A9 subsumes their share), while the four smallest are 105, 32, 25, and 11. **Two skeletons are
+> delivered:** `the-lost-mitten` (11 nodes, 16 slots) and `the-clocktower-cipher` (25 nodes, 26 slots), both passing
+> all seven acceptance checks in `scripts/check_theme_contract.py`. The first was chosen to prove the toolchain end
+> to end before committing to the large trees, and it did: `scripts/parameterize_skeleton.py` applied each slotting
+> plan with the structural fingerprint unchanged and the gate unblocked. **14 skeletons and 4,305 nodes remain.**
+> This does not change A20's priority argument above; it changes what scheduling it honestly costs, and it should be
+> planned per skeleton rather than as one item.
+>
+> **Two authoring conventions the first two slices settled, worth following for the remaining 14.** First, the
+> article belongs *inside* the slot value (`THRESHOLD` = "the old town clocktower"), matching all 45 existing
+> contracts, which means a slot must never sit sentence-initially or the rendered beat opens lowercase. Four of
+> `the-clocktower-cipher`'s beats did on the first pass and were restructured ("Gruff but kind, {KEEPER} warns ..."
+> rather than "{KEEPER}, gruff but kind, warns ..."). Verify with a zero-count check over rendered surfaces, not by
+> eye. Second, a theme-bearing ending title gets its own `ENDING`-scope `*_TITLE` slot rather than an inline token:
+> `The {CIPHER} Revealed` would render as "The cipher Revealed", so the whole title is the slot. Generic titles
+> ("Too Risky", "A Secret Kept") are left as literal text, though the parameterize script still requires an entry
+> for every ending.
 >
 > **A21 (new, found while doing A20): 273 retired-theme proper nouns are hardcoded into 11 of the 45 skeletons
 > that already have contracts, and the acceptance suite structurally cannot see them.** `legacy_lexicon` is only
