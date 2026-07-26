@@ -59,16 +59,6 @@ owner's own work to fix, which is the cheapest possible remediation posture. **T
 > (`the-quiet-harbor-protocol`). So A14's real fix list is one node, which drops its effort from M to S and makes
 > it safe to land blocking on day one rather than advisory-then-flip.
 >
-> **Third correction (2026-07-26, on fixing it): the fix list is 2 nodes across 2 skeletons, and the reduction came
-> from narrowing my own rule.** The teen-band reading treated `capture` as fatal alongside `death`. That was an
-> implementation choice, not the owner's instruction, which is specific: "a scenario where a user is presented
-> option A and B and both result in death." Measured, the choice was doing real damage: **3 of the 5 violations
-> existed only because of it**, and all three are deliberately authored espionage climaxes whose own beats read
-> "Nothing between her and the closing dark", each offering a survivable `capture`. Capture is that genre's
-> signature ending, not a death, and forbidding it would have rewritten four of the catalog's climaxes to satisfy
-> a rule nobody asked for. Narrowed to `death`, which leaves exactly the two genuine cases, both
-> resource-exhausted bottlenecks. **Both are now fixed and the quarantine is empty** (see A9's row for how).
->
 > **Second correction (2026-07-26, on implementing it): the fix list is 5 nodes across 4 skeletons, not 1.** Both
 > figures above came from a *static, direct-terminal* scan: a decision every one of whose options is itself a
 > forbidden ending node. The rule as A14 actually specifies it follows single-choice corridors and runs over the
@@ -80,6 +70,16 @@ owner's own work to fix, which is the cheapest possible remediation posture. **T
 > MVP tier and therefore excluded from `_production_candidates`, though `load_skeleton` still validates it. All
 > five were inspected and are genuine. Effort stays S for the *rule*; the content fixes are S4 work and the four
 > skeletons are strict-xfail quarantined until then.
+>
+> **Third correction (2026-07-26, on fixing it): the fix list is 2 nodes across 2 skeletons, and the reduction came
+> from narrowing my own rule.** The teen-band reading treated `capture` as fatal alongside `death`. That was an
+> implementation choice, not the owner's instruction, which is specific: "a scenario where a user is presented
+> option A and B and both result in death." Measured, the choice was doing real damage: **3 of the 5 violations
+> existed only because of it**, and all three are deliberately authored espionage climaxes whose own beats read
+> "Nothing between her and the closing dark", each offering a survivable `capture`. Capture is that genre's
+> signature ending, not a death, and forbidding it would have rewritten four of the catalog's climaxes to satisfy
+> a rule nobody asked for. Narrowed to `death`, which leaves exactly the two genuine cases, both
+> resource-exhausted bottlenecks. **Both are now fixed and the quarantine is empty** (see A9's row for how).
 
 **A19 (added post-#418) belonged in that list for a different reason: it was free because the defect was dormant.**
 No theme contract declares a personalizable slot yet, so no fill carries a sentinel, so stripping them out of the
@@ -92,6 +92,38 @@ free, and it does not get cheaper by waiting either.** It is the enabling precon
 skeletons, and personalization is the one perceived-diversity lever that needs no new tree (section 8.1). With one
 test household it is also the item whose benefit is most immediately observable, since the current readers can say
 whether a book with their own name in it feels new.
+
+> **A20 correction (2026-07-26, on starting it): the estimate of M was wrong by an order of magnitude. A20 is a
+> program, not a task.** The measured scope is **4,341 `<<FILL>>` nodes across 16 skeletons, every one of them
+> carrying zero existing `{SLOT}` tokens**, so there is no partial migration to finish anywhere: each skeleton is
+> a from-scratch slotting pass over every beat, ending title, and theme-specific choice label it owns. The
+> distribution is extremely uneven, which is the one piece of good news, because it means the item is divisible:
+> `the-tenfold-siege` is 677 nodes and `the-sunken-temple`/`the-harrowstone-keep` are 550 each (and those two are
+> A9's clone pair, so A9 subsumes their share), while the four smallest are 105, 32, 25, and 11. **One skeleton is
+> delivered:** `the-lost-mitten`, the smallest at 11 nodes, now has a 16-slot contract and passes all six
+> acceptance checks in `scripts/check_theme_contract.py`. It was chosen to prove the toolchain end to end before
+> committing to the large trees, and it did: `scripts/parameterize_skeleton.py` applied the slotting plan with the
+> structural fingerprint unchanged and the gate unblocked. **15 skeletons and 4,330 nodes remain.** This does not
+> change A20's priority argument above; it changes what scheduling it honestly costs, and it should be planned per
+> skeleton rather than as one item.
+>
+> **A21 (new, found while doing A20): 273 retired-theme proper nouns are hardcoded into 11 of the 45 skeletons
+> that already have contracts, and the acceptance suite structurally cannot see them.** `legacy_lexicon` is only
+> ever evaluated against a *proposed slot value* (`validator/slots.py`, the `legacy_lexicon` rule); nothing checks
+> the skeleton's **own** residual text, so a proper noun left un-slotted in a beat, an ending title, or a choice
+> label survives every re-theme intact. The confirming detail is that **every one of the 273 leaked terms already
+> owns a slot on its own contract**, so these are migration misses, not design decisions: `the-clockwork-menagerie`
+> declares `COMPANION` (default "Tock the brass sparrow") and then hardcodes `Follow Tock.` into 12 choice labels;
+> `the-sky-ship-stowaway` declares `SHIP_NAME` and then ships the ending title `The Cirrus Sails On`;
+> `the-pale-road` declares `C05_HAZARD`/`C06_HAZARD`/`C11_HAZARD` and then names those waypoints in 49 ending
+> titles. A looser stem-based scan reports 1,771 hits, but that count includes generic English words that happen to
+> sit in a lexicon (`salt`, `Roll`, `Register`, `Turning`), so **273 is the defensible number and the
+> proper-noun class is the right bar to gate on**; the generic remainder is a judgement call per term, not a
+> defect list. A21 is two pieces of work with very different costs: the *check* is S (a deterministic residual-leak
+> scan over the same surfaces `parameterize_skeleton.py` already parses, added to the catalog drift guard so no
+> future migration can repeat this), and the *fixes* are M and mostly mechanical, but not purely so, because
+> substituting the full slot default is not always the right prose (`Follow Tock.` must not become `Follow Tock the
+> brass sparrow.`). Land the check first, quarantine the 11 skeletons, then drain them.
 
 **A9 is unblocked.** The clone pair can be retired and replaced outright with no migration concern, because the
 only progress recorded against it is test data belonging to the owner's family.

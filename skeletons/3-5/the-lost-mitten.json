@@ -31,107 +31,107 @@
   "nodes": [
     {
       "id": "n_start",
-      "body": "<<FILL role=setup words=85 beats='Pip the fox cub is playing on the snowy hill and notices one red mitten is gone; one bare hand is cold; Pip decides to look for it'>>",
+      "body": "<<FILL role=setup words=85 beats='{HERO} the {HERO_KIND} is playing on the {PLAY_PLACE} and notices one {ITEM_COLOR} {LOST_ITEM} is gone; one bare hand is cold; {HERO} decides to look for it'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pine",
-          "label": "Look under the big pine tree.",
+          "label": "Look under the big {LANDMARK_A}.",
           "target": "n_pine"
         },
         {
           "id": "c_rabbit",
-          "label": "Ask Hoppy the rabbit.",
+          "label": "Ask {FRIEND} the {FRIEND_KIND}.",
           "target": "n_rabbit"
         },
         {
           "id": "c_sled",
-          "label": "Check the sledding track.",
+          "label": "Check the {LANDMARK_B}.",
           "target": "n_sled"
         }
       ]
     },
     {
       "id": "n_pine",
-      "body": "<<FILL role=rising words=80 beats='No mitten under the pine, but Pip spots little footprints in the snow heading toward the creek; a gentle clue, never scary'>>",
+      "body": "<<FILL role=rising words=80 beats='No {LOST_ITEM} under the {LANDMARK_A}, but {HERO} spots little footprints in the snow heading toward the {MEETING_PLACE}; a gentle clue, never scary'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_pine_creek",
-          "label": "Follow the footprints to the creek.",
+          "label": "Follow the footprints to the {MEETING_PLACE}.",
           "target": "n_creek"
         },
         {
           "id": "c_pine_back",
-          "label": "Go back to the snowy hill.",
+          "label": "Go back to the {PLAY_PLACE}.",
           "target": "n_start"
         }
       ]
     },
     {
       "id": "n_rabbit",
-      "body": "<<FILL role=rising words=80 beats='Hoppy the rabbit has not seen the mitten but says she heard birds chirping by the creek about something red'>>",
+      "body": "<<FILL role=rising words=80 beats='{FRIEND} the {FRIEND_KIND} has not seen the {LOST_ITEM} but says she heard {HELPERS} chirping by the {MEETING_PLACE} about something {ITEM_COLOR}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_rabbit_creek",
-          "label": "Hop down to the creek.",
+          "label": "Hop down to the {MEETING_PLACE}.",
           "target": "n_creek"
         },
         {
           "id": "c_rabbit_back",
-          "label": "Look again on the hill.",
+          "label": "Look again on the {PLAY_PLACE}.",
           "target": "n_start"
         }
       ]
     },
     {
       "id": "n_sled",
-      "body": "<<FILL role=rising words=80 beats='The mitten is not on the sled track, but a single red thread is caught on a twig pointing toward the creek'>>",
+      "body": "<<FILL role=rising words=80 beats='The {LOST_ITEM} is not on the {LANDMARK_B}, but a single {ITEM_COLOR} thread is caught on a twig pointing toward the {MEETING_PLACE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_sled_creek",
-          "label": "Follow the red thread to the creek.",
+          "label": "Follow the {ITEM_COLOR} thread to the {MEETING_PLACE}.",
           "target": "n_creek"
         },
         {
           "id": "c_sled_back",
-          "label": "Try the hill one more time.",
+          "label": "Try the {PLAY_PLACE} one more time.",
           "target": "n_start"
         }
       ]
     },
     {
       "id": "n_creek",
-      "body": "<<FILL role=choice words=85 beats='At the frozen creek Pip sees a flash of red in the snow, hears birds chirping above, and smells warm cocoa from home; three friendly paths'>>",
+      "body": "<<FILL role=choice words=85 beats='At the frozen {MEETING_PLACE} {HERO} sees a flash of {ITEM_COLOR} in the snow, hears {HELPERS} chirping above, and smells warm {HOME_TREAT} from home; three friendly paths'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_creek_red",
-          "label": "Reach for the red thing in the snow.",
+          "label": "Reach for the {ITEM_COLOR} thing in the snow.",
           "target": "n_found"
         },
         {
           "id": "c_creek_birds",
-          "label": "Look up at the chirping birds.",
+          "label": "Look up at the chirping {HELPERS}.",
           "target": "n_birds"
         },
         {
           "id": "c_creek_home",
-          "label": "Follow the smell of cocoa home.",
+          "label": "Follow the smell of {HOME_TREAT} home.",
           "target": "n_cocoa"
         }
       ]
     },
     {
       "id": "n_birds",
-      "body": "<<FILL role=rising words=80 beats='The birds show Pip the red mitten snagged on a low branch, just out of reach; Pip can stretch up or call for help'>>",
+      "body": "<<FILL role=rising words=80 beats='The {HELPERS} show {HERO} the {ITEM_COLOR} {LOST_ITEM} snagged on a low branch, just out of reach; {HERO} can stretch up or call for help'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_birds_lift",
-          "label": "Gently lift the mitten down.",
+          "label": "Gently lift the {LOST_ITEM} down.",
           "target": "n_found"
         },
         {
@@ -143,42 +143,42 @@
     },
     {
       "id": "n_help",
-      "body": "<<FILL role=rising words=80 beats='Pips friends Hoppy and the squirrels make a wobbly, giggly chain to reach the high branch together'>>",
+      "body": "<<FILL role=rising words=80 beats='{HERO}s friends {FRIEND} and the {FRIEND_GROUP} make a wobbly, giggly chain to reach the high branch together'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_help_together",
-          "label": "Reach the mitten together.",
+          "label": "Reach the {LOST_ITEM} together.",
           "target": "n_together"
         }
       ]
     },
     {
       "id": "n_cocoa",
-      "body": "<<FILL role=rising words=80 beats='At home Mama Fox has warm cocoa; as Pip pulls off the snowy boots, something red tumbles out of a boot'>>",
+      "body": "<<FILL role=rising words=80 beats='At home {CAREGIVER} has warm {HOME_TREAT}; as {HERO} pulls off the snowy {OUTER_GEAR}, something {ITEM_COLOR} tumbles out of a {OUTER_GEAR_ONE}'>>",
       "is_ending": false,
       "choices": [
         {
           "id": "c_cocoa_surprise",
-          "label": "See what fell out of the boot.",
+          "label": "See what fell out of the {OUTER_GEAR_ONE}.",
           "target": "n_surprise"
         }
       ]
     },
     {
       "id": "n_found",
-      "body": "<<FILL role=completion words=80 beats='Pip picks up the red mitten and slips it on; both hands are warm again; a happy, cozy resolution'>>",
+      "body": "<<FILL role=completion words=80 beats='{HERO} picks up the {ITEM_COLOR} {LOST_ITEM} and slips it on; both hands are warm again; a happy, cozy resolution'>>",
       "is_ending": true,
       "ending": {
         "id": "e_found",
         "valence": "positive",
         "kind": "completion",
-        "title": "The Red Mitten"
+        "title": "The {ITEM_COLOR} {LOST_ITEM}"
       }
     },
     {
       "id": "n_together",
-      "body": "<<FILL role=completion words=80 beats='The friends lift the mitten down all together and cheer; Pip is warm and grateful for good friends'>>",
+      "body": "<<FILL role=completion words=80 beats='The friends lift the {LOST_ITEM} down all together and cheer; {HERO} is warm and grateful for good friends'>>",
       "is_ending": true,
       "ending": {
         "id": "e_together",
@@ -189,7 +189,7 @@
     },
     {
       "id": "n_surprise",
-      "body": "<<FILL role=ending words=80 beats='The lost mitten was tucked inside Pips boot the whole time; everyone laughs and shares cocoa; a gentle, funny ending'>>",
+      "body": "<<FILL role=ending words=80 beats='The lost {LOST_ITEM} was tucked inside {HERO}s {OUTER_GEAR_ONE} the whole time; everyone laughs and shares {HOME_TREAT}; a gentle, funny ending'>>",
       "is_ending": true,
       "ending": {
         "id": "e_surprise",

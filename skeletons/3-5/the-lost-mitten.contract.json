@@ -1,0 +1,304 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-lost-mitten",
+  "age_band": "3-5",
+  "legacy_lexicon": [
+    "Pip",
+    "fox cub",
+    "Mama Fox",
+    "Hoppy",
+    "rabbit",
+    "mitten",
+    "mittens",
+    "snowy hill",
+    "sledding track",
+    "sled track",
+    "pine tree",
+    "pine",
+    "creek",
+    "cocoa",
+    "squirrels",
+    "boots",
+    "boot"
+  ],
+  "default_binding": {
+    "HERO": "Pip",
+    "HERO_KIND": "fox cub",
+    "CAREGIVER": "Mama Fox",
+    "FRIEND": "Hoppy",
+    "FRIEND_KIND": "rabbit",
+    "FRIEND_GROUP": "squirrels",
+    "HELPERS": "birds",
+    "LOST_ITEM": "mitten",
+    "ITEM_COLOR": "red",
+    "PLAY_PLACE": "snowy hill",
+    "LANDMARK_A": "pine tree",
+    "LANDMARK_B": "sledding track",
+    "MEETING_PLACE": "creek",
+    "HOME_TREAT": "cocoa",
+    "OUTER_GEAR": "boots",
+    "OUTER_GEAR_ONE": "boot"
+  },
+  "slots": [
+    {
+      "id": "HERO",
+      "scope": "global",
+      "meaning": "The young protagonist who loses the item and searches for it.",
+      "guidance": "One small child or child-like animal, named or role-named; capable of solving this alone but glad of help. Read as a possessive in two beats ('{HERO}s friends'), so avoid a name ending in s.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal"
+        ],
+        "distinct_from": [
+          "FRIEND",
+          "CAREGIVER"
+        ]
+      }
+    },
+    {
+      "id": "HERO_KIND",
+      "scope": "global",
+      "meaning": "What kind of creature or child the hero is, read right after their name.",
+      "guidance": "A bare noun phrase that follows 'the' naturally ('fox cub', 'small bear', 'little girl'); never a title or an adjective alone.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "FRIEND_KIND"
+        ]
+      }
+    },
+    {
+      "id": "CAREGIVER",
+      "scope": "global",
+      "meaning": "The trusted adult waiting at home with something warm at the end.",
+      "guidance": "A safe, steady adult of the hero's own household; present only to welcome the hero home, never a source of worry or scolding.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal"
+        ],
+        "distinct_from": [
+          "HERO",
+          "FRIEND"
+        ]
+      }
+    },
+    {
+      "id": "FRIEND",
+      "scope": "global",
+      "meaning": "The named peer the hero can ask for news, who later helps lift the item down.",
+      "guidance": "One friendly peer the hero's own age, named; helpful and cheerful, never a rival and never the reason the item was lost.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "lethal"
+        ],
+        "distinct_from": [
+          "HERO",
+          "CAREGIVER"
+        ]
+      }
+    },
+    {
+      "id": "FRIEND_KIND",
+      "scope": "global",
+      "meaning": "What kind of creature or child the friend is, read right after their name.",
+      "guidance": "A bare noun phrase that follows 'the' naturally, matching HERO_KIND's register. The friend is referred to as 'she' in one beat.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO_KIND"
+        ]
+      }
+    },
+    {
+      "id": "FRIEND_GROUP",
+      "scope": "track",
+      "meaning": "The small crowd of extra friends who join the friend to make a reaching chain.",
+      "guidance": "A plural, playful group who can stack or link up safely; read after 'the' ('squirrels', 'penguin cousins'). Numerous and small, so the chain is funny rather than risky.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal"
+        ],
+        "distinct_from": [
+          "HELPERS"
+        ]
+      }
+    },
+    {
+      "id": "HELPERS",
+      "scope": "track",
+      "meaning": "The chattering creatures overhead who spot the lost item and point the hero to it.",
+      "guidance": "A plural group that lives above head height and can chirp or call; they only give directions, they never take the item or scare the hero.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "lethal"
+        ],
+        "distinct_from": [
+          "FRIEND_GROUP"
+        ]
+      }
+    },
+    {
+      "id": "LOST_ITEM",
+      "scope": "global",
+      "meaning": "The one cherished wearable the whole story is about recovering.",
+      "guidance": "A single small worn item that comes in a pair, so losing one leaves the hero half-warm; harmless, recognizable at a glance, and light enough to snag on a branch.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "toxic"
+        ],
+        "distinct_from": [
+          "OUTER_GEAR",
+          "OUTER_GEAR_ONE"
+        ]
+      }
+    },
+    {
+      "id": "ITEM_COLOR",
+      "scope": "global",
+      "meaning": "The lost item's colour, which is how every clue is recognized.",
+      "guidance": "A bare colour word used as an adjective and also standing alone ('something {ITEM_COLOR}'); one vivid colour that shows against the setting.",
+      "constraints": {
+        "max_words": 2,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "PLAY_PLACE",
+      "scope": "global",
+      "meaning": "The open place the hero was playing when the item went missing, and the hub every search loops back to.",
+      "guidance": "One cheerful outdoor spot with room to run, read after 'the'; safe to return to over and over, with nothing hazardous in it.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "toxic",
+          "lethal"
+        ],
+        "distinct_from": [
+          "MEETING_PLACE",
+          "LANDMARK_A",
+          "LANDMARK_B"
+        ]
+      }
+    },
+    {
+      "id": "LANDMARK_A",
+      "scope": "route",
+      "meaning": "The first thing the hero searches under, near the play place.",
+      "guidance": "A single tall, obvious feature something could be lost under, read after 'the big'; findable without leaving the play area and safe to poke around.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "toxic",
+          "lethal"
+        ],
+        "distinct_from": [
+          "LANDMARK_B",
+          "PLAY_PLACE",
+          "MEETING_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "LANDMARK_B",
+      "scope": "route",
+      "meaning": "The second thing the hero searches, a used play surface where a thread could catch.",
+      "guidance": "A stretch of ground or track the hero plays on, read after 'the' and after 'not on the'; safe to walk and search along.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "toxic",
+          "lethal"
+        ],
+        "distinct_from": [
+          "LANDMARK_A",
+          "PLAY_PLACE",
+          "MEETING_PLACE"
+        ]
+      }
+    },
+    {
+      "id": "MEETING_PLACE",
+      "scope": "global",
+      "meaning": "The place all three searches converge on, where the hero finally sees the item.",
+      "guidance": "One nearby outdoor spot every path can reach on foot, read after 'the' and after 'the frozen'; calm and shallow, never deep or fast water and never a place to fall into.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic",
+          "lethal"
+        ],
+        "distinct_from": [
+          "PLAY_PLACE",
+          "LANDMARK_A",
+          "LANDMARK_B"
+        ]
+      }
+    },
+    {
+      "id": "HOME_TREAT",
+      "scope": "track",
+      "meaning": "The warm thing waiting at home, whose smell is one of the three paths from the meeting place.",
+      "guidance": "One warm food or drink with a smell that carries outdoors; shareable at the end, plain enough for a very young reader to picture.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "toxic"
+        ],
+        "distinct_from": [
+          "LOST_ITEM"
+        ]
+      }
+    },
+    {
+      "id": "OUTER_GEAR",
+      "scope": "track",
+      "meaning": "The snowy outer things the hero pulls off at home, plural.",
+      "guidance": "A plural worn item that comes off at the door and could hide something inside it; must be the plural of OUTER_GEAR_ONE.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "toxic"
+        ],
+        "distinct_from": [
+          "LOST_ITEM"
+        ]
+      }
+    },
+    {
+      "id": "OUTER_GEAR_ONE",
+      "scope": "track",
+      "meaning": "One of the outer things, the hiding place the lost item tumbles out of.",
+      "guidance": "The singular of OUTER_GEAR, read after 'a' and after a possessive; roomy enough that the lost item could sit in it unnoticed all afternoon.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [
+          "weapon",
+          "toxic"
+        ],
+        "distinct_from": [
+          "LOST_ITEM"
+        ]
+      }
+    }
+  ]
+}
