@@ -122,8 +122,8 @@ whether a book with their own name in it feels new.
 > ever evaluated against a *proposed slot value* (`validator/slots.py`, the `legacy_lexicon` rule); nothing checks
 > the skeleton's **own** residual text, so a proper noun left un-slotted in a beat, an ending title, or a choice
 > label survives every re-theme intact. The confirming detail is that **270 of the 273 leaks name a term that
-> already owns a slot on its own contract**, so those are migration misses, not design decisions: `the-clockwork-menagerie`
-> declares `COMPANION` (default "Tock the brass sparrow") and then hardcodes `Follow Tock.` into 12 choice labels;
+> already owns a slot on its own contract**, so those are migration misses, not design decisions:
+> `the-clockwork-menagerie` declares `COMPANION` ("Tock the brass sparrow") then hardcodes `Follow Tock.` in 12 labels;
 > `the-sky-ship-stowaway` declares `SHIP_NAME` and then ships the ending title `The Cirrus Sails On`;
 > `the-pale-road` declares `C05_HAZARD`/`C06_HAZARD`/`C11_HAZARD` and then names those waypoints in 49 ending
 > titles. The other **3 are the expensive kind**: `the-midnight-frequency` names `Okafor` twice and `Kettle` once in
