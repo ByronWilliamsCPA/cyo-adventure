@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, cast
 from sqlalchemy import select
 
 from cyo_adventure.db.models import Concept, GenerationJob, Storybook, StorybookVersion
-from cyo_adventure.diversity.normalize import theme_signature
+from cyo_adventure.diversity.normalize import similarity_signature
 
 if TYPE_CHECKING:
     import uuid
@@ -187,7 +187,7 @@ async def load_family_history(
                 storybook_id=storybook_id,
                 version=version,
                 skeleton_slug=skeleton_slug,
-                theme_sig=theme_signature(
+                theme_sig=similarity_signature(
                     _brief_mapping(brief), _themes_from_blob(blob)
                 ),
                 created_at=created_at,

@@ -21,7 +21,7 @@ from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from cyo_adventure.diversity.history import HistoryEntry, load_family_history
-from cyo_adventure.diversity.normalize import jaccard_similarity, theme_signature
+from cyo_adventure.diversity.normalize import containment, similarity_signature
 
 if TYPE_CHECKING:
     import uuid
@@ -32,8 +32,34 @@ if TYPE_CHECKING:
 # StoryNeighbor list cap (WS-0 design doc section 5.1).
 _MAX_NEIGHBORS = 10
 
-# tau_theme: a prior, not a fitted constant (WS-0 design doc section 5.3).
-_DEFAULT_THEME_THRESHOLD = 0.35
+# tau_theme: re-derived 2026-07-26 for A5, against the A4 premise panel and the
+# committed catalog (scripts/measure_theme_coverage.py). It is still a chosen
+# floor rather than a fitted constant, but the basis changed underneath it twice,
+# so the old 0.35 no longer meant what it was set to mean:
+#
+#   1. A1 replaced the measure's INPUT. The stored side used to carry raw curated
+#      themes the request side could never produce, so a byte-identical premise
+#      scored 0.333 against 0.35 and did not register as similar.
+#   2. A2 replaced the MEASURE. Containment divides by the request, not the
+#      union, so the same match no longer loses points for a story also being
+#      about other things.
+#
+# Measured containment over the panel x catalog (976 pairs): median 0.0000,
+# p90 0.3333, max 1.0000. 0.34 sits just above p90, so it admits a request whose
+# themes are largely delivered while rejecting the long tail of single-tag
+# coincidences. Deliberately NOT tuned to hit a target rate; the number is
+# recorded with its basis so a later change re-derives rather than nudges it.
+_DEFAULT_THEME_THRESHOLD = 0.34
+
+# A3: an upper bound on cell_theme_saturation's escalation signal. With 3-tree
+# cells, saturation pins at 1.0 after three similar reads, which parks the ladder
+# permanently at LEAF/CATALOG and makes the blended weight rank-equivalent to
+# recency alone. That is the mirror image of the inert-signal defect this work
+# exists to fix, and A2 pushes harder toward "similar", so it gets closer sooner.
+# Above this bound the recommendation is reported as saturated rather than
+# escalated, so a caller can tell "this cell is exhausted" from "this request
+# needs a different tree".
+_SATURATION_CEILING = 0.999
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,9 +144,15 @@ def score_history(
             ``cell_slugs`` is empty, ``cell_theme_saturation`` is ``1.0``
             (WS-0 design doc section 5.3: nothing to pick anyway).
     """
+    # #ASSUME: data integrity: containment is asymmetric, so argument order is
+    # load-bearing: the REQUEST is the denominator. Swapping these silently
+    # inverts the question from "how much of what the reader asked for does this
+    # story give them" to "how much of this story did the reader ask for", which
+    # penalises every rich story.
+    # #VERIFY: tests/unit/test_similarity_signature.py::
+    # test_containment_argument_order_is_request_then_story
     scored = [
-        (entry, jaccard_similarity(request_theme_sig, entry.theme_sig))
-        for entry in history
+        (entry, containment(request_theme_sig, entry.theme_sig)) for entry in history
     ]
     ranked = sorted(scored, key=lambda pair: pair[1], reverse=True)
     neighbors = tuple(
@@ -151,7 +183,7 @@ def score_history(
     )
     max_similar_count = max(similar_count_per_slug.values(), default=0)
 
-    if cell_theme_saturation < 1.0:
+    if cell_theme_saturation < _SATURATION_CEILING:
         recommendation = DifferentiationLevel.TREE
     elif max_similar_count < 2:
         recommendation = DifferentiationLevel.LEAF
@@ -194,7 +226,7 @@ async def similarity_context(
         SimilarityContext: The composed request-time similarity picture.
     """
     history = await load_family_history(session, family_id)
-    request_theme_sig = theme_signature(brief)
+    request_theme_sig = similarity_signature(brief)
     return score_history(
         request_theme_sig=request_theme_sig,
         history=history,
