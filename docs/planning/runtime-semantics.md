@@ -14,7 +14,7 @@ source: "tech-spec.md section 'Story Runtime Semantics v1'"
 
 # Story Runtime Semantics v1
 
-> **Status**: Accepted (cross-signed) | **Version**: 1.1 | **Updated**: 2026-07-03
+> **Status**: Accepted (cross-signed) | **Version**: 1.2 | **Updated**: 2026-07-26
 > **Scope**: Tier-1 and Tier-2 stories
 > **Binding on**: Player (TypeScript/XState) and Validator (Python/networkx)
 
@@ -55,7 +55,7 @@ subsequent conditions.
 
 An effect marked `once: true` applies exactly on the first entry to its node. Subsequent visits
 to the same node skip that effect. The record of which nodes have been entered at least once is
-kept in the **implicit visit set**, stored as part of `var_state` (see Section 6: Save Format).
+kept in the **implicit visit set**, stored as part of `var_state` (see Section 5: Save Format).
 
 **Example**: `once: true` is appropriate for "you find the lantern." Re-entering the lantern
 room on a later pass should not set `has_lantern` again (it is already true), but an `inc`
@@ -96,7 +96,7 @@ It is not shown in a disabled or greyed-out state.
 **Implementation requirement**: both the PWA player and the validator's configuration walk must
 use identical condition evaluation. A choice invisible to the validator must be invisible to the
 player; a choice visible to the validator must be visible to the player. Divergence here
-constitutes a conformance failure (see ADR-006 and Section 7: Conformance).
+constitutes a conformance failure (see ADR-006 and Section 10: Cross-Sign).
 
 ---
 
@@ -105,7 +105,7 @@ constitutes a conformance failure (see ADR-006 and Section 7: Conformance).
 **Normative rule**: a save is a point-in-time snapshot. It stores exactly:
 
 | Field | Type | Description |
-|-------|------|-------------|
+| --- | --- | --- |
 | `current_node` | String | Node id at the moment of save |
 | `var_state` | Object | Full variable name-to-value map at the moment of save |
 | `path` | Array of String | Ordered list of node ids visited, from `start_node` to `current_node` |
@@ -114,22 +114,55 @@ constitutes a conformance failure (see ADR-006 and Section 7: Conformance).
 | `version` | Integer | The Storybook `version` this save was taken against |
 | `state_revision` | Integer | The server-side revision counter at save time |
 
-v1 uses snapshots, not an event log. There is no mechanism to reconstruct intermediate states
-from a save.
+v1 uses snapshots, not an event log. A snapshot carries no history of *how* variables reached
+their values, so no intermediate state can be reconstructed by inverting effects. Replaying
+`path` forward from a known origin is a different operation and is permitted: see Section 6.
+
+> **Note (2026-07-26)**: `save_slots` is client-writable and server-persisted but is the only
+> field of this table omitted from `validate_reading_state`
+> (`src/cyo_adventure/api/reading.py`), which defeats the anti-forgery intent stated two lines
+> above it in that file. It is inert while nothing restores from a slot. Tracked as a defect;
+> ADR-024 Decision 6 explains why any future replay origin must not repeat the pattern.
 
 **Constraint**: a save taken against `version` N cannot be used with `version` N+1 (see
 Section 8: Version Pinning).
 
 ---
 
-## 6. No Backtracking in v1
+## 6. Backtracking by Forward Replay
 
-**Normative rule**: the reader moves forward only. There is no "back" button in v1.
+> **Revised 2026-07-26 (v1.2) by [ADR-024](./adr/adr-024-bounded-backtracking-path-replay.md).** This section
+> previously read "there is no 'back' button in v1", on the rationale that backtracking "requires undoing
+> effects, which demands an event-log model rather than a snapshot model". A back button had meanwhile shipped
+> (`frontend/src/reader/Reader.tsx`), so the document and the product disagreed. The rationale is what was
+> wrong: the shipped mechanism never undoes anything, so the snapshot model of Section 5 is preserved and no
+> event log is needed. The prohibition is replaced by the rules below.
 
-**Rationale**: a back button requires undoing effects, which demands an event-log model rather
-than a snapshot model. The complexity is deferred until and unless an event-log model is
-adopted. This is a design constraint, not an implementation shortcut; any Phase-1 back-button
-implementation requires a revision to this document and an ADR.
+**Normative rule**: a reader may return to an earlier point on their own recorded path, and any such state is
+produced **only** by replaying `path` forward from a known origin with known initial variables. Reversing an
+effect, decrementing a counter, or otherwise computing an inverse is prohibited. A state not reachable by
+forward replay is not reachable at all.
+
+**Why this preserves the snapshot model**: a save records `path` (Section 5), so every prefix of that path is
+replayable from the origin. Re-deriving an earlier state needs no history of *how* variables changed, only the
+ordered choices that changed them.
+
+**Availability is fail-closed.** Backtracking is available exactly when there is at least one recorded choice
+(`path.length > 1`) **and** the recorded path replays faithfully, reproducing the live state. Otherwise the
+reader gets no backtracking rather than an incorrect one. This holds for a continuation read, whose origin
+variables are not recoverable: see ADR-024 Decision 6, which keeps continuation backtracking disabled and
+states what enabling it would require.
+
+**What rewinds**: `current_node`, `var_state`, `path`, and `visit_set`, being the product of the choice
+history. **What carries over unchanged**: `state_revision` (owned by the server's concurrency counter) and
+`save_slots` (owned outside the choice history). `version` is unchanged and Section 8 pinning still applies.
+
+**Server impact**: none. A replayed shorter state is indistinguishable from having made fewer choices and
+satisfies the existing structural floor, so backtracking introduces no server contract. The cross-sign for this
+section is player-only.
+
+A bounded multi-hop retry affordance is permitted under ADR-024 Decision 5, as a control distinct from the
+single-step in-story one.
 
 ---
 

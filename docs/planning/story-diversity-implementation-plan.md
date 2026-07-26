@@ -74,6 +74,7 @@ Measured while sequencing. Each is applied in plan v2 as well; recorded here bec
 | **A8 at `TAU_CELL` = 0.05 fails exactly 1 of 100 in-cell pairs** (the known clone at 0.00095; next-lowest 0.09123, median 0.3859) | A8 lands blocking immediately, no advisory-then-flip phase, no calibration risk |
 | **A `TAU_STRUCT` gate is rejected**: it would fail 27 of 100 pairs across 19 of 28 cells, and ADR-020's amendment already made `TAU_STRUCT` documentation-only | Closes the open threshold decision in plan v2 section 6 |
 | **B2 is a blocker, not a parallel docs chore.** `runtime-semantics.md` section 6 forbids a back button and requires "a revision to this document and an ADR" for any Phase-1 implementation. A12 enables that button in more states and A13b extends it to multi-hop | B2 moves ahead of A12, A13b and A18 instead of alongside them |
+| **A12 is not a bug fix, and is deferred.** Found while writing B2's ADR. A continuation read's replay origin is retained nowhere: not on `ReadingState`, not on `Completion`, and only transiently in router state that `series.ts` documents as untrusted. Enabling it needs new durable state, a schema/API/OpenAPI change, and server-side validation of that state, because a replay origin is a state-restoration input | A12 leaves S5 and is reclassified L, deferred. ADR-024 Decision 6 records it as unauthorized with the bar any future decision must meet |
 
 ---
 
@@ -208,9 +209,10 @@ belongs to #416 and A20 should not work around it silently.
    grown-up reads your idea first. Then it takes a little while to write your book." Shuffle is display-only among
    generic names. Serve the guardian set off `ReasonCode` / `band_profile` / `content_nogo`; the kid response
    still omits `content_nogo` values entirely.
-3. **A12** (M): enable Go back in continuation reads. `replayRecordedPath` fails closed when
-   `path[0] !== start_node` (`engine.ts:288-297`), disabling the control in exactly the state-carrying series
-   books where a reader has most to lose. A bug fix.
+3. **A12 is removed from this slice and deferred.** S0 established it is not a bug fix: a continuation read's
+   replay origin is not retained anywhere (see plan v2 A12 and ADR-024 Decision 6), so enabling it needs new
+   durable state plus a schema, API and OpenAPI change, and that state is a state-restoration input that must be
+   server-validated or it becomes a second `save_slots`. It needs its own decision, and A13b does not wait on it.
 4. **A13b** (M): a second, separately labelled ending-screen affordance, "Try a different way", walking up to 3
    hops to the last node offering a real pick and falling back to one step when there is none. Availability stays
    today's `path.length > 1` and replayable, **never** "an untaken choice exists within 3 hops", which would hide

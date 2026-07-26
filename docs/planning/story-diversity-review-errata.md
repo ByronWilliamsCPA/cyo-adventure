@@ -148,6 +148,8 @@ Four independent sources say the mechanism should be path replay, and snapshots 
   forward only. There is no 'back' button in v1... a back button requires undoing effects, which demands an
   **event-log model rather than a snapshot model**... any Phase-1 back-button implementation requires a revision
   to this document and an ADR." The rationale names precisely the defect the consistency reviewer found.
+  **Superseded 2026-07-26**: section 6 was revised into "Backtracking by Forward Replay" by ADR-024. The
+  quotation above is retained as the text this review was conducted against.
 - **The same document, section 5**, specifies `save_slots` normatively as part of the save format, and states
   "There is no mechanism to reconstruct intermediate states from a save" -- the direct contradiction of the
   plan's "snapshots avoid the problem entirely by storing the state rather than re-deriving it."

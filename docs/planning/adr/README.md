@@ -24,7 +24,7 @@ ADRs document significant architectural decisions along with their context and c
 ## ADR Index
 
 | ADR | Title | Status | Date |
-|-----|-------|--------|------|
+| --- | --- | --- | --- |
 | [ADR-001](./adr-001-story-format-json-storybook.md) | Story format is a versioned JSON Storybook graph | Accepted | 2026-06-20 |
 | [ADR-002](./adr-002-client-pwa.md) | Client is a Progressive Web App | Accepted | 2026-06-20 |
 | [ADR-003](./adr-003-frontier-llm-generation.md) | Frontier LLM for generation, local model as fallback | Accepted | 2026-06-20 |
@@ -48,6 +48,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-021](./adr-021-service-account-rls-and-worker-deployment.md) | Dedicated least-privilege service accounts, enforced RLS, and in-repo worker deployment | Proposed | 2026-07-20 |
 | [ADR-022](./adr-022-tiered-rls-scoping.md) | Tiered RLS scoping (flat per-family enforcement on the high-sensitivity tables) | Proposed | 2026-07-24 |
 | [ADR-023](./adr-023-story-personalization-slots.md) | Guardian opt-in story personalization (render-time slot substitution) | Proposed | 2026-07-25 |
+| [ADR-024](./adr-024-bounded-backtracking-path-replay.md) | Bounded backtracking by forward path replay | Accepted | 2026-07-26 |
 
 ## Creating ADRs
 

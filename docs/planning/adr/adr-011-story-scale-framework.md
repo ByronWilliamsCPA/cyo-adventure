@@ -217,6 +217,32 @@ completion->entry links are edges); v1 is a linear chain. Each book independentl
 its own band/length/style/topology gate. Young/tier-1 bands get **episodic** series (no
 state carry). Schema/validator now; series generation is a later phase.
 
+> **Addendum: series retirement (added 2026-07-26, owner decision).** The invariant above creates a
+> promise to the reader, and this addendum protects it on the way out as well as on the way in.
+>
+> **Normative rule: a non-final series book is never retired before its replacement ships in the same
+> release.** `Reader.tsx` offers "Continue the series" on a satisfying ending of a non-final book. If
+> book 2 is withdrawn or materially changed while a reader holds a satisfying ending in book 1, that
+> offer goes quiet with no in-product account, after a teen may have spent hours in a 550-node book
+> and earned carried state.
+>
+> Two consequences follow:
+>
+> 1. **The replacement must accept the predecessor's carried state.** It is not enough for the new
+>    book to pass its own gate; every satisfying-ending state of book N must be an admissible entry
+>    state for the replacement book N+1. This is what validator rule `SR-9` gates.
+> 2. **If it cannot, re-cut the predecessor to `is_final`** so the continuation is never promised in
+>    the first place. Withdrawing the promise is acceptable; leaving it dangling is not.
+>
+> This binds the catalog-disposition principle (retire and replace rather than carry substandard
+> work, recorded in [story-diversity-plan-v2.md](../story-diversity-plan-v2.md) section 6): the
+> principle says a substandard book may be replaced, and this addendum says a non-final series book
+> may not be replaced *alone*. The two are compatible; the series is the unit of replacement.
+>
+> Adopted as a written rule while the catalog has one author and one test household, because it costs
+> nothing now and prevents a habit forming. Enforcement becomes live with the first reader outside
+> that household.
+
 ### 9. Provenance
 
 Cells are tagged by evidence: `8-11` measured (high); `5-8` node counts measured, rest
