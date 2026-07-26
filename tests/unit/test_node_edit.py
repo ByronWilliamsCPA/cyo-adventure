@@ -112,7 +112,7 @@ def _wire_session(
     ``session.execute`` now serves two distinct ``select(...)`` statements:
     the storybook row lookup (``_load_edit_target``) and, since Task 6a's
     at-rest sentinel re-check, the ``GenerationJob`` provenance lookup inside
-    ``_personalizable_slot_ids_for_story``. The two are distinguished by
+    ``personalizable_slot_ids_for_story``. The two are distinguished by
     which ORM entity they target, mirroring
     tests/unit/test_moderation_pipeline.py::_load. Default ``job=None``
     (no job on record) resolves an empty personalizable-slot set: today's
@@ -557,10 +557,15 @@ async def test_edit_leaving_sentinel_in_choice_label_rejected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_edit_contract_unrecoverable_rejected() -> None:
-    """A ``GenerationJob`` with a skeleton_slug but no recoverable band fails
-    closed, mirroring the moderation-entry backstop
-    (test_moderation_pipeline.py::test_entry_contract_unrecoverable_routes_to_human_review).
+async def test_edit_contract_unrecoverable_with_sentinel_rejected() -> None:
+    """An UNRECOVERABLE contract still fails closed when the edited blob bears a
+    sentinel: with no declared slots, any well-formed sentinel is an
+    ``unknown_slot`` violation, so a forged/injected sentinel is rejected
+    exactly as it would be under a recovered contract.
+
+    A ``GenerationJob`` with a skeleton_slug but no recoverable band leaves
+    the personalizable-slot set unrecoverable (``None``), which degrades to an
+    empty declared-slot set for the at-rest check.
     """
     story = _story("in_review")
     version_row = _version_row()
@@ -574,12 +579,43 @@ async def test_edit_contract_unrecoverable_rejected() -> None:
     _wire_session(session, story=story, version_row=version_row, job=job)
     ctx = _ctx("admin", session)
 
-    body = NodeEditBody(body="A perfectly ordinary, sentinel-free edit.")
-    with pytest.raises(ValidationError, match="contract could not be recovered"):
+    body = NodeEditBody(body=f"You reach the gate marked {wrap('HERO', 'Ada')}.")
+    with pytest.raises(ValidationError, match="sentinel"):
         await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
 
     assert version_row.blob is original_blob
     session.add.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_edit_contract_unrecoverable_sentinel_free_succeeds() -> None:
+    """An UNRECOVERABLE contract must NOT permanently block a sentinel-free edit.
+
+    Regression: a story whose personalizable-slot contract cannot be recovered
+    (a ``GenerationJob`` with a skeleton_slug but no recoverable band) used to
+    fail closed on EVERY node edit, locking the entire (dormant, sentinel-free)
+    existing catalog out of editing. With no sentinel in the edited blob there
+    is nothing for the at-rest check to validate against the contract, so the
+    edit proceeds; fail-closed is preserved only for blobs that actually carry
+    a sentinel (see the sibling ``..._with_sentinel_rejected`` test).
+    """
+    story = _story("in_review")
+    version_row = _version_row()
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug"},  # no skeleton_band
+    )
+    session = AsyncMock(spec=AsyncSession)
+    _wire_session(session, story=story, version_row=version_row, job=job)
+    ctx = _ctx("admin", session)
+
+    result = await node_edit.edit_node(
+        "s1", 1, _NODE_ID, NodeEditBody(body="A perfectly ordinary edit."), ctx
+    )
+
+    assert result.status == "in_review"
+    assert version_row.blob["nodes"][0]["body"] == "A perfectly ordinary edit."  # type: ignore[index]
 
 
 @pytest.mark.asyncio

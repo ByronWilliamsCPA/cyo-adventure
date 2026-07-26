@@ -7,27 +7,25 @@ stages, persists the aggregated report, and drives ``submit`` / ``auto_reject``.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, cast
+from typing import TYPE_CHECKING, cast
 
 import httpx
 from pydantic import ValidationError
 from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import ResourceNotFoundError
-from cyo_adventure.core.exceptions import ValidationError as CoreValidationError
-from cyo_adventure.db.models import GenerationJob, Storybook, StorybookVersion
+from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events import Actor, EventType, record_event
-from cyo_adventure.generation.authoring_metadata import (
-    SKELETON_BAND_KEY,
-    SKELETON_SLUG_KEY,
-)
-from cyo_adventure.generation.binding import load_contract_for, personalizable_slot_ids
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.pii import assert_prompt_pii_safe
-from cyo_adventure.generation.skeleton import load_skeleton
-from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.leaf_diversity import run_leaf_diversity_check
+from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNSET,
+    PersonalizableSlotsArg,
+    PersonalizableSlotsUnset,
+    personalizable_slot_ids_for_story,
+)
 from cyo_adventure.moderation.repair import attempt_repair
 from cyo_adventure.moderation.report import (
     Finding,
@@ -64,46 +62,12 @@ _logger = get_logger(__name__)
 _MAX_REVIEW_TOKENS = 1024
 _MAX_REPAIR_TOKENS = 32000
 
-
-class _PersonalizableSlotsUnset:
-    """Marker type for :data:`_PERSONALIZABLE_SLOTS_UNSET` (Task 6c).
-
-    ``None`` is a MEANINGFUL, fail-closed return value in the
-    personalizable-slot tri-state contract (see
-    :func:`_personalizable_slot_ids_for_job`'s docstring), so it cannot also
-    serve as "the caller passed nothing" for
-    :func:`run_moderation_pipeline`'s ``personalizable_slots`` parameter, nor
-    for :func:`~cyo_adventure.generation.import_story.import_filled_story`'s
-    pass-through of the same parameter: a caller that legitimately resolved
-    ``None`` (personalization possible but the contract is uncomputable) must
-    be able to thread that exact value through and have it still fail
-    closed, not have it silently reinterpreted as "resolve it yourself,
-    caller forgot". A dedicated sentinel TYPE (not a shared ``object()``)
-    lets ``isinstance`` narrow the parameter cleanly under BasedPyright
-    strict mode.
-    """
-
-    __slots__ = ()
-
-
-_PERSONALIZABLE_SLOTS_UNSET: Final = _PersonalizableSlotsUnset()
-"""Default marker meaning "the caller did not supply personalizable_slots".
-
-When :func:`run_moderation_pipeline` receives this exact sentinel (its
-parameter's default), it resolves the slot set itself via
-:func:`_personalizable_slot_ids_for_story`, exactly as it always has. Any
-other value passed for the parameter -- a real ``frozenset[str]`` OR an
-explicit ``None`` -- is used VERBATIM instead (Task 6c: threads the
-resume path's own, correctly-timed and correctly-banded, resolution).
-"""
-
-_PersonalizableSlotsArg = frozenset[str] | None | _PersonalizableSlotsUnset
-"""Type of the ``personalizable_slots`` override parameter.
-
-Shared by :func:`run_moderation_pipeline` and
-:func:`~cyo_adventure.generation.import_story.import_filled_story`, which
-forwards its own same-named parameter through unchanged.
-"""
+# The personalizable-slot tri-state contract (the ``PERSONALIZABLE_SLOTS_UNSET``
+# marker, its ``PersonalizableSlotsUnset`` type, the ``PersonalizableSlotsArg``
+# override type, and the two resolvers) lives in
+# :mod:`cyo_adventure.moderation.personalizable_slots` so cross-package
+# consumers (``generation/import_story.py``, ``api/node_edit.py``) import a
+# public name from a dedicated module instead of this module's internals.
 
 
 async def run_moderation_pipeline(
@@ -115,7 +79,7 @@ async def run_moderation_pipeline(
     generation_provider: GenerationProvider,
     pii: PiiContext,
     review_model_override: str | None = None,
-    personalizable_slots: _PersonalizableSlotsArg = _PERSONALIZABLE_SLOTS_UNSET,
+    personalizable_slots: PersonalizableSlotsArg = PERSONALIZABLE_SLOTS_UNSET,
 ) -> None:
     """Screen a persisted draft story and drive it to in_review or needs_revision.
 
@@ -131,7 +95,7 @@ async def run_moderation_pipeline(
             review_stage2_model). None uses the configured settings model.
         personalizable_slots: Task 6c override for the story's declared
             personalizable slot ids. Left at its default
-            (:data:`_PERSONALIZABLE_SLOTS_UNSET`) by every caller except the
+            (:data:`PERSONALIZABLE_SLOTS_UNSET`) by every caller except the
             cyo-author resume path (``generation/import_story.py::
             resume_manual_fill``, via ``import_filled_story``'s own
             pass-through), which resolves this itself -- using the
@@ -141,7 +105,7 @@ async def run_moderation_pipeline(
             resume-path timing gap (I1) and bad-band-recovery divergence
             (I2) the whole-branch review found in the Task 6a backstop.
             When left at the default, this function resolves the slot set
-            itself via :func:`_personalizable_slot_ids_for_story`, exactly
+            itself via :func:`personalizable_slot_ids_for_story`, exactly
             as it always has (dormant for every other caller). An explicit
             ``None`` (as opposed to the default) is honored VERBATIM and
             still fails closed below: it means the caller itself already
@@ -221,7 +185,7 @@ async def run_moderation_pipeline(
     # with no GenerationJob on record, `_load`'s default, adds no finding).
     #
     # #CRITICAL: data-integrity: Task 6c. `personalizable_slots` starts as
-    # `_PERSONALIZABLE_SLOTS_UNSET` for every caller except the cyo-author
+    # `PERSONALIZABLE_SLOTS_UNSET` for every caller except the cyo-author
     # resume path (see this parameter's own docstring above); only THAT
     # branch below re-resolves it from the story id, exactly as before. A
     # caller-supplied value -- a real `frozenset` OR an explicit `None` --
@@ -230,15 +194,19 @@ async def run_moderation_pipeline(
     # test_run_moderation_pipeline_honors_explicit_personalizable_slots,
     # ::test_run_moderation_pipeline_explicit_none_fails_closed, and
     # ::test_run_moderation_pipeline_default_resolves_from_story (dormancy).
-    if isinstance(personalizable_slots, _PersonalizableSlotsUnset):
-        personalizable_slots = await _personalizable_slot_ids_for_story(
+    if isinstance(personalizable_slots, PersonalizableSlotsUnset):
+        personalizable_slots = await personalizable_slot_ids_for_story(
             session, story_id
         )
     if personalizable_slots is None:
+        # Distinct event name from the blob-integrity violation logged below:
+        # this is a CONTRACT-recovery failure (the personalizable-slot set could
+        # not be resolved), not a sentinel violation in the story blob. Sharing
+        # one event name made the two fail-closed paths indistinguishable in
+        # logs.
         _logger.warning(
-            "moderation.entry_sentinel_integrity_violation",
+            "moderation.entry_contract_unrecoverable",
             story_id=story_id,
-            reason="contract_unrecoverable",
         )
         report.add(
             Finding(
@@ -261,8 +229,13 @@ async def run_moderation_pipeline(
                 "moderation.entry_sentinel_integrity_violation",
                 story_id=story_id,
                 reason="violations_found",
+                # #ASSUME: security: the raw sentinel token is redacted from
+                # the log line as defense-in-depth. node_id + kind already
+                # locate and classify the violation; server-side the token
+                # carries only a generic default, never resolved child data.
+                # #VERIFY: keep sentinel tokens out of every log/response sink.
                 violations=[
-                    {"node_id": v.node_id, "kind": v.kind, "token": v.token}
+                    {"node_id": v.node_id, "kind": v.kind}
                     for v in entry_integrity.violations
                 ],
             )
@@ -411,7 +384,7 @@ async def _attempt_and_adopt_repair(
         independent: Whether the review backend is independent of the generator.
         personalizable_slots: The story's declared personalizable slot ids,
             already resolved ONCE by the caller (:func:`run_moderation_pipeline`,
-            Task 6a) via :func:`_personalizable_slot_ids_for_story` for the
+            Task 6a) via :func:`personalizable_slot_ids_for_story` for the
             entry-level sentinel-integrity backstop; reused here rather than
             re-resolved, so a moderation pass never does the GenerationJob/
             contract lookup twice. The caller only enters this function when
@@ -598,7 +571,7 @@ def _repair_is_adoptable(
         original: The pre-repair blob being protected.
         story_id: The story id, for structured rejection logging.
         personalizable_slot_ids: The story's declared personalizable slot ids
-            (see :func:`_personalizable_slot_ids_for_story`), passed to
+            (see :func:`personalizable_slot_ids_for_story`), passed to
             :func:`~cyo_adventure.validator.sentinel_integrity.check_sentinel_integrity_at_rest`.
 
     Returns:
@@ -636,148 +609,15 @@ def _repair_is_adoptable(
         _logger.warning(
             "moderation.repair_failed_sentinel_integrity",
             story_id=story_id,
+            # Redact the raw sentinel token (see the entry-integrity log
+            # above for the rationale); node_id + kind suffice to diagnose.
             violations=[
-                {"node_id": v.node_id, "kind": v.kind, "token": v.token}
+                {"node_id": v.node_id, "kind": v.kind}
                 for v in integrity_result.violations
             ],
         )
         return False
     return True
-
-
-async def _personalizable_slot_ids_for_story(
-    session: AsyncSession, story_id: str
-) -> frozenset[str] | None:
-    """Resolve a story's declared personalizable slot ids for the repair re-check.
-
-    ``StorybookVersion`` carries ``skeleton_slug`` but no band, so the story's
-    matched skeleton is recovered via its ``GenerationJob`` row, mirroring the
-    same provenance chain :func:`~cyo_adventure.generation.worker._run_skeleton_fill`
-    and :mod:`cyo_adventure.generation.import_story` already use.
-    ``GenerationJob.storybook_id`` is not a FK (see that model's docstring);
-    this uses the same degrade-on-missing pattern already established by
-    :mod:`cyo_adventure.story_requests.anchoring` and
-    :mod:`cyo_adventure.covers.service` (oldest job first, ``None`` on no match).
-
-    The SELECT is the only part of this resolution that is unique to "find
-    the job from the story id"; everything after it (Task 6c) is extracted
-    into :func:`_personalizable_slot_ids_for_job`, a reusable helper for a
-    caller that already holds the ``GenerationJob`` row (and, on the
-    cyo-author resume path, a better-resolved band than the raw
-    ``authoring_metadata`` key) -- see that function's own docstring for the
-    full tri-state contract this function inherits unchanged.
-
-    Args:
-        session: The pipeline's own open async session.
-        story_id: The persisted storybook id under moderation.
-
-    Returns:
-        frozenset[str] | None: see :func:`_personalizable_slot_ids_for_job`.
-    """
-    job = (
-        await session.execute(
-            select(GenerationJob)
-            .where(GenerationJob.storybook_id == story_id)
-            .order_by(GenerationJob.created_at)
-            .limit(1)
-        )
-    ).scalar_one_or_none()
-    if job is None:
-        return frozenset()
-    return _personalizable_slot_ids_for_job(job)
-
-
-def _personalizable_slot_ids_for_job(
-    job: GenerationJob, *, band: str | None = None
-) -> frozenset[str] | None:
-    """Resolve a ``GenerationJob``'s declared personalizable slot ids.
-
-    Extracted from :func:`_personalizable_slot_ids_for_story` (Task 6c) so a
-    caller that already holds the job row can resolve the SAME tri-state
-    answer that function would produce for that job, without a second
-    ``GenerationJob`` SELECT. This is a plain synchronous function (no
-    ``await``): every step below (skeleton/contract loading) is file I/O,
-    not database I/O, so a caller like ``generation/import_story.py::
-    resume_manual_fill`` can call it directly on its in-memory job, before
-    that job is ever linked to a persisted story id.
-
-    Args:
-        job: The already-resolved ``GenerationJob`` (its ``authoring_metadata``
-            is the source of ``skeleton_slug`` and, absent ``band``, the
-            stored ``skeleton_band``).
-        band: Explicit band override. When provided (not ``None``), used
-            INSTEAD OF reading ``job.authoring_metadata[SKELETON_BAND_KEY]``.
-            A caller that has already resolved the CORRECT band through its
-            own richer logic -- e.g. ``generation/import_story.py::
-            _resolve_resume_band``, which falls back to the request's brief
-            band when the job predates that authoring_metadata key -- should
-            pass that resolution here (Task 6c's I2 fix) rather than let
-            this function re-derive a possibly-``None`` band from the raw
-            metadata key alone. ``None`` (the default) means "no override;
-            read the raw metadata key", matching this function's own
-            historical behavior and every non-resume caller (which has no
-            better band to offer). Note ``""`` (no band directory) IS a
-            legitimate override value, distinct from ``None``; a caller that
-            resolved an override always passes a ``str``, never ``None``.
-
-    Returns:
-        frozenset[str] | None: The declared personalizable slot ids. An EMPTY
-            frozenset is returned (not a guess) whenever no personalizable
-            slot could legitimately exist for this job: no ``skeleton_slug``
-            (a ``fresh_generation`` job), or a legacy skeleton with no
-            theme-contract sidecar
-            (:func:`~cyo_adventure.generation.binding.load_contract_for`
-            returns ``None``). ``None`` is returned only when the job DOES
-            carry a ``skeleton_slug`` (so a contract may genuinely declare
-            personalizable slots) but the contract cannot be recovered (no
-            band available from either source, or the skeleton/contract
-            sidecar failing to load): the caller must fail closed rather
-            than risk treating a real sentinel as forged with a guessed
-            empty set.
-    """
-    authoring = (
-        job.authoring_metadata if isinstance(job.authoring_metadata, dict) else {}
-    )
-    slug = authoring.get(SKELETON_SLUG_KEY)
-    if not isinstance(slug, str):
-        return frozenset()
-    resolved_band = band if band is not None else authoring.get(SKELETON_BAND_KEY)
-    if not isinstance(resolved_band, str):
-        _logger.warning(
-            "moderation.repair_contract_band_missing",
-            job_id=str(job.id),
-            story_id=job.storybook_id,
-            slug=slug,
-        )
-        return None
-    try:
-        skeleton_path = resolve_skeleton_path(resolved_band, slug)
-        skeleton = load_skeleton(skeleton_path)
-        contract = load_contract_for(skeleton_path, skeleton)
-    # #CRITICAL: external-resources: load_skeleton (generation/skeleton.py)
-    # does json.loads(path.read_text(...)), which raises a raw
-    # FileNotFoundError/OSError/JSONDecodeError (a ValueError subclass), NOT
-    # a CoreValidationError, when the skeleton file a stale
-    # GenerationJob.authoring_metadata points at has since moved or been
-    # corrupted. Broadened here to mirror
-    # generation/import_story.py::_load_resume_skeleton's handling of this
-    # same resolve_skeleton_path -> load_skeleton chain, so a missing/corrupt
-    # sidecar fails this function closed (None) instead of crashing the
-    # entire moderation pass.
-    # #VERIFY: test_repair_contract_file_missing_is_discarded_and_routes_to_human_review.
-    except (FileNotFoundError, OSError, ValueError, CoreValidationError) as exc:
-        _logger.warning(
-            "moderation.repair_contract_load_failed",
-            job_id=str(job.id),
-            story_id=job.storybook_id,
-            slug=slug,
-            band=resolved_band,
-            error=str(exc)[:500],
-        )
-        return None
-    if contract is None:
-        return frozenset()
-    return personalizable_slot_ids(contract)
 
 
 def _overall_verdict(report: ModerationReport) -> str:

@@ -35,10 +35,10 @@ from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.moderation import run_moderation_pipeline
-from cyo_adventure.moderation.pipeline import (
-    _PERSONALIZABLE_SLOTS_UNSET,
-    _personalizable_slot_ids_for_job,
-    _PersonalizableSlotsArg,
+from cyo_adventure.moderation.personalizable_slots import (
+    PERSONALIZABLE_SLOTS_UNSET,
+    PersonalizableSlotsArg,
+    personalizable_slot_ids_for_job,
 )
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
@@ -98,7 +98,7 @@ async def import_filled_story(
     session: AsyncSession,
     request: ImportRequest,
     *,
-    personalizable_slots: _PersonalizableSlotsArg = _PERSONALIZABLE_SLOTS_UNSET,
+    personalizable_slots: PersonalizableSlotsArg = PERSONALIZABLE_SLOTS_UNSET,
 ) -> str:
     """Validate a filled story and persist it if the gate does not block.
 
@@ -691,7 +691,7 @@ async def resume_manual_fill(
     # resolved (`_resolve_resume_band`'s brief-band fallback, not the raw
     # `authoring_metadata` key alone, closing I2), then threaded through
     # `import_filled_story` into the moderation entry below, so it uses the
-    # exact answer `_personalizable_slot_ids_for_story` would have produced
+    # exact answer `personalizable_slot_ids_for_story` would have produced
     # for this job had it been linked in time -- never a guess. A `None`
     # result (contract genuinely uncomputable) is threaded through verbatim
     # too: the moderation entry backstop then fails closed on this resume
@@ -699,7 +699,7 @@ async def resume_manual_fill(
     # here silently persisted a clean-looking version with no entry-level
     # check at all.
     # #VERIFY: tests/unit/test_resume_manual_fill_personalizable_slots.py.
-    personalizable_slots = _personalizable_slot_ids_for_job(job, band=band)
+    personalizable_slots = personalizable_slot_ids_for_job(job, band=band)
 
     # #CRITICAL: security: a personalizable slot's sentinel-wrapped value is
     # the ONLY marker standing between an authored fill's free-text output
@@ -736,7 +736,10 @@ async def resume_manual_fill(
     # the worker's own check, whenever
     # `personalizable_slot_ids` resolves empty (every contract on disk
     # today): `check_sentinel_integrity` then derives zero expected
-    # sentinels and returns `ok=True` unconditionally.
+    # sentinels, so its dropped/forged/migrated/unknown-slot checks all pass.
+    # Its malformed-near-miss scan still runs unconditionally, but fires only
+    # on genuinely sentinel-shaped tokens ordinary prose never contains, so
+    # this stays byte-neutral for all real sentinel-free content.
     # #VERIFY: test_resume_dropped_sentinel_rejected_pre_persist,
     # test_resume_forged_sentinel_rejected_pre_persist, and
     # test_resume_clean_sentinel_free_import_persists_unchanged in
@@ -750,8 +753,12 @@ async def resume_manual_fill(
         if reference_skeleton is not None:
             integrity_result = check_sentinel_integrity(reference_skeleton, blob)
             if not integrity_result.ok:
+                # Redact the raw sentinel token from the log payload as
+                # defense-in-depth; node_id + kind fully classify+locate each
+                # violation, and the token holds only a generic default
+                # server-side, never resolved child data.
                 violation_details = [
-                    {"node_id": v.node_id, "kind": v.kind, "token": v.token}
+                    {"node_id": v.node_id, "kind": v.kind}
                     for v in integrity_result.violations
                 ]
                 logger.error(

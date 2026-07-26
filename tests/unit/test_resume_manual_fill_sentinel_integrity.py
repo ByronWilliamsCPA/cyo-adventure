@@ -100,7 +100,9 @@ async def test_resume_dropped_sentinel_rejected_pre_persist(
 
     import_called = False
 
-    async def _fake_import_filled_story(_session, _request, **_kwargs: object):
+    async def _fake_import_filled_story(
+        _session: object, _request: object, **_kwargs: object
+    ) -> str:
         nonlocal import_called
         import_called = True
         return "s_x"
@@ -154,7 +156,9 @@ async def test_resume_forged_sentinel_rejected_pre_persist(
 
     import_called = False
 
-    async def _fake_import_filled_story(_session, _request, **_kwargs: object):
+    async def _fake_import_filled_story(
+        _session: object, _request: object, **_kwargs: object
+    ) -> str:
         nonlocal import_called
         import_called = True
         return "s_x"

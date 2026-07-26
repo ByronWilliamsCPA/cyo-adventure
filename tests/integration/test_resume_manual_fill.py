@@ -272,8 +272,8 @@ async def test_resume_survives_skeleton_file_deleted_after_persist(
             request: import_story_module.ImportRequest,
             *,
             personalizable_slots: (
-                import_story_module._PersonalizableSlotsArg
-            ) = import_story_module._PERSONALIZABLE_SLOTS_UNSET,
+                import_story_module.PersonalizableSlotsArg
+            ) = import_story_module.PERSONALIZABLE_SLOTS_UNSET,
         ) -> str:
             story_id = await real_import_filled_story(
                 session_, request, personalizable_slots=personalizable_slots

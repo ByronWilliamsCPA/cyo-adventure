@@ -89,7 +89,9 @@ from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.moderation.classifiers import run_classifiers
-from cyo_adventure.moderation.pipeline import _personalizable_slot_ids_for_story
+from cyo_adventure.moderation.personalizable_slots import (
+    personalizable_slot_ids_for_story,
+)
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.review_provider import (
     build_review_provider,
@@ -457,29 +459,46 @@ async def edit_node(
     # deterministic gate above). Re-resolve the story's declared
     # personalizable-slot set (Task 6a; the SAME resolver the moderation
     # pipeline's entry backstop and repair gate reuse) and re-check the
-    # EDITED blob at rest. `None` (contract unrecoverable) and a non-ok
-    # result both fail closed here, exactly like the gate-block cap above:
-    # the edit is rejected before anything is persisted, and the mutation
-    # happened on a local copy (`new_blob`) that is simply discarded.
+    # EDITED blob at rest. A non-ok result fails closed, exactly like the
+    # gate-block cap above: the edit is rejected before anything is
+    # persisted, and the mutation happened on a local copy (`new_blob`) that
+    # is simply discarded.
+    #
+    # An UNRECOVERABLE contract (`None`) degrades to an empty declared-slot
+    # set rather than a hard block. `check_sentinel_integrity_at_rest` with
+    # no declared slots still fails closed on any sentinel actually present
+    # in the edited blob (every well-formed sentinel becomes `unknown_slot`,
+    # every near-miss `malformed`), so a forged or leftover sentinel is
+    # still caught. But a sentinel-free edit, which is every edit to the
+    # entire existing (dormant) catalog, is no longer permanently 422'd by
+    # an unrelated contract-recovery failure. This preserves the security
+    # invariant for the only blobs that carry sentinel risk while removing
+    # the lockout for blobs that carry none.
     # #VERIFY: tests/unit/test_node_edit.py::
     # test_edit_injecting_forged_sentinel_rejected_and_blob_unchanged,
     # ::test_edit_leaving_sentinel_in_choice_label_rejected,
-    # ::test_edit_contract_unrecoverable_rejected,
+    # ::test_edit_contract_unrecoverable_with_sentinel_rejected,
+    # ::test_edit_contract_unrecoverable_sentinel_free_succeeds,
     # ::test_edit_sentinel_free_still_succeeds (dormancy).
-    personalizable_slots = await _personalizable_slot_ids_for_story(
+    personalizable_slots = await personalizable_slot_ids_for_story(
         ctx.session, storybook_id
     )
-    if personalizable_slots is None:
-        msg = "personalizable-slot contract could not be recovered; failing closed"
-        raise ValidationError(msg, details={"reason": "contract_unrecoverable"})
-    integrity_result = check_sentinel_integrity_at_rest(new_blob, personalizable_slots)
+    slots_for_check = (
+        personalizable_slots if personalizable_slots is not None else frozenset()
+    )
+    integrity_result = check_sentinel_integrity_at_rest(new_blob, slots_for_check)
     if not integrity_result.ok:
         msg = "edited passage introduced a sentinel-integrity violation"
         raise ValidationError(
             msg,
             details={
+                # #ASSUME: security: the raw sentinel token is redacted from
+                # the 422 response body as defense-in-depth. node_id + kind let
+                # the admin locate and classify the violation; the token holds
+                # only a generic default server-side, never child data.
+                # #VERIFY: keep sentinel tokens out of every log/response sink.
                 "violations": [
-                    {"node_id": v.node_id, "kind": v.kind, "token": v.token}
+                    {"node_id": v.node_id, "kind": v.kind}
                     for v in integrity_result.violations
                 ]
             },
