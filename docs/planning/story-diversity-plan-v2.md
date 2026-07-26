@@ -2,10 +2,11 @@
 schema_type: planning
 title: "Story Diversity Plan v2"
 description: "Rebuilt diversity plan, grounded only in measurements that survived a seven-reviewer adversarial
-  pass and a 98-document corpus survey. Nineteen near-term deliverables, six independent defects, eight items deferred
+  pass and a 98-document corpus survey. Twenty near-term deliverables, six independent defects, eight items deferred
   behind named prerequisites, five resolved owner decisions, a child-reader review folded in, a
   development-stage section re-ordering the work for a catalog with one author and one test household, and a
-  reconciliation section against merged PR #418 (ADR-023) and open PR #416. Replaces two superseded plans."
+  reconciliation section against merged PR #418 (ADR-023) and open PR #416 that records personalization as a
+  measured diversity lever. Replaces two superseded plans."
 tags:
   - planning
   - generation
@@ -54,6 +55,12 @@ owner's own work to fix, which is the cheapest possible remediation posture. **T
 No theme contract declares a personalizable slot yet, so no fill carries a sentinel, so stripping them out of the
 ATG tokeniser changes no current output and needs no baseline re-derivation. That window closes the first time a
 contract opts a slot in.
+
+**A20 (contract backfill) is authoring, so the stage argument cuts the other way from the gates above: it is not
+free, and it does not get cheaper by waiting either.** It is the enabling precondition for personalization on 16
+skeletons, and personalization is the one perceived-diversity lever that needs no new tree (section 8.1). With one
+test household it is also the item whose benefit is most immediately observable, since the current readers can say
+whether a book with their own name in it feels new.
 
 **A9 is unblocked.** The clone pair can be retired and replaced outright with no migration concern, because the
 only progress recorded against it is test data belonging to the owner's family.
@@ -116,6 +123,11 @@ this document is treated as established.
 | **45 of 61 skeletons have a `.contract.json`; 39 of those 45 declare a `HERO` slot**, so 16 skeletons have no contract at all | enumeration of `skeletons/**/*.contract.json`; independently stated in ADR-023 and reproduced here |
 | Beats hardcode character pronouns, so a slot value cannot vary gender: `the-cinderwick-exchange.json:89` "the retired clocksmith who tends the lo[ck]", `the-envoy-of-three-courts.json:135` "See {COURIER} on **his** way and snatch some sleep" | direct file read |
 | The ATG has **no sentinel awareness**: `strip_sentinels` is imported by `validator/reading_level.py`, `moderation/pipeline.py` and `moderation/rescreen.py`, and by nothing under `diversity/`. `mask_tokens` on a `{~HERO:Friend~}` body emits `hero` as a content token that the stripped body does not | import scan; live tokeniser run (see A19) |
+| **`HERO` is the catalog's least varied slot**: 39 contracts bind it to **28 distinct values** (ratio 0.72), with `Wren` reused 5 times and `Rowan`, `Milo`, `Priya`, `June` each reused | `default_binding` enumeration across all 45 contracts |
+| **Every non-personalizable differentiating slot is at or near fully distinct**: `THRESHOLD` 34/34, `ENTRANCE` 24/24, `DEADLINE` 19/19, `GOAL` 17/17, `DEADLINE_SIGN` 17/17, `OPENING_MOMENT` 16/17, and all three `ROUTE_*_CHAR` at 1.00 | same enumeration, slots appearing in 8+ books |
+| **`COMPANION` is fully distinct (14/14)** and is personalizable under ADR-023 row 3, so it is the one slot where opting in spends a maximally differentiating axis | same enumeration |
+| **Theme-contract coverage is anti-correlated with band**: `5-8` and `8-11` at 100%, `3-5` at 86%, but `10-13` 64%, `16+` 64%, `13-16` **57%**. 16 of 61 skeletons have no contract, 15 of those 16 at `10-13` and above | per-band `.contract.json` existence scan |
+| **Both books of the isomorphic clone pair lack a contract**, so `the-harrowstone-keep` and `the-sunken-temple` are ineligible for personalization entirely | contract existence check on both slugs |
 | Reading telemetry does not exist: `ReadingState` is one mutable row with `path` overwritten; `Completion`'s key includes `ending_id` with one `found_at`, so re-reads and depth-at-terminal are unrecorded | `db/models.py:725-793` |
 | Difficulty, win-arc count, and reading telemetry are unspecified corpus-wide | 98-document survey |
 
@@ -159,6 +171,7 @@ Each item traces to a fact in section 1. Effort: S under a day, M a few days, L 
 | **A13b** | **Add a second, separately labelled affordance at the ending screen only: "Try a different way."** Walks up to **3 hops** to the last node where the reader had a real pick, and **falls back to one step when there is none**. Availability stays exactly today's `path.length > 1` and replayable: it must never become "an untaken choice exists within 3 hops", because that hides the button at precisely the 88 preserved climaxes (take option A, die, go back, take option B, win: on that second ending there is no untaken fork nearby and a button the child just learned would vanish). "Untaken" is defined against the current read only, and the walk stops at the **first branching ancestor** regardless of whether its other options were used, so the destination is always "the last place you got to pick" rather than a distance that varies per press. Captures the full measured benefit (the 58 corridor terminals) without repurposing a learned affordance. | M |
 | **A14** | **`L2-14`: no decision may offer only fatal options, band-scoped, and stated so it cannot be dodged.** Owner rule: a reader must never be shown option A and option B where both end in death. Two corrections from the child-reader review (section 6.2). **(a) Band-scope it.** `Valence.NEGATIVE` includes `setback`, so a single negative-valence rule would forbid a 15-year-old from ever facing a lose-lose dilemma, which is exactly what a `gauntlet` reader seeks and what ADR-011 sanctions from 13-16 up. Enforce the negative-valence reading at **8-11 and 10-13**, and the `death`/`capture` reading at **13-16 and 16+**. **(b) State it over the reader-visible decision unit, not the node**, or an author can comply by splitting an all-fatal decision into two single-choice corridors that each end fatally: the rule passes and the child now gets a page with one button that kills them. So: no reachable branching node may have every downstream path reach a forbidden terminal without an intervening visible choice. That also folds in the 776 single-choice fatal corridors, which are the larger agency problem and which the node-scoped rule missed entirely. Layer 2 (`L2-14`) because it is about visible choices in reachable configurations. `L2-14` is still free: `main` is at `L2-13` and open PR #416 does not mint a new L2 rule (its "adds L2-13" is a catalog entry for a rule already shipped in `layer2.py`), but re-check against #416's branch before claiming the ID. | M |
 | **A19** | **Make the anti-template guard strip personalization sentinels before tokenising.** New, from the PR #418 review, and the cheapest it will ever be. `strip_sentinels` is wired into `validator/reading_level.py:154`, `moderation/pipeline.py:736` and `moderation/rescreen.py:438`, but nothing under `diversity/` or `moderation/leaf_diversity.py` imports it (zero occurrences of "sentinel" in either file). Verified against the live tokeniser: `mask_tokens('{~HERO:Friend~} stepped into the hall and the lamp guttered.', frozenset())` yields `['hero', 'friend', 'stepped', ...]`, so `content_tokens` keeps `hero`, while the stripped body yields `['friend', 'stepped', ...]`. The slot **id** leaks in as a content token and is never an entity, so `extract_entities` cannot mask it. Every fill of a given skeleton carries the identical sentinel-derived token set, which inflates the pairwise intersection, deflates masked leaf distance, and biases a distance-floor verdict toward FAIL. The fix is one call at the tokenising boundary plus a regression test that a sentinel-bearing and a stripped-equivalent fill score identically. **Do it now**: no `.contract.json` declares a personalizable slot yet, so the defect is dormant and the change is unobservable in current output; once fills carry sentinels it becomes a live false-positive source in a gate the plan is about to start relying on (A8, and the deferred ATG-against-k-nearest item). | S |
+| **A20** | **Backfill the 16 missing theme contracts, teen bands first.** Added 2026-07-26 (owner observation, section 8.1): personalization is a real perceived-diversity lever, but a skeleton with no `.contract.json` has no declared slots and so cannot be personalized at all. Coverage is **anti-correlated with need**: 100% at `5-8` and `8-11`, but 57% at `13-16`, 64% at `16+` and `10-13`, and 15 of the 16 gaps sit at `10-13` or above. The teen bands are where this plan already measured the least structural variety (no `short` skeleton exists at all for `13-16` or `16+`, and both books of the isomorphic clone pair are in the uncovered set), so the bands with the thinnest catalog get the least benefit from the one lever that needs no new tree. Authoring 16 contracts over existing trees is far cheaper than authoring 16 trees. Order: `13-16` (6), `16+` (5), `10-13` (4), then `3-5` (1). Bound by A9: do not write the clone pair's contracts until its fix-or-replace disposition is settled, or the work is done twice. | M |
 | **A15** | **Triggered, not scheduled (section 0).** **Retire-for-quality must not delete a child's progress.** `archive` is the only exit from `published`, `library.py` filters on published status, `reconcileOfflineCache` purges the local copy, and `reading_history.py::_history_item` degrades a version-less book to a storybook **id** as its title with `total_endings = 0`. So a retired book takes the shelf card, the in-progress read, the offline copy and the "6 of 7 endings found" badge with it, silently. Distinguish **unsafe** (archive now, the urgency justifies it) from **substandard** (no new readers: stop assigning, keep it readable for any profile with progress or completions, let it age out). Interim before the deferred visibility work exists: unassign only from profiles with no activity. Fix `_history_item`'s degraded row to show a friendly retired label, not a UUID. | M |
 | **A16** | **Adopt as a written rule now, enforce when triggered (section 0).** **Never retire a non-final series book before its replacement ships in the same release.** `Reader.tsx:313-320` offers "Continue the series" on a satisfying ending of a non-final book; if book 2 changes or goes, that promise goes quiet with no in-product account, after a teen spent hours in a 550-node book and earned carried state. The replacement must accept book 1's carried state, which is exactly what B3 gates. If it cannot, re-cut book 1 to `is_final` so the continuation is never promised. Binds A9. | S |
 | **A17** | **Triggered, not scheduled (section 0).** **A retired book leaves a tombstone, not a hole**: title, endings the child found, and one line ("This one has gone back to the workshop. Your 6 endings are still yours."). Children infer causes, and a card that vanishes next to a `StarRating` they cannot clear invites "did I lose it because I rated it 2 stars?". | S |
@@ -325,6 +338,44 @@ the two claims have different bases. Both are true. Open PR #416 claims `SR-8`, 
 "adds L2-13" is a catalog entry for a rule already shipped in `layer2.py`, not a new ID, so `L2-14` stays free
 for A14. Net: B3 becomes `SR-9`, the deferred fail-depth floor becomes `PL-25`, A14 keeps `L2-14`, and all three
 should be re-checked against #416's branch immediately before implementation rather than trusted from here.
+
+### 8.1 Personalization is a diversity lever, and this review initially missed it
+
+**Owner observation, 2026-07-26: the render-time substitution PR #418 adds should increase perceived diversity by
+letting a reader insert themselves into an existing story.** That is correct, and the first pass of this review
+treated #418 only as a coordination and contamination surface. Recorded here with the measurement, because the
+measurement both confirms the point and says how to sequence it.
+
+**Why it is a real lever, and a kind this plan did not have.** The original goal was *perceived* diversity. Every
+Track A item works on **between-book distance**: theme signatures, structural distance, variation axes, clone
+audits. Personalization works on a different axis, the **reader's relationship to a single book**, which nothing
+else here touches. It is also the only lever that raises perceived novelty **without authoring a tree**, so it
+acts immediately inside the binding constraint this plan keeps running into: 58 production-eligible skeletons, 15
+of 18 non-empty cells holding exactly three, and P(a reader's second story reuses the first's tree) = 1/5.
+ADR-023 row 1 calls the protagonist first name "the single detail that makes a book feel like the child's own",
+and rows 2 through 8 compound on it.
+
+**The trade is more favourable than it first appears.** The worry worth checking was that personalization
+*removes* between-book variation: a made-up hero name differs per book, whereas a reader's own name is constant
+across every book they read. That is directionally true and turns out to be small, because **`HERO` is the least
+varied slot in the catalog**: 28 distinct values across 39 books (0.72), with `Wren` reused five times. Every
+non-personalizable differentiator measured is at or near fully distinct (`THRESHOLD` 34/34, `ENTRANCE` 24/24,
+`DEADLINE` 19/19, `GOAL` 17/17, all `ROUTE_*_CHAR` 1.00). So opting in spends the catalog's **weakest**
+differentiating axis and leaves the strong ones intact. One exception to sequence deliberately: **`COMPANION` is
+14/14 fully distinct** and is personalizable under ADR-023 row 3, so a sibling substitution there does spend a
+maximally differentiating axis. Prefer `HERO` first; treat `COMPANION` as a knowing trade, not a free one.
+
+**The honest limit.** Personalization raises the floor on how engaging any one book feels. It does not raise the
+ceiling on how *distinguishable* two books are: the same tree with your name in it is still the same tree, so
+the 1/5 reuse probability and the isomorphic pair are untouched. It is additive to the structural work, not a
+substitute for it, and it makes the surviving structural differentiators carry proportionally more of the load,
+which is an argument for keeping A8 and A9 at priority rather than relaxing them.
+
+**The actionable finding: eligibility is anti-correlated with need.** Contract coverage runs 100% at `5-8` and
+`8-11` but 57% at `13-16` and 64% at `16+` and `10-13`, with 15 of 16 gaps at `10-13` or above. The teen bands
+have the thinnest catalog by every measure in section 1, and both books of the isomorphic clone pair have no
+contract at all, so the two books that most need differentiation help get **none** from this mechanism. That is
+cheap to fix relative to authoring trees, and it becomes **A20**.
 
 **Two standing obligations inherited from #416, which will bind this work once it merges:**
 
