@@ -744,7 +744,10 @@ def _personalizable_slot_ids_for_job(
     resolved_band = band if band is not None else authoring.get(SKELETON_BAND_KEY)
     if not isinstance(resolved_band, str):
         _logger.warning(
-            "moderation.repair_contract_band_missing", job_id=str(job.id), slug=slug
+            "moderation.repair_contract_band_missing",
+            job_id=str(job.id),
+            story_id=job.storybook_id,
+            slug=slug,
         )
         return None
     try:
@@ -766,6 +769,7 @@ def _personalizable_slot_ids_for_job(
         _logger.warning(
             "moderation.repair_contract_load_failed",
             job_id=str(job.id),
+            story_id=job.storybook_id,
             slug=slug,
             band=resolved_band,
             error=str(exc)[:500],
