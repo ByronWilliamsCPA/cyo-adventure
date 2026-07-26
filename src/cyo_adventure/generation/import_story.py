@@ -35,6 +35,11 @@ from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.moderation import run_moderation_pipeline
+from cyo_adventure.moderation.pipeline import (
+    _PERSONALIZABLE_SLOTS_UNSET,
+    _personalizable_slot_ids_for_job,
+    _PersonalizableSlotsArg,
+)
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.sentinel_integrity import check_sentinel_integrity
@@ -89,12 +94,27 @@ class ImportRequest:
     skeleton_slug: str | None = None
 
 
-async def import_filled_story(session: AsyncSession, request: ImportRequest) -> str:
+async def import_filled_story(
+    session: AsyncSession,
+    request: ImportRequest,
+    *,
+    personalizable_slots: _PersonalizableSlotsArg = _PERSONALIZABLE_SLOTS_UNSET,
+) -> str:
     """Validate a filled story and persist it if the gate does not block.
 
     Args:
         session: Open async session; caller owns the transaction.
         request: The grouped import inputs (see :class:`ImportRequest`).
+        personalizable_slots: Task 6c pass-through to
+            :func:`~cyo_adventure.moderation.pipeline.run_moderation_pipeline`'s
+            own same-named parameter. Left at its default for every caller
+            except :func:`resume_manual_fill`, which resolves this itself
+            (see that function's docstring) and threads the result through
+            here so the moderation-entry backstop uses the identical slot
+            set the resume path's own pre-persist check used, instead of
+            re-resolving it from the database (where, at this point in
+            :func:`resume_manual_fill`'s call sequence, the job is not yet
+            linked to ``story_id``).
 
     Returns:
         The persisted story id (the blob's ``id``). The story leaves ``draft``
@@ -172,6 +192,7 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         generation_provider=build_provider(_default_settings),
         pii=pii,
         review_model_override=request.review_model_override,
+        personalizable_slots=personalizable_slots,
     )
 
     return story_id
@@ -565,6 +586,29 @@ async def resume_manual_fill(
     instead of being stranded: the story already exists and passed moderation,
     it just cannot be re-verified against its origin skeleton.
 
+    Task 6c (whole-branch review findings I1/I2/M1): this function also
+    resolves the story's declared personalizable-slot set itself, from the
+    in-memory ``job`` and the band already resolved above
+    (:func:`_resolve_resume_band`'s brief-band fallback), and threads it
+    through :func:`import_filled_story` into
+    :func:`~cyo_adventure.moderation.pipeline.run_moderation_pipeline`'s
+    entry-level sentinel-integrity backstop. Resolving it here, rather than
+    letting that backstop resolve it from the database as it does for every
+    other caller, closes two gaps the Task 6a backstop introduced on this
+    path specifically: the backstop's own ``GenerationJob`` lookup is keyed
+    on ``storybook_id``, which this function does not set until AFTER
+    :func:`import_filled_story` (and thus the moderation pass) returns (I1:
+    without this fix, the backstop would always see "no job" here and
+    silently pass an empty slot set, which would wrongly reject a legitimate
+    personalizable sentinel as an ``unknown_slot`` the moment a real
+    personalizable contract ships); and the backstop's own band recovery
+    reads only the raw ``authoring_metadata`` key, not this function's own
+    brief-band fallback (I2). A resolution of ``None`` (the contract is
+    genuinely uncomputable, as opposed to merely a render/binding failure)
+    is threaded through unchanged and makes the moderation entry fail closed
+    on this resume (M1), rather than the story silently persisting clean
+    with no entry-level check at all.
+
     Args:
         session: Open async session; the story/version write still follows
             import_filled_story's own transaction contract, but this
@@ -634,6 +678,29 @@ async def resume_manual_fill(
         except (ResourceNotFoundError, ValidationError) as exc:
             skeleton_load_error = str(exc)
 
+    # #CRITICAL: security: Task 6c (I1/I2). The moderation-entry Variant B
+    # backstop (moderation/pipeline.py::run_moderation_pipeline) resolves the
+    # story's declared personalizable-slot set via a `GenerationJob` lookup
+    # keyed on `storybook_id`; on THIS path that link is not written until
+    # `job.storybook_id = story_id` below, AFTER `import_filled_story` (and
+    # thus the moderation pass) has already run. Resolving via that lookup
+    # inside the pipeline would therefore always see "no job" and answer an
+    # empty set (I1) -- fail-open for a legitimate sentinel the instant a real
+    # personalizable contract ships. Resolved HERE instead, directly from the
+    # in-memory `job` and the band this function has ALREADY correctly
+    # resolved (`_resolve_resume_band`'s brief-band fallback, not the raw
+    # `authoring_metadata` key alone, closing I2), then threaded through
+    # `import_filled_story` into the moderation entry below, so it uses the
+    # exact answer `_personalizable_slot_ids_for_story` would have produced
+    # for this job had it been linked in time -- never a guess. A `None`
+    # result (contract genuinely uncomputable) is threaded through verbatim
+    # too: the moderation entry backstop then fails closed on this resume
+    # (M1), rather than the pre-Task-6c gap where an uncomputable contract
+    # here silently persisted a clean-looking version with no entry-level
+    # check at all.
+    # #VERIFY: tests/unit/test_resume_manual_fill_personalizable_slots.py.
+    personalizable_slots = _personalizable_slot_ids_for_job(job, band=band)
+
     # #CRITICAL: security: a personalizable slot's sentinel-wrapped value is
     # the ONLY marker standing between an authored fill's free-text output
     # and a family's later personalization resolve; a dropped or forged
@@ -654,11 +721,19 @@ async def resume_manual_fill(
     # the reorder that closes that gap. Reuses the EXISTING reference-
     # skeleton production (`_stage1_reference_skeleton`, the same artifact
     # `_finalize_resume`'s Stage 1 fidelity gate consumes below) rather than
-    # a second binding/contract-load path. Dormant when `reference_skeleton`
-    # cannot be computed (skeleton unreadable, or a contract/render failure):
-    # that already-existing degrade-to-needs_review case is left exactly as
-    # it was pre-Task-6b (see `_finalize_resume`), not newly fail-closed
-    # here. Also dormant, like the worker's own check, whenever
+    # a second binding/contract-load path. This pre-persist check itself is
+    # skipped (not run) when `reference_skeleton` cannot be computed
+    # (skeleton unreadable, or a contract/render failure): that
+    # already-existing degrade-to-needs_review case is left exactly as it
+    # was pre-Task-6b (see `_finalize_resume`), which still runs and can
+    # still downgrade the job's status. As of Task 6c (M1), a skeleton- or
+    # contract-load failure specifically (not a render/binding failure -- see
+    # `personalizable_slots`'s own resolution above, which fails closed only
+    # when the CONTRACT itself is unrecoverable) is no longer silently
+    # persisted clean either: `personalizable_slots` resolves `None` in that
+    # same failure mode, and the moderation-entry backstop this function
+    # threads it into (below) fails closed on it instead. Also dormant, like
+    # the worker's own check, whenever
     # `personalizable_slot_ids` resolves empty (every contract on disk
     # today): `check_sentinel_integrity` then derives zero expected
     # sentinels and returns `ok=True` unconditionally.
@@ -707,7 +782,9 @@ async def resume_manual_fill(
         skeleton_slug=skeleton_slug,
     )
     try:
-        story_id = await import_filled_story(session, request)
+        story_id = await import_filled_story(
+            session, request, personalizable_slots=personalizable_slots
+        )
     except ValidationError as exc:
         # #CRITICAL: data-integrity: record the gate-block on the job row
         # before re-raising, mirroring worker.py's failure-commit-then-reraise
