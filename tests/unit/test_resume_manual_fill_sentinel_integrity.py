@@ -100,7 +100,7 @@ async def test_resume_dropped_sentinel_rejected_pre_persist(
 
     import_called = False
 
-    async def _fake_import_filled_story(_session, _request):
+    async def _fake_import_filled_story(_session, _request, **_kwargs: object):
         nonlocal import_called
         import_called = True
         return "s_x"
@@ -154,7 +154,7 @@ async def test_resume_forged_sentinel_rejected_pre_persist(
 
     import_called = False
 
-    async def _fake_import_filled_story(_session, _request):
+    async def _fake_import_filled_story(_session, _request, **_kwargs: object):
         nonlocal import_called
         import_called = True
         return "s_x"
@@ -202,7 +202,7 @@ async def test_resume_clean_sentinel_free_import_persists_unchanged(
     }
     _wire_legacy(monkeypatch, original_skeleton)
 
-    async def _fake_import_filled_story(_session, _request):
+    async def _fake_import_filled_story(_session, _request, **_kwargs: object):
         return "s_x"
 
     async def _fake_run_stage1_gate(*_args, **_kwargs):
@@ -251,7 +251,7 @@ async def test_resume_sentinel_check_skipped_when_no_skeleton_slug(
     )
     session = _FakeSession(job=job, concept=concept)
 
-    async def _fake_import_filled_story(_session, _request):
+    async def _fake_import_filled_story(_session, _request, **_kwargs: object):
         return "s_x"
 
     checked = False

@@ -52,6 +52,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from sqlalchemy import Select
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 pytestmark = pytest.mark.asyncio
 
@@ -708,6 +709,188 @@ async def test_entry_contract_unrecoverable_routes_to_human_review(
 
 
 @pytest.mark.unit
+async def test_run_moderation_pipeline_honors_explicit_personalizable_slots(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """(Task 6c, I1) An explicitly-threaded, non-default ``personalizable_slots``
+    is honored VERBATIM and skips the database resolver entirely.
+
+    No ``GenerationJob`` is wired (``_load``'s dormant default), so if this
+    call fell back to ``_personalizable_slot_ids_for_story`` the resolver
+    would answer the empty set and the ``HERO`` sentinel below would be
+    wrongly flagged ``unknown_slot`` -- exactly the resume-path timing bug
+    (I1) the whole-branch review found: on that path, the GenerationJob is
+    not yet linked to the story id at the moment moderation runs, so the
+    resolver sees "no job" even though the fill legitimately declares a
+    personalizable slot. Passing the caller's own resolution (as
+    ``resume_manual_fill`` now does) bypasses that timing gap by construction.
+    """
+    story, version = _story(), _version()
+    tainted_blob = copy.deepcopy(_BLOB)
+    nodes = cast("list[dict[str, object]]", tainted_blob["nodes"])
+    start_node = next(n for n in nodes if n["id"] == "n_start")
+    start_node["body"] = f"{start_node['body']} {wrap('HERO', 'Ada')}"
+    version.blob = tainted_blob
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+
+    resolver_called = False
+    real_resolver = pipeline_mod._personalizable_slot_ids_for_story
+
+    async def _spy_resolver(
+        session: AsyncSession, story_id: str
+    ) -> frozenset[str] | None:
+        nonlocal resolver_called
+        resolver_called = True
+        return await real_resolver(session, story_id)
+
+    monkeypatch.setattr(
+        pipeline_mod, "_personalizable_slot_ids_for_story", _spy_resolver
+    )
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+        personalizable_slots=frozenset({"HERO"}),
+    )
+
+    assert not resolver_called, (
+        "an explicit personalizable_slots must skip _personalizable_slot_ids_for_story"
+    )
+    submit.assert_awaited_once()
+    auto_reject.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    categories = {
+        f["category"]
+        for f in cast("list[dict[str, object]]", moderation_report["findings"])
+    }
+    assert "sentinel_integrity_violation" not in categories
+    assert version.blob == tainted_blob
+
+
+@pytest.mark.unit
+async def test_run_moderation_pipeline_explicit_none_fails_closed(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """(Task 6c, M1) An explicit ``personalizable_slots=None`` fails closed at
+    the entry backstop, even for an otherwise completely clean, sentinel-free
+    blob, and without ever consulting ``_personalizable_slot_ids_for_story``.
+
+    Mirrors ``test_entry_contract_unrecoverable_routes_to_human_review``'s
+    routing assertion, but for a CALLER-supplied ``None`` (the shape
+    ``resume_manual_fill`` now threads when its own contract resolution is
+    genuinely uncomputable) rather than one this function resolves itself.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+
+    resolver_called = False
+    real_resolver = pipeline_mod._personalizable_slot_ids_for_story
+
+    async def _spy_resolver(
+        session: AsyncSession, story_id: str
+    ) -> frozenset[str] | None:
+        nonlocal resolver_called
+        resolver_called = True
+        return await real_resolver(session, story_id)
+
+    monkeypatch.setattr(
+        pipeline_mod, "_personalizable_slot_ids_for_story", _spy_resolver
+    )
+
+    submit = AsyncMock()
+    auto_reject = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+        personalizable_slots=None,
+    )
+
+    assert not resolver_called, (
+        "an explicit personalizable_slots (even None) must skip the resolver"
+    )
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
+    moderation_report = version.moderation_report
+    assert moderation_report is not None
+    categories = {
+        f["category"]
+        for f in cast("list[dict[str, object]]", moderation_report["findings"])
+    }
+    assert "sentinel_integrity_violation" in categories
+    assert version.blob == _BLOB
+
+
+@pytest.mark.unit
+async def test_run_moderation_pipeline_default_resolves_from_story(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """(Task 6c dormancy) Omitting ``personalizable_slots`` entirely -- every
+    caller except ``resume_manual_fill`` -- still resolves via
+    ``_personalizable_slot_ids_for_story``, exactly as before Task 6c.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_verdict_review_provider())
+
+    resolver_called = False
+    real_resolver = pipeline_mod._personalizable_slot_ids_for_story
+
+    async def _spy_resolver(
+        session: AsyncSession, story_id: str
+    ) -> frozenset[str] | None:
+        nonlocal resolver_called
+        resolver_called = True
+        return await real_resolver(session, story_id)
+
+    monkeypatch.setattr(
+        pipeline_mod, "_personalizable_slot_ids_for_story", _spy_resolver
+    )
+
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    assert resolver_called, (
+        "omitting personalizable_slots must still resolve via "
+        "_personalizable_slot_ids_for_story (dormancy)"
+    )
+    submit.assert_awaited_once()
+
+
+@pytest.mark.unit
 async def test_classifier_and_review_stage_receive_stripped_sentinel_text(
     mock_session: AsyncMock,
     monkeypatch: pytest.MonkeyPatch,
@@ -1052,6 +1235,101 @@ def _wire_personalizable_job(
             "skeleton_band": "8-11",
         },
     )
+
+
+@pytest.mark.unit
+async def test_personalizable_slot_ids_for_job_band_override_recovers_missing_metadata_band(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """(Task 6c, I2) A ``band`` override recovers the contract even when the
+    job's own ``authoring_metadata`` has no ``skeleton_band`` key at all.
+
+    Mirrors ``resume_manual_fill``'s own situation: a job that predates the
+    ``skeleton_band`` authoring_metadata key falls back to the request's
+    brief band via ``_resolve_resume_band``, and that resolution -- not the
+    (absent) raw metadata key -- must be what determines the contract. Before
+    Task 6c, only ``_personalizable_slot_ids_for_story`` existed, which reads
+    ONLY the raw metadata key and would resolve ``None`` (fail closed) for
+    this exact job, even though the contract is perfectly recoverable via the
+    caller's own better-informed band.
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(
+        _personalizable_contract().model_dump_json().encode("utf-8")
+    )
+    monkeypatch.setattr(
+        pipeline_mod, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    monkeypatch.setattr(
+        pipeline_mod, "load_skeleton", lambda _path: _personalizable_skeleton()
+    )
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug"},  # no skeleton_band key
+    )
+
+    # Without the override, this is the pre-Task-6c fail-closed answer.
+    assert pipeline_mod._personalizable_slot_ids_for_job(job) is None
+
+    # With the caller's own resolved band, the SAME contract recovers cleanly.
+    result = pipeline_mod._personalizable_slot_ids_for_job(job, band="8-11")
+    assert result == frozenset({"HERO"})
+
+
+@pytest.mark.unit
+async def test_personalizable_slot_ids_for_job_no_override_reads_metadata_band(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """(Task 6c dormancy) With no ``band`` override, behavior is unchanged:
+    the raw ``authoring_metadata`` key is read, matching every non-resume
+    caller (which has no better band to offer).
+    """
+    band_dir = tmp_path / "8-11"
+    band_dir.mkdir()
+    skeleton_path = band_dir / "themed-slug.json"
+    contract_path = skeleton_path.with_name("themed-slug.contract.json")
+    contract_path.write_bytes(
+        _personalizable_contract().model_dump_json().encode("utf-8")
+    )
+    monkeypatch.setattr(
+        pipeline_mod, "resolve_skeleton_path", lambda _band, _slug: skeleton_path
+    )
+    monkeypatch.setattr(
+        pipeline_mod, "load_skeleton", lambda _path: _personalizable_skeleton()
+    )
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "themed-slug", "skeleton_band": "8-11"},
+    )
+
+    assert pipeline_mod._personalizable_slot_ids_for_job(job) == frozenset({"HERO"})
+
+
+@pytest.mark.unit
+async def test_personalizable_slot_ids_for_job_returns_none_when_contract_uncomputable(
+    tmp_path: Path,
+) -> None:
+    """(Task 6c, M1) A ``skeleton_slug`` present but the skeleton file genuinely
+    missing (even with a band override supplied) resolves ``None``, never a
+    guessed empty set: this is the exact resolution ``resume_manual_fill``
+    threads through to make the moderation entry fail closed on M1.
+    """
+    job = GenerationJob(
+        concept_id=uuid.uuid4(),
+        storybook_id="s1",
+        authoring_metadata={"skeleton_slug": "does-not-exist"},
+    )
+
+    result = pipeline_mod._personalizable_slot_ids_for_job(
+        job, band=str(tmp_path / "nonexistent-band")
+    )
+
+    assert result is None
 
 
 @pytest.mark.unit
