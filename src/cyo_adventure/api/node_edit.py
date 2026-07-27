@@ -70,8 +70,8 @@ from __future__ import annotations
 import copy
 from typing import TYPE_CHECKING, cast
 
-import anyio
 import httpx
+from anyio.to_thread import run_sync
 from fastapi import APIRouter
 from sqlalchemy import func, select
 
@@ -452,7 +452,7 @@ async def edit_node(
     # child mid-read (AL-035). anyio.to_thread keeps the loop responsive.
     # #VERIFY: the handler's existing tests still pass; the gate is pure and
     # holds no session, so running it off-loop is safe.
-    gate_result = await anyio.to_thread.run_sync(run_gate, new_blob)
+    gate_result = await run_sync(run_gate, new_blob)
     if gate_result.blocked:
         msg = "edited passage failed the validation gate"
         raise ValidationError(

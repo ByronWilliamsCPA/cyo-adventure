@@ -465,6 +465,14 @@ known-first-party = ["cyo_adventure"]
 # the result). A config object would obscure the sole-publish-path contract.
 "**/publishing/service.py" = ["PLR0913"]
 
+# skeleton_matches_cell carries the skeleton metadata, the three orthogonal cell
+# dimensions (band, length, style), and the keyword-only include_continuations
+# flag that separates generation selection (excludes mid-series books, AL-045)
+# from the in-cell clone audit (measures them). The dimensions are the request's
+# own fields passed straight through; collapsing them into a config object would
+# obscure the cell contract that authoring_plan and the diversity audit share.
+"**/generation/skeleton_match.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests

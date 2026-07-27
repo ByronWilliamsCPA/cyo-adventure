@@ -144,7 +144,12 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
 
 
 def skeleton_matches_cell(
-    metadata: StoryMetadata, *, band: str, length: str, style: str
+    metadata: StoryMetadata,
+    *,
+    band: str,
+    length: str,
+    style: str,
+    include_continuations: bool = False,
 ) -> bool:
     """Return whether a skeleton's metadata matches a (band, length, style) cell.
 
@@ -159,6 +164,14 @@ def skeleton_matches_cell(
         style: The request's narrative style; ignored for every band except
             "13-16" and "16+" (ADR-011: style collapses to prose below the
             teen bands).
+        include_continuations: When False (the default, used by generation
+            selection), a mid-series continuation is not a cell match, because
+            it must not be drawn for an ordinary themed request (AL-045). When
+            True, the continuation gate is skipped: the in-cell clone audit
+            (diversity/incell.py) opts in so that a book 2 which re-skins book 1
+            is still measured against the catalog. Selection and catalog-quality
+            are separate concerns that happen to share this predicate; only the
+            audit sets this flag.
 
     Returns:
         True if age_band matches, the skeleton's length matches (or the
@@ -168,7 +181,7 @@ def skeleton_matches_cell(
     """
     if metadata.age_band != band:
         return False
-    if is_continuation_skeleton(metadata):
+    if not include_continuations and is_continuation_skeleton(metadata):
         return False
     if metadata.length is not None and metadata.length != length:
         return False
@@ -205,7 +218,9 @@ def is_continuation_skeleton(metadata: StoryMetadata) -> bool:
     return series is not None and series.book_index > 1
 
 
-def candidates_for_cell(band: str, length: str, style: str) -> list[str]:
+def candidates_for_cell(
+    band: str, length: str, style: str, *, include_continuations: bool = False
+) -> list[str]:
     """Return slugs of every production-eligible skeleton matching a cell.
 
     Args:
@@ -213,6 +228,10 @@ def candidates_for_cell(band: str, length: str, style: str) -> list[str]:
         length: The request's length, already defaulted if the request's own
             length was null.
         style: The request's narrative style.
+        include_continuations: Forwarded to :func:`skeleton_matches_cell`. The
+            default (False) is generation-selection behavior and excludes
+            mid-series books. The in-cell clone audit passes True so a
+            continuation is still measured against its cell-mates.
 
     Returns:
         Sorted-by-filename slugs; empty if no skeleton matches (the caller
@@ -222,7 +241,13 @@ def candidates_for_cell(band: str, length: str, style: str) -> list[str]:
     return [
         slug
         for slug, metadata in _production_candidates(band)
-        if skeleton_matches_cell(metadata, band=band, length=length, style=style)
+        if skeleton_matches_cell(
+            metadata,
+            band=band,
+            length=length,
+            style=style,
+            include_continuations=include_continuations,
+        )
     ]
 
 

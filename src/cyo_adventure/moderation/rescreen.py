@@ -58,8 +58,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal
 
-import anyio
 import httpx
+from anyio.to_thread import run_sync
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import select
 
@@ -398,7 +398,7 @@ async def _rescreen_one(
         # no yield, so a multi-book rescreen blocked the loop for seconds at a
         # time (AL-035).
         # #VERIFY: rescreen tests; the gate is pure and session-free.
-        gate_result = await anyio.to_thread.run_sync(run_gate, version_row.blob)
+        gate_result = await run_sync(run_gate, version_row.blob)
         reasons = _gate_reasons(gate_result) if gate_result.blocked else []
 
         # The parsed model is needed for node text (classifiers) and the age
