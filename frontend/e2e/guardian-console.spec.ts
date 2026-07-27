@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { mockMe, seedGuardianSession } from './support/auth'
+import { makeGuardianSession, mockMe, mockOnboarding, seedGuardianSession } from './support/auth'
 
 /**
  * Console e2e (C4a-4): unauthenticated-redirect smoke plus the signed-in
@@ -34,6 +34,41 @@ test('an unauthenticated visit to an admin review detail URL also redirects to l
 }) => {
   await page.goto('/admin/review/some-story')
   await expect(page).toHaveURL(/\/guardian\/login$/)
+})
+
+test('signing in after an unauthenticated deep link returns to that deep link, not the console default', async ({
+  page,
+}) => {
+  // S-7(a): ProtectedRoute hands the login route `state={{ from: location }}`
+  // (ProtectedRoute.tsx:67); LoginPage is supposed to honor it post-login
+  // instead of always landing on the role-based console home. Drive the real
+  // login form (like guardian-auth.spec.ts) so LoginPage's own `from`
+  // resolution runs, not a seeded session that skips the login page entirely.
+  await page.goto('/admin/review/some-story')
+  await expect(page).toHaveURL(/\/guardian\/login$/)
+
+  await page.route('**/auth/v1/token**', (route) =>
+    route.fulfill({ json: makeGuardianSession('e2e-admin-deep-link-token') })
+  )
+  await mockOnboarding(page, { role: 'admin' })
+  await mockMe(page, { role: 'admin' })
+  // The review surface fetch is incidental to this test (only the post-login
+  // destination is under test); fail it the same way the signed-in admin
+  // console spec below does, and assert the resulting error state to prove
+  // the app actually mounted ReviewDetailPage at the deep-linked URL rather
+  // than merely matching the URL by coincidence.
+  await page.route('**/api/v1/storybooks/some-story/review*', (route) =>
+    route.fulfill({ status: 500, json: { detail: 'not under test here' } })
+  )
+
+  await page.getByLabel('Email').fill('admin@example.com')
+  await page.getByLabel('Password').fill('test-password')
+  await page.getByRole('button', { name: 'Sign in' }).click()
+
+  await expect(page).toHaveURL(/\/admin\/review\/some-story$/)
+  await expect(
+    page.getByText('We could not load this story for review. Please reload.')
+  ).toBeVisible()
 })
 
 const FLAGGED = {
