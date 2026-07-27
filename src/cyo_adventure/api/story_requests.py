@@ -8,8 +8,10 @@ explicit admin surface GET /admin/story-requests. Approve and decline are
 guardian-own-family or admin-global; a request outside the caller's scope
 returns 404 (existence hiding), which deliberately diverges from
 generation.py's cross-family 403 for this lower-value, child-facing resource.
-Approve builds a ConceptBrief and enqueues generation through the service
-layer, so it never touches the guardian-only POST /concepts gate. The
+Approve builds a ConceptBrief and creates the Concept directly through the
+service layer, so it never touches the guardian-only POST /concepts gate; no
+GenerationJob is created here (an admin later enqueues generation via
+POST /story-requests/{id}/authoring-plan). The
 authored-create endpoint (WS-B PR 2) lets a guardian or admin submit a
 pre-approved request, optionally on a child's behalf (profile_id may be null);
 family_id is optional and defaults to the caller's own family, while naming a
