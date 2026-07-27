@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, cast
 import pytest
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.mutation.subtree import (
     adjacency,
     all_edges,
@@ -48,7 +49,7 @@ def _load_catalog() -> list[tuple[str, dict[str, object]]]:
     """
     catalog: list[tuple[str, dict[str, object]]] = []
     for path in sorted(_SKELETONS_ROOT.glob("*/*.json")):
-        if path.name.endswith(".contract.json"):
+        if is_sidecar(path):
             continue
         story = cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
         meta = story.get("metadata")

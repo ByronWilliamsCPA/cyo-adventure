@@ -50,12 +50,13 @@ from pathlib import Path
 from typing import cast
 
 from cyo_adventure.diversity.structure import structure_fingerprint
+from cyo_adventure.storybook.slotted_surfaces import FILL_DIRECTIVE_RE
 from cyo_adventure.storybook.theme_contract import SLOT_TOKEN_RE
 from cyo_adventure.validator.gate import run_gate
 
-# The production FILL directive parse, reused verbatim from the pilot
-# (`out/pilot/_neutralize.py:337`) and from `generation/binding.py`.
-_FILL_RE = re.compile(r"^<<FILL role=(\w+) words=(\d+) beats='(.*)'>>$", re.DOTALL)
+# The production FILL directive parse. Single shared definition since A21;
+# previously a fourth private copy of the same pattern.
+_FILL_RE = FILL_DIRECTIVE_RE
 
 # Any brace-delimited group anywhere in a slotted surface; used to find
 # malformed tokens (a `{...}` group that does not match SLOT_TOKEN_RE's

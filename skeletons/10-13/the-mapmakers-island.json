@@ -644,7 +644,7 @@
       "choices": [
         {
           "id": "c_cf_notes_1",
-          "label": "Follow Alder's notes toward the camp.",
+          "label": "Follow {PREDECESSOR}'s notes toward the camp.",
           "target": "cf_bench"
         }
       ]
@@ -2907,12 +2907,12 @@
       "choices": [
         {
           "id": "c_tw_fuelstore_1",
-          "label": "Copy Alder's last message and cross to the ridge.",
+          "label": "Copy {PREDECESSOR}'s last message and cross to the ridge.",
           "target": "tw_ridgeway"
         },
         {
           "id": "c_tw_fuelstore_2",
-          "label": "Sit with Alder's unanswered message.",
+          "label": "Sit with {PREDECESSOR}'s unanswered message.",
           "target": "e_tw_note"
         }
       ]
@@ -3086,7 +3086,7 @@
         },
         {
           "id": "c_cove_seacave_2",
-          "label": "Sit with Alder's kind hidden note.",
+          "label": "Sit with {PREDECESSOR}'s kind hidden note.",
           "target": "e_cove_tin"
         }
       ]

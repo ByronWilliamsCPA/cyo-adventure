@@ -7,8 +7,10 @@ mask, and theme-tag normalization for request-time similarity matching
 (WS-0 design doc section 2.1; supervisor Adjustment 1).
 
 Pure module: stdlib plus ``cyo_adventure.storybook.models`` /
-``cyo_adventure.core.exceptions`` only. Never imports ``db``, ``generation``,
-or ``sqlalchemy`` (WS-0 design doc section 1.1 import rule).
+``cyo_adventure.storybook.sentinels`` / ``cyo_adventure.core.exceptions``
+only. Never imports ``db``, ``generation``, or ``sqlalchemy`` (WS-0 design
+doc section 1.1 import rule). ``storybook.sentinels`` is admitted under the
+same rule: it imports only ``re``, ``typing``, and ``core.exceptions``.
 """
 
 from __future__ import annotations
@@ -21,7 +23,9 @@ from typing import cast
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.diversity.similarity_vocab import SIMILARITY_TAG_MAP
 from cyo_adventure.storybook.models import Storybook
+from cyo_adventure.storybook.sentinels import strip_sentinels
 
 # Deliberately crude: only needs to identify sentence-initial vs
 # sentence-medial capitalization, not linguistic sentence boundaries
@@ -185,6 +189,14 @@ STOPWORDS: frozenset[str] = frozenset(
 # noise down to the thematically informative words, so short paraphrased
 # briefs land close together instead of being diluted by unrelated content
 # words (see docs/planning/ws0-diversity-metrics-design.md section 10).
+# #CRITICAL: security: this is the ECHO vocabulary. Its values are read back to
+# a child by generation/worker.py::_degraded_set_aside_decisions, which turns
+# theme_signature(theme_brief) tags into SET_ASIDE phrases on the kid surface.
+# Adding a key here changes what a child is shown, so it is a content-safety
+# change, not a similarity tweak. FROZEN: similarity work belongs in
+# diversity/similarity_vocab.py (A1).
+# #VERIFY: tests/unit/test_similarity_signature.py::
+# test_echo_vocabulary_is_unchanged_by_the_similarity_split
 _THEME_TAG_MAP: dict[str, str] = {
     "dragon": "dragon",
     "dragons": "dragon",
@@ -420,11 +432,29 @@ def extract_entities(
     model = coerce_storybook(story)
     bodies = [node.body for node in model.nodes]
     bodies.extend(choice.label for node in model.nodes for choice in node.choices)
-    return _medial_caps_tokens(bodies) | _brief_declared_entities(brief)
+    # #ASSUME: data integrity: a personalization sentinel's SLOT ID must never
+    # enter the entity set. `{~HERO:Robin~}` tokenizes to `HERO` then `Robin`,
+    # and `HERO` is uppercase at a sentence-medial position, so the medial-caps
+    # scan would otherwise adopt the slot id as if it were a character name.
+    # That is masking a synthetic token instead of a real one, and it displaces
+    # a genuine entity from the set. Stripping to the inner value first makes a
+    # sentinel-bearing fill produce the same entity set as the same fill with
+    # its sentinels already resolved.
+    # #VERIFY: tests/unit/test_diversity_sentinels.py, which asserts entity-set
+    # and distance equality between a sentinel-bearing pair and its resolved
+    # equivalent.
+    stripped = [strip_sentinels(body) for body in bodies]
+    return _medial_caps_tokens(stripped) | _brief_declared_entities(brief)
 
 
 def mask_tokens(text: str, entities: frozenset[str]) -> list[str]:
     """Lowercase, tokenize, and mask every entity token to one placeholder.
+
+    Personalization sentinels are resolved to their inner generic word before
+    tokenizing, so a stored fill carrying ``{~HERO:Robin~}`` yields the same
+    token sequence as the same prose with its sentinels already substituted
+    (ADR-023). Without this, each sentinel contributes an extra ``HERO`` token
+    that shifts every bigram spanning it.
 
     Args:
         text: The prose to mask (typically one node body).
@@ -435,8 +465,14 @@ def mask_tokens(text: str, entities: frozenset[str]) -> list[str]:
         list[str]: Lowercased tokens, with every token whose lowercase form
             is in ``entities`` replaced by :data:`ENTITY_PLACEHOLDER`.
     """
+    # #ASSUME: data integrity: every diversity consumer that tokenizes prose
+    # funnels through here, namely the leaf, lexical and aggregate modules, so
+    # this is the single boundary at which sentinels must be resolved. The
+    # reading-level validator and both moderation entry points already strip at
+    # their own boundaries; diversity was the remaining gate that did not.
+    # #VERIFY: tests/unit/test_diversity_sentinels.py.
     masked: list[str] = []
-    for token in tokenize(text):
+    for token in tokenize(strip_sentinels(text)):
         lowered = token.lower()
         masked.append(ENTITY_PLACEHOLDER if lowered in entities else lowered)
     return masked
@@ -543,3 +579,115 @@ def theme_signature(
             lowered = theme.strip().lower()
             tags.add(_THEME_TAG_MAP.get(lowered, lowered))
     return frozenset(tags)
+
+
+def _similarity_tag_matches(text: str) -> frozenset[str]:
+    """Return similarity tags recognized in free text.
+
+    Mirrors :func:`_tag_matches` but against the similarity vocabulary, so a
+    request premise lands in the same space a story's curated themes do.
+
+    Args:
+        text: Free-form text (typically a brief's ``premise``).
+
+    Returns:
+        frozenset[str]: Canonical similarity tags for every matching content
+            unigram or bigram. Unmatched words contribute nothing.
+    """
+    content = [token.lower() for token in tokenize(text)]
+    content = [token for token in content if token not in STOPWORDS]
+    tags: set[str] = set()
+    for word in content:
+        tag = SIMILARITY_TAG_MAP.get(word)
+        if tag is not None:
+            tags.add(tag)
+    for first, second in pairwise(content):
+        tag = SIMILARITY_TAG_MAP.get(f"{first} {second}")
+        if tag is not None:
+            tags.add(tag)
+    return frozenset(tags)
+
+
+def similarity_signature(
+    brief: Mapping[str, object] | None,
+    metadata_themes: Sequence[str] | None = None,
+) -> frozenset[str]:
+    """Return a canonical similarity signature (A1).
+
+    The counterpart to :func:`theme_signature`, which stays the frozen **echo**
+    signature. This one exists to be compared, and the difference that matters is
+    what happens to a curated theme that the vocabulary does not recognise.
+
+    ``theme_signature`` passes an unrecognised ``metadata.themes`` entry through
+    **verbatim** (``normalize.py`` line ~571,
+    ``tags.add(_THEME_TAG_MAP.get(lowered, lowered))``). Since no catalog theme is
+    an echo-map value, the stored side accumulated 132 raw strings the request
+    side could never produce, so the comparison was asymmetric by construction: a
+    byte-identical premise scored 0.333 against a ``tau_theme`` of 0.35 and did
+    not register as similar. Here an unrecognised theme is **dropped**, which
+    keeps both sides inside one closed vocabulary at the cost of losing signal the
+    map does not yet cover. That trade is deliberate: an unmappable string cannot
+    make two stories measurably similar, it can only make them spuriously
+    distinct. Coverage is therefore a measured number, not an assumption
+    (``scripts/measure_theme_coverage.py``).
+
+    Args:
+        brief: The theme brief (a ``ConceptBrief``-shaped mapping), or None.
+            Only the ``premise`` field is read.
+        metadata_themes: Curated theme strings from a story's
+            ``metadata.themes``, when available.
+
+    Returns:
+        frozenset[str]: Canonical similarity tags; empty when neither source
+            yields a recognised tag.
+    """
+    tags: set[str] = set()
+    premise = brief.get("premise") if brief is not None else None
+    if isinstance(premise, str) and premise:
+        tags |= _similarity_tag_matches(premise)
+    for theme in metadata_themes or ():
+        if not theme:
+            continue
+        # #ASSUME: data integrity: an unrecognised curated theme is DROPPED, not
+        # passed through. Passing it through is exactly the defect this function
+        # exists to fix: it put 132 strings on the stored side that the request
+        # side could never produce.
+        # #VERIFY: tests/unit/test_similarity_signature.py::
+        # test_unmapped_curated_theme_is_dropped_not_passed_through
+        tag = SIMILARITY_TAG_MAP.get(theme.strip().lower())
+        if tag is not None:
+            tags.add(tag)
+    return frozenset(tags)
+
+
+def containment(request: frozenset[str], story: frozenset[str]) -> float:
+    """Return how much of ``request`` is covered by ``story`` (A2).
+
+    Symmetric Jaccard is the wrong measure for request-versus-story. A request is
+    a short statement of intent; a story carries a fuller set, including themes
+    the reader never asked for. Jaccard divides by the union, so every theme the
+    story has and the request did not mention *lowers* the score, and a story that
+    fully delivers the request is punished for also being about other things. That
+    is a structural penalty on a match, not a signal.
+
+    Containment asks the question the caller actually has: of what the reader
+    asked for, how much does this story already give them?
+
+    Empty-set semantics differ from :func:`jaccard_similarity` on purpose, and
+    that function is left untouched: ``normalize.py`` records "an empty signature
+    must never register as similar to anything" as a deliberate WS-0 decision, and
+    it is relied upon elsewhere. Here an empty *request* is not a claim of
+    similarity either, so it returns ``0.0``; there is nothing the reader asked
+    for, so nothing can be covered.
+
+    Args:
+        request: The request-side signature.
+        story: The story-side signature.
+
+    Returns:
+        float: ``|request & story| / |request|`` in ``[0, 1]``; ``0.0`` when
+            ``request`` is empty.
+    """
+    if not request:
+        return 0.0
+    return len(request & story) / len(request)

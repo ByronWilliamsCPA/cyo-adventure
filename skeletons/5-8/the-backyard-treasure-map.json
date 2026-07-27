@@ -675,7 +675,7 @@
     },
     {
       "id": "s_bramble_6",
-      "body": "<<FILL role=rising words=72 beats='{C1_COLLAR} has {C1_TAG} that reads Pepper, please be my friend, but no address at all; the cat clearly knows {C1_ZONE_HINT} well and treats the friends like old pals; {HERO} and {COMPANION} wonder if it has been waiting for the map to be found'>>",
+      "body": "<<FILL role=rising words=72 beats='{C1_COLLAR} has {C1_TAG} that reads the cat's name and please be my friend, but no address at all; the cat clearly knows {C1_ZONE_HINT} well and treats the friends like old pals; {HERO} and {COMPANION} wonder if it has been waiting for the map to be found'>>",
       "is_ending": false,
       "choices": [
         {

@@ -723,6 +723,7 @@ async def fill_skeleton(
     review_stage1_model: str | None = None,
     prep_model: str | None = None,
     slot_bindings: Mapping[str, str] | None = None,
+    differentiation_directive: str = "",
 ) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Stage B': Fill -> Repair).
 
@@ -779,6 +780,14 @@ async def fill_skeleton(
             (:func:`~cyo_adventure.generation.prompts.build_bound_fill_prompt`)
             instead of the free-text variant. ``None`` (default) preserves the
             byte-identical legacy prompt for every existing caller.
+        differentiation_directive: The trusted differentiation block (A6/A7) from
+            :func:`~cyo_adventure.generation.prompts.build_differentiation_directive`,
+            carrying this family's escalation level, the drawn craft axis, and the
+            titles of prior stories on this same skeleton. Empty by default, in
+            which case the prompt renders its explicit no-context block; it is
+            never left as an unfilled template token. Threaded into both the
+            free-text and the bound-fill prompt variants, so contract-bound
+            skeletons receive the same A6/A7 anti-repetition steering.
 
     Returns:
         A :class:`GenerationOutcome` describing the final status, the last
@@ -819,9 +828,14 @@ async def fill_skeleton(
             json.dumps(skeleton),
             json.dumps(dict(slot_bindings)),
             json.dumps(theme_brief),
+            differentiation_directive,
         )
         if slot_bindings is not None
-        else build_fill_prompt(json.dumps(skeleton), json.dumps(theme_brief))
+        else build_fill_prompt(
+            json.dumps(skeleton),
+            json.dumps(theme_brief),
+            differentiation_directive,
+        )
     )
     current_doc, gate_result = await _run_one_stage(
         fill_prompt, provider=guarded_provider, max_tokens=_MAX_TOKENS_PROSE

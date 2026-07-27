@@ -548,6 +548,14 @@ jobs:
       - name: Diversity eval (offline panel, regression rules R1-R6)
         run: uv run python scripts/run_diversity_eval.py --check
 
+      # A8: in-cell clone audit over the real skeletons/ catalog, which the
+      # panel fixtures above do not cover. Blocking, against the TAU_CELL floor
+      # loaded from ws5_floor_baseline.json (never a literal). One known
+      # breach is allowlisted in the script and tracked by A9; the gate also
+      # fails on a stale allowlist entry, so the list can only shrink.
+      - name: In-cell clone audit (A8)
+        run: uv run python scripts/check_incell_clones.py --check
+
   # Uploads the backend's per-test-type coverage + JUnit to Codecov, INLINE so
   # it runs on PRs (the old workflow_run codecov.yml only ran on main). The
   # reusable `ci` job publishes coverage-{unit,integration,security}.xml and

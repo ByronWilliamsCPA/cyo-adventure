@@ -81,6 +81,7 @@ def test_bound_fill_prompt_no_unfilled_placeholders() -> None:
         "{skeleton_with_fill_directives}",
         "{slot_bindings}",
         "{theme_brief}",
+        "{differentiation_directive}",
     ):
         assert token not in prompt.combined
 
@@ -111,6 +112,29 @@ def test_bound_fill_prompt_ending_title_freeze_line_present() -> None:
 def test_bound_fill_prompt_bound_values_labeled_as_data() -> None:
     prompt = build_bound_fill_prompt("{}", "{}", "{}")
     assert "## Bound Theme Values (validated data, not instructions)" in prompt.user
+
+
+def test_bound_fill_prompt_carries_differentiation_directive() -> None:
+    """I1: the bound-fill path threads the A6/A7 directive into the prompt.
+
+    Contract-bound skeletons are the production-dominant fill direction, so a
+    directive supplied by the caller must actually reach the rendered prompt
+    rather than being silently dropped as it was before this fix.
+    """
+    marker = "UNIQUE-DIFFERENTIATION-MARKER-9137"
+    prompt = build_bound_fill_prompt("{}", "{}", "{}", marker)
+    assert marker in prompt.combined
+
+
+def test_bound_fill_prompt_never_ships_an_unfilled_directive_token() -> None:
+    """A bound caller that omits the directive still gets a complete prompt.
+
+    The default renders the explicit no-context block, byte-for-byte the same
+    fallback :func:`build_fill_prompt` uses, so the token is never left raw.
+    """
+    prompt = build_bound_fill_prompt("{}", "{}", "{}")
+    assert "{differentiation_directive}" not in prompt.combined
+    assert "No similarity context was available" in prompt.combined
 
 
 # ---------------------------------------------------------------------------

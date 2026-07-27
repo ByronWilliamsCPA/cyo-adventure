@@ -6,6 +6,7 @@ from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.skeleton import (
     has_unfilled_directives,
     is_production_eligible,
+    is_sidecar,
     load_skeleton,
 )
 
@@ -54,9 +55,42 @@ _DEMO_SKELETONS = [
     "skeletons/16+/the-sunken-signal.json",
 ]
 
+# L2-14 quarantine (A14). EMPTY as of 2026-07-26: all four skeletons that once
+# offered a reader a decision whose every option ended in death now pass.
+#
+# Two of the four never needed a content change at all. The rule originally
+# treated `capture` as fatal, which was an implementation choice rather than the
+# owner's instruction ("both result in death"), and narrowing it to `death`
+# cleared `the-quiet-harbor-protocol` and `the-cinder-bazaar`, whose deliberately
+# authored "closing dark" climaxes each offer a survivable capture.
+#
+# The remaining two were real and were fixed in the content:
+#   the-sunken-signal  n_collapse  the survive-but-fail ending the author had
+#                                  already written was gated behind equipment;
+#                                  the gate now also opens at air=0.
+#   the-serpent-vaults c22_drown_e death -> setback, so running the deep lock dry
+#                                  ends the descent instead of the diver.
+#
+# The mechanism is kept, not deleted: it is strict, so a re-added entry that
+# stops failing forces its own removal, and S4 has further catalog work to come.
+_L2_14_QUARANTINE: frozenset[str] = frozenset()
+
+
+def _param(rel: str) -> object:
+    """Parametrize one skeleton, strict-xfail if it is L2-14 quarantined."""
+    if rel in _L2_14_QUARANTINE:
+        return pytest.param(
+            rel,
+            marks=pytest.mark.xfail(
+                strict=True,
+                reason="L2-14: all-fatal decision, quarantined pending slice S4",
+            ),
+        )
+    return rel
+
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _DEMO_SKELETONS])
 def test_skeletons_load_under_schema_2_0(rel: str) -> None:
     """Each demo skeleton parses under schema 2.0 with typed endings."""
     data = load_skeleton(Path(rel))
@@ -80,7 +114,7 @@ def _assert_passes_full_gate(rel: str) -> None:
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _DEMO_SKELETONS])
 def test_skeletons_pass_full_gate_including_policy(rel: str) -> None:
     """Each demo skeleton passes the full gate, including the policy layer."""
     _assert_passes_full_gate(rel)
@@ -94,7 +128,7 @@ def test_demo_shell_is_production_eligible_by_default() -> None:
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _DEMO_SKELETONS])
 def test_seed_skeletons_are_mvp_non_production(rel: str) -> None:
     """The three current hand-authored seeds are MVP/Test, not production."""
     data = load_skeleton(Path(rel))
@@ -118,10 +152,10 @@ def _discover_production_skeletons() -> list[str]:
 
     found: list[str] = []
     for path in sorted(Path("skeletons").glob("*/*.json")):
-        # Skip WS-2 theme-contract sidecars: they share the .json suffix and
-        # this band-directory glob, but they are not skeletons (see
-        # generation/skeleton_match.py, which skips them the same way).
-        if path.name.endswith(".contract.json"):
+        # Skip sidecars (WS-2 theme contracts and WS-5 lineage records): they
+        # share the .json suffix and this band-directory glob, but they are not
+        # skeletons (see generation/skeleton.py::is_sidecar, the shared skip).
+        if is_sidecar(path):
             continue
         data = json.loads(path.read_text(encoding="utf-8"))
         if is_production_eligible(data):
@@ -139,14 +173,14 @@ def test_at_least_one_production_skeleton_exists() -> None:
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _PRODUCTION_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _PRODUCTION_SKELETONS])
 def test_production_skeletons_pass_full_gate(rel: str) -> None:
     """Each production skeleton passes the full gate (blocked is False)."""
     _assert_passes_full_gate(rel)
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("rel", _PRODUCTION_SKELETONS)
+@pytest.mark.parametrize("rel", [_param(r) for r in _PRODUCTION_SKELETONS])
 def test_production_skeletons_are_production_eligible(rel: str) -> None:
     """Each production skeleton is scale-classified as production-eligible."""
     data = load_skeleton(Path(rel))

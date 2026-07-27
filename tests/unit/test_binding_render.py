@@ -677,8 +677,7 @@ def test_render_end_to_end_on_pilot_parameterized_skeleton() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Node-level slot-scanning helpers (_iter_nodes, _body_slot_tokens,
-# _ending_slot_tokens, _choice_slot_tokens)
+# Node-level slot-scanning helper (_iter_nodes)
 # ---------------------------------------------------------------------------
 
 
@@ -694,29 +693,6 @@ def test_iter_nodes_skips_non_dict_entries_in_the_nodes_list() -> None:
     }
     nodes = list(binding._iter_nodes(skeleton))
     assert nodes == [{"id": "n1", "body": "prose"}]
-
-
-def test_body_slot_tokens_empty_when_body_is_not_a_string() -> None:
-    """A node whose ``body`` is not a string yields no slot tokens."""
-    assert tuple(binding._body_slot_tokens({"body": 123})) == ()
-
-
-def test_ending_slot_tokens_empty_when_ending_title_is_not_a_string() -> None:
-    """A node whose ending ``title`` is not a string yields no slot tokens."""
-    node: dict[str, object] = {"ending": {"id": "e_a", "title": 123}}
-    assert tuple(binding._ending_slot_tokens(node)) == ()
-
-
-def test_choice_slot_tokens_skips_non_dict_choices_and_non_string_labels() -> None:
-    """Non-dict choices and non-string labels contribute no tokens."""
-    node: dict[str, object] = {
-        "choices": [
-            "not a choice",
-            {"label": 123},
-            {"label": "Approach {A1_OFFER}."},
-        ]
-    }
-    assert list(binding._choice_slot_tokens(node)) == ["A1_OFFER"]
 
 
 # ---------------------------------------------------------------------------

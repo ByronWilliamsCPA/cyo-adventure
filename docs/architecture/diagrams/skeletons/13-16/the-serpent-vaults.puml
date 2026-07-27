@@ -735,8 +735,8 @@ c21_pass : rising · 56w
 state c22_drown_a #D1C4E9
 c22_drown_a : rising · 50w
 state c22_drown_e #FFCDD2
-c22_drown_e : death (negative)
-c22_drown_e : "No Breath for the Deep Run"
+c22_drown_e : setback (negative)
+c22_drown_e : "Turned Back at the Deep Lock"
 state c22_charge_a #D1C4E9
 c22_charge_a : rising · 50w
 state c22_charge_e #FFCDD2

@@ -1272,7 +1272,7 @@ g0_market --> g0_lantern_buy : Buy lamp oil for the brass lantern.
 g0_market --> g0_rope : Buy eel line and a grapple.
 g0_market --> g0_market_look : Walk the stalls and listen.
 g0_market --> w0_oddments : Poke through the oddments cart.
-g0_lantern_buy --> g0_inn_door : Carry the oil jar to the inn.
+g0_lantern_buy --> g0_inn_door : Take the oil and a lantern on to the inn...
 g0_rope --> g0_inn_door : Carry the coil to the inn.
 g0_market_look --> g0_inn_door : Take what you heard to the inn.
 g0_inn_early --> g0_redcloaks : Size up the redcloak swords at the bar.

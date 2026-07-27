@@ -12,6 +12,7 @@ from cyo_adventure.diversity.structure import (
     structure_features,
     structure_fingerprint,
 )
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.storybook.models import Storybook
 
 _SPACE_STATION_FILL = Path(
@@ -44,9 +45,7 @@ def test_structural_distance_zero_for_same_skeleton_fills() -> None:
 @pytest.mark.unit
 def test_structural_distance_positive_across_skeletons() -> None:
     """Any two distinct skeleton files in skeletons/8-11/ are structurally apart."""
-    paths = sorted(
-        p for p in _SKELETON_DIR.glob("*.json") if not p.name.endswith(".contract.json")
-    )
+    paths = sorted(p for p in _SKELETON_DIR.glob("*.json") if not is_sidecar(p))
     assert len(paths) >= 2
     first = _load(paths[0])
     second = _load(paths[1])
@@ -110,8 +109,7 @@ def test_features_handle_cyclic_topologies() -> None:
     cyclic_paths = [
         path
         for path in _SKELETON_DIR.glob("*.json")
-        if not path.name.endswith(".contract.json")
-        and _load(path)["metadata"]["topology"] == "open_map"
+        if not is_sidecar(path) and _load(path)["metadata"]["topology"] == "open_map"
     ]
     assert cyclic_paths, "expected at least one open_map skeleton fixture"
     for path in cyclic_paths:

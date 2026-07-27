@@ -24,6 +24,7 @@ import pytest
 from cyo_adventure.generation.binding import load_contract_for, render_bound_skeleton
 from cyo_adventure.validator.gate import run_gate
 from cyo_adventure.validator.slots import BUNDLE_IDS, validate_slot_bindings
+from cyo_adventure.validator.theme_leak import residual_theme_leaks
 
 if TYPE_CHECKING:
     from cyo_adventure.storybook.theme_contract import ThemeContract
@@ -144,3 +145,21 @@ def test_default_binding_renders_with_no_residual_tokens(contract_path: Path) ->
     """
     skeleton, contract = _load_skeleton(contract_path)
     render_bound_skeleton(skeleton, contract.default_binding)
+
+
+@pytest.mark.parametrize("contract_path", _CONTRACT_PATHS, ids=lambda p: p.stem)
+def test_no_residual_retired_theme_proper_nouns(contract_path: Path) -> None:
+    """A21: the skeleton's own text must not name the theme it was migrated off.
+
+    ``legacy_lexicon`` is otherwise only ever tested against a *proposed slot
+    value*, so a proper noun left hardcoded in a beat, an ending title, or a
+    choice label passes every other check here and then survives every
+    re-theme intact.
+    """
+    skeleton, contract = _load_skeleton(contract_path)
+    leaks = residual_theme_leaks(skeleton, contract)
+    assert not leaks, f"{contract_path.stem} leaks its retired theme: " + "; ".join(
+        f"{leak.term!r} in {leak.kind} {leak.location} "
+        f"(slot: {', '.join(leak.owning_slot_ids) or 'none declared'})"
+        for leak in leaks[:8]
+    )

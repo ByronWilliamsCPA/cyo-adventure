@@ -55,10 +55,10 @@ state c01_fd_c1 #D1C4E9
 c01_fd_c1 : rising · 62w
 state c01_fd_end #FFCDD2
 c01_fd_end : death (negative)
-c01_fd_end : "The Pressed Gamble at Threshold Crust"
+c01_fd_end : "The Pressed Gamble at {C01_HAZARD}"
 state c01_lost #FFCDD2
 c01_lost : death (negative)
-c01_lost : "Turned from the Road at Threshold Crust"
+c01_lost : "Turned from the Road at {C01_HAZARD}"
 state c02_ap #D1C4E9
 c02_ap : rising · 76w
 state c02_f0_c0 #D1C4E9
@@ -101,10 +101,10 @@ state c02_fd_c1 #D1C4E9
 c02_fd_c1 : rising · 62w
 state c02_fd_end #FFCDD2
 c02_fd_end : death (negative)
-c02_fd_end : "The Pressed Gamble at Weighing House"
+c02_fd_end : "The Pressed Gamble at {C02_HAZARD}"
 state c02_lost #FFCDD2
 c02_lost : death (negative)
-c02_lost : "Turned from the Road at Weighing House"
+c02_lost : "Turned from the Road at {C02_HAZARD}"
 state c03_ap #D1C4E9
 c03_ap : rising · 76w
 state c03_f0_c0 #D1C4E9
@@ -134,7 +134,7 @@ state c03_f3_c1 #D1C4E9
 c03_f3_c1 : rising · 62w
 state c03_f3_end #FFCDD2
 c03_f3_end : death (negative)
-c03_f3_end : "Still at White Noon"
+c03_f3_end : "Still at {C03_HAZARD}"
 state c03_gate #FFF9C4
 c03_gate : choice · 92w
 state c03_pass #D1C4E9
@@ -147,10 +147,10 @@ state c03_fd_c1 #D1C4E9
 c03_fd_c1 : rising · 62w
 state c03_fd_end #FFCDD2
 c03_fd_end : death (negative)
-c03_fd_end : "The Pressed Gamble at White Noon"
+c03_fd_end : "The Pressed Gamble at {C03_HAZARD}"
 state c03_lost #FFCDD2
 c03_lost : death (negative)
-c03_lost : "Turned from the Road at White Noon"
+c03_lost : "Turned from the Road at {C03_HAZARD}"
 state c04_ap #D1C4E9
 c04_ap : rising · 76w
 state c04_f0_c0 #D1C4E9
@@ -200,10 +200,10 @@ state c04_fd_c1 #D1C4E9
 c04_fd_c1 : rising · 62w
 state c04_fd_end #FFCDD2
 c04_fd_end : death (negative)
-c04_fd_end : "The Pressed Gamble at Scouring Wind"
+c04_fd_end : "The Pressed Gamble at {C04_HAZARD}"
 state c04_lost #FFCDD2
 c04_lost : death (negative)
-c04_lost : "Turned from the Road at Scouring Wind"
+c04_lost : "Turned from the Road at {C04_HAZARD}"
 state c05_ap #D1C4E9
 c05_ap : rising · 76w
 state c05_f0_c0 #D1C4E9
@@ -246,10 +246,10 @@ state c05_fd_c1 #D1C4E9
 c05_fd_c1 : rising · 62w
 state c05_fd_end #FFCDD2
 c05_fd_end : death (negative)
-c05_fd_end : "The Pressed Gamble at Brine Sink"
+c05_fd_end : "The Pressed Gamble at {C05_HAZARD}"
 state c05_lost #FFCDD2
 c05_lost : death (negative)
-c05_lost : "Turned from the Road at Brine Sink"
+c05_lost : "Turned from the Road at {C05_HAZARD}"
 state c06_ap #D1C4E9
 c06_ap : rising · 76w
 state c06_f0_c0 #D1C4E9
@@ -292,10 +292,10 @@ state c06_fd_c1 #D1C4E9
 c06_fd_c1 : rising · 62w
 state c06_fd_end #FFCDD2
 c06_fd_end : death (negative)
-c06_fd_end : "The Pressed Gamble at Bone Field"
+c06_fd_end : "The Pressed Gamble at {C06_HAZARD}"
 state c06_lost #FFCDD2
 c06_lost : death (negative)
-c06_lost : "Turned from the Road at Bone Field"
+c06_lost : "Turned from the Road at {C06_HAZARD}"
 state c07_ap #D1C4E9
 c07_ap : rising · 76w
 state c07_f0_c0 #D1C4E9
@@ -338,10 +338,10 @@ state c07_fd_c1 #D1C4E9
 c07_fd_c1 : rising · 62w
 state c07_fd_end #FFCDD2
 c07_fd_end : death (negative)
-c07_fd_end : "The Pressed Gamble at Mirage Lake"
+c07_fd_end : "The Pressed Gamble at {C07_HAZARD}"
 state c07_lost #FFCDD2
 c07_lost : death (negative)
-c07_lost : "Turned from the Road at Mirage Lake"
+c07_lost : "Turned from the Road at {C07_HAZARD}"
 state c08_ap #D1C4E9
 c08_ap : rising · 76w
 state c08_f0_c0 #D1C4E9
@@ -384,10 +384,10 @@ state c08_fd_c1 #D1C4E9
 c08_fd_c1 : rising · 62w
 state c08_fd_end #FFCDD2
 c08_fd_end : death (negative)
-c08_fd_end : "The Pressed Gamble at Needle Flats"
+c08_fd_end : "The Pressed Gamble at {C08_HAZARD}"
 state c08_lost #FFCDD2
 c08_lost : death (negative)
-c08_lost : "Turned from the Road at Needle Flats"
+c08_lost : "Turned from the Road at {C08_HAZARD}"
 state c09_ap #D1C4E9
 c09_ap : rising · 76w
 state c09_f0_c0 #D1C4E9
@@ -430,10 +430,10 @@ state c09_fd_c1 #D1C4E9
 c09_fd_c1 : rising · 62w
 state c09_fd_end #FFCDD2
 c09_fd_end : death (negative)
-c09_fd_end : "The Pressed Gamble at First Night"
+c09_fd_end : "The Pressed Gamble at {C09_HAZARD}"
 state c09_lost #FFCDD2
 c09_lost : death (negative)
-c09_lost : "Turned from the Road at First Night"
+c09_lost : "Turned from the Road at {C09_HAZARD}"
 state c10_ap #D1C4E9
 c10_ap : rising · 76w
 state c10_f0_c0 #D1C4E9
@@ -476,10 +476,10 @@ state c10_fd_c1 #D1C4E9
 c10_fd_c1 : rising · 62w
 state c10_fd_end #FFCDD2
 c10_fd_end : death (negative)
-c10_fd_end : "The Pressed Gamble at Thirst Ridge"
+c10_fd_end : "The Pressed Gamble at {C10_HAZARD}"
 state c10_lost #FFCDD2
 c10_lost : death (negative)
-c10_lost : "Turned from the Road at Thirst Ridge"
+c10_lost : "Turned from the Road at {C10_HAZARD}"
 state c11_ap #D1C4E9
 c11_ap : rising · 76w
 state c11_f0_c0 #D1C4E9
@@ -522,10 +522,10 @@ state c11_fd_c1 #D1C4E9
 c11_fd_c1 : rising · 62w
 state c11_fd_end #FFCDD2
 c11_fd_end : death (negative)
-c11_fd_end : "The Pressed Gamble at Bitter Wells"
+c11_fd_end : "The Pressed Gamble at {C11_HAZARD}"
 state c11_lost #FFCDD2
 c11_lost : death (negative)
-c11_lost : "Turned from the Road at Bitter Wells"
+c11_lost : "Turned from the Road at {C11_HAZARD}"
 state c12_ap #D1C4E9
 c12_ap : rising · 76w
 state c12_f0_c0 #D1C4E9
@@ -568,10 +568,10 @@ state c12_fd_c1 #D1C4E9
 c12_fd_c1 : rising · 62w
 state c12_fd_end #FFCDD2
 c12_fd_end : death (negative)
-c12_fd_end : "The Pressed Gamble at Crust Bridge"
+c12_fd_end : "The Pressed Gamble at {C12_HAZARD}"
 state c12_lost #FFCDD2
 c12_lost : death (negative)
-c12_lost : "Turned from the Road at Crust Bridge"
+c12_lost : "Turned from the Road at {C12_HAZARD}"
 state c13_ap #D1C4E9
 c13_ap : rising · 76w
 state c13_f0_c0 #D1C4E9
@@ -614,10 +614,10 @@ state c13_fd_c1 #D1C4E9
 c13_fd_c1 : rising · 62w
 state c13_fd_end #FFCDD2
 c13_fd_end : death (negative)
-c13_fd_end : "The Pressed Gamble at Salt Pillars"
+c13_fd_end : "The Pressed Gamble at {C13_HAZARD}"
 state c13_lost #FFCDD2
 c13_lost : death (negative)
-c13_lost : "Turned from the Road at Salt Pillars"
+c13_lost : "Turned from the Road at {C13_HAZARD}"
 state c14_ap #D1C4E9
 c14_ap : rising · 76w
 state c14_f0_c0 #D1C4E9
@@ -660,10 +660,10 @@ state c14_fd_c1 #D1C4E9
 c14_fd_c1 : rising · 62w
 state c14_fd_end #FFCDD2
 c14_fd_end : death (negative)
-c14_fd_end : "The Pressed Gamble at White Basin"
+c14_fd_end : "The Pressed Gamble at {C14_HAZARD}"
 state c14_lost #FFCDD2
 c14_lost : death (negative)
-c14_lost : "Turned from the Road at White Basin"
+c14_lost : "Turned from the Road at {C14_HAZARD}"
 state c15_ap #D1C4E9
 c15_ap : rising · 76w
 state c15_f0_c0 #D1C4E9
@@ -706,10 +706,10 @@ state c15_fd_c1 #D1C4E9
 c15_fd_c1 : rising · 62w
 state c15_fd_end #FFCDD2
 c15_fd_end : death (negative)
-c15_fd_end : "The Pressed Gamble at Drifting Dunes"
+c15_fd_end : "The Pressed Gamble at {C15_HAZARD}"
 state c15_lost #FFCDD2
 c15_lost : death (negative)
-c15_lost : "Turned from the Road at Drifting Dunes"
+c15_lost : "Turned from the Road at {C15_HAZARD}"
 state c16_ap #D1C4E9
 c16_ap : rising · 76w
 state c16_f0_c0 #D1C4E9
@@ -752,10 +752,10 @@ state c16_fd_c1 #D1C4E9
 c16_fd_c1 : rising · 62w
 state c16_fd_end #FFCDD2
 c16_fd_end : death (negative)
-c16_fd_end : "The Pressed Gamble at Cairn Maze"
+c16_fd_end : "The Pressed Gamble at {C16_HAZARD}"
 state c16_lost #FFCDD2
 c16_lost : death (negative)
-c16_lost : "Turned from the Road at Cairn Maze"
+c16_lost : "Turned from the Road at {C16_HAZARD}"
 state c17_ap #D1C4E9
 c17_ap : rising · 76w
 state c17_f0_c0 #D1C4E9
@@ -798,10 +798,10 @@ state c17_fd_c1 #D1C4E9
 c17_fd_c1 : rising · 62w
 state c17_fd_end #FFCDD2
 c17_fd_end : death (negative)
-c17_fd_end : "The Pressed Gamble at Caustic Rime"
+c17_fd_end : "The Pressed Gamble at {C17_HAZARD}"
 state c17_lost #FFCDD2
 c17_lost : death (negative)
-c17_lost : "Turned from the Road at Caustic Rime"
+c17_lost : "Turned from the Road at {C17_HAZARD}"
 state c18_ap #D1C4E9
 c18_ap : rising · 76w
 state c18_f0_c0 #D1C4E9
@@ -844,10 +844,10 @@ state c18_fd_c1 #D1C4E9
 c18_fd_c1 : rising · 62w
 state c18_fd_end #FFCDD2
 c18_fd_end : death (negative)
-c18_fd_end : "The Pressed Gamble at Razor Pan"
+c18_fd_end : "The Pressed Gamble at {C18_HAZARD}"
 state c18_lost #FFCDD2
 c18_lost : death (negative)
-c18_lost : "Turned from the Road at Razor Pan"
+c18_lost : "Turned from the Road at {C18_HAZARD}"
 state c19_ap #D1C4E9
 c19_ap : rising · 76w
 state c19_f0_c0 #D1C4E9
@@ -890,10 +890,10 @@ state c19_fd_c1 #D1C4E9
 c19_fd_c1 : rising · 62w
 state c19_fd_end #FFCDD2
 c19_fd_end : death (negative)
-c19_fd_end : "The Pressed Gamble at Hollow Ground"
+c19_fd_end : "The Pressed Gamble at {C19_HAZARD}"
 state c19_lost #FFCDD2
 c19_lost : death (negative)
-c19_lost : "Turned from the Road at Hollow Ground"
+c19_lost : "Turned from the Road at {C19_HAZARD}"
 state c20_ap #D1C4E9
 c20_ap : rising · 76w
 state c20_f0_c0 #D1C4E9
@@ -936,10 +936,10 @@ state c20_fd_c1 #D1C4E9
 c20_fd_c1 : rising · 62w
 state c20_fd_end #FFCDD2
 c20_fd_end : death (negative)
-c20_fd_end : "The Pressed Gamble at Last Water"
+c20_fd_end : "The Pressed Gamble at {C20_HAZARD}"
 state c20_lost #FFCDD2
 c20_lost : death (negative)
-c20_lost : "Turned from the Road at Last Water"
+c20_lost : "Turned from the Road at {C20_HAZARD}"
 state c21_ap #D1C4E9
 c21_ap : rising · 76w
 state c21_f0_c0 #D1C4E9
@@ -982,10 +982,10 @@ state c21_fd_c1 #D1C4E9
 c21_fd_c1 : rising · 62w
 state c21_fd_end #FFCDD2
 c21_fd_end : death (negative)
-c21_fd_end : "The Pressed Gamble at Rim Ascent"
+c21_fd_end : "The Pressed Gamble at {C21_HAZARD}"
 state c21_lost #FFCDD2
 c21_lost : death (negative)
-c21_lost : "Turned from the Road at Rim Ascent"
+c21_lost : "Turned from the Road at {C21_HAZARD}"
 state c22_ap #D1C4E9
 c22_ap : rising · 76w
 state c22_f0_c0 #D1C4E9
@@ -1028,10 +1028,10 @@ state c22_fd_c1 #D1C4E9
 c22_fd_c1 : rising · 62w
 state c22_fd_end #FFCDD2
 c22_fd_end : death (negative)
-c22_fd_end : "The Pressed Gamble at Pilgrim Pass"
+c22_fd_end : "The Pressed Gamble at {C22_HAZARD}"
 state c22_lost #FFCDD2
 c22_lost : death (negative)
-c22_lost : "Turned from the Road at Pilgrim Pass"
+c22_lost : "Turned from the Road at {C22_HAZARD}"
 state c23_ap #D1C4E9
 c23_ap : rising · 76w
 state c23_f0_c0 #D1C4E9
@@ -1074,10 +1074,10 @@ state c23_fd_c1 #D1C4E9
 c23_fd_c1 : rising · 62w
 state c23_fd_end #FFCDD2
 c23_fd_end : death (negative)
-c23_fd_end : "The Pressed Gamble at Salt Veil"
+c23_fd_end : "The Pressed Gamble at {C23_HAZARD}"
 state c23_lost #FFCDD2
 c23_lost : death (negative)
-c23_lost : "Turned from the Road at Salt Veil"
+c23_lost : "Turned from the Road at {C23_HAZARD}"
 state c24_ap #D1C4E9
 c24_ap : rising · 76w
 state c24_f0_c0 #D1C4E9
@@ -1120,10 +1120,10 @@ state c24_fd_c1 #D1C4E9
 c24_fd_c1 : rising · 62w
 state c24_fd_end #FFCDD2
 c24_fd_end : death (negative)
-c24_fd_end : "The Pressed Gamble at Pale Mile"
+c24_fd_end : "The Pressed Gamble at {C24_HAZARD}"
 state c24_lost #FFCDD2
 c24_lost : death (negative)
-c24_lost : "Turned from the Road at Pale Mile"
+c24_lost : "Turned from the Road at {C24_HAZARD}"
 state shr_ap0 #D1C4E9
 shr_ap0 : rising · 78w
 state shr_ap1 #D1C4E9

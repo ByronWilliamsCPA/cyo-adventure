@@ -126,7 +126,7 @@ n_ascent --> n_surface : Ride the rebreather up in safe stages.
 n_ascent --> n_collapse : Claw upward on your last breath.
 n_ascent --> n_end_sink : Let go and sink back down.
 n_collapse --> n_surface : Find one last kick.
-n_collapse --> n_rescue : Signal your dive buddy with the rebreath...
+n_collapse --> n_rescue : Signal your dive buddy for a hand up.
 n_collapse --> n_end_drown : Slip into the dark.
 n_surface --> n_end_success : Hand over the recovered signal core.
 n_surface --> n_end_survived : Climb aboard with nothing but your life.

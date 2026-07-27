@@ -1,0 +1,14 @@
+{
+  "lineage_version": 2,
+  "origin": "fresh",
+  "mutant_slug": "the-midnight-frequency",
+  "parent_slug": null,
+  "parent_sha256": null,
+  "donor_slugs": [],
+  "op_chain": [],
+  "generator": "hand-authored:v1",
+  "generation_params_sha256": "104b33883bca632539e2990a01fd343113daf16090f6e0df71fd0c5b84e02d29",
+  "created_at": "2026-07-26T00:00:00+00:00",
+  "tool_version": "0.0.0",
+  "acceptance_digest": "104b33883bca632539e2990a01fd343113daf16090f6e0df71fd0c5b84e02d29"
+}

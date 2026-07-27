@@ -93,37 +93,44 @@ Dad," "your sister loved this"). No new consent needed; the family is the trust 
 - There is **no "receive recommendations from everyone" option**, by design. The connection
   graph is enumerable, parent-built, and small.
 
-> **PROPOSED ADDENDUM to ring 2, pending coordination (added 2026-07-25; flags an open question,
-> does not resolve it).** Two in-flight workstreams both want a sentence added here recording
-> **what granularity of child-linked data may cross ring 2**, and they ask for different bars.
-> They must be reconciled in one edit, not raced.
->
-> 1. **Recommendation attribution** (PR #415 item B6, owner decision 2026-07-25): sharing a
->    child's first name with a connected family via `display_name` next to a recommendation is
->    working-as-intended, sanctioned by this ADR's mutual connection consent **alone**, with no
->    additional disclosure consent layered on top. B6 asks that this ADR state that granularity
->    explicitly, since the Decision section above defines the rings but never enumerates what may
->    cross ring 2 beyond "book reference, recommender display name, and rating/like".
-> 2. **Personalized story content** ([ADR-023](./adr-023-story-personalization-slots.md), status
->    Proposed): render-time substitution of a child's real first name, and of a small set of
->    other opted-in details, throughout story prose read in a connected household. ADR-023
->    proposes a **stricter** bar for this: a separate, separately-worded, timestamped,
->    policy-versioned disclosure consent, held per profile and per connection, on top of the
->    mutual connection consent this ADR already requires.
->
-> The argument that the two legitimately differ is about bandwidth and repetition, not about the
-> datum. An attribution is a single low-bandwidth signal attached to a pointer, rendered once in a
-> feed. A name substituted throughout full story prose is the same datum delivered continuously,
-> read directly by the other household's children rather than surfaced to its guardian, and
-> compounded by whatever else ADR-023's taxonomy permits at ring 2 alongside it: a sibling's first
-> name, a pet's name, a kinship label, a favourite, a home type. One book can carry all of them at
-> once, repeatedly; an attribution line carries one, once. That argument is not obviously decisive.
-> Neither
-> ADR-023 nor this note picks a side on the merits, but the owner has now chosen: **ADR-023 OD-1
-> was confirmed 2026-07-25 (owner choice, pending counsel confirmation)**, keeping the stricter
-> separate-consent bar for personalized story content and accepting the divergence from B6
-> deliberately. Counsel review is the remaining gate on that divergence. Whoever
-> writes the real amendment sentence should cover both cases in a single change.
+#### Ring-2 data granularity (amendment, 2026-07-26)
+
+The Decision above defines the rings but never enumerated *what granularity of child-linked data* may
+cross ring 2. This amendment states it, and resolves the two in-flight asks that a prior proposed
+addendum flagged as needing one edit rather than two racing ones. Both are now settled.
+
+**Normative rule: two, and only two, categories of child-linked data may cross ring 2, and they carry
+different consent bars.**
+
+| Category | What crosses | Consent bar |
+| --- | --- | --- |
+| **Recommendation attribution** | A book reference, the recommender's `display_name` (a first name or nickname, and the only stored child name), and a rating or like | The mutual connection consent this ADR already requires. **Nothing further.** |
+| **Personalized story content** | A child's real first name, and a closed set of other opted-in details, substituted into story prose read in the connected household | Mutual connection consent **plus** a separate, separately-worded, timestamped, policy-versioned disclosure consent, held per profile and per connection ([ADR-023](./adr-023-story-personalization-slots.md) section 3) |
+
+Anything not in this table does not cross ring 2.
+
+**Why the same datum carries two different bars.** A child's first name appears in both rows, so the
+asymmetry needs justifying rather than asserting. The difference is bandwidth, audience, and
+compounding, not the datum:
+
+- An attribution is a **single low-bandwidth fact attached to a pointer**, rendered once, in a feed
+  surface the receiving *guardian* opted into seeing.
+- A substituted name is the **same datum delivered continuously**, through every passage of a book that
+  may be re-read many times, and read directly by the other household's **children**.
+- It also arrives **compounded**: one book can carry a first name, a sibling's first name, a pet's name,
+  a kinship label, favourites, and a home type together. Individually trivial, jointly a recognisable
+  portrait of a named child and their household. An attribution line carries one of those, once, and
+  never compounds. Pronouns remain ring 1 only, so the most identity-sensitive slot never participates
+  in a ring-2 disclosure at all.
+
+This reasoning is not claimed to be decisive on the merits. It is recorded so a later reader can contest
+the argument rather than guess at it. Both positions were confirmed by owner decision on 2026-07-25: the
+attribution bar as working-as-intended, and ADR-023's stricter bar via OD-1. **Counsel review is the
+remaining gate on the divergence**, not on the attribution row.
+
+**Supporting basis for the attribution row**: `display_name` is established as a first name or nickname
+and the only stored child name (`coppa-compliance-audit.md:129`), and the disclosure is already
+inventoried (`gdpr-compliance-review.md:160`).
 
 ### Ring 3: global (system only, future)
 

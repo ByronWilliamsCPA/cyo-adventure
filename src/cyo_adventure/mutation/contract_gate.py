@@ -25,11 +25,11 @@ contract content, so a mutated contract can never weaken it (CR-4).
 from __future__ import annotations
 
 import json
-import re
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.binding import render_bound_skeleton
+from cyo_adventure.storybook.slotted_surfaces import slot_tokens_in_surfaces
 from cyo_adventure.storybook.theme_contract import (
     SLOT_TOKEN_RE,
     ThemeContract,
@@ -48,83 +48,17 @@ if TYPE_CHECKING:
 
     from cyo_adventure.storybook.theme_contract import SlotSpec
 
-# The FILL directive parse, matching ``generation/binding._FILL_RE`` verbatim so
-# the beats surface is scanned identically to the render path.
-_FILL_RE = re.compile(r"^<<FILL role=(\w+) words=(\d+) beats='(.*)'>>$", re.DOTALL)
-
-
-# dict[str, object] / list[str] have no forward reference to defer, so there is
-# no runtime cost to not quoting them in these cast() calls (see
-# review_surface.py for the same pattern); left unquoted here so the type
-# expression is not a duplicated string literal (S1192) across the module.
-def _body_beats_tokens(node: Mapping[str, object]) -> frozenset[str]:
-    """Return the slot tokens in a node's ``<<FILL ...>>`` beats segment.
-
-    Args:
-        node: One skeleton node to scan.
-
-    Returns:
-        frozenset[str]: The slot ids referenced in the beats segment, or an
-            empty set when the node has no matching body.
-    """
-    body = node.get("body")
-    if not isinstance(body, str):
-        return frozenset()
-    match = _FILL_RE.match(body)
-    if match is None:
-        return frozenset()
-    return frozenset(cast(list[str], SLOT_TOKEN_RE.findall(match.group(3))))  # noqa: TC006
-
-
-def _ending_title_tokens(node: Mapping[str, object]) -> frozenset[str]:
-    """Return the slot tokens in a node's ending title, when present.
-
-    Args:
-        node: One skeleton node to scan.
-
-    Returns:
-        frozenset[str]: The slot ids referenced in the ending title, or an
-            empty set when the node has no ending title.
-    """
-    ending = node.get("ending")
-    if not isinstance(ending, dict):
-        return frozenset()
-    title = cast(dict[str, object], ending).get("title")  # noqa: TC006
-    if not isinstance(title, str):
-        return frozenset()
-    return frozenset(cast(list[str], SLOT_TOKEN_RE.findall(title)))  # noqa: TC006
-
-
-def _choice_label_tokens(node: Mapping[str, object]) -> frozenset[str]:
-    """Return the slot tokens in a node's choice labels.
-
-    Args:
-        node: One skeleton node to scan.
-
-    Returns:
-        frozenset[str]: The slot ids referenced across the node's choices.
-    """
-    choices = node.get("choices")
-    if not isinstance(choices, list):
-        return frozenset()
-    tokens: set[str] = set()
-    for raw_choice in cast("list[object]", choices):
-        if not isinstance(raw_choice, dict):
-            continue
-        label = cast(dict[str, object], raw_choice).get("label")  # noqa: TC006
-        if isinstance(label, str):
-            tokens.update(cast(list[str], SLOT_TOKEN_RE.findall(label)))  # noqa: TC006
-    return frozenset(tokens)
-
 
 def _slotted_surface_tokens(skeleton: Mapping[str, object]) -> frozenset[str]:
     """Return every ``{SLOT}`` token in a skeleton's three slotted surfaces.
 
     The three surfaces are exactly the ADR-019 legal homes for a slot token: the
     ``beats='...'`` segment of a ``<<FILL ...>>`` node body, an ending title, and
-    a choice label. Reimplements ``generation.binding._slotted_surface_tokens``
-    (a private helper) here so the mutation layer holds no cross-module private
-    import.
+    a choice label. This used to reimplement
+    ``generation.binding._slotted_surface_tokens`` (a private helper) so the
+    mutation layer held no cross-module private import; A21 promoted that walk to
+    the public :mod:`cyo_adventure.storybook.slotted_surfaces`, so the
+    reimplementation is gone and both layers now read one definition.
 
     Args:
         skeleton: The raw skeleton dict to scan.
@@ -132,18 +66,7 @@ def _slotted_surface_tokens(skeleton: Mapping[str, object]) -> frozenset[str]:
     Returns:
         frozenset[str]: The slot ids referenced in those three surfaces.
     """
-    nodes = skeleton.get("nodes")
-    if not isinstance(nodes, list):
-        return frozenset()
-    tokens: set[str] = set()
-    for raw_node in cast("list[object]", nodes):
-        if not isinstance(raw_node, dict):
-            continue
-        node = cast(dict[str, object], raw_node)  # noqa: TC006
-        tokens |= _body_beats_tokens(node)
-        tokens |= _ending_title_tokens(node)
-        tokens |= _choice_label_tokens(node)
-    return frozenset(tokens)
+    return slot_tokens_in_surfaces(skeleton)
 
 
 def _pick_probe(contract: ThemeContract) -> tuple[SlotSpec, str] | None:

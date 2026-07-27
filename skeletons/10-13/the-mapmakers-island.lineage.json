@@ -1,0 +1,14 @@
+{
+  "lineage_version": 2,
+  "origin": "fresh",
+  "mutant_slug": "the-mapmakers-island",
+  "parent_slug": null,
+  "parent_sha256": null,
+  "donor_slugs": [],
+  "op_chain": [],
+  "generator": "hand-authored:v1",
+  "generation_params_sha256": "d178f3fff0c101ce37f5fdcaa8f54a55e20bfd292ef757b0aac61dc8e9ded23f",
+  "created_at": "2026-07-26T00:00:00+00:00",
+  "tool_version": "0.0.0",
+  "acceptance_digest": "d178f3fff0c101ce37f5fdcaa8f54a55e20bfd292ef757b0aac61dc8e9ded23f"
+}

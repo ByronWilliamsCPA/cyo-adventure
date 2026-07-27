@@ -85,7 +85,9 @@
     "ROUTE_E_FIND": "a brass bolt head",
     "ROUTE_E_TAG": "Home",
     "FIN_KEYBOX": "a weathered wren birdhouse",
-    "FIN_GATE1": "painted-shut sash window"
+    "FIN_GATE1": "painted-shut sash window",
+    "ROUTE_C_KEEPER": "Mr. Okafor the harbormaster",
+    "ROUTE_D_KEEPER": "Ms. Kettle the librarian"
   },
   "slots": [
     {
@@ -904,6 +906,42 @@
           "ROUTE_C_GATE",
           "ROUTE_D_GATE",
           "ROUTE_E_GATE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_C_KEEPER",
+      "scope": "route",
+      "meaning": "The named adult who keeps the night watch at site C.",
+      "guidance": "A named, kindly adult belonging to this site; firm about rules but never a threat, and never the reason the night goes wrong.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "COMPANION",
+          "GUARDIAN",
+          "ROUTE_C_LURE"
+        ]
+      }
+    },
+    {
+      "id": "ROUTE_D_KEEPER",
+      "scope": "route",
+      "meaning": "The named adult who is roused by the alarm at site D.",
+      "guidance": "A named, kindly adult belonging to this site; firm about rules but never a threat, and never the reason the night goes wrong.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "HERO",
+          "COMPANION",
+          "GUARDIAN",
+          "ROUTE_D_LURE"
         ]
       }
     }

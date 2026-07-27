@@ -32,6 +32,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.mutation import operators as m4_ops
 from cyo_adventure.mutation.acceptance import Stage, run_acceptance
 from cyo_adventure.mutation.operators import (
@@ -187,7 +188,7 @@ def _tier1_catalog() -> list[tuple[str, dict[str, object]]]:
     """Return ``(slug, story)`` for every production Tier-1 standalone skeleton."""
     catalog: list[tuple[str, dict[str, object]]] = []
     for path in sorted(_SKELETONS_ROOT.glob("*/*.json")):
-        if path.name.endswith(".contract.json"):
+        if is_sidecar(path):
             continue
         story = _load(path)
         meta = story.get("metadata")

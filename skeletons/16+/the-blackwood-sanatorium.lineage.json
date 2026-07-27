@@ -1,0 +1,14 @@
+{
+  "lineage_version": 2,
+  "origin": "fresh",
+  "mutant_slug": "the-blackwood-sanatorium",
+  "parent_slug": null,
+  "parent_sha256": null,
+  "donor_slugs": [],
+  "op_chain": [],
+  "generator": "hand-authored:v1",
+  "generation_params_sha256": "6e58f7bb8a2360060b9dfe29af97a1474f0bc07bf0e637e4c103d56601b670bd",
+  "created_at": "2026-07-26T00:00:00+00:00",
+  "tool_version": "0.0.0",
+  "acceptance_digest": "6e58f7bb8a2360060b9dfe29af97a1474f0bc07bf0e637e4c103d56601b670bd"
+}

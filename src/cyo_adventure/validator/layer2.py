@@ -1,4 +1,4 @@
-"""Layer-2 state-space validator (rules L2-9 through L2-13).
+"""Layer-2 state-space validator (rules L2-9 through L2-14).
 
 Layer 2 runs only on Tier-2 stories and operates over the full reachable
 configuration space produced by :func:`~cyo_adventure.validator.walk.walk_configurations`.
@@ -15,6 +15,13 @@ L2-10 (stateful termination / loop escape)
     A reachable configuration has no path to any ending config.
 L2-11 (conditional usefulness / dead branch)
     A conditional choice is never visible in any reachable configuration.
+L2-14 (no all-forbidden decision)
+    A reachable configuration offering two or more visible choices where EVERY
+    option leads to a forbidden ending with no intervening visible choice.
+    Band-scoped: "forbidden" means negative valence at 3-5 through 10-13, and
+    ``death`` at 13-16 and 16+. ``capture`` was deliberately excluded from the
+    teen bands (see the rationale at ``_FATAL_KINDS``): it is the signature
+    climax of capture/escape genres, not a lethal outcome.
 L2-13 (scale advisory)
     A completed-walk Tier-2 story exceeds the ADR-011 hand-authoring node
     ceiling, so the configuration walk is its sole correctness guarantee
@@ -40,11 +47,11 @@ from cyo_adventure.validator.report import (
 from cyo_adventure.validator.walk import walk_configurations
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Callable, Mapping
 
     from cyo_adventure.player.state import ReadingState
-    from cyo_adventure.storybook.evaluator import VarValue
-    from cyo_adventure.storybook.models import Node, Storybook
+    from cyo_adventure.storybook.evaluator import VarState, VarValue
+    from cyo_adventure.storybook.models import Ending, Node, Storybook
     from cyo_adventure.validator.walk import ConfigKey, WalkResult
 
 
@@ -80,7 +87,12 @@ class _WalkContext:
 HAND_AUTHORING_NODE_CEILING = 460
 
 
-def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport:
+def validate_layer2(
+    story: Storybook,
+    *,
+    cap: int = 100_000,
+    carried: VarState | None = None,
+) -> ValidationReport:
     """Run every Layer-2 rule over a Tier-2 story's reachable configuration space.
 
     Returns an empty report immediately for Tier-1 stories; Layer-2 rules are
@@ -91,6 +103,12 @@ def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport
         cap: Maximum number of distinct configurations the walk may enumerate
             before aborting. Defaults to 100 000. When the walk caps, exactly
             one L2-12 finding is returned and no other Layer-2 rules are run.
+        carried: Carried variable values to seed the start configuration with,
+            for validating a series continuation entry rather than a fresh read.
+            ``None`` validates the ordinary declared-initial start. SR-9 uses
+            this to ask whether a predecessor's win state leaves the receiving
+            book sound, which is a question no other rule can pose because every
+            other walk begins at the declared initials.
 
     Returns:
         ValidationReport: All findings from the Layer-2 rules. ``report.ok``
@@ -102,7 +120,7 @@ def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport
     if story.metadata.tier == 1:
         return report
 
-    result = walk_configurations(story, cap=cap)
+    result = walk_configurations(story, cap=cap, carried=carried)
 
     # L2-12: configuration space too large. Return immediately -- partial results
     # are unreliable for the remaining rules.
@@ -128,6 +146,7 @@ def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport
     dead_end_keys = _check_dead_ends(ctx, report)
     _check_loop_escape(ctx, dead_end_keys, report)
     _check_dead_branches(ctx, story.nodes, report)
+    _check_no_all_fatal_decisions(ctx, story, report)
 
     return report
 
@@ -263,6 +282,39 @@ def _l2_11_finding(story_id: str, node_id: str, choice_id: str) -> ValidationFin
 # ---------------------------------------------------------------------------
 # Internal rule implementations
 # ---------------------------------------------------------------------------
+
+
+def _l2_14_finding(
+    story_id: str,
+    node_id: str,
+    var_state: Mapping[str, VarValue],
+    option_count: int,
+) -> ValidationFinding:
+    """Build an L2-14 all-forbidden-decision finding.
+
+    Args:
+        story_id: The story id.
+        node_id: The node id of the offending decision.
+        var_state: The deterministically sorted variable state.
+        option_count: How many visible choices the decision offered.
+
+    Returns:
+        ValidationFinding: The formatted L2-14 finding.
+    """
+    return ValidationFinding(
+        rule_id="L2-14",
+        severity=Severity.ERROR,
+        story_id=story_id,
+        node_id=node_id,
+        message=(
+            f"L2-14 no-way-out: node '{node_id}' with var_state {var_state} "
+            f"offers {option_count} visible choices and every one of them "
+            f"reaches a forbidden ending with no further choice on the way, in "
+            f"story '{story_id}' (a reader must never be shown a decision where "
+            f"every option is fatal; at least one option must let them advance "
+            f"or loop back)"
+        ),
+    )
 
 
 def _configs_as_reading_states(
@@ -453,3 +505,165 @@ def _check_dead_branches(
                 continue  # unconditional choices are never dead branches
             if choice.id not in ever_visible:
                 report.add(_l2_11_finding(ctx.story_id, node_id, choice.id))
+
+
+# ---------------------------------------------------------------------------
+# L2-14: no decision may offer only forbidden outcomes
+# ---------------------------------------------------------------------------
+
+# Which ending outcomes a decision may not consist *entirely* of, per band.
+#
+# The two readings are deliberately different, because `Valence.NEGATIVE`
+# includes `setback`. A single negative-valence rule applied at the teen bands
+# would forbid a 15-year-old from ever facing a lose-lose dilemma, which is
+# exactly what a `gauntlet` reader seeks and what ADR-011 section 5 sanctions
+# from 13-16 up. So the teen bands get the narrow `death` reading and everything
+# below gets the broad negative-valence one.
+#
+# Scope note: plan v2 item A14 specified the negative-valence reading at 8-11
+# and 10-13 only. It is applied at 3-5 and 5-8 as well, deliberately: measured
+# over the committed catalog it adds **zero** violations there (all 37
+# all-negative decisions sit at 13-16 and 16+), it is strictly more protective
+# for the two bands the child-reader review found got no benefit from this rule
+# or from A13, and the plan's scoping rationale argued only against
+# over-constraining teens, never for leaving the youngest unguarded.
+_NEGATIVE_VALENCE_BANDS = frozenset({"3-5", "5-8", "8-11", "10-13"})
+_FATAL_KIND_BANDS = frozenset({"13-16", "16+"})
+
+# #CRITICAL: security: "fatal" at the teen bands means DEATH, not every grim
+# outcome. Narrowed 2026-07-26 after measuring what the wider reading cost.
+#
+# The owner's rule is specific: avoid "a scenario where a user is presented
+# option A and B and both result in death." An earlier revision of this rule also
+# treated `capture` as fatal. That was an implementation choice, not the stated
+# instruction, and measuring it showed the choice was doing real damage: it
+# flagged 5 nodes across 4 skeletons, of which **3 existed only because of the
+# capture inclusion**. Those three are deliberately authored espionage climaxes
+# whose own beats read "Nothing between her and the closing dark", and each one
+# offers a `capture` option, so the reader survives without winning. Capture is
+# the signature ending of that genre rather than a death, and forbidding it would
+# have rewritten four of the catalog's climaxes to satisfy a rule nobody asked
+# for.
+#
+# Narrowing to `death` leaves exactly the two nodes that genuinely present a
+# reader with options that all kill them.
+# #VERIFY: tests/unit/test_layer2_validator.py::
+# test_l2_14_capture_is_not_fatal_at_a_teen_band
+_FATAL_KINDS = frozenset({"death"})
+
+
+def _forbidden_ending_predicate(band: str) -> Callable[[Ending], bool] | None:
+    """Return the "this outcome may not be the only option" test for a band.
+
+    Args:
+        band: The story's ``metadata.age_band`` value.
+
+    Returns:
+        A predicate over an :class:`Ending`, or ``None`` when the band is not
+        covered by this rule (in which case L2-14 does not run).
+    """
+    if band in _NEGATIVE_VALENCE_BANDS:
+        return lambda ending: ending.valence.value == "negative"
+    if band in _FATAL_KIND_BANDS:
+        return lambda ending: ending.kind.value in _FATAL_KINDS
+    return None
+
+
+def _doomed_option(
+    ctx: _WalkContext,
+    start: ConfigKey,
+    endings: Mapping[str, Ending],
+    is_forbidden: Callable[[Ending], bool],
+) -> bool:
+    """Whether one option leads to a forbidden ending with no choice on the way.
+
+    Walks forward from ``start`` through single-successor configurations. The
+    walk stops as soon as the reader would get another real say, which is the
+    whole point of the rule: an option is not "doomed" if the reader can still
+    steer after taking it.
+
+    Args:
+        ctx: The walk context.
+        start: The successor configuration this option leads to.
+        endings: Node id to :class:`Ending`, for ending configurations only.
+        is_forbidden: The band's forbidden-outcome predicate.
+
+    Returns:
+        bool: ``True`` only when every step from here is forced and the forced
+            path terminates in a forbidden ending.
+    """
+    seen: set[ConfigKey] = set()
+    current = start
+    while True:
+        if current in seen:
+            # A forced cycle never reaches an ending, so it is not a forbidden
+            # terminal. L2-10 owns the "no path to an ending" defect.
+            return False
+        seen.add(current)
+
+        successors = ctx.result.edges.get(current)
+        if successors is None:
+            # A successor the cap refused to record. Layer 2 returns early on a
+            # capped walk, so this is unreachable here; treat as not-doomed
+            # rather than guess.
+            return False
+
+        if len(successors) >= 2:
+            return False  # the reader gets another real choice: not doomed
+
+        if not successors:
+            ending = endings.get(current[0])
+            # No successors and no ending is a stateful dead end, which L2-9
+            # already reports; do not double-report it as a fatal option.
+            return ending is not None and is_forbidden(ending)
+
+        current = successors[0]
+
+
+def _check_no_all_fatal_decisions(
+    ctx: _WalkContext,
+    story: Storybook,
+    report: ValidationReport,
+) -> None:
+    """L2-14: no reachable decision may offer only forbidden outcomes.
+
+    Stated over the **reader-visible decision unit**, not the node. A node-scoped
+    rule is trivially satisfied by splitting an all-fatal decision into two
+    single-choice corridors that each end fatally: the rule passes and the child
+    gets a page with one button that kills them. Stating it over configurations
+    with two or more visible choices, and treating an option as doomed only when
+    every step after it is forced, closes that loophole and folds in the
+    single-choice fatal corridors at the same time.
+
+    Args:
+        ctx: The walk context.
+        story: The story, for its age band and ending blocks.
+        report: The report to append findings to.
+    """
+    is_forbidden = _forbidden_ending_predicate(story.metadata.age_band.value)
+    if is_forbidden is None:
+        return
+
+    endings: Mapping[str, Ending] = {
+        node.id: node.ending for node in story.nodes if node.ending is not None
+    }
+
+    for key, successors in sorted(ctx.result.edges.items()):
+        if len(successors) < 2:
+            continue
+        if not all(
+            _doomed_option(ctx, successor, endings, is_forbidden)
+            for successor in successors
+        ):
+            continue
+        rs = ctx.result.configs.get(key)
+        if rs is None:
+            continue
+        report.add(
+            _l2_14_finding(
+                ctx.story_id,
+                rs.current_node,
+                dict(sorted(rs.var_state.items())),
+                len(successors),
+            )
+        )

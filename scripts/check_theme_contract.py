@@ -36,6 +36,12 @@ Checks:
 6. ``render_bound_skeleton(skeleton, contract.default_binding)`` succeeds
    (all four post-conditions hold), and the result carries zero residual
    ``{SLOT}`` tokens.
+7. (A21) ``residual_theme_leaks(skeleton, contract) == ()``: the skeleton's own
+   beats guidance, ending titles, and choice labels name no proper noun from
+   the theme it was migrated off. Checks 4 and 5 only ever test a *proposed
+   slot value* against ``legacy_lexicon``, so without this a retired
+   character's name left hardcoded in a label passes every other check here
+   and then survives every re-theme.
 
 ``--fingerprint-manifest`` optionally compares the skeleton's current
 structural fingerprint against a stored pre-migration value (design section
@@ -72,6 +78,7 @@ from cyo_adventure.validator.slots import (
     band_mandatory_bundles,
     validate_slot_bindings,
 )
+from cyo_adventure.validator.theme_leak import residual_theme_leaks
 
 if TYPE_CHECKING:
     from cyo_adventure.storybook.theme_contract import SlotSpec
@@ -102,9 +109,9 @@ def _report(label: str, name: str, *, passed: bool, detail: str = "") -> None:
     """Print one PASS/FAIL line in a consistent format.
 
     Args:
-        label: The check's ordinal ("1".."6", matching this module's
+        label: The check's ordinal ("1".."7", matching this module's
             docstring) or "opt" for the optional fingerprint-manifest
-            comparison, which is not one of the six numbered checks.
+            comparison, which is not one of the numbered checks.
         name: A short human-readable check name.
         passed: Whether the check passed.
         detail: Optional extra detail, printed only when present.
@@ -402,6 +409,22 @@ def main(argv: list[str] | None = None) -> int:
             passed=ok,
             detail=f"residual token(s): {residual}" if residual else "",
         )
+
+    # --- Check 7 (A21): the skeleton does not name its retired theme --------
+    leaks = residual_theme_leaks(skeleton, contract)
+    ok = not leaks
+    all_passed &= ok
+    _report(
+        "7",
+        "no retired-theme proper noun left in beats/titles/labels",
+        passed=ok,
+        detail="; ".join(
+            f"{leak.term!r} in {leak.kind} {leak.location} "
+            f"(slot: {', '.join(leak.owning_slot_ids) or 'none declared'})"
+            for leak in leaks[:8]
+        )
+        + (f" (+{len(leaks) - 8} more)" if len(leaks) > 8 else ""),
+    )
 
     return 0 if all_passed else 1
 

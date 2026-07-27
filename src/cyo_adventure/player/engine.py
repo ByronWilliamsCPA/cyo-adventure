@@ -53,7 +53,45 @@ class StoryEngine:
         Returns:
             ReadingState: The initial reading state pinned to the story version.
         """
+        return self.start_continuation(None)
+
+    def start_continuation(self, carried: VarState | None) -> ReadingState:
+        """Begin a read, optionally seeding name-matched carried variables.
+
+        Mirrors the client's ``startContinuation``
+        (``frontend/src/player/engine.ts``) exactly, including the order of
+        operations: carried values are merged into the declared initials
+        **before** the start node's ``on_enter`` effects run. Seeding afterwards
+        would let a carried value overwrite an effect the entry node applied,
+        which the client does not do, and player/validator divergence here is a
+        conformance failure under runtime-semantics.md section 1.
+
+        Carry rules (WS-G G3, identical to the client): a carried value is used
+        only when its name matches a declared variable and its type matches;
+        a wrong-typed value is skipped so the declared initial stands; a carried
+        int is clamped into the receiving variable's declared bounds.
+
+        Args:
+            carried: Carried variable values from a predecessor book, or
+                ``None`` for an ordinary read.
+
+        Returns:
+            ReadingState: The initial reading state pinned to the story version.
+        """
         var_state: VarState = {var.name: var.initial for var in self._story.variables}
+        if carried:
+            for var in self._story.variables:
+                value = carried.get(var.name)
+                if value is None:
+                    continue
+                if var.type.value == "bool" and isinstance(value, bool):
+                    var_state[var.name] = value
+                elif (
+                    var.type.value == "int"
+                    and isinstance(value, int)
+                    and not isinstance(value, bool)
+                ):
+                    var_state[var.name] = self._clamp(var.name, value)
         state = ReadingState(
             current_node=self._story.start_node,
             var_state=var_state,

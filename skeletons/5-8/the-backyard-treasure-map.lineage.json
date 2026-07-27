@@ -1,0 +1,14 @@
+{
+  "lineage_version": 2,
+  "origin": "fresh",
+  "mutant_slug": "the-backyard-treasure-map",
+  "parent_slug": null,
+  "parent_sha256": null,
+  "donor_slugs": [],
+  "op_chain": [],
+  "generator": "hand-authored:v1",
+  "generation_params_sha256": "811ad5a460cc806480659ab6735e6f02f936f5d8f508785e14004fb97f6c92ea",
+  "created_at": "2026-07-26T00:00:00+00:00",
+  "tool_version": "0.0.0",
+  "acceptance_digest": "811ad5a460cc806480659ab6735e6f02f936f5d8f508785e14004fb97f6c92ea"
+}

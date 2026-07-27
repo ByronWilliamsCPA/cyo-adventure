@@ -912,6 +912,37 @@ async def test_fill_skeleton_with_slot_bindings_builds_bound_fill_prompt() -> No
 
 
 @pytest.mark.asyncio
+async def test_fill_skeleton_bound_path_threads_differentiation_directive() -> None:
+    """I1: differentiation_directive reaches the bound-fill prompt, not just
+    the free-text one.
+
+    fill_skeleton accepted the directive but only forwarded it to
+    build_fill_prompt; on the slot_bindings path (47 of 61 skeletons, the
+    production direction) it was silently discarded. This pins that the
+    directive the caller passes actually reaches the provider on that path.
+    """
+    marker = "UNIQUE-BOUND-DIFF-MARKER-4471"
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+    pii = PiiContext(child_names=frozenset())
+    slot_bindings = {"HERO": "Priya", "A1_GATE": "the jammed hatch"}
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        pii,
+        slot_bindings=slot_bindings,
+        differentiation_directive=marker,
+    )
+
+    assert outcome.status == "passed"
+    assert len(provider.calls) == 1
+    assert marker in provider.calls[0]
+
+
+@pytest.mark.asyncio
 async def test_fill_skeleton_without_slot_bindings_builds_plain_fill_prompt() -> None:
     """slot_bindings=None (the default) builds the ordinary build_fill_prompt
     variant, with no bound-theme-values data block -- the regression pin every

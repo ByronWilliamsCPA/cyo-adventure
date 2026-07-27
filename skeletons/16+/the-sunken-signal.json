@@ -539,14 +539,26 @@
         },
         {
           "id": "c_reach_buddy",
-          "label": "Signal your dive buddy with the rebreather alarm.",
+          "label": "Signal your dive buddy for a hand up.",
           "target": "n_rescue",
           "condition": {
-            "==": [
+            "or": [
               {
-                "var": "has_rebreather"
+                "==": [
+                  {
+                    "var": "has_rebreather"
+                  },
+                  true
+                ]
               },
-              true
+              {
+                "==": [
+                  {
+                    "var": "air"
+                  },
+                  0
+                ]
+              }
             ]
           }
         },

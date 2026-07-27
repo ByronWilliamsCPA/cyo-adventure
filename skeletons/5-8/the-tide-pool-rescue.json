@@ -189,7 +189,7 @@
         },
         {
           "id": "c_st_rest",
-          "label": "Sit with Gran and let the tide finish the rescuing.",
+          "label": "Sit with {COMPANION} and let the tide finish the rescuing.",
           "target": "e_tide_star"
         }
       ]

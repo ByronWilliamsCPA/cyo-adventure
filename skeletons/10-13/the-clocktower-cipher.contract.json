@@ -1,0 +1,455 @@
+{
+  "contract_version": 1,
+  "skeleton_slug": "the-clocktower-cipher",
+  "age_band": "10-13",
+  "legacy_lexicon": [
+    "Clocktower",
+    "clocktower",
+    "clockkeeper",
+    "clockmaker",
+    "clockface",
+    "clockwork",
+    "cipher wheel",
+    "gear-token",
+    "pendulum pit",
+    "pendulum",
+    "music-box automaton",
+    "Logbooks",
+    "logbooks",
+    "Hidden Workshop",
+    "Cipher Revealed",
+    "oil can",
+    "brass key",
+    "tower machinery"
+  ],
+  "default_binding": {
+    "HEROES": "Three friends",
+    "THRESHOLD": "the old town clocktower",
+    "SETTLEMENT": "the town",
+    "CIPHER": "cipher",
+    "KEEPER": "the old clockkeeper",
+    "MAKER": "the clockmaker",
+    "LANDMARK_FACE": "the great clockface",
+    "VAULT": "the vault",
+    "MECHANISM": "clock",
+    "CRAFT": "clockwork",
+    "ACCESS_HIGH": "the high cracked window",
+    "ACCESS_LOW": "the loose grate",
+    "KEY": "the brass key",
+    "STUDY": "the clockmaker's study",
+    "ARCHIVE": "logbooks",
+    "CIPHER_TOOL": "the cipher wheel",
+    "HAZARD": "the pendulum pit",
+    "LUBRICANT": "the oil can",
+    "TOKEN": "a small gear-token",
+    "MACHINERY": "the tower machinery",
+    "SECRET_ROOM": "the clockmaker's hidden workshop",
+    "KEEPSAKE": "a music-box automaton",
+    "CLOSING_SIGN": "the closing bells",
+    "END_LIBRARY_TITLE": "Lost in the Logbooks",
+    "END_SECRET_TITLE": "The Hidden Workshop",
+    "END_HERO_TITLE": "The Cipher Revealed"
+  },
+  "slots": [
+    {
+      "id": "HEROES",
+      "scope": "global",
+      "meaning": "The small group of young investigators, named as a group at the opening.",
+      "guidance": "A plural group of two to four peers, read as a sentence subject ('{HEROES} find ...'); capable together, no adult leader among them.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "KEEPER",
+          "MAKER"
+        ]
+      }
+    },
+    {
+      "id": "THRESHOLD",
+      "scope": "global",
+      "meaning": "The locked civic landmark the whole story takes place inside.",
+      "guidance": "One old, publicly known building with a working mechanism at the top, read after 'find'; imposing but never sinister, and plausibly enterable by children.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "toxic"
+        ],
+        "distinct_from": [
+          "SETTLEMENT",
+          "VAULT",
+          "SECRET_ROOM"
+        ]
+      }
+    },
+    {
+      "id": "SETTLEMENT",
+      "scope": "global",
+      "meaning": "The community the landmark belongs to, restored by the triumphant ending.",
+      "guidance": "The surrounding town or neighbourhood, read after 'lost to' and 'bring it to'; a place with a shared history worth recovering.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": [
+          "THRESHOLD"
+        ]
+      }
+    },
+    {
+      "id": "CIPHER",
+      "scope": "global",
+      "meaning": "The kind of puzzle the whole mystery is built on.",
+      "guidance": "A bare singular noun for a decodable system, used adjectivally too ('the {CIPHER} note', 'a second tiny {CIPHER} panel'); solvable by a determined child with the right tool.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": [
+          "CIPHER_TOOL"
+        ]
+      }
+    },
+    {
+      "id": "KEEPER",
+      "scope": "global",
+      "meaning": "The gruff, kindly adult custodian who can let the friends in and knows the history.",
+      "guidance": "One adult caretaker of the landmark, read as a sentence subject and after 'with'; brusque but safe, and the one who catches the thieving ending without any menace.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "weapon",
+          "lethal"
+        ],
+        "distinct_from": [
+          "HEROES",
+          "MAKER"
+        ]
+      }
+    },
+    {
+      "id": "MAKER",
+      "scope": "global",
+      "meaning": "The long-dead craftsperson who built the landmark and hid the secret in it.",
+      "guidance": "One historical maker, read in the possessive ('{MAKER}'s study', '{MAKER}'s secret'); absent from the present action, known only through their work and letter.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "weapon",
+          "lethal"
+        ],
+        "distinct_from": [
+          "HEROES",
+          "KEEPER"
+        ]
+      }
+    },
+    {
+      "id": "LANDMARK_FACE",
+      "scope": "global",
+      "meaning": "The great mechanism at the top, where the puzzle is finally set.",
+      "guidance": "The landmark's large public-facing mechanism, read after 'up to' and 'behind'; must have adjustable parts a solved code can be entered into.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "lethal"
+        ],
+        "distinct_from": [
+          "MACHINERY",
+          "HAZARD"
+        ]
+      }
+    },
+    {
+      "id": "VAULT",
+      "scope": "global",
+      "meaning": "The hidden chamber the solved puzzle opens, holding the maker's legacy.",
+      "guidance": "One small concealed room, read after 'reveal' and 'into'; a reward space, never a trap.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal",
+          "capture"
+        ],
+        "distinct_from": [
+          "SECRET_ROOM",
+          "THRESHOLD"
+        ]
+      }
+    },
+    {
+      "id": "MECHANISM",
+      "scope": "global",
+      "meaning": "The landmark's working device, running true again in the best ending.",
+      "guidance": "A bare singular noun read after 'the' in 'the {MECHANISM} runs true again'; the thing the community would notice being fixed.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CRAFT",
+      "scope": "global",
+      "meaning": "The maker's trade, seen half-finished in the hidden workshop.",
+      "guidance": "A bare mass noun for the maker's kind of work ('clockwork', 'joinery'), read after 'half-finished'; something a child could find wondrous.",
+      "constraints": {
+        "max_words": 3,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "ACCESS_HIGH",
+      "scope": "route",
+      "meaning": "The high, awkward opening that is the second unofficial way in.",
+      "guidance": "An opening well above ground level, read after 'through' and 'up to'; a small thrill to use, and safely landable on the far side.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "lethal"
+        ],
+        "distinct_from": [
+          "ACCESS_LOW"
+        ]
+      }
+    },
+    {
+      "id": "ACCESS_LOW",
+      "scope": "route",
+      "meaning": "The low opening the decoded note points to as a way in.",
+      "guidance": "A ground-level gap the note can mention by name, read after 'and' and 'Try'; unglamorous and easy once known about.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "lethal"
+        ],
+        "distinct_from": [
+          "ACCESS_HIGH"
+        ]
+      }
+    },
+    {
+      "id": "KEY",
+      "scope": "route",
+      "meaning": "The physical opener the decoded clue leads the friends to.",
+      "guidance": "One small findable object that opens the front door, read after 'find' and 'with'; hidden in plain sight rather than guarded.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "TOKEN",
+          "CIPHER_TOOL"
+        ]
+      }
+    },
+    {
+      "id": "STUDY",
+      "scope": "track",
+      "meaning": "The maker's own workroom inside the landmark, holding the decoding tool.",
+      "guidance": "One preserved private room belonging to MAKER, read as a sentence subject and after 'Open'; cluttered with the maker's papers.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal"
+        ],
+        "distinct_from": [
+          "SECRET_ROOM",
+          "VAULT"
+        ]
+      }
+    },
+    {
+      "id": "ARCHIVE",
+      "scope": "track",
+      "meaning": "The absorbing stack of records that can swallow a whole evening.",
+      "guidance": "A plural noun for readable historical records, read after 'old', 'the fascinating', and 'Lost in the'; tempting rather than useful, since losing the night to them is one ending.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "CIPHER_TOOL",
+      "scope": "track",
+      "meaning": "The device found in the study that explains how the code works.",
+      "guidance": "One portable object that decodes CIPHER, read after 'holds' and 'Take'; carried up to the mechanism, so hand-sized.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "CIPHER",
+          "KEY",
+          "TOKEN"
+        ]
+      }
+    },
+    {
+      "id": "HAZARD",
+      "scope": "track",
+      "meaning": "The one genuinely risky interior space, crossable with care or refusable.",
+      "guidance": "An interior space with a moving part and a narrow way past, read after 'past', 'along', and 'away from'; mild peril only, and backing out must always read as sensible rather than cowardly.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "lethal",
+          "graphic"
+        ],
+        "distinct_from": [
+          "LANDMARK_FACE",
+          "MACHINERY"
+        ]
+      }
+    },
+    {
+      "id": "LUBRICANT",
+      "scope": "track",
+      "meaning": "The tool won past the hazard, which later frees the jammed mechanism.",
+      "guidance": "One portable maintenance item, read after 'grab' and 'with'; its only job is to undo the jam, which is what makes crossing the hazard worth it.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon",
+          "toxic"
+        ],
+        "distinct_from": [
+          "TOKEN",
+          "KEY"
+        ]
+      }
+    },
+    {
+      "id": "TOKEN",
+      "scope": "track",
+      "meaning": "The small keepsake hidden in the stair, pocketable in passing.",
+      "guidance": "One tiny object of the maker's trade, read after 'hides'; a collectible with no mechanical use, so finding it never gates anything.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "KEY",
+          "LUBRICANT",
+          "KEEPSAKE"
+        ]
+      }
+    },
+    {
+      "id": "MACHINERY",
+      "scope": "track",
+      "meaning": "The working guts of the landmark, filling the basement.",
+      "guidance": "A mass or plural noun for the mechanism's inner workings, read after 'holds'; impressive to look at, not a puzzle to solve.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [
+          "lethal"
+        ],
+        "distinct_from": [
+          "LANDMARK_FACE",
+          "HAZARD"
+        ]
+      }
+    },
+    {
+      "id": "SECRET_ROOM",
+      "scope": "track",
+      "meaning": "The alternative discovery behind the mechanism: the maker's private workroom.",
+      "guidance": "One concealed room belonging to MAKER, read as a sentence subject and after 'into'; a wonder rather than a prize, since its ending is warm rather than triumphant.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "capture"
+        ],
+        "distinct_from": [
+          "VAULT",
+          "STUDY"
+        ]
+      }
+    },
+    {
+      "id": "KEEPSAKE",
+      "scope": "track",
+      "meaning": "The wondrous object in the vault, beside the letter and the treasure.",
+      "guidance": "One charming made object of the maker's craft, read in a list after a comma; delightful and harmless.",
+      "constraints": {
+        "max_words": 5,
+        "forbid": [
+          "weapon"
+        ],
+        "distinct_from": [
+          "TOKEN"
+        ]
+      }
+    },
+    {
+      "id": "CLOSING_SIGN",
+      "scope": "track",
+      "meaning": "The signal that the night is over and the friends must leave.",
+      "guidance": "A plural or mass noun that can 'ring', read as a sentence subject; a deadline the landmark itself announces, with no one scolding them.",
+      "constraints": {
+        "max_words": 4,
+        "forbid": [],
+        "distinct_from": []
+      }
+    },
+    {
+      "id": "END_LIBRARY_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: they lost the night to the records and left empty-handed.",
+      "guidance": "A title-cased phrase naming the absorbed-in-reading ending; rueful and affectionate, never a rebuke.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "despair"
+        ],
+        "distinct_from": [
+          "END_SECRET_TITLE",
+          "END_HERO_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "END_SECRET_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: they found the maker's hidden workroom instead of the vault.",
+      "guidance": "A title-cased phrase naming the hidden-room discovery; warm and satisfying, a different prize rather than a lesser one.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "despair"
+        ],
+        "distinct_from": [
+          "END_LIBRARY_TITLE",
+          "END_HERO_TITLE"
+        ]
+      }
+    },
+    {
+      "id": "END_HERO_TITLE",
+      "scope": "ending",
+      "meaning": "Ending title: the main triumph, the decoded message given back to the town.",
+      "guidance": "A title-cased phrase naming the full solve; quietly triumphant, and the one that reads as the story's true ending.",
+      "constraints": {
+        "max_words": 6,
+        "forbid": [
+          "lethal",
+          "despair"
+        ],
+        "distinct_from": [
+          "END_LIBRARY_TITLE",
+          "END_SECRET_TITLE"
+        ]
+      }
+    }
+  ]
+}

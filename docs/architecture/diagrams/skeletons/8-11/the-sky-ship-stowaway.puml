@@ -202,7 +202,7 @@ e_set_final : setback (negative)
 e_set_final : "Put Ashore at Port"
 state e_win_save_ship #C8E6C9
 e_win_save_ship : completion (positive)
-e_win_save_ship : "The Cirrus Sails On"
+e_win_save_ship : "Safe Aboard {SHIP_NAME}"
 state b_patch1 #FFF9C4
 b_patch1 : choice · 100w
 state b_patch_ok #D1C4E9
@@ -372,11 +372,11 @@ b_patch1 --> b_patch_ok : Climb {ROUTE_G_ZONE} to reach {O_TEAR}.
 b_patch1 --> b_patch_alt : Work {O_WINCH} from below.
 b_patch_ok --> e_win_patch : Watch the mended envelope hold.
 b_patch_alt --> e_win_steer : Feel the ship steady beneath you.
-b_free1 --> b_free_ok : Help ease Nimbus out to the open air.
+b_free1 --> b_free_ok : Help ease {SECRET_NAME} out to the open ...
 b_free1 --> b_free_alt : Coax {SECRET_NAME} to {P_BAY}.
 b_free_ok --> b_free_ok2 : Watch the sky-whale take to the air.
-b_free_ok2 --> e_win_free : Follow Nimbus toward safe harbour.
-b_free_alt --> e_win_friend : Settle Nimbus safe for the voyage.
+b_free_ok2 --> e_win_free : Follow {SECRET_NAME} toward safe harbour...
+b_free_alt --> e_win_friend : Settle {SECRET_NAME} safe for the voyage...
 b_tell1 --> b_tell_crew : Rally the working crew.
 b_tell1 --> b_tell_captain : Put it to {CAPTAIN}.
 b_tell1 --> b_tell_reveal : Show them all {SECRET_NAME}.

@@ -38,6 +38,7 @@ from cyo_adventure.player.engine import StoryEngine
 
 if TYPE_CHECKING:
     from cyo_adventure.player.state import ReadingState
+    from cyo_adventure.storybook.evaluator import VarState
     from cyo_adventure.storybook.models import Storybook
 
 # ---------------------------------------------------------------------------
@@ -91,7 +92,12 @@ class WalkResult:
 # ---------------------------------------------------------------------------
 
 
-def walk_configurations(story: Storybook, *, cap: int = 100_000) -> WalkResult:
+def walk_configurations(
+    story: Storybook,
+    *,
+    cap: int = 100_000,
+    carried: VarState | None = None,
+) -> WalkResult:
     """Enumerate every reachable configuration in *story* via BFS.
 
     The walk drives the pure :class:`~cyo_adventure.player.engine.StoryEngine`
@@ -107,6 +113,11 @@ def walk_configurations(story: Storybook, *, cap: int = 100_000) -> WalkResult:
         story: The parsed, schema-valid :class:`~cyo_adventure.storybook.models.Storybook`.
         cap: Maximum number of distinct configurations to enumerate before
             aborting.  Defaults to 100 000.
+        carried: Carried variable values to seed the start configuration with,
+            for walking a series continuation entry instead of a fresh read.
+            ``None`` walks the ordinary declared-initial start. Seeding uses
+            :meth:`~cyo_adventure.player.engine.StoryEngine.start_continuation`,
+            so the walk sees exactly the state a real continuation reader would.
 
     Returns:
         WalkResult: The (possibly partial) configuration closure.
@@ -119,7 +130,7 @@ def walk_configurations(story: Storybook, *, cap: int = 100_000) -> WalkResult:
     # #VERIFY: StoryEngine._clone() copies every mutable container on each choose();
     # no containers are shared between a parent state and its child.
     engine = StoryEngine(story)
-    initial = engine.start()
+    initial = engine.start_continuation(carried)
 
     configs: dict[ConfigKey, ReadingState] = {}
     edges: dict[ConfigKey, list[ConfigKey]] = {}

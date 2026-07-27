@@ -91,7 +91,7 @@
       "choices": [
         {
           "id": "c_t1_root_1",
-          "label": "Follow Junia to the mechanism.",
+          "label": "Follow {T1_MENTOR} to the mechanism.",
           "target": "t1_intro"
         }
       ]
@@ -103,7 +103,7 @@
       "choices": [
         {
           "id": "c_t1_intro_1",
-          "label": "Study the three faults with Junia.",
+          "label": "Study the three faults with {T1_MENTOR}.",
           "target": "t1_survey"
         }
       ]

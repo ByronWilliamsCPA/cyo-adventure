@@ -1,4 +1,4 @@
-"""Cross-book series meta-validator (rules SR-1..SR-7).
+"""Cross-book series meta-validator (rules SR-1..SR-7, SR-9).
 
 Unlike the single-story gate (Layer 1, Layer 2, and the PL-* policy rules), this
 validator runs over a *chain* of books: a series is a meta-skeleton whose nodes
@@ -19,15 +19,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from cyo_adventure.storybook.models import EndingKind
+from cyo_adventure.validator.layer2 import validate_layer2
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
     ValidationReport,
 )
+from cyo_adventure.validator.walk import walk_configurations
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from cyo_adventure.storybook.evaluator import VarState, VarValue
     from cyo_adventure.storybook.models import Series, Storybook
 
 # A satisfying continuation ending: a win the reader carries into the next book.
@@ -61,6 +64,10 @@ def validate_series(books: Sequence[Storybook]) -> ValidationReport:
         _check_final_flags(series_books, report)
         _check_continuity(series_books, report)
     _check_state_carry(series_books, report)
+    # SR-9 simulates the continuation handoff, so it needs the indices to be
+    # well formed; a malformed chain has no meaningful "next book".
+    if well_formed:
+        _check_continuation_entry_states(series_books, report)
     return report
 
 
@@ -271,3 +278,199 @@ def _check_state_carry(series_books: list[_Book], report: ValidationReport) -> N
                 ),
             )
         )
+
+
+# The most distinct carried entry states SR-9 will simulate per book pair. A
+# state-carrying book can end in many satisfying configurations; simulating every
+# one is unbounded work for a rule whose job is to catch a broken handoff, not to
+# enumerate one. When the cap bites, SR-9 says so rather than reporting a clean
+# chain over a truncated sample.
+_MAX_ENTRY_STATES = 64
+
+
+def _satisfying_exit_states(book: Storybook) -> tuple[list[VarState], bool]:
+    """Return the distinct variable states at ``book``'s satisfying endings.
+
+    Args:
+        book: The sending book.
+
+    Returns:
+        tuple: The distinct exit states (deduplicated, deterministically
+            ordered), and whether the walk capped or the state list was
+            truncated at :data:`_MAX_ENTRY_STATES`.
+    """
+    result = walk_configurations(book)
+    endings = {
+        node.id: node.ending
+        for node in book.nodes
+        if node.ending is not None and node.ending.kind in _SATISFYING_KINDS
+    }
+    seen: set[tuple[tuple[str, VarValue], ...]] = set()
+    states: list[VarState] = []
+    for key, reading_state in sorted(result.configs.items()):
+        if key[0] not in endings:
+            continue
+        signature = tuple(sorted(reading_state.var_state.items()))
+        if signature in seen:
+            continue
+        seen.add(signature)
+        states.append(dict(reading_state.var_state))
+        if len(states) >= _MAX_ENTRY_STATES:
+            return states, True
+    return states, result.capped
+
+
+def _l2_error_signatures(book: Storybook, carried: VarState | None) -> set[str]:
+    """Return a stable signature per Layer-2 ERROR for one entry state.
+
+    Args:
+        book: The book to validate.
+        carried: The carried entry state, or ``None`` for the declared initials.
+
+    Returns:
+        set[str]: One ``rule_id|node_id`` signature per error. Keyed on rule and
+            node rather than the full message, because a message embeds the
+            variable state and would therefore never match between the baseline
+            and the seeded run even for the same defect.
+    """
+    report = validate_layer2(book, carried=carried)
+    return {f"{finding.rule_id}|{finding.node_id or ''}" for finding in report.errors}
+
+
+def _satisfying_ending_reachable(book: Storybook, carried: VarState) -> bool:
+    """Whether a satisfying ending is still reachable entering with ``carried``.
+
+    Args:
+        book: The receiving book.
+        carried: The carried variable state to seed the entry with.
+
+    Returns:
+        bool: ``True`` when at least one reachable configuration sits on a
+            satisfying ending. A capped walk returns ``True``, because a partial
+            exploration cannot prove unreachability.
+    """
+    result = walk_configurations(book, carried=carried)
+    if result.capped:
+        return True
+    satisfying = {
+        node.id
+        for node in book.nodes
+        if node.ending is not None and node.ending.kind in _SATISFYING_KINDS
+    }
+    return any(key[0] in satisfying for key in result.configs)
+
+
+def _check_continuation_entry_states(
+    series_books: list[_Book], report: ValidationReport
+) -> None:
+    """SR-9: a satisfying exit state must leave the next book winnable.
+
+    SR-5 verifies that the two ends of a continuation *exist*: the sending book
+    declares a satisfying ending and the receiving book declares an entry node.
+    It deliberately does not trace state across the join, and it tests ending
+    **existence** rather than reachability. Layer 2 cannot cover the gap either,
+    because it only ever walks from ``start_node`` with the declared initials, so
+    the state a continuation reader actually arrives with is outside every
+    existing rule's view.
+
+    This rule closes that gap for ``carries_state`` chains: for each adjacent
+    pair, every distinct variable state at a satisfying ending of book N is
+    carried into book N+1 under the WS-G G3 rules, and book N+1 must still have a
+    satisfying ending reachable from there. A reader who wins book 1 and finds
+    book 2 unwinnable has been handed a dead campaign, and today nothing detects
+    it.
+
+    Two distinct failures are reported, because the stress-test findings show
+    both occur:
+
+    1. **The receiving book stops being sound.** Its Layer-2 rules are re-run
+       seeded from the carried entry, and any ERROR that does *not* also occur
+       from the declared initials is a cross-book defect. This is the F3 shape
+       from ``series-stress-test-findings.md``: a variable acquired in book 1
+       arrives already true, so book 2's "gift it if missing" branch becomes
+       unsatisfiable and raises ``L2-11``. Only the **delta** is reported, so a
+       defect the receiving book already has under its own gate stays that gate's
+       to report, not this one's.
+    2. **The receiving book stops being winnable.** No satisfying ending is
+       reachable from the carried entry. ``L2-10`` cannot cover this: it asks
+       whether *some* ending is reachable, not whether a *satisfying* one is, so
+       a book that can only be lost from this entry passes Layer 2 cleanly.
+
+    Args:
+        series_books: The (book, series) pairs, one per book in the chain.
+        report: The report to append findings to.
+    """
+    by_index = {series.book_index: (book, series) for book, series in series_books}
+    for book, series in series_books:
+        next_book = by_index.get(series.book_index + 1)
+        if next_book is None or not series.carries_state:
+            continue
+        receiver, _receiver_series = next_book
+
+        # #ASSUME: data-integrity: this rule walks the receiver from its
+        # start_node (via _l2_error_signatures / _satisfying_ending_reachable),
+        # which is the correct entry only because a continuation's
+        # series_entry_node equals its start_node for every book today:
+        # generation.series_link.embed_series_block is the sole writer and
+        # copies start_node into series_entry_node (WS-G G2), and
+        # player.engine.start_continuation takes no mid-graph entry parameter. A
+        # future v2 with a genuine mid-graph entry would make this walk seed the
+        # wrong prologue and silently validate the wrong reader path.
+        # #VERIFY: if series_entry_node ever diverges from start_node, seed the
+        # receiver walk from series_entry_node here and in walk.py, and pin it
+        # with a test that a non-start entry changes SR-9's carried reachability.
+        exit_states, truncated = _satisfying_exit_states(book)
+        if truncated:
+            report.add(
+                ValidationFinding(
+                    rule_id="SR-9",
+                    severity=Severity.WARNING,
+                    story_id=book.id,
+                    message=(
+                        f"SR-9 series: book {series.book_index} '{book.id}' has more "
+                        f"than {_MAX_ENTRY_STATES} distinct satisfying exit states or "
+                        f"capped its walk, so the continuation handoff into "
+                        f"'{receiver.id}' was checked over a truncated sample"
+                    ),
+                )
+            )
+
+        baseline_errors = _l2_error_signatures(receiver, None)
+
+        for carried in exit_states:
+            new_errors = _l2_error_signatures(receiver, carried) - baseline_errors
+            if new_errors:
+                report.add(
+                    ValidationFinding(
+                        rule_id="SR-9",
+                        severity=Severity.ERROR,
+                        story_id=receiver.id,
+                        message=(
+                            f"SR-9 series: book {series.book_index} '{book.id}' can be "
+                            f"completed with carried state "
+                            f"{dict(sorted(carried.items()))}, but entering book "
+                            f"{series.book_index + 1} '{receiver.id}' with that state "
+                            f"raises Layer-2 errors it does not raise from its own "
+                            f"declared initials: {sorted(new_errors)} (an acquisition "
+                            f"branch for a carried variable must be redesigned, not "
+                            f"copied)"
+                        ),
+                    )
+                )
+            if _satisfying_ending_reachable(receiver, carried):
+                continue
+            report.add(
+                ValidationFinding(
+                    rule_id="SR-9",
+                    severity=Severity.ERROR,
+                    story_id=receiver.id,
+                    message=(
+                        f"SR-9 series: book {series.book_index} '{book.id}' can be "
+                        f"completed with carried state "
+                        f"{dict(sorted(carried.items()))}, but entering book "
+                        f"{series.book_index + 1} '{receiver.id}' with that state "
+                        f"leaves no satisfying ending reachable (the reader wins "
+                        f"book {series.book_index} into an unwinnable continuation)"
+                    ),
+                )
+            )

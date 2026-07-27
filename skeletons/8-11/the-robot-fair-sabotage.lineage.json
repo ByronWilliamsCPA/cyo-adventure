@@ -1,0 +1,14 @@
+{
+  "lineage_version": 2,
+  "origin": "fresh",
+  "mutant_slug": "the-robot-fair-sabotage",
+  "parent_slug": null,
+  "parent_sha256": null,
+  "donor_slugs": [],
+  "op_chain": [],
+  "generator": "hand-authored:v1",
+  "generation_params_sha256": "4dfdf513c60d7ae11c0dde2a39c0013a399feb70ae3179a44bc52834158b44be",
+  "created_at": "2026-07-26T00:00:00+00:00",
+  "tool_version": "0.0.0",
+  "acceptance_digest": "4dfdf513c60d7ae11c0dde2a39c0013a399feb70ae3179a44bc52834158b44be"
+}

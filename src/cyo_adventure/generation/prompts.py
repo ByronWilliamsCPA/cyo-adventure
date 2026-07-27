@@ -40,7 +40,7 @@ from cyo_adventure.validator.band_profile import (
 from cyo_adventure.validator.layer1 import Scale, ScalePlacement, resolve_node_budget
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Sequence
 
     from cyo_adventure.generation.concept import ConceptBrief
     from cyo_adventure.storybook.theme_contract import SlotSpec, ThemeContract
@@ -356,7 +356,114 @@ def build_prose_prompt(skeleton_json: str, brief: ConceptBrief) -> StagePrompt:
     return _split_stage_prompt(text)
 
 
-def build_fill_prompt(skeleton_json: str, theme_brief: str) -> StagePrompt:
+def build_differentiation_directive(
+    *,
+    level: str | None,
+    axis_instruction: str | None,
+    prior_titles: Sequence[str] = (),
+    prior_theme_tags: Sequence[str] = (),
+) -> str:
+    """Render the trusted differentiation block for the fill prompt (A6, A7).
+
+    Every input is pipeline-derived or drawn from a closed vocabulary. In
+    particular this NEVER carries a prior story's premise or request text: those
+    are another child's words, and routing a sibling's request into this fill's
+    prompt would make one child's phrasing an input to another child's story.
+    Published titles are content the family already holds, and theme tags come
+    from the closed similarity vocabulary, so neither is free text.
+
+    Args:
+        level: The ``DifferentiationLevel`` value (``tree``, ``leaf``, or
+            ``catalog``), or ``None`` when no similarity context was available.
+        axis_instruction: The drawn variation axis's instruction, or ``None``.
+        prior_titles: Published titles of this family's prior stories on this
+            same skeleton.
+        prior_theme_tags: Canonical similarity tags those stories carry.
+
+    Returns:
+        str: The rendered block. Never empty: when nothing is known it says so,
+            because a silently absent directive is what this work is fixing.
+    """
+    lines: list[str] = []
+    if axis_instruction:
+        lines.append(f"**Craft direction for this telling.** {axis_instruction}")
+        lines.append("")
+
+    if level == "leaf":
+        lines.append(
+            " ".join(
+                [
+                    "**This family has already read every skeleton in this cell for",
+                    "a similar theme.** They will recognise this structure. Your",
+                    "prose is the only thing that can make this feel like a new",
+                    "book: change the setting wholesale, not decoratively, and give",
+                    "the cast different wants from anything the titles below",
+                    "suggest.",
+                ]
+            )
+        )
+    elif level == "catalog":
+        lines.append(
+            " ".join(
+                [
+                    "**This family has read this skeleton more than once already",
+                    "for a similar theme.** Treat every surface as needing",
+                    "replacement: place, era, cast, the nature of the obstacle, and",
+                    "the imagery used to describe it. A reskin will read as a",
+                    "repeat.",
+                ]
+            )
+        )
+    elif level == "tree":
+        lines.append(
+            " ".join(
+                [
+                    "**This structure is new to this family.** Write it straight;",
+                    "no extra differentiation pressure applies.",
+                ]
+            )
+        )
+    else:
+        lines.append(
+            " ".join(
+                [
+                    "**No similarity context was available for this request.**",
+                    "Write it straight.",
+                ]
+            )
+        )
+
+    if prior_titles:
+        lines.append("")
+        titles = ", ".join(f"'{title}'" for title in prior_titles)
+        rationale = " ".join(
+            [
+                "Only the titles are given, deliberately: you are being told what",
+                "to differ from, not what those stories said.",
+            ]
+        )
+        lines.append(
+            " ".join(
+                [
+                    f"Stories this family already owns on this skeleton: {titles}.",
+                    "Do not reuse their settings, character names, or central",
+                    f"images. {rationale}",
+                ]
+            )
+        )
+    if prior_theme_tags:
+        lines.append("")
+        tags = ", ".join(sorted(prior_theme_tags))
+        lines.append(f"Themes already covered for this family: {tags}.")
+
+    return "\n".join(lines)
+
+
+def build_fill_prompt(
+    skeleton_json: str,
+    theme_brief: str,
+    differentiation_directive: str = "",
+) -> StagePrompt:
     """Build the Stage B' (Fill) generation prompt for automated skeleton_fill.
 
     Loads ``fill.md`` from the bundled templates package, substitutes all
@@ -375,6 +482,10 @@ def build_fill_prompt(skeleton_json: str, theme_brief: str) -> StagePrompt:
             "<<FILL role=... words=... beats='...'>>" bodies still in place.
         theme_brief: JSON-serialised concept brief (the child's request) used
             to adapt the skeleton's world/characters/theme.
+        differentiation_directive: The trusted differentiation block from
+            :func:`build_differentiation_directive`. Defaults to the
+            no-context block rather than to an empty string, so the template
+            never ships an unfilled token.
 
     Returns:
         The Stage B' :class:`StagePrompt` (no unfilled tokens).
@@ -391,6 +502,11 @@ def build_fill_prompt(skeleton_json: str, theme_brief: str) -> StagePrompt:
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", skeleton_json)
         .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
+        .replace(
+            "{differentiation_directive}",
+            differentiation_directive
+            or build_differentiation_directive(level=None, axis_instruction=None),
+        )
     )
     return _split_stage_prompt(text)
 
@@ -563,6 +679,7 @@ def build_bound_fill_prompt(
     skeleton_json: str,
     slot_bindings_json: str,
     theme_brief: str,
+    differentiation_directive: str = "",
 ) -> StagePrompt:
     """Build the WS-2 bound-fill prompt for a parameterized skeleton fill.
 
@@ -590,6 +707,10 @@ def build_bound_fill_prompt(
             produced the bound skeleton.
         theme_brief: JSON-serialised concept brief (the child's request) used
             to adapt the skeleton's world/characters/theme.
+        differentiation_directive: The trusted differentiation block (A6/A7)
+            from :func:`build_differentiation_directive`. Defaults to the
+            no-context block rather than to an empty string, so the template
+            never ships an unfilled token, matching :func:`build_fill_prompt`.
 
     Returns:
         The bound-fill :class:`StagePrompt` (no unfilled tokens).
@@ -609,6 +730,11 @@ def build_bound_fill_prompt(
         .replace("{skeleton_with_fill_directives}", skeleton_json)
         .replace("{slot_bindings}", slot_bindings_json)
         .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
+        .replace(
+            "{differentiation_directive}",
+            differentiation_directive
+            or build_differentiation_directive(level=None, axis_instruction=None),
+        )
     )
     return _split_stage_prompt(text)
 

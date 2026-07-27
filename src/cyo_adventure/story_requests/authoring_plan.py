@@ -23,9 +23,13 @@ from cyo_adventure.diversity.query import DifferentiationLevel, similarity_conte
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.allowlist import is_enabled_allowlist_pair
 from cyo_adventure.generation.authoring_metadata import (
+    DIFFERENTIATION_LEVEL_KEY,
+    PRIOR_THEME_TAGS_KEY,
+    PRIOR_TITLES_KEY,
     SKELETON_ALTERNATIVES_KEY,
     SKELETON_BAND_KEY,
     SKELETON_SLUG_KEY,
+    VARIATION_AXIS_KEY,
 )
 from cyo_adventure.generation.skeleton_match import (
     candidates_for_cell,
@@ -34,6 +38,7 @@ from cyo_adventure.generation.skeleton_match import (
     select_skeleton_for_cell,
     skeleton_matches_cell,
 )
+from cyo_adventure.generation.variation import select_axis
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -272,13 +277,32 @@ async def _automated_provider_metadata(
     return {"provider": plan.provider, "model": plan.model}
 
 
+@dataclass(frozen=True, slots=True)
+class _Differentiation:
+    """The differentiation signal, on its way to the fill prompt (A6).
+
+    Attributes:
+        level: The ``DifferentiationLevel`` value, or ``None`` on the override
+            path where no similarity context is computed.
+        prior_titles: Published titles of this family's prior stories on the
+            chosen skeleton. Titles only, deliberately: a prior story's premise
+            is another child's request text and must never reach this fill.
+        prior_theme_tags: Canonical similarity tags those stories carry, from
+            the closed vocabulary, so this is not free text either.
+    """
+
+    level: str | None = None
+    prior_titles: tuple[str, ...] = ()
+    prior_theme_tags: tuple[str, ...] = ()
+
+
 async def _resolve_skeleton_fill(
     session: AsyncSession,
     plan: AuthoringPlanRequest,
     concept: Concept,
     request: StoryRequest,
     band: str,
-) -> tuple[str, str, list[str], list[str]]:
+) -> tuple[str, str, list[str], list[str], _Differentiation]:
     """Resolve the skeleton for a skeleton_fill plan: override or auto-pick.
 
     Extracted from build_authoring_plan to keep that function's cognitive
@@ -376,7 +400,16 @@ async def _resolve_skeleton_fill(
                 f"request's cell (band='{band}', length='{length}', "
                 f"style='{style}')."
             )
-        return skeleton_slug, skeleton_band, skeleton_alternatives, warnings
+        # Override path: no similarity context is computed, so there is no
+        # differentiation signal to carry. The fill prompt says so explicitly
+        # rather than implying the structure is new to the family.
+        return (
+            skeleton_slug,
+            skeleton_band,
+            skeleton_alternatives,
+            warnings,
+            _Differentiation(),
+        )
 
     # Auto-pick path: the empty-cell guard applies ONLY here (an override above
     # is legitimately allowed to name a slug for an empty own-cell).
@@ -453,7 +486,29 @@ async def _resolve_skeleton_fill(
                 "level": sim_ctx.recommendation.value,
             },
         )
-    return selection.slug, band, skeleton_alternatives, warnings
+    # A6: carry the signal to the fill instead of only warning and logging it.
+    # Restricted to priors on the CHOSEN skeleton, since that is what the fill is
+    # being asked to differ from; a prior on a different tree is already distinct
+    # structurally and naming it would just dilute the instruction.
+    prior = [
+        neighbor
+        for neighbor in sim_ctx.neighbors
+        if neighbor.skeleton_slug == selection.slug and neighbor.title
+    ]
+    # A6: "themes already covered" must be the PRIORS' own tags, so the fill is
+    # steered to differ FROM stories the family already holds. Feeding the
+    # current request's tags here (an earlier bug) steered the fill away from
+    # the very theme the child just asked for. Union across the chosen-skeleton
+    # priors, matching the same set prior_titles names.
+    prior_theme_tags = tuple(
+        sorted({tag for neighbor in prior for tag in neighbor.theme_tags})
+    )
+    differentiation = _Differentiation(
+        level=sim_ctx.recommendation.value,
+        prior_titles=tuple(dict.fromkeys(neighbor.title for neighbor in prior)),
+        prior_theme_tags=prior_theme_tags,
+    )
+    return selection.slug, band, skeleton_alternatives, warnings, differentiation
 
 
 async def build_authoring_plan(
@@ -514,12 +569,14 @@ async def build_authoring_plan(
     skeleton_band: str | None = None
     skeleton_alternatives: list[str] = []
     skeleton_warnings: list[str] = []
+    differentiation = _Differentiation()
     if method == "skeleton_fill":
         (
             skeleton_slug,
             skeleton_band,
             skeleton_alternatives,
             skeleton_warnings,
+            differentiation,
         ) = await _resolve_skeleton_fill(session, plan, concept, request, band)
 
     warnings = eligibility_warnings(method, mechanism, band, prep_model)
@@ -535,11 +592,19 @@ async def build_authoring_plan(
         persisted_alternatives = (
             [] if plan.skeleton_slug is not None else skeleton_alternatives
         )
+        # A7: draw one craft axis, seeded on the request id so a re-run
+        # reproduces it. Deterministic on purpose: a randomly-drawn axis would
+        # confound every before-and-after comparison of its effect.
+        axis = select_axis(str(request.id))
         authoring_metadata = {
             **(authoring_metadata or {}),
             SKELETON_SLUG_KEY: skeleton_slug,
             SKELETON_BAND_KEY: skeleton_band,
             SKELETON_ALTERNATIVES_KEY: persisted_alternatives,
+            DIFFERENTIATION_LEVEL_KEY: differentiation.level,
+            VARIATION_AXIS_KEY: axis.key,
+            PRIOR_TITLES_KEY: list(differentiation.prior_titles),
+            PRIOR_THEME_TAGS_KEY: list(differentiation.prior_theme_tags),
             "theme_brief": concept.brief,
             "review_stage1_model": plan.review_stage1_model,
             "review_stage2_model": plan.review_stage2_model,
