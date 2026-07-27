@@ -141,3 +141,25 @@ def test_select_atg_comparison_partner_is_noop_on_first_use() -> None:
     assert select_atg_comparison_partner("new-slug", history) is None
     assert select_atg_comparison_partner(None, history) is None
     assert select_atg_comparison_partner("new-slug", []) is None
+
+
+@pytest.mark.unit
+def test_neighbor_theme_tags_carry_the_prior_stories_own_signature() -> None:
+    """I2: each neighbor carries ITS OWN theme tags, not the request's.
+
+    The "themes already covered for this family" signal must describe the
+    priors a fill should differ FROM. A regression fed it the current
+    request's tags instead, steering the fill away from the child's ask; this
+    pins that the neighbor exposes the prior's sorted ``theme_sig`` and that it
+    is independent of the incoming request signature.
+    """
+    prior_sig = frozenset({"forest", "courage"})
+    ctx = score_history(
+        request_theme_sig=_DRAGON,
+        history=[_entry("b1", "s1", prior_sig, day=1)],
+        cell_slugs=["s1"],
+    )
+    assert len(ctx.neighbors) == 1
+    neighbor = ctx.neighbors[0]
+    assert neighbor.theme_tags == ("courage", "forest")
+    assert set(neighbor.theme_tags) != set(_DRAGON)

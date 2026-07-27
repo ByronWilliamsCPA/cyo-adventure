@@ -17,7 +17,11 @@ from cyo_adventure.db.models import (
     PipelineEvent,
     StoryRequest,
 )
-from cyo_adventure.diversity.query import DifferentiationLevel, SimilarityContext
+from cyo_adventure.diversity.query import (
+    DifferentiationLevel,
+    SimilarityContext,
+    StoryNeighbor,
+)
 from cyo_adventure.events import Actor, EventType
 from cyo_adventure.generation.skeleton_match import select_skeleton_for_cell
 from cyo_adventure.story_requests.authoring_plan import (
@@ -634,15 +638,17 @@ def _sim_ctx(
     *,
     similar_count_per_slug: dict[str, int],
     recommendation: DifferentiationLevel,
+    neighbors: tuple[StoryNeighbor, ...] = (),
 ) -> SimilarityContext:
     """Build a SimilarityContext for mocking `similarity_context` (WS-4).
 
-    Only `similar_count_per_slug` and `recommendation` matter to
-    build_authoring_plan's auto-pick path; the other fields are filled with
-    innocuous defaults since nothing under test reads them.
+    Only `similar_count_per_slug`, `recommendation`, and (for the A6 priors
+    assertions) `neighbors` matter to build_authoring_plan's auto-pick path;
+    the other fields are filled with innocuous defaults since nothing under
+    test reads them.
     """
     return SimilarityContext(
-        neighbors=(),
+        neighbors=neighbors,
         cell_theme_saturation=0.0,
         used_slugs=frozenset(),
         similar_count_per_slug=similar_count_per_slug,
@@ -709,6 +715,65 @@ async def test_skeleton_fill_auto_pick_passes_similar_usage_to_selection() -> No
     # the RNG's draw differently than [0.0625, 1, 1].
     legacy = select_skeleton_for_cell(_CELL_8_11_SHORT_PROSE, {}, random.Random(42))
     assert legacy.slug != result.skeleton_slug
+
+
+@pytest.mark.asyncio
+async def test_skeleton_fill_persists_priors_theme_tags_not_request_tags() -> None:
+    """I2: prior_theme_tags carries the PRIORS' tags, never the request's.
+
+    "Themes already covered for this family" must describe the stories the
+    family already holds so the fill differs FROM them. A regression fed it the
+    current request's own signature instead, steering the fill away from the
+    child's ask. This pins that a prior on the chosen skeleton contributes its
+    OWN theme tags to the persisted metadata.
+    """
+    similar_counts = dict.fromkeys(_CELL_8_11_SHORT_PROSE, 0)
+    with patch(
+        "cyo_adventure.story_requests.authoring_plan.random.SystemRandom",
+        new=lambda: random.Random(42),
+    ):
+        # The chosen slug is deterministic under this seed (same recipe the
+        # weighting test above uses); place the prior on it so it survives the
+        # chosen-skeleton filter.
+        chosen = select_skeleton_for_cell(
+            _CELL_8_11_SHORT_PROSE,
+            {},
+            random.Random(42),
+            similar_usage=similar_counts,
+        ).slug
+        neighbor = StoryNeighbor(
+            storybook_id="b1",
+            version=1,
+            skeleton_slug=chosen,
+            theme_similarity=0.9,
+            title="The Fox and the Old Lantern",
+            theme_tags=("courage", "forest"),
+        )
+        ctx = _sim_ctx(
+            similar_count_per_slug=similar_counts,
+            recommendation=DifferentiationLevel.TREE,
+            neighbors=(neighbor,),
+        )
+        with patch(
+            "cyo_adventure.story_requests.authoring_plan.similarity_context",
+            new=AsyncMock(return_value=ctx),
+        ):
+            result = await build_authoring_plan(
+                _FakeSession(),
+                _request(),
+                _short_prose_8_11_concept(),
+                AuthoringPlanRequest(
+                    method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+                ),
+                actor=_admin_actor(),
+            )
+    metadata = result.job.authoring_metadata
+    assert metadata is not None
+    assert result.skeleton_slug == chosen
+    assert metadata["prior_titles"] == ["The Fox and the Old Lantern"]
+    # The priors' own tags, sorted -- not tags derived from the request premise
+    # "a fox finds a lantern".
+    assert metadata["prior_theme_tags"] == ["courage", "forest"]
 
 
 @pytest.mark.asyncio

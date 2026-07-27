@@ -19,7 +19,6 @@ from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
 from cyo_adventure.db.models import GenerationJob
-from cyo_adventure.diversity.normalize import similarity_signature
 from cyo_adventure.diversity.query import DifferentiationLevel, similarity_context
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.allowlist import is_enabled_allowlist_pair
@@ -442,7 +441,6 @@ async def _resolve_skeleton_fill(
         random.SystemRandom(),
         similar_usage=sim_ctx.similar_count_per_slug,
     )
-    request_theme_tags = similarity_signature(concept.brief)
     if sim_ctx.recommendation is DifferentiationLevel.LEAF:
         warnings.append(
             "every skeleton in this cell has already been used for a "
@@ -497,10 +495,18 @@ async def _resolve_skeleton_fill(
         for neighbor in sim_ctx.neighbors
         if neighbor.skeleton_slug == selection.slug and neighbor.title
     ]
+    # A6: "themes already covered" must be the PRIORS' own tags, so the fill is
+    # steered to differ FROM stories the family already holds. Feeding the
+    # current request's tags here (an earlier bug) steered the fill away from
+    # the very theme the child just asked for. Union across the chosen-skeleton
+    # priors, matching the same set prior_titles names.
+    prior_theme_tags = tuple(
+        sorted({tag for neighbor in prior for tag in neighbor.theme_tags})
+    )
     differentiation = _Differentiation(
         level=sim_ctx.recommendation.value,
         prior_titles=tuple(dict.fromkeys(neighbor.title for neighbor in prior)),
-        prior_theme_tags=tuple(sorted(request_theme_tags)),
+        prior_theme_tags=prior_theme_tags,
     )
     return selection.slug, band, skeleton_alternatives, warnings, differentiation
 

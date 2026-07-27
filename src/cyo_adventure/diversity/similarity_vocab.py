@@ -273,7 +273,9 @@ SIMILARITY_TAG_MAP: dict[str, str] = {
     "clue": "mystery",
     "clues": "mystery",
     "detective": "mystery",
-    "secret": "mystery",
+    # "secret" is a vocabulary word mapping to the mystery theme, not a
+    # credential; bandit B105 (hardcoded_password_string) false positive.
+    "secret": "mystery",  # nosec B105
     "suspicion and trust": "mystery",
     "trust and paranoia": "mystery",
     "tradecraft": "mystery",

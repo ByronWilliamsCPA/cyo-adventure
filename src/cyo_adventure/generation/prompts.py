@@ -679,6 +679,7 @@ def build_bound_fill_prompt(
     skeleton_json: str,
     slot_bindings_json: str,
     theme_brief: str,
+    differentiation_directive: str = "",
 ) -> StagePrompt:
     """Build the WS-2 bound-fill prompt for a parameterized skeleton fill.
 
@@ -706,6 +707,10 @@ def build_bound_fill_prompt(
             produced the bound skeleton.
         theme_brief: JSON-serialised concept brief (the child's request) used
             to adapt the skeleton's world/characters/theme.
+        differentiation_directive: The trusted differentiation block (A6/A7)
+            from :func:`build_differentiation_directive`. Defaults to the
+            no-context block rather than to an empty string, so the template
+            never ships an unfilled token, matching :func:`build_fill_prompt`.
 
     Returns:
         The bound-fill :class:`StagePrompt` (no unfilled tokens).
@@ -725,6 +730,11 @@ def build_bound_fill_prompt(
         .replace("{skeleton_with_fill_directives}", skeleton_json)
         .replace("{slot_bindings}", slot_bindings_json)
         .replace(_THEME_BRIEF_PLACEHOLDER, theme_brief)
+        .replace(
+            "{differentiation_directive}",
+            differentiation_directive
+            or build_differentiation_directive(level=None, axis_instruction=None),
+        )
     )
     return _split_stage_prompt(text)
 

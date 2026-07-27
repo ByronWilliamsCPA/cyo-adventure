@@ -785,8 +785,9 @@ async def fill_skeleton(
             carrying this family's escalation level, the drawn craft axis, and the
             titles of prior stories on this same skeleton. Empty by default, in
             which case the prompt renders its explicit no-context block; it is
-            never left as an unfilled template token. Only reaches the free-text
-            fill variant, since the bound-fill prompt has its own template.
+            never left as an unfilled template token. Threaded into both the
+            free-text and the bound-fill prompt variants, so contract-bound
+            skeletons receive the same A6/A7 anti-repetition steering.
 
     Returns:
         A :class:`GenerationOutcome` describing the final status, the last
@@ -827,6 +828,7 @@ async def fill_skeleton(
             json.dumps(skeleton),
             json.dumps(dict(slot_bindings)),
             json.dumps(theme_brief),
+            differentiation_directive,
         )
         if slot_bindings is not None
         else build_fill_prompt(

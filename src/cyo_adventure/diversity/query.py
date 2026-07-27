@@ -56,9 +56,12 @@ _DEFAULT_THEME_THRESHOLD = 0.34
 # permanently at LEAF/CATALOG and makes the blended weight rank-equivalent to
 # recency alone. That is the mirror image of the inert-signal defect this work
 # exists to fix, and A2 pushes harder toward "similar", so it gets closer sooner.
-# Above this bound the recommendation is reported as saturated rather than
-# escalated, so a caller can tell "this cell is exhausted" from "this request
-# needs a different tree".
+# For realistic cell sizes (2-3 candidate skeletons) cell_theme_saturation only
+# takes values in {0, 1/3, 1/2, 2/3, 1.0}, so `< 0.999` is equivalent to `< 1.0`:
+# the ladder escalates past TREE only once EVERY candidate in the cell already
+# has a similar-theme story. The 0.999 (rather than a plain 1.0) only guards a
+# float that could round just shy of 1.0 in a hypothetically large cell; it is
+# not a distinct "saturated" state (the ladder is TREE/LEAF/CATALOG only).
 _SATURATION_CEILING = 0.999
 
 
@@ -75,6 +78,10 @@ class StoryNeighbor:
             this story already gives them. Asymmetric, so it is not a distance.
         title: The published title, carried so a later fill can be told what to
             differ FROM without being told what those stories said (A6).
+        theme_tags: This prior story's OWN similarity signature (sorted), from
+            the closed vocabulary. Carried so a later fill can be told which
+            themes the family already holds and asked to differ from them (A6);
+            it is the prior's tags, never the incoming request's.
     """
 
     storybook_id: str
@@ -82,6 +89,7 @@ class StoryNeighbor:
     skeleton_slug: str | None
     theme_similarity: float
     title: str = ""
+    theme_tags: tuple[str, ...] = ()
 
 
 class DifferentiationLevel(StrEnum):
@@ -166,6 +174,7 @@ def score_history(
             skeleton_slug=entry.skeleton_slug,
             theme_similarity=similarity,
             title=entry.title,
+            theme_tags=tuple(sorted(entry.theme_sig)),
         )
         for entry, similarity in ranked[:_MAX_NEIGHBORS]
     )

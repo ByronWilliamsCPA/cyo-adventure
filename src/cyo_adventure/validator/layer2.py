@@ -19,7 +19,9 @@ L2-14 (no all-forbidden decision)
     A reachable configuration offering two or more visible choices where EVERY
     option leads to a forbidden ending with no intervening visible choice.
     Band-scoped: "forbidden" means negative valence at 3-5 through 10-13, and
-    ``death``/``capture`` at 13-16 and 16+.
+    ``death`` at 13-16 and 16+. ``capture`` was deliberately excluded from the
+    teen bands (see the rationale at ``_FATAL_KINDS``): it is the signature
+    climax of capture/escape genres, not a lethal outcome.
 L2-13 (scale advisory)
     A completed-walk Tier-2 story exceeds the ADR-011 hand-authoring node
     ceiling, so the configuration walk is its sole correctness guarantee

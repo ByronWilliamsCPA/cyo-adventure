@@ -4,13 +4,12 @@ WS-2 fixes exactly three places in a skeleton where a ``{SLOT}`` token may
 legally appear: the ``beats='...'`` guidance inside a ``<<FILL ...>>`` node
 body, an ending's ``title``, and a choice's ``label``
 (``docs/planning/ws2-parameterized-catalog-design.md`` section 4). Four
-call sites had grown their own walk over those surfaces:
+call sites had each grown their own walk over those surfaces:
 :mod:`cyo_adventure.generation.binding` (to collect declared tokens and to
-substitute values), :mod:`cyo_adventure.mutation.contract_gate` (which says
+substitute values), :mod:`cyo_adventure.mutation.contract_gate` (which said
 so in its own docstring: "Reimplements
 ``generation.binding._slotted_surface_tokens``"), ``scripts/
-parameterize_skeleton.py``, and the A21 residual-leak scan in
-:mod:`cyo_adventure.validator.theme_leak`.
+parameterize_skeleton.py``, and :mod:`cyo_adventure.mutation.bundle`.
 
 Four copies of "what counts as a slotted surface" is how a surface gets
 checked by one pass and missed by another, which is exactly the shape of the
@@ -19,6 +18,15 @@ choice labels that the acceptance suite walked for *tokens* but never for
 *text*. This module is the single definition, and it lives in the pure
 ``storybook`` layer so the validator can import it without inverting the
 established ``generation -> validator -> storybook`` direction.
+
+The request- and validation-path copies (``generation.binding`` and
+``mutation.contract_gate``) now delegate here, and the A21 residual-leak scan
+added alongside this module (:mod:`cyo_adventure.validator.theme_leak`)
+consumes it from the start rather than ever having been a fifth copy. The two
+offline catalog tools, ``scripts/parameterize_skeleton.py`` and
+:mod:`cyo_adventure.mutation.bundle`, still carry their own walk; neither
+gates a child-facing fill, so they are tracked as the remaining un-unified
+surfaces rather than blocked on here.
 
 Deliberately dependency-light: stdlib plus
 :data:`cyo_adventure.storybook.theme_contract.SLOT_TOKEN_RE` only. It walks

@@ -407,6 +407,18 @@ def _check_continuation_entry_states(
             continue
         receiver, _receiver_series = next_book
 
+        # #ASSUME: data-integrity: this rule walks the receiver from its
+        # start_node (via _l2_error_signatures / _satisfying_ending_reachable),
+        # which is the correct entry only because a continuation's
+        # series_entry_node equals its start_node for every book today:
+        # generation.series_link.embed_series_block is the sole writer and
+        # copies start_node into series_entry_node (WS-G G2), and
+        # player.engine.start_continuation takes no mid-graph entry parameter. A
+        # future v2 with a genuine mid-graph entry would make this walk seed the
+        # wrong prologue and silently validate the wrong reader path.
+        # #VERIFY: if series_entry_node ever diverges from start_node, seed the
+        # receiver walk from series_entry_node here and in walk.py, and pin it
+        # with a test that a non-start entry changes SR-9's carried reachability.
         exit_states, truncated = _satisfying_exit_states(book)
         if truncated:
             report.add(
