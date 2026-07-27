@@ -22,6 +22,21 @@ async function apiGet(bearer: string, path: string): Promise<Response> {
   })
 }
 
+// Node-side authenticated PATCH, for the S-3 admin_users.py wire-boundary
+// tests below (no route mocks; a real PATCH against the real backend).
+async function apiPatch(
+  bearer: string,
+  path: string,
+  body: Record<string, unknown>
+): Promise<Response> {
+  return fetch(`${BACKEND}${path}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${bearer}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(5000),
+  })
+}
+
 /**
  * Real-API WS-J admin user-management (Phase 3.1 write-path backfill): the
  * Kids tab's real create/edit/deactivate round-trip through
@@ -240,4 +255,126 @@ test('#12c listing cross-family profiles emits a PROFILE_VIEWED audit event', as
   // The payload carries the row count, never per-row PII (admin_profiles.py:
   // "one event per call, never one per row").
   expect('count' in viewed!.payload, 'PROFILE_VIEWED payload should carry a count').toBe(true)
+})
+
+/**
+ * S-3: admin_users.py's self-lockout guard and the is_admin privilege-
+ * escalation write path, both exercised at the real wire boundary (no route
+ * mocks; a real PATCH against the real backend), the same posture as #12b/
+ * #12c above.
+ *
+ * #ASSUME: data-integrity: reading admin_users.py::update_user directly
+ * (not inferring it from the frontend) shows the guard is NOT a
+ * population-count "last admin" check: `_require_admin` gates the caller's
+ * role, then `parsed == ctx.principal.user_id` refuses ANY self-edit
+ * unconditionally, before any other admin's existence is considered (see
+ * that function's own docstring: "A system-wide 'last admin' check is
+ * deliberately out of scope"). In the seeded "Dev Family", dev-admin is the
+ * only role='admin' row, so this guard happens to also be the thing that
+ * stops the last admin from locking themselves out; the two tests below
+ * assert the guard that actually exists, not a broader invariant the code
+ * does not implement.
+ * #VERIFY: tests/integration/test_admin_users_api.py::
+ * test_admin_cannot_edit_own_account pins the same behavior server-side.
+ */
+test.describe('S-3 admin_users.py: self-lockout guard and is_admin escalation', () => {
+  async function devFamilyId(): Promise<string> {
+    const res = await apiGet(ADMIN_BEARER, '/api/v1/admin/families')
+    expect(res.status, 'admin families list failed').toBe(200)
+    const body = (await res.json()) as { families: { id: string; name: string }[] }
+    const devFamily = body.families.find((f) => f.name === 'Dev Family')
+    expect(devFamily, 'seeded "Dev Family" missing from the admin families list').toBeDefined()
+    return devFamily!.id
+  }
+
+  async function userId(familyId: string, role: 'admin' | 'guardian'): Promise<string> {
+    const res = await apiGet(
+      ADMIN_BEARER,
+      `/api/v1/admin/users?family_id=${familyId}&role=${role}`
+    )
+    expect(res.status, `admin users list (role=${role}) failed`).toBe(200)
+    const body = (await res.json()) as {
+      users: { id: string; role: string; is_admin: boolean }[]
+    }
+    // dev-dual is role='guardian' AND is_admin=true, so when looking up the
+    // plain guardian filter to the row that is NOT dual-role; when looking up
+    // the admin, Dev Family seeds exactly one role='admin' row (dev-admin).
+    const match =
+      role === 'guardian'
+        ? body.users.find((u) => !u.is_admin)
+        : body.users.find((u) => u.is_admin)
+    expect(match, `no ${role} row found in Dev Family (is_admin=${role !== 'guardian'})`).toBeDefined()
+    return match!.id
+  }
+
+  test('an admin cannot demote/deactivate their own account (self-lockout guard, real 403)', async () => {
+    const familyId = await devFamilyId()
+    const selfId = await userId(familyId, 'admin')
+
+    const resp = await apiPatch(ADMIN_BEARER, `/api/v1/admin/users/${selfId}`, {
+      status: 'deactivated',
+    })
+
+    expect(resp.status, 'self-edit PATCH must be refused with 403, not applied').toBe(403)
+    const body = (await resp.json()) as { error?: string; message?: string }
+    expect(body.error, 'self-lockout error shape').toBe('AuthorizationError')
+    expect(body.message ?? '', 'self-lockout error message').toMatch(/own account/i)
+
+    // Positive control: the row was never touched (still admin/active), so
+    // the 403 above reflects a refused write, not a route that happens to
+    // 403 while silently applying the change anyway.
+    const after = await apiGet(ADMIN_BEARER, `/api/v1/admin/users?family_id=${familyId}&role=admin`)
+    const afterBody = (await after.json()) as { users: { id: string; status: string }[] }
+    const stillActive = afterBody.users.find((u) => u.id === selfId)
+    expect(stillActive?.status, 'self-edit must be a no-op, not a partial write').toBe('active')
+  })
+
+  test('an admin can grant is_admin:true to another adult, and it is audited (privilege escalation)', async () => {
+    const familyId = await devFamilyId()
+    const guardianId = await userId(familyId, 'guardian')
+
+    const since = new Date(Date.now() - 5_000).toISOString()
+
+    try {
+      const resp = await apiPatch(ADMIN_BEARER, `/api/v1/admin/users/${guardianId}`, {
+        is_admin: true,
+      })
+      expect(resp.status, 'is_admin escalation PATCH must succeed for a non-self target').toBe(
+        200
+      )
+      const body = (await resp.json()) as { id: string; is_admin: boolean; role: string }
+      expect(body.is_admin, 'escalated row must report is_admin: true').toBe(true)
+      expect(body.role, 'escalation must not silently change the role').toBe('guardian')
+
+      // Escalating a capability is not a silent write: admin_users.py records
+      // a USER_MANAGED audit event for every update_user call (mirrors the
+      // #12c PROFILE_VIEWED pattern above, same audit surface, different
+      // event kind).
+      const audit = await apiGet(
+        ADMIN_BEARER,
+        `/api/v1/admin/audit?kind=user_managed&since=${encodeURIComponent(since)}`
+      )
+      expect(audit.status, 'admin audit query failed').toBe(200)
+      const auditBody = (await audit.json()) as {
+        events: { entity_id: string; entity_type: string; payload: Record<string, unknown> }[]
+      }
+      const escalationEvent = auditBody.events.find((e) => e.entity_id === guardianId)
+      expect(
+        escalationEvent,
+        'no USER_MANAGED audit event recorded for the is_admin escalation'
+      ).toBeDefined()
+      expect(escalationEvent!.entity_type, 'USER_MANAGED entity_type').toBe('user')
+    } finally {
+      // #CRITICAL: data-integrity: revert the seeded dev-guardian back to
+      // is_admin=false unconditionally, even on assertion failure above;
+      // scripts/reset_e2e_real_state.py does not touch User rows (see its
+      // module docstring's five-item scope), so leaving this set would
+      // silently turn dev-guardian into a dual-role admin for every
+      // subsequent real-tier run (this file's own beforeAll reset would not
+      // catch it either).
+      // #VERIFY: the revert PATCH here mirrors kid-flag-real.spec.ts's own
+      // afterEach resolve-the-flag cleanup convention.
+      await apiPatch(ADMIN_BEARER, `/api/v1/admin/users/${guardianId}`, { is_admin: false })
+    }
+  })
 })
