@@ -1,0 +1,14 @@
+{
+  "lineage_version": 2,
+  "origin": "fresh",
+  "mutant_slug": "the-cinderwick-exchange",
+  "parent_slug": null,
+  "parent_sha256": null,
+  "donor_slugs": [],
+  "op_chain": [],
+  "generator": "hand-authored:v1",
+  "generation_params_sha256": "208e8a61c47455c8bb4896ecfa847ee722542444a73e4b443ad752f5c1fa000c",
+  "created_at": "2026-07-26T00:00:00+00:00",
+  "tool_version": "0.0.0",
+  "acceptance_digest": "208e8a61c47455c8bb4896ecfa847ee722542444a73e4b443ad752f5c1fa000c"
+}

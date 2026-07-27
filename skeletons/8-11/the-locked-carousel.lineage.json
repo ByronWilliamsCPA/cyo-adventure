@@ -1,0 +1,14 @@
+{
+  "lineage_version": 2,
+  "origin": "fresh",
+  "mutant_slug": "the-locked-carousel",
+  "parent_slug": null,
+  "parent_sha256": null,
+  "donor_slugs": [],
+  "op_chain": [],
+  "generator": "hand-authored:v1",
+  "generation_params_sha256": "7b9cbc6126fe11c3ba658a10c9a046f473a0f77c28cd4f2f2430dca12c9a04c7",
+  "created_at": "2026-07-26T00:00:00+00:00",
+  "tool_version": "0.0.0",
+  "acceptance_digest": "7b9cbc6126fe11c3ba658a10c9a046f473a0f77c28cd4f2f2430dca12c9a04c7"
+}

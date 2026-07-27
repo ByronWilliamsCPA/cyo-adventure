@@ -1,0 +1,14 @@
+{
+  "lineage_version": 2,
+  "origin": "fresh",
+  "mutant_slug": "the-tide-pool-rescue",
+  "parent_slug": null,
+  "parent_sha256": null,
+  "donor_slugs": [],
+  "op_chain": [],
+  "generator": "hand-authored:v1",
+  "generation_params_sha256": "189d1e4ccc2b5e3add616c91f25c4fe87e07186559bba5bd6e949a6b2cb0bb50",
+  "created_at": "2026-07-26T00:00:00+00:00",
+  "tool_version": "0.0.0",
+  "acceptance_digest": "189d1e4ccc2b5e3add616c91f25c4fe87e07186559bba5bd6e949a6b2cb0bb50"
+}
