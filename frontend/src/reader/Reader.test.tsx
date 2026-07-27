@@ -367,6 +367,12 @@ describe('Reader ending progress and celebration', () => {
   it('celebrates a positive ending with the animated stars', () => {
     reachLanternEnding()
     const stars = screen.getByTestId('ending-celebration')
+    // The celebrate-vs-calm distinction is purely decorative: the stars element
+    // is aria-hidden (asserted below) and the ending's title/body prose are the
+    // same either way, so there is no accessible/text signal to assert instead.
+    // The --celebrate class token is the only observable difference, and its
+    // visual effect (the CSS star burst) is not rendered in jsdom. Keep the
+    // class assertion as the narrowest available proxy for that visual state.
     expect(stars.className).toContain('reader-ending__stars--celebrate')
     expect(stars.getAttribute('aria-hidden')).toBe('true')
   })
@@ -395,11 +401,7 @@ describe('Reader K6 endings tracker', () => {
   function reachLanternEnding(fetchReadingHistory?: FetchReadingHistoryMock) {
     render(
       <MemoryRouter>
-        <Reader
-          story={lantern}
-          profileId="p1"
-          fetchReadingHistory={fetchReadingHistory}
-        />
+        <Reader story={lantern} profileId="p1" fetchReadingHistory={fetchReadingHistory} />
       </MemoryRouter>
     )
     fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
@@ -419,9 +421,9 @@ describe('Reader K6 endings tracker', () => {
       },
     ])
     reachLanternEnding(fetchReadingHistory)
-    expect(
-      await screen.findByTestId('endings-tracker')
-    ).toHaveTextContent('You found ending 2 of 4! Read again to find more.')
+    expect(await screen.findByTestId('endings-tracker')).toHaveTextContent(
+      'You found ending 2 of 4! Read again to find more.'
+    )
     expect(fetchReadingHistory).toHaveBeenCalledWith('p1')
   })
 
@@ -449,7 +451,9 @@ describe('Reader K6 endings tracker', () => {
 
   it('renders nothing on a lookup failure', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const fetchReadingHistory = vi.fn<FetchReadingHistoryMock>().mockRejectedValue(new Error('boom'))
+    const fetchReadingHistory = vi
+      .fn<FetchReadingHistoryMock>()
+      .mockRejectedValue(new Error('boom'))
     reachLanternEnding(fetchReadingHistory)
     await waitFor(() => expect(fetchReadingHistory).toHaveBeenCalled())
     expect(screen.queryByTestId('endings-tracker')).not.toBeInTheDocument()
@@ -609,9 +613,7 @@ describe('Reader read-aloud (K7)', () => {
     bodyUtterance.onend?.()
     expect(speakMock).toHaveBeenCalledTimes(2)
     const choicesUtterance = speakMock.mock.calls[1][0] as MockUtterance
-    expect(choicesUtterance.text).toBe(
-      'Your choices are: Pick up the lantern., Walk inside.'
-    )
+    expect(choicesUtterance.text).toBe('Your choices are: Pick up the lantern., Walk inside.')
   })
 
   it('re-tapping while speaking stops speech', () => {

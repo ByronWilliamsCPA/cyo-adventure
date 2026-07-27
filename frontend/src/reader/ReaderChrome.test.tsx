@@ -30,9 +30,7 @@ describe('ReaderChrome', () => {
     render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
     expect(screen.queryByText('2 of 5 pages explored')).toBeNull()
     // The bar is still there and still accessible via aria-label.
-    expect(screen.getByRole('progressbar').getAttribute('aria-label')).toBe(
-      '2 of 5 pages explored'
-    )
+    expect(screen.getByRole('progressbar').getAttribute('aria-label')).toBe('2 of 5 pages explored')
   })
 
   it('shows the numeric label when the caller vouches for it', () => {
@@ -77,8 +75,12 @@ describe('ReaderChrome', () => {
         />
       )
       const button = screen.getByRole('button', { name: 'Read this page aloud' })
+      // The unpressed state is fully observable: aria-pressed=false plus the
+      // "Listen" visible affordance. (Dropped a redundant assertion on the
+      // reader-tts-toggle--speaking class token, which is driven by the same
+      // `speaking` flag as aria-pressed and carries no extra user-facing signal.)
       expect(button).toHaveAttribute('aria-pressed', 'false')
-      expect(button.className).not.toContain('reader-tts-toggle--speaking')
+      expect(screen.getByText('Listen')).toBeInTheDocument()
       fireEvent.click(button)
       expect(onToggle).toHaveBeenCalledTimes(1)
     })
@@ -93,8 +95,12 @@ describe('ReaderChrome', () => {
         />
       )
       const button = screen.getByRole('button', { name: 'Stop reading aloud' })
+      // The pressed state is fully observable: aria-pressed=true plus the
+      // "Stop" visible affordance. (Dropped a redundant assertion on the
+      // reader-tts-toggle--speaking class token, which is driven by the same
+      // `speaking` flag as aria-pressed and carries no extra user-facing signal.)
       expect(button).toHaveAttribute('aria-pressed', 'true')
-      expect(button.className).toContain('reader-tts-toggle--speaking')
+      expect(screen.getByText('Stop')).toBeInTheDocument()
     })
   })
 
