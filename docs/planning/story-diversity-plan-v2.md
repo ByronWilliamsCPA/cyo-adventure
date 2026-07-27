@@ -182,6 +182,33 @@ whether a book with their own name in it feels new.
 > opener, and making it a tighter hand-off book moves `n_nodes`/`n_endings`/`n_choices`/`max_depth` together (the
 > numeric term carries weight 0.5). This is authoring hours, not engineering, and it is the one A9 piece that stays
 > open.
+>
+> **Item 2 scoped to a spec 2026-07-26. Still open, but no longer needs re-deriving.** Four further measurements,
+> so the next attempt starts from evidence:
+>
+> 1. **The copy is total.** The two books' out-degree histograms are byte-identical
+>    (`{0:152, 1:185, 2:114, 3:48, 4:25, 5:14, 6:10, 7:2}`), with 324 of 550 node ids simply renamed
+>    (`a0_*` -> `g0_*`). Same degree sequence, same depth, same everything but `n_effects`. Book 2 is book 1's
+>    skeleton, confirmed at the graph level and not just the feature level.
+> 2. **Deletion cannot work. Proved exhaustively, not argued.** Every subset of up to five prunable groups
+>    (`w0`-`w7`, `g1`-`g4`; 12 candidates) was simulated: **zero** are simultaneously gate-clean and above
+>    `tau_cell`. The blocker is always the same, `PL-17`, whose ending floor scales at ~25% of node count while
+>    book 2 sits at 27.6% (152/550). Every removable group is ending-dense (`w3` is 62%, `w4` 58%, `w2` 46%), so
+>    pruning the bail-out fan drops below the floor before it moves the metric. Dropping `w2,w3,w4,w6` reaches
+>    0.0549 at 439 nodes but needs 110 endings and has 94.
+> 3. **The viable levers, with numbers.** Ending remix alone (35 `capture` -> `setback`) reaches only **0.0350**.
+>    A state layer alone needs about **6 variables, 40 conditions, 120 effects** to reach **0.0601**. The two
+>    combined are far cheaper: **5 variables, 20 conditions, 75 effects plus a 35-ending remix reaches 0.0710**,
+>    a 42% margin. Feasibility against `L2-12` is fine: book 2 currently walks **3,668 configurations** in 0.19s,
+>    and each added bool roughly doubles that (7,130 at +1), so three more bools stay near 29k against the
+>    100,000 cap.
+> 4. **Why it was not executed here, and the trap to avoid.** The state layer is only honest if each gate and cost
+>    sits where the fiction supports it. A prose-grounded scan found 103 nodes with exertion language and 77
+>    candidate choices, but **three of the first eight candidates were false positives** (`Push too hard when he
+>    hesitates` is social pressure, not physical exertion). Placing 33 conditions and 72 effects by pattern match
+>    would produce gates that pass every checker and mean nothing, which is metric-gaming with extra steps. Doing
+>    it properly means reading the 324-node spine and placing each cost deliberately. That is the remaining work:
+>    authoring judgement over a book, not a script.
 
 **A9 is unblocked.** The clone pair can be retired and replaced outright with no migration concern, because the
 only progress recorded against it is test data belonging to the owner's family.
