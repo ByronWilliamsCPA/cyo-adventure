@@ -468,7 +468,10 @@ def create_app() -> FastAPI:
     # instead of 202 KB to take offline (AL-031). Nothing else in the stack
     # compresses, so this is the only place it can happen. minimum_size skips
     # the small responses where the CPU is not worth it.
-    app.add_middleware(GZipMiddleware, minimum_size=1024)
+    # compresslevel=6 is zlib's default balance point: it captures nearly all of
+    # the ratio that level 9 reaches on this repetitive story JSON at a fraction
+    # of the CPU, keeping the child's wait short without pinning the worker.
+    app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=6)
     # #CRITICAL: observability: CorrelationMiddleware is added LAST so it is the
     # OUTERMOST layer (Starlette applies the most-recently-added middleware
     # first). This way a rate-limit / body-size / SSRF rejection emitted by the

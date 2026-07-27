@@ -53,7 +53,7 @@ if TYPE_CHECKING:
 
     from cyo_adventure.player.state import ReadingState
     from cyo_adventure.storybook.evaluator import VarState, VarValue
-    from cyo_adventure.storybook.models import Ending, Node, Storybook
+    from cyo_adventure.storybook.models import Ending, Storybook
     from cyo_adventure.validator.walk import ConfigKey, WalkResult
 
 
@@ -283,6 +283,51 @@ def _condition_var_names(condition: object) -> set[str]:
     return names
 
 
+def _is_var_ref(operand: object, name: str) -> bool:
+    """Whether ``operand`` is exactly the ``{"var": name}`` reference leaf."""
+    if not isinstance(operand, dict):
+        return False
+    typed = cast("dict[str, object]", operand)
+    return set(typed) == {"var"} and typed["var"] == name
+
+
+def _requires_boolean_false(condition: object, name: str) -> bool:
+    """Whether ``condition`` contains a clause requiring boolean ``name`` false.
+
+    Recognises the DSL shapes that force a boolean false: ``{"==": [var, False]}``
+    and ``{"!=": [var, True]}`` in either operand order, and the logical negation
+    ``{"!": {"var": name}}``. Used to gate L2-11 Cause 1 so a variable the
+    condition requires *true* (e.g. ``token`` in ``and(token == true, vigor >= 9)``,
+    which is dead because of ``vigor``, not ``token``) is never blamed as the
+    dead-branch cause. The ``is`` comparisons keep an int ``0``/``1`` from being
+    read as the bool literal.
+
+    Args:
+        condition: A condition tree, or any nested fragment of one.
+        name: The boolean variable name to test for a false requirement.
+
+    Returns:
+        bool: ``True`` when some clause requires ``name`` to be false.
+    """
+    if isinstance(condition, list):
+        items = cast("list[object]", condition)
+        return any(_requires_boolean_false(item, name) for item in items)
+    if not isinstance(condition, dict):
+        return False
+    typed = cast("dict[str, object]", condition)
+    if set(typed) == {"!"} and _is_var_ref(typed["!"], name):
+        return True
+    for op, forbidden in (("==", False), ("!=", True)):
+        operands = typed.get(op)
+        if isinstance(operands, list) and len(cast("list[object]", operands)) == 2:
+            left, right = cast("list[object]", operands)
+            if _is_var_ref(left, name) and right is forbidden:
+                return True
+            if _is_var_ref(right, name) and left is forbidden:
+                return True
+    return any(_requires_boolean_false(value, name) for value in typed.values())
+
+
 def _dead_branch_cause(story: Storybook, node_id: str, condition: object) -> str | None:
     """Return a plain-language cause for an unsatisfiable condition, if known.
 
@@ -320,8 +365,15 @@ def _dead_branch_cause(story: Storybook, node_id: str, condition: object) -> str
             continue
         # Carried-variable polarity: a continuation seeds a carried variable
         # true and never unsets it, so any condition requiring it false is
-        # unsatisfiable by construction.
-        if var.initial is True and name not in mutated:
+        # unsatisfiable by construction. The polarity gate is essential: for
+        # ``and(token == true, vigor >= 9)`` (dead because ``vigor`` is never
+        # reachable) ``token`` initialises true but the condition requires it
+        # *true*, so it is not the cause and must not be blamed.
+        if (
+            var.initial is True
+            and name not in mutated
+            and _requires_boolean_false(condition, name)
+        ):
             return (
                 f"variable '{name}' initialises true and no effect ever unsets it, "
                 f"so a condition requiring it false can never hold; carried state "

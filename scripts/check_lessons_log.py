@@ -74,9 +74,17 @@ _STATUSES_NEEDING_REF = frozenset({"applied", "rejected", "superseded"})
 
 _ID_RE = re.compile(r"^AL-(\d{3})$")
 
+# Split on a pipe that is not backslash-escaped, so a cell may carry a literal
+# '|' as '\|' exactly as the column-count error message promises authors it can.
+_UNESCAPED_PIPE_RE = re.compile(r"(?<!\\)\|")
+
 
 def _split_row(line: str) -> list[str]:
     """Split one markdown table row into its trimmed cell values.
+
+    A literal pipe inside a cell is written escaped (``\\|``); the split honours
+    that escape and then unescapes it, so such a cell counts as one column
+    rather than being torn in two.
 
     Args:
         line: A single table line, with or without surrounding pipes.
@@ -85,7 +93,10 @@ def _split_row(line: str) -> list[str]:
         list[str]: The cell values, outer empty strings from the leading and
             trailing pipes removed.
     """
-    cells = [cell.strip() for cell in line.strip().split("|")]
+    cells = [
+        cell.strip().replace("\\|", "|")
+        for cell in _UNESCAPED_PIPE_RE.split(line.strip())
+    ]
     if cells and not cells[0]:
         cells = cells[1:]
     if cells and not cells[-1]:

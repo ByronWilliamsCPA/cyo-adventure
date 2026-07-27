@@ -14,6 +14,7 @@ PL-22 (band profile not configured, fail closed) is a runtime invariant added
 
 from __future__ import annotations
 
+import heapq
 import re
 
 import networkx as nx
@@ -450,7 +451,16 @@ _POSITIVE_ENDING_COUNT_FLOOR_GAMEBOOK = 3
 
 
 def _words_on_shortest_satisfying_path(story: Storybook) -> int | None:
-    """Return the word count on the fewest-node satisfying path, or None.
+    """Return the fewest words on any satisfying path, or None.
+
+    Node-weighted uniform-cost (Dijkstra) search from the start node, each node
+    weighted by its body word count, so the result is the *fewest words* to reach
+    a satisfying ending, not the fewest nodes. This mirrors the canonical writer
+    ``mutation.identity.recompute_estimated_minutes`` (its ``_fastest_finish_words``)
+    exactly, so PL-23 can never warn against a value that clock produced. A
+    fewest-node path can carry more words than the fewest-word path, which is the
+    disagreement this closes. The heap tie-breaks equal distances by node id, so
+    the result is deterministic under ``PYTHONHASHSEED``.
 
     Reuses the same satisfying-ending definition and graph as PL-20, so the two
     rules can never disagree about which path is "the fastest finish".
@@ -459,8 +469,8 @@ def _words_on_shortest_satisfying_path(story: Storybook) -> int | None:
         story: The parsed story.
 
     Returns:
-        int | None: Total words on that path, or ``None`` when no satisfying
-            ending is reachable.
+        int | None: Total words on the fewest-word satisfying path, or ``None``
+            when no satisfying ending is reachable.
     """
     satisfying = {
         node.id
@@ -469,20 +479,24 @@ def _words_on_shortest_satisfying_path(story: Storybook) -> int | None:
     }
     if not satisfying:
         return None
+    weights = {node.id: node_word_count(node.body) for node in story.nodes}
+    start = story.start_node
+    if start not in weights:
+        return None
     graph = _build_graph(story)
-    bodies = {node.id: node.body for node in story.nodes}
-    best: int | None = None
-    best_words = 0
-    for target in satisfying:
-        if target not in graph or story.start_node not in graph:
+    settled: set[str] = set()
+    frontier: list[tuple[int, str]] = [(weights[start], start)]
+    while frontier:
+        distance, current = heapq.heappop(frontier)
+        if current in settled:
             continue
-        if not nx.has_path(graph, story.start_node, target):
-            continue
-        path = list(nx.shortest_path(graph, story.start_node, target))
-        if best is None or len(path) < best:
-            best = len(path)
-            best_words = sum(node_word_count(bodies.get(nid, "")) for nid in path)
-    return best_words if best is not None else None
+        settled.add(current)
+        if current in satisfying:
+            return distance
+        for target in graph.successors(current):
+            if target not in settled:
+                heapq.heappush(frontier, (distance + weights.get(target, 0), target))
+    return None
 
 
 def _check_declared_read_time(story: Storybook, report: ValidationReport) -> None:

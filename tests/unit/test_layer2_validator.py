@@ -1271,3 +1271,59 @@ def test_l2_11_falls_back_to_the_generic_message() -> None:
     findings = [f for f in validate_layer2(story).findings if f.rule_id == "L2-11"]
     assert len(findings) == 1
     assert findings[0].message.endswith("(condition always false)")
+
+
+@pytest.mark.unit
+def test_l2_11_does_not_blame_a_variable_required_true() -> None:
+    """A required-*true* carried variable is never named as the dead cause.
+
+    ``and(token == true, score >= 99)`` is dead because ``score`` can never reach
+    99, not because of ``token``. ``token`` initialises true and is never unset,
+    which once tripped Cause 1 into blaming it with an inverted claim; the
+    polarity gate must let the message fall back to the generic wording instead.
+    That cause text is fed verbatim into the Stage C repair prompt, so a wrong
+    cause actively misdirects the repair.
+    """
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "start",
+                "body": "Start.",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_on", "label": "On.", "target": "end"},
+                    {
+                        "id": "c_dead",
+                        "label": "Dead.",
+                        "target": "end",
+                        "condition": {
+                            "and": [
+                                {"==": [{"var": "token"}, True]},
+                                {">=": [{"var": "score"}, 99]},
+                            ]
+                        },
+                    },
+                ],
+            },
+            {
+                "id": "end",
+                "body": "End.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e1",
+                    "kind": "completion",
+                    "valence": "positive",
+                    "title": "Done",
+                },
+            },
+        ],
+        start="start",
+        variables=[
+            {"name": "token", "type": "bool", "initial": True},
+            {"name": "score", "type": "int", "initial": 0, "min": 0, "max": 5},
+        ],
+    )
+    findings = [f for f in validate_layer2(story).findings if f.rule_id == "L2-11"]
+    assert len(findings) == 1
+    assert "initialises true" not in findings[0].message
+    assert findings[0].message.endswith("(condition always false)")

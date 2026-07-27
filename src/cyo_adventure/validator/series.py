@@ -506,6 +506,13 @@ def _check_carried_variables(
         series_books: (story, series) pairs, already index-validated.
         report: The report to append findings to.
     """
+    # #ASSUME: data-integrity: the frontend player clamps carried ints into the
+    # receiver's declared bounds and skips wrong-typed carried values
+    # (frontend/src/player/engine.ts::startContinuation). SR-8's severities encode
+    # that exact client behaviour; if the clamp/skip contract drifts, these
+    # findings misclassify carry loss.
+    # #VERIFY: keep engine.ts::startContinuation and this rule in lockstep; any
+    # change to the player's carry handling must re-derive SR-8's severities.
     ordered = sorted(series_books, key=lambda pair: pair[1].book_index)
     if not ordered or not all(series.carries_state for _, series in ordered):
         return

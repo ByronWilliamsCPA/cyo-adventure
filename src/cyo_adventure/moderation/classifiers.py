@@ -202,10 +202,14 @@ async def _screen_one(
         try:
             findings = await call()
         except ClassifierUnavailable as exc:
-            state.reason = state.reason or exc.reason
             if attempt < len(_RETRY_BACKOFF_SECONDS):
                 await asyncio.sleep(_RETRY_BACKOFF_SECONDS[attempt])
                 continue
+            # Record the reason only when the node is actually abandoned, not on
+            # a transient attempt that a later retry recovers from; otherwise a
+            # recovered node would still stamp state.reason and misreport the run
+            # as degraded.
+            state.reason = state.reason or exc.reason
             state.consecutive_failures += 1
             state.unscreened.append(node_id)
             return []
