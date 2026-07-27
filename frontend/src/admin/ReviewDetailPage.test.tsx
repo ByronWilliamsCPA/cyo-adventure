@@ -411,9 +411,7 @@ describe('ReviewDetailPage', () => {
     mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
     render(
       <MemoryRouter
-        initialEntries={[
-          { pathname: '/admin/review/s1', state: { reviewQueue: ['s1', 's2'] } },
-        ]}
+        initialEntries={[{ pathname: '/admin/review/s1', state: { reviewQueue: ['s1', 's2'] } }]}
       >
         <Routes>
           <Route path="/admin/review/:storybookId" element={<ReviewDetailPage />} />
@@ -530,6 +528,46 @@ describe('ReviewDetailPage', () => {
     const sendBack = screen.getByRole('button', { name: /^Send Back$/i })
     expect(approve).toBeEnabled()
     expect(sendBack).toBeEnabled()
+  })
+
+  it('archives a published story and returns to the console', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: { ...SURFACE, status: 'published' } })
+    mockPost.mockResolvedValue({ data: { id: 's1', status: 'archived' } })
+    renderAt('s1')
+    await user.click(await screen.findByRole('button', { name: /^Archive$/i }))
+    await user.click(await screen.findByRole('button', { name: /Confirm archive/i }))
+    expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/archive')
+    expect(await screen.findByText('CONSOLE HOME')).toBeInTheDocument()
+  })
+
+  it.each(['in_review', 'draft', 'needs_revision'] as const)(
+    'disables Archive for a %s story while keeping its label',
+    async (status) => {
+      mockGet.mockResolvedValue({ data: { ...SURFACE, status } })
+      renderAt('s1')
+      const archive = await screen.findByRole('button', { name: /^Archive$/i })
+      expect(archive).toBeDisabled()
+      const hint = screen.getByText(/only published stories can be archived/i)
+      expect(archive).toHaveAttribute('aria-describedby', hint.id)
+    }
+  )
+
+  it('keeps Archive enabled for a published story', async () => {
+    mockGet.mockResolvedValue({ data: { ...SURFACE, status: 'published' } })
+    renderAt('s1')
+    expect(await screen.findByRole('button', { name: /^Archive$/i })).toBeEnabled()
+  })
+
+  it('surfaces a backend rejection when archive fails without navigating away', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: { ...SURFACE, status: 'published' } })
+    mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 409 } })
+    renderAt('s1')
+    await user.click(await screen.findByRole('button', { name: /^Archive$/i }))
+    await user.click(await screen.findByRole('button', { name: /Confirm archive/i }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(/could not archive/i)
+    expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
   })
 
   it('shows an error state when the review surface fails to load', async () => {
@@ -916,12 +954,12 @@ describe('ReviewDetailPage', () => {
       const dialog = await screen.findByRole('dialog', { name: 'Edit passage n1' })
       await user.click(within(dialog).getByRole('button', { name: 'Save' }))
 
-      expect(await within(dialog).findByText(/L1-7: node\/word budget exceeded/)).toBeInTheDocument()
+      expect(
+        await within(dialog).findByText(/L1-7: node\/word budget exceeded/)
+      ).toBeInTheDocument()
       // The dialog stays open (the edit was rejected) and the original prose
       // is still what the page shows -- the stored blob was never touched.
-      expect(within(dialog).getByLabelText('Passage text')).toHaveValue(
-        'A dark cave yawned ahead.'
-      )
+      expect(within(dialog).getByLabelText('Passage text')).toHaveValue('A dark cave yawned ahead.')
     })
 
     it('surfaces a generic error for a non-gate failure (e.g. 500) without pretending it is a rule violation', async () => {

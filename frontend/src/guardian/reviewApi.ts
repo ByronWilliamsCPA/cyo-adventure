@@ -89,6 +89,16 @@ export interface SentBackResult {
 }
 
 /**
+ * Result of archiving a published story. Hand-typed to mirror ArchivedView in
+ * src/cyo_adventure/api/schemas.py (the same convention as ApprovedResult /
+ * SentBackResult above); the backend only ever returns status "archived" here.
+ */
+export interface ArchivedResult {
+  id: string
+  status: string
+}
+
+/**
  * Shape of a "Still processing" row, mapped from a C4a-5 generation-job that is
  * genuinely still generating (queued or running).
  */
@@ -116,6 +126,7 @@ export interface ReviewApi {
   surface(storybookId: string, version?: number): Promise<ReviewSurface>
   approve(storybookId: string, visibility: Visibility): Promise<ApprovedResult>
   sendBack(storybookId: string, reason: string): Promise<SentBackResult>
+  archive(storybookId: string): Promise<ArchivedResult>
   stillProcessing(): Promise<StillProcessingItem[]>
 }
 
@@ -142,6 +153,13 @@ export function makeReviewApi(api: AxiosInstance): ReviewApi {
       const res = await api.post<SentBackResult>(`/v1/storybooks/${storybookId}/send-back`, {
         reason,
       })
+      return res.data
+    },
+    // Un-publish a published book: the backend state machine only permits
+    // published -> archived (any other status 409s), removing the story from
+    // the library. The endpoint takes no body.
+    async archive(storybookId: string): Promise<ArchivedResult> {
+      const res = await api.post<ArchivedResult>(`/v1/storybooks/${storybookId}/archive`)
       return res.data
     },
     // Wires C4a-5's guardian-only generation-jobs list into the console's

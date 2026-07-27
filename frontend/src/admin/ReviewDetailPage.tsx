@@ -38,7 +38,7 @@ type LoadState =
   | { kind: 'error'; message: string }
   | { kind: 'ready'; surface: ReviewSurface }
 
-type ActionDialog = null | 'approve' | 'sendback'
+type ActionDialog = null | 'approve' | 'sendback' | 'archive'
 
 function Finding({ finding }: { finding: FindingView }) {
   return (
@@ -159,9 +159,7 @@ export function ReviewDetailPage() {
   // back-to-queue behavior.
   const reviewQueue = useMemo<string[]>(() => {
     const raw = (location.state as { reviewQueue?: unknown } | null)?.reviewQueue
-    return Array.isArray(raw) && raw.every((v): v is string => typeof v === 'string')
-      ? raw
-      : []
+    return Array.isArray(raw) && raw.every((v): v is string => typeof v === 'string') ? raw : []
   }, [location.state])
   const queueIndex = reviewQueue.indexOf(storybookId)
   const nextInQueue = queueIndex >= 0 ? reviewQueue[queueIndex + 1] : undefined
@@ -405,14 +403,13 @@ export function ReviewDetailPage() {
             surface.story_level_findings
               .filter((finding) => finding.category === 'classifier_degraded')
               .map((finding) => finding.source)
-              .filter((source): source is string => typeof source === 'string'),
-          ),
+              .filter((source): source is string => typeof source === 'string')
+          )
         )
         return degradedSources.length > 0 ? (
           <p role="alert" className="review-detail__degraded">
-            Automated screening was degraded for this version:{' '}
-            {degradedSources.join(', ')} did not run. Review the prose extra carefully; the
-            automated safety net was not fully applied.
+            Automated screening was degraded for this version: {degradedSources.join(', ')} did not
+            run. Review the prose extra carefully; the automated safety net was not fully applied.
           </p>
         ) : null
       })()}
@@ -615,6 +612,24 @@ export function ReviewDetailPage() {
         >
           Approve
         </Button>
+        {/*
+          Archive is the inverse gate of Approve/Send Back: it un-publishes a
+          published book, and the backend state machine permits archive only
+          from "published" (any other status 409s). So on an in-review story
+          this is disabled while the other two are live, and on a published
+          story (reached via the admin library, P19) it is the sole live
+          action.
+        */}
+        <Button
+          variant="danger"
+          onClick={() => openDialog('archive')}
+          disabled={surface.status !== 'published'}
+          aria-describedby={
+            surface.status !== 'published' ? 'review-archive-disabled-hint' : undefined
+          }
+        >
+          Archive
+        </Button>
       </div>
       {/*
         Keep each button's accessible name its visible label ("Approve" / "Send
@@ -626,6 +641,11 @@ export function ReviewDetailPage() {
       {surface.status !== 'in_review' ? (
         <p id="review-actions-disabled-hint" className="review-actionbar__hint cyo-text-muted">
           Only stories in review can be approved or sent back.
+        </p>
+      ) : null}
+      {surface.status !== 'published' ? (
+        <p id="review-archive-disabled-hint" className="review-actionbar__hint cyo-text-muted">
+          Only published stories can be archived.
         </p>
       ) : null}
 
@@ -734,13 +754,54 @@ export function ReviewDetailPage() {
         </Dialog>
       ) : null}
 
+      {dialog === 'archive' ? (
+        <Dialog
+          title="Archive this story?"
+          onClose={closeDialog}
+          actions={
+            <>
+              <Button variant="ghost" onClick={closeDialog}>
+                Cancel
+              </Button>
+              {/*
+                #CRITICAL: security: confirming archive un-publishes this story
+                and removes it from the library for every assigned child; a
+                misclick must not silently pull a live book.
+                #VERIFY: this confirm dialog gates the action and the backend
+                state machine rejects archive from any status other than
+                published (ReviewDetailPage.test.tsx archive success + gating).
+              */}
+              <Button
+                variant="danger"
+                disabled={submitting}
+                onClick={() => void runAction(() => reviewApi.archive(storybookId))}
+              >
+                Confirm archive
+              </Button>
+            </>
+          }
+        >
+          {actionError ? (
+            <p role="alert" className="review-detail__action-error cyo-text-error">
+              We could not archive this story. It may no longer be published.
+            </p>
+          ) : null}
+          <p>
+            Archiving removes this story from the library. Assigned children will no longer see it.
+          </p>
+        </Dialog>
+      ) : null}
+
       {editNodeId !== null ? (
-        <Dialog title={`Edit passage ${editNodeId}`} onClose={closeEditDialog} actions={
-          <>
-            <Button variant="ghost" onClick={closeEditDialog} disabled={editSubmitting}>
-              Cancel
-            </Button>
-            {/*
+        <Dialog
+          title={`Edit passage ${editNodeId}`}
+          onClose={closeEditDialog}
+          actions={
+            <>
+              <Button variant="ghost" onClick={closeEditDialog} disabled={editSubmitting}>
+                Cancel
+              </Button>
+              {/*
               #CRITICAL: security: prose-only edit; the backend re-runs the
               deterministic gate and re-review before persisting, and rejects
               (422, unchanged blob) an edit that breaks a structural/length/
@@ -749,14 +810,12 @@ export function ReviewDetailPage() {
               existing choice labels are editable fields here.
               #VERIFY: ReviewDetailPage.test.tsx passage-edit success + 422 cases.
             */}
-            <Button
-              disabled={!editBodyValid || editSubmitting}
-              onClick={() => void saveEdit()}
-            >
-              Save
-            </Button>
-          </>
-        }>
+              <Button disabled={!editBodyValid || editSubmitting} onClick={() => void saveEdit()}>
+                Save
+              </Button>
+            </>
+          }
+        >
           {editError ? (
             <p role="alert" className="review-detail__action-error cyo-text-error">
               {editError}
