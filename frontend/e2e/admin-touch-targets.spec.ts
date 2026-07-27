@@ -65,9 +65,10 @@ test.beforeEach(async ({ context, page }) => {
 })
 
 /**
- * Asserts every visible button within `scopeSelector` meets the 44px tap
- * floor. Fails loudly (count > 0) if the scope selector matched nothing, so
- * a route/selector typo cannot silently pass an empty check.
+ * Asserts every visible button within `scopeSelector` meets the WCAG 2.5.5
+ * 44x44 CSS-px tap floor on BOTH axes (height and width). Fails loudly
+ * (count > 0) if the scope selector matched nothing, so a route/selector typo
+ * cannot silently pass an empty check.
  */
 async function expectAllButtonsMeetTapFloor(page: Page, scopeSelector: string) {
   const buttons = page.locator(`${scopeSelector} button:visible`)
@@ -76,6 +77,7 @@ async function expectAllButtonsMeetTapFloor(page: Page, scopeSelector: string) {
   for (let i = 0; i < count; i++) {
     const box = await buttons.nth(i).boundingBox()
     expect(box?.height ?? 0, `button ${i} in "${scopeSelector}" height`).toBeGreaterThanOrEqual(44)
+    expect(box?.width ?? 0, `button ${i} in "${scopeSelector}" width`).toBeGreaterThanOrEqual(44)
   }
 }
 
