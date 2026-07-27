@@ -132,6 +132,7 @@ plan somewhere. `applied` means the change is merged and the `Ref` proves it. No
 
 ## Related documents
 
+- [Handoff document](./handoff-authoring-lessons-and-story-quality-2026-07-27.md), branch state, the rebase work the merged diversity and personalization PRs require, environment traps, and the open-work triage
 - [Story quality lessons from the Wyrmreach build](./story-quality-lessons-2026-07.md), the narrative behind AL-001..AL-023
 - [Adversarial review record](./reviews/ceiling-scale-review-2026-07-25.md), the raw evidence and measurements behind AL-026..AL-040
 - [Wyrmreach series build report](./wyrmreach-series-report.md), the run that produced them
