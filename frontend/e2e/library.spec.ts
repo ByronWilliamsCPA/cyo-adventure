@@ -334,6 +334,70 @@ test('shows no chip (never an error) when the recommendations feed fails', async
   await expect(page.getByText(/loved this/i)).toHaveCount(0)
 })
 
+// F-6b: the offline shelf fallback (LibraryPage.tsx's `status: 'offline'`
+// branch) was unit-only before this. A single route handler models the two
+// phases (online, then offline) via closure state, matching this repo's
+// one-handler-per-test convention (see reader-reload-resume.spec.ts):
+// first a normal visit succeeds and the fire-and-forget cacheLibraryList
+// write lands in the real IndexedDB `library_lists` store, then the network
+// fetch is made to transport-fail (route.abort(), the same OfflineError path
+// classifyApiError.ts maps to `kind: 'offline'`) and a fresh mount (a full
+// reload; LibraryPage's load() only re-fires on mount or the 'online' event)
+// proves the shelf still renders from the cached list rather than the "We
+// lost the bookshelf" error state. The "Time to find your grown-up" consent
+// gate is a different, already-covered surface; not duplicated here.
+test('shelf still renders from the cached list when the network fetch fails (F-6b)', async ({
+  page,
+}) => {
+  let libraryMode: 'online' | 'offline' = 'online'
+  await page.route('**/api/v1/library*', (route) => {
+    if (libraryMode === 'offline') {
+      return route.abort('internetdisconnected')
+    }
+    return route.fulfill({ json: STORIES })
+  })
+
+  await page.goto('/library/p1')
+  const hero = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(hero).toContainText('The Lantern')
+
+  // Confirm the fire-and-forget cacheLibraryList write actually landed before
+  // going offline, so the fallback below reads a real cached shelf rather
+  // than racing an empty one.
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          new Promise<number>((resolve) => {
+            const req = indexedDB.open('cyo-reader', 3)
+            req.onerror = () => resolve(-1)
+            req.onsuccess = () => {
+              const getReq = req.result
+                .transaction('library_lists', 'readonly')
+                .objectStore('library_lists')
+                .get('p1')
+              getReq.onsuccess = () => resolve(getReq.result ? 1 : 0)
+              getReq.onerror = () => resolve(-1)
+            }
+          })
+      )
+    )
+    .toBe(1)
+
+  libraryMode = 'offline'
+  await page.reload()
+
+  await expect(page.getByText('No internet. These books are ready to read.')).toBeVisible()
+  await expect(page.getByText('We lost the bookshelf')).toHaveCount(0)
+  const heroAfterOffline = page.getByRole('region', { name: 'Continue Reading' })
+  await expect(heroAfterOffline).toContainText('The Lantern')
+  const shelfAfterOffline = page.getByRole('region', { name: 'More to Explore' })
+  await expect(shelfAfterOffline).toContainText('Acorn Detectives')
+  // Requesting a new story needs the network; the offline shelf hides both
+  // request affordances rather than offering ones that could only fail.
+  await expect(page.getByRole('button', { name: 'Ask for a new story' })).toHaveCount(0)
+})
+
 test('shows no chip when the recommendations feed is empty', async ({ page }) => {
   await page.route('**/api/v1/library*', (route) => route.fulfill({ json: STORIES }))
   await page.route('**/api/v1/recommendations/*', (route) =>

@@ -71,11 +71,17 @@ test.beforeEach(async ({ context, page }) => {
         this.text = text
       }
     }
+    // F-3: record what was actually handed to speak() so the test can assert
+    // the spoken text matches the visible passage, not just that the toggle's
+    // aria-pressed state flipped. window.__spokenTexts is read back via
+    // page.evaluate; it is not part of the app, only this test's stub.
+    ;(window as unknown as { __spokenTexts: string[] }).__spokenTexts = []
     const fakeSpeechSynthesis = {
-      speak: () => {
+      speak: (utterance: { text: string }) => {
         // Deliberately never fires onend/onerror: this spec only asserts UI
         // states the toggle drives (speaking on tap, cancel on
         // toggle-off/navigation), not real audio completion.
+        ;(window as unknown as { __spokenTexts: string[] }).__spokenTexts.push(utterance.text)
       },
       cancel: () => {},
     }
@@ -143,6 +149,20 @@ test('shows the read-aloud toggle for a tts_enabled profile picked through the p
   const stopToggle = page.getByRole('button', { name: 'Stop reading aloud' })
   await expect(stopToggle).toBeVisible()
   await expect(stopToggle).toHaveAttribute('aria-pressed', 'true')
+
+  // F-3: the stub must actually be handed the passage's own text, not a
+  // fixed/empty string; a no-op speak() call that never inspects its
+  // argument would still flip aria-pressed and pass a text-blind assertion.
+  // Whitespace is normalized before comparing: useReadAloud.speak() is
+  // handed node.body verbatim, while PassageText's rendered innerText can
+  // join paragraph blocks with different line breaks than the raw source.
+  const normalize = (text: string) => text.replace(/\s+/g, ' ').trim()
+  const passageText = normalize(await page.getByTestId('passage-body').innerText())
+  const spokenTexts = await page.evaluate(
+    () => (window as unknown as { __spokenTexts: string[] }).__spokenTexts
+  )
+  expect(spokenTexts).toHaveLength(1)
+  expect(normalize(spokenTexts[0])).toBe(passageText)
 
   // Re-tapping while speaking stops it.
   await stopToggle.click()
