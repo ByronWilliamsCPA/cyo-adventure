@@ -20,6 +20,7 @@ import pytest
 
 from cyo_adventure.diversity.structure import structural_distance, structure_fingerprint
 from cyo_adventure.generation.binding import load_contract_for
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.mutation import state_ops
 from cyo_adventure.mutation.contract_gate import contract_acceptance_reason
 from cyo_adventure.mutation.floors import (
@@ -59,7 +60,7 @@ def _load(slug_path: str) -> dict[str, object]:
 def _first_m2_parent() -> tuple[str, dict[str, object]]:
     """Return the first catalog skeleton M2 accepts with default params."""
     for path in sorted(_SKELETONS_ROOT.glob("*/*.json")):
-        if path.name.endswith(".contract.json"):
+        if is_sidecar(path):
             continue
         story = cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
         if M2.preconditions(story, OpParams.of()).satisfied:

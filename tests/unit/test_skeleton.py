@@ -6,6 +6,7 @@ from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.skeleton import (
     has_unfilled_directives,
     is_production_eligible,
+    is_sidecar,
     load_skeleton,
 )
 
@@ -151,10 +152,10 @@ def _discover_production_skeletons() -> list[str]:
 
     found: list[str] = []
     for path in sorted(Path("skeletons").glob("*/*.json")):
-        # Skip WS-2 theme-contract sidecars: they share the .json suffix and
-        # this band-directory glob, but they are not skeletons (see
-        # generation/skeleton_match.py, which skips them the same way).
-        if path.name.endswith(".contract.json"):
+        # Skip sidecars (WS-2 theme contracts and WS-5 lineage records): they
+        # share the .json suffix and this band-directory glob, but they are not
+        # skeletons (see generation/skeleton.py::is_sidecar, the shared skip).
+        if is_sidecar(path):
             continue
         data = json.loads(path.read_text(encoding="utf-8"))
         if is_production_eligible(data):

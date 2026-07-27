@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
+from cyo_adventure.generation.skeleton import is_sidecar
 from cyo_adventure.mutation.acceptance import (
     Stage,
     _cell_matches,  # pyright: ignore[reportPrivateUsage]
@@ -66,7 +67,7 @@ def _load(slug_path: str) -> dict[str, object]:
 def _first_eligible_tier1() -> tuple[str, dict[str, object]]:
     """Return the first production Tier-1 standalone skeleton M1 accepts."""
     for path in sorted(_SKELETONS_ROOT.glob("*/*.json")):
-        if path.name.endswith(".contract.json"):
+        if is_sidecar(path):
             continue
         story = cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
         if M1.preconditions(story, OpParams.of()).satisfied:
@@ -389,7 +390,7 @@ def test_reguide_items_reference_the_swapped_surfaces() -> None:
 def _eligible_parent_path() -> Path:
     """Return the filesystem path of an eligible Tier-1 parent for the CLI."""
     for path in sorted(_SKELETONS_ROOT.glob("*/*.json")):
-        if path.name.endswith(".contract.json"):
+        if is_sidecar(path):
             continue
         story = cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
         if M1.preconditions(story, OpParams.of()).satisfied:
