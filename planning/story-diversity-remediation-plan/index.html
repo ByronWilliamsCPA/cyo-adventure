@@ -1,0 +1,5135 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Phased plan to close the nine gaps in story-diversity-analysis.md and raise book diversity further. Records thirteen review corrections and owner decisions: the open-vocabulary theme signature is unsafe as drafted because the closed vocabulary is load-bearing for the WS-7 echo surface; the gamebook cells' 98% negative share is ADR-011-intended with PL-20 working as designed, the real gap being a shallow fail-path tail PL-20 leaves out of scope; expanding the curated vocabulary is the better fix and it exposes a symmetric-Jaccard defect that makes an identical premise score as dissimilar; the guardian family-only versus catalog two-prong is sound but blocked on visibility being set at approval rather than at intake; and visibility authorization is a monotone restriction rule where the guardian sets a ceiling the admin may lower but never raise, which a guardian may change later without any content re-screen because every content screen is already visibility-independent; PL-22's fraction resolves to 33% on measured funnel depth; and the request page must state its restrictions up front, because the three most surprising ones can never be explained afterwards; and 'how many winning arcs' is the wrong question, since path mass and ending count are decoupled, which also exposes two series-continuity gaps. Identifies the root cause of the gamebook symptoms: ADR-011's restart-on-fail primitive is specified, unrepresentable in the schema, and half-built in the player, so every terminal is a hard stop. The resulting two-tier restart model (setbacks auto-loop, foreclosing terminals offer a choice) then narrows PL-22 from 178 endings to 73 and retracts the SR-8 series rule entirely, and an opt-in challenge mode adds a series reset on death for the two teen bands.">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/story-diversity-remediation-plan/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Story Diversity Remediation and Enhancement Plan - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#superseded-2026-07-25" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Story Diversity Remediation and Enhancement Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../template_feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Feedback
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#superseded-2026-07-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SUPERSEDED (2026-07-25)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-corrections-and-refinements-from-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Corrections and refinements from review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Corrections and refinements from review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-the-open-vocabulary-theme-signature-is-unsafe-as-drafted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 The open-vocabulary theme signature is unsafe as drafted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-98-negative-ending-share-is-intended-pl-20-works-and-the-real-gap-is-the-fail-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The 98% negative ending share is intended, PL-20 works, and the real gap is the fail path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-expanding-the-curated-vocabulary-is-the-right-fix-and-it-exposes-a-worse-defect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Expanding the curated vocabulary is the right fix, and it exposes a worse defect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-the-family-only-versus-catalog-two-prong-sound-with-one-blocker-and-two-caveats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 The family-only versus catalog two-prong: sound, with one blocker and two caveats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-the-visibility-authorization-rule-guardian-sets-a-ceiling-admin-may-only-restrict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 The visibility authorization rule: guardian sets a ceiling, admin may only restrict
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-ceiling-changes-and-dual-role-enforcement-both-settled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Ceiling changes and dual-role enforcement: both settled
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-pl-22s-fraction-33-and-the-reasoning-is-measurable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 PL-22's fraction: 33%, and the reasoning is measurable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18-the-request-page-must-state-the-restrictions-before-the-child-invests-in-an-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.8 The request page must state the restrictions before the child invests in an idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#19-how-many-winning-arcs-is-the-wrong-question-it-is-path-mass-not-ending-count" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.9 "How many winning arcs" is the wrong question: it is path mass, not ending count
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#110-the-series-rule-exposes-two-validator-gaps-and-one-design-tension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.10 The series rule exposes two validator gaps and one design tension
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#111-root-cause-restart-on-fail-is-specified-half-built-and-unrepresentable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.11 Root cause: restart-on-fail is specified, half-built, and unrepresentable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-the-two-tier-restart-model-and-the-three-things-it-simplifies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.12 The two-tier restart model, and the three things it simplifies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-opt-in-challenge-mode-permadeath-as-a-campaign-reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.13 Opt-in challenge mode: permadeath as a campaign reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-objective-and-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Objective and constraints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-phases-and-deliverables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Phases and deliverables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Phases and deliverables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#p1-unblock-the-similarity-signal-findings-31-sections-11-and-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P1: Unblock the similarity signal (findings 3.1, sections 1.1 and 1.3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p2-catalog-integrity-finding-32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P2: Catalog integrity (finding 3.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p3-make-escalation-actually-act-findings-33-37-38" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P3: Make escalation actually act (findings 3.3, 3.7, 3.8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p4-fail-path-depth-and-outcome-mix-section-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P4: Fail-path depth and outcome mix (section 1.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p5-per-reader-scoping-and-guard-hardening-findings-35-36" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P5: Per-reader scoping and guard hardening (findings 3.5, 3.6)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p6-raise-the-ceiling-findings-34-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P6: Raise the ceiling (findings 3.4, 2.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p7-visibility-authorization-and-tiered-privacy-controls-section-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P7: Visibility authorization and tiered privacy controls (section 1.4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p8-pre-submission-expectation-setting-section-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P8: Pre-submission expectation setting (section 1.8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p9-series-continuity-section-110" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P9: Series continuity (section 1.10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p10-implement-restart-on-fail-section-111" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P10: Implement restart-on-fail (section 1.11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-sequencing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Sequencing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-metrics-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Metrics added
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-decisions-and-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Decisions and open questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Decisions and open questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-resolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Resolved
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-still-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Still open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-is-working-and-must-survive-this-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What is working, and must survive this plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Story Diversity Remediation and Enhancement Plan</h1>
+
+<blockquote>
+<h2 id="superseded-2026-07-25">SUPERSEDED (2026-07-25)<a class="headerlink" href="#superseded-2026-07-25" title="Permanent link">&para;</a></h2>
+<p><strong>Do not start work from this document.</strong> A seven-reviewer adversarial pass and a 98-document corpus survey
+found that its measurements hold but a substantial share of its reasoning does not, including: the 33%
+fail-depth fraction (circular proxy), the per-topology SPM key (four of six classes empty, direction
+reversed), the restart design (contradicts <code>runtime-semantics.md</code> section 6, an accepted normative rule, and
+uses snapshots where four sources say path replay), the SR-8 retraction and SR-9 (misread <code>series.py</code>;
+SR-9 contradicts ADR-011 section 8), the echo-safety premise (129 of 132 catalog themes echo at band <code>3-5</code>),
+the dual-role mechanism (<code>admin-guardian-dual-roles-plan.md</code> already chose a different one), a false
+compliance claim, a <code>PL-22</code> rule-ID collision across 37 references, and a fabricated source quotation.</p>
+<p><strong><a href="../story-diversity-review-errata/">story-diversity-review-errata.md</a> is the correction of record</strong>, and its
+section 6 states what a rebuild must carry forward. The rebuild is
+<strong><a href="../story-diversity-plan-v2/">story-diversity-plan-v2.md</a></strong>. This document is retained for provenance only.</p>
+<p>Four defects this review surfaced are real and independent of the plan; see errata section 5.</p>
+</blockquote>
+<hr />
+<blockquote>
+<p><strong>Execution schedule:</strong> <a href="../story-diversity-execution-plan/">story-diversity-execution-plan.md</a> re-sequences
+this plan's 56 deliverables from discovery order into dependency and value order, as seven milestones with
+one branch per shippable unit. Start there to begin work; stay here for the evidence and reasoning.</p>
+<p><strong>Companion documents.</strong> <a href="../story-flexibility-plan/">story-flexibility-plan.md</a> is the strategy of record.
+<a href="../story-diversity-analysis/">story-diversity-analysis.md</a> is the current-state audit this plan executes.
+Finding references below (3.1, 3.2, ...) point at that audit's section numbers.</p>
+</blockquote>
+<hr />
+<h2 id="1-corrections-and-refinements-from-review">1. Corrections and refinements from review<a class="headerlink" href="#1-corrections-and-refinements-from-review" title="Permanent link">&para;</a></h2>
+<p>Thirteen items, each from a review challenge and each changing the work. They are recorded here rather than
+silently patched into the audit, because each rests on a fact the audit did not establish. 1.1 and 1.2 correct
+errors; 1.3 through 1.10 are owner direction and resolved decisions that reshape the approach. 1.6 also
+corrects an earlier claim about offline revocation, and 1.9 replaces a deliverable that measured the wrong
+thing, 1.11 identifies the root cause the P4 measurements were symptoms of, 1.12 simplifies three
+deliverables and retracts one, and 1.13 adds an opt-in challenge mode.</p>
+<h3 id="11-the-open-vocabulary-theme-signature-is-unsafe-as-drafted">1.1 The open-vocabulary theme signature is unsafe as drafted<a class="headerlink" href="#11-the-open-vocabulary-theme-signature-is-unsafe-as-drafted" title="Permanent link">&para;</a></h3>
+<p>The audit's top recommendation was to replace <code>theme_signature</code>'s closed 12-tag vocabulary with an
+open-vocabulary content-token signature. <strong>As drafted that is a privacy regression, not just a diversity
+fix.</strong> The closed vocabulary is load-bearing for a surface the audit did not trace.</p>
+<p><code>generation/worker.py::_degraded_set_aside_decisions</code> turns each returned tag into a
+<code>RawElement(phrase=tag)</code>, feeds it to <code>derive_dispositions</code>, and renders it through
+<code>render_interpretation</code> into the WS-7 request interpretation: a kid-facing echo plus a guardian caption,
+persisted on the story request. The code says so explicitly, twice:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>decompose the premise into WS-0 theme_signature tags (each catalog vocabulary and
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>echo-safe by construction, so no premise substring leaks)
+</span></code></pre></div>
+<p>The closed vocabulary is what guarantees that no substring of a child's free-text premise is ever rendered
+back or stored in a derived artifact. Open the vocabulary in place and the tags become arbitrary premise
+tokens, which for real requests means pet names, sibling names, a school, a street, a grandparent, a medical
+detail. Those would then be:</p>
+<ul>
+<li>rendered to a kid-facing echo and a guardian caption,</li>
+<li>persisted in <code>RequestInterpretation</code> as a new artifact containing children's personal data,</li>
+<li>and, since interpretation text re-enters downstream prompts, exported to an LLM provider.</li>
+</ul>
+<p>Under GDPR that is a data-minimisation problem (Art. 5(1)&copy;), a purpose-limitation problem (Art. 5(1)(b),
+new derived artifact for a new purpose), a storage-limitation problem unless it inherits the premise's
+retention (Art. 5(1)(e)), and it lands squarely in the children's-data regime that
+<a href="../adr/adr-018-childrens-privacy-compliance/">ADR-018</a> and <a href="../privacy-model/">privacy-model.md</a> govern. It also
+widens the OWASP LLM01 surface that safety invariant 4 already flags.</p>
+<p><strong>Corrected design: split one function into two signatures with different postures.</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Echo signature</th>
+<th>Similarity signature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>WS-7 kid echo and guardian caption</td>
+<td>WS-4 selection weighting, ATG partner choice</td>
+</tr>
+<tr>
+<td>Vocabulary</td>
+<td><strong>Closed and curated</strong> (today's <code>_THEME_TAG_MAP</code>)</td>
+<td>Open, entity-masked content tokens</td>
+</tr>
+<tr>
+<td>Rendered to a user</td>
+<td>Yes</td>
+<td><strong>Never</strong></td>
+</tr>
+<tr>
+<td>Persisted</td>
+<td>Yes (in <code>RequestInterpretation</code>)</td>
+<td><strong>Never</strong> (derived at read time, in-memory only)</td>
+</tr>
+<tr>
+<td>Enters an LLM prompt</td>
+<td>Yes, as today</td>
+<td><strong>Never</strong></td>
+</tr>
+<tr>
+<td>Personal data at rest</td>
+<td>Unchanged from today</td>
+<td><strong>None added</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The similarity signature is privacy-safe precisely because of those four "never"s. It is computed at query
+time from the premise the family already lawfully supplied for story generation, used to pick a number, and
+discarded. It creates no new personal data at rest, so there is no new retention or erasure obligation, and
+nothing new to export. Entity masking is belt-and-braces on top: <code>diversity/normalize.py</code> already ships
+<code>extract_entities</code> and <code>mask_tokens</code> with a single <code>ENTITY_PLACEHOLDER</code>, built for exactly this, so names
+collapse to <code>&lt;ent&gt;</code> and contribute zero distance before the signature is even formed.</p>
+<p>The diversity benefit survives the split intact, because diversity only ever needed the internal number. The
+audit conflated the two consumers; separating them gets the coverage without touching the echo guarantee.</p>
+<p>Two consequences for the plan: the echo path must be held byte-identical (D1 is a pure split, no behaviour
+change), and <code>privacy-model.md</code> must gain a short entry recording the similarity signature as a
+transient, non-persisted, non-exported derivation, with a DPO or legal read on whether the DPIA needs an
+addendum. That is a judgement call this plan flags rather than makes.</p>
+<h3 id="12-the-98-negative-ending-share-is-intended-pl-20-works-and-the-real-gap-is-the-fail-path">1.2 The 98% negative ending share is intended, PL-20 works, and the real gap is the fail path<a class="headerlink" href="#12-the-98-negative-ending-share-is-intended-pl-20-works-and-the-real-gap-is-the-fail-path" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Revised 2026-07-25 after a second review challenge.</strong> An earlier version of this section described
+<code>_MIN_COMPLETE</code> as "a reachability floor, satisfied by a single arc existing" and compared it against a
+random-walk mean depth of 4 to 9 nodes. Both were misleading. <code>_MIN_COMPLETE</code> is a floor on the <em>length of
+the shortest winning path</em>, it is the deliberate age-appropriate-depth guarantee, and it passes with margin
+on every production skeleton. The corrected finding below is narrower, better evidenced, and much cheaper to
+fix.</p>
+</blockquote>
+<p>The challenge was that 98% of endings ending badly seems high. Checking it against policy: <strong>the ratio itself
+is ADR-011's stated design intent, and nothing in the validator constrains it.</strong></p>
+<ul>
+<li>ADR-011 section 6: "Gamebook endings are 'few wins + many fails' (~25-35% of nodes are terminals)". The
+  gamebook cells conform on terminal fraction: 27.6%, 30.0%, 30.9% for the three long trees.</li>
+<li><code>validator/band_profile.py</code> enforces <code>forbidden_ending_kinds</code> (no <code>death</code> below 10-13), <code>min_endings</code>,
+  <code>min_decisions</code>, and <code>_MIN_COMPLETE</code>, enforced as <strong>PL-20</strong> in <code>validator/policy.py</code>. Grepping the validator
+  for <code>valence</code> returns <strong>nothing</strong>: valence is a declared field used for diagram styling and diversity
+  metrics only.</li>
+</ul>
+<p>So 98% is not a rule violation. It is the Fighting Fantasy convention the style was designed around, and it
+arrived by convention rather than by decision, since no rule sets it.</p>
+<p><strong>PL-20 is the age-appropriate-depth guarantee, and it works.</strong> Its own docstring states the design exactly:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>PL-20: the shortest satisfying-completion path must meet the arc floor.
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>The shortest path in nodes from start_node to any success/completion ending must be at
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>least that floor; a too-short winning path (a hollow quick win) blocks.
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Fail-fast negative endings are unaffected.
+</span></code></pre></div>
+<p>Measured against every production-eligible gamebook skeleton, it passes with margin everywhere. Shortest
+winning path versus the cell floor, plus the depth distribution of negative endings (BFS node depth from
+<code>start_node</code>, conditions ignored):</p>
+<table>
+<thead>
+<tr>
+<th>Skeleton</th>
+<th>Floor</th>
+<th>Shortest win</th>
+<th>Shortest fail</th>
+<th>p10 fail</th>
+<th>Median fail</th>
+<th>PL-20</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the-harrowstone-keep</td>
+<td>32</td>
+<td>59</td>
+<td><strong>3</strong></td>
+<td>18</td>
+<td>39</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-sunken-temple</td>
+<td>32</td>
+<td>59</td>
+<td><strong>3</strong></td>
+<td>18</td>
+<td>39</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-serpent-vaults</td>
+<td>32</td>
+<td>72</td>
+<td>5</td>
+<td>11</td>
+<td>39</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-thornwood-trial</td>
+<td>32</td>
+<td>35</td>
+<td>4</td>
+<td>9</td>
+<td>21</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-labyrinth-of-glass</td>
+<td>32</td>
+<td>59</td>
+<td>6</td>
+<td>10</td>
+<td>34</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-sunspire-ascent</td>
+<td>24</td>
+<td>26</td>
+<td><strong>2</strong></td>
+<td>9</td>
+<td>16</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-smugglers-cut</td>
+<td>24</td>
+<td>26</td>
+<td>5</td>
+<td>13</td>
+<td>20</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-iron-spire-trial</td>
+<td>24</td>
+<td>42</td>
+<td>6</td>
+<td>10</td>
+<td>24</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-drowned-court</td>
+<td>29</td>
+<td>30</td>
+<td><strong>2</strong></td>
+<td>6</td>
+<td>17</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-cinder-bazaar</td>
+<td>29</td>
+<td>33</td>
+<td>10</td>
+<td>10</td>
+<td>19</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-red-meridian-run</td>
+<td>29</td>
+<td>47</td>
+<td>6</td>
+<td>10</td>
+<td>25</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-ashfall-expedition</td>
+<td>37</td>
+<td>48</td>
+<td>4</td>
+<td>8</td>
+<td>25</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-pale-road</td>
+<td>37</td>
+<td>81</td>
+<td>7</td>
+<td>14</td>
+<td>43</td>
+<td>ok</td>
+</tr>
+<tr>
+<td>the-tenfold-siege</td>
+<td>37</td>
+<td>37</td>
+<td>8</td>
+<td>12</td>
+<td>24</td>
+<td>ok</td>
+</tr>
+</tbody>
+</table>
+<p>Two things follow, and the first retracts an earlier claim.</p>
+<p><strong>The catalog is not shallow by construction.</strong> Median negative-ending depth is 16 to 43 nodes. Those are
+substantial reads on most paths, and PL-20 holds every winning path at 26 to 81 nodes against floors of 24 to
+37. An earlier draft cited a uniform-random-walk mean depth of 4 to 9 nodes and implied the books deliver only
+that. Both numbers are correct and they measure different things: the <em>distribution of endings by depth</em> is
+deep, while a <em>probability-weighted random walk</em> exits early because a per-node fatal-branch hazard compounds
+geometrically. Random walk is also a pessimistic proxy, since a real reader reads the prose and avoids
+obviously fatal choices. The honest statement is that endings are mostly deep and that delivered depth is
+simply unmeasured, which is what D16 exists to fix.</p>
+<p><strong>The narrow, real gap is the one PL-20 declares out of scope: "Fail-fast negative endings are unaffected."</strong>
+The depth principle is enforced on the winning path and has no sibling rule on the fail path, so a tree can
+satisfy a 29-node win floor while offering a terminal at node 2. Shortest fail runs at <strong>7% to 17% of the win
+floor</strong>, and <code>the-sunspire-ascent</code> and <code>the-drowned-court</code> both terminate as early as node 2.</p>
+<p>Sizing the remediation across all 1,778 endings in the 14 gamebook skeletons:</p>
+<table>
+<thead>
+<tr>
+<th>Fail-depth floor</th>
+<th>Endings below it</th>
+<th>Share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25% of the cell's <code>min_complete</code></td>
+<td>100</td>
+<td>5.6%</td>
+</tr>
+<tr>
+<td>33%</td>
+<td>178</td>
+<td>10.0%</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>395</td>
+<td>22.2%</td>
+</tr>
+</tbody>
+</table>
+<p>A floor at 25% to 33% is therefore <strong>surgical, not a rebalance</strong>: 100 to 178 endings out of 1,778, each
+remediable by WS-5's M2 ending re-map, converting an early lethal terminal into a <code>setback</code> that routes back
+into the graph. That is far cheaper and better targeted than the "rebalance the gamebook cells" an earlier
+draft proposed, and it extends an existing, ratified design principle rather than inventing one.</p>
+<p><strong>Why it is still a diversity finding.</strong> The content that differentiates one 500-node tree from another lives
+in its depth: the mid-game branches, the distinct set pieces, the payoff. A reader who exits in the first few
+nodes has read only the shared opening funnel, so two structurally distinct gamebooks are indistinguishable to
+them. The shallow tail is a small share of endings, but it is the share a reader hits first and hits
+repeatedly across re-reads, which is exactly where perceived sameness forms. Closing it is cheap, and it
+protects every other lever in this plan.</p>
+<p>Separately, "few wins" still has no number: 2 to 5 winning endings out of 74 to 209 is unconstrained by any
+rule. That remains a product decision for D18 to ratify, now independent of the depth question.</p>
+<p>Note also that re-reading is a supported loop: <code>api/reading.py::list_completions</code> tracks "every ending a child
+profile has completed" per profile, so ending-collection is expected. That is an argument for closing the
+shallow tail rather than against it: every re-read that exits early re-reads the same opening funnel.</p>
+<h3 id="13-expanding-the-curated-vocabulary-is-the-right-fix-and-it-exposes-a-worse-defect">1.3 Expanding the curated vocabulary is the right fix, and it exposes a worse defect<a class="headerlink" href="#13-expanding-the-curated-vocabulary-is-the-right-fix-and-it-exposes-a-worse-defect" title="Permanent link">&para;</a></h3>
+<p>Owner clarification (2026-07-25): the 12-tag map was a deliberate <strong>baseline</strong>, not a design limit, and
+expanding it is on the table. That reframes D2 and it is the better path, because expanding a curated list
+preserves every property section 1.1 had to defend: the vocabulary stays closed, stays echo-safe by
+construction, stays free of premise substrings, adds no personal data at rest, and raises no DPIA question.
+The open-vocabulary variant is now a fallback, not the plan.</p>
+<p><strong>The expansion target is already authored.</strong> The skeleton catalog declares <strong>132 distinct curated themes</strong>
+across <code>metadata.themes</code> (<code>adventure</code>, <code>courage</code>, <code>friendship</code>, <code>grief</code>, <code>baking</code>, <code>music</code>, <code>codes</code>,
+<code>astronomy</code>, <code>heist</code>, <code>investigation</code>, <code>belonging</code>, <code>fairness</code>, ...). <strong>Zero of them are values in
+<code>_THEME_TAG_MAP</code>.</strong> So the story side of the comparison already speaks a 132-term curated vocabulary while the
+request side can only recognise 12 tags. The controlled vocabulary this needs largely exists; it has simply
+never been wired to the request side.</p>
+<p><strong>And that asymmetry is a worse defect than the coverage gap.</strong> <code>history.py</code> builds a stored entry's signature
+as <code>theme_signature(brief, _themes_from_blob(blob))</code>: premise tags <strong>union</strong> the story's raw curated themes,
+with <code>_THEME_TAG_MAP.get(lowered, lowered)</code> passing unmapped themes through verbatim. An incoming request has
+no story yet, so its signature is premise tags only. The two sides are structurally unequal in size, and
+symmetric Jaccard punishes exactly that. Measured:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>request sig : [&#39;dragon&#39;, &#39;fire&#39;]
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>stored sig  : [&#39;coming-of-age&#39;, &#39;courage&#39;, &#39;dragon&#39;, &#39;fire&#39;, &#39;friendship&#39;, &#39;mystery&#39;]
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>jaccard     : 0.333   tau_theme = 0.35  -&gt;  NOT similar
+</span></code></pre></div>
+<p><strong>A byte-identical premise, on the same tree, does not register as similar.</strong> The four curated themes the
+request could never have produced sit in Jaccard's denominator and push a perfect match below the threshold.</p>
+<p>This changes the severity of finding 3.1. The audit said WS-4 is inert for out-of-vocabulary themes; it is
+closer to inert for <strong>all</strong> themes, because even the 12 tags that do fire get diluted on the stored side. Any
+coverage work that does not also fix the measure will keep under-triggering.</p>
+<p><strong>Two fixes, both cheap, and they compose:</strong></p>
+<ol>
+<li><strong>Expand and unify the vocabulary (D2a).</strong> Grow <code>_THEME_TAG_MAP</code> so the request side can emit the same
+   controlled tags the catalog declares, and normalise <code>metadata.themes</code> <strong>into</strong> that vocabulary instead of
+   passing raw strings through. Note that the 132 are not all usable as tags: some are per-story literary
+   themes (<code>compromise as inheritance</code>, <code>conduct carried up the wall</code>) that belong in prose notes, not in a
+   matching vocabulary. Curate a controlled set, roughly 60 to 120 tags, spanning relational themes,
+   activity and domain, setting, companion or creature, and narrative mode.</li>
+<li><strong>Stop using symmetric Jaccard for request-versus-story (D2b).</strong> A request is a short statement of intent;
+   a story carries a fuller theme set. Use a containment measure, <code>|A n B| / |A|</code> with <code>A</code> the request
+   signature, or the overlap coefficient <code>|A n B| / min(|A|, |B|)</code>. The example above then scores 1.0 rather
+   than 0.333. Add it as a new function: <code>jaccard_similarity</code> is also used for leaf distance, where symmetry
+   is correct, so it must not change.</li>
+</ol>
+<p><strong>Keep the review gate on any expansion.</strong> The vocabulary is echo-safe <em>because</em> it is curated and
+human-reviewed. Expansion must stay in reviewed code or reviewed data, never a runtime-learned or
+auto-mined list, or "echo-safe by construction" quietly degrades to "echo-safe by hope".</p>
+<h3 id="14-the-family-only-versus-catalog-two-prong-sound-with-one-blocker-and-two-caveats">1.4 The family-only versus catalog two-prong: sound, with one blocker and two caveats<a class="headerlink" href="#14-the-family-only-versus-catalog-two-prong-sound-with-one-blocker-and-two-caveats" title="Permanent link">&para;</a></h3>
+<p>Owner proposal (2026-07-25): let the guardian choose whether a book is family-only or added to the general
+library, apply strict PII controls on the catalog path, and allow a less strict approach on the family-only
+path. Evaluated against what is already built:</p>
+<p><strong>The machinery exists.</strong> <code>publishing/state_machine.py::Visibility</code> is a closed <code>FAMILY</code> / <code>CATALOG</code> enum,
+<code>storybook.visibility</code> carries a check constraint, and <code>api/assignments.py</code> and <code>api/library.py</code> already gate
+browse, assign, and read on it. A catalog book is cross-family assignable; a family book is not. Nothing needs
+inventing.</p>
+<p><strong>The risk-tiering instinct is correct.</strong> The WS-7 echo renders a child's own request back to that child and
+their own guardian, which is intra-family regardless of visibility. Showing a family their own words back is a
+materially different exposure from publishing them to other families, and a proportionate, risk-based control
+is a defensible design posture. A relaxation scoped to family-only is the right shape.</p>
+<p><strong>Blocker: the flag does not exist yet when the strictness decision has to be made.</strong> <code>Visibility</code> is
+"chosen by the admin at release approval" (its own docstring) at the <em>end</em> of the pipeline. The theme signature
+is derived at request time for selection, and the degraded interpretation and echo are produced at fill time.
+Both happen long before any visibility value exists, so the pipeline cannot branch on it. The fix is to
+capture <strong>intended visibility at intake</strong>, as a guardian field on the story request, and treat the
+approval-time value as the authoritative final one. Without that field the two-prong design cannot be
+implemented at all, whatever the policy says.</p>
+<p><strong>Caveat 1: visibility does not gate the LLM provider.</strong> Interpretation text re-enters downstream prompts
+(cover art, repair), so a family-only book still exports premise-derived content to a third-party processor,
+and <code>privacy-model.md</code> still carries an <strong>open blocker</strong> on whether OpenRouter's standard-retention or
+zero-data-retention path applies. So family-only means "not shown to other families", not "stays in our
+system". A relaxation justified as "the data never leaves the family" would be overstating it; the honest
+justification is the narrower one about intra-family echo.</p>
+<p><strong>Caveat 2: on the catalog path, decouple rather than scrub.</strong> Redacting names out of free text is a losing
+game, and a child's premise published cross-family is a disclosure of their personal expression even with
+every proper noun removed. The cleaner control is to <strong>not publish the family-facing artifacts at all</strong> on a
+catalog book: the WS-7 interpretation and echo stay family-scoped, and the catalog listing carries only
+skeleton-derived and generated metadata (title, cover, themes, band, length). That is a structural guarantee
+rather than a filter that has to be right every time.</p>
+<p><strong>Sequencing note.</strong> Two existing decisions bear on the catalog prong. ADR-016 makes the catalog the widest
+ring of the three-ring social boundary, and <code>privacy-model.md</code>'s "If Shared Beyond Family" section states that
+the current controls are calibrated for private family use, with COPPA and Kids Category compliance a Phase 7
+launch blocker that is <strong>not yet done</strong>. So the family-only relaxation is available now; routing
+child-premise-derived books into a cross-family catalog should wait on that compliance work regardless of what
+the visibility flag permits.</p>
+<p><strong>One recommendation on who decides.</strong> The proposal moves the catalog decision to the guardian. Today an admin
+makes it at release approval, which puts an independent reviewer on a cross-family disclosure decision.
+Prefer <strong>guardian opt-in as a precondition, admin approval retained as the gate</strong>: the guardian expresses
+intent at intake (which is also what unblocks the timing problem above), and the admin still decides whether
+it actually enters the shared catalog. That keeps both controls and costs nothing.</p>
+<h3 id="15-the-visibility-authorization-rule-guardian-sets-a-ceiling-admin-may-only-restrict">1.5 The visibility authorization rule: guardian sets a ceiling, admin may only restrict<a class="headerlink" href="#15-the-visibility-authorization-rule-guardian-sets-a-ceiling-admin-may-only-restrict" title="Permanent link">&para;</a></h3>
+<p>Owner direction (2026-07-25): the admin needs a lever, but it must never override a guardian's setting unless
+it is <em>more</em> restrictive. Guardian chooses global, admin may choose global or family. Guardian chooses family,
+admin cannot change it. Admin-created book, admin chooses freely.</p>
+<p>That is a <strong>monotone restriction rule</strong>, and it has a clean formal shape. Order the two values by
+permissiveness, <code>FAMILY &lt; CATALOG</code>. Then the resolved visibility is a lattice meet:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>resolved = min(guardian_ceiling, admin_choice)
+</span></code></pre></div>
+<p>with the guardian's value acting as a ceiling the admin can lower but never raise. The admin-created case is
+not a special case at all: an absent guardian means the ceiling is the top element, <code>CATALOG</code>, and the meet
+leaves the admin free. One function, no branching on who created the book.</p>
+<table>
+<thead>
+<tr>
+<th>Guardian ceiling</th>
+<th>Admin may resolve to</th>
+<th>Admin may NOT</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>catalog</code> (global)</td>
+<td><code>catalog</code> or <code>family</code></td>
+<td>n/a</td>
+<td>Admin restricts; a reviewer can always narrow disclosure.</td>
+</tr>
+<tr>
+<td><code>family</code></td>
+<td><code>family</code> only</td>
+<td><code>catalog</code></td>
+<td>The guardian's restriction is binding. This is the load-bearing case.</td>
+</tr>
+<tr>
+<td>none (admin-created)</td>
+<td><code>catalog</code> or <code>family</code></td>
+<td>n/a</td>
+<td>No guardian intent to honor; ceiling is the top element.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The default differs by initiator, and a single constant gets one of them wrong.</strong> <code>StoryRequest</code> already
+carries <code>initiator_role</code> in <code>('child', 'guardian', 'admin')</code>, derived from the authenticated principal and
+marked <code>#CRITICAL: security</code> in <code>story_requests/service.py</code>, so it is the right discriminator:</p>
+<ul>
+<li><code>initiator_role</code> is <code>guardian</code> or <code>child</code>, and no explicit choice was made: ceiling is <strong><code>family</code></strong>. Silence
+  is not consent to cross-family disclosure.</li>
+<li><code>initiator_role</code> is <code>admin</code>: ceiling is <strong><code>catalog</code></strong>, meaning unconstrained, since there is no guardian
+  whose intent is being honored.</li>
+</ul>
+<p><strong>A child must never set the ceiling.</strong> Per ADR-015 a child-initiated request is gated by a guardian, so the
+ceiling is captured at that gating step, defaulting to <code>family</code>. Because <code>initiator_role</code> is derived from the
+authenticated principal rather than supplied by the client, a child cannot present as a guardian to raise it.
+The ceiling field must follow the same derivation, not accept a role from the request body.</p>
+<p><strong>This rule turns the current <code>ApproveBody</code> default into a silent downgrade.</strong> <code>ApproveBody.visibility</code>
+defaults to <code>"family"</code> today, which is the safe default while the admin is the sole decider. Under the ceiling
+rule, an admin approving a guardian-<code>catalog</code> book with no body would silently restrict it to family and look
+like a deliberate decision. The omitted-body semantics must change from "family" to "honor the guardian
+ceiling". That is a wire-contract change, so the generated frontend client has to be regenerated with it.</p>
+<p><strong>Four decisions the rule implies but does not settle:</strong></p>
+<ol>
+<li><strong>Can a guardian raise their own ceiling later?</strong> It is their family's book, so yes in principle, but only
+   through the guardian surface and never through the admin approve path, or the lever becomes a loophole. If
+   the book is already published as <code>family</code>, raising the ceiling should re-enter review rather than widen
+   disclosure in place.</li>
+<li><strong>Post-publish restriction.</strong> Restricting a published <code>catalog</code> book to <code>family</code> is more restrictive, so the
+   rule permits it, and it is exactly what a takedown needs. But other families may already hold assignments.
+   Recommend the restriction revoke cross-family assignments (the honest reading of "more restrictive") and
+   that reading state be retained rather than deleted, so a re-widening does not lose a child's progress.</li>
+<li><strong>Multi-guardian families.</strong> If two guardians set different ceilings, take the <strong>most restrictive</strong>. Safe,
+   predictable, and consistent with the rest of the rule.</li>
+<li><strong>Dual-role adults.</strong> <code>/v1/me</code> returns a base <code>role</code> plus an orthogonal <code>is_admin</code>, so one person can be
+   both. Enforce the lattice on the <strong>role being acted in</strong>, not on identity: an adult who is both must raise
+   their own family's ceiling on the guardian surface, not sidestep it via the admin path. Otherwise the admin
+   lever is a hole in the guardian control for exactly the families where both hats are worn, which is most of
+   them in a homelab deployment.</li>
+</ol>
+<p><strong>Enforcement location.</strong> In <code>publishing</code>'s approve service, not only in the API layer, and as a pure function
+over a frozen table in the style of <code>state_machine.LEGAL_TRANSITIONS</code>. That keeps it unit-testable without a
+database and gives one place to point at when asking whether a loosening is possible.</p>
+<h3 id="16-ceiling-changes-and-dual-role-enforcement-both-settled">1.6 Ceiling changes and dual-role enforcement: both settled<a class="headerlink" href="#16-ceiling-changes-and-dual-role-enforcement-both-settled" title="Permanent link">&para;</a></h3>
+<p>Owner decisions (2026-07-25): a guardian <strong>may</strong> change the ceiling later, as long as it does not violate
+privacy restrictions; and for dual-role adults the lattice is enforced on <strong>the role being acted in</strong>.</p>
+<p><strong>What "does not violate privacy restrictions" actually amounts to: less than expected.</strong> Checking whether any
+content screen is keyed on visibility, the answer is that none is, and the screens already run at the stricter
+setting:</p>
+<ul>
+<li><strong>Self-naming is disallowed by design, at every visibility.</strong> <code>story_requests/interpretation.py</code> sets a
+  self-naming request aside as <code>IDENTITY_PROTECTION</code> under Route A, and <code>generation/worker.py</code> notes that Route
+  A "forbids ANY family requested family-child name". So a family-only book does not contain the requesting
+  child's own name to begin with; there is no name to newly disclose by widening.</li>
+<li><strong>The PII egress floor and echo screens are visibility-independent.</strong> <code>_echo_floor</code>'s four ordered checks
+  (structural injection, graphic-echo minimum, <code>assert_prompt_pii_safe</code> against <code>PiiContext</code>, plus the
+  unconditional email/phone/address patterns) take a band, never a visibility.</li>
+<li><strong><code>moderation/rescreen.py</code> says so outright:</strong> "this sweep does not filter on <code>Storybook.visibility</code>:
+  'family-tier' and 'the current published catalog' are the same set today."</li>
+</ul>
+<p>So a guardian widening needs <strong>no content re-screen</strong>. That is the useful finding: the natural design instinct
+here is a re-screen gate on widening, and it would be redundant work, because the content was already screened
+at the strictest level. Widening is a disclosure-surface change, not a content change.</p>
+<p><strong>What widening does require:</strong></p>
+<ol>
+<li><strong>D29's exclusion must be evaluated at read time, not baked at publish time.</strong> If the catalog read surface
+   filters out the family-facing WS-7 interpretation and echo by checking <code>visibility</code> when serving, then
+   widening is automatically safe the moment the flag flips. If instead publish-time code decides which fields
+   to persist for cross-family consumption, a later widening would expose family-facing artifacts that were
+   written under the family-only assumption. This is the single load-bearing implementation requirement of the
+   whole ceiling-change decision, and it is a test, not a feature.</li>
+<li><strong>The Phase 7 COPPA gate still applies</strong> (D31). A guardian may widen; that does not bypass the unfinished
+   compliance work for cross-family distribution.</li>
+<li><strong>An informed, deliberate action.</strong> The guardian surface must state what becomes visible to other families.
+   A book already read by another family cannot be unread, whatever the flag says afterwards.</li>
+<li><strong>An explicit, audited, human-invoked path.</strong> ADR-005 governs <em>both</em> directions of the publish decision, and
+   <code>state_machine.LEGAL_TRANSITIONS</code> has no machine-reachable transition out of <code>published</code>. Visibility is a
+   <code>Storybook</code> column rather than a status, so a post-publish change is not a status transition and would
+   otherwise be a bare field update. It is a disclosure decision and needs the same audit trail as the original
+   (D28). Open: whether widening a published book should additionally require re-approval, or whether the
+   guardian's own action is sufficient given that no content changes.</li>
+</ol>
+<p><strong>Correction to an earlier statement.</strong> A previous turn of this analysis said narrowing "cannot reach offline
+copies". That is wrong. <code>frontend/src/offline/revocation.ts::reconcileOfflineCache</code> already purges revoked
+books from IndexedDB, deletes the associated reading state, and <strong>drops</strong> queued offline writes for a revoked
+book rather than flushing them first. So revocation does reach offline caches on the next reconcile. The only
+residual gap is a device that never comes back online. Narrowing is therefore more effective, and widening
+correspondingly less irreversible, than stated earlier.</p>
+<p><strong>Dual-role enforcement: the role being acted in.</strong> The primitive already exists:
+<code>story_requests/service.py</code> derives <code>initiator_role</code> from <code>principal.acting_role(family_id)</code>, so
+<code>resolve_visibility</code> can be evaluated against the acting role rather than against identity or capability. The
+consequence is deliberate friction: an adult holding both guardian and admin for their own family must raise
+their own family's ceiling on the guardian surface, because the admin path can only restrict. In a homelab
+deployment where one adult wears both hats, that is a two-step rather than a toggle, and that is the point:
+the guardian control stays a real control rather than something the admin lever can quietly route around.</p>
+<p><strong>Incidental docs gap.</strong> <code>story_requests/interpretation.py</code> cites
+<code>coppa-gdpr-remediation-plan.md Section 5 Decision 4</code> as the governing decision for Route A self-naming
+policy, and that file is not present in <code>docs/planning/</code>. A security-relevant decision is currently governed by
+a document that cannot be read. Restore it or repoint the citation.</p>
+<h3 id="17-pl-22s-fraction-33-and-the-reasoning-is-measurable">1.7 PL-22's fraction: 33%, and the reasoning is measurable<a class="headerlink" href="#17-pl-22s-fraction-33-and-the-reasoning-is-measurable" title="Permanent link">&para;</a></h3>
+<p>Three candidate fractions, evaluated against the constraints that actually bear on the choice.</p>
+<p><strong>Is there guidance in the initial research?</strong> No. Searching <code>docs/planning/</code>, <code>docs/planning/adr/</code>, and
+<code>docs/architecture/</code> for difficulty, frustration, discouragement, early-death, or forgiveness guidance returns
+nothing on this question. ADR-011 sets terminal <em>fraction</em> ("~25-35% of nodes are terminals") and the
+"few wins + many fails" character, and PL-20 sets the winning-path floor. How early a reader may be
+terminated, and how many winning arcs there should be, are genuinely unspecified rather than specified
+elsewhere and missed. So this is a decision to make, not a decision to look up.</p>
+<p><strong>Constraint 1: the ending-count floor does not discriminate between 25% and 33%.</strong> Converting an early
+terminal into a routing <code>setback</code> removes an ending, and both the band <code>min_endings</code> and the breadth-scaled
+gamebook ending fraction still have to hold. Measured headroom per skeleton:</p>
+<table>
+<thead>
+<tr>
+<th>PL-22 fraction</th>
+<th>Endings affected</th>
+<th>Share of 1,778</th>
+<th>Skeletons breaking the ending floor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25% of <code>min_complete</code></td>
+<td>100</td>
+<td>5.6%</td>
+<td>1 (<code>the-ashfall-expedition</code>)</td>
+</tr>
+<tr>
+<td>33%</td>
+<td>178</td>
+<td>10.0%</td>
+<td>1 (<code>the-ashfall-expedition</code>)</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>395</td>
+<td>22.2%</td>
+<td><strong>10 of 14</strong></td>
+</tr>
+</tbody>
+</table>
+<p>So 50% is confirmed as a genuine rebalance and should be rejected. 25% and 33% cost the same single exception,
+which means the floor constraint is silent between them. And that exception is avoidable by construction:
+<strong>remediation must be ending-count-preserving</strong>, relocating a terminal deeper (M2 ending re-map, or re-targeting
+the choice that reached it) rather than deleting it. <code>the-ashfall-expedition</code> has zero headroom at either
+fraction and so <em>must</em> relocate; everywhere else it is the better default anyway, because deleting endings
+erodes the "many fails" character the fraction exists to preserve.</p>
+<p><strong>Constraint 2: the shared opening funnel, which is what the diversity argument actually rests on.</strong> PL-22
+exists so a reader gets past the shared opening before terminating, since a reader who exits inside the funnel
+has read nothing that distinguishes this tree from another. So the floor should clear the depth at which the
+tree's distinctive content becomes reachable. Using "BFS depth at which 10% of the tree is reachable" as that
+proxy:</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Median</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Depth at which 10% of the tree is reachable</td>
+<td><strong>9</strong></td>
+<td>6 to 12</td>
+</tr>
+<tr>
+<td>25% of <code>min_complete</code></td>
+<td>8.0</td>
+<td>6 to 9</td>
+</tr>
+<tr>
+<td>33% of <code>min_complete</code></td>
+<td>10.6</td>
+<td>8 to 12</td>
+</tr>
+</tbody>
+</table>
+<p>Per skeleton, <strong>33% clears the 10%-reachable depth in 13 of 14; 25% clears it in only 3 of 14.</strong> A 25% floor
+lands just inside the funnel region, which is precisely the failure PL-22 is meant to prevent. A 33% floor
+lands just past it.</p>
+<p><strong>Recommendation: 33%.</strong> It is the smallest fraction that satisfies the rule's own rationale, it costs the same
+single ending-floor exception as 25%, and 178 relocations across 14 skeletons is a bounded, mechanical job.
+Choosing 25% would ship a rule that passes its own test on 3 of 14 trees, which is worse than not having the
+rule, because it would read as solved.</p>
+<p><strong>One exception to note.</strong> <code>the-smugglers-cut</code> has a 33% floor of 8 but reaches 10% of its tree only at depth
+11, so it still permits an exit inside its funnel. The per-cell table should therefore allow a per-cell
+override where the funnel is unusually deep, rather than treating 33% as universal. Defining PL-22 as
+<code>max(0.33 * min_complete, funnel_clearing_depth)</code> is the more principled form; start with the constant, and
+promote to the max form if D16's telemetry shows funnel exits still matter.</p>
+<p><strong>Resolved: the 60% tense-but-fair question.</strong> Accepted per owner review. A cell holding one ~95% gauntlet, one
+~80% harsh-but-survivable, and one ~60% tense-but-fair is legitimate gamebook variety rather than a broken
+<code>narrative_style</code> promise. D19 moves from "hold pending telemetry" to accepted, and the in-cell outcome-spread
+requirement is a design target rather than an open question. <code>narrative_style</code> continues to promise the
+gamebook <em>form</em> (second person, gauntlet-capable topologies, many fails), not a specific lethality rate.</p>
+<h3 id="18-the-request-page-must-state-the-restrictions-before-the-child-invests-in-an-idea">1.8 The request page must state the restrictions before the child invests in an idea<a class="headerlink" href="#18-the-request-page-must-state-the-restrictions-before-the-child-invests-in-an-idea" title="Permanent link">&para;</a></h3>
+<p>Owner direction (2026-07-25): if we block a child from using their own name and never said so on the request
+page, they will be annoyed that the book did not turn out as expected. That is correct, and there is a
+structural reason it cannot be fixed after the fact.</p>
+<p><strong>What the request surface says today.</strong> <code>frontend/src/library/RequestStory.tsx</code> renders one prompt, "What
+should your story be about?", a 500-character textarea, and an optional series name. It states <strong>no
+restrictions at all</strong>. A child can type "a story where I'm the hero and my name is Maya" with no indication
+that neither part of that will happen.</p>
+<p><strong>Why the WS-7 echo cannot cover this.</strong> WS-7 reflects the interpretation back after submission, which is the
+right mechanism for "here is what we built and what we set aside". But <code>interpretation.py</code> defines
+<code>_ELEMENT_MUST_BE_NULL</code> over exactly three reason codes, <code>SAFETY_POLICY</code>, <code>PERSONAL_DETAILS</code>, and
+<code>IDENTITY_PROTECTION</code>: for these, the offending phrase "is never echoed, stored, or paraphrased". So for the
+three most surprising restrictions, including self-naming, the post-hoc reflection can name the <em>reason</em> but
+structurally cannot show the child <em>what</em> it dropped. Pre-submission disclosure is therefore not a nicety
+duplicating the echo; it is the only place the expectation can actually be set.</p>
+<p><strong>The authoritative restriction set.</strong> <code>ReasonCode</code> has ten members, six of which are requester-facing
+restrictions worth stating up front:</p>
+<table>
+<thead>
+<tr>
+<th>Reason code</th>
+<th>What to tell the requester</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IDENTITY_PROTECTION</code></td>
+<td>The hero will not be you. Self-naming is disallowed by design (Route A).</td>
+</tr>
+<tr>
+<td><code>PERSONAL_DETAILS</code></td>
+<td>No real names, addresses, phone numbers, or emails, yours or anyone's.</td>
+</tr>
+<tr>
+<td><code>STRUCTURE_FIXED</code></td>
+<td>How many endings there are, where they are, and how the story branches are already set and cannot be requested.</td>
+</tr>
+<tr>
+<td><code>BAND_POLICY</code></td>
+<td>Some content is off-limits for this reader's age band.</td>
+</tr>
+<tr>
+<td><code>GUARDIAN_CONTROL</code></td>
+<td>This family has some themes turned off.</td>
+</tr>
+<tr>
+<td><code>SAFETY_POLICY</code></td>
+<td>Some phrasings are withheld by the safety floor.</td>
+</tr>
+</tbody>
+</table>
+<p>The remaining four are not restrictions: <code>BOUND_TO_SLOT</code> and <code>STORY_FIT</code> are successes, <code>NOT_THIS_STORY_KIND</code>
+and <code>NO_CONFORMING_BINDING</code> are fit outcomes that only exist after a bind attempt.</p>
+<p><strong>Design requirements:</strong></p>
+<ol>
+<li><strong>Derive the copy from the enforcement source, not from hand-written strings.</strong> A hard-coded list on the
+   request page will drift from <code>ReasonCode</code>, <code>band_profile</code>, and the guardian's <code>content_nogo</code> the first time
+   any of them changes, and a stated restriction that no longer matches behaviour is worse than none. Serve
+   the restriction set from the API, keyed on the requesting profile's band, so the page renders what the
+   pipeline will actually enforce.</li>
+<li><strong>Band-appropriate copy.</strong> The <code>AgeBand</code> is known at request time. A 3-5 requester and a 16+ requester need
+   different wording for the same rule, and the kid surface needs the positive framing ("your hero gets a
+   made-up name") rather than the policy framing.</li>
+<li><strong>Resolved (owner decision, 2026-07-25): the kid surface says only that some themes are off.</strong>
+   <code>GUARDIAN_CONTROL</code> reflects that family's own banned themes, and naming them to a child exposes guardian
+   intent, so the kid surface states the fact without the list. The guardian surface shows the actual list,
+   which the guardian set and can change. Two things follow for implementation: D36's API response must not
+   carry the <code>content_nogo</code> values on the kid-surface variant at all, rather than sending them and relying on
+   the client not to render them, and the kid-facing copy must not vary with the list's contents, since copy
+   that changes when a theme is added leaks the list one bit at a time.</li>
+<li><strong>Serves <a href="../capability-register/">K19</a></strong> (expectation-setting) as its pre-submission half, alongside WS-7's
+   post-submission reflection. Worth recording as such so the two are maintained together.</li>
+</ol>
+<h3 id="19-how-many-winning-arcs-is-the-wrong-question-it-is-path-mass-not-ending-count">1.9 "How many winning arcs" is the wrong question: it is path mass, not ending count<a class="headerlink" href="#19-how-many-winning-arcs-is-the-wrong-question-it-is-path-mass-not-ending-count" title="Permanent link">&para;</a></h3>
+<p>Owner direction (2026-07-25), resolving the last open product decision:</p>
+<ul>
+<li>A gamebook may have <strong>more than one</strong> successful outcome.</li>
+<li>For a <strong>series</strong>, every end point must allow for a <strong>single start point</strong> in the next book.</li>
+<li>The minimum should be <strong>a reflection of the branching strategy</strong>, not a fixed number.</li>
+<li>Reconvergence is fine: many nodes collapsing to a couple of final paths, or several paths all reaching one
+  successful ending, is acceptable.</li>
+<li>But <strong>ten positive endings where 90% of paths reach a couple of unsuccessful ones does not work.</strong></li>
+</ul>
+<p>That last clause invalidates D18 as drafted. A <code>min_positive_endings</code> count scaling with ending count would
+have passed a book with ten unreachable wins and failed a book with one well-fed win, which is backwards. The
+constraint is on <strong>the distribution of path mass across endings</strong>, and the count of positive endings should be
+left entirely unconstrained.</p>
+<p><strong>The failure case is already in the catalog.</strong> Choice-uniform walk, 40,000 trials per skeleton. <code>SPM</code> is
+satisfying path mass, the share of playthroughs reaching a <code>success</code>/<code>completion</code> ending; <code>top2</code>/<code>top5</code> are the
+share of terminal mass absorbed by the most-hit 2 and 5 endings; <code>reached</code> is how many distinct endings were
+ever hit:</p>
+<table>
+<thead>
+<tr>
+<th>Skeleton</th>
+<th>Endings</th>
+<th>Positive</th>
+<th>SPM</th>
+<th>top2</th>
+<th>top5</th>
+<th>Reached</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the-drowned-court</td>
+<td>105</td>
+<td><strong>5</strong></td>
+<td><strong>0.00%</strong></td>
+<td>38%</td>
+<td>75%</td>
+<td>43</td>
+</tr>
+<tr>
+<td>the-harrowstone-keep</td>
+<td>152</td>
+<td>4</td>
+<td>0.01%</td>
+<td>38%</td>
+<td>57%</td>
+<td>136</td>
+</tr>
+<tr>
+<td>the-thornwood-trial</td>
+<td>115</td>
+<td>4</td>
+<td>0.00%</td>
+<td>50%</td>
+<td>85%</td>
+<td>48</td>
+</tr>
+<tr>
+<td>the-serpent-vaults</td>
+<td>172</td>
+<td>4</td>
+<td>0.00%</td>
+<td>29%</td>
+<td>72%</td>
+<td>40</td>
+</tr>
+<tr>
+<td>the-ashfall-expedition</td>
+<td>143</td>
+<td>3</td>
+<td>0.00%</td>
+<td>40%</td>
+<td>70%</td>
+<td><strong>30</strong></td>
+</tr>
+<tr>
+<td>the-tenfold-siege</td>
+<td>209</td>
+<td>2</td>
+<td>0.00%</td>
+<td>29%</td>
+<td>71%</td>
+<td>54</td>
+</tr>
+<tr>
+<td>the-smugglers-cut</td>
+<td>80</td>
+<td>2</td>
+<td>0.50%</td>
+<td>50%</td>
+<td>76%</td>
+<td>62</td>
+</tr>
+</tbody>
+</table>
+<p><code>the-drowned-court</code> is the described failure exactly: <strong>five positive endings, and effectively no path mass
+reaches any of them</strong>, while the top five endings absorb 75%. Ending count and path mass are fully decoupled,
+which is why the count is the wrong lever.</p>
+<p><strong>A third finding falls out of the <code>reached</code> column.</strong> Only 30 to 136 of each book's declared endings are ever
+hit in 40,000 walks: <code>the-ashfall-expedition</code> reaches 30 of 143, <code>the-tenfold-siege</code> 54 of 209. The
+breadth-scaled <code>min_endings</code> floor counts <strong>declared</strong> endings, so ADR-011's terminal-fraction guarantee is
+satisfied in part by endings a reader will essentially never see. Declared ending count overstates delivered
+variety, and any future ending-count floor should prefer mass-bearing endings.</p>
+<p><strong>The formalization, replacing <code>min_positive_endings</code>:</strong></p>
+<ol>
+<li><strong>A satisfying-path-mass floor, keyed on topology.</strong> "A reflection of the branching strategy" is directly
+   implementable: <code>structure_features().topology</code> already classifies every tree as <code>gauntlet</code>,
+   <code>branch_and_bottleneck</code>, <code>sorting_hat</code>, <code>open_map</code>, <code>time_cave</code>, or <code>loop_and_grow</code>. A <code>gauntlet</code> earns a
+   lower SPM floor than a <code>sorting_hat</code> by design. The floor is per topology, not per cell and not a constant.</li>
+<li><strong>Concentration is explicitly permitted.</strong> Reconvergence to few endings is fine, and one satisfying ending
+   absorbing all winning mass is fine. The rule fails only when the <em>satisfying</em> share falls below the floor.
+   No rule should penalize a low ending count or a high top-k share on its own.</li>
+<li><strong>Positive ending count stays unconstrained.</strong> Deliberately: it is the measure that produced the wrong
+   answer.</li>
+</ol>
+<p><strong>Caveat on the model.</strong> Choice-uniform walk is a structural lower bound, not a prediction: a real reader reads
+the prose and avoids obviously fatal choices, and condition-gated choices mean some sampled paths are ones a
+real reader could not take. So structural SPM is a <strong>design gate</strong>, and the floor must be calibrated against
+the real satisfying-ending rate from D16's telemetry rather than set from the model alone.</p>
+<h3 id="110-the-series-rule-exposes-two-validator-gaps-and-one-design-tension">1.10 The series rule exposes two validator gaps and one design tension<a class="headerlink" href="#110-the-series-rule-exposes-two-validator-gaps-and-one-design-tension" title="Permanent link">&para;</a></h3>
+<p>"Every end point must allow for a single start point in the next book" is stronger than what SR-5 enforces, and
+checking it found two gaps.</p>
+<p><strong>What SR-5 does today.</strong> Its docstring: "each non-final book has a win ending and a next-book entry node...
+It does NOT trace that the win ending targets that entry node; books are independent graphs with no shared node
+ids." So it verifies that <em>a</em> win exists and that the next book declares a <code>series_entry_node</code>. It says nothing
+about the other 148 endings.</p>
+<p><strong>Gap 1: endings that foreclose continuation are permitted in a non-final book.</strong> <code>death</code> and <code>capture</code> are
+states you cannot continue a campaign from, yet nothing forbids them in a book that promises a sequel. The
+catalog's only series, <code>brass-lantern</code>, is exactly this case:</p>
+<table>
+<thead>
+<tr>
+<th>Book</th>
+<th>Skeleton</th>
+<th>Endings</th>
+<th>death</th>
+<th>capture</th>
+<th>Foreclosing</th>
+<th>Satisfying</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>the-harrowstone-keep</td>
+<td>152</td>
+<td>17</td>
+<td>77</td>
+<td><strong>94 (62%)</strong></td>
+<td>4</td>
+</tr>
+<tr>
+<td>2</td>
+<td>the-sunken-temple</td>
+<td>152</td>
+<td>17</td>
+<td>77</td>
+<td><strong>94 (62%)</strong></td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<p>62% of each book's endings cannot lead to the next book's <code>n_start</code>. Both books do use a single
+<code>series_entry_node</code> of <code>n_start</code>, so the single-start-point convention is already followed; it is the endings
+that do not honor it. The machine-checkable part of the owner's rule is therefore a new rule, <strong>SR-8</strong>: in a
+non-final series book, no ending may be of a continuation-foreclosing kind. <code>death</code> is unambiguous; whether
+<code>capture</code> forecloses or is a legitimate cliffhanger ("you are taken, and book 2 opens in the cell") is a
+narrative decision to settle before SR-8 lands.</p>
+<p><strong>Gap 2: nothing requires the highest-index book to be final.</strong> SR-4 flags a book <em>below</em> the highest index
+that is <code>is_final</code>; SR-5 skips the highest index entirely. So <code>brass-lantern</code> book 2, declaring
+<code>is_final: false</code> with no book 3 in the catalog, passes both. A chain can promise a continuation that does not
+exist, and a reader finishes book 2 expecting book 3. That is <strong>SR-9</strong>: the highest-index book must be
+<code>is_final</code>, or a successor must exist.</p>
+<p><strong>The design tension, worth recording.</strong> A gamebook wants many fails; a series requires every ending to be
+continuable. So series-plus-gamebook is a genuinely constrained combination: its fails must be <code>setback</code>-shaped,
+survivable and continuable, rather than <code>death</code> or <code>capture</code>. <code>brass-lantern</code> reads as authored gamebook-first
+and series-second, which is how it acquired 94 foreclosing endings.</p>
+<p><strong>This composes with PL-22.</strong> D17's remediation converts early terminals into routing <code>setback</code>s, and SR-8's
+remediation converts foreclosing terminals into continuable ones. Both are M2 ending re-maps in the same
+direction, so the two jobs should be done in one pass over the affected skeletons rather than twice.</p>
+<h3 id="111-root-cause-restart-on-fail-is-specified-half-built-and-unrepresentable">1.11 Root cause: <code>restart-on-fail</code> is specified, half-built, and unrepresentable<a class="headerlink" href="#111-root-cause-restart-on-fail-is-specified-half-built-and-unrepresentable" title="Permanent link">&para;</a></h3>
+<p>Owner expectation (2026-07-25): in a gamebook, many paths should be <strong>setbacks</strong>, not end-of-story-and-start-over.</p>
+<p>That is what ADR-011 specifies, and tracing why the catalog does not do it found the root cause of every P4
+symptom.</p>
+<p><strong>ADR-011 defines <code>restart-on-fail</code> as a first-class flow primitive.</strong> Its flow-primitive list reads:
+"<strong>restart-on-fail</strong> (negative ending -&gt; start/checkpoint)". The per-band allowance table grants it as
+"yes, lethal (gamebook)" for 13-16 and 16+. And it is written into the definition of the <code>gauntlet</code> topology
+itself: "linear spine, branch-to-fail, terminal (many), <strong>restart-on-fail</strong>", whose reread driver is
+"master the one path". A gauntlet is <em>supposed</em> to be many terminals plus a loop back, so the reader learns the
+route across attempts.</p>
+<p><strong>The schema forbids the edge that would implement it.</strong> <code>storybook/models.py</code>'s <code>Node</code> validator:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>if self.is_ending:
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    if self.choices:
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        msg = f&quot;ending node &#39;{self.id}&#39; must have no choices&quot;
+</span></code></pre></div>
+<p>An ending node has no outgoing edge, by invariant. So "negative ending -&gt; start/checkpoint" is unrepresentable
+in an authored graph. Grepping the source for <code>restart</code> finds worker restarts, Redis restarts, and Kubernetes
+probes: the primitive appears nowhere in the implementation.</p>
+<p><strong>And the checkpoint half is built but has no producer.</strong> <code>player/state.py</code> carries
+<code>save_slots: dict[str, Snapshot]</code>, and <code>engine.py::_clone</code> copies each snapshot individually with a documented
+purity guarantee so "a cloned timeline cannot mutate a save slot shared with the original". <code>replay.py</code> already
+reconstructs a state from a <code>choice_path</code>, so state restoration works. But <code>EffectOp</code> operates on variables
+only (<code>var: str</code>), there is no save-slot effect, the strings <code>save</code> and <code>slot</code> do not appear in
+<code>storybook/models.py</code>, and no API exposes slots. <strong><code>save_slots</code> is correct runtime plumbing that nothing can
+ever write to.</strong></p>
+<p><strong>So the chain is:</strong> ADR-011 specifies restart-on-fail; the schema cannot express it; the checkpoint mechanism
+has no producer; therefore all 1,778 gamebook terminals are hard stops, and the gauntlet topology's defining
+reread loop has no in-product mechanism at all. That is why SPM is ~0%, why an early terminal costs the whole
+session rather than a few nodes, and why only 30 of 143 endings are ever reached.</p>
+<p><strong>Two designs, and the tension between them resolves cleanly.</strong></p>
+<p><em>Design A, the non-terminal setback (the literal reading of the owner expectation).</em> Model a setback as an
+ordinary node: an <code>on_enter</code> penalty effect plus choices routing onward. <strong>Expressible today with no schema
+change</strong>, which is worth knowing: authors simply used <code>is_ending: true, kind: setback</code> instead. But it collides
+with ADR-011's terminal fraction. <code>the-thornwood-trial</code> has 111 setback terminals out of 115 endings against a
+<code>min_endings</code> floor of 94, so converting even 22 of them breaks the floor. Wholesale conversion is not viable;
+targeted conversion of the shallowest terminals is exactly what D17 already does.</p>
+<p><em>Design B, restart-on-fail via checkpoints (what ADR-011 intended).</em> Keep terminals many, and make a terminal
+not the end of the <strong>session</strong>. Needs three pieces: a way to establish a checkpoint (a new effect op, or an
+implicit checkpoint at bottleneck nodes), a restart affordance offered at an ending in the API and reader UI,
+and authored checkpoint placement. Two of the three hard parts already exist in <code>save_slots</code> and <code>replay.py</code>.</p>
+<p><strong>Design B is primary, A is the targeted supplement.</strong> B preserves ADR-011's terminal fraction and the "many
+fails" character while restoring the loop the framework assumes, and it is the design the ADR actually
+specifies. A stays useful for the shallowest terminals under D17.</p>
+<p><strong>Two consequences for deliverables already in this plan:</strong></p>
+<ol>
+<li><strong>D18's SPM measure changes shape.</strong> With restart-on-fail, a per-walk satisfying path mass near zero is not
+   necessarily a defect: the meaningful measure becomes the <strong>cumulative satisfying rate per session</strong>, across
+   restarts. The structural per-walk SPM stays useful as a design gate, but the floor must be set against
+   session-level telemetry (D16), not against the single-walk model.</li>
+<li><strong>Checkpoint placement and PL-22 are the same measurement.</strong> A restart that returns the reader to node 1
+   makes them re-read the shared opening funnel, which is precisely the diversity failure PL-22 exists to
+   prevent. So checkpoints must sit at or past the funnel-clearing depth, which is the same 33%-of-<code>min_complete</code>
+   quantity section 1.7 derived. One number serves both rules.</li>
+</ol>
+<h3 id="112-the-two-tier-restart-model-and-the-three-things-it-simplifies">1.12 The two-tier restart model, and the three things it simplifies<a class="headerlink" href="#112-the-two-tier-restart-model-and-the-three-things-it-simplifies" title="Permanent link">&para;</a></h3>
+<p>Owner design (2026-07-25):</p>
+<ul>
+<li><strong>Setback:</strong> loop back automatically to a previous safe point, a node where the reader can choose a different
+  path.</li>
+<li><strong>Terminal ending:</strong> offer the reader a choice, restart from the last safe point <strong>or</strong> restart from node 1.
+  Especially important for series books.</li>
+</ul>
+<p>This is a better model than section 1.11 recorded, and it resolves three things that were open or wrong.</p>
+<p><strong>It answers D46: the safe point is derivable from the reader's own state, not authored.</strong> "A safe place where
+they can choose a different path" is a precise definition: the most recent visited non-ending node with more
+than one visible choice, where at least one choice from it remains untaken. <code>ReadingState</code> persists <code>path</code> (the
+ordered node ids), <code>var_state</code>, <code>visit_set</code>, and <code>save_slots</code>, so the engine can identify it without any help
+from the author. So the checkpoint mechanism needs <strong>no new <code>EffectOp</code>, no authored marker, and no
+implicit-at-bottleneck heuristic</strong>: the engine writes a snapshot as the reader passes a qualifying safe point.
+<code>save_slots</code> finally gets its producer, and the producer is the runtime rather than the story. That is almost
+certainly what it was built for.</p>
+<p><strong>One implementation constraint makes the snapshot approach mandatory rather than optional.</strong> <code>choice_path</code> is
+<strong>not</strong> persisted on <code>ReadingState</code>; only <code>path</code> is. So a rewind cannot reconstruct historical <code>var_state</code> by
+replaying choices: when two choices from one node share a target but carry different <code>effects</code>, the taken choice
+is not recoverable from the node sequence alone, and reconvergent gamebook graphs do exactly that. Snapshots
+avoid the problem entirely by storing the state rather than re-deriving it.</p>
+<p><strong>It removes the need for any schema change or catalog remediation for setbacks.</strong> A setback ending stays
+<code>is_ending: true</code> in the graph; the player auto-returns the reader to the safe point. The terminal-fraction
+floor is untouched, ending counts are untouched, and <code>the-thornwood-trial</code>'s 111 setback terminals are fine
+exactly as authored. Design A from section 1.11 is therefore not needed as a catalog change at all: it is a
+player behaviour.</p>
+<p><strong>It narrows PL-22 from 178 endings to 73.</strong> Only a <em>foreclosing</em> terminal leaves the reader with a restart
+decision; a setback returns them automatically at negligible cost. So PL-22 should apply to <code>death</code> and
+<code>capture</code> terminals, not to setbacks. The shallow tail below 33% of <code>min_complete</code> splits:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Endings below 33%</th>
+<th>Share</th>
+<th>PL-22 applies?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>setback</code></td>
+<td>104</td>
+<td>58%</td>
+<td>No, the auto-loop handles them</td>
+</tr>
+<tr>
+<td><code>death</code> / <code>capture</code></td>
+<td><strong>73</strong></td>
+<td>41%</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>other</td>
+<td>1</td>
+<td>1%</td>
+<td>Case by case</td>
+</tr>
+</tbody>
+</table>
+<p><strong>And that makes the ending-floor problem disappear.</strong> Section 1.7 flagged <code>the-ashfall-expedition</code> as the one
+skeleton with zero ending-count headroom at either candidate fraction. All 29 of its shallow terminals are
+<code>setback</code>, so it needs <strong>zero</strong> conversions. Re-checking every skeleton with PL-22 scoped to foreclosing
+terminals only: no skeleton falls below its <code>min_endings</code> floor. The "remediation must be ending-count-preserving"
+constraint from section 1.7 is no longer forced by arithmetic, though it remains the better default.</p>
+<p><strong>It answers D42 and retracts SR-8.</strong> Section 1.10 flagged <code>brass-lantern</code>'s 94 <code>death</code>/<code>capture</code> endings per
+book (62%) as a series-continuity violation. <strong>With restart-on-fail available, that is not a defect.</strong> A
+foreclosing terminal no longer forecloses the <em>series</em>; it forecloses that <em>attempt</em>. The reader restarts from a
+safe point or node 1 and can still reach the continuable ending, which SR-5 already requires to exist. So:</p>
+<ul>
+<li>SR-8 as drafted (forbid continuation-foreclosing ending kinds in a non-final series book) is <strong>not needed</strong>.
+  The property that matters is that restart-on-fail exists, which is a product invariant rather than a graph
+  property, so there is nothing for the validator to check.</li>
+<li>D42 ("does <code>capture</code> foreclose continuation?") is <strong>resolved: neither <code>death</code> nor <code>capture</code> forecloses</strong>,
+  given restart. Both foreclose an attempt.</li>
+<li><code>brass-lantern</code> needs no ending remediation on continuity grounds. It still needs the D9 clone resolution and
+  whatever PL-22 requires of its foreclosing terminals, which for these two skeletons is zero, since all 12 of
+  each book's shallow terminals are <code>setback</code>.</li>
+<li><strong>SR-9 stands unchanged.</strong> Nothing about restart fixes book 2 declaring <code>is_final: false</code> with no book 3.</li>
+</ul>
+<p><strong>One new open question, and it is live.</strong> For a state-carrying series (<code>carries_state: true</code>, which
+<code>brass-lantern</code> is), what does "restart from node 1" mean for state inherited from the previous book? It should
+<strong>not</strong> reset that state, since the reader earned it in book N-1; node 1 should mean this book's start node with
+the inherited state intact, and only this book's own progress discarded. The API needs to distinguish
+"book-local reset" from "series reset", and offering the latter to a reader at all is a product decision.</p>
+<h3 id="113-opt-in-challenge-mode-permadeath-as-a-campaign-reset">1.13 Opt-in challenge mode: permadeath as a campaign reset<a class="headerlink" href="#113-opt-in-challenge-mode-permadeath-as-a-campaign-reset" title="Permanent link">&para;</a></h3>
+<p>Owner direction (2026-07-25): in gameplay style, killing the character would traditionally send the reader back
+to book 1, node 1. That should be something a reader can <strong>opt into</strong> to increase the complexity if they wish.</p>
+<p>This adds a third tier above section 1.12's two: with the mode enabled, a <code>death</code> ending resets the whole
+series rather than returning the reader to a safe point. Opt-in, never default.</p>
+<p><strong>The band gate comes free from existing policy.</strong> No new rule is needed to decide where this may be offered:</p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th><code>forbidden_ending_kinds</code></th>
+<th>ADR-011 restart-on-fail</th>
+<th>Challenge mode offerable?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3-5, 5-8</td>
+<td><code>death</code>, <code>capture</code></td>
+<td>none / soft try-again only</td>
+<td>No: there is no <code>death</code> ending to trigger it</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td><code>death</code></td>
+<td>failure/entrapment, no death</td>
+<td>No: same reason</td>
+</tr>
+<tr>
+<td>10-13</td>
+<td>none</td>
+<td>"yes, logical"</td>
+<td>No: <code>death</code> exists but lethal restart is not sanctioned</td>
+</tr>
+<tr>
+<td>13-16, 16+</td>
+<td>none</td>
+<td><strong>"yes, lethal (gamebook)"</strong></td>
+<td><strong>Yes</strong></td>
+</tr>
+</tbody>
+</table>
+<p>ADR-011 already says restart-on-fail is "lethal only from <code>13-16</code> up", and the two lower bands have no <code>death</code>
+ending for the mode to act on. So the mode is offerable at 13-16 and 16+ and nowhere else, derived from policy
+already in place.</p>
+<p><strong>It resolves section 1.12's open question by contrast.</strong> There are now two distinct resets, and they are not
+the same operation:</p>
+<ul>
+<li><strong>Book-local node-1 restart</strong> (section 1.12, the normal-mode option on a foreclosing terminal): returns to
+  <em>this book's</em> start node and <strong>preserves</strong> state inherited from book N-1, which the reader earned there.</li>
+<li><strong>Series reset</strong> (this section, the challenge-mode consequence of <code>death</code>): returns to <strong>book 1, node 1</strong> and
+  discards carried state.</li>
+</ul>
+<p>So a series reset is a <em>consequence the reader opted into</em>, not a menu item offered casually. That is a better
+answer than offering both resets side by side, and it closes the question 1.12 raised.</p>
+<p><strong>Nothing exists to hold the mode flag.</strong> There is a catalog-level <code>Series</code> table, but <strong>no per-profile series
+progress table</strong>: series progress is implicit in the per-book <code>ReadingState</code> rows plus <code>Completion</code> rows, and
+<code>get_series_next</code> resolves the next book on demand each time. So this feature needs one new per-(profile,
+series) row to carry the mode. That is the only schema addition it requires, and it is worth noting that it also
+gives series progress a home it currently lacks.</p>
+<p><strong>A series reset is a multi-row destructive operation, and that is the risky part.</strong> It resets every
+<code>ReadingState</code> row for that profile across the series' books. Three requirements follow:</p>
+<ol>
+<li><strong>Atomic and server-authoritative.</strong> It must not be applied optimistically on-device. A death that happens
+   offline and arrives through <code>offline/sync.ts</code> could otherwise destroy a run during conflict resolution, and
+   resolving that conflict wrongly costs the reader hours rather than minutes.</li>
+<li><strong><code>Completion</code> rows must survive.</strong> <code>api/reading.py::list_completions</code> tracks "every ending a child profile
+   has completed" as an achievement log, not as progress. A permadeath reset should clear reading state and keep
+   the collected endings, or the mode punishes the reader twice and erases the collection loop that makes
+   re-reading worthwhile.</li>
+<li><strong>It must interact correctly with <code>state_revision</code></strong> optimistic concurrency across every affected row, not
+   just the book the death occurred in.</li>
+</ol>
+<p><strong>Mode locking is a genuine decision.</strong> If a reader can switch to normal mode after dying, the challenge is
+void; if they are locked in, a child can be trapped in an experience they no longer want. Recommend: allow a
+downgrade from challenge to normal at any time, but never retroactively undo a death that has already reset the
+run. The consequence stands, the mode does not trap them.</p>
+<p><strong>Guardian visibility.</strong> A mode that destroys hours of progress is worth surfacing to the guardian, consistent
+with the existing G-series controls: reader-selectable, band-gated, guardian-visible. Whether a guardian can
+withdraw availability is a product decision rather than a safety one.</p>
+<p><strong>State the consequence before opt-in.</strong> This is section 1.8's principle applied to a new surface: "if your
+character dies, you start again at the very beginning of book 1" must be stated plainly at the point of
+enabling, not discovered on the first death. Unlike the request-page restrictions, this one <em>can</em> be explained
+afterwards, but by then it has already cost the reader the run.</p>
+<p><strong>One honest tension with the diversity objective.</strong> Challenge mode increases replay volume, which surfaces more
+distinct leaves; but it also forces repeated re-reading of the shared opening funnel, which is exactly the
+perceived-sameness failure PL-22 exists to prevent. For a mode the reader deliberately chose, that trade is
+acceptable. It is another reason the mode must never be the default, and it raises rather than lowers the value
+of D48's checkpoint placement for normal mode.</p>
+<hr />
+<h2 id="2-objective-and-constraints">2. Objective and constraints<a class="headerlink" href="#2-objective-and-constraints" title="Permanent link">&para;</a></h2>
+<p>Objective is unchanged from <a href="../story-flexibility-plan/">story-flexibility-plan.md</a> section 1: minimise the
+perceived similarity between any two stories a reader encounters. This plan adds one clause the audit made
+necessary: <strong>and ensure the reader actually reaches the content that differentiates them.</strong></p>
+<p>Constraints every deliverable holds:</p>
+<ol>
+<li>The ADR-011 constraint grammar stays frozen. No deliverable requests a safety exception, and none should be
+   granted one.</li>
+<li>Every generated story passes the full <code>validator/</code> gate and <code>moderation/</code> review before publish.</li>
+<li>The novelty floor: selection never fully excludes an eligible candidate. Every weighting change keeps the
+   <code>1/(1 + ...)</code> form.</li>
+<li><strong>New: no diversity mechanism may create, persist, render, or export personal data that the system does not
+   already hold for the story-generation purpose.</strong> This is the generalisation of section 1.1 and it binds
+   D1-D4 and D11.</li>
+<li>The WS-7 echo path is byte-identical after D1. A privacy-motivated refactor that changes what a child sees
+   has failed.</li>
+</ol>
+<hr />
+<h2 id="3-phases-and-deliverables">3. Phases and deliverables<a class="headerlink" href="#3-phases-and-deliverables" title="Permanent link">&para;</a></h2>
+<p>Six phases. P1 and P2 are prerequisites for trusting any diversity metric and should land first. Effort is
+S (under a day), M (a few days), L (a sprint or more).</p>
+<h3 id="p1-unblock-the-similarity-signal-findings-31-sections-11-and-13">P1: Unblock the similarity signal (findings 3.1, sections 1.1 and 1.3)<a class="headerlink" href="#p1-unblock-the-similarity-signal-findings-31-sections-11-and-13" title="Permanent link">&para;</a></h3>
+<p>Nothing downstream of similarity works until this lands. Revised per section 1.3: <strong>expanding the curated
+vocabulary is the primary path</strong>, and the open-vocabulary variant drops to a fallback. D2 and D3 are the two
+that actually turn the signal on, and neither changes the privacy posture at all.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>Split <code>theme_signature</code> into <code>echo_signature</code> (today's function, renamed, behaviour byte-identical) and <code>similarity_signature</code>. Repoint <code>worker.py</code>'s two degraded-interpretation call sites at <code>echo_signature</code>; repoint <code>history.py</code> and <code>query.py</code> at <code>similarity_signature</code>. Pure refactor, no output change. Worth doing even though D2 keeps both closed: it names the echo-safety requirement so a later coverage change cannot silently widen the rendered surface.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D2</td>
+<td><strong>Expand and unify the controlled vocabulary.</strong> Grow <code>_THEME_TAG_MAP</code> so the request side can emit the tags the catalog already declares, and normalise <code>metadata.themes</code> <em>into</em> that vocabulary rather than passing raw strings through. Curate roughly 60-120 tags from the 132 themes the catalog declares, dropping the per-story literary phrases that are not matchable tags. Stays closed, stays echo-safe, stays reviewed: no new personal data, no DPIA question.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D3</td>
+<td><strong>Replace symmetric Jaccard for request-versus-story comparison.</strong> Add a containment measure (intersection size over the <em>request</em> signature's size, or the overlap coefficient over the smaller of the two) and use it in <code>score_history</code>. Leave <code>jaccard_similarity</code> untouched: leaf distance needs symmetry. This alone lifts the worked example in section 1.3 from 0.333 to 1.0.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Make "unknown" distinct from "dissimilar". <code>jaccard_similarity(frozenset(), frozenset())</code> returns <code>0.0</code>, so an unrecognised theme is affirmatively scored as maximally dissimilar to a byte-identical prior request. Return an explicit unknown and have <code>score_history</code> treat it <strong>conservatively</strong> (assume similar), so the failure mode is over-diversifying rather than silently disabling.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D5</td>
+<td>Re-derive <code>tau_theme</code>. The 0.35 threshold was set against a 12-tag symmetric-Jaccard space; D2 and D3 change both the vocabulary size and the measure. Re-fit on the D6 panel and record the new value with its basis.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D6</td>
+<td>A committed evaluation panel of realistic premises (pets, sports, family, school, music, invention, weather, food, sibling relationships) paired with catalog themes, so coverage and threshold claims are testable and regression-gated in CI alongside the existing WS-0 panel.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D7</td>
+<td><strong>Fallback, do not build yet:</strong> an open-vocabulary <code>similarity_signature</code> (<code>content_tokens(mask_tokens(premise, extract_entities(...)))</code>, never rendered, persisted, or prompted) plus the <code>privacy-model.md</code> entry and DPO review from section 1.1. Build only if D2 plus D6 show coverage still short of target, and only behind the D1 split.</td>
+<td>M</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Acceptance.</strong> On the D6 panel, over 95% of realistic premises yield a non-empty signature; two paraphrases of
+one request score above the re-derived <code>tau_theme</code>; and a byte-identical premise against a stored story with
+curated themes scores as similar (today it scores 0.333 and does not). Every WS-7 echo golden test passes
+unchanged. <code>theme_signature</code>'s old name is gone, so no future caller can pick the wrong one by accident.</p>
+<p><strong>Why D2 before D7.</strong> Expanding a curated list buys most of the coverage while keeping the closed-vocabulary
+echo guarantee, so it needs no privacy review, no DPIA question, and no new artifact. The open-vocabulary
+variant is the only option that reopens all of that, and section 1.3's measurement suggests it may not be
+needed. Reach for it last.</p>
+<p><strong>Constraint.</strong> Any vocabulary expansion stays in reviewed code or reviewed data. A runtime-learned or
+auto-mined tag list would break the "echo-safe by construction" property that section 1.1 exists to protect.</p>
+<h3 id="p2-catalog-integrity-finding-32">P2: Catalog integrity (finding 3.2)<a class="headerlink" href="#p2-catalog-integrity-finding-32" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D8</td>
+<td>CI audit computing pairwise <code>structural_distance</code> across every production-eligible skeleton in each cell, failing below <code>TAU_CELL</code> (0.05). Applies the anti-clone floor to the whole catalog, not just to mutation-derived promotion candidates.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D9</td>
+<td>Resolve the live clone pair: <code>the-sunken-temple</code> and <code>the-harrowstone-keep</code> are the same 550-node tree in the same 13-16/long/gamebook cell at distance 0.00095. Retire one, mutate one past the floor via the WS-5 operators, or re-cell it. Whichever is chosen, the cell must end with 5 genuinely distinct trees, not 4 and a duplicate.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D10</td>
+<td>Either extend <code>structure_fingerprint</code> to canonicalise node ids by graph position, or document it as an identity check that is explicitly <strong>not</strong> a clone check and route clone questions to <code>structural_distance</code>. Today it reports the clone pair as different because their node ids differ, so every equality-based check built on it is blind to renamed clones.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Acceptance.</strong> D8 fails on the current <code>main</code> before D9 and passes after. <code>13-16/medium/gamebook</code>, minimum
+in-cell distance 0.091, is reviewed as a near-miss even though it clears the floor.</p>
+<h3 id="p3-make-escalation-actually-act-findings-33-37-38">P3: Make escalation actually act (findings 3.3, 3.7, 3.8)<a class="headerlink" href="#p3-make-escalation-actually-act-findings-33-37-38" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D11</td>
+<td>Thread <code>DifferentiationLevel</code> and the top-k neighbours into <code>fill_skeleton</code>, and add a conditional escalated block to <code>fill.md</code>: an avoid-list plus a directive to vary tone, cast relationships, and pacing rather than surface nouns. <strong>Privacy constraint: pass the prior fills' published titles, settings, and cast, which are generated content the family already has, never the prior requests' premises.</strong> That keeps one family member's request text out of another's generation prompt and satisfies constraint 4. Fence at reuse per safety invariant 4.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D12</td>
+<td>A variation-axis library: an authored set of axes (narrative distance, tonal register, sensory emphasis, pacing, whose point of view the scene favours) with one drawn per request and passed to the fill. Varies the <em>dimension</em> of variation rather than sampling noise, so it does not trade against the reading-level stability the WS-0 lexical guards watch.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D13</td>
+<td>Feature-vector-aware selection weighting: de-weight a candidate by <code>structural_distance</code> and <code>valence_hist</code> proximity to the reader's recent stories, not by slug identity alone. <code>structure_features</code> already computes everything needed. Keeps the <code>1/(1 + ...)</code> novelty floor.</td>
+<td>M</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Acceptance.</strong> ATG masked distance between two fills of one tree at <code>LEAF</code> escalation beats the same pair at
+<code>TREE</code> escalation by a measurable margin on the WS-0 panel. D13 makes the section 3.2 clone pair
+self-correcting: the second of two near-identical trees is de-weighted like the repeat it is, independent of
+D9.</p>
+<h3 id="p4-fail-path-depth-and-outcome-mix-section-12">P4: Fail-path depth and outcome mix (section 1.2)<a class="headerlink" href="#p4-fail-path-depth-and-outcome-mix-section-12" title="Permanent link">&para;</a></h3>
+<p>The phase the second review challenge produced, then substantially narrowed. <strong>D14 is the primary
+deliverable and it is small.</strong> It extends PL-20's existing, ratified depth principle from the winning path to
+every path, which is what PL-20's docstring declares out of scope. D16 measures what readers actually
+receive; D15 and D18 are the product decisions PL-20's authors deliberately left open.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D14</td>
+<td><strong>PL-22, a fail-depth floor, scoped to foreclosing terminals.</strong> No <code>death</code>/<code>capture</code> ending may sit closer to <code>start_node</code> than a set fraction of the cell's <code>min_complete</code>. Scoped per section 1.12: a <code>setback</code> terminal auto-loops to a safe point at negligible cost, so only a foreclosing terminal leaves the reader with a restart decision. That narrows the affected set from 178 endings to <strong>73</strong>, and no skeleton then falls below its <code>min_endings</code> floor. Same enforcement shape as PL-20 (BFS from <code>start_node</code>), same <code>band_profile.py</code> cell table.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D15</td>
+<td>Ratify PL-22's fraction as an ADR-011 amendment. 25% and 33% are both defensible; 50% is a genuine rebalance (395 endings, 22.2%) and should be rejected unless D16's data demands it. The amendment should state the principle explicitly: the age-appropriate-depth guarantee applies to every path a reader can take, not only to the winning one.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D16</td>
+<td>Instrument <strong>real</strong> reading depth. <code>ReadingState</code> and <code>Completion</code> already hold what is needed: nodes visited per session, terminal reached, endings collected per profile, re-reads per storybook. Report the distribution of depth-reached against <code>min_complete</code> per cell, the share of sessions terminating below PL-22's candidate fractions, and the <strong>real satisfying-ending rate</strong> per book and per profile (the calibration input D18's SPM floor needs). This replaces the structural proxies (choice-uniform walk and BFS ending depth) with measurement, and it is what decides whether D17 is needed at all.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D17</td>
+<td>Remediate the foreclosing endings PL-22 rejects, via WS-5's M2 ending re-map: relocate the terminal deeper rather than deleting it. At 33% that is <strong>73</strong> <code>death</code>/<code>capture</code> endings across 7 skeletons, concentrated in <code>the-tenfold-siege</code> (23), <code>the-serpent-vaults</code> (12), <code>the-labyrinth-of-glass</code> (11), and <code>the-pale-road</code> (12). Ending-count-preserving relocation is no longer forced by the floor (section 1.12) but remains the better default. Every remutated tree re-runs the full gate.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D18</td>
+<td><strong>A satisfying-path-mass (SPM) floor keyed on topology</strong>, replacing the <code>min_positive_endings</code> count this deliverable previously proposed (section 1.9: count and mass are decoupled, and <code>the-drowned-court</code> has 5 positive endings at 0.00% SPM). Floor the share of playthroughs reaching a <code>success</code>/<code>completion</code> ending, keyed on <code>structure_features().topology</code> so a <code>gauntlet</code> earns a lower floor than a <code>sorting_hat</code>. Explicitly permit reconvergence and high top-k concentration; leave positive ending count unconstrained. Calibrate against D16 telemetry, not the model alone.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D19</td>
+<td><strong>Accepted</strong> (section 1.7): require in-cell <strong>outcome spread</strong> so candidates in one cell occupy different points in the valence envelope. A cell holding one 95% gauntlet, one ~80% harsh-but-survivable, and one ~60% tense-but-fair is still entirely gamebook, and it varies how the cell <em>plays</em> rather than only how it reads. Enforced by the D5 audit. Hold until D16 shows whether readers experience the uniformity.</td>
+<td>M</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Acceptance.</strong> PL-22 fails on the current <code>main</code> for the 100 endings below a 25% floor and passes after D17.
+D16 publishes the measured depth-reached distribution per cell. No skeleton regresses on PL-20: converting a
+terminal to a routing <code>setback</code> must not shorten any winning path.</p>
+<p><strong>Framing note.</strong> This phase does not make gamebooks easy, and it does not touch the 98% ratio. ADR-011 chose
+"few wins + many fails" and that stays; median ending depth is already 16 to 43 nodes, so the books are
+substantial. The gap is a shallow tail that PL-20 deliberately does not cover, and the reason to close it is
+that a reader who exits at node 2 has read only the shared opening funnel, which is where perceived sameness
+between two structurally distinct books is manufactured. One rule, one constant per cell, and about a hundred
+ending re-maps.</p>
+<h3 id="p5-per-reader-scoping-and-guard-hardening-findings-35-36">P5: Per-reader scoping and guard hardening (findings 3.5, 3.6)<a class="headerlink" href="#p5-per-reader-scoping-and-guard-hardening-findings-35-36" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D20</td>
+<td>Optional <code>profile_id</code> scoping in <code>load_family_history</code> and <code>recent_skeleton_usage</code>. Prefer per-profile history for weighting and for the ATG partner, falling back to family scope when a profile is too new. Perceived similarity is a per-reader phenomenon; today a 20-row window is shared across all a family's children, and a sibling's fill can be the ATG comparison partner.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D21</td>
+<td>ATG against the k most recent same-tree fills (or the k nearest by similarity signature), taking the minimum distance as the verdict input, so templating that recurs with a gap stops being invisible. Then calibrate the empty per-band threshold table and decide the promotion from advisory to blocking, which WS-1 already tracks as open.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D22</td>
+<td>Consider counting distinct storybooks rather than versions in the recency window, or raise the 20-row cap. Retries and re-authored versions currently consume window slots, so a family that re-authors heavily has a much shorter effective memory. <code>skeleton_match</code> documents the version-counting choice as deliberate; this is a product decision to revisit, not a bug to fix.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<h3 id="p6-raise-the-ceiling-findings-34-21">P6: Raise the ceiling (findings 3.4, 2.1)<a class="headerlink" href="#p6-raise-the-ceiling-findings-34-21" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D23</td>
+<td><strong>Alternate beat phrasings.</strong> Author two or three interchangeable beat variants per node sharing one <em>outcome contract</em> (same successor state, same choice semantics, same role and word target) but delivering it through a different scene. Selection draws a variant set per fill; the Stage 1 fidelity gate checks the fill against whichever variant was issued, so it keeps working unchanged. Needs a design doc and probably an ADR.</td>
+<td>L</td>
+</tr>
+<tr>
+<td>D24</td>
+<td>Grow the small cells. Fifteen of eighteen non-empty cells hold exactly three trees, which is the root arithmetic constraint: a child reading four stories at one band and length must see a tree twice. WS-8's flywheel owns the automated path; this is the reminder that three-per-cell is the number to beat, and that D5 must gate every addition.</td>
+<td>L</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why D23 is the ceiling.</strong> <code>beats=</code> is byte-identical across every fill of a skeleton, forever, and <code>fill.md</code>
+requires the prose to depict that exact beat with the Stage 1 gate enforcing it. So every fill of
+<code>the-cave-of-echoes</code> contains the same two-way split with the same pair of sensory lures, at the same depth,
+with the same word budget. (An earlier version misquoted this beat; see errata section 2.1.) Pushing <code>fill.md</code> harder collides with the fidelity gate, and
+fidelity wins because it is the blocking one. D23 is the only deliverable that lifts that cap: it makes
+<code>beats</code> a contract the pipeline checks rather than a string it freezes.</p>
+<h3 id="p7-visibility-authorization-and-tiered-privacy-controls-section-14">P7: Visibility authorization and tiered privacy controls (section 1.4)<a class="headerlink" href="#p7-visibility-authorization-and-tiered-privacy-controls-section-14" title="Permanent link">&para;</a></h3>
+<p>The owner's two-prong proposal, with the authorization rule specified in section 1.5. D25 is the blocker:
+without an intake-time guardian ceiling, nothing else in this phase can be conditioned on anything.
+Independent of P1 through P6 and it does not gate them: P1's expansion path needs no visibility tiering at
+all, since a curated closed vocabulary is already safe on both prongs.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D25</td>
+<td><strong>Guardian visibility ceiling at intake.</strong> A guardian-set field on the story request, so the pipeline can branch at request and fill time and so the admin has something to be bound by. Today <code>Visibility</code> is chosen by the admin at release approval, at the end of the pipeline, long after the signature is derived and the echo is rendered. Set from the authenticated principal's acting role, never from a client-supplied role: <code>initiator_role</code> is already derived this way (<code>story_requests/service.py</code>, marked <code>#CRITICAL: security</code>) and the ceiling must follow the same pattern so a child cannot set it.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D26</td>
+<td><strong><code>resolve_visibility</code>, a pure lattice meet.</strong> Implement section 1.5's rule as a pure function plus a frozen table, mirroring <code>state_machine.LEGAL_TRANSITIONS</code>, and enforce it in <code>publishing</code>'s approve service rather than only in the API layer. Unit-testable with no database, exactly like <code>LEGAL_TRANSITIONS</code>.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D27</td>
+<td><strong>Fix the <code>ApproveBody</code> default, which becomes a silent downgrade.</strong> <code>ApproveBody.visibility</code> defaults to <code>"family"</code> today, which is safe when the admin is the only decider. Under the ceiling rule an omitted body would silently restrict a guardian's <code>catalog</code> book to family. Change the semantics: an omitted body means "honor the guardian ceiling", not "family". This is a wire-contract change and needs the OpenAPI client regenerated.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D28</td>
+<td><strong>Audit every resolution.</strong> Record <code>(guardian_ceiling, admin_choice, resolved, actor, initiator_role)</code> in the pipeline event log on each approve. Visibility is a disclosure decision, so "why is this book family-only" must be answerable after the fact, and a rule that silently lowers a setting is exactly the kind of thing that needs a trail.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D29</td>
+<td><strong>Catalog path: decouple rather than scrub.</strong> On a catalog-visibility book, do not publish the family-facing WS-7 interpretation or echo cross-family at all; the catalog listing carries only skeleton-derived and generated metadata (title, cover, themes, band, length). A structural guarantee, not a redaction filter that has to be right every time.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D30</td>
+<td>Family-only relaxation, scoped honestly. Document exactly what the relaxation covers (intra-family echo of the family's own request) and what it does <strong>not</strong> (LLM-provider export, which visibility does not gate, and which still sits behind <code>privacy-model.md</code>'s open OpenRouter retention blocker). Any relaxation whose stated basis is "the data never leaves the family" is mis-scoped.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D31</td>
+<td>Gate the catalog prong on Phase 7 compliance. ADR-016 makes the catalog the widest ring of the three-ring boundary, and <code>privacy-model.md</code>'s "If Shared Beyond Family" section lists COPPA and Kids Category compliance as an unfinished Phase 7 launch blocker. Routing child-premise-derived books cross-family should wait on that work regardless of what the flag permits.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D32</td>
+<td><strong>Guardian ceiling-change path</strong> (section 1.6): a guardian-surface action to raise or lower their own ceiling, audited through D28's trail, with copy stating what becomes visible to other families. No content re-screen is required, and the reason is recorded in section 1.6 so a future reader does not add one as a precaution. Post-publish changes route through an explicit human-invoked path, never a bare column update.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D33</td>
+<td><strong>Assert D29's exclusion is read-time, not publish-time.</strong> A test that widens a published family-only book to catalog and asserts the cross-family read surface still exposes no family-facing interpretation or echo. This is the load-bearing requirement behind allowing ceiling changes at all; if the filter is applied when serving, widening is safe by construction.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D34</td>
+<td><strong>Evaluate <code>resolve_visibility</code> against the acting role</strong>, using the existing <code>principal.acting_role(family_id)</code> rather than identity or the <code>is_admin</code> capability. Test that a dual-role adult acting as admin cannot raise their own family's guardian ceiling, and that the same person acting as guardian can.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D35</td>
+<td>Restore or repoint <code>coppa-gdpr-remediation-plan.md</code>, cited by <code>story_requests/interpretation.py</code> as governing Route A self-naming policy but absent from <code>docs/planning/</code>.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Acceptance.</strong> A story request carries a guardian ceiling from intake. <code>resolve_visibility</code> rejects every
+loosening transition in section 1.5's table, enforced in the service layer and covered by unit tests with no
+database. An approve with no body on a guardian-<code>catalog</code> book resolves to <code>catalog</code>, not <code>family</code>. A
+catalog-visibility book exposes no premise-derived free text cross-family, verified by a test asserting the
+interpretation and echo fields are absent from the cross-family read surface.</p>
+<p><strong>Note on ordering.</strong> If P1 lands as D2 plus D3 (expanded curated vocabulary, containment measure), the
+privacy question that motivated the tiering largely evaporates: a closed reviewed vocabulary is echo-safe on
+both prongs, so no relaxation is needed to get the diversity benefit. P7 then stands on its own product merits
+(guardians wanting to share good books, and the authorization rule being correct) rather than as a privacy
+workaround. That is the better outcome, and a reason to do P1 first.</p>
+<h3 id="p8-pre-submission-expectation-setting-section-18">P8: Pre-submission expectation setting (section 1.8)<a class="headerlink" href="#p8-pre-submission-expectation-setting-section-18" title="Permanent link">&para;</a></h3>
+<p>The pre-submission half of <a href="../capability-register/">K19</a>, complementing WS-7's post-submission reflection.
+Independent of every other phase. Small, and it addresses the most direct cause of a child feeling the book
+"did not turn out as expected": three of the six requester-facing restrictions can never be explained after
+the fact, because <code>_ELEMENT_MUST_BE_NULL</code> forbids echoing the offending phrase.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D36</td>
+<td><strong>Serve the restriction set from the API</strong>, keyed on the requesting profile's band, derived from <code>ReasonCode</code>, <code>band_profile</code>, and the profile's <code>content_nogo</code> rather than hand-written copy. A hard-coded list on the page drifts from enforcement the first time any of those changes, and a stated restriction that no longer matches behaviour is worse than none.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D37</td>
+<td><strong>Surface it on the kid request surface</strong> (<code>frontend/src/library/RequestStory.tsx</code>), which today shows one prompt, a 500-character textarea, and no restrictions at all. Positive, band-appropriate framing: the hero gets a made-up name, no real names or contact details, the story's shape is already set.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D38</td>
+<td><strong>Surface the fuller set on the guardian intake surface</strong> (<code>frontend/src/guardian/IntakePage.tsx</code>), including the family's actual <code>content_nogo</code> list, which the guardian set and can change.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D39</td>
+<td><strong>Enforce the resolved <code>GUARDIAN_CONTROL</code> disclosure level</strong> (section 1.8, owner-decided): the kid surface states only that some themes are off. D36's kid-surface response must omit the <code>content_nogo</code> values entirely rather than sending them for the client to hide, and the copy must be invariant to the list's contents so it cannot leak membership by changing. Test both.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D40</td>
+<td>Regression-test the pair: a request naming the requesting child resolves to <code>IDENTITY_PROTECTION</code>, and the restriction the API served for that band covers it. Keeps the stated restrictions and the enforced ones from diverging silently, which is the failure mode D36 exists to prevent.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<h3 id="p9-series-continuity-section-110">P9: Series continuity (section 1.10)<a class="headerlink" href="#p9-series-continuity-section-110" title="Permanent link">&para;</a></h3>
+<p>Two validator gaps the owner's single-start-point rule exposed, plus the remediation of the one series in the
+catalog. Small, and it shares its remediation pass with D17.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D41</td>
+<td><strong>Retracted, see section 1.12.</strong> SR-8 (forbidding continuation-foreclosing ending kinds in a non-final series book) is unnecessary once restart-on-fail exists: a foreclosing terminal forecloses the <em>attempt</em>, not the series, and SR-5 already requires a reachable satisfying ending. Kept as a numbered entry so the reasoning is not rediscovered. <strong>Depends on P10 shipping</strong>; if restart-on-fail is deferred, SR-8 comes back.</td>
+<td>none</td>
+</tr>
+<tr>
+<td>D42</td>
+<td><strong>Resolved (section 1.12): neither <code>death</code> nor <code>capture</code> forecloses continuation</strong>, given restart. Both foreclose an attempt. No kind set to fix.</td>
+<td>none</td>
+</tr>
+<tr>
+<td>D43</td>
+<td><strong>SR-9: the highest-index book must be <code>is_final</code>, or a successor must exist.</strong> SR-4 flags a book below the highest index that <em>is</em> final; SR-5 skips the highest index entirely, so a chain can promise a continuation that does not exist. <code>brass-lantern</code> book 2 declares <code>is_final: false</code> with no book 3 and passes both rules today.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D44</td>
+<td><strong><code>brass-lantern</code> needs no continuity remediation</strong> (section 1.12): its 94 <code>death</code>/<code>capture</code> endings per book are fine once restart exists, and all 12 of each book's shallow terminals are <code>setback</code>, so PL-22 asks nothing of it either. What it still needs is the D9 structural-clone resolution, which is already tracked there.</td>
+<td>none</td>
+</tr>
+<tr>
+<td>D45</td>
+<td>Record the series-plus-gamebook tension in ADR-011's amendment: a series book's fails must be <code>setback</code>-shaped rather than lethal, so the combination is more constrained than either style alone. <code>brass-lantern</code> reads as authored gamebook-first and series-second, which is how it acquired 94 foreclosing endings.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<h3 id="p10-implement-restart-on-fail-section-111">P10: Implement <code>restart-on-fail</code> (section 1.11)<a class="headerlink" href="#p10-implement-restart-on-fail-section-111" title="Permanent link">&para;</a></h3>
+<p>The root-cause phase. ADR-011 specifies the primitive, the schema cannot express it, and the checkpoint
+mechanism is built with no producer. Highest leverage in the whole plan for the gamebook cells, because it
+addresses the cause rather than the symptoms P4 measures. Needs an ADR amendment and a design doc before code.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D46</td>
+<td><strong>Engine-written checkpoints at derived safe points</strong> (section 1.12, resolved). A safe point is the most recent visited non-ending node with more than one visible choice and at least one choice untaken, computed from the persisted <code>path</code>/<code>var_state</code>/<code>visit_set</code>. No new <code>EffectOp</code>, no authored marker, no bottleneck heuristic: the engine snapshots into <code>save_slots</code> as the reader passes one. Snapshots are mandatory rather than optional because <code>choice_path</code> is not persisted, so historical <code>var_state</code> cannot be re-derived when two choices share a target with different effects.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D47</td>
+<td><strong>Two-tier restart behaviour</strong> (section 1.12). A <code>setback</code> terminal <strong>auto-loops</strong> the reader to the last safe point, restoring <code>var_state</code>, <code>visit_set</code>, and position from the snapshot, landing them where a different path is available. A foreclosing terminal instead <strong>offers a choice</strong>: restart from the last safe point, or restart from node 1. API plus reader UI over existing primitives.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D48</td>
+<td><strong>Checkpoint placement at or past the funnel-clearing depth</strong> (section 1.11 consequence 2): a restart that returns the reader to node 1 re-reads the shared opening funnel, which is the diversity failure PL-22 exists to prevent. Reuse the same 33%-of-<code>min_complete</code> quantity from section 1.7 rather than deriving a second number.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D49</td>
+<td><strong>Amend ADR-011</strong> to record that <code>restart-on-fail</code> is a player-level loop over hard terminals rather than a graph edge, since <code>Node</code> forbids choices on an ending node and that invariant is worth keeping. The ADR currently implies a graph edge ("negative ending -&gt; start/checkpoint"), which is not implementable as written.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D50</td>
+<td><strong>Re-shape D18's floor as a session-level measure</strong> once D47 ships: cumulative satisfying rate per session across restarts, with structural per-walk SPM retained as the design gate. Without this, D18 would floor a metric that restart-on-fail deliberately makes unrepresentative.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D51</td>
+<td>Audit whether <code>save_slots</code> should stay unwritable until D46 lands. It is currently correct plumbing with no producer, which is harmless but invites a future contributor to assume checkpoints work. Either document it as reserved-for-D47 or gate it behind the same decision.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D52</td>
+<td><strong>Per-(profile, series) mode row.</strong> The one schema addition challenge mode needs: nothing currently holds per-profile series state, since progress is implicit in per-book <code>ReadingState</code> plus <code>Completion</code> rows. Carries the mode flag and gives series progress a home it currently lacks. Band-gated to 13-16 and 16+ per section 1.13.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D53</td>
+<td><strong>Series-reset operation:</strong> atomic, server-authoritative, resetting every <code>ReadingState</code> row for the profile across the series' books while <strong>preserving <code>Completion</code> rows</strong>, and correct against <code>state_revision</code> on every affected row. Never applied optimistically on-device: a death arriving through <code>offline/sync.ts</code> must not destroy a run during conflict resolution.</td>
+<td>M</td>
+</tr>
+<tr>
+<td>D54</td>
+<td><strong>Opt-in surface with the consequence stated up front</strong> ("if your character dies, you start again at the very beginning of book 1"), guardian-visible, at the point of enabling rather than on first death. Section 1.8's principle on a new surface.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D55</td>
+<td><strong>Mode-change policy:</strong> allow a downgrade from challenge to normal at any time, but never retroactively undo a death that has already reset the run. Preserves the challenge without trapping a child in an experience they no longer want.</td>
+<td>S</td>
+</tr>
+<tr>
+<td>D56</td>
+<td>Decide whether a guardian may withdraw challenge-mode availability for a profile. A product decision rather than a safety one, since the mode cannot expose content the band forbids.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-sequencing">4. Sequencing<a class="headerlink" href="#4-sequencing" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>P1 (similarity signal)  -----+
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>   D1 -&gt; D2, D3 -&gt; D4, D5, D6  |   (D7 = open-vocab fallback, only if needed)
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>                            +--&gt; P3 (escalation acts: D11, D12, D13)
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>P2 (catalog integrity)  ----+         |
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>   D8 -&gt; D9, D10                       +--&gt; P5 (per-reader, guard hardening: D20, D21, D22)
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>                                      |
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>P4 (fail-path depth + outcome mix) ----+
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>   D14 -&gt; D15 -&gt; D17      (PL-22: rule, ratify, remediate)
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>   D16 (measure)  -&gt;  D18, D19 gated on it
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>P6 (ceiling: D23, D24)   independent, longest lead time, start the D23 design early
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>P7 (visibility: D25 -&gt; D26, D27, D28 -&gt; D29..D32, D34)   independent; D25 unblocks the rest
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>     D33 (read-time filter test) gates D32
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>P8 (expectation setting: D36 -&gt; D37, D38, D39, D40)   independent; no open decisions
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>P9 (series: D42 -&gt; D41, D43; D44 shares D17&#39;s remediation pass; D45)
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>P10 (restart-on-fail: D46 -&gt; D47 -&gt; D48, D50; D49, D51)   root cause; ADR-011 amendment first
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>     challenge mode: D52 -&gt; D53 -&gt; D54, D55; D56   opt-in, 13-16 and 16+ only
+</span></code></pre></div>
+<p>P1 before P3: escalation cannot act on a signal that does not fire. P1 before any metric claim: until the
+similarity signal covers real requests and the catalog is clone-free, the WS-0 dashboard reports on a system
+whose diversity machinery is mostly inert, and its numbers will look better than the reader's experience.
+D14 does not wait on D16: PL-22 at 25% of <code>min_complete</code> is justified by the structural asymmetry alone (a
+terminal at node 2 against a 29-node win floor), and D16's telemetry then tells us whether to tighten toward
+33%. D16 does gate D18 and D19, which are product decisions that should not be made on a proxy. D23's design
+can start immediately since it blocks on nothing here.</p>
+<p>Suggested first slice, roughly one sprint: D1-D6 (the whole vocabulary and measure fix), D8 and D10
+(catalog audit and the fingerprint clarification), D12 (variation axes), D14 (PL-22), plus starting
+D16's instrumentation.
+That turns the signal on safely, gates the catalog, closes the shallow-terminal tail, adds the cheapest real
+leaf-diversity gain, and begins collecting the depth data the rest of P4 needs.</p>
+<hr />
+<h2 id="5-metrics-added">5. Metrics added<a class="headerlink" href="#5-metrics-added" title="Permanent link">&para;</a></h2>
+<p>Beyond the WS-0 suite:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Definition</th>
+<th>Serves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Similarity-signature coverage</td>
+<td>Share of real requests yielding a non-empty signature</td>
+<td>D2</td>
+</tr>
+<tr>
+<td>Escalation trigger rate</td>
+<td>Share of requests recommending <code>LEAF</code> or <code>CATALOG</code></td>
+<td>D2, D3</td>
+</tr>
+<tr>
+<td>In-cell minimum structural distance</td>
+<td>Per cell, lowest pairwise <code>structural_distance</code></td>
+<td>D8, D9</td>
+</tr>
+<tr>
+<td>Shallow-terminal share</td>
+<td>Per skeleton, endings whose BFS depth is under 25%/33% of the cell's <code>min_complete</code></td>
+<td>D14, D17</td>
+</tr>
+<tr>
+<td>Depth-reached distribution</td>
+<td>Real nodes visited per session before a terminal, as a ratio of <code>min_complete</code></td>
+<td>D16</td>
+</tr>
+<tr>
+<td>Early-exit rate</td>
+<td>Share of real sessions terminating below PL-22's candidate fractions</td>
+<td>D14, D16</td>
+</tr>
+<tr>
+<td>Satisfying path mass (SPM)</td>
+<td>Share of choice-uniform playthroughs reaching a <code>success</code>/<code>completion</code> ending; the structural design gate</td>
+<td>D18</td>
+</tr>
+<tr>
+<td>Ending-mass concentration</td>
+<td>Share of terminal mass on the top-k endings, and how many declared endings are ever reached</td>
+<td>D18</td>
+</tr>
+<tr>
+<td>Satisfying-ending rate</td>
+<td>Real share of readers reaching a <code>success</code>/<code>completion</code> ending per storybook; the SPM floor's calibration input</td>
+<td>D16, D18</td>
+</tr>
+<tr>
+<td>Session satisfying rate</td>
+<td>Cumulative share of reading <em>sessions</em> reaching a <code>success</code>/<code>completion</code> ending across restarts; supersedes per-walk SPM as the floor once D47 ships</td>
+<td>D50</td>
+</tr>
+<tr>
+<td>Challenge-mode adoption and survival</td>
+<td>Share of eligible profiles enabling it, and runs reaching book N before a series reset; tells us whether the mode is tuned or punishing</td>
+<td>D52, D54</td>
+</tr>
+<tr>
+<td>Series continuation admissibility</td>
+<td>Non-final series books with zero continuation-foreclosing endings</td>
+<td>D41, D44</td>
+</tr>
+<tr>
+<td>Outcome-mix spread</td>
+<td>Per cell, spread of negative-ending share across candidates</td>
+<td>D19</td>
+</tr>
+<tr>
+<td>Escalated ATG lift</td>
+<td>ATG masked distance at <code>LEAF</code> escalation minus the same pair at <code>TREE</code></td>
+<td>D11</td>
+</tr>
+</tbody>
+</table>
+<p>The first two are the honesty check on this whole plan. If coverage stays low, nothing else in P3 or P5 is
+doing anything, however good the code looks.</p>
+<hr />
+<h2 id="6-decisions-and-open-questions">6. Decisions and open questions<a class="headerlink" href="#6-decisions-and-open-questions" title="Permanent link">&para;</a></h2>
+<h3 id="61-resolved">6.1 Resolved<a class="headerlink" href="#61-resolved" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Decision</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PL-22's fraction</td>
+<td><strong>33% of <code>min_complete</code>.</strong> 25% clears the rule's own funnel rationale on only 3 of 14 gamebook skeletons; 33% clears it on 13 of 14, at the same single ending-floor exception. Remediation must be ending-count-preserving.</td>
+<td>1.7, ratified by D15</td>
+</tr>
+<tr>
+<td>Is a ~60% tense-but-fair gamebook tree acceptable?</td>
+<td><strong>Yes.</strong> Legitimate in-cell variety; <code>narrative_style</code> promises the gamebook form, not a lethality rate. D19 becomes a design target.</td>
+<td>1.7</td>
+</tr>
+<tr>
+<td>May a guardian change their visibility ceiling later?</td>
+<td><strong>Yes</strong>, and it needs no content re-screen, because every content screen is already visibility-independent.</td>
+<td>1.6, built by D32</td>
+</tr>
+<tr>
+<td>Dual-role adults</td>
+<td>Enforce the lattice on <strong>the role being acted in</strong>, via <code>principal.acting_role(family_id)</code>.</td>
+<td>1.6, built by D34</td>
+</tr>
+<tr>
+<td>Admin visibility lever</td>
+<td><strong>Guardian sets a ceiling; the admin may only restrict.</strong> <code>resolved = min(guardian_ceiling, admin_choice)</code>.</td>
+<td>1.5, built by D26</td>
+</tr>
+<tr>
+<td>What does the kid surface say about <code>GUARDIAN_CONTROL</code>?</td>
+<td><strong>Only that some themes are off</strong>, never the list. The kid-surface API response omits <code>content_nogo</code> entirely, and the copy stays invariant to the list's contents.</td>
+<td>1.8, built by D39</td>
+</tr>
+<tr>
+<td>How many winning arcs should a gamebook have?</td>
+<td><strong>Wrong question: it is path mass, not ending count.</strong> Floor the satisfying path mass, keyed on topology ("a reflection of the branching strategy"); leave positive ending count unconstrained; permit reconvergence. Ten positive endings at 0% mass must fail.</td>
+<td>1.9, built by D18</td>
+</tr>
+<tr>
+<td>Should gamebook fails be terminal?</td>
+<td><strong>No: many paths should be setbacks, not end-of-story.</strong> ADR-011 already specifies <code>restart-on-fail</code>; the schema forbids the edge and the checkpoint mechanism has no producer. Root cause of the P4 symptoms.</td>
+<td>1.11, built by P10</td>
+</tr>
+<tr>
+<td>Series end points</td>
+<td><strong>Every ending must allow the next book's single start point</strong>, satisfied by restart-on-fail rather than by restricting ending kinds. SR-8 retracted; <code>brass-lantern</code> needs no continuity remediation.</td>
+<td>1.10, 1.12</td>
+</tr>
+<tr>
+<td>Restart behaviour</td>
+<td><strong>Two tiers.</strong> A <code>setback</code> auto-loops to the last safe point; a foreclosing terminal offers last-safe-point or node 1. Safe point = most recent visited multi-choice node with an untaken choice, derived from persisted state.</td>
+<td>1.12, built by D46/D47</td>
+</tr>
+<tr>
+<td>Opt-in challenge mode</td>
+<td><strong>Yes: a <code>death</code> resets the series to book 1, node 1, opt-in and never default.</strong> Offerable at 13-16 and 16+ only, gated by existing policy (<code>death</code> is forbidden below 10-13; ADR-011 makes lethal restart-on-fail "13-16 up").</td>
+<td>1.13, built by D52-D56</td>
+</tr>
+<tr>
+<td>What does "restart from node 1" mean in a state-carrying series?</td>
+<td><strong>Two distinct resets.</strong> Book-local node-1 restart preserves state inherited from book N-1; the series reset (book 1, node 1) discards it and is the challenge-mode consequence of <code>death</code>, not a casual menu item.</td>
+<td>1.13</td>
+</tr>
+<tr>
+<td>Does <code>capture</code> foreclose continuation?</td>
+<td><strong>No, and neither does <code>death</code></strong>, given restart. Both foreclose an attempt.</td>
+<td>1.12</td>
+</tr>
+<tr>
+<td>Open vs curated vocabulary</td>
+<td><strong>Expand the curated closed list</strong>; the open-vocabulary variant drops to a fallback (D7) that may never be needed.</td>
+<td>1.3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-still-open">6.2 Still open<a class="headerlink" href="#62-still-open" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Does the similarity signature need a DPIA addendum?</strong> Only relevant if D7 is ever built. The design adds no
+  personal data at rest and no new export, which is the basis for arguing no. A DPO or legal call, not an
+  engineering one. D7 raises it; it does not answer it.</li>
+<li><strong>May a guardian withdraw challenge-mode availability for a profile?</strong> D56. A product decision rather than a
+  safety one, since the mode cannot expose content the band forbids. <strong>The last open product decision in this
+  plan.</strong></li>
+<li><strong>Should PL-22 become <code>max(0.33 * min_complete, funnel_clearing_depth)</code>?</strong> One skeleton
+  (<code>the-smugglers-cut</code>) has a funnel deeper than its 33% floor. Start with the constant plus a per-cell
+  override; revisit on D16's telemetry.</li>
+<li><strong>Should the ATG become blocking, and at what per-band threshold?</strong> Inherited from WS-1, unblocked by D21's
+  calibration.</li>
+<li><strong>ADR candidate for D23.</strong> Alternate beat phrasings move a safety-adjacent artifact from frozen string to
+  checked contract. That deserves its own ADR alongside ADR-019 (parameterised skeletons) and ADR-020
+  (mutation-derived catalog growth).</li>
+</ul>
+<hr />
+<h2 id="7-what-is-working-and-must-survive-this-plan">7. What is working, and must survive this plan<a class="headerlink" href="#7-what-is-working-and-must-survive-this-plan" title="Permanent link">&para;</a></h2>
+<p>Repeated from the audit because a remediation plan is where hard-won properties get traded away by accident:</p>
+<ul>
+<li><strong>Deliberate topology variety per cell.</strong> Every kid-band cell holds three distinct topologies at structural
+  distance 0.20 to 0.49. D8 exists to protect this as automation grows the catalog.</li>
+<li><strong>Safety orthogonal to diversity.</strong> Freezing the ADR-011 constraint grammar rather than the graphs is why
+  every lever here is available without touching the gate.</li>
+<li><strong>The novelty floor.</strong> No eligible tree is ever fully excluded. D13 and D20 keep the form.</li>
+<li><strong>Fail-closed binding.</strong> <code>generation/binding.py</code> raises rather than falling back to <code>default_binding</code>. A
+  silent fallback would ship the shipped default story, the most visible possible repeat.</li>
+<li><strong>The echo-safe guarantee.</strong> The property section 1.1 nearly cost us. After D1 it is a named function with a
+  documented reason to stay closed, which is stronger than the incidental protection it had before.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

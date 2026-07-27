@@ -2831,10 +2831,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-no-backtracking-in-v1" class="md-nav__link">
+  <a href="#6-backtracking-by-forward-replay" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. No Backtracking in v1
+        6. Backtracking by Forward Replay
       
     </span>
   </a>
@@ -2918,7 +2918,7 @@
 
 <h1 id="story-runtime-semantics-v1">Story Runtime Semantics v1<a class="headerlink" href="#story-runtime-semantics-v1" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted (cross-signed) | <strong>Version</strong>: 1.1 | <strong>Updated</strong>: 2026-07-03
+<p><strong>Status</strong>: Accepted (cross-signed) | <strong>Version</strong>: 1.2 | <strong>Updated</strong>: 2026-07-26
 <strong>Scope</strong>: Tier-1 and Tier-2 stories
 <strong>Binding on</strong>: Player (TypeScript/XState) and Validator (Python/networkx)</p>
 </blockquote>
@@ -2949,7 +2949,7 @@ subsequent conditions.</p>
 <code>once: true</code>.</p>
 <p>An effect marked <code>once: true</code> applies exactly on the first entry to its node. Subsequent visits
 to the same node skip that effect. The record of which nodes have been entered at least once is
-kept in the <strong>implicit visit set</strong>, stored as part of <code>var_state</code> (see Section 6: Save Format).</p>
+kept in the <strong>implicit visit set</strong>, stored as part of <code>var_state</code> (see Section 5: Save Format).</p>
 <p><strong>Example</strong>: <code>once: true</code> is appropriate for "you find the lantern." Re-entering the lantern
 room on a later pass should not set <code>has_lantern</code> again (it is already true), but an <code>inc</code>
 marked <code>once</code> on a limited-supply node must also not apply twice.</p>
@@ -2977,7 +2977,7 @@ It is not shown in a disabled or greyed-out state.</p>
 <p><strong>Implementation requirement</strong>: both the PWA player and the validator's configuration walk must
 use identical condition evaluation. A choice invisible to the validator must be invisible to the
 player; a choice visible to the validator must be visible to the player. Divergence here
-constitutes a conformance failure (see ADR-006 and Section 7: Conformance).</p>
+constitutes a conformance failure (see ADR-006 and Section 10: Cross-Sign).</p>
 <hr />
 <h2 id="5-save-format">5. Save Format<a class="headerlink" href="#5-save-format" title="Permanent link">&para;</a></h2>
 <p><strong>Normative rule</strong>: a save is a point-in-time snapshot. It stores exactly:</p>
@@ -3027,17 +3027,48 @@ constitutes a conformance failure (see ADR-006 and Section 7: Conformance).</p>
 </tr>
 </tbody>
 </table>
-<p>v1 uses snapshots, not an event log. There is no mechanism to reconstruct intermediate states
-from a save.</p>
+<p>v1 uses snapshots, not an event log. A snapshot carries no history of <em>how</em> variables reached
+their values, so no intermediate state can be reconstructed by inverting effects. Replaying
+<code>path</code> forward from a known origin is a different operation and is permitted: see Section 6.</p>
+<blockquote>
+<p><strong>Note (2026-07-26)</strong>: <code>save_slots</code> is client-writable and server-persisted but is the only
+field of this table omitted from <code>validate_reading_state</code>
+(<code>src/cyo_adventure/api/reading.py</code>), which defeats the anti-forgery intent stated two lines
+above it in that file. It is inert while nothing restores from a slot. Tracked as a defect;
+ADR-024 Decision 6 explains why any future replay origin must not repeat the pattern.</p>
+</blockquote>
 <p><strong>Constraint</strong>: a save taken against <code>version</code> N cannot be used with <code>version</code> N+1 (see
 Section 8: Version Pinning).</p>
 <hr />
-<h2 id="6-no-backtracking-in-v1">6. No Backtracking in v1<a class="headerlink" href="#6-no-backtracking-in-v1" title="Permanent link">&para;</a></h2>
-<p><strong>Normative rule</strong>: the reader moves forward only. There is no "back" button in v1.</p>
-<p><strong>Rationale</strong>: a back button requires undoing effects, which demands an event-log model rather
-than a snapshot model. The complexity is deferred until and unless an event-log model is
-adopted. This is a design constraint, not an implementation shortcut; any Phase-1 back-button
-implementation requires a revision to this document and an ADR.</p>
+<h2 id="6-backtracking-by-forward-replay">6. Backtracking by Forward Replay<a class="headerlink" href="#6-backtracking-by-forward-replay" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Revised 2026-07-26 (v1.2) by <a href="../adr/adr-024-bounded-backtracking-path-replay/">ADR-024</a>.</strong> This section
+previously read "there is no 'back' button in v1", on the rationale that backtracking "requires undoing
+effects, which demands an event-log model rather than a snapshot model". A back button had meanwhile shipped
+(<code>frontend/src/reader/Reader.tsx</code>), so the document and the product disagreed. The rationale is what was
+wrong: the shipped mechanism never undoes anything, so the snapshot model of Section 5 is preserved and no
+event log is needed. The prohibition is replaced by the rules below.</p>
+</blockquote>
+<p><strong>Normative rule</strong>: a reader may return to an earlier point on their own recorded path, and any such state is
+produced <strong>only</strong> by replaying <code>path</code> forward from a known origin with known initial variables. Reversing an
+effect, decrementing a counter, or otherwise computing an inverse is prohibited. A state not reachable by
+forward replay is not reachable at all.</p>
+<p><strong>Why this preserves the snapshot model</strong>: a save records <code>path</code> (Section 5), so every prefix of that path is
+replayable from the origin. Re-deriving an earlier state needs no history of <em>how</em> variables changed, only the
+ordered choices that changed them.</p>
+<p><strong>Availability is fail-closed.</strong> Backtracking is available exactly when there is at least one recorded choice
+(<code>path.length &gt; 1</code>) <strong>and</strong> the recorded path replays faithfully, reproducing the live state. Otherwise the
+reader gets no backtracking rather than an incorrect one. This holds for a continuation read, whose origin
+variables are not recoverable: see ADR-024 Decision 6, which keeps continuation backtracking disabled and
+states what enabling it would require.</p>
+<p><strong>What rewinds</strong>: <code>current_node</code>, <code>var_state</code>, <code>path</code>, and <code>visit_set</code>, being the product of the choice
+history. <strong>What carries over unchanged</strong>: <code>state_revision</code> (owned by the server's concurrency counter) and
+<code>save_slots</code> (owned outside the choice history). <code>version</code> is unchanged and Section 8 pinning still applies.</p>
+<p><strong>Server impact</strong>: none. A replayed shorter state is indistinguishable from having made fewer choices and
+satisfies the existing structural floor, so backtracking introduces no server contract. The cross-sign for this
+section is player-only.</p>
+<p>A bounded multi-hop retry affordance is permitted under ADR-024 Decision 5, as a control distinct from the
+single-step in-story one.</p>
 <hr />
 <h2 id="7-endings">7. Endings<a class="headerlink" href="#7-endings" title="Permanent link">&para;</a></h2>
 <p><strong>Normative rule</strong>: an ending node is identified by its stable <code>ending.id</code>. The <code>ending.id</code>
@@ -3112,7 +3143,7 @@ document.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
   </span>
 
     

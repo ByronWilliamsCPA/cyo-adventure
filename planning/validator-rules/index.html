@@ -2842,6 +2842,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#series-cross-book-chain-rules-series-stories-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Series: Cross-Book Chain Rules (Series Stories Only)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rule-application-order" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2896,9 +2907,12 @@
 
 <h1 id="validation-rule-catalog">Validation Rule Catalog<a class="headerlink" href="#validation-rule-catalog" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted | <strong>Version</strong>: 1.2 | <strong>Updated</strong>: 2026-07-16
+<p><strong>Status</strong>: Accepted | <strong>Version</strong>: 1.3 | <strong>Updated</strong>: 2026-07-26
 <strong>Scope</strong>: All stories (Layer 1, Policy); Tier-2 stories only (Layer 2); all stories
-advisory (RL); all stories always-human (SAFE)</p>
+advisory (RL); all stories always-human (SAFE); series chains at publish only (SR)</p>
+<p><strong>v1.3</strong> closes a registry gap rather than adding rules: L2-13, L2-14 and the entire
+SR family (SR-1..SR-7, SR-9) were enforced in code while documented nowhere here, so
+the catalog was not the reference it claims to be. SR-8 is recorded as reserved.</p>
 </blockquote>
 <hr />
 <h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
@@ -2942,6 +2956,11 @@ to this document.</p>
 <td>Always human-routed</td>
 <td>Yes (routes to human review, not auto-rejected)</td>
 </tr>
+<tr>
+<td>Series (SR)</td>
+<td>Pass/fail</td>
+<td>Yes, at publish only (cross-book; not part of <code>run_gate</code>)</td>
+</tr>
 </tbody>
 </table>
 <p>Layer 1, Policy, and Layer 2 are hard gates, run in that order (<code>validator/gate.py::run_gate</code>):
@@ -2954,6 +2973,12 @@ auto-publish path exists when the flag is set.</p>
 <p><strong>Layer 2 applies to Tier-2 stories only.</strong> Running Layer 2 on a Tier-1 story (which carries
 no variables and has deterministic visibility for all choices) is a no-op and must not produce
 false failures.</p>
+<p><strong>The Series (SR) family sits outside <code>run_gate</code> by necessity.</strong> Every other family validates one
+story in isolation; SR validates a <em>chain</em>, so it takes <code>Sequence[Storybook]</code>
+(<code>validator/series.py::validate_series</code>) and runs at publish time from
+<code>publishing/service.py</code>, which raises <code>BusinessLogicError(rule="series_validation")</code> on any SR
+error. A single story therefore cannot be SR-checked at generation time, and a book that passes
+L1/PL/L2 can still be refused at publish because of the chain it joins.</p>
 <hr />
 <h2 id="layer-1-graph-rules-all-stories">Layer 1: Graph Rules (All Stories)<a class="headerlink" href="#layer-1-graph-rules-all-stories" title="Permanent link">&para;</a></h2>
 <p>Layer 1 runs first, on every story. Layer 2 does not run if Layer 1 fails, because the graph
@@ -3031,7 +3056,7 @@ the closure of reachable configurations. The default configuration cap is 100,00
 <tr>
 <td>L2-8</td>
 <td>2</td>
-<td><strong>Configuration walk</strong>: the walk starts at <code>(start_node, initial_var_state)</code> and explores every configuration reachable via valid transitions using the canonical evaluator and transition order. If the walk cannot be completed (malformed condition returns non-boolean), the story fails.</td>
+<td><strong>Configuration walk</strong>: the walk starts at <code>(start_node, initial_var_state)</code> and explores every configuration reachable via valid transitions using the canonical evaluator and transition order. If the walk cannot be completed (malformed condition returns non-boolean), the story fails. <strong>NO ID EMITTED</strong> (recorded 2026-07-26): this row describes the walk <em>mechanism</em>, and no code path reports <code>L2-8</code> as a finding. The failure it names is unreachable rather than unimplemented: <code>gate.py::run_gate</code> early-returns on any Layer-1 ERROR, L1-6 already validates the operator whitelist and condition/variable types, and <code>validator/walk.py</code> has no raise path, so a non-boolean condition cannot survive to break the walk. Kept because it defines the configuration semantics every other L2 rule is stated against; compare PL-22, also a backstop rather than a normal-path rule.</td>
 <td><code>L2-8 walk: configuration walk failed at node '{node_id}' with var_state {var_state}: {reason}</code></td>
 </tr>
 <tr>
@@ -3057,6 +3082,18 @@ the closure of reachable configurations. The default configuration cap is 100,00
 <td>2</td>
 <td><strong>Configuration cap</strong>: if the reachable configuration set exceeds the ceiling (default 100,000), the walk aborts immediately and the story fails. This prevents unbounded validator runtime on pathological stories.</td>
 <td><code>L2-12 cap: reachable configuration set exceeded the ceiling of {cap} configurations in story '{story_id}' (state space too large; reduce variable count or tighten bounds)</code></td>
+</tr>
+<tr>
+<td>L2-13</td>
+<td>2</td>
+<td><strong>Hand-authoring scale ceiling</strong>: a Tier-2 story past the hand-review node ceiling is flagged so the record states plainly that the completed configuration walk, not human reading, is now its correctness guarantee. Informational about <em>who</em> guarantees the story, not a defect in it.</td>
+<td><code>L2-13 scale: Tier-2 story '{story_id}' has {node_count} nodes, past the hand-authoring ceiling of {ceiling}; the completed Layer-2 configuration walk is now its sole correctness guarantee (hand-review insufficient at this scale)</code></td>
+</tr>
+<tr>
+<td>L2-14</td>
+<td>2</td>
+<td><strong>No all-fatal decision</strong> (added 2026-07-26, A14, per the owner ruling "no decision should only have fatal node options; at least one needs to allow advancing or loop back"). No reachable configuration offering two or more visible choices may have every one of them arrive at a forbidden ending with no further choice on the way. Stated over the <strong>reader-visible decision unit</strong>, not the node: a node-scoped reading is trivially satisfied by splitting an all-fatal decision into single-choice corridors that each end fatally, which passes the rule and still shows a child a page with one button that kills them, so the check follows single-successor corridors forward. Forbidden endings are band-scoped: negative valence at 3-5/5-8/8-11/10-13, and <code>kind == death</code> at 13-16/16+. <code>capture</code> is deliberately NOT fatal at the teen bands, since a survivable capture is the signature ending of the espionage stories there and forbidding it would have rewritten four authored climaxes.</td>
+<td><code>L2-14 no-way-out: node '{node_id}' with var_state {var_state} offers {option_count} visible choices and every one of them reaches a forbidden ending with no further choice on the way, in story '{story_id}' (a reader must never be shown a decision where every option is fatal; at least one option must let them advance or loop back)</code></td>
 </tr>
 </tbody>
 </table>
@@ -3152,6 +3189,78 @@ age-safety rule in its own right; it is defined below.</p>
 </tbody>
 </table>
 <hr />
+<h2 id="series-cross-book-chain-rules-series-stories-only">Series: Cross-Book Chain Rules (Series Stories Only)<a class="headerlink" href="#series-cross-book-chain-rules-series-stories-only" title="Permanent link">&para;</a></h2>
+<p>Runs at publish time over the whole chain, not at generation time over one story: see the note
+under Pass/Fail semantics above. <code>validate_series(books)</code> sorts the chain by <code>book_index</code> and
+applies the rules below; <code>publishing/service.py</code> raises
+<code>BusinessLogicError(rule="series_validation")</code> if any error is reported.</p>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Layer</th>
+<th>Description</th>
+<th>Failure Message Template</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SR-1</td>
+<td>Series</td>
+<td><strong>Series metadata present and single-valued</strong>: every book passed as part of a chain must declare a <code>series</code> block, and the whole chain must share one <code>series_id</code>. Books lacking the block are reported and excluded, so the later rules operate only on series-tagged books.</td>
+<td><code>SR-1 series: book '{book_id}' declares no series metadata but was passed as part of a series chain</code> / <code>SR-1 series: chain spans multiple series ids {ids}; a series is one id</code></td>
+</tr>
+<tr>
+<td>SR-2</td>
+<td>Series</td>
+<td><strong>Contiguous index</strong>: <code>book_index</code> values must form a contiguous <code>1..N</code> with no gaps and no repeats. Gate for the index-dependent rules (SR-4, SR-5, SR-9), which do not run when it fails.</td>
+<td><code>SR-2 series: book_index values {indices} are not a contiguous 1..{n} chain (gaps or duplicates)</code></td>
+</tr>
+<tr>
+<td>SR-3</td>
+<td>Series</td>
+<td><strong>Entry node exists and is declared</strong>: a declared <code>series_entry_node</code> must name a real node in its own book, and any book that is continued into (index &gt; 1) must declare one.</td>
+<td><code>SR-3 series: series_entry_node '{node}' is not a node in book '{book_id}'</code> / <code>SR-3 series: continued-into book {index} '{book_id}' must declare a series_entry_node</code></td>
+</tr>
+<tr>
+<td>SR-4</td>
+<td>Series</td>
+<td><strong>Final flag position</strong>: no book below the highest index may be <code>is_final</code>. The top-index book MAY be final (closed series) or not (open chain a future continuation extends); ADR-011 section 8 and WS-G G4 make open chains first-class, and v1 generation always writes <code>is_final=false</code>.</td>
+<td><code>SR-4 series: book {index} '{book_id}' is marked is_final but is not the last of {last} books</code></td>
+</tr>
+<tr>
+<td>SR-5</td>
+<td>Series</td>
+<td><strong>Both ends of a continuation exist</strong>: each non-final book declares a successful-completion ending, and the book after it declares a <code>series_entry_node</code>. Deliberately does <strong>not</strong> trace that the win ending targets that entry node: books are independent graphs with no shared node ids, so cross-book target convergence is not machine-checkable here. Tests <strong>existence</strong>, not reachability, which is the gap SR-9 closes.</td>
+<td><code>SR-5 series: non-final book {index} '{book_id}' has no successful-completion ending to continue the campaign</code> / <code>SR-5 series: book {index} '{book_id}' continues, but the next book '{next_id}' declares no series_entry_node to converge on</code></td>
+</tr>
+<tr>
+<td>SR-6</td>
+<td>Series</td>
+<td><strong>Young and Tier-1 chains are episodic</strong>: a young-band or Tier-1 book must run with <code>carries_state=false</code>. Carrying state across books assumes a reader who returns to a specific save; the young bands and the variable-free tier do not support that contract.</td>
+<td><code>SR-6 series: book '{book_id}' is a young or Tier-1 story and must run an episodic (carries_state=false) series</code></td>
+</tr>
+<tr>
+<td>SR-7</td>
+<td>Series</td>
+<td><strong>Uniform carry mode</strong>: <code>carries_state</code> must be the same across every book of a chain; a chain must not mix state-carrying and episodic books.</td>
+<td><code>SR-7 series: the chain mixes state-carrying and episodic books; carries_state must be uniform across a series</code></td>
+</tr>
+<tr>
+<td>SR-8</td>
+<td>Series</td>
+<td><strong>RESERVED, not implemented here.</strong> Claimed by the open PR for the authoring-lessons workstream (#416). Do not reuse this id on <code>main</code> until that PR lands or closes; a rule id is free only when no <em>open</em> PR has claimed it.</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>SR-9</td>
+<td>Series</td>
+<td><strong>A satisfying exit must leave the next book winnable</strong> (added 2026-07-26, B3). For a <code>carries_state</code> chain, every distinct variable state at a satisfying ending of book N is carried into book N+1 under the WS-G G3 rules (name match, type match, int clamp), and book N+1 must still work from there. Closes the gap SR-5 and Layer 2 both leave open: SR-5 tests ending existence and never traces state across the join, and Layer 2 only ever walks from <code>start_node</code> with the declared initials, so the state a continuation reader actually arrives with is outside every other rule's view. Two distinct failures are reported. (a) <strong>The receiving book stops being sound</strong>: its Layer-2 rules are re-run seeded from the carried entry, and any ERROR not also raised from its own declared initials is a cross-book defect. (b) <strong>The continuation is unwinnable</strong>: no satisfying ending is reachable from the carried entry, so a reader wins book N into a dead campaign. Entry states are sampled up to <code>_MAX_ENTRY_STATES</code> (64); exceeding that, or a capped walk, is reported as a truncated check rather than silently passed.</td>
+<td><code>SR-9 series: book {index} '{book_id}' can be completed with carried state {carried}, but entering book {next_index} '{next_id}' with that state raises Layer-2 errors it does not raise from its own declared initials: {new_errors} (an acquisition branch for a carried variable must be redesigned, not copied)</code> / <code>... leaves no satisfying ending reachable (the reader wins book {index} into an unwinnable continuation)</code> / <code>SR-9 series: book {index} '{book_id}' has more than {max} distinct satisfying exit states or capped its walk, so the continuation handoff into '{next_id}' was checked over a truncated sample</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
 <h2 id="rule-application-order">Rule Application Order<a class="headerlink" href="#rule-application-order" title="Permanent link">&para;</a></h2>
 <p>The validator applies rules in this order:</p>
 <ol>
@@ -3159,9 +3268,13 @@ age-safety rule in its own right; it is defined below.</p>
 <li>PL-15 through PL-21, plus the PL-22 fail-closed guard (age-policy gate; all stories).
    PL-19 is advisory; the rest block. PL-22 fires only when the band has no configured
    profile, in which case it is the sole finding and PL-15..PL-21 do not run.</li>
-<li>L2-8 through L2-12 (state-space; Tier-2 only). Stop if any L2 rule fails.</li>
+<li>L2-8 through L2-14 (state-space; Tier-2 only). Stop if any L2 rule fails. L2-13 is
+   informational about which guarantee covers the story, not a defect in it.</li>
 <li>RL-13 (advisory; all stories). Log warnings; continue.</li>
 <li>SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.</li>
+<li>SR-1 through SR-9 (series chain; series stories only) run <strong>later and elsewhere</strong>, at
+   publish time over the whole chain rather than inside <code>run_gate</code> over one story. A book
+   can clear steps 1-5 at generation time and still be refused at publish by an SR error.</li>
 </ol>
 <p>Stopping at the first Layer-1 failure is allowed for efficiency; all Layer-1 failures may also
 be collected in a single pass before reporting, which is preferred for repair-stage prompts
@@ -3211,7 +3324,7 @@ to address only the flagged node ids and rule violations, changing nothing else.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 17, 2026 19:07:42 UTC">July 17, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
   </span>
 
     

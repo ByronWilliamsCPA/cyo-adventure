@@ -1,0 +1,3867 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Rebuilt diversity plan, grounded only in measurements that survived a seven-reviewer adversarial pass and a 98-document corpus survey. Twenty near-term deliverables, six independent defects, eight items deferred behind named prerequisites, five resolved owner decisions, a child-reader review folded in, a development-stage section re-ordering the work for a catalog with one author and one test household, and a reconciliation section against merged PR #418 (ADR-023) and open PR #416 that records personalization as a measured diversity lever. Replaces two superseded plans.">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/story-diversity-plan-v2/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Story Diversity Plan v2 - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#0-development-stage-and-what-it-changes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Story Diversity Plan v2
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../operations/runbook/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/supabase-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator Runbook
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/authoring-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring Guide
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../template_feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Feedback
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-development-stage-and-what-it-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Development stage, and what it changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-basis-what-is-established" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Basis: what is established
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-what-this-plan-does-not-claim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. What this plan does NOT claim
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-track-a-near-term-grounded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Track A: near-term, grounded
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-track-b-defects-found-by-the-review-independent-of-this-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Track B: defects found by the review, independent of this plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-deferred-each-behind-a-named-prerequisite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Deferred, each behind a named prerequisite
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-decisions-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Decisions required
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Decisions required">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-child-reader-review-2026-07-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Child-reader review (2026-07-25)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-how-a14s-scope-was-chosen-and-why-it-is-a-layer-2-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 How A14's scope was chosen, and why it is a Layer 2 rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-method-rules-for-this-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Method rules for this document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-reconciliation-with-pr-418-merged-and-pr-416-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Reconciliation with PR #418 (merged) and PR #416 (open)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Reconciliation with PR #418 (merged) and PR #416 (open)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-personalization-is-a-diversity-lever-and-this-review-initially-missed-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Personalization is a diversity lever, and this review initially missed it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Story Diversity Plan v2</h1>
+
+<blockquote>
+<p><strong>Replaces</strong> <a href="../story-diversity-remediation-plan/">story-diversity-remediation-plan.md</a> and
+<a href="../story-diversity-execution-plan/">story-diversity-execution-plan.md</a>, both superseded.
+<a href="../story-diversity-analysis/">story-diversity-analysis.md</a> remains the measurement record;
+<a href="../story-diversity-review-errata/">story-diversity-review-errata.md</a> records what was refuted and why.</p>
+</blockquote>
+<hr />
+<h2 id="0-development-stage-and-what-it-changes">0. Development stage, and what it changes<a class="headerlink" href="#0-development-stage-and-what-it-changes" title="Permanent link">&para;</a></h2>
+<p><strong>Owner context (2026-07-25): every story in the catalog was authored by the owner, and the only readers are the
+owner's own children helping test.</strong> There is no third-party author, no other family, no published cross-family
+catalog, and no reader whose progress belongs to someone else. The risks below are real for the future; most are
+not live yet.</p>
+<p>That does not make the plan smaller. It <strong>re-orders</strong> it, and in a direction worth stating explicitly, because
+the intuitive reading is backwards.</p>
+<p><strong>Do the catalog-quality rules now, precisely because enforcement is currently free.</strong> A8 (in-cell clone audit),
+A14 (<code>L2-14</code>), B3 (<code>SR-9</code>) and A16-as-a-rule are all validator or CI gates over authored content. Today there
+are 58 skeletons, no published cross-family content to grandfather, no external author to coordinate with, and
+no reader to disrupt. Every month of authoring makes each of these strictly more expensive to adopt, because the
+violating set grows and the fix list grows with it. The <code>L2-14</code> violation and the one clone pair are the
+owner's own work to fix, which is the cheapest possible remediation posture. <strong>These get more urgent, not less.</strong></p>
+<blockquote>
+<p><strong>Correction (2026-07-26).</strong> An earlier revision of this paragraph said "the 37 <code>L2-14</code> violations". That
+conflated the unscoped count with A14's own band-scoping and overstated the fix list by 36. Re-measured by band:
+all 37 all-negative-valence decisions sit at <strong>13-16 (4) and 16+ (33)</strong>, and <strong>zero</strong> at 8-11 or 10-13. A14
+applies the negative-valence reading only at 8-11 and 10-13, where it is therefore <strong>preventive with nothing to
+fix</strong>, and the <code>death</code>/<code>capture</code> reading at 13-16 and 16+, where exactly <strong>1</strong> node violates
+(<code>the-quiet-harbor-protocol</code>). So A14's real fix list is one node, which drops its effort from M to S and makes
+it safe to land blocking on day one rather than advisory-then-flip.</p>
+<p><strong>Second correction (2026-07-26, on implementing it): the fix list is 5 nodes across 4 skeletons, not 1.</strong> Both
+figures above came from a <em>static, direct-terminal</em> scan: a decision every one of whose options is itself a
+forbidden ending node. The rule as A14 actually specifies it follows single-choice corridors and runs over the
+reachable <strong>configuration</strong> space, which is deliberately broader and catches three cases the static scan could
+not see. Measured by running the implemented rule over the catalog: <code>the-quiet-harbor-protocol</code> <code>b_lo_final</code>
+(4 direct fatal terminals), <code>the-cinder-bazaar</code> <code>bg_hi_final</code> and <code>bg_lo_final</code> (a capture terminal plus
+corridors to death), <code>the-serpent-vaults</code> <code>c22_gate</code> (see the 6.2 correction), and <code>the-sunken-signal</code>
+<code>n_ascent</code> (at <code>air=0</code> both options kill). The last was missed even by the corrected static scan because it is
+MVP tier and therefore excluded from <code>_production_candidates</code>, though <code>load_skeleton</code> still validates it. All
+five were inspected and are genuine. Effort stays S for the <em>rule</em>; the content fixes are S4 work and the four
+skeletons are strict-xfail quarantined until then.</p>
+<p><strong>Third correction (2026-07-26, on fixing it): the fix list is 2 nodes across 2 skeletons, and the reduction came
+from narrowing my own rule.</strong> The teen-band reading treated <code>capture</code> as fatal alongside <code>death</code>. That was an
+implementation choice, not the owner's instruction, which is specific: "a scenario where a user is presented
+option A and B and both result in death." Measured, the choice was doing real damage: <strong>3 of the 5 violations
+existed only because of it</strong>, and all three are deliberately authored espionage climaxes whose own beats read
+"Nothing between her and the closing dark", each offering a survivable <code>capture</code>. Capture is that genre's
+signature ending, not a death, and forbidding it would have rewritten four of the catalog's climaxes to satisfy
+a rule nobody asked for. Narrowed to <code>death</code>, which leaves exactly the two genuine cases, both
+resource-exhausted bottlenecks. <strong>Both are now fixed and the quarantine is empty</strong> (see A9's row for how).</p>
+</blockquote>
+<p><strong>A19 (added post-#418) belonged in that list for a different reason: it was free because the defect was dormant.</strong>
+No theme contract declares a personalizable slot yet, so no fill carries a sentinel, so stripping them out of the
+tokeniser changed no current output and needed no baseline re-derivation. <strong>Delivered 2026-07-26</strong>, and the
+implementation confirmed the dormancy claim: the diversity regression gate reports <code>findings=0</code> unchanged. It also
+shrank the defect: see the A19 row for the measured effect, which was far smaller than this plan first asserted.</p>
+<p><strong>A20 (contract backfill) is authoring, so the stage argument cuts the other way from the gates above: it is not
+free, and it does not get cheaper by waiting either.</strong> It is the enabling precondition for personalization on 16
+skeletons, and personalization is the one perceived-diversity lever that needs no new tree (section 8.1). With one
+test household it is also the item whose benefit is most immediately observable, since the current readers can say
+whether a book with their own name in it feels new.</p>
+<blockquote>
+<p><strong>A20 correction (2026-07-26, on starting it): the estimate of M was wrong by an order of magnitude. A20 is a
+program, not a task.</strong> The measured scope is <strong>4,341 <code>&lt;&lt;FILL&gt;&gt;</code> nodes across 16 skeletons, every one of them
+carrying zero existing <code>{SLOT}</code> tokens</strong>, so there is no partial migration to finish anywhere: each skeleton is
+a from-scratch slotting pass over every beat, ending title, and theme-specific choice label it owns. The
+distribution is extremely uneven, which is the one piece of good news, because it means the item is divisible:
+<code>the-tenfold-siege</code> is 677 nodes and <code>the-sunken-temple</code>/<code>the-harrowstone-keep</code> are 550 each (and those two are
+A9's clone pair, so A9 subsumes their share), while the four smallest are 105, 32, 25, and 11. <strong>Two skeletons are
+delivered:</strong> <code>the-lost-mitten</code> (11 nodes, 16 slots) and <code>the-clocktower-cipher</code> (25 nodes, 26 slots), both passing
+all seven acceptance checks in <code>scripts/check_theme_contract.py</code>. The first was chosen to prove the toolchain end
+to end before committing to the large trees, and it did: <code>scripts/parameterize_skeleton.py</code> applied each slotting
+plan with the structural fingerprint unchanged and the gate unblocked. <strong>14 skeletons and 4,305 nodes remain.</strong>
+This does not change A20's priority argument above; it changes what scheduling it honestly costs, and it should be
+planned per skeleton rather than as one item.</p>
+<p><strong>Two authoring conventions the first two slices settled, worth following for the remaining 14.</strong> First, the
+article belongs <em>inside</em> the slot value (<code>THRESHOLD</code> = "the old town clocktower"), matching all 45 existing
+contracts, which means a slot must never sit sentence-initially or the rendered beat opens lowercase. Four of
+<code>the-clocktower-cipher</code>'s beats did on the first pass and were restructured ("Gruff but kind, {KEEPER} warns ..."
+rather than "{KEEPER}, gruff but kind, warns ..."). Verify with a zero-count check over rendered surfaces, not by
+eye. Second, a theme-bearing ending title gets its own <code>ENDING</code>-scope <code>*_TITLE</code> slot rather than an inline token:
+<code>The {CIPHER} Revealed</code> would render as "The cipher Revealed", so the whole title is the slot. Generic titles
+("Too Risky", "A Secret Kept") are left as literal text, though the parameterize script still requires an entry
+for every ending.</p>
+<p><strong>A21 (new, found while doing A20): 273 retired-theme proper nouns are hardcoded into 11 of the 45 skeletons
+that already have contracts, and the acceptance suite structurally cannot see them.</strong> <code>legacy_lexicon</code> is only
+ever evaluated against a <em>proposed slot value</em> (<code>validator/slots.py</code>, the <code>legacy_lexicon</code> rule); nothing checks
+the skeleton's <strong>own</strong> residual text, so a proper noun left un-slotted in a beat, an ending title, or a choice
+label survives every re-theme intact. The confirming detail is that <strong>270 of the 273 leaks name a term that
+already owns a slot on its own contract</strong>, so those are migration misses, not design decisions:
+<code>the-clockwork-menagerie</code> declares <code>COMPANION</code> ("Tock the brass sparrow") then hardcodes <code>Follow Tock.</code> in 12 labels;
+<code>the-sky-ship-stowaway</code> declares <code>SHIP_NAME</code> and then ships the ending title <code>The Cirrus Sails On</code>;
+<code>the-pale-road</code> declares <code>C05_HAZARD</code>/<code>C06_HAZARD</code>/<code>C11_HAZARD</code> and then names those waypoints in 49 ending
+titles. The other <strong>3 are the expensive kind</strong>: <code>the-midnight-frequency</code> names <code>Okafor</code> twice and <code>Kettle</code> once in
+beats with no slot declared for either, so those need a contract change, not just a surface rewrite.
+A looser stem-based scan reports 1,771 hits, but that count includes generic English words that happen to
+sit in a lexicon (<code>salt</code>, <code>Roll</code>, <code>Register</code>, <code>Turning</code>), so <strong>273 is the defensible number and the
+proper-noun class is the right bar to gate on</strong>; the generic remainder is a judgement call per term, not a
+defect list. A21 is two pieces of work with very different costs: the <em>check</em> is S (a deterministic residual-leak
+scan over the same surfaces <code>parameterize_skeleton.py</code> already parses, added to the catalog drift guard so no
+future migration can repeat this), and the <em>fixes</em> are M and mostly mechanical, but not purely so, because
+substituting the full slot default is not always the right prose (<code>Follow Tock.</code> must not become <code>Follow Tock the
+brass sparrow.</code>). Land the check first, quarantine the 11 skeletons, then drain them.</p>
+<p><strong>A21 delivered 2026-07-26, check and all 273 fixes in one pass; the quarantine was opened and emptied in the same
+change.</strong> <code>validator/theme_leak.py</code> is the scan, wired into both <code>scripts/check_theme_contract.py</code> (as check 7)
+and the catalog drift guard, and it found a fourth private copy of the slotted-surface walk on the way in: the
+walk now lives once, in <code>storybook/slotted_surfaces.py</code>, with <code>generation/binding.py</code>,
+<code>mutation/contract_gate.py</code> (whose docstring had <em>said</em> it reimplemented binding's private helper) and
+<code>scripts/parameterize_skeleton.py</code> all reading it. Fidelity was verified by rendering the pre-fix and post-fix
+documents under the same default binding and diffing every surface: <strong>4 of the 11 came out byte-identical,
+including all 242 of <code>the-pale-road</code>'s substitutions</strong>, because each waypoint's <code>C##_HAZARD</code> default was already
+exactly the leaked name. The other 7 changed 9 surfaces in total, every one deliberate and inspected. Two needed a
+contract change rather than a surface rewrite, which is the "expensive kind" predicted above: <code>the-clockwork-menagerie</code>
+gained <code>COMPANION_NAME</code> ("Tock") because binding the full <code>COMPANION</code> would have turned 9 short labels into
+<code>Follow her wind-up mouse Tock.</code>, and <code>the-midnight-frequency</code> gained <code>ROUTE_C_KEEPER</code>/<code>ROUTE_D_KEEPER</code> for the 3
+unowned leaks. <strong>The case-sensitivity decision paid for itself immediately</strong>: <code>the-midnight-frequency</code>'s harbor-office
+beat opens "The harbor office: kettle, charts", and a casefolding scan would have reported the appliance as a leak
+of the librarian <code>Ms. Kettle</code>.</p>
+<p><strong>A9 correction (2026-07-26, on investigating it): "clone pair" was wrong, and A9 is two items whose efficient
+routes point in opposite directions.</strong> Measured: <strong>every <code>structure_features</code> field of the two books is identical</strong>
+(550 nodes, 152 endings, 801 choices, <code>max_depth</code> 58, <code>mean_branching</code> 2.892, the same ending-kind and valence
+histograms, <code>branch_and_bottleneck</code> both) <strong>except <code>n_effects</code>, 49 vs 48</strong>. But the prose is <em>not</em> duplicated:
+<strong>1,326 of 1,503 slotted surfaces differ</strong>, the <code>structure_fingerprint</code>s are unequal, and the two books declare
+different variables (<code>scout_ally</code>/<code>has_sigil</code> vs <code>marsh_guide</code>/<code>choir_key</code>). Book 2 is a <strong>re-skinned skeleton, not
+a copied story.</strong> That inverts the disposition: the writing is not the substandard part, the design is, so
+<strong>replacing book 2 would discard 1,326 distinct authored surfaces to fix a problem that is not in them.</strong></p>
+<p><strong>Item 1, the 14 SR-9 findings: one root cause, fixed at one node. DELIVERED.</strong> The 14 are not 14 defects; they are
+the cross-product of <code>has_sigil</code> (2 values) x <code>vigor</code> (7 values) over a single condition, <code>has_lantern=False</code> on
+entry. Book 2 declares <code>has_lantern: true</code> as its own initial and <strong>gates two choices on it while granting it
+nowhere</strong>, so a reader who finished book 1 without the lantern arrives to two dead branches (<code>L2-11</code> at <code>g0_hedda</code>
+and <code>g2_cu1</code>). Book 2 already had an unwired <code>g0_lantern_buy</code> node, so the fix was to make that node's single
+choice carry <code>set has_lantern=true</code> and to widen its beat to cover both arrivals. <strong>Deliberately unconditional:</strong> a
+gate on <code>has_lantern==false</code> would itself be dead from book 2's own declared initials, mirroring the exact defect
+SR-9 flags, whereas setting an already-true bool is a no-op. Series errors 14 -&gt; 0, <code>run_gate</code> still unblocked.
+Note the honest side effect: the added effect moved <code>n_effects</code> 47 -&gt; 48, so the structural distance <em>fell</em> from
+0.000947 to 0.000469. Fixing item 1 made item 2 marginally worse by the metric.</p>
+<p><strong>Item 2, the structural twinning: restructure book 2, do not replace it. Effort L, not started.</strong> Three routes
+were considered. <em>Replace</em> is the worst: 550 nodes of new prose thrown at a shape defect. <em>Metric-gaming</em> (nudging
+features until the distance clears <code>tau_cell</code> without changing what a reader walks) is cheapest and is <strong>rejected
+explicitly</strong>: it would convert a real perceived-diversity defect into a passing number, which is the failure mode
+this whole plan exists to stop. <em>Restructure</em> is the only honest route that preserves the prose, and it is genuine
+editorial work: a middle book of a series should not be a 152-ending, 58-deep sprawl shaped exactly like its
+opener, and making it a tighter hand-off book moves <code>n_nodes</code>/<code>n_endings</code>/<code>n_choices</code>/<code>max_depth</code> together (the
+numeric term carries weight 0.5). This is authoring hours, not engineering, and it is the one A9 piece that stays
+open.</p>
+<p><strong>Item 2 scoped to a spec 2026-07-26. Still open, but no longer needs re-deriving.</strong> Four further measurements,
+so the next attempt starts from evidence:</p>
+<ol>
+<li><strong>The copy is total.</strong> The two books' out-degree histograms are byte-identical
+   (<code>{0:152, 1:185, 2:114, 3:48, 4:25, 5:14, 6:10, 7:2}</code>), with 324 of 550 node ids simply renamed
+   (<code>a0_*</code> -&gt; <code>g0_*</code>). Same degree sequence, same depth, same everything but <code>n_effects</code>. Book 2 is book 1's
+   skeleton, confirmed at the graph level and not just the feature level.</li>
+<li><strong>Deletion cannot work. Proved exhaustively, not argued.</strong> Every subset of up to five prunable groups
+   (<code>w0</code>-<code>w7</code>, <code>g1</code>-<code>g4</code>; 12 candidates) was simulated: <strong>zero</strong> are simultaneously gate-clean and above
+   <code>tau_cell</code>. The blocker is always the same, <code>PL-17</code>, whose ending floor scales at ~25% of node count while
+   book 2 sits at 27.6% (152/550). Every removable group is ending-dense (<code>w3</code> is 62%, <code>w4</code> 58%, <code>w2</code> 46%), so
+   pruning the bail-out fan drops below the floor before it moves the metric. Dropping <code>w2,w3,w4,w6</code> reaches
+   0.0549 at 439 nodes but needs 110 endings and has 94.</li>
+<li><strong>The viable levers, with numbers.</strong> Ending remix alone (35 <code>capture</code> -&gt; <code>setback</code>) reaches only <strong>0.0350</strong>.
+   A state layer alone needs about <strong>6 variables, 40 conditions, 120 effects</strong> to reach <strong>0.0601</strong>. The two
+   combined are far cheaper: <strong>5 variables, 20 conditions, 75 effects plus a 35-ending remix reaches 0.0710</strong>,
+   a 42% margin. Feasibility against <code>L2-12</code> is fine: book 2 currently walks <strong>3,668 configurations</strong> in 0.19s,
+   and each added bool roughly doubles that (7,130 at +1), so three more bools stay near 29k against the
+   100,000 cap.</li>
+<li><strong>Why it was not executed here, and the trap to avoid.</strong> The state layer is only honest if each gate and cost
+   sits where the fiction supports it. A prose-grounded scan found 103 nodes with exertion language and 77
+   candidate choices, but <strong>three of the first eight candidates were false positives</strong> (<code>Push too hard when he
+   hesitates</code> is social pressure, not physical exertion). Placing 33 conditions and 72 effects by pattern match
+   would produce gates that pass every checker and mean nothing, which is metric-gaming with extra steps. Doing
+   it properly means reading the 324-node spine and placing each cost deliberately. That is the remaining work:
+   authoring judgement over a book, not a script.</li>
+</ol>
+</blockquote>
+<p><strong>A9 is unblocked.</strong> The clone pair can be retired and replaced outright with no migration concern, because the
+only progress recorded against it is test data belonging to the owner's family.</p>
+<p><strong>The reader-protection machinery is genuinely premature.</strong> A15 (retire without deleting progress), A17
+(tombstone card), and the deferred visibility-ceiling work all protect a reader whose collection is not the
+owner's to discard. Today it is. These should be recorded as <strong>triggered</strong>, not scheduled:</p>
+<table>
+<thead>
+<tr>
+<th>Deferred item</th>
+<th>Trigger that makes it live</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A15, A17 (progress preservation, tombstones)</td>
+<td>The first reader outside the owner's household, or the first book the owner would be unwilling to reset</td>
+</tr>
+<tr>
+<td>A16 (no retiring a non-final series book early)</td>
+<td>Same. Keep it as a <strong>written rule now</strong>, since it costs nothing and prevents a habit forming</td>
+</tr>
+<tr>
+<td>Visibility ceiling, ring-2 attribution</td>
+<td>The first connected family</td>
+</tr>
+<tr>
+<td>Reading telemetry (<code>r1-deferred-debt-register</code> U5)</td>
+<td>Enough readers for a distribution to mean anything. With one family it cannot calibrate anything</td>
+</tr>
+<tr>
+<td>A10 (empty teen <code>short</code> cells)</td>
+<td>A request that actually lands in one. The owner controls requests today</td>
+</tr>
+</tbody>
+</table>
+<p><strong>And the child-reader findings can now be tested rather than argued.</strong> The subagent review in section 6.1
+reasoned about what a child would find confusing. The owner's children are the current test readers, and the
+repo already ships <code>.claude/skills/naive-ux-check/</code> for exactly this: staged naive-user comprehension prompts
+per persona, logged to a dated findings report. Three of that review's judgements are empirical questions a
+single session with a real child would settle better than any amount of analysis:</p>
+<ul>
+<li>Does a 3-hop rewind read as "the app took my turn"? (A13b's core risk)</li>
+<li>Is the lower back-chevron confusable with the one that exits the book? (A18)</li>
+<li>Does a hero-name field with a shuffle land as a toy or as a restriction? (A11)</li>
+</ul>
+<p>Run those before building A11, A13b or A18, not after. It is the one form of evidence this plan has been unable
+to gather, and it is currently available.</p>
+<hr />
+<h2 id="1-basis-what-is-established">1. Basis: what is established<a class="headerlink" href="#1-basis-what-is-established" title="Permanent link">&para;</a></h2>
+<p>Each of these was re-derived independently, from source, by a reviewer instructed to refute it. Nothing else in
+this document is treated as established.</p>
+<table>
+<thead>
+<tr>
+<th>Fact</th>
+<th>How verified</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>61 skeletons, 58 production-eligible</td>
+<td><code>is_sidecar</code> + <code>_production_candidates</code></td>
+</tr>
+<tr>
+<td>24 <code>(band, length, style)</code> cells, 6 empty, and <strong>15 of 18 non-empty cells hold exactly three trees</strong></td>
+<td><code>candidates_for_cell</code>; forced by 15x3 + 2x4 + 1x5 = 58</td>
+</tr>
+<tr>
+<td><strong>No <code>short</code> skeleton exists for <code>13-16</code> or <code>16+</code> in either style</strong>, so those requests have zero candidates</td>
+<td>cell enumeration</td>
+</tr>
+<tr>
+<td>P(a reader's second story reuses the first's tree) in a 3-cell is <strong>exactly &#8533;</strong>; general form 1/(2n-1)</td>
+<td>closed form, plus 4M trials against the real <code>select_skeleton_for_cell</code></td>
+</tr>
+<tr>
+<td><code>the-harrowstone-keep</code> and <code>the-sunken-temple</code> are <strong>graph-isomorphic</strong> (start- and ending-kind-preserving, 550 nodes, 796 edges), in one cell, both production-eligible</td>
+<td>colour refinement + pruned <code>DiGraphMatcher</code>; WL hashes equal</td>
+</tr>
+<tr>
+<td><code>structure_fingerprint</code> cannot detect that pair (355 of 550 node ids differ)</td>
+<td>direct comparison</td>
+</tr>
+<tr>
+<td>The catalog declares <strong>132 curated <code>metadata.themes</code></strong>; <strong>zero</strong> are values in <code>_THEME_TAG_MAP</code> (which is 67 keys to 12 values)</td>
+<td>enumeration</td>
+</tr>
+<tr>
+<td><strong>The zero overlap was a category mismatch, not a missing map entry.</strong> The echo map's 12 values are concrete <strong>subjects</strong> (<code>dragon</code>, <code>castle</code>, <code>space</code>); the 132 curated themes are abstract <strong>authorial themes</strong> (<code>courage</code>, <code>friendship</code>, <code>mystery</code>). Two different axes, so no synonym-mapping inside one flat space could make them intersect</td>
+<td>A1 implementation; enumerated both value sets</td>
+</tr>
+<tr>
+<td><strong>The story side barely populates the subject axis, which is the request side's native language.</strong> All 15 canonical theme tags appear on some story, but <strong>9 of 22 subject tags never appear on any story</strong>: <code>animals</code>, <code>castle</code>, <code>cave</code>, <code>dinosaur</code>, <code>dragon</code>, <code>fire</code>, <code>knight</code>, <code>magic</code>, <code>pirate</code>. Eight are echo-vocabulary values, meaning the echo map exists precisely because we expect children to ask for exactly the things no story is tagged with. <strong>So A1 and A2 fix the mechanical defects but cannot fix matching for those requests: the signal is absent from the corpus, not mis-measured.</strong> A catalog tagging gap, cheap to close because it is metadata rather than prose; pair it with A20</td>
+<td><code>scripts/measure_theme_coverage.py</code> section 4</td>
+</tr>
+<tr>
+<td>The similarity comparison is <strong>asymmetric</strong>: the stored side is premise tags union raw curated themes, the request side is premise only, so symmetric Jaccard scores a byte-identical premise at <strong>0.333</strong> against <code>tau_theme</code> 0.35 and it does not register as similar</td>
+<td><code>history.py:190</code> vs <code>query.py:197</code>; reproduced</td>
+</tr>
+<tr>
+<td><code>DifferentiationLevel</code> never reaches <code>fill_skeleton</code>; it reaches a warning, a log line, and the flywheel trigger</td>
+<td>call-graph trace</td>
+</tr>
+<tr>
+<td>The ATG is advisory, fail-open, single-partner, with an empty per-band threshold table</td>
+<td><code>moderation/leaf_diversity.py</code>, <code>diversity/leaf.py</code></td>
+</tr>
+<tr>
+<td>Ending <strong>count</strong> and satisfying <strong>path mass</strong> are decoupled (Spearman weak, and negative under 3 of 4 reader models)</td>
+<td>4 reader models; walker validated in lockstep against <code>StoryEngine</code>, 0 divergences in 1,800 walks</td>
+</tr>
+<tr>
+<td>Topology does <strong>not</strong> key satisfying path mass (4 of 6 classes hold zero gamebooks; the 2 populated classes do not separate, eta-squared 0.367, and the direction is reversed). The <strong>fail-kind mix</strong> does (eta-squared 0.636)</td>
+<td>per-skeleton measurement</td>
+</tr>
+<tr>
+<td>1,778 gamebook endings; 178 sit below 33% of <code>min_complete</code>, splitting 104 <code>setback</code> / 73 <code>death</code>+<code>capture</code> / 1 <code>discovery</code>; scoped to foreclosing terminals, <strong>no</strong> skeleton breaches <code>min_endings</code></td>
+<td>BFS depth + <code>_effective_floors</code></td>
+</tr>
+<tr>
+<td>The <strong>shared opening spine is 1 to 6 nodes</strong> (median 3), and within-cell opening-content Jaccard is median 0.089, so two books in a cell were never confusable at the opening</td>
+<td>dominator intersection; pairwise content Jaccard</td>
+</tr>
+<tr>
+<td><strong>Go back ships, works at an ending node, and is disabled for continuation reads</strong></td>
+<td><code>engine.ts:325-347</code> (<code>back</code> has no ending guard, requires only <code>path.length &gt; 1</code>); <code>engine.ts:288-297</code> fails closed when <code>path[0] !== start_node</code></td>
+</tr>
+<tr>
+<td>Of the 73 shallow foreclosing terminals, <strong>only 15 are escapable by a single Go back</strong>; the other 58 are reached from single-choice corridors, so backing up one step re-presents the same fatal choice</td>
+<td>per-terminal predecessor analysis</td>
+</tr>
+<tr>
+<td><strong>All 73 are within 3 Go-back hops</strong> of a node offering a real alternative (15 need one hop, 58 need exactly three; max 3)</td>
+<td>back-walk to nearest branching ancestor</td>
+</tr>
+<tr>
+<td>Across 58 production-eligible skeletons there are <strong>2,668 decision nodes</strong> (non-ending, 2+ choices). <strong>144</strong> have every option terminating, but those sit at <strong>median 90% of the tree's max depth</strong> and <strong>88 of them offer a positive ending</strong>: they are climaxes. <strong>37</strong> are all-negative-valence. <strong>1</strong> has every option a <code>death</code>/<code>capture</code> terminal (<code>the-quiet-harbor-protocol</code>)</td>
+<td>per-node target classification</td>
+</tr>
+<tr>
+<td>Separately, <strong>776 single-choice nodes</strong> lead only to a <code>death</code>/<code>capture</code> terminal. These are not decisions; they are the corridor pattern A13 addresses</td>
+<td>per-node scan</td>
+</tr>
+<tr>
+<td><code>save_slots</code> is client-writable, server-persisted, and <strong>omitted from <code>validate_reading_state</code></strong></td>
+<td><code>schemas.py:80</code>, <code>reading.py:412</code>, <code>reading.py:168-175</code></td>
+</tr>
+<tr>
+<td><strong>129 of 132 catalog themes pass the echo floor at band <code>3-5</code></strong></td>
+<td>ran the real <code>sanitize_element</code> (<code>story_requests/interpretation.py</code>) at all six bands; re-run unchanged after PR #418, same three withheld (<code>lethal checkpoints</code>, <code>lethal missteps</code>, <code>the drowned descent</code>)</td>
+</tr>
+<tr>
+<td><strong>45 of 61 skeletons have a <code>.contract.json</code>; 39 of those 45 declare a <code>HERO</code> slot</strong>, so 16 skeletons have no contract at all</td>
+<td>enumeration of <code>skeletons/**/*.contract.json</code>; independently stated in ADR-023 and reproduced here</td>
+</tr>
+<tr>
+<td>Beats hardcode character pronouns, so a slot value cannot vary gender: <code>the-cinderwick-exchange.json:89</code> "the retired clocksmith who tends the lo[ck]", <code>the-envoy-of-three-courts.json:135</code> "See {COURIER} on <strong>his</strong> way and snatch some sleep"</td>
+<td>direct file read</td>
+</tr>
+<tr>
+<td>The ATG had <strong>no sentinel awareness</strong> (fixed 2026-07-26, A19): <code>strip_sentinels</code> was imported by <code>validator/reading_level.py</code>, <code>moderation/pipeline.py</code> and <code>moderation/rescreen.py</code>, and by nothing under <code>diversity/</code>. <strong>The end-to-end effect was much smaller than first claimed</strong>: on the two committed pilot fills with 113 and 108 sentinel sites, unigram distance did not move at all and bigram distance moved by ~0.006, flipping no verdict. See the corrected A19 row for why, and why it was still worth fixing</td>
+<td>import scan; end-to-end run over <code>out/pilot/fills/</code></td>
+</tr>
+<tr>
+<td><strong><code>HERO</code> is the catalog's least varied slot</strong>: 39 contracts bind it to <strong>28 distinct values</strong> (ratio 0.72), with <code>Wren</code> reused 5 times and <code>Rowan</code>, <code>Milo</code>, <code>Priya</code>, <code>June</code> each reused</td>
+<td><code>default_binding</code> enumeration across all 45 contracts</td>
+</tr>
+<tr>
+<td><strong>Every non-personalizable differentiating slot is at or near fully distinct</strong>: <code>THRESHOLD</code> 34/34, <code>ENTRANCE</code> 24/24, <code>DEADLINE</code> 19/19, <code>GOAL</code> 17/17, <code>DEADLINE_SIGN</code> 17/17, <code>OPENING_MOMENT</code> 16/17, and all three <code>ROUTE_*_CHAR</code> at 1.00</td>
+<td>same enumeration, slots appearing in 8+ books</td>
+</tr>
+<tr>
+<td><strong><code>COMPANION</code> is fully distinct (14/14)</strong> and is personalizable under ADR-023 row 3, so it is the one slot where opting in spends a maximally differentiating axis</td>
+<td>same enumeration</td>
+</tr>
+<tr>
+<td><strong>Theme-contract coverage is anti-correlated with band</strong>: <code>5-8</code> and <code>8-11</code> at 100%, <code>3-5</code> at 86%, but <code>10-13</code> 64%, <code>16+</code> 64%, <code>13-16</code> <strong>57%</strong>. 16 of 61 skeletons have no contract, 15 of those 16 at <code>10-13</code> and above</td>
+<td>per-band <code>.contract.json</code> existence scan</td>
+</tr>
+<tr>
+<td><strong>Both books of the isomorphic clone pair lack a contract</strong>, so <code>the-harrowstone-keep</code> and <code>the-sunken-temple</code> are ineligible for personalization entirely</td>
+<td>contract existence check on both slugs</td>
+</tr>
+<tr>
+<td>Reading telemetry does not exist: <code>ReadingState</code> is one mutable row with <code>path</code> overwritten; <code>Completion</code>'s key includes <code>ending_id</code> with one <code>found_at</code>, so re-reads and depth-at-terminal are unrecorded</td>
+<td><code>db/models.py:725-793</code></td>
+</tr>
+<tr>
+<td>Difficulty, win-arc count, and reading telemetry are unspecified corpus-wide</td>
+<td>98-document survey</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-what-this-plan-does-not-claim">2. What this plan does NOT claim<a class="headerlink" href="#2-what-this-plan-does-not-claim" title="Permanent link">&para;</a></h2>
+<p>Recorded so these are not re-derived. Full reasoning in the errata.</p>
+<ul>
+<li><strong>No funnel argument.</strong> The shared spine is 1 to 6 nodes and same-cell openings are already distinct, so
+  "a reader who exits early has read only the shared opening" is false. Any depth floor must be justified as a
+  <strong>difficulty</strong> decision, not a diversity one.</li>
+<li><strong>No fraction is recommended for a depth floor.</strong> The 33% figure came from a circular proxy.</li>
+<li><strong>No per-topology outcome floor.</strong> Not calibratable.</li>
+<li><strong>No claim that a satisfying-path-mass figure near zero is a defect.</strong> Under a competent reader it is
+  1.3% to 34.9% (median ~9%), and two or three plies of foresight move 13 of 14 skeletons to 41-100%.</li>
+<li><strong>No claim that <code>save_slots</code> lacks a producer</strong>, that <code>LEGAL_TRANSITIONS</code> has no exit from <code>published</code>, or that
+  the COPPA remediation plan is missing. All three were false.</li>
+<li><strong>No new snapshot-based restart mechanism.</strong> Path replay already ships and is now the normative mechanism:
+  <code>runtime-semantics.md</code> section 6 was revised 2026-07-26 by
+  <a href="../adr/adr-024-bounded-backtracking-path-replay/">ADR-024</a> from "no backtracking" into "backtracking by
+  forward replay only", which prohibits computing an inverse. The conclusion is unchanged and now rests on a
+  rule rather than on a deferral.</li>
+<li><strong>No <code>min_positive_endings</code> floor</strong>, and no assertion that any coverage target is achievable before it is
+  measured.</li>
+</ul>
+<h2 id="3-track-a-near-term-grounded">3. Track A: near-term, grounded<a class="headerlink" href="#3-track-a-near-term-grounded" title="Permanent link">&para;</a></h2>
+<p>Each item traces to a fact in section 1. Effort: S under a day, M a few days, L a sprint or more.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Deliverable</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A1</strong></td>
+<td><strong>DELIVERED 2026-07-26. Two vocabularies, not one grown map.</strong> <code>_THEME_TAG_MAP</code> is frozen as the <strong>echo</strong> vocabulary with a <code>#CRITICAL</code> note and a test pinning its 12 values, because <code>worker.py::_degraded_set_aside_decisions</code> reads them back to a child. The new <code>diversity/similarity_vocab.py</code> holds the similarity vocabulary; <code>similarity_signature()</code> uses it and <strong>drops</strong> an unrecognised curated theme instead of passing it through verbatim, which is the line (<code>normalize.py</code> <code>tags.add(_THEME_TAG_MAP.get(lowered, lowered))</code>) that put 132 unproducible strings on the stored side. <strong>Coverage measured, not asserted</strong> (<code>scripts/measure_theme_coverage.py</code>): <strong>131 of 132</strong> distinct catalog themes map (99%), <strong>256 of 257</strong> theme uses (100%); the single drop is <code>state-gated locks</code>, excluded deliberately as a graph property rather than a theme. Empty request signatures over the A4 panel fall from <strong>7 of 16 to 1 of 16</strong>. One finding that reframes the defect: the echo map's 12 values are <strong>concrete subjects</strong> and the 132 curated themes are <strong>abstract</strong>, so the zero overlap was a category mismatch, not a missing entry. The similarity space therefore spans both axes (22 subject + 15 theme = 37 canonical tags).</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>A2</strong></td>
+<td><strong>DELIVERED 2026-07-26. A containment measure</strong>, <code>containment(request, story) = \|request &amp; story\| / \|request\|</code>, in a new function. <code>jaccard_similarity</code> and its documented empty-set semantics are untouched. The plan's 0.333 case is <strong>reproduced as a test</strong> rather than asserted: one request tag plus two curated themes the request side cannot produce gives Jaccard exactly &#8531; against a 0.35 floor, so the match was missed; containment returns 1.0. Argument order is load-bearing and carries a <code>#CRITICAL</code> note, since swapping it inverts the question to "how much of this story did the reader ask for", penalising every rich story. Empty request returns 0.0, matching the WS-0 intent that an empty signature never registers as similar.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>A3</strong></td>
+<td><strong>DELIVERED 2026-07-26. A saturation ceiling guard</strong> (<code>_SATURATION_CEILING = 0.999</code>) plus a regression test pinning that saturation reaches exactly <code>count/3</code> in a 3-tree cell, so the pinning behaviour cannot drift silently. A2 pushes harder toward "similar", so the cell reaches 1.0 sooner, and above the ceiling the ladder moves past <code>TREE</code> rather than continuing to recommend a tree that does not exist.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>A4</strong></td>
+<td><strong>DELIVERED 2026-07-26. A committed premise panel</strong> of 16 realistic child requests (<code>scripts/measure_theme_coverage.py::PREMISE_PANEL</code>), spanning pets, sports, family, school, music, invention, weather, food and siblings plus the fantasy staples the echo map anticipates. Coverage is printed with no target asserted in advance, per the method rule.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>A5</strong></td>
+<td><strong>DELIVERED 2026-07-26. <code>tau_theme</code> re-derived: 0.35 to 0.34</strong>, recorded in <code>query.py</code> with its basis. The old value no longer meant what it was set to mean, because A1 changed the measure's <em>input</em> and A2 changed the <em>measure</em>. Measured containment over the panel by catalog (976 pairs): median 0.0000, p90 0.3333, max 1.0000; 0.34 sits just above p90, admitting a request whose themes are largely delivered while rejecting the long tail of single-tag coincidences. Deliberately not tuned to a target rate.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>A6</strong></td>
+<td><strong>DELIVERED 2026-07-26. Thread <code>DifferentiationLevel</code> and prior-fill context into <code>fill_skeleton</code> and <code>fill.md</code>.</strong> The signal used to reach a warning string, a log line and the flywheel trigger, then stop; the fill that could act on it never saw it, so escalating a request changed nothing about the prose. Now persisted by <code>authoring_plan.py</code> into <code>authoring_metadata</code> (<code>differentiation_level</code>, <code>prior_titles</code>, <code>prior_theme_tags</code>, <code>variation_axis</code>), read by <code>worker.py::_differentiation_directive</code>, rendered by <code>prompts.build_differentiation_directive</code>, and threaded through <code>fill_skeleton</code> into a new trusted <code>{differentiation_directive}</code> block in <code>fill.md</code>. The three levels render distinguishably (pinned by test) and an absent signal says so rather than implying the structure is new to the family, which matters on the admin-override path where no similarity context is computed. <strong>The privacy fence holds structurally, not by discipline: <code>authoring_metadata</code> has no key for a prior premise</strong>, so a sibling's request text cannot travel into this fill even by mistake. Only published titles (content the family already holds) and closed-vocabulary theme tags cross. The block is rendered <strong>outside</strong> the <code>UNTRUSTED_USER_INPUT</code> fence, since it is pipeline instruction, and a test asserts that position.</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>A7</strong></td>
+<td><strong>DELIVERED 2026-07-26. A variation-axis library</strong> (<code>generation/variation.py</code>): ten authored craft axes across narrative distance, sensory emphasis, tonal register, viewpoint favour and pacing, one drawn per request. Drawn <strong>deterministically</strong> via blake2b over the request id, not <code>random</code>, because Python salts string hashes per process and a randomly-drawn axis would confound every before-and-after comparison of its effect. Each instruction is a positive craft direction rather than a prohibition (pinned by test), since a prohibition tells a model what to avoid without telling it what to do instead. One axis per fill, never several: a fill told to be simultaneously close-third, sound-led, slow-paced and antagonist-sympathetic has four masters. No axis changes what happens or how a story ends, only how a fixed sequence of beats is narrated, which is what keeps it inside the band profile. <strong>Verification limit, stated rather than glossed:</strong> the plan asks that RL-13 not regress "over regenerated fills before and after", and that cannot be checked here because it needs real provider calls. The reading-level suite passes and the axes are <em>designed</em> to hold register fixed by varying an authorial decision instead of sampling temperature, but the empirical check is outstanding and belongs with the first real generation run.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>A8</strong></td>
+<td><strong>DELIVERED 2026-07-26. In-cell clone audit in CI</strong>, using <code>structural_distance</code> (not <code>structure_fingerprint</code>, which cannot see a renamed clone) against the <strong>loaded</strong> <code>TAU_CELL</code> from <code>ws5_floor_baseline.json</code>, never a hardcoded 0.05. Logic in <code>diversity/incell.py</code>, CLI in <code>scripts/check_incell_clones.py</code>, wired <strong>blocking</strong> into <code>ci.yml</code>'s existing <code>diversity</code> job. Measured 67 distinct in-cell pairs across 18 populated cells: exactly one breaches, the known clone pair at 0.00095, and it is allowlisted against A9. The allowlist is a shrinking debt register, not an exemption regime: the gate also fails on a <strong>stale</strong> entry, so a fixed pair must be deleted in the same change. One counting defect found and fixed while building it: style partitions a cell only at <code>13-16</code> and <code>16+</code>, so a naive style loop measured every lower-band pair twice (the origin of this plan's earlier "100 pairs across 28 cells", which also contradicted its own established 18-cell figure).</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>A9</strong></td>
+<td><strong>Resolve the in-cell duplicate</strong> under the disposition principle in section 6, fix-or-replace with no series exemption. Bound by A16: <code>the-harrowstone-keep</code> and <code>the-sunken-temple</code> are brass-lantern books 1 and 2, a deliberate series stress-test artifact, so "retire one" is not available. <strong>Corrected and split 2026-07-26, see the A9 note below: it is two items with opposite economics, and "clone" was the wrong word.</strong> Item 1 (the 14 SR-9 findings) is <strong>delivered</strong>; item 2 (the structural twinning) is a restructure of book 2's shape, effort <strong>L</strong>, not started.</td>
+<td>M -&gt; L</td>
+</tr>
+<tr>
+<td><strong>A10</strong></td>
+<td><strong>Make the empty teen <code>short</code> cells fail gracefully or fill them.</strong> A <code>13-16/short</code> or <code>16+/short</code> request has zero candidates today and 422s. Per the disposition principle in section 6, authoring is preferred over degrading the surface.</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>A11</strong></td>
+<td><strong>Set expectations on the request page, affirmatively, and drop two of the three restrictions.</strong> <code>RequestStory.tsx</code> is one prompt and a 500-character box today. Per the child-reader review (section 6.1): <strong>drop</strong> the fixed-structure statement from the kid surface (no child under about eleven has that model; keep it on guardian intake) and <strong>drop</strong> "some themes are off for this family" (unnameable on the kid surface, so it is a pre-emptive accusation with nothing to act on; the existing blocked-status copy handles the real event kindly). <strong>Reshape</strong> the naming rule from a prohibition into a mechanism: a "Who's the hero?" field pre-filled with a made-up name and a shuffle control, which sets the expectation without ever saying "you cannot be the hero". <strong>Copy superseded by ADR-023 (merged in PR #418); adopt its wording, do not draft alternative text.</strong> The child-reader review's suggestion to reuse <code>interpretation.py</code>'s "Heroes in our stories always have made-up names" is <strong>withdrawn</strong>: ADR-023 section 4 is replacing that exact sentence, because it becomes false for a family that enables G18, and the affirmative PII line this row previously proposed ("Everyone in the story gets a made-up name, even your friends") is false in the same state. ADR-023 section 4 Ask 1 supplies the replacement and asks this plan to adopt it rather than converge separately; the load-bearing change is "starts with", which is unconditionally true because <em>generation</em> always uses a placeholder, and which stops implying the separate claim about what a reader <em>sees</em>. Kid surface: "Everyone in the story starts with a made-up name, even your friends. Ask your grown-up if you want your own name to show up when you read." Guardian help text as given in that section. <strong>Add</strong> the expectation the review found matters most to a child and that was on nobody's list: "A grown-up reads your idea first. Then it takes a little while to write your book." Net effect is zero new blocks of rules text. Serve the guardian-facing set from the API off <code>ReasonCode</code> / <code>band_profile</code> / <code>content_nogo</code>; the kid-surface response still omits <code>content_nogo</code> values entirely. <strong>Shuffle semantics (ADR-023 Ask 2, answered here): display-only, among generic names, with no effect on what is generated or stored.</strong> The field picks a label for the request surface; the skeleton's <code>HERO</code> slot is bound by the fill, and under ADR-023 personalization is a render-time substitution on the family's own devices. Making the shuffle write a stored bound value would put it on the same slot the personalization sentinel occupies and force the two to be sequenced; keeping it cosmetic leaves them orthogonal and needing no coordination. This also keeps the naive-UX question in section 0 ("toy or restriction?") a pure copy question. Update <code>capability-register.md</code> K19 (line 137), whose row already records this copy dependency as a precondition on G18's flag, and note that K20/G18 are minted (register v1.8) so the hero-name surface must stay consistent with them.</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>A12</strong></td>
+<td><strong>Enable Go back in continuation reads.</strong> <code>replayRecordedPath</code> fails closed when <code>path[0] !== start_node</code>, disabling Go back in exactly the state-carrying series books where a reader has most to lose. <strong>Rescoped 2026-07-26 (S0/B2 finding): this is not a bug fix, and it is deferred behind a decision.</strong> Replaying a continuation read needs its origin's initial variables, and nothing retains them: <code>startContinuation</code> seeds <code>var_state</code> from a carried map but the resulting <code>ReadingState</code> does not keep it, <code>ReadingState</code> has no column for it (<code>db/models.py:725</code>), and <code>Completion</code> stores only <code>(child_profile_id, storybook_id, version, ending_id, found_at)</code> so the predecessor's exit state cannot be re-derived either. The seed reaches the client only transiently through router <code>location.state</code>, which <code>series.ts</code> documents as untrusted and attacker-shapeable. So enabling it needs new durable state, hence a schema change, an API change and an OpenAPI regeneration; <strong>and that state would be a replay origin, making it a state-restoration input of exactly the class B1 describes.</strong> Built naively it creates a second <code>save_slots</code>, letting a forged origin replay into a state the reader never earned, in the books where that pays best. ADR-024 Decision 6 records it as not authorized and states the fail-closed-validation requirement any future decision must meet.</td>
+<td>L, deferred</td>
+</tr>
+<tr>
+<td><strong>A13a</strong></td>
+<td><strong>Leave the in-story Go back exactly as it is: one step, always available.</strong> <code>Reader.tsx:210</code> states its purpose, "Kids mis-tap constantly; Go back undoes just the last choice." A multi-hop rewind bound to that button would move a mis-tapping 4-year-old three passages upstream and erase prose they were enjoying. At 3-5 and 5-8 that is pure loss, since <code>_PROFILES</code> forbids <code>death</code> and <code>capture</code> at both bands so there is no fatal corridor to rescue, and a 3-5 story is 10-45 nodes, making 3 hops up to a third of the book. <strong>No change to <code>back()</code> or <code>canGoBack()</code>.</strong></td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>A13b</strong></td>
+<td><strong>Add a second, separately labelled affordance at the ending screen only: "Try a different way."</strong> Walks up to <strong>3 hops</strong> to the last node where the reader had a real pick, and <strong>falls back to one step when there is none</strong>. Availability stays exactly today's <code>path.length &gt; 1</code> and replayable: it must never become "an untaken choice exists within 3 hops", because that hides the button at precisely the 88 preserved climaxes (take option A, die, go back, take option B, win: on that second ending there is no untaken fork nearby and a button the child just learned would vanish). "Untaken" is defined against the current read only, and the walk stops at the <strong>first branching ancestor</strong> regardless of whether its other options were used, so the destination is always "the last place you got to pick" rather than a distance that varies per press. Captures the full measured benefit (the 58 corridor terminals) without repurposing a learned affordance.</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>A14</strong></td>
+<td><strong>DELIVERED 2026-07-26. <code>L2-14</code>: no decision may offer only fatal options, band-scoped, stated so it cannot be dodged.</strong> Owner rule: a reader must never be shown option A and option B where both end in death. Implemented in <code>validator/layer2.py</code> as an ERROR over the reachable configuration space. <strong>(a) Band-scoped.</strong> <code>Valence.NEGATIVE</code> includes <code>setback</code>, so a single negative-valence rule would forbid a 15-year-old from ever facing a lose-lose dilemma, which is what a <code>gauntlet</code> reader seeks and what ADR-011 section 5 sanctions from 13-16 up. Negative-valence reading at <strong>3-5 through 10-13</strong>, <code>death</code>/<code>capture</code> reading at <strong>13-16 and 16+</strong>. (Plan text originally scoped the broad reading to 8-11 and 10-13 only; extended to 3-5 and 5-8 deliberately, since it adds zero violations there, is strictly more protective for the two bands the child-reader review found got no benefit, and the scoping rationale only ever argued against over-constraining teens.) <strong>(b) Stated over the reader-visible decision unit, not the node</strong>, or an author complies by splitting an all-fatal decision into two single-choice corridors that each end fatally: the rule passes and the child gets a page with one button that kills them. So: a reachable configuration with 2+ visible choices fails when <strong>every</strong> option reaches a forbidden ending with no intervening visible choice. That folds in the 776 single-choice fatal corridors, which are the larger agency problem. Layer 2 because it is about visible choices in reachable configurations. <strong>Fix list: 5 nodes across 4 skeletons</strong> (see the section 0 second correction), strict-xfail quarantined pending S4.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>A15</strong></td>
+<td><strong>Triggered, not scheduled (section 0).</strong> <strong>Retire-for-quality must not delete a child's progress.</strong> <code>archive</code> is the only exit from <code>published</code>, <code>library.py</code> filters on published status, <code>reconcileOfflineCache</code> purges the local copy, and <code>reading_history.py::_history_item</code> degrades a version-less book to a storybook <strong>id</strong> as its title with <code>total_endings = 0</code>. So a retired book takes the shelf card, the in-progress read, the offline copy and the "6 of 7 endings found" badge with it, silently. Distinguish <strong>unsafe</strong> (archive now, the urgency justifies it) from <strong>substandard</strong> (no new readers: stop assigning, keep it readable for any profile with progress or completions, let it age out). Interim before the deferred visibility work exists: unassign only from profiles with no activity. Fix <code>_history_item</code>'s degraded row to show a friendly retired label, not a UUID.</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>A16</strong></td>
+<td><strong>Adopt as a written rule now, enforce when triggered (section 0).</strong> <strong>Never retire a non-final series book before its replacement ships in the same release.</strong> <code>Reader.tsx:313-320</code> offers "Continue the series" on a satisfying ending of a non-final book; if book 2 changes or goes, that promise goes quiet with no in-product account, after a teen spent hours in a 550-node book and earned carried state. The replacement must accept book 1's carried state, which is exactly what B3 gates. If it cannot, re-cut book 1 to <code>is_final</code> so the continuation is never promised. Binds A9.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>A17</strong></td>
+<td><strong>Triggered, not scheduled (section 0).</strong> <strong>A retired book leaves a tombstone, not a hole</strong>: title, endings the child found, and one line ("This one has gone back to the workshop. Your 6 endings are still yours."). Children infer causes, and a card that vanishes next to a <code>StarRating</code> they cannot clear invites "did I lose it because I rated it 2 stars?".</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>A18</strong></td>
+<td><strong>Differentiate the two back-chevrons.</strong> <code>Reader.tsx</code> renders Go back as a ghost button with a chevron visually identical to the top-bar "Leave" chevron, one of which exits the book. A13b makes the lower one more consequential. Give the story-level control a circular-arrow glyph, and make the ending-screen affordance primary weight rather than ghost, since there it is a headline action.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-track-b-defects-found-by-the-review-independent-of-this-plan">4. Track B: defects found by the review, independent of this plan<a class="headerlink" href="#4-track-b-defects-found-by-the-review-independent-of-this-plan" title="Permanent link">&para;</a></h2>
+<p>Each stands on its own and does not wait on Track A.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Defect</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>B1</strong></td>
+<td><strong>DELIVERED 2026-07-26.</strong> <code>save_slots</code> was the only reading-state field omitted from <code>validate_reading_state</code> (<code>reading.py:168-175</code>), defeating the <code>#CRITICAL</code> anti-forgery intent stated two lines above the call site. Resolved <strong>fail-closed</strong>: the gate now receives the field and refuses any non-empty slot map. Chose refusal over content validation because the field has <strong>no producer and no consumer</strong> (the client initialises it to <code>{}</code> and only copies it through, and <code>ReaderPage.tsx:285</code> records that "the engine never mutates it today"; the server only round-trips it at <code>reading.py:79</code>/<code>:412</code>), and because <code>runtime-semantics.md</code> section 5 specifies the field normatively as "slot name to snapshot" without ever fixing the snapshot's shape. Validating slot contents would therefore mean inventing a schema here and pinning future work to it, while refusing a non-empty map costs nothing today and turns the moment slots go live into a loud 422 pointing at the check. That is the bar ADR-024 Decision 6 sets for a state-restoration input. The parameter is deliberately <strong>required, not defaulted</strong>, since a default is how the field came to be skipped in the first place; all 18 existing call sites were updated.</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>B2</strong></td>
+<td><strong>DELIVERED 2026-07-26.</strong> <code>runtime-semantics.md</code> section 6 stated there is no back button in v1 and that any implementation "requires a revision to this document and an ADR", while <code>Reader.tsx:210</code> shipped one. Resolved by <a href="../adr/adr-024-bounded-backtracking-path-replay/">ADR-024</a> (Accepted) plus the section 6 rewrite (document version 1.2). The finding that mattered: section 6's <em>rationale</em> was the wrong part, not just its rule, because the shipped mechanism replays forward and never inverts an effect, so the snapshot model is preserved and the event log section 6 waited for is not needed. ADR-024 also authorizes A13b and, per the A12 row, declines to authorize continuation backtracking.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>B3</strong></td>
+<td><strong>DELIVERED 2026-07-26 as <code>SR-9</code>.</strong> For <code>carries_state=true</code>, every satisfying-ending state of book N must be an admissible entry state for book N+1. Layer 2 only ever walked from <code>start_node</code> with declared initials, so continuation entry state was outside every existing rule's view; <code>walk_configurations</code> and <code>validate_layer2</code> now take an optional <code>carried</code> seed, and <code>StoryEngine.start_continuation</code> mirrors the client's <code>startContinuation</code> including its order of operations (carry-seed <strong>before</strong> the entry node's <code>on_enter</code>, since seeding after would let a carried value overwrite an effect the client applies first, and player/validator divergence is a conformance failure). Reports two failures: an <strong>L2 error delta</strong> (any error the receiving book raises from the carried entry but not from its own declared initials, which is the F3 shape) and <strong>unwinnability</strong> (no satisfying ending reachable, which <code>L2-10</code> cannot see because it asks whether <em>some</em> ending is reachable, not a satisfying one). Bounded at 64 distinct exit states per pair, and it says so rather than reporting a clean chain over a truncated sample. Checked against #416's <code>SR-8</code> before building: that rule is a static comparison of two declaration blocks, this one simulates reachable state, so they do not collapse.</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>B4</strong></td>
+<td><code>machine.ts:108</code> resets to the start node with declared initials, so "Read again" in a continuation read fabricates <code>has_lantern=true</code> and <code>vigor=5</code> the reader never earned and discards carried state.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>B5</strong></td>
+<td><strong>DELIVERED 2026-07-26, by <code>SR-9</code>.</strong> F3 is escalated from authoring guidance to a gate-detectable defect, and <strong>confirmed firing on real content</strong>: run against the committed <code>brass-lantern</code> chain, <code>SR-9</code> raises <strong>14 errors</strong>, every one of them a book-1 win state carrying <code>has_lantern: False</code> into a book 2 that then breaks. That is B5's claim reproduced by the gate rather than by inspection. Consequence worth stating: the chain can no longer pass <code>publishing/service.py</code>'s approval-time series check until the content is fixed, which is the intended effect and lands on the same two books A9 is already repairing or replacing. <strong>Evidence updated 2026-07-26: those 14 errors are now FIXED</strong> (A9 item 1), so re-running <code>validate_series</code> on the <code>brass-lantern</code> chain today reports <strong>0</strong>, not 14. The gate is not broken; the content it caught has been repaired. The 14 were one root cause enumerated over <code>has_sigil</code> x <code>vigor</code>, and the fix was one choice in <code>the-sunken-temple</code>'s <code>g0_lantern_buy</code>. Anyone re-deriving B5's evidence must read book 2 at commit <code>e0e6c3a^</code> to see the gate fire.</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>B6</strong></td>
+<td><strong>Closed as working-as-intended</strong> (section 6): sharing a child's first name with a connected family is sanctioned by mutual guardian consent. Residual <strong>re-scoped by PR #418</strong>: ADR-016 now carries a proposed addendum that already names this item, and ADR-023 section 4 requires that ADR-016 be amended in <strong>one</strong> edit covering both ring-2 <em>attribution</em> granularity (this item) and ring-2 <em>personalization</em> granularity (ADR-023 section 3), which sets a deliberately stricter bar for the same datum. So the residual is no longer "add a sentence"; it is <strong>participate in that single reconciliation edit and do not race it</strong>. Whoever writes the amendment writes both halves or neither. The asymmetry is recorded as intended, not as an inconsistency to resolve: an attribution line is one low-bandwidth fact rendered once to a receiving <em>guardian</em>, while a name substituted through story prose is the same datum delivered continuously to another household's <em>children</em> and compounded with other slot values.</td>
+<td>S</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-deferred-each-behind-a-named-prerequisite">5. Deferred, each behind a named prerequisite<a class="headerlink" href="#5-deferred-each-behind-a-named-prerequisite" title="Permanent link">&para;</a></h2>
+<p>Not "later" in the abstract. Each has one thing that must happen first.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Prerequisite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reading telemetry (depth reached, early-exit rate, real satisfying rate)</td>
+<td>A schema design for durable per-session reading data plus a child-behaviour privacy review. <code>r1-deferred-debt-register.md</code> U5 already registers this as Phase 4b with an owner; extend that, do not duplicate it.</td>
+</tr>
+<tr>
+<td>A fail-depth floor (<code>PL-25</code> if it is ever built; <code>PL-22</code> is the maximum on <code>main</code> and open PR #416 takes <code>PL-23</code> and <code>PL-24</code>)</td>
+<td><strong>Probably not needed at all</strong> if A13 lands: a multi-step Go back fixes all 73 shallow foreclosing terminals with no skeleton edits, where a floor needs 73 relocations and a fraction with no non-circular basis. Revisit only if A13 is rejected or telemetry shows a residual problem.</td>
+</tr>
+<tr>
+<td>An outcome-mix floor keyed on the fail-kind mix</td>
+<td>Telemetry. Do not key it on topology. <strong>Partly overtaken by PR #416's <code>PL-24</code></strong> (advisory ending-mix shape: a 60% single-kind ceiling plus a style-aware winnability floor). That covers the <em>distributional</em> half of this item without telemetry, so the residual here is only the fail-kind-mix keying, which still needs telemetry. #416's own calibration note is the more valuable carry-forward: a flat 5% positive-valence floor fired on all nine gamebooks and no prose story, so it was replaced with an absolute distinct-winnable-endings floor for gamebooks. That is section 7 rule 2 arrived at independently.</td>
+</tr>
+<tr>
+<td>Challenge mode / permadeath</td>
+<td>B2's ADR, since it is a backtracking-semantics change; plus a per-(profile, series) row, which does not exist.</td>
+</tr>
+<tr>
+<td>Alternate beat phrasings</td>
+<td>Its own design doc and ADR. The evidence for it is weaker than stated (the illustrating quotation was wrong), though the byte-frozen-beat constraint is real. Also bounded by the <code>L2-12</code> 100,000-configuration cap, which permanently caps declared variables near five.</td>
+</tr>
+<tr>
+<td>Per-reader (<code>profile_id</code>) scoping, and ATG against the k nearest same-tree fills with calibrated thresholds</td>
+<td>A1 through A5, since both consume the similarity signal.</td>
+</tr>
+<tr>
+<td>A guardian visibility ceiling</td>
+<td>A first-class ceiling column on <code>Storybook</code> (no <code>Storybook</code> to <code>StoryRequest</code> join exists; <code>GenerationJob.storybook_id</code> is deliberately not a foreign key), plus an explicit amendment to the <code>#CRITICAL</code> invariant at <code>publishing/service.py:309-317</code> that visibility "must never be settable outside an admin-gated approve". If built, enforce on an explicitly passed acting capacity per <code>admin-guardian-dual-roles-plan.md</code>, not on <code>acting_role</code>, which returns <code>GUARDIAN</code> for a same-family admin approve.</td>
+</tr>
+<tr>
+<td>Growing the small cells past three trees</td>
+<td>WS-8's flywheel owns the automated path; A8 must gate every addition.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-decisions-required">6. Decisions required<a class="headerlink" href="#6-decisions-required" title="Permanent link">&para;</a></h2>
+<p><strong>Resolved (owner, 2026-07-25): catalog disposition.</strong> No book or skeleton is required to be kept. Retire and
+replace, or fix; substandard work is not carried. This is a standing principle, not a one-off ruling on
+brass-lantern. <strong>Convergent, narrower support from ADR-023 section 6, merged in PR #418</strong>: deciding its own
+migration posture for existing content, it lands on "<strong>Replace by default</strong>, given the low volume and the fact
+that it is test content; repair only where a specific story is expensive to reproduce"
+(<code>adr-023-story-personalization-slots.md:327-328</code>). That is the same reasoning from the same premises, reached
+independently. Two honest bounds on how much weight it carries: ADR-023 is <code>status: proposed</code> pending counsel
+sign-off, not accepted, and its ruling is scoped to migrating content onto sentinels rather than to keep-or-retire
+generally. So it corroborates the principle; it does not ratify it. The principle still rests on the owner
+instruction. It has three consequences:</p>
+<ul>
+<li><strong>A9</strong> takes the fix-or-replace path. A same-series exemption from the in-cell clone rule is <strong>off the table</strong>:
+  two books of one series sharing an isomorphic tree is substandard regardless of the narrative continuity that
+  explains it.</li>
+<li><strong>A8 gains teeth.</strong> The audit may require replacement rather than negotiate an exemption.
+  <strong>Threshold decision closed 2026-07-26, on measurement: use <code>TAU_CELL</code> = 0.05, blocking, and do not pursue a
+  <code>TAU_STRUCT</code> gate.</strong> All 67 in-cell hand-authored pairs across the 18 populated cells were measured with
+  <code>structural_distance</code>. At <code>TAU_CELL</code> exactly <strong>one</strong> pair fails, the known clone pair at 0.00095, with the
+  next-lowest at 0.09123 and a median of 0.3956. So <code>TAU_CELL</code> flags precisely what A9 already intends to fix and
+  nothing else, which means A8 can land blocking immediately with no calibration risk. A <code>TAU_STRUCT</code> (0.332507)
+  gate is rejected on two independent grounds: it would fail <strong>17 of 67 pairs (25%) across 12 of 18 cells</strong>, which is
+  the whole-class-failure anti-pattern PR #416's AL-051 warns against, and ADR-020's floor-recalibration
+  amendment already made <code>TAU_STRUCT</code> <strong>documentation only</strong> ("No longer gates mutants; the anti-clone guarantee
+  is <code>TAU_CELL</code> against parent + siblings"), so gating on it would contradict a ratified amendment. Note the
+  baseline's own <code>clamps</code> entry already records the 0.000947 pair as the observed same-cell minimum that
+  <code>TAU_CELL</code> is set to reject, so A8 is implementing an intent the baseline states rather than choosing a new bar.
+  One scope note: <code>TAU_CELL</code> currently gates generated <strong>mutants</strong>; A8's delta is extending it to hand-authored
+  in-cell pairs.</li>
+<li><strong>A10</strong> leans to authoring the missing teen <code>short</code> skeletons rather than degrading the surface, since a cell
+  that 422s is itself substandard. Still needs a call on sequencing, because this is content authoring with
+  nothing to fix.</li>
+</ul>
+<p><strong>Resolved (owner, 2026-07-25): difficulty.</strong> Adopt A13 with a <strong>3-hop</strong> bound, re-evaluated as stories are
+developed, rather than a fail-depth floor. And a new rule: <strong>no decision may offer only fatal options; at least
+one must allow advancing or looping back.</strong> That becomes A14 (<code>L2-14</code>, see section 6.2 for why Layer 2).</p>
+<p><strong>Resolved (owner, 2026-07-25): ring-2 attribution.</strong> Sharing the child's first name with a connected family is
+fine, because both guardians have agreed. Keep <code>display_name</code> as the attribution; B6 closes as
+working-as-intended. The basis is recorded here so it is not re-raised: mutual connection consent is the
+control, <code>coppa-compliance-audit.md:129</code> establishes that <code>display_name</code> is a first name or nickname and the
+only stored child name, and the disclosure is inventoried in <code>gdpr-compliance-review.md:160</code>. ADR-016 should
+gain a sentence stating ring-2 attribution granularity, since it currently defines the rings but not this.</p>
+<p><strong>Resolved (owner, 2026-07-25): A14's scope.</strong> The intent is that a reader is never shown option A and option B
+where both result in death. Confirmed at the negative-valence reading below, which is a superset of that concern.</p>
+<h3 id="61-child-reader-review-2026-07-25">6.1 Child-reader review (2026-07-25)<a class="headerlink" href="#61-child-reader-review-2026-07-25" title="Permanent link">&para;</a></h3>
+<p>A subagent evaluated A11, A13, A14 and the disposition principle purely from the reader's side, grounded in the
+shipped reader UI and the ADR-011 band tables. It found the rules mostly right and the <strong>wording</strong> mostly not the
+child's. Eight findings argued a rule was wrong; seven argued it needed different presentation. The substantive
+ones are folded into A11, A13a/A13b, A14, and A15 through A18 above. Three worth keeping visible:</p>
+<ul>
+<li><strong>Band spread.</strong> A13 and A14 both key on <code>death</code>/<code>capture</code>, which <code>_PROFILES</code> forbids at 3-5 and 5-8 and
+  partially at 8-11. So the two youngest bands get <strong>zero benefit</strong> from either while carrying A13's downside if
+  the multi-hop had been bound to the in-story button. A11 is where those bands live or die.</li>
+<li><strong>A coupling to watch.</strong> A13 and A14 both make the world safer, and landing both unscoped at 13-16/16+ is the
+  fastest route to a teen concluding the book cannot hurt them. Band-scoping A14 (above) is what prevents that.</li>
+<li><strong>The actionability test for any kid-facing restriction</strong>: if a child cannot act on it, it is anxiety, not
+  information. That is why the unnameable forbidden-theme warning is dropped rather than reworded.</li>
+</ul>
+<h3 id="62-how-a14s-scope-was-chosen-and-why-it-is-a-layer-2-rule">6.2 How A14's scope was chosen, and why it is a Layer 2 rule<a class="headerlink" href="#62-how-a14s-scope-was-chosen-and-why-it-is-a-layer-2-rule" title="Permanent link">&para;</a></h3>
+<p>The rule reads naturally as three different tests, and the measurement separates them:</p>
+<table>
+<thead>
+<tr>
+<th>Reading of "only fatal options"</th>
+<th>Violations of 2,668 decisions</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Every option is a <code>death</code>/<code>capture</code> terminal</td>
+<td><strong>1</strong></td>
+<td>The clear floor. Too narrow to be the whole rule.</td>
+</tr>
+<tr>
+<td>Every option is a <strong>negative-valence</strong> terminal (doomed whatever you pick)</td>
+<td><strong>37</strong></td>
+<td><strong>Recommended.</strong> Matches the intent: the reader is offered a decision with no good outcome.</td>
+</tr>
+<tr>
+<td>Every option terminates at all</td>
+<td>144</td>
+<td><strong>Not implementable as stated.</strong> These sit at median 90% of max tree depth and 88 of them offer a positive ending: they are climaxes. Forbidding them would make it impossible to end a story on a choice.</td>
+</tr>
+</tbody>
+</table>
+<p>The middle reading is adopted. The literal phrase "advancing or loop back" points at the third, which the
+climax measurement rules out: a story must be able to end on a choice.</p>
+<p><strong>Two findings from checking the gated case</strong>, which the declared-choice count would have missed:</p>
+<ul>
+<li><del><strong>No skeleton has "unconditional options all fatal with the survivable one gated."</strong></del> <strong>Refuted 2026-07-26
+  by the implementation.</strong> <code>the-serpent-vaults</code> node <code>c22_gate</code> degrades exactly that way: its survivable option
+  <code>c22_pass</code> is <strong>conditional</strong>, and the other four options each corridor into a <code>death</code> ending, so whenever that
+  condition is false the reader is shown four options and dies on all of them. The original claim came from
+  scanning direct terminals only, which cannot see a corridor. This does not weaken the argument for stating the
+  rule over configurations, it strengthens it: the loophole 6.2 called theoretical is occupied.</li>
+<li><strong>18 decision nodes have every choice conditional</strong> (in <code>the-cinder-bazaar</code>, <code>the-quiet-harbor-protocol</code>,
+  <code>the-iron-spire-trial</code>, <code>the-glass-comet</code>, and the brass-lantern pair). That shape is already covered:
+  <strong><code>L2-9</code></strong> blocks "any reachable non-ending configuration with zero visible choices", so a reader can never
+  face an empty decision, and these skeletons pass the gate today.</li>
+</ul>
+<p>Together those two are why A14 belongs in Layer 2 and must be written over visible choices. Nothing violates it
+through gating today, and stating it that way costs nothing while closing the loophole permanently. <code>L2-9</code> and
+<code>L2-11</code> already walk the same configuration space, so the <code>L2-12</code> cap is not a new constraint.</p>
+<h2 id="7-method-rules-for-this-document">7. Method rules for this document<a class="headerlink" href="#7-method-rules-for-this-document" title="Permanent link">&para;</a></h2>
+<p>Carried from the errata, because the previous plans failed on all six.</p>
+<ol>
+<li>Measurement and inference are separated. Section 1 is measurement; section 2 states what is not claimed.</li>
+<li>Any invented proxy is declared as invented, with its free parameters and a sensitivity sweep, or it decides
+   nothing.</li>
+<li>One metric, one definition per table.</li>
+<li>A later section may not quietly erase an earlier section's evidence. If it does, the earlier section is
+   edited, not left standing.</li>
+<li>Rule IDs, ADR numbers, and "this is unaddressed" claims are checked against <code>validator-rules.md</code> and the
+   98-document corpus before being written. <strong>Amended 2026-07-26</strong>: checking <code>main</code> is not sufficient. A rule ID is
+   free only if no <em>open</em> PR has claimed it. B3's <code>SR-8</code> was correct against <code>main</code> and wrong against PR #416.
+   Check <code>main</code> and the open PR set, and say which basis the claim rests on.</li>
+<li>Source text is quoted verbatim with its file path, or not quoted.</li>
+<li><strong>Added 2026-07-26</strong>: an ADR's status is quoted with its citation. A <code>proposed</code> ADR corroborates; it does not
+   ratify. This document overclaimed ADR-023 as ratifying the disposition principle before checking its front
+   matter.</li>
+<li><strong>Added 2026-07-26</strong>: editing a file under <code>skeletons/</code> is never a one-file change. Committed derived artifacts
+   (<code>docs/architecture/diagrams/skeletons/&lt;band&gt;/&lt;slug&gt;.puml</code> and <code>.svg</code>, plus the
+   <code>docs/architecture/story-skeletons.md</code> catalog) are regenerated by
+   <code>scripts/render_skeleton_diagrams.py</code> and gated by
+   <code>tests/integration/test_skeleton_diagrams_fresh.py</code>. Two commits in this workstream (the L2-14 content fixes and
+   the first A20 slice) shipped with stale <code>.puml</code>, caught only by a full-suite run. Every remaining A20 skeleton
+   will hit this, so regenerate and stage the derived files in the same commit. Note that the freshness gate checks
+   <code>.puml</code> only: the <code>.svg</code> files, which are what <code>story-skeletons.md</code> actually links, are ungated and need
+   <code>graphviz</code> installed locally, so a machine without <code>dot</code> silently renders 61 <em>empty</em> SVGs and reports success.
+   Verify a re-render kept its node groups (<code>grep -c 'g id='</code>) before staging any SVG.
+   <strong>Amended 2026-07-26</strong>: the diagrams are not the only catalog-derived artifact.
+   <code>docs/planning/ws5_floor_baseline.json</code> is computed from the whole catalog by
+   <code>scripts/calibrate_mutation_floors.py</code> and gated by
+   <code>tests/unit/test_skeleton_mutation_floors.py</code>, so a one-line skeleton edit can make it stale too: adding a single
+   effect to <code>the-sunken-temple</code> moved the observed same-cell minimum 0.000947 -&gt; 0.000469 and shifted two
+   state-space statistics. Regenerate it in the same commit, and <strong>diff it rather than trusting it</strong>: confirm the
+   three thresholds (<code>TAU_STRUCT</code>, <code>TAU_CELL</code>, <code>TAU_STATE</code>) are unchanged and only observed statistics moved, since
+   a threshold shift would silently re-baseline the gates that load this file. The general rule: after touching
+   <code>skeletons/</code>, run the full suite before claiming done. Both stale-artifact failures in this workstream were found
+   by a full run and by nothing else.</li>
+</ol>
+<h2 id="8-reconciliation-with-pr-418-merged-and-pr-416-open">8. Reconciliation with PR #418 (merged) and PR #416 (open)<a class="headerlink" href="#8-reconciliation-with-pr-418-merged-and-pr-416-open" title="Permanent link">&para;</a></h2>
+<p>Review dated 2026-07-26, after merging <code>origin/main</code> at <code>bbf6ddb</code> (which contains PR #418,
+"opt-in story personalization P1+P2 with fail-closed sentinel integrity (ADR-023)", and the v0.36.0 release
+commit) into this branch. No conflicts.</p>
+<p><strong>The plan's foundations survive intact.</strong> PR #418 touched none of <code>skeletons/</code>, <code>diversity/</code>,
+<code>generation/skeleton_match.py</code>, <code>fill.md</code>, <code>validator/{policy,series,band_profile}.py</code>,
+<code>storybook/models.py</code>, <code>frontend/src/player/engine.ts</code>, <code>frontend/src/reader/Reader.tsx</code>, or <code>api/reading.py</code>.
+Every measurement in section 1 was re-derived on the merged tree and is unchanged: 61 skeletons / 58
+production-eligible, cell sizes <code>{3: 15, 4: 2, 5: 1}</code>, the clone pair at <code>structural_distance</code> 0.00095 with
+unequal fingerprints, 2,668 decision nodes, and the echo floor at 132 themes / 129 passing at band <code>3-5</code> with the
+same three withheld.</p>
+<p><strong>What changed, and where it landed:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Effect on this plan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADR-023 section 4 replaces the Route A hero-name copy</td>
+<td><strong>A11 rewritten.</strong> Adopt ADR-023's wording; the child-reader review's proposal to reuse "Heroes in our stories always have made-up names" is withdrawn, because that is the sentence being replaced.</td>
+</tr>
+<tr>
+<td>ADR-023 Ask 2 (shuffle semantics)</td>
+<td><strong>Answered in A11</strong>: display-only among generic names, no stored or generated effect, so it stays orthogonal to the sentinel mechanism.</td>
+</tr>
+<tr>
+<td>ADR-023 section 3 sets a stricter ring-2 bar than B6</td>
+<td><strong>B6 re-scoped</strong> from "add a sentence to ADR-016" to "participate in the single reconciliation edit ADR-023 requires".</td>
+</tr>
+<tr>
+<td>Sentinels now exist in <code>node.body</code>, and the ATG never strips them</td>
+<td><strong>New deliverable A19.</strong> The only genuinely new defect this review found.</td>
+</tr>
+<tr>
+<td>ADR-023 catalog facts (45 of 61 contracts, <code>HERO</code> in 39 of 45; pronouns hardcoded in beats)</td>
+<td><strong>Added to section 1.</strong> The pronoun examples independently corroborate the frozen-beat constraint that bounds the deferred alternate-phrasings item.</td>
+</tr>
+<tr>
+<td>ADR-023 section 6 "Replace by default"</td>
+<td>Corroborates the disposition principle in section 6, with the two bounds stated there.</td>
+</tr>
+<tr>
+<td>Capability register at v1.8: <strong>G18</strong> and <strong>K20</strong> minted, K19 carries a copy dependency</td>
+<td><strong>Noted in A11.</strong> K19's row already records the rewording as a precondition on G18's flag and requires consistency with A11, so the two are already coupled in the register.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The rule-ID note.</strong> On <code>main</code> today the maxima are <code>SR-7</code>, <code>L2-13</code>, <code>PL-22</code> (enumerated from
+<code>src/cyo_adventure/validator/</code>). ADR-023 flags an <code>SR-8</code> collision and attributes it to PR #416, not #418; that
+attribution is correct, and the apparent contradiction with this plan's "<code>SR-7</code> is the current maximum" is that
+the two claims have different bases. Both are true. Open PR #416 claims <code>SR-8</code>, <code>PL-23</code> and <code>PL-24</code>. Its
+"adds L2-13" is a catalog entry for a rule already shipped in <code>layer2.py</code>, not a new ID, so <code>L2-14</code> stays free
+for A14. Net: B3 becomes <code>SR-9</code>, the deferred fail-depth floor becomes <code>PL-25</code>, A14 keeps <code>L2-14</code>, and all three
+should be re-checked against #416's branch immediately before implementation rather than trusted from here.</p>
+<h3 id="81-personalization-is-a-diversity-lever-and-this-review-initially-missed-it">8.1 Personalization is a diversity lever, and this review initially missed it<a class="headerlink" href="#81-personalization-is-a-diversity-lever-and-this-review-initially-missed-it" title="Permanent link">&para;</a></h3>
+<p><strong>Owner observation, 2026-07-26: the render-time substitution PR #418 adds should increase perceived diversity by
+letting a reader insert themselves into an existing story.</strong> That is correct, and the first pass of this review
+treated #418 only as a coordination and contamination surface. Recorded here with the measurement, because the
+measurement both confirms the point and says how to sequence it.</p>
+<p><strong>Why it is a real lever, and a kind this plan did not have.</strong> The original goal was <em>perceived</em> diversity. Every
+Track A item works on <strong>between-book distance</strong>: theme signatures, structural distance, variation axes, clone
+audits. Personalization works on a different axis, the <strong>reader's relationship to a single book</strong>, which nothing
+else here touches. It is also the only lever that raises perceived novelty <strong>without authoring a tree</strong>, so it
+acts immediately inside the binding constraint this plan keeps running into: 58 production-eligible skeletons, 15
+of 18 non-empty cells holding exactly three, and P(a reader's second story reuses the first's tree) = &#8533;.
+ADR-023 row 1 calls the protagonist first name "the single detail that makes a book feel like the child's own",
+and rows 2 through 8 compound on it.</p>
+<p><strong>The trade is more favourable than it first appears.</strong> The worry worth checking was that personalization
+<em>removes</em> between-book variation: a made-up hero name differs per book, whereas a reader's own name is constant
+across every book they read. That is directionally true and turns out to be small, because <strong><code>HERO</code> is the least
+varied slot in the catalog</strong>: 28 distinct values across 39 books (0.72), with <code>Wren</code> reused five times. Every
+non-personalizable differentiator measured is at or near fully distinct (<code>THRESHOLD</code> 34/34, <code>ENTRANCE</code> 24/24,
+<code>DEADLINE</code> 19/19, <code>GOAL</code> 17/17, all <code>ROUTE_*_CHAR</code> 1.00). So opting in spends the catalog's <strong>weakest</strong>
+differentiating axis and leaves the strong ones intact. One exception to sequence deliberately: <strong><code>COMPANION</code> is
+14/14 fully distinct</strong> and is personalizable under ADR-023 row 3, so a sibling substitution there does spend a
+maximally differentiating axis. Prefer <code>HERO</code> first; treat <code>COMPANION</code> as a knowing trade, not a free one.</p>
+<p><strong>The honest limit.</strong> Personalization raises the floor on how engaging any one book feels. It does not raise the
+ceiling on how <em>distinguishable</em> two books are: the same tree with your name in it is still the same tree, so
+the &#8533; reuse probability and the isomorphic pair are untouched. It is additive to the structural work, not a
+substitute for it, and it makes the surviving structural differentiators carry proportionally more of the load,
+which is an argument for keeping A8 and A9 at priority rather than relaxing them.</p>
+<p><strong>The actionable finding: eligibility is anti-correlated with need.</strong> Contract coverage runs 100% at <code>5-8</code> and
+<code>8-11</code> but 57% at <code>13-16</code> and 64% at <code>16+</code> and <code>10-13</code>, with 15 of 16 gaps at <code>10-13</code> or above. The teen bands
+have the thinnest catalog by every measure in section 1, and both books of the isomorphic clone pair have no
+contract at all, so the two books that most need differentiation help get <strong>none</strong> from this mechanism. That is
+cheap to fix relative to authoring trees, and it becomes <strong>A20</strong>.</p>
+<p><strong>Two standing obligations inherited from #416, which will bind this work once it merges:</strong></p>
+<ol>
+<li>Its new <code>CLAUDE.md</code> "Authoring Lessons Requirement" directive mandates appending to
+   <code>docs/planning/authoring-lessons-log.md</code>, validated by <code>scripts/check_lessons_log.py</code>, for any authoring or
+   validator work. A8, A14, A19 and B3 are all validator work by that definition.</li>
+<li>Its AL-014/AL-044 report that the anti-clone floor is unreachable for hand-authored shells, with two withheld
+   books at structural distance 0.0139 against a 0.05 floor. That is <strong>independent corroboration of A8's finding
+   from a different corpus</strong>, and it sharpens the section 6 threshold decision: the failing set is larger than the
+   one clone pair this plan measured, so measure it across both corpora before picking <code>TAU_CELL</code> or <code>TAU_STRUCT</code>.</li>
+</ol>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

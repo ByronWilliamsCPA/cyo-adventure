@@ -12,13 +12,9 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-011-story-scale-framework/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-024-bounded-backtracking-path-replay/">
       
       
-        <link rel="prev" href="../adr-010-modal-review-and-gated-generation/">
-      
-      
-        <link rel="next" href="../../../PROJECT_SETUP/">
       
       
         
@@ -29,7 +25,7 @@
     
     
       
-        <title>ADR-011: Story-scale framework (reading band x length x style) - CYO Adventure</title>
+        <title>ADR-024: Bounded backtracking by forward path replay - CYO Adventure</title>
       
     
     
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-011-story-scale-framework-reading-band-x-length-x-style" class="md-skip">
+        <a href="#adr-024-bounded-backtracking-by-forward-path-replay" class="md-skip">
           Skip to content
         </a>
       
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-011: Story-scale framework (reading band x length x style)
+              ADR-024: Bounded backtracking by forward path replay
             
           </span>
         </div>
@@ -388,12 +384,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../../" class="md-tabs__link">
           
   
@@ -1693,8 +1687,6 @@
       
   
   
-    
-  
   
   
     
@@ -1718,19 +1710,18 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -1759,13 +1750,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1922,8 +1913,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1961,17 +1950,16 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8_6" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -2000,13 +1988,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2373,44 +2361,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ADR-011
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--accepted"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2433,208 +2387,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TL;DR
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Context
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Decision">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-three-axes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Three axes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#1a-mvptest-tier-below-short-non-production" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1a. MVP/Test tier (below Short, non-production)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-total-words-primary-node-count-derived" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Total words primary, node count derived
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-words-per-node-advisory-story-mean-anchor-100-at-the-research-core" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Words per node (advisory story-mean; anchor 100 at the research core)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-the-three-clocks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. The three clocks
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-master-cell-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Master cell table
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-constants-research-locked-all-cells" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Constants (research-locked, all cells)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7-topologies-6-and-flow-primitives" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Topologies (6) and flow primitives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#8-series-campaign-continuity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. Series (campaign continuity)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#9-provenance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9. Provenance
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Consequences
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3047,10 +2799,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-three-axes" class="md-nav__link">
+  <a href="#1-backtracking-is-by-forward-replay-only" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Three axes
+        1. Backtracking is by forward replay only
       
     </span>
   </a>
@@ -3058,10 +2810,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#1a-mvptest-tier-below-short-non-production" class="md-nav__link">
+  <a href="#2-the-server-and-validator-are-unaffected" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1a. MVP/Test tier (below Short, non-production)
+        2. The server and validator are unaffected
       
     </span>
   </a>
@@ -3069,10 +2821,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-total-words-primary-node-count-derived" class="md-nav__link">
+  <a href="#3-availability-is-fail-closed-and-defined-on-replayability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Total words primary, node count derived
+        3. Availability is fail-closed, and defined on replayability
       
     </span>
   </a>
@@ -3080,10 +2832,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-words-per-node-advisory-story-mean-anchor-100-at-the-research-core" class="md-nav__link">
+  <a href="#4-what-rewinds-and-what-carries-over" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Words per node (advisory story-mean; anchor 100 at the research core)
+        4. What rewinds and what carries over
       
     </span>
   </a>
@@ -3091,10 +2843,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-the-three-clocks" class="md-nav__link">
+  <a href="#5-a-bounded-multi-hop-retry-affordance-is-authorized" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. The three clocks
+        5. A bounded multi-hop retry affordance is authorized
       
     </span>
   </a>
@@ -3102,54 +2854,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-master-cell-table" class="md-nav__link">
+  <a href="#6-continuation-read-backtracking-is-not-authorized-by-this-adr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Master cell table
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-constants-research-locked-all-cells" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Constants (research-locked, all cells)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7-topologies-6-and-flow-primitives" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Topologies (6) and flow primitives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#8-series-campaign-continuity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. Series (campaign continuity)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#9-provenance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9. Provenance
+        6. Continuation-read backtracking is NOT authorized by this ADR
       
     </span>
   </a>
@@ -3214,577 +2922,188 @@
   
 
 
-<h1 id="adr-011-story-scale-framework-reading-band-x-length-x-style">ADR-011: Story-scale framework (reading band x length x style)<a class="headerlink" href="#adr-011-story-scale-framework-reading-band-x-length-x-style" title="Permanent link">&para;</a></h1>
+<h1 id="adr-024-bounded-backtracking-by-forward-path-replay">ADR-024: Bounded backtracking by forward path replay<a class="headerlink" href="#adr-024-bounded-backtracking-by-forward-path-replay" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted (2026-07-03)
-<strong>Date</strong>: 2026-07-02
-<strong>Relates to</strong>: <a href="../adr-001-story-format-json-storybook/">ADR-001</a> (adds <code>length</code>,
-<code>narrative_style</code>, and <code>series</code> metadata plus two <code>Topology</code> enum values),
-<a href="../adr-006-conditions-inhouse-evaluator/">ADR-006</a> (series state-carry uses declared
-variables/conditions). <strong>Supersedes</strong> the compact per-band budgets in
-<code>validator/band_profile.py</code> (the "compact slice", the only part of an earlier
-internal reading-level x topology x scale design memo that landed).</p>
+<p><strong>Status</strong>: Accepted (2026-07-26), on owner direction to implement
+<a href="../../story-diversity-implementation-plan/">story-diversity-implementation-plan.md</a> slice S0.
+<strong>Supersedes</strong>: <a href="../../runtime-semantics/">runtime-semantics.md</a> section 6 ("No Backtracking in v1"),
+whose own text requires "a revision to this document and an ADR" for any Phase-1 back-button
+implementation. This is that ADR; the section-6 revision lands with it.
+<strong>Cross-sign</strong>: player only. The validator and server need no change; see Decision 2.</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>Story size is a deliberate product axis, not a side effect of generator behaviour. A
-story is placed on a <strong>reading-band x length x narrative-style</strong> matrix. <strong>Length is
-defined by a total-word budget; node count is derived</strong> (<code>nodes = total_words /
-words_per_node</code>). Three "clocks" govern the experience: a <strong>fastest-finish arc floor</strong>
-(shortest path to a satisfying completion must tell a full story), a <strong>total-node
-envelope</strong> (world size, with per-cell variance across skeletons), and a <strong>whole-world
-replay</strong> measure. Decisions-per-path is held constant (~4-8); length adds breadth, not
-depth. Six topologies compose from six flow primitives, gated by per-band safety
-allowances. A <strong>series</strong> chains books, with every successful-completion ending of a
-non-final book converging on the next book's single entry node.</p>
+<p>Backtracking is permitted, and is implemented <strong>only</strong> by replaying the recorded path forward from a known
+origin, never by reversing effects. That is why it does not need the event-log model section 6 deferred it
+for: a snapshot plus its recorded path is already sufficient to re-derive any earlier point on that path.
+Availability is fail-closed. A bounded multi-hop retry affordance is authorized at the ending screen. Enabling
+backtracking for <strong>continuation reads</strong> is explicitly <em>not</em> authorized here, because it requires durable state
+that does not exist yet.</p>
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<p>The full model was specified in an earlier internal design memo but only a <strong>compact
-slice</strong> shipped: <code>band_profile.py</code> holds one small node range per band (8-11 &lt;= 30, 16+
-&lt;= 60), with no length or style axis, no words-per-node enforcement, and a band-only
-coverage view. Genre-faithful scale is far larger (8-11 ~90-120 nodes, 13-16 ~350-456,
-16+ ~400+), so genre-scale skeletons are rejected by <code>load_skeleton</code> today.</p>
-<p>The empirical basis (recorded in <code>docs/planning/research/</code>):</p>
-<ul>
-<li><strong>JHM 2019</strong> measured 40 classic CYOA books (ages 9-12): ~90-120 page-nodes, median
-  ~20 endings (11-42), ~5 decisions/playthrough (7-8 longest), essentially a tree (max
-  indegree 1.5). This anchors the 8-11 and 10-13 bands with high confidence.</li>
-<li>The four-source reconciliation adds words/node (~100-150), total words (~8-15k at
-  8-11), the age-gated fail-state policy, and the finding that many endings come from
-  <strong>reconvergent leaves, not depth</strong>.</li>
-<li><strong>5-8</strong> node counts are measured (medium confidence); <strong>13-16</strong> rests on gamebook
-  metadata; <strong>3-5 and 16+ have no research</strong> and are product-defined.</li>
-</ul>
-<p>The framework must be durable because size decisions drive reading fit, safety policy,
-generation cost, and catalog shape, and because the compact slice already demonstrated
-that an unrecorded model silently collapses (the length axis was lost).</p>
+<p><code>runtime-semantics.md</code> section 6 states, normatively, "the reader moves forward only. There is no 'back' button
+in v1", with the rationale that "a back button requires undoing effects, which demands an event-log model rather
+than a snapshot model."</p>
+<p>A back button ships. <code>frontend/src/reader/Reader.tsx:210</code> renders it, commenting "Kids mis-tap constantly; Go
+back undoes just the last choice by replaying." So the document and the product disagree, and the document says
+what to do about that.</p>
+<p><strong>The rationale, not just the rule, is what turned out to be wrong.</strong> Section 6 assumed backtracking means
+undoing effects. The shipped implementation never undoes anything: <code>back()</code>
+(<code>frontend/src/player/engine.ts:325</code>) calls <code>replayRecordedPath</code>, which starts a fresh <code>start(story)</code> and
+re-applies the recorded choices, then returns the state one step short of the live one. Effects are applied
+forward, exactly once, in the same order as the original read. No inverse operation exists anywhere in the
+mechanism, so no event log is required. The snapshot model of section 5 is preserved intact.</p>
+<p>This ADR ratifies that mechanism, tightens the rules around it, and authorizes one extension.</p>
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<h3 id="1-three-axes">1. Three axes<a class="headerlink" href="#1-three-axes" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Reading band</strong> (6): <code>3-5</code>, <code>5-8</code>, <code>8-11</code>, <code>10-13</code>, <code>13-16</code>, <code>16+</code>.</li>
-<li><strong>Length</strong> (3 production tiers): <code>short</code>, <code>medium</code>, <code>long</code>, defined by a <strong>total-word
-  budget</strong>. Young bands (<code>3-5</code>, <code>5-8</code>) cap at Medium. Epic scale is a <strong>series</strong>, not a
-  4<sup>th</sup> tier. A non-production <strong>MVP/Test tier</strong> sits below Short (section 1a).</li>
-<li><strong><code>narrative_style</code></strong> (explicit field): <code>prose</code> vs <code>gamebook</code>, meaningful only for
-  <code>13-16</code>/<code>16+</code>; all lower bands are implicitly prose. Style sets words/node, so one
-  length is either fewer/denser nodes (prose) or more/shorter nodes (gamebook).</li>
-</ul>
-<h3 id="1a-mvptest-tier-below-short-non-production">1a. MVP/Test tier (below Short, non-production)<a class="headerlink" href="#1a-mvptest-tier-below-short-non-production" title="Permanent link">&para;</a></h3>
-<p>A single band-independent tier below Short, for prototyping, pipeline/integration
-testing, and generator development. It is <strong>not production-eligible</strong>: skeletons and
-stories in this tier are marked <code>production_eligible = false</code> (a <code>tier = "mvp"</code> marker),
-<code>load_skeleton</code> accepts them, but production story selection excludes them so no
-MVP-scale story ever reaches a child-facing catalog.</p>
-<ul>
-<li><strong>Node envelope</strong>: ~8-45 nodes, band-independent (the point is exercising the plumbing,
-  not reading fit). Words/node still <strong>inherits the band mean</strong> from section 3, so an
-  <code>16+</code> MVP node is denser than a <code>3-5</code> one.</li>
-<li><strong><code>min-to-complete</code></strong>: relaxed to ~4 nodes; the arc-floor substance requirement of the
-  three clocks (section 4) is <strong>waived</strong> here, because MVP shells exist to be short.</li>
-<li><strong>Endings</strong>: ~2-6. <strong>Style</strong>: prose only (gamebook needs scale to be meaningful).</li>
-<li>The three current hand-authored skeletons live here as development seeds: Lost Mitten
-  (<code>3-5</code>, 11 nodes), Clocktower (<code>10-13</code>, 25), Sunken Signal (<code>16+</code>, 32). This is the
-  decision that closes the earlier Pilot-vs-rescale question: <strong>adopt an MVP tier and
-  classify the current skeletons into it</strong>, rather than rescaling them to production floors.</li>
-</ul>
-<h3 id="2-total-words-primary-node-count-derived">2. Total words primary, node count derived<a class="headerlink" href="#2-total-words-primary-node-count-derived" title="Permanent link">&para;</a></h3>
-<p><code>nodes = total_words / words_per_node</code>. The gate enforces the derived node envelope, but
-the design anchor is words. This binds nodes, words, and words/node by one equation so
-the axes cannot silently disagree (the failure mode that lost the length axis before).</p>
-<h3 id="3-words-per-node-advisory-story-mean-anchor-100-at-the-research-core">3. Words per node (advisory story-mean; anchor 100 at the research core)<a class="headerlink" href="#3-words-per-node-advisory-story-mean-anchor-100-at-the-research-core" title="Permanent link">&para;</a></h3>
-<p>Enforced as a story-level <strong>mean</strong> within the advisory band, plus a per-node hard
-<strong>max</strong> (wall guard); <strong>no</strong> hard per-node min (a one-line beat is legitimate).</p>
-<table>
-<thead>
-<tr>
-<th>Band</th>
-<th>Style</th>
-<th style="text-align: right;">Mean</th>
-<th>Advisory band</th>
-<th style="text-align: right;">Per-node max</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>3-5</td>
-<td>prose</td>
-<td style="text-align: right;">40</td>
-<td>28-55</td>
-<td style="text-align: right;">90</td>
-</tr>
-<tr>
-<td>5-8</td>
-<td>prose</td>
-<td style="text-align: right;">70</td>
-<td>50-95</td>
-<td style="text-align: right;">155</td>
-</tr>
-<tr>
-<td>8-11</td>
-<td>prose</td>
-<td style="text-align: right;">100</td>
-<td>70-135</td>
-<td style="text-align: right;">220</td>
-</tr>
-<tr>
-<td>10-13</td>
-<td>prose</td>
-<td style="text-align: right;">100</td>
-<td>70-135</td>
-<td style="text-align: right;">220</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>prose</td>
-<td style="text-align: right;">140</td>
-<td>100-185</td>
-<td style="text-align: right;">310</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>gamebook</td>
-<td style="text-align: right;">65</td>
-<td>45-90</td>
-<td style="text-align: right;">145</td>
-</tr>
-<tr>
-<td>16+</td>
-<td>prose</td>
-<td style="text-align: right;">175</td>
-<td>125-230</td>
-<td style="text-align: right;">385</td>
-</tr>
-<tr>
-<td>16+</td>
-<td>gamebook</td>
-<td style="text-align: right;">80</td>
-<td>55-110</td>
-<td style="text-align: right;">175</td>
-</tr>
-</tbody>
-</table>
-<h3 id="4-the-three-clocks">4. The three clocks<a class="headerlink" href="#4-the-three-clocks" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Fastest finish</strong> = shortest path to a <em>satisfying</em> completion (success/completion
-  valence), a per-cell floor (<code>min-to-complete</code> nodes) that must contain a full arc
-  (setup -&gt; rising -&gt; climax -&gt; resolution). Substance is added with mandatory <strong>linear
-  passages</strong>, not extra decisions. Fail-<em>fast</em> is allowed; a quick, hollow <em>win</em> is not.</li>
-<li><strong>Total-node envelope</strong> = world size, derived; skeletons vary within it by topology.</li>
-<li><strong>Whole-world</strong> = replay to exhaustion (<code>total_words / reading_pace</code>), identical for
-  prose and gamebook; tracks ending count.</li>
-</ul>
-<h3 id="5-master-cell-table">5. Master cell table<a class="headerlink" href="#5-master-cell-table" title="Permanent link">&para;</a></h3>
-<p>These are the <strong>production</strong> cells; the below-Short MVP/Test tier (section 1a) is
-deliberately smaller than every row here and is excluded from this table.
-<code>min-&gt;complete</code> = arc-floor shortest success path (nodes). <code>total nodes</code> = derived
-envelope. Gamebook endings are "few wins + many fails" (~25-35% of nodes are terminals).
-<code>dagger</code> = exceeds the ~460-node hand-authoring ceiling; procedural-generator / series
-scale, not a hand-authored seed.</p>
-<table>
-<thead>
-<tr>
-<th>Band</th>
-<th>Length</th>
-<th>Style</th>
-<th style="text-align: right;">min-&gt;complete</th>
-<th style="text-align: right;">fastest finish</th>
-<th>total nodes</th>
-<th>endings</th>
-<th>whole-world</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>3-5</td>
-<td>Short</td>
-<td>prose</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">~2-3 min</td>
-<td>10-23</td>
-<td>2-4</td>
-<td>~5-9 min</td>
-</tr>
-<tr>
-<td>3-5</td>
-<td>Medium</td>
-<td>prose</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">~3 min</td>
-<td>23-45</td>
-<td>4-6</td>
-<td>~9-18 min</td>
-</tr>
-<tr>
-<td>5-8</td>
-<td>Short</td>
-<td>prose</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">~5 min</td>
-<td>29-50</td>
-<td>6-10</td>
-<td>~20-40 min</td>
-</tr>
-<tr>
-<td>5-8</td>
-<td>Medium</td>
-<td>prose</td>
-<td style="text-align: right;">9</td>
-<td style="text-align: right;">~7 min</td>
-<td>50-86</td>
-<td>10-16</td>
-<td>~40-65 min</td>
-</tr>
-<tr>
-<td>8-11</td>
-<td>Short</td>
-<td>prose</td>
-<td style="text-align: right;">9</td>
-<td style="text-align: right;">~8 min</td>
-<td>60-100</td>
-<td>12-18</td>
-<td>~50-85 min</td>
-</tr>
-<tr>
-<td>8-11</td>
-<td>Medium</td>
-<td>prose</td>
-<td style="text-align: right;">12</td>
-<td style="text-align: right;">~10 min</td>
-<td>100-160</td>
-<td>18-28</td>
-<td>~85-135 min</td>
-</tr>
-<tr>
-<td>8-11</td>
-<td>Long</td>
-<td>prose</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: right;">~12 min</td>
-<td>160-240</td>
-<td>28-40</td>
-<td>~2.2-3.3 hr</td>
-</tr>
-<tr>
-<td>10-13</td>
-<td>Short</td>
-<td>prose</td>
-<td style="text-align: right;">11</td>
-<td style="text-align: right;">~7 min</td>
-<td>90-140</td>
-<td>14-22</td>
-<td>~60-95 min</td>
-</tr>
-<tr>
-<td>10-13</td>
-<td>Medium</td>
-<td>prose</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: right;">~9 min</td>
-<td>140-220</td>
-<td>22-32</td>
-<td>~95-145 min</td>
-</tr>
-<tr>
-<td>10-13</td>
-<td>Long</td>
-<td>prose</td>
-<td style="text-align: right;">17</td>
-<td style="text-align: right;">~11 min</td>
-<td>220-340</td>
-<td>32-48</td>
-<td>~2.5-3.8 hr</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>Medium</td>
-<td>prose</td>
-<td style="text-align: right;">15</td>
-<td style="text-align: right;">~11 min</td>
-<td>115-170</td>
-<td>20-32</td>
-<td>~85-125 min</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>Medium</td>
-<td>gamebook</td>
-<td style="text-align: right;">24</td>
-<td style="text-align: right;">~8 min</td>
-<td>245-370</td>
-<td>many fails</td>
-<td>~85-125 min</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>Long</td>
-<td>prose</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">~15 min</td>
-<td>170-270</td>
-<td>30-48</td>
-<td>~2.1-3.3 hr</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>Long</td>
-<td>gamebook</td>
-<td style="text-align: right;">32</td>
-<td style="text-align: right;">~11 min</td>
-<td>370-585 dagger</td>
-<td>many fails</td>
-<td>~2.1-3.3 hr</td>
-</tr>
-<tr>
-<td>16+</td>
-<td>Medium</td>
-<td>prose</td>
-<td style="text-align: right;">18</td>
-<td style="text-align: right;">~14 min</td>
-<td>135-215</td>
-<td>24-40</td>
-<td>~110-175 min</td>
-</tr>
-<tr>
-<td>16+</td>
-<td>Medium</td>
-<td>gamebook</td>
-<td style="text-align: right;">29</td>
-<td style="text-align: right;">~11 min</td>
-<td>300-475 dagger</td>
-<td>many fails</td>
-<td>~110-175 min</td>
-</tr>
-<tr>
-<td>16+</td>
-<td>Long</td>
-<td>prose</td>
-<td style="text-align: right;">23</td>
-<td style="text-align: right;">~18 min</td>
-<td>215-345</td>
-<td>36-60</td>
-<td>~2.9-4.6 hr</td>
-</tr>
-<tr>
-<td>16+</td>
-<td>Long</td>
-<td>gamebook</td>
-<td style="text-align: right;">37</td>
-<td style="text-align: right;">~14 min</td>
-<td>475-750 dagger</td>
-<td>many fails</td>
-<td>~2.9-4.6 hr</td>
-</tr>
-</tbody>
-</table>
-<p>Reading-pace anchors (approx, standard fluency norms, not project-measured): 3-5 ~100
-wpm (read aloud), 5-8 ~90, 8-11 ~120, 10-13 ~150, 13-16 ~190, 16+ ~220.</p>
-<h3 id="6-constants-research-locked-all-cells">6. Constants (research-locked, all cells)<a class="headerlink" href="#6-constants-research-locked-all-cells" title="Permanent link">&para;</a></h3>
-<p>Decisions per path <strong>~4-8</strong> (length adds breadth, not depth; do not inflate); choices
-per decision <strong>2-3</strong>; setup before first choice <strong>~2-3 nodes</strong>; endings via reconvergent
-leaves, scaling with node count (prose ~15-22%).</p>
-<h3 id="7-topologies-6-and-flow-primitives">7. Topologies (6) and flow primitives<a class="headerlink" href="#7-topologies-6-and-flow-primitives" title="Permanent link">&para;</a></h3>
-<p>Flow primitives: <strong>linear passage</strong> (1-&gt;1), <strong>branch</strong> (1-&gt;N), <strong>bottleneck</strong> (M-&gt;1),
-<strong>loop</strong> (back-edge; needs state), <strong>terminal</strong> (1-&gt;0), <strong>restart-on-fail</strong> (negative
-ending -&gt; start/checkpoint).</p>
-<table>
-<thead>
-<tr>
-<th>Topology</th>
-<th>Built from</th>
-<th>Fastest-finish</th>
-<th>Reread driver</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>time_cave</td>
-<td>branch, terminal</td>
-<td>low</td>
-<td>many divergent endings</td>
-</tr>
-<tr>
-<td>loop_and_grow</td>
-<td>branch, loop, bottleneck, terminal</td>
-<td>low-med</td>
-<td>state growth per loop</td>
-</tr>
-<tr>
-<td>branch_and_bottleneck (incl. <strong>quest</strong> variant)</td>
-<td>branch, bottleneck, terminal</td>
-<td>med</td>
-<td>different routes, same beats</td>
-</tr>
-<tr>
-<td>open_map</td>
-<td>hub, branch, loop/return, bottleneck, terminal</td>
-<td>med</td>
-<td>explore in any order</td>
-</tr>
-<tr>
-<td>sorting_hat</td>
-<td>branch (sort), parallel subtrees, terminal; no cross-track bottleneck</td>
-<td>med</td>
-<td>play each track</td>
-</tr>
-<tr>
-<td>gauntlet</td>
-<td>linear spine, branch-to-fail, terminal (many), restart-on-fail</td>
-<td>high</td>
-<td>master the one path</td>
-</tr>
-</tbody>
-</table>
-<p><code>open_map</code> and <code>sorting_hat</code> are <strong>added</strong> to the enum; <code>quest</code> folds into
-<code>branch_and_bottleneck</code>; <code>floating_modules</code> is documented-but-deferred. Per-band
-allowances gate the dangerous primitives: no <code>death</code>/<code>capture</code> endings for <code>3-5</code>/<code>5-8</code>,
-no <code>death</code> for <code>8-11</code>; loops require state (tier 2); restart-on-fail is lethal only from
-<code>13-16</code> up.</p>
-<p>Per-band topology and flow allowances (which shapes an authored skeleton may use):</p>
-<table>
-<thead>
-<tr>
-<th>Band</th>
-<th>Topologies</th>
-<th>Loops</th>
-<th>Restart-on-fail</th>
-<th>Reconvergence</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>3-5</td>
-<td>loop_and_grow, time_cave</td>
-<td>gentle try-again</td>
-<td>none (no death/capture)</td>
-<td>minimal</td>
-</tr>
-<tr>
-<td>5-8</td>
-<td>time_cave, loop_and_grow, open_map</td>
-<td>comic</td>
-<td>soft try-again only</td>
-<td>light</td>
-</tr>
-<tr>
-<td>8-11</td>
-<td>branch_and_bottleneck, time_cave, open_map, sorting_hat (Medium/Long only)</td>
-<td>optional (T2)</td>
-<td>failure/entrapment, no death</td>
-<td>light-rising</td>
-</tr>
-<tr>
-<td>10-13</td>
-<td>branch_and_bottleneck, open_map, sorting_hat (Medium/Long only)</td>
-<td>yes (state)</td>
-<td>yes, logical</td>
-<td>moderate</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>branch_and_bottleneck (prose), gauntlet (gamebook), sorting_hat (Medium/Long only), open_map</td>
-<td>yes</td>
-<td>yes, lethal (gamebook)</td>
-<td>prose moderate / gamebook low</td>
-</tr>
-<tr>
-<td>16+</td>
-<td>branch_and_bottleneck / gauntlet, sorting_hat (Medium/Long only)</td>
-<td>yes</td>
-<td>yes, lethal</td>
-<td>prose moderate / gamebook low</td>
-</tr>
-</tbody>
-</table>
-<p>The <code>3-5</code> and <code>5-8</code> Loops entries ("gentle try-again", "comic") are the non-stateful
-try-again kind, legal at Tier 1; they are distinct from the stateful progress loops
-referenced by "loops require state (tier 2)" above, which first apply at <code>8-11</code>
-("optional (T2)") and are required from <code>10-13</code> up.</p>
-<p><code>sorting_hat</code> costs <code>sort + N x (track arc)</code> nodes, so it buys replay diversity at a node
-premium and lives in Medium/Long cells, not Short; the table above annotates every band
-where it appears accordingly.</p>
-<h3 id="8-series-campaign-continuity">8. Series (campaign continuity)<a class="headerlink" href="#8-series-campaign-continuity" title="Permanent link">&para;</a></h3>
-<p>A <code>series</code> tag chains multiple books. <strong>Invariant:</strong> in any non-final book, every
-successful-completion ending converges on the next book's single <code>series_entry_node</code>
-(many endings -&gt; one entry), with declared state carried across. Series metadata:
-<code>series_id</code>, <code>book_index</code>, <code>series_entry_node</code>, the continuation flag, and the
-state-export contract. The series is a <strong>meta-skeleton</strong> (books are nodes,
-completion-&gt;entry links are edges); v1 is a linear chain. Each book independently passes
-its own band/length/style/topology gate. Young/tier-1 bands get <strong>episodic</strong> series (no
-state carry). Schema/validator now; series generation is a later phase.</p>
-<blockquote>
-<p><strong>Addendum: series retirement (added 2026-07-26, owner decision).</strong> The invariant above creates a
-promise to the reader, and this addendum protects it on the way out as well as on the way in.</p>
-<p><strong>Normative rule: a non-final series book is never retired before its replacement ships in the same
-release.</strong> <code>Reader.tsx</code> offers "Continue the series" on a satisfying ending of a non-final book. If
-book 2 is withdrawn or materially changed while a reader holds a satisfying ending in book 1, that
-offer goes quiet with no in-product account, after a teen may have spent hours in a 550-node book
-and earned carried state.</p>
-<p>Two consequences follow:</p>
+<h3 id="1-backtracking-is-by-forward-replay-only">1. Backtracking is by forward replay only<a class="headerlink" href="#1-backtracking-is-by-forward-replay-only" title="Permanent link">&para;</a></h3>
+<p><strong>Normative rule</strong>: any state a reader returns to is produced by replaying the recorded <code>path</code> forward from a
+known origin with known initial variables. Reversing an effect, decrementing a counter, or otherwise computing
+an inverse is prohibited. If a state cannot be reached by forward replay, the reader does not go there.</p>
+<p>This is what keeps the mechanism compatible with section 5's snapshot format. A save records <code>path</code>, so any
+prefix of that path is replayable; nothing about undoing is needed.</p>
+<h3 id="2-the-server-and-validator-are-unaffected">2. The server and validator are unaffected<a class="headerlink" href="#2-the-server-and-validator-are-unaffected" title="Permanent link">&para;</a></h3>
+<p><strong>Normative rule</strong>: backtracking is a client-side concern and introduces no server contract.</p>
+<p>A state produced by Go back is indistinguishable from having made fewer choices, so the existing save path
+accepts it by construction: <code>api/reading.py::put_reading_state</code> uses revision-based optimistic concurrency and
+requires nothing about <code>path</code> growing between saves, and <code>player/replay.py::_check_structure</code> requires only known
+node ids, <code>current_node === path[path.length - 1]</code>, and a complete in-bounds <code>var_state</code>, all of which a shorter
+replayed state satisfies. This is why the cross-sign is player-only.</p>
+<h3 id="3-availability-is-fail-closed-and-defined-on-replayability">3. Availability is fail-closed, and defined on replayability<a class="headerlink" href="#3-availability-is-fail-closed-and-defined-on-replayability" title="Permanent link">&para;</a></h3>
+<p><strong>Normative rule</strong>: Go back is available exactly when both hold:</p>
 <ol>
-<li><strong>The replacement must accept the predecessor's carried state.</strong> It is not enough for the new
-   book to pass its own gate; every satisfying-ending state of book N must be an admissible entry
-   state for the replacement book N+1. This is what validator rule <code>SR-9</code> gates.</li>
-<li><strong>If it cannot, re-cut the predecessor to <code>is_final</code></strong> so the continuation is never promised in
-   the first place. Withdrawing the promise is acceptable; leaving it dangling is not.</li>
+<li><code>path.length &gt; 1</code> (there is at least one recorded choice to undo), and</li>
+<li>the recorded path replays faithfully from the origin, reproducing the live state.</li>
 </ol>
-<p>This binds the catalog-disposition principle (retire and replace rather than carry substandard
-work, recorded in <a href="../../story-diversity-plan-v2/">story-diversity-plan-v2.md</a> section 6): the
-principle says a substandard book may be replaced, and this addendum says a non-final series book
-may not be replaced <em>alone</em>. The two are compatible; the series is the unit of replacement.</p>
-<p>Adopted as a written rule while the catalog has one author and one test household, because it costs
-nothing now and prevents a habit forming. Enforcement becomes live with the first reader outside
-that household.</p>
-</blockquote>
-<h3 id="9-provenance">9. Provenance<a class="headerlink" href="#9-provenance" title="Permanent link">&para;</a></h3>
-<p>Cells are tagged by evidence: <code>8-11</code> measured (high); <code>5-8</code> node counts measured, rest
-estimated; <code>10-13</code> medium; <code>13-16</code> gamebook metadata; <code>3-5</code>/<code>16+</code> product-defined. This
-records which numbers are empirical and which are tunable product choices.</p>
+<p>When replay cannot reproduce the live state, the reader gets <strong>no</strong> Go back rather than a wrong one. The
+enumerated fail-closed cases, all of which return <code>null</code> today:</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Why it fails closed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>path.length &lt;= 1</code></td>
+<td>Nothing to undo</td>
+</tr>
+<tr>
+<td><code>path[0] !== start_node</code> (continuation read)</td>
+<td>The origin's initial variables are not recoverable; see Decision 6</td>
+</tr>
+<tr>
+<td>Dangling <code>start_node</code></td>
+<td><code>start()</code> throws; a corrupt story must not crash the reader</td>
+</tr>
+<tr>
+<td>Dangling choice target</td>
+<td><code>choose()</code> throws; the branch is treated as dead</td>
+</tr>
+<tr>
+<td>Replay budget exhausted</td>
+<td><code>MAX_REPLAY_STEPS</code> (5000) bounds the search over paths where several choices share a target</td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>canGoBack</code> must be defined as <code>back(...) !== null</code></strong>, never as an independent predicate. Two predicates that
+can disagree would render a button that does nothing, which is worse than no button.</p>
+<h3 id="4-what-rewinds-and-what-carries-over">4. What rewinds and what carries over<a class="headerlink" href="#4-what-rewinds-and-what-carries-over" title="Permanent link">&para;</a></h3>
+<p><strong>Normative rule</strong>: Go back rewinds exactly what choices produced, and nothing else.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Behaviour</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>current_node</code>, <code>var_state</code>, <code>path</code>, <code>visit_set</code></td>
+<td>Rewound to the replayed prior state</td>
+<td>These are the product of the choice history</td>
+</tr>
+<tr>
+<td><code>state_revision</code></td>
+<td>Carried over unchanged</td>
+<td>Owned by the server's concurrency counter, not by the choice history</td>
+</tr>
+<tr>
+<td><code>save_slots</code></td>
+<td>Carried over unchanged</td>
+<td>Owned outside the choice history; a rewind is not a slot operation</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>Unchanged</td>
+<td>Section 8 version pinning still applies</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-a-bounded-multi-hop-retry-affordance-is-authorized">5. A bounded multi-hop retry affordance is authorized<a class="headerlink" href="#5-a-bounded-multi-hop-retry-affordance-is-authorized" title="Permanent link">&para;</a></h3>
+<p><strong>Normative rule</strong>: a second, separately labelled affordance may walk back <strong>up to three hops</strong> to the nearest
+ancestor at which the reader had a genuine choice, subject to Decision 3's availability rule. Constraints:</p>
+<ul>
+<li>It is a <strong>distinct control from the in-story Go back</strong>, which remains single-step and unchanged. The in-story
+  control exists for mis-taps; repurposing it to move a young reader three passages upstream would erase prose
+  they were enjoying, and at the 3-5 and 5-8 bands there is no fatal corridor to rescue because <code>_PROFILES</code>
+  forbids <code>death</code> and <code>capture</code> at both.</li>
+<li>It is offered at the <strong>ending screen only</strong>.</li>
+<li>Availability stays Decision 3's rule. It must <strong>not</strong> be gated on "an untaken choice exists within 3 hops",
+  which would hide the control at a climax the reader has already partly explored, so a button the child just
+  learned would vanish exactly when they expected it.</li>
+<li>The walk stops at the <strong>first branching ancestor</strong> regardless of whether its other options were taken, so the
+  destination is always "the last place you got to pick" rather than a distance that varies per press.</li>
+<li>Three is a <strong>starting bound, to be re-evaluated as stories are developed</strong> (owner decision, 2026-07-25). It is
+  not derived from a measurement; it is chosen because all 73 measured shallow foreclosing terminals lie within
+  three hops of a node offering a real alternative.</li>
+</ul>
+<h3 id="6-continuation-read-backtracking-is-not-authorized-by-this-adr">6. Continuation-read backtracking is NOT authorized by this ADR<a class="headerlink" href="#6-continuation-read-backtracking-is-not-authorized-by-this-adr" title="Permanent link">&para;</a></h3>
+<p><strong>Normative rule</strong>: a continuation read gets no backtracking until a separate decision provides a durable,
+server-validated replay origin.</p>
+<p>This is called out because the gap looks like a small bug and is not. <code>startContinuation</code>
+(<code>engine.ts:123</code>) seeds <code>var_state</code> from a carried map, but the resulting <code>ReadingState</code> does not retain that
+map, and nothing persists it:</p>
+<ul>
+<li><code>ReadingState</code> has no column for a carried or initial variable state (<code>db/models.py:725</code>).</li>
+<li><code>Completion</code> stores only <code>(child_profile_id, storybook_id, version, ending_id, found_at)</code>, so the predecessor
+  book's exit state cannot be re-derived either.</li>
+<li>The seed reaches the client only transiently, through router <code>location.state</code>, which <code>series.ts</code> documents as
+  untrusted and attacker-shapeable via history manipulation.</li>
+</ul>
+<p>So enabling it requires new durable state, which means a schema change, an API change, and an OpenAPI
+regeneration. <strong>And that new state would be a replay origin, which makes it a state-restoration input</strong>: exactly
+the class of defect that <code>save_slots</code> already represents, being client-writable, server-persisted, and omitted
+from <code>validate_reading_state</code>. A naive implementation would create a second instance of that defect, where a
+forged origin lets a reader replay into a state they never earned, in the state-carrying series books where
+there is most to gain by doing so.</p>
+<p>Any future decision to enable it must therefore land the origin as <strong>server-validated</strong> data, not merely
+persisted data.</p>
 <h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <ul>
-<li>✅ Size is a recorded, self-consistent contract (nodes derived from words and
-  words/node), so the axes cannot drift apart the way the compact slice did.</li>
-<li>✅ The <code>min-to-complete</code> arc floor gives the validator an anti-cheese gate: a large
-  world cannot be "completed" via a 2-node shortcut to a hollow win.</li>
-<li>✅ Style-as-a-field reconciles prose and gamebook as two chunkings of one word budget,
-  reproducing the measured Fighting Fantasy node counts without inflating reading time.</li>
-<li>✅ Series delivers epic scale as a chain of validatable books rather than an
-  un-authorable mega-story.</li>
-<li>✅ The below-Short <strong>MVP/Test tier</strong> (section 1a) resolves the Pilot-vs-rescale
-  question: the three existing compact skeletons (Lost Mitten <code>3-5</code>/11, Clocktower
-  <code>10-13</code>/25, Sunken Signal <code>16+</code>/32) are classified as non-production MVP seeds rather
-  than rescaled, so prototyping keeps cheap shells while the production floors stay high.</li>
-<li>⚠️ The MVP tier must be firewalled from production: a skeleton tagged <code>tier = "mvp"</code>
-  must never be selectable for a child-facing story. The selection layer, not just the
-  validator, has to enforce the exclusion.</li>
-<li>⚠️ <code>3-5</code> and <code>16+</code> budgets are product-defined without research; treat as tunable and
-  revisit if reader data arrives.</li>
-<li>⚠️ Implementation is non-trivial: a schema change (<code>length</code>, <code>narrative_style</code>,
-  <code>series</code>, two topology enum values), a rewritten <code>band_profile</code>, a topology classifier,
-  and a series meta-validator. It lands on a <strong>separate enabler branch first</strong>; skeleton
-  authoring rebases onto it and stays content-only.</li>
+<li>Section 6 of <code>runtime-semantics.md</code> is rewritten from a prohibition into the rules above, and the document
+  version moves to 1.2.</li>
+<li>The multi-hop affordance is unblocked and needs no further ADR.</li>
+<li>Continuation backtracking stays disabled, and is now disabled <em>on the record</em> with its cost stated, rather
+  than by an undocumented fail-closed branch.</li>
+<li>"Read again" on a continuation read remains wrong for a separate reason not fixed here: <code>machine.ts:108</code>
+  resets to <code>start_node</code> with declared initials, fabricating carried variables the reader never earned. That is
+  a reset bug, not a backtracking one, and is tracked as its own defect.</li>
 </ul>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
-<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>band_profile.py</code> encodes per-<code>(band, length, style)</code> budgets; <code>load_skeleton</code>
-      accepts a genre-scale skeleton per the master table and rejects out-of-envelope
-      node counts.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The MVP/Test tier loads (the three current skeletons pass as <code>tier = "mvp"</code>,
-      <code>production_eligible = false</code>) and production story selection excludes it; an
-      MVP-scale skeleton offered for a child-facing story is refused by the selection layer.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Words/node enforced as a story-mean with a per-node max; a one-line node passes,
-      a 600-word wall fails.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>min-to-complete</code> gate: a story with a hollow short win path is rejected;
-      fail-fast endings are allowed.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Topology classifier distinguishes all six patterns; per-band allowance checks
-      reject a <code>death</code> ending at <code>3-5</code>/<code>5-8</code>/<code>8-11</code>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Series meta-validator enforces single-entry convergence and the state-export
-      contract on a two-book fixture.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Coverage view renders the <code>band x length x style</code> grid.</li>
+<ul>
+<li><code>engine.test.ts</code> must keep its "fails closed for a continuation state" case; Decision 6 makes it normative
+  rather than incidental.</li>
+<li>A test at an ending reached through a <strong>single-choice corridor</strong>, since 58 of the 73 measured shallow
+  foreclosing terminals are reached that way and a one-hop rewind re-presents the same fatal choice.</li>
+<li>A test that <code>canGoBack</code> and <code>back</code> never disagree.</li>
+<li>A test that <code>save_slots</code> and <code>state_revision</code> survive a rewind unchanged.</li>
 </ul>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../adr-001-story-format-json-storybook/">ADR-001</a>: the schema this extends.</li>
-<li><a href="../adr-006-conditions-inhouse-evaluator/">ADR-006</a>: the evaluator series state-carry
-  relies on.</li>
-<li><code>docs/planning/research/</code>: the empirical anchors (JHM 2019 + four-source reconciliation).</li>
+<li><a href="../../runtime-semantics/">runtime-semantics.md</a> sections 5, 6, 8</li>
+<li><a href="../adr-001-story-format-json-storybook/">ADR-001</a> (two-axis endings)</li>
+<li><a href="../adr-011-story-scale-framework/">ADR-011</a> section 8 (series continuity)</li>
+<li><a href="../../story-diversity-plan-v2/">story-diversity-plan-v2.md</a> items A12, A13a, A13b, A18, B2, B4</li>
 </ul>
 
 
@@ -3818,7 +3137,7 @@ records which numbers are empirical and which are tunable product choices.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 17:15:46 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 27, 2026 04:06:26 UTC">July 27, 2026</span>
   </span>
 
     
