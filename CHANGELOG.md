@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- version list -->
 
+## [0.39.1] - 2026-07-28
+
+### Bug Fixes
+
+- **ci**: Repair seven chronically broken scheduled workflows
+  ([#435](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/435),
+  [`0da056a`](https://github.com/ByronWilliamsCPA/cyo-adventure/commit/0da056acbdbdb828ea5a4513715b89207ab3c2df))
+
+
 ## [0.39.0] - 2026-07-28
 
 ### Features
@@ -2715,6 +2724,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
+[0.39.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.38.1...v0.39.0
 [0.38.1]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.38.0...v0.38.1
 [0.38.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.37.0...v0.38.0
