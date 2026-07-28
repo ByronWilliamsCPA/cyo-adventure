@@ -255,8 +255,10 @@ def _scale_cell_block(brief: ConceptBrief) -> str:
     band = str(brief.age_band)
     style = brief.narrative_style.value
     lines = [
-        f"\n- Story scale: this is a {brief.length.value} {style} story for the "
-        f"{band} band. Size the world to that scale cell, not the band minimum."
+        (
+            f"\n- Story scale: this is a {brief.length.value} {style} story for the "
+            f"{band} band. Size the world to that scale cell, not the band minimum."
+        )
     ]
     words = words_per_node_profile(band, style)
     if words is not None:
@@ -572,9 +574,11 @@ def _violations_block(violations: list[SlotViolation] | None) -> str:
     lines = [
         "\n## Previous Attempt Violations",
         "",
-        "Your previous binding failed these deterministic checks. Correct "
-        "ONLY the flagged slot(s); keep every other value the same unless it "
-        "shares the same violation.",
+        (
+            "Your previous binding failed these deterministic checks. Correct "
+            "ONLY the flagged slot(s); keep every other value the same unless it "
+            "shares the same violation."
+        ),
         "",
     ]
     for violation in violations:

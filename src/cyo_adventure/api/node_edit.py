@@ -375,6 +375,7 @@ async def edit_node(
     version: int,
     node_id: str,
     body: NodeEditBody,
+    *,
     ctx: Context,
 ) -> ReviewSurfaceView:
     """Apply a prose-only edit to one node, re-running the gate and moderation.

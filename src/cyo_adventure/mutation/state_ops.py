@@ -1406,7 +1406,7 @@ def _apply_add_route(parent: Mapping[str, object], params: OpParams) -> Mutation
         raise ValidationError(msg, field="host", value=host)
     candidate = copy.deepcopy(dict(parent))
     new_choice_id = _mint_choice_id(parent, host)
-    _append_choice(candidate, host, new_choice_id, target, condition)
+    _append_choice(candidate, host, new_choice_id, target, condition=condition)
     resynced = resync_metadata(candidate)
     _assert_endings_untouched(parent, resynced)
     reguide = (
@@ -1455,6 +1455,7 @@ def _append_choice(  # noqa: PLR0913 -- the fields one new gated choice needs
     host: str,
     choice_id: str,
     target: str,
+    *,
     condition: dict[str, object],
 ) -> None:
     """Append a condition-gated choice to a host node's choice list, in place."""

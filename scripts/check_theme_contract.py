@@ -165,7 +165,7 @@ def _pick_probe(contract: ThemeContract) -> tuple[SlotSpec, str] | None:
 
     floor = band_mandatory_bundles(contract.age_band)
     if floor:
-        bundle = "lethal" if "lethal" in floor else sorted(floor)[0]
+        bundle = "lethal" if "lethal" in floor else min(floor)
         return contract.slots[0], bundle
 
     for slot in contract.slots:

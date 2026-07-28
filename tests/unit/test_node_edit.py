@@ -225,7 +225,7 @@ async def test_child_role_rejected() -> None:
 
     body = NodeEditBody(body="x")
     with pytest.raises(AuthorizationError, match="admin or guardian role required"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
     session.execute.assert_not_awaited()
 
@@ -237,7 +237,7 @@ async def test_device_role_rejected() -> None:
 
     body = NodeEditBody(body="x")
     with pytest.raises(AuthorizationError, match="admin or guardian role required"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
     session.execute.assert_not_awaited()
 
@@ -250,7 +250,7 @@ async def test_missing_story_raises_404() -> None:
 
     body = NodeEditBody(body="x")
     with pytest.raises(ResourceNotFoundError, match="storybook 's1' not found"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
 
 @pytest.mark.asyncio
@@ -262,7 +262,7 @@ async def test_guardian_other_family_rejected() -> None:
 
     body = NodeEditBody(body="x")
     with pytest.raises(AuthorizationError):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
 
 # ---------------------------------------------------------------------------
@@ -280,7 +280,7 @@ async def test_non_editable_status_rejected(status: str) -> None:
 
     body = NodeEditBody(body="x")
     with pytest.raises(StateTransitionError, match="in_review or needs_revision"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
 
 @pytest.mark.asyncio
@@ -292,7 +292,7 @@ async def test_needs_revision_status_is_editable() -> None:
     ctx = _ctx("admin", session)
 
     result = await node_edit.edit_node(
-        "s1", 1, _NODE_ID, NodeEditBody(body="A brand new opening."), ctx
+        "s1", 1, _NODE_ID, NodeEditBody(body="A brand new opening."), ctx=ctx
     )
 
     assert result.status == "needs_revision"
@@ -308,7 +308,7 @@ async def test_not_latest_version_rejected() -> None:
 
     body = NodeEditBody(body="x")
     with pytest.raises(StateTransitionError, match="latest version"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
 
 # ---------------------------------------------------------------------------
@@ -325,7 +325,7 @@ async def test_unknown_node_id_raises_404() -> None:
 
     body = NodeEditBody(body="x")
     with pytest.raises(ResourceNotFoundError, match="node 'does-not-exist'"):
-        await node_edit.edit_node("s1", 1, "does-not-exist", body, ctx)
+        await node_edit.edit_node("s1", 1, "does-not-exist", body, ctx=ctx)
 
 
 @pytest.mark.asyncio
@@ -339,7 +339,7 @@ async def test_unknown_choice_id_rejected_and_blob_unchanged() -> None:
 
     body = NodeEditBody(choice_labels={"not-a-real-choice": "New label"})
     with pytest.raises(ValidationError, match="does not have"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
     # The structural cap: an unknown choice id is rejected before anything is
     # written, and the stored blob object is left byte-for-byte untouched.
@@ -401,7 +401,7 @@ async def test_prose_edit_applies_body_and_choice_label() -> None:
         body="You step onto a NEWLY WRITTEN path.",
         choice_labels={_CHOICE_ID: "Chase the rabbit!"},
     )
-    result = await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+    result = await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
     # The stored blob carries the edit.
     nodes = version_row.blob["nodes"]  # type: ignore[index]
@@ -451,7 +451,7 @@ async def test_guardian_own_family_edit_allowed() -> None:
     ctx = _ctx("guardian", session, family_id=_FAMILY_A)
 
     result = await node_edit.edit_node(
-        "s1", 1, _NODE_ID, NodeEditBody(body="Guardian-edited opening."), ctx
+        "s1", 1, _NODE_ID, NodeEditBody(body="Guardian-edited opening."), ctx=ctx
     )
 
     assert result.status == "in_review"
@@ -493,7 +493,7 @@ async def test_gate_failing_edit_rejected_with_unchanged_blob(
 
     body = NodeEditBody(body="x")
     with pytest.raises(ValidationError) as exc_info:
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
     assert exc_info.value.details["findings"][0]["rule_id"] == "L1-7"
     # The stored blob is untouched: the mutation happened on a discarded copy.
@@ -527,7 +527,7 @@ async def test_edit_injecting_forged_sentinel_rejected_and_blob_unchanged() -> N
 
     body = NodeEditBody(body=f"You step onto a path marked {wrap('HERO', 'Ada')}.")
     with pytest.raises(ValidationError, match="sentinel"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
     # The stored blob is untouched: the mutation happened on a discarded copy.
     assert version_row.blob is original_blob
@@ -550,7 +550,7 @@ async def test_edit_leaving_sentinel_in_choice_label_rejected() -> None:
 
     body = NodeEditBody(choice_labels={_CHOICE_ID: wrap("HERO", "Ada")})
     with pytest.raises(ValidationError, match="sentinel"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
     assert version_row.blob is original_blob
     session.add.assert_not_called()
@@ -581,7 +581,7 @@ async def test_edit_contract_unrecoverable_with_sentinel_rejected() -> None:
 
     body = NodeEditBody(body=f"You reach the gate marked {wrap('HERO', 'Ada')}.")
     with pytest.raises(ValidationError, match="sentinel"):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
     assert version_row.blob is original_blob
     session.add.assert_not_called()
@@ -611,7 +611,7 @@ async def test_edit_contract_unrecoverable_sentinel_free_succeeds() -> None:
     ctx = _ctx("admin", session)
 
     result = await node_edit.edit_node(
-        "s1", 1, _NODE_ID, NodeEditBody(body="A perfectly ordinary edit."), ctx
+        "s1", 1, _NODE_ID, NodeEditBody(body="A perfectly ordinary edit."), ctx=ctx
     )
 
     assert result.status == "in_review"
@@ -628,7 +628,7 @@ async def test_edit_sentinel_free_still_succeeds() -> None:
     ctx = _ctx("admin", session)
 
     result = await node_edit.edit_node(
-        "s1", 1, _NODE_ID, NodeEditBody(body="A perfectly ordinary edit."), ctx
+        "s1", 1, _NODE_ID, NodeEditBody(body="A perfectly ordinary edit."), ctx=ctx
     )
 
     assert result.status == "in_review"
@@ -664,7 +664,7 @@ async def test_classifier_call_blocked_on_pii_in_edited_text(
 
     body = NodeEditBody(body="This page was written just for Ada today.")
     with pytest.raises(ValidationError):
-        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx)
+        await node_edit.edit_node("s1", 1, _NODE_ID, body, ctx=ctx)
 
     assert classifier_called["count"] == 0
     # The stored blob is untouched: the mutation happened on a discarded copy.
@@ -689,7 +689,11 @@ async def test_moderation_block_persists_and_does_not_reject(
     ctx = _ctx("admin", session)
 
     result = await node_edit.edit_node(
-        "s1", 1, _NODE_ID, NodeEditBody(body="Something the reviewer will block."), ctx
+        "s1",
+        1,
+        _NODE_ID,
+        NodeEditBody(body="Something the reviewer will block."),
+        ctx=ctx,
     )
 
     assert result.summary is not None
@@ -713,7 +717,7 @@ async def test_edit_records_event_without_prose() -> None:
     ctx = _ctx("admin", session)
 
     await node_edit.edit_node(
-        "s1", 1, _NODE_ID, NodeEditBody(body="Edited for the event test."), ctx
+        "s1", 1, _NODE_ID, NodeEditBody(body="Edited for the event test."), ctx=ctx
     )
 
     session.add.assert_called_once()

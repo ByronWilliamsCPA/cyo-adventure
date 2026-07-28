@@ -24,7 +24,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import create_engine, insert, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.postgres import PostgresContainer
 
 from cyo_adventure.api.deps import get_db_session
 from cyo_adventure.app import app
