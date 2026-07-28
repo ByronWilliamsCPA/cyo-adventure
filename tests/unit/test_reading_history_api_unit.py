@@ -36,6 +36,7 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+from cyo_adventure.storybook.sentinels import wrap
 
 _T1 = datetime(2026, 1, 1, tzinfo=UTC)
 _T2 = datetime(2026, 1, 2, tzinfo=UTC)
@@ -219,6 +220,15 @@ def test_book_title_falls_back_on_missing_title() -> None:
 @pytest.mark.unit
 def test_book_title_falls_back_on_non_string_title() -> None:
     assert _book_title({"title": 42}, "fallback-id") == "fallback-id"
+
+
+@pytest.mark.unit
+def test_book_title_strips_sentinels() -> None:
+    token = wrap("HERO", "Explorer")
+    title = _book_title({"title": f"{token} and the Map"}, "fallback-id")
+    assert "{~" not in title
+    assert "~}" not in title
+    assert "Explorer" in title
 
 
 @pytest.mark.unit

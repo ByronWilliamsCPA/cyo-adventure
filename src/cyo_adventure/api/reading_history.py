@@ -38,6 +38,7 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -94,10 +95,12 @@ def _book_title(blob: Mapping[str, object], storybook_id: str) -> str:
         storybook_id: The story id (title fallback).
 
     Returns:
-        str: ``blob["title"]`` when it is a non-empty string, else ``storybook_id``.
+        str: ``blob["title"]``, with personalization sentinels stripped to
+            their generic word (ADR-023 P3), when it is a non-empty string;
+            else ``storybook_id``.
     """
     title = blob.get("title")
-    return title if isinstance(title, str) and title else storybook_id
+    return strip_sentinels(title) if isinstance(title, str) and title else storybook_id
 
 
 def _ending_count(blob: Mapping[str, object], storybook_id: str, version: int) -> int:

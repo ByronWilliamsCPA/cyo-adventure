@@ -18,6 +18,7 @@ from cyo_adventure.api.deps import Context
 from cyo_adventure.api.schemas import NotificationListView, NotificationView
 from cyo_adventure.core.exceptions import AuthorizationError, ValidationError
 from cyo_adventure.notifications.service import list_guardian_notifications
+from cyo_adventure.storybook.sentinels import strip_sentinels
 
 router = APIRouter(prefix="/api/v1", tags=["notifications"])
 
@@ -118,6 +119,14 @@ async def list_notifications(
     items = await list_guardian_notifications(
         ctx.session, ctx.principal, since=since_dt, limit=_bound_limit(limit)
     )
+    # #CRITICAL: security: title/body are composed from story metadata
+    # (see notifications/service.py), which may carry personalization
+    # sentinels (ADR-023). Strip them here, at the wire-serialization
+    # boundary, so a raw {~SLOTID:value~} token never reaches a guardian's
+    # feed for a book they have not opted into personalization for.
+    # #VERIFY: tests/unit/test_notifications_api_unit.py::
+    # TestListNotificationsResponseShape::
+    # test_sentinels_are_stripped_from_title_and_body.
     return NotificationListView(
         notifications=[
             NotificationView(
@@ -125,8 +134,8 @@ async def list_notifications(
                 occurred_at=item.occurred_at,
                 kind=item.kind,
                 severity=item.severity,
-                title=item.title,
-                body=item.body,
+                title=strip_sentinels(item.title),
+                body=strip_sentinels(item.body),
                 storybook_id=item.storybook_id,
                 request_id=item.request_id,
                 profile_id=item.profile_id,
