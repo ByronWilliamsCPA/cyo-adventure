@@ -10,10 +10,18 @@
 # credentials and real network I/O). Because a schedule-only failure never turns
 # a PR red, a failed scheduled run files/updates one tracking issue.
 #
-# Credentials: set the secrets OPENROUTER_API_KEY and one of OPENAI_API_KEY /
-# PERSPECTIVE_API_KEY. Until they exist the tier SKIPS (the run is green but
-# measures nothing); the pre-flight step warns loudly on a scheduled run so a
-# missing credential is visible rather than silently passing.
+# Credentials: set the REPO-level secrets OPENROUTER_API_KEY (the review
+# provider; `_PROVIDER = "openrouter"` is pinned in the test) and one of
+# OPENAI_API_KEY / PERSPECTIVE_API_KEY (the Stage-0 classifier). These are two
+# different stages, not alternatives to each other, so one of each is required.
+# The job declares no `environment:`, so repo and inherited org secrets apply.
+#
+# Until they exist a SCHEDULED run FAILS CLOSED at the pre-flight step below and
+# files the tracking issue. That is deliberate: this tier previously skipped
+# every test and still reported success, which is an affirmative claim that the
+# classifiers were exercised when they never were. If the credentials are not
+# going to be provisioned, delete the `schedule:` trigger and keep
+# workflow_dispatch, rather than restoring a green run that measures nothing.
 name: Safety Evaluation
 
 on:
