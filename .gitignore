@@ -221,6 +221,11 @@ local.conf
 # Node modules (if using any Node tools)
 node_modules/
 
+# Playwright MCP scratch output (console logs and page snapshots the browser MCP
+# server writes during interactive debugging). Deliberately unanchored: the
+# server writes relative to its cwd, so this also covers .worktrees/ checkouts.
+.playwright-mcp/
+
 # Docker
 docker-compose.override.yml
 
