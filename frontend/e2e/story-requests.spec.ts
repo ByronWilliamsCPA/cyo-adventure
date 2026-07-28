@@ -147,6 +147,13 @@ test('approve removes the approved row, then decline empties the list', async ({
 
   await page.goto('/guardian/requests')
 
+  // P-6b: a guardian-specific heading/intro distinguishes this queue from
+  // IntakePage's "Request a story" surface, which lives at a different route.
+  await expect(
+    page.getByRole('heading', { name: 'Requests from your kids' })
+  ).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Request a story' })).toHaveCount(0)
+
   await expect(page.getByText('A story about a friendly dragon')).toBeVisible()
   await expect(page.getByText('A pirate adventure')).toBeVisible()
 

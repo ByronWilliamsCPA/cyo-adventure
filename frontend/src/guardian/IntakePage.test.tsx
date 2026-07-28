@@ -51,6 +51,15 @@ function renderPage() {
 }
 
 describe('IntakePage', () => {
+  // P-6b: this page and RequestsPage's embedded RequestStoryForm previously
+  // both said "Request a story" with nothing telling them apart; this line
+  // cross-links to the other surface instead.
+  it('cross-links to Story requests to disambiguate from the other request surface', async () => {
+    renderPage()
+    const link = await screen.findByRole('link', { name: /story requests/i })
+    expect(link).toHaveAttribute('href', '/guardian/requests')
+  })
+
   it('shows the add-child hint as a link to profiles when there are no children', async () => {
     mockGet.mockReset().mockImplementation((url: string) => {
       if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [] } })
@@ -74,16 +83,11 @@ describe('IntakePage', () => {
     renderPage()
 
     await user.click(await screen.findByRole('button', { name: /Reader A/i }))
-    await user.type(
-      screen.getByLabelText(/What's it about/i),
-      'A quiet walk through the woods.'
-    )
+    await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk through the woods.')
     await user.click(screen.getByRole('button', { name: /^Gentle$/i }))
     await user.click(screen.getByRole('button', { name: /Request Story/i }))
 
-    await waitFor(() =>
-      expect(mockPost).toHaveBeenCalledWith('/v1/concepts', expect.anything())
-    )
+    await waitFor(() => expect(mockPost).toHaveBeenCalledWith('/v1/concepts', expect.anything()))
     const conceptCall = mockPost.mock.calls.find((c) => c[0] === '/v1/concepts')
     const briefJson = JSON.stringify(conceptCall?.[1])
     expect(briefJson).not.toContain('Reader A')
@@ -113,9 +117,7 @@ describe('IntakePage', () => {
     })
     renderPage()
 
-    expect(
-      screen.queryByTestId('intake-excluded-themes')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('intake-excluded-themes')).not.toBeInTheDocument()
 
     await user.click(await screen.findByRole('button', { name: /Reader A/i }))
 
@@ -126,13 +128,9 @@ describe('IntakePage', () => {
     await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
     await user.click(screen.getByRole('button', { name: /Request Story/i }))
 
-    await waitFor(() =>
-      expect(mockPost).toHaveBeenCalledWith('/v1/concepts', expect.anything())
-    )
+    await waitFor(() => expect(mockPost).toHaveBeenCalledWith('/v1/concepts', expect.anything()))
     const conceptCall = mockPost.mock.calls.find((c) => c[0] === '/v1/concepts')
-    const conceptBody = conceptCall?.[1] as
-      | { brief: { content_nogo: string[] } }
-      | undefined
+    const conceptBody = conceptCall?.[1] as { brief: { content_nogo: string[] } } | undefined
     expect(conceptBody?.brief.content_nogo).toEqual(['spiders', 'magic'])
   })
 
@@ -143,23 +141,66 @@ describe('IntakePage', () => {
       return Promise.resolve({
         data: {
           jobs: [
-            { id: 'jq', status: 'queued', storybook_status: null, error: null,
-              title: 'Q', premise_snippet: 'q', age_band: '8-11', storybook_id: null,
-              version: null, created_at: '2026-07-02T00:00:00Z' },
-            { id: 'jw', status: 'passed', storybook_status: 'in_review', error: null,
-              title: 'W', premise_snippet: 'w', age_band: '8-11', storybook_id: 's1',
-              version: 1, created_at: '2026-07-02T00:00:00Z' },
-            { id: 'ja', status: 'passed', storybook_status: 'published', error: null,
-              title: 'A', premise_snippet: 'a', age_band: '8-11', storybook_id: 's2',
-              version: 1, created_at: '2026-07-02T00:00:00Z' },
-            { id: 'jf', status: 'failed', storybook_status: null,
-              error: 'pipeline blew up', title: 'F', premise_snippet: 'f',
-              age_band: '8-11', storybook_id: null, version: null,
-              created_at: '2026-07-02T00:00:00Z' },
-            { id: 'jn', status: 'needs_review', storybook_status: null,
-              error: null, title: 'N', premise_snippet: 'n', age_band: '8-11',
-              storybook_id: null, version: null,
-              created_at: '2026-07-02T00:00:00Z' },
+            {
+              id: 'jq',
+              status: 'queued',
+              storybook_status: null,
+              error: null,
+              title: 'Q',
+              premise_snippet: 'q',
+              age_band: '8-11',
+              storybook_id: null,
+              version: null,
+              created_at: '2026-07-02T00:00:00Z',
+            },
+            {
+              id: 'jw',
+              status: 'passed',
+              storybook_status: 'in_review',
+              error: null,
+              title: 'W',
+              premise_snippet: 'w',
+              age_band: '8-11',
+              storybook_id: 's1',
+              version: 1,
+              created_at: '2026-07-02T00:00:00Z',
+            },
+            {
+              id: 'ja',
+              status: 'passed',
+              storybook_status: 'published',
+              error: null,
+              title: 'A',
+              premise_snippet: 'a',
+              age_band: '8-11',
+              storybook_id: 's2',
+              version: 1,
+              created_at: '2026-07-02T00:00:00Z',
+            },
+            {
+              id: 'jf',
+              status: 'failed',
+              storybook_status: null,
+              error: 'pipeline blew up',
+              title: 'F',
+              premise_snippet: 'f',
+              age_band: '8-11',
+              storybook_id: null,
+              version: null,
+              created_at: '2026-07-02T00:00:00Z',
+            },
+            {
+              id: 'jn',
+              status: 'needs_review',
+              storybook_status: null,
+              error: null,
+              title: 'N',
+              premise_snippet: 'n',
+              age_band: '8-11',
+              storybook_id: null,
+              version: null,
+              created_at: '2026-07-02T00:00:00Z',
+            },
           ],
         },
       })
@@ -190,9 +231,18 @@ describe('IntakePage', () => {
         return Promise.resolve({
           data: {
             jobs: [
-              { id: 'jw', status: 'passed', storybook_status: 'in_review', error: null,
-                title: 'W', premise_snippet: 'w', age_band: '8-11', storybook_id: 's1',
-                version: 1, created_at: '2026-07-02T00:00:00Z' },
+              {
+                id: 'jw',
+                status: 'passed',
+                storybook_status: 'in_review',
+                error: null,
+                title: 'W',
+                premise_snippet: 'w',
+                age_band: '8-11',
+                storybook_id: 's1',
+                version: 1,
+                created_at: '2026-07-02T00:00:00Z',
+              },
             ],
           },
         })
@@ -213,15 +263,42 @@ describe('IntakePage', () => {
         return Promise.resolve({
           data: {
             jobs: [
-              { id: 'jq', status: 'queued', storybook_status: null, error: null,
-                title: 'Q', premise_snippet: 'q', age_band: '8-11', storybook_id: null,
-                version: null, created_at: '2026-07-02T00:00:00Z' },
-              { id: 'jw', status: 'passed', storybook_status: 'in_review', error: null,
-                title: 'W', premise_snippet: 'w', age_band: '8-11', storybook_id: 's1',
-                version: 1, created_at: '2026-07-02T00:00:00Z' },
-              { id: 'ja', status: 'passed', storybook_status: 'published', error: null,
-                title: 'A', premise_snippet: 'a', age_band: '8-11', storybook_id: 's2',
-                version: 1, created_at: '2026-07-02T00:00:00Z' },
+              {
+                id: 'jq',
+                status: 'queued',
+                storybook_status: null,
+                error: null,
+                title: 'Q',
+                premise_snippet: 'q',
+                age_band: '8-11',
+                storybook_id: null,
+                version: null,
+                created_at: '2026-07-02T00:00:00Z',
+              },
+              {
+                id: 'jw',
+                status: 'passed',
+                storybook_status: 'in_review',
+                error: null,
+                title: 'W',
+                premise_snippet: 'w',
+                age_band: '8-11',
+                storybook_id: 's1',
+                version: 1,
+                created_at: '2026-07-02T00:00:00Z',
+              },
+              {
+                id: 'ja',
+                status: 'passed',
+                storybook_status: 'published',
+                error: null,
+                title: 'A',
+                premise_snippet: 'a',
+                age_band: '8-11',
+                storybook_id: 's2',
+                version: 1,
+                created_at: '2026-07-02T00:00:00Z',
+              },
             ],
           },
         })
@@ -271,11 +348,18 @@ describe('IntakePage', () => {
         return Promise.resolve({
           data: {
             jobs: [
-              { id: 'jf', status: 'failed', storybook_status: null,
-                error: 'pipeline blew up', title: 'F',
-                premise_snippet: 'tide pools and brave crabs', age_band: '8-11',
-                storybook_id: null, version: null,
-                created_at: '2026-07-02T00:00:00Z' },
+              {
+                id: 'jf',
+                status: 'failed',
+                storybook_status: null,
+                error: 'pipeline blew up',
+                title: 'F',
+                premise_snippet: 'tide pools and brave crabs',
+                age_band: '8-11',
+                storybook_id: null,
+                version: null,
+                created_at: '2026-07-02T00:00:00Z',
+              },
             ],
           },
         })
@@ -286,9 +370,7 @@ describe('IntakePage', () => {
     const row = await screen.findByTestId('request-jf')
     expect(within(row).getByText('This story could not be made.')).toBeInTheDocument()
     // The technical error stays visible for debugging, demoted to secondary text.
-    expect(within(row).getByText('pipeline blew up')).toHaveClass(
-      'intake-request__error-detail'
-    )
+    expect(within(row).getByText('pipeline blew up')).toHaveClass('intake-request__error-detail')
 
     await user.click(within(row).getByRole('button', { name: /Try again/i }))
 
@@ -310,9 +392,18 @@ describe('IntakePage', () => {
         return Promise.resolve({
           data: {
             jobs: [
-              { id: 'ja', status: 'passed', storybook_status: 'published', error: null,
-                title: 'A', premise_snippet: 'a', age_band: '8-11', storybook_id: 's2',
-                version: 1, created_at: '2026-07-02T00:00:00Z' },
+              {
+                id: 'ja',
+                status: 'passed',
+                storybook_status: 'published',
+                error: null,
+                title: 'A',
+                premise_snippet: 'a',
+                age_band: '8-11',
+                storybook_id: 's2',
+                version: 1,
+                created_at: '2026-07-02T00:00:00Z',
+              },
             ],
           },
         })
@@ -321,8 +412,12 @@ describe('IntakePage', () => {
       if (url === '/v1/storybooks/s2/content-summary')
         return Promise.resolve({
           data: {
-            storybook_id: 's2', version: 1, screened: true, summary: null,
-            flagged_count: 0, findings: [],
+            storybook_id: 's2',
+            version: 1,
+            screened: true,
+            summary: null,
+            flagged_count: 0,
+            findings: [],
           },
         })
       throw new Error(`unexpected GET ${url}`)
@@ -334,7 +429,9 @@ describe('IntakePage', () => {
     })
     renderPage()
 
-    await user.click(await screen.findByRole('button', { name: /Assign more/i }))
+    // P-6a: no assignments exist yet for this storybook, so the row's button
+    // reads "Assign to a child" rather than "Assign more".
+    await user.click(await screen.findByRole('button', { name: /Assign to a child/i }))
     await user.click(await screen.findByRole('checkbox', { name: /Reader A/i }))
     await user.click(screen.getByRole('button', { name: /^Assign$/ }))
 
@@ -383,13 +480,9 @@ describe('IntakePage', () => {
 
     // Let the in-flight generate settle so the test does not leave a dangling
     // promise; the premise field clearing confirms the single submit landed.
-    await waitFor(() =>
-      expect(mockPost).toHaveBeenCalledWith('/v1/concepts/c1/generate')
-    )
+    await waitFor(() => expect(mockPost).toHaveBeenCalledWith('/v1/concepts/c1/generate'))
     resolveGenerate?.()
-    await waitFor(() =>
-      expect(screen.getByLabelText(/What's it about/i)).toHaveValue('')
-    )
+    await waitFor(() => expect(screen.getByLabelText(/What's it about/i)).toHaveValue(''))
     expect(mockPost.mock.calls.filter((c) => c[0] === '/v1/concepts')).toHaveLength(1)
   })
 
@@ -418,8 +511,7 @@ describe('IntakePage', () => {
     const user = userEvent.setup()
     let jobsCalls = 0
     mockGet.mockReset().mockImplementation((url: string) => {
-      if (url === '/v1/profiles')
-        return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
       if (url === '/v1/generation-jobs') {
         jobsCalls += 1
         // First call is the initial load (succeeds); the post-submit refresh rejects.
@@ -481,9 +573,16 @@ describe('IntakePage', () => {
           data: {
             jobs: [
               {
-                id: 'ja', status: 'passed', storybook_status: 'published', error: null,
-                title: 'A', premise_snippet: 'a', age_band: '8-11', storybook_id: 's2',
-                version: 1, created_at: '2026-07-02T00:00:00Z',
+                id: 'ja',
+                status: 'passed',
+                storybook_status: 'published',
+                error: null,
+                title: 'A',
+                premise_snippet: 'a',
+                age_band: '8-11',
+                storybook_id: 's2',
+                version: 1,
+                created_at: '2026-07-02T00:00:00Z',
               },
             ],
           },
@@ -494,20 +593,80 @@ describe('IntakePage', () => {
       if (url === '/v1/storybooks/s2/content-summary')
         return Promise.resolve({
           data: {
-            storybook_id: 's2', version: 1, screened: true, summary: null,
-            flagged_count: 0, findings: [],
+            storybook_id: 's2',
+            version: 1,
+            screened: true,
+            summary: null,
+            flagged_count: 0,
+            findings: [],
           },
         })
       throw new Error(`unexpected GET ${url}`)
     })
     renderPage()
 
-    await user.click(await screen.findByRole('button', { name: /Assign more/i }))
+    // P-6a: no assignments exist yet for this storybook, so the row's button
+    // reads "Assign to a child" rather than "Assign more".
+    await user.click(await screen.findByRole('button', { name: /Assign to a child/i }))
     const dialog = await screen.findByRole('dialog', { name: /Assign to children/i })
     expect(dialog).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /^Cancel$/i }))
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+  })
+
+  // P-6a: an Approved row's assign button reads "Assign to a child" when the
+  // storybook has no assignments yet, and "Assign more" once at least one
+  // exists; the generation-jobs list itself carries no count, so the page
+  // resolves it per-row via GET /v1/storybooks/{id}/assignments.
+  it('labels the assign button per storybook: Assign to a child vs Assign more', async () => {
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/generation-jobs')
+        return Promise.resolve({
+          data: {
+            jobs: [
+              {
+                id: 'ja',
+                status: 'passed',
+                storybook_status: 'published',
+                error: null,
+                title: 'A',
+                premise_snippet: 'a',
+                age_band: '8-11',
+                storybook_id: 's2',
+                version: 1,
+                created_at: '2026-07-02T00:00:00Z',
+              },
+              {
+                id: 'jb',
+                status: 'passed',
+                storybook_status: 'published',
+                error: null,
+                title: 'B',
+                premise_snippet: 'b',
+                age_band: '8-11',
+                storybook_id: 's3',
+                version: 1,
+                created_at: '2026-07-02T00:00:00Z',
+              },
+            ],
+          },
+        })
+      if (url === '/v1/storybooks/s2/assignments')
+        return Promise.resolve({ data: { storybook_id: 's2', profile_ids: [] } })
+      if (url === '/v1/storybooks/s3/assignments')
+        return Promise.resolve({ data: { storybook_id: 's3', profile_ids: ['p1'] } })
+      throw new Error(`unexpected GET ${url}`)
+    })
+    renderPage()
+
+    const rowA = await screen.findByTestId('request-ja')
+    const rowB = await screen.findByTestId('request-jb')
+    await waitFor(() =>
+      expect(within(rowA).getByRole('button')).toHaveTextContent('Assign to a child')
+    )
+    await waitFor(() => expect(within(rowB).getByRole('button')).toHaveTextContent('Assign more'))
   })
 
   it('polls while a job is active and stops after it settles', async () => {
@@ -518,8 +677,15 @@ describe('IntakePage', () => {
     // advanceTimersByTimeAsync instead; the assertions and intent are identical.
     vi.useFakeTimers()
     const active = {
-      id: 'jq', status: 'queued', storybook_status: null, error: null, title: 'Q',
-      premise_snippet: 'q', age_band: '8-11', storybook_id: null, version: null,
+      id: 'jq',
+      status: 'queued',
+      storybook_status: null,
+      error: null,
+      title: 'Q',
+      premise_snippet: 'q',
+      age_band: '8-11',
+      storybook_id: null,
+      version: null,
       created_at: '2026-07-02T00:00:00Z',
     }
     const settled = { ...active, status: 'passed', storybook_status: 'in_review' }

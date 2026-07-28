@@ -123,6 +123,20 @@ export function LandingPage() {
           </span>
         </Link>
       </nav>
+      {/* P-6e: the two doors above assume an existing account (a kid with a
+          device grant, or a guardian/admin who already signed in once); a
+          brand-new visitor had no affordance at all. There is no separate
+          signup route (LoginPage.tsx): "Continue with Google/Apple" on the
+          ordinary guardian login IS the self-signup path (a new account
+          lands in AuthStatus 'awaiting-approval'), so this links straight
+          there rather than inventing a new route or bouncing through the
+          Grown-ups door's console redirect first. */}
+      <p className="landing__new-visitor">
+        New here?{' '}
+        <Link className="landing__new-visitor-link" to={GUARDIAN_LOGIN_PATH}>
+          Get started
+        </Link>
+      </p>
     </main>
   )
 }

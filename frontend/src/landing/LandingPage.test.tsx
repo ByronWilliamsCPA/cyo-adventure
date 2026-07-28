@@ -41,6 +41,17 @@ describe('LandingPage', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'CYO Adventure' })).toBeInTheDocument()
   })
 
+  // P-6e: the Kids/Grown-ups doors both assume an existing account; a
+  // brand-new visitor previously had no affordance at all. There is no
+  // separate signup route, so this links straight to the ordinary guardian
+  // login, where "Continue with Google/Apple" IS the self-signup path.
+  it('shows a new-visitor affordance linking straight to guardian login', () => {
+    renderLanding()
+    const link = screen.getByRole('link', { name: /get started/i })
+    expect(link).toHaveAttribute('href', '/guardian/login')
+    expect(screen.getByText(/new here\?/i)).toBeInTheDocument()
+  })
+
   describe('device-state-aware Kids door (ADR-014 section 5)', () => {
     it('routes the Kids door through guardian login with the authorize-device intent when no grant exists', () => {
       renderLanding()

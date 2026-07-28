@@ -367,6 +367,15 @@
   margin: 0;
 }
 
+/* P-6b: one-line explainer under the page heading, disambiguating this
+   full concept-authoring flow from the quick pre-approved request embedded
+   on Story requests; color comes from cyo-text-muted added alongside it. */
+.intake__intro {
+  font-size: 0.875rem;
+  margin: 0 0 1rem;
+  max-width: 40rem;
+}
+
 /* Live "N / MAX" character counters under the premise (IntakePage.tsx) and
    request-text (RequestStoryForm.tsx) textareas. Rendered as a sibling of
    the label (never inside it, which would leak into the field's accessible
@@ -421,6 +430,14 @@
 .profiles__preview-link {
   flex-shrink: 0;
   color: var(--color-amber-text, #87561d);
+}
+
+/* P-6c: destructive, confirm-gated delete action, placed last in the
+   .profiles__card flex row and given a small gap so it doesn't crowd Edit
+   into an easy mis-tap; color/contrast come from the shared .cyo-btn--danger
+   variant (Button.css), already used for StoryRequestQueue's Decline. */
+.profiles__delete-btn {
+  margin-left: 0.5rem;
 }
 
 /* ADR-015 G3: "Auto-approve on" card badge (ProfilesPage). */
@@ -1355,6 +1372,15 @@
 
 .request-form__notice--blocked {
   color: var(--color-error, #9b2c2c);
+}
+
+/* P-6b: one-line explainer under the guardian-mode heading; color comes
+   from the cyo-text-muted class added alongside it in RequestStoryForm.tsx.
+   Admin mode renders no intro, so this only ever appears inside the flex
+   .request-form gap above. */
+.request-form__intro {
+  font-size: 0.875rem;
+  margin: 0;
 }
 
 /* Disabled-submit reason above Send request; color comes from the

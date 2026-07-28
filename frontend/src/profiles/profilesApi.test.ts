@@ -7,6 +7,7 @@ function fakeAxios() {
     get: vi.fn(),
     post: vi.fn(),
     patch: vi.fn(),
+    delete: vi.fn(),
   }
 }
 
@@ -34,6 +35,15 @@ describe('makeProfilesApi', () => {
     const result = await makeProfilesApi(api as never).update('p1', { avatar: null })
     expect(api.patch).toHaveBeenCalledWith('/v1/profiles/p1', { avatar: null })
     expect(result.avatar).toBeNull()
+  })
+
+  // P-6c: deletes via DELETE /v1/profiles/:id (204 No Content server-side,
+  // api/profiles.py's delete_profile).
+  it('deletes via DELETE /v1/profiles/:id', async () => {
+    const api = fakeAxios()
+    api.delete.mockResolvedValue({ data: undefined })
+    await makeProfilesApi(api as never).deleteProfile('p1')
+    expect(api.delete).toHaveBeenCalledWith('/v1/profiles/p1')
   })
 
   // ADR-015 G3: the wire shape only, per ProfileEnvelopeFields' header

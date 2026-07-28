@@ -27,6 +27,8 @@ export function RequestsPage() {
           neutral default message. */}
       <StoryRequestQueue
         scope="family"
+        heading="Requests from your kids"
+        intro="Review the story ideas your children have asked for, and approve or decline each one."
         approveSuccessMessage="Approved! The story is being made; track it under Story requests."
       />
     </>

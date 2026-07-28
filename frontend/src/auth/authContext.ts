@@ -13,11 +13,7 @@ import type { Principal } from './types'
  * concept).
  */
 export type AuthStatus =
-  | 'loading'
-  | 'signed-out'
-  | 'awaiting-approval'
-  | 'needs-consent'
-  | 'signed-in'
+  'loading' | 'signed-out' | 'awaiting-approval' | 'needs-consent' | 'signed-in'
 
 /**
  * A session was established with Supabase but the backend could not resolve it
@@ -77,6 +73,16 @@ export interface AuthContextValue {
    * meaningful while status === 'needs-consent'.
    */
   recordConsent: (signerName: string) => Promise<void>
+  /**
+   * P-6d: re-resolves status/principal from the CURRENT Supabase session,
+   * without submitting anything. Used by GuardianAwaitingApprovalPage's
+   * "Check again" recheck (and its background poll) so an admin's approval
+   * can be picked up without a sign-out/sign-in round trip. Shares
+   * syncPrincipal with recordConsent's tail, so it correctly short-circuits
+   * before ever calling GET /v1/me for a still-awaiting-approval guardian
+   * (see AuthStatus's 'awaiting-approval' doc).
+   */
+  refreshStatus: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)

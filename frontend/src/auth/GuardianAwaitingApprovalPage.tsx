@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useState } from 'react'
+
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 import { Navigate } from 'react-router'
@@ -11,13 +13,24 @@ import {
 } from '../routes'
 import { useAuth } from './useAuth'
 
+// P-6d: how often this page silently re-checks approval status in the
+// background while the guardian is not actively pressing "Check again".
+// Cheap (re-reads the current Supabase session, short-circuits before
+// GET /v1/me while still awaiting approval; see refreshStatus's doc), so a
+// modest interval is fine without adding real server load.
+const AUTO_RECHECK_INTERVAL_MS = 20_000
+
 /**
  * Shown to a self-signed-up guardian (AuthStatus 'awaiting-approval')
- * instead of the console. ProtectedRoute routes here directly; nothing on
- * this page can proceed past it (no polling, no retry-past-the-gate) since
- * only an admin approving the account server-side changes anything. Signing
- * out and back in re-runs AuthContext's onboarding check, which is the only
- * way this page's guardian would ever see it clear.
+ * instead of the console. ProtectedRoute routes here directly.
+ *
+ * P-6d: this used to be a true dead end (sign out was the only escape); it
+ * now re-checks status both on a background timer and via a manual "Check
+ * again" button, using AuthContext's refreshStatus (re-resolves the
+ * principal from the current Supabase session, the same tail recordConsent
+ * already uses). Approval itself is still entirely server-side (only an
+ * admin approving the account changes anything); this page just stops
+ * requiring a sign-out/sign-in round trip to notice.
  *
  * #ASSUME: security: this route sits outside ProtectedRoute (see
  * router.tsx's comment on it), so a signed-out visitor or an
@@ -27,7 +40,35 @@ import { useAuth } from './useAuth'
  * #VERIFY: GuardianAwaitingApprovalPage.test.tsx redirect cases.
  */
 export function GuardianAwaitingApprovalPage() {
-  const { status, principal, signOut } = useAuth()
+  const { status, principal, signOut, refreshStatus } = useAuth()
+  const [checking, setChecking] = useState(false)
+
+  // #ASSUME: external-resources: the recheck call can fail (network,
+  // session expiry). Failing silently (no error banner) is deliberate: this
+  // is a convenience recheck, not a required action, and the guardian can
+  // always retry or fall back to Sign out / signing back in.
+  // #VERIFY: GuardianAwaitingApprovalPage.test.tsx "Check again" tests.
+  const checkAgain = useCallback(async () => {
+    setChecking(true)
+    try {
+      await refreshStatus()
+    } catch (err) {
+      console.error('awaiting-approval recheck failed', err instanceof Error ? err.message : err)
+    } finally {
+      setChecking(false)
+    }
+  }, [refreshStatus])
+
+  // Hooks must run unconditionally before the status-gated early returns
+  // below (rules of hooks), so the poll effect itself gates on status
+  // internally instead of the component returning early first.
+  useEffect(() => {
+    if (status !== 'awaiting-approval') return undefined
+    const id = setInterval(() => {
+      void checkAgain()
+    }, AUTO_RECHECK_INTERVAL_MS)
+    return () => clearInterval(id)
+  }, [status, checkAgain])
 
   if (status === 'signed-out') {
     return <Navigate to={GUARDIAN_LOGIN_PATH} replace />
@@ -53,6 +94,12 @@ export function GuardianAwaitingApprovalPage() {
         description="A family administrator needs to approve your account before you can start adding profiles or requesting stories. This is usually quick -- check back soon, or come back after you've heard from them."
       />
       <p className="console__notice cyo-text-muted">
+        We'll check automatically every so often, or you can check right now.
+      </p>
+      <p className="console__notice">
+        <Button variant="ghost" size="sm" onClick={() => void checkAgain()} disabled={checking}>
+          {checking ? 'Checking…' : 'Check again'}
+        </Button>{' '}
         <Button variant="ghost" size="sm" onClick={() => void signOut()}>
           Sign out
         </Button>

@@ -60,6 +60,11 @@ test.describe('guardian authored request (RequestsPage)', () => {
 
     await page.goto('/guardian/requests')
 
+    // P-6b: this form's own heading disambiguates it from both the review
+    // queue above it on this same page and from IntakePage's "Request a
+    // story" (a different route entirely).
+    await expect(page.getByRole('heading', { name: 'Quick story request' })).toBeVisible()
+
     await page.getByLabel('Child (optional)').selectOption(CHILD_PROFILE.id)
     await expect(page.getByLabel('Age band')).toHaveValue(CHILD_PROFILE.age_band)
     await page.getByLabel('What should the story be about?').fill('A story about a kind robot')
@@ -73,7 +78,11 @@ test.describe('guardian authored request (RequestsPage)', () => {
       page.getByRole('button', { name: 'Send request' }).click(),
     ])
 
-    await expect(page.getByText('Request approved and sent for authoring.')).toBeVisible()
+    // P-6b: guardian mode's success copy points to Books, disambiguating this
+    // surface from the child-request review queue's own approve toast.
+    await expect(
+      page.getByText("Sent! Your story is being made. You'll find it under Books once it's ready.")
+    ).toBeVisible()
     expect(requestBody).toEqual({
       request_text: 'A story about a kind robot',
       age_band: CHILD_PROFILE.age_band,
@@ -106,7 +115,9 @@ test.describe('guardian authored request (RequestsPage)', () => {
     await expect(
       page.getByRole('alert').filter({ hasText: 'did not pass our content check' })
     ).toBeVisible()
-    await expect(page.getByText('Request approved and sent for authoring.')).toHaveCount(0)
+    await expect(
+      page.getByText("Sent! Your story is being made. You'll find it under Books once it's ready.")
+    ).toHaveCount(0)
     expect(requestBody).toEqual({
       request_text: 'A scary story',
       age_band: '8-11',
@@ -154,7 +165,9 @@ test.describe('admin authored request (AdminRequestsPage)', () => {
       page.getByRole('button', { name: 'Send request' }).click(),
     ])
 
-    await expect(page.getByText('Request approved and sent for authoring.')).toBeVisible()
+    await expect(
+      page.getByText('Request approved. Story generation has started.')
+    ).toBeVisible()
     expect(requestBody).toEqual({
       request_text: 'A story for the whole family',
       age_band: '8-11',

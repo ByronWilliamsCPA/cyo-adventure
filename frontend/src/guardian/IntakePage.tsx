@@ -9,6 +9,7 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { AssignChildrenDialog } from './AssignChildrenDialog'
+import { makeAssignApi } from './assignApi'
 import { BudgetBanner } from './BudgetBanner'
 import { BUDGET_EXCEEDED_MESSAGE, isBudgetExceededError } from './budgetApi'
 import {
@@ -62,6 +63,15 @@ function assignedNotice(count: number): string {
   return `Assigned to ${count} ${count === 1 ? 'child' : 'children'}.`
 }
 
+// P-6a: the generation-jobs list (GenerationJobSummary) carries no assignment
+// count, so an Approved row cannot tell "assigned to nobody yet" from
+// "already assigned" without asking. A `count` of `undefined` means "not
+// fetched yet" and defers to the same "Assign to a child" wording a
+// genuinely-unassigned book gets, rather than guessing "Assign more".
+function assignButtonLabel(count: number | undefined): string {
+  return count !== undefined && count > 0 ? 'Assign more' : 'Assign to a child'
+}
+
 /**
  * Guardian concept intake + "My Requests" status list (C4a-5, wireframe 4.5).
  *
@@ -76,6 +86,7 @@ export function IntakePage() {
   const api = useApi()
   const intakeApi = useMemo(() => makeIntakeApi(api), [api])
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
+  const assignApi = useMemo(() => makeAssignApi(api), [api])
 
   const [profiles, setProfiles] = useState<ProfileView[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -100,6 +111,12 @@ export function IntakePage() {
   // The storybook id whose "Assign to children" dialog is open, or null when
   // closed. Approved request rows carry a non-null storybook_id (see statusPill).
   const [assigning, setAssigning] = useState<string | null>(null)
+  // P-6a: per-storybook assignment count for Approved rows, keyed by
+  // storybook_id; absent means "not fetched yet" (assignButtonLabel treats
+  // that the same as zero). Seeded lazily below and kept current by
+  // AssignChildrenDialog's onAssigned callback so the label never has to
+  // wait for a full jobs refetch after a guardian assigns.
+  const [assignedCounts, setAssignedCounts] = useState<Record<string, number>>({})
   // Distinct from `error` (a submit failure): a read failure on the initial
   // load or a poll. Surfacing it prevents an empty/stale list from masquerading
   // as a genuine "no requests" state after a session expiry or network drop.
@@ -157,6 +174,51 @@ export function IntakePage() {
     }, POLL_MS)
     return () => clearInterval(id)
   }, [jobs, refreshJobs])
+
+  // P-6a: fetch the real assignment count for any Approved row this page has
+  // not already resolved, reusing the same GET the assign dialog itself calls
+  // on open (assignApi.get) rather than a new endpoint. Scoped to Approved
+  // rows only (not every job) so this never fires for the common case of a
+  // list with no approved books yet.
+  // #ASSUME: external-resources: this fetch can fail (network, session
+  // expiry); a failure just leaves the count unresolved, so the row falls
+  // back to "Assign to a child" rather than blocking or erroring the page.
+  // #VERIFY: IntakePage.test.tsx "assign button label" tests.
+  useEffect(() => {
+    const approvedIds = [
+      ...new Set(
+        jobs
+          .filter((job) => statusPill(job) === 'Approved' && job.storybook_id !== null)
+          .map((job) => job.storybook_id as string)
+      ),
+    ]
+    const unknownIds = approvedIds.filter((id) => !(id in assignedCounts))
+    if (unknownIds.length === 0) return undefined
+    let cancelled = false
+    void Promise.all(
+      unknownIds.map(async (id): Promise<readonly [string, number] | null> => {
+        try {
+          const profileIds = await assignApi.get(id)
+          return [id, Array.isArray(profileIds) ? profileIds.length : 0] as const
+        } catch (err) {
+          console.error('assignment count fetch failed', err)
+          return null
+        }
+      })
+    ).then((results) => {
+      if (cancelled) return
+      setAssignedCounts((prev) => {
+        const next = { ...prev }
+        for (const result of results) {
+          if (result !== null) next[result[0]] = result[1]
+        }
+        return next
+      })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [jobs, assignedCounts, assignApi])
 
   const selected = profiles.find((p) => p.id === selectedId) ?? null
   // #ASSUME: data-integrity: banned_themes is always present on a ProfileView
@@ -276,6 +338,16 @@ export function IntakePage() {
   return (
     <section className="intake">
       <h1>Request a story</h1>
+      {/* P-6b: this is the full concept-authoring flow (describe an idea,
+          pick a child, wait for it to be made); it is deliberately distinct
+          from the quick pre-approved request embedded on Story requests
+          (RequestStoryForm), which this line cross-links to rather than
+          silently duplicating "Request a story" on both surfaces. */}
+      <p className="intake__intro cyo-text-muted">
+        Describe an idea below and we&apos;ll make a full story for your child. Reviewing your
+        kids&apos; own story ideas happens under <Link to="/guardian/requests">Story requests</Link>
+        .
+      </p>
       {loadError ? (
         <ErrorBanner className="intake-form__error" onRetry={() => void loadData()}>
           {loadError}
@@ -436,7 +508,7 @@ export function IntakePage() {
                       setAssigning(job.storybook_id)
                     }}
                   >
-                    Assign more
+                    {assignButtonLabel(assignedCounts[job.storybook_id])}
                   </button>
                 ) : null}
                 {pill === 'Failed' ? (
@@ -460,9 +532,14 @@ export function IntakePage() {
           onClose={() => setAssigning(null)}
           // onAssigned receives the storybook's full post-save assignment
           // list (assignApi.add returns the server's complete profile_ids),
-          // so the count reads "assigned to N total". Nothing else on this
-          // page renders assignments, so the notice is the whole refresh.
-          onAssigned={(profileIds) => setAssignNotice(assignedNotice(profileIds.length))}
+          // so the count reads "assigned to N total". It also updates
+          // assignedCounts directly (P-6a) so the row's button label flips
+          // from "Assign to a child" to "Assign more" immediately, without
+          // waiting on the lazy-fetch effect to re-run.
+          onAssigned={(profileIds) => {
+            setAssignNotice(assignedNotice(profileIds.length))
+            setAssignedCounts((prev) => ({ ...prev, [assigning]: profileIds.length }))
+          }}
         />
       ) : null}
     </section>

@@ -45,7 +45,10 @@ test.describe('signed-in intake', () => {
     page,
   }) => {
     let brief: Record<string, unknown> | null = null
-    // jobs endpoint state machine: empty -> queued -> waiting for review
+    // jobs endpoint state machine: empty -> queued -> waiting for review ->
+    // approved (published). Phase 3 exercises P-6a: an Approved row with no
+    // assignments yet must offer "Assign to a child", not a presumptuous
+    // "Assign more".
     let jobsPhase = 0
     const JOB = (status: string, storybookStatus: string | null) => ({
       id: 'j1',
@@ -62,7 +65,8 @@ test.describe('signed-in intake', () => {
     await page.route('**/api/v1/generation-jobs', (route) => {
       if (jobsPhase === 0) return route.fulfill({ json: { jobs: [] } })
       if (jobsPhase === 1) return route.fulfill({ json: { jobs: [JOB('queued', null)] } })
-      return route.fulfill({ json: { jobs: [JOB('passed', 'in_review')] } })
+      if (jobsPhase === 2) return route.fulfill({ json: { jobs: [JOB('passed', 'in_review')] } })
+      return route.fulfill({ json: { jobs: [JOB('passed', 'published')] } })
     })
     await page.route('**/api/v1/concepts', (route) => {
       brief = (route.request().postDataJSON() as { brief: Record<string, unknown> }).brief
@@ -71,6 +75,11 @@ test.describe('signed-in intake', () => {
     })
     await page.route('**/api/v1/concepts/c1/generate', (route) =>
       route.fulfill({ status: 202, json: { job_id: 'j1', status: 'queued' } })
+    )
+    // P-6a: AssignChildrenDialog's onAssigned tail calls this same GET on
+    // open; here it only backs the Approved row's assign-button label.
+    await page.route('**/api/v1/storybooks/s-new/assignments', (route) =>
+      route.fulfill({ json: { storybook_id: 's-new', profile_ids: [] } })
     )
 
     await page.goto('/guardian/intake')
@@ -96,5 +105,18 @@ test.describe('signed-in intake', () => {
     await expect(page.getByTestId('request-status-j1')).toHaveText('Waiting for review', {
       timeout: 12_000,
     })
+
+    // Approval (publishing) happens out-of-band (an admin acts on the review
+    // queue), so the job's own status stays 'passed' and the live poll never
+    // observes it (isActive gates polling on status queued/running); the
+    // guardian sees it on the next full load instead. Simulate that with a
+    // reload rather than a further live poll tick. The Approved row must
+    // offer "Assign to a child" (P-6a), not "Assign more", since nothing has
+    // been assigned to it yet.
+    jobsPhase = 3
+    await page.reload()
+    await expect(page.getByTestId('request-status-j1')).toHaveText('Approved')
+    await expect(page.getByRole('button', { name: 'Assign to a child' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Assign more' })).toHaveCount(0)
   })
 })

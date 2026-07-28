@@ -1,16 +1,21 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GuardianAwaitingApprovalPage } from './GuardianAwaitingApprovalPage'
 
 const mockSignOut = vi.fn()
+const mockRefreshStatus = vi.fn()
 let mockAuth: { status: string; principal: { role: string } | null } = {
   status: 'awaiting-approval',
   principal: null,
 }
 vi.mock('./useAuth', () => ({
-  useAuth: (): unknown => ({ ...mockAuth, signOut: mockSignOut }),
+  useAuth: (): unknown => ({
+    ...mockAuth,
+    signOut: mockSignOut,
+    refreshStatus: mockRefreshStatus,
+  }),
 }))
 
 function renderWithRouter() {
@@ -21,18 +26,20 @@ function renderWithRouter() {
         <Route path="/guardian/consent" element={<div>Consent page</div>} />
         <Route path="/guardian" element={<div>Guardian console</div>} />
         <Route path="/admin" element={<div>Admin console</div>} />
-        <Route
-          path="/guardian/awaiting-approval"
-          element={<GuardianAwaitingApprovalPage />}
-        />
+        <Route path="/guardian/awaiting-approval" element={<GuardianAwaitingApprovalPage />} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
 beforeEach(() => {
   mockSignOut.mockReset().mockResolvedValue(undefined)
+  mockRefreshStatus.mockReset().mockResolvedValue(undefined)
   mockAuth = { status: 'awaiting-approval', principal: null }
+})
+
+afterEach(() => {
+  vi.useRealTimers()
 })
 
 describe('GuardianAwaitingApprovalPage', () => {
@@ -41,10 +48,63 @@ describe('GuardianAwaitingApprovalPage', () => {
     expect(screen.getByText(/awaiting approval/i)).toBeInTheDocument()
   })
 
+  // P-6d: this page used to be a true dead end while still pending; it now
+  // shows a manual recheck action alongside Sign out.
+  it('still pending: shows the waiting copy and a Check again action', () => {
+    renderWithRouter()
+    expect(screen.getByText(/awaiting approval/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Check again' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument()
+  })
+
   it('signs out on request', () => {
     renderWithRouter()
     fireEvent.click(screen.getByRole('button', { name: 'Sign out' }))
     expect(mockSignOut).toHaveBeenCalledTimes(1)
+  })
+
+  // P-6d: clicking Check again calls refreshStatus; a status flip to
+  // 'signed-in' (an admin approved the account) must advance the guardian
+  // off this page without a sign-out/sign-in round trip.
+  it('Check again calls refreshStatus and advances off the page once status flips to signed-in', async () => {
+    mockRefreshStatus.mockImplementation(() => {
+      mockAuth = { status: 'signed-in', principal: { role: 'guardian' } }
+      return Promise.resolve()
+    })
+    renderWithRouter()
+    fireEvent.click(screen.getByRole('button', { name: 'Check again' }))
+    expect(mockRefreshStatus).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(screen.getByText('Guardian console')).toBeInTheDocument())
+  })
+
+  // P-6d: still-pending is the common case; a failed recheck must not throw,
+  // crash the page, or strand the "Checking…" label past the failure.
+  it('a failed Check again leaves the page on the waiting state', async () => {
+    mockRefreshStatus.mockRejectedValue(new Error('network down'))
+    renderWithRouter()
+    fireEvent.click(screen.getByRole('button', { name: 'Check again' }))
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Check again' })).toBeInTheDocument()
+    )
+    expect(screen.getByText(/awaiting approval/i)).toBeInTheDocument()
+  })
+
+  // P-6d: the background poll is a convenience, not a requirement; it must
+  // fire refreshStatus on its own without any user interaction.
+  it('polls refreshStatus automatically while still pending', async () => {
+    vi.useFakeTimers()
+    renderWithRouter()
+    expect(mockRefreshStatus).not.toHaveBeenCalled()
+    // Deviation from the brief: Testing Library's fake-timer detection only
+    // fires when a `jest` global exists (jestFakeTimersAreEnabled in
+    // @testing-library/dom), so under Vitest waitFor cannot advance the
+    // faked timers and would hang. Drive the flush explicitly with act +
+    // advanceTimersByTimeAsync instead (same pattern as
+    // IntakePage.test.tsx's "polls while a job is active" test).
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(20_000)
+    })
+    expect(mockRefreshStatus).toHaveBeenCalledTimes(1)
   })
 
   it('redirects a signed-out visitor to login', () => {
