@@ -673,6 +673,11 @@ runs on Supabase-managed infrastructure instead of the homelab; see
       4, 6).
 - [ ] The live-model adversarial safety run carried as Phase 3 debt (safety evaluation
       doc's model-dependent classes).
+- [ ] Moderation review-model redesign and post-Perspective Stage-0 successor
+      (owner decisions pending): see
+      [moderation-review-current-state-2026-07-28.md](./safety/moderation-review-current-state-2026-07-28.md)
+      and [moderation-review-redesign-2026-07-28.md](./safety/moderation-review-redesign-2026-07-28.md).
+      Hard external deadline: Google Perspective API sunsets 2026-12-31.
 - [ ] **Newly surfaced by the 2026-07-20 audit, from `security-hardening-plan-2026-07.md`,
       neither previously tracked here nor closed**: H1, `assign_storybook` performs no
       band-ceiling comparison against the target profile, so a guardian can assign an
@@ -717,6 +722,7 @@ iteration; the reader itself is straightforward.
 | Multi-device progress loss | M | M | Revision-based concurrency; explicit conflict resolution; server canonical |
 | Scope creep (dice, combat, sharing) | M | M | Dice and combat out of v1; sharing beyond the family is deferred to the R2/R3 public rungs (ADR-008), not v1; revisit others only on demand |
 | iOS PWA storage eviction | M | M | IndexedDB as cache only; Postgres canonical; sync on every choice |
+| Google Perspective API sunset (2026-12-31), classifiers.py has no live date gate | H (calendar-driven) | M | Redesign proposes retiring the axis ahead of the deadline; see `safety/moderation-review-current-state-2026-07-28.md` and `safety/moderation-review-redesign-2026-07-28.md` |
 
 ## Definition of Done
 
