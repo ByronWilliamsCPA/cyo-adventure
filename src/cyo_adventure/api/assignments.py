@@ -60,6 +60,7 @@ from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.storybook.models import ContentFlags
+from cyo_adventure.storybook.sentinels import strip_sentinels
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -494,8 +495,9 @@ def _guardian_book_item(
         policy: The resolved threshold policy shared across the whole listing.
 
     Returns:
-        GuardianBookItem: The browse row with title, content badge, and the
-            sorted assignment set.
+        GuardianBookItem: The browse row with title (personalization
+            sentinels stripped to their generic word, ADR-023 P3), content
+            badge, and the sorted assignment set.
     """
     # #EDGE: data integrity: build_content_summary raises ValidationError on a
     # moderation_report that no longer conforms at rest (e.g. an unrecognized
@@ -526,10 +528,17 @@ def _guardian_book_item(
         )
         screened = False
         flagged_count = 0
+    # #CRITICAL: security: this is the guardian browse-and-assign list, not
+    # an admin/review surface, so a raw personalization sentinel (e.g.
+    # {~HERO:Explorer~}) must never reach it (ADR-023 P3), the same leak
+    # class the library/reading-history/recommendations/notifications feeds
+    # already close.
+    # #VERIFY: test_assignments_api_unit.py::TestGuardianBookItem::
+    # test_title_strips_sentinels.
     title = version_row.blob.get("title")
     return GuardianBookItem(
         storybook_id=book.id,
-        title=title if isinstance(title, str) and title else book.id,
+        title=strip_sentinels(title) if isinstance(title, str) and title else book.id,
         version=version,
         age_band=_book_age_band(version_row.blob),
         visibility=cast("Literal['family', 'catalog']", book.visibility),

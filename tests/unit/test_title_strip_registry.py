@@ -40,6 +40,8 @@ DECIDED: dict[str, str] = {
     "ReadingHistoryItem": "strip",  # api/reading_history.py::_book_title
     "RecommendationItem": "strip",  # api/recommendations.py::_book_title
     "NotificationView": "strip",  # api/notifications.py (title/body wrapped in strip_sentinels)
+    "SeriesNextBook": "strip",  # api/reading.py::get_series_next (title stripped before SeriesNextBook)
+    "GuardianBookItem": "strip",  # api/assignments.py::_guardian_book_item (title stripped before GuardianBookItem)
     # --- raw: the version-blob endpoint (the artifact the client resolves
     # personalization against) is deliberately verbatim ---
     # (get_storybook_version returns a plain dict, not a schemas.py
@@ -55,25 +57,6 @@ DECIDED: dict[str, str] = {
     # is nothing to strip here. This is the guardian's own title, echoed
     # back to themselves in their own "My Requests" list. ---
     "ConceptBrief": "raw",  # generation/concept.py (guardian's own request.brief.title)
-    # --- raw, BUT UNFIXED LEAK: these two title-bearing consumer surfaces
-    # read `blob.get("title")` directly with no strip_sentinels() call, the
-    # same pattern A2-A4 fixed for LibraryItem/ReadingHistoryItem/
-    # RecommendationItem/NotificationView. They are classified "raw" here
-    # only because that is what the code currently does; per Task A5's
-    # scope (tests only, no src/ changes), this is flagged for the
-    # supervisor to schedule a follow-up fix, not silently accepted as by
-    # design like the admin/review surfaces above.
-    # TODO(ADR-023 leak): api/reading.py `get_series_next` builds
-    # SeriesNextBook.title from `blob.get("title")` verbatim (no strip);
-    # this is a kid-facing series-continuation feed, structurally identical
-    # to the already-fixed LibraryItem/ReadingHistoryItem sites.
-    "SeriesNextBook": "raw",  # api/reading.py::get_series_next -- UNFIXED, see TODO above
-    # TODO(ADR-023 leak): api/assignments.py `_guardian_book_item` builds
-    # GuardianBookItem.title from `version_row.blob.get("title")` verbatim
-    # (no strip); this is the guardian browse-and-assign list, not an
-    # admin/review surface, so it does not fall under the ADR-023 section 10
-    # carve-out and looks like the same class of leak as SeriesNextBook.
-    "GuardianBookItem": "raw",  # api/assignments.py::_guardian_book_item -- UNFIXED, see TODO above
     # --- raw: internal job-status projection, not story content. The title
     # here is read from Concept.brief (the guardian's own ConceptBrief, see
     # above), not from a published story blob, so the same "no sentinel can

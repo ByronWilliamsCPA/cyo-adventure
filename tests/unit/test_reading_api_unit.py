@@ -26,6 +26,7 @@ from cyo_adventure.api.reading import (
     _version_ending_ids,
     _view,
     get_reading_state,
+    get_series_next,
     put_reading_state,
     record_completion,
 )
@@ -41,6 +42,7 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+from cyo_adventure.storybook.sentinels import wrap
 
 if TYPE_CHECKING:
     from sqlalchemy import Select
@@ -1269,3 +1271,51 @@ class TestRecordCompletion:
             AuthorizationError, match=r"profile is not accessible to this principal"
         ):
             await record_completion(body, ctx)
+
+
+# ---------------------------------------------------------------------------
+# get_series_next
+# ---------------------------------------------------------------------------
+
+
+class TestGetSeriesNext:
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_next_book_title_strips_sentinels(self) -> None:
+        """SeriesNextBook.title must not leak a raw personalization sentinel.
+
+        ADR-023 P3 (registry: tests/unit/test_title_strip_registry.py). The
+        series-next feed is kid-facing, structurally identical to the
+        already-fixed LibraryItem/ReadingHistoryItem/RecommendationItem
+        sites: the sibling's published blob title is read verbatim from
+        `blob.get("title")` and must be stripped before it reaches the
+        response model.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("story-1", family_id)
+        book.series_id = uuid.uuid4()
+        book.book_index = 1
+        sibling = _published_book("story-2", family_id)
+        sibling.series_id = book.series_id
+        sibling.book_index = 2
+        token = wrap("HERO", "Explorer")
+        blob = _valid_blob()
+        blob["title"] = f"{token} and the Map"
+        version = StorybookVersion(storybook_id="story-2", version=1, blob=blob)
+        session = _FakeSession(
+            get_map={
+                (Storybook, "story-1"): book,
+                (Storybook, "story-2"): sibling,
+                (StorybookVersion, ("story-2", 1)): version,
+            },
+            scalar_result=sibling,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+
+        result = await get_series_next(str(profile_id), "story-1", ctx)
+
+        assert result.next is not None
+        assert "{~" not in result.next.title
+        assert "~}" not in result.next.title
+        assert "Explorer" in result.next.title

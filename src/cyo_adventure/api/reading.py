@@ -48,6 +48,7 @@ from cyo_adventure.db.models import (
 )
 from cyo_adventure.player.replay import validate_reading_state
 from cyo_adventure.publishing.state_machine import Visibility
+from cyo_adventure.storybook.sentinels import strip_sentinels
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -283,6 +284,13 @@ async def get_series_next(
         return SeriesNextView(next=None)
     series_row = await ctx.session.get(Series, book.series_id)
     blob = version_row.blob
+    # #CRITICAL: security: this is a kid-facing series-continuation feed, so
+    # a raw personalization sentinel (e.g. {~HERO:Explorer~}) must never
+    # reach a non-opted-in reader (ADR-023 P3), the same leak class the
+    # library/reading-history/recommendations/notifications feeds already
+    # close.
+    # #VERIFY: test_reading_api_unit.py::TestGetSeriesNext::
+    # test_next_book_title_strips_sentinels.
     title = blob.get("title")
     # #EDGE: data integrity: a pre-WS-G sibling blob carries no embedded
     # series block; the declared entry node is then unknown and the client
@@ -300,7 +308,7 @@ async def get_series_next(
         next=SeriesNextBook(
             storybook_id=sibling.id,
             version=published_version,
-            title=title if isinstance(title, str) else "",
+            title=strip_sentinels(title) if isinstance(title, str) else "",
             series_entry_node=entry,
             carries_state=series_row.carries_state if series_row else False,
         )
