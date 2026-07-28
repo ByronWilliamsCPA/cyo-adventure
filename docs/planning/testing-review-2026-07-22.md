@@ -3,8 +3,7 @@ purpose: Comprehensive critical review of the test suite (coverage by test type,
   quality, and mocking vs real data), with prioritized findings and recommendations.
 component: testing
 source: session 2026-07-22, branch claude/testing-coverage-quality-review-eyceyy
-related: handoff-comprehensive-e2e-audit-2026-07-22.md,
-  handoff-test-coverage-robustness-2026-07-22.md
+related: handoff-test-coverage-robustness-2026-07-22.md
 ---
 
 # Critical Review: CYO Adventure Test Suite (2026-07-22)

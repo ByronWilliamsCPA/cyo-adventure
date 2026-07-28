@@ -549,11 +549,18 @@ of this file.
    `extra="forbid"` schema accepts, instead of echoing back server-View-only
    fields picked up on cross-device resync) was needed to make the spec pass
    4/4; before that fix a resynced save 422'd. Staging and production
-   conflict coverage remain genuinely absent; production is explicitly out
-   of scope, per the reasoning in
-   `docs/planning/handoff-offline-conflict-real-backend-2026-07-16.md`
-   (which also documents the original two-BrowserContext recipe this spec
-   implements).
+   conflict coverage remain genuinely absent. Production is explicitly out
+   of scope: this check works by deliberately provoking a real 409, which
+   means creating conflicting reading-state on a live system, and
+   `frontend/e2e-prod/` is otherwise strictly non-destructive (the one narrow,
+   self-cleaning device-grant mint/revoke in `kid-device-grant.spec.ts` is its
+   only write). Racing two devices against production reading-state is a
+   materially different risk profile and needs a deliberate team decision, not
+   a unilateral addition; staging remains fair game. That reasoning, and the
+   original two-BrowserContext recipe this spec implements, came from
+   `handoff-offline-conflict-real-backend-2026-07-16.md`, retired in PR #444
+   and recoverable via
+   `git show 4afe490~1:docs/planning/handoff-offline-conflict-real-backend-2026-07-16.md`.
 
 `#ASSUME: external-resources: gaps 2, 4, and (if attempted) 6 above were
 authored without access to a running browser or a live backend/Postgres

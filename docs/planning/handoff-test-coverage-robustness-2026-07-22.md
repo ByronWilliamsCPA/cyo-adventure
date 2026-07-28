@@ -12,8 +12,9 @@ This is an executable gap-closure plan, not just a status note. It consolidates
 every hole from two source documents so a fresh session can drive them all to
 done without re-deriving state:
 
-- Audit: [`handoff-comprehensive-e2e-audit-2026-07-22.md`](handoff-comprehensive-e2e-audit-2026-07-22.md)
-  (P0/P1/P2, per environment).
+- Audit: `handoff-comprehensive-e2e-audit-2026-07-22.md` (P0/P1/P2, per environment).
+  Retired in PR #444 once its findings were closed; recover it with
+  `git show 4afe490~1:docs/planning/handoff-comprehensive-e2e-audit-2026-07-22.md`.
 - Verdict: [`../testing/action-coverage-robustness-2026-07-22.md`](../testing/action-coverage-robustness-2026-07-22.md)
   (per-action x per-tier grading, component-only areas, micro-holes).
 

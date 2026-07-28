@@ -39,10 +39,14 @@ the [tech spec](../planning/tech-spec.md).
 > path by silent newest-write-wins: a 409 adopts the server's current row without
 > ever showing a dialog, because a 5-10 year old cannot reason about a "which place
 > do you want to keep?" prompt and reading must never block on a conflict. This can
-> discard the local position (deliberate, bounded data loss). The decision is
-> recorded in
-> [handoff-e2e-workflow-logic-review-2026-07-22.md](../planning/handoff-e2e-workflow-logic-review-2026-07-22.md)
-> and implemented in `frontend/src/offline/sync.ts` (`resolveConflict`,
+> discard the local position (deliberate, bounded data loss). Newest-write-wins was
+> chosen over "keep the furthest place" because it is the simplest rule to reason
+> about and reading must never block on a conflict; the accepted cost is that a
+> child can be moved backward when the other device is less far along, tagged
+> `#ASSUME: data-integrity` at both call sites. The decision was taken in the
+> 2026-07-22 e2e workflow-logic review (finding P-1) and implemented in commit
+> `161fca4`; that review document was retired in PR #444 and remains in git
+> history. It is implemented in `frontend/src/offline/sync.ts` (`resolveConflict`,
 > `use_newer_progress` branch) and the 409 handler in
 > `frontend/src/reader/ReaderPage.tsx`. The `continue_from_this_device` /
 > `use_newer_progress` server contract below is unchanged; only the client no

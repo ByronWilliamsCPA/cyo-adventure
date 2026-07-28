@@ -22,10 +22,11 @@ import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
  * decision, a conflict is resolved SILENTLY: the child is never shown a dialog;
  * the app adopts the server's newest row and keeps reading.
  *
- * Implements the real-backend gap described in
- * docs/planning/handoff-offline-conflict-real-backend-2026-07-16.md (that
- * doc lives on the PR #268 branch, not this one; fetched via
- * `git show origin/claude/frontend-testing-infrastructure-vag8z6:...`). It
+ * Implements the real-backend gap described in the 2026-07-16 offline-conflict
+ * handoff (docs/planning/handoff-offline-conflict-real-backend-2026-07-16.md),
+ * retired in PR #444 once this spec closed it; read it with
+ * `git show 4afe490~1:docs/planning/handoff-offline-conflict-real-backend-2026-07-16.md`.
+ * References to "the handoff doc" below mean that file. It
  * closes test-traceability-matrix.md's S2 real-tier row and is picked up by
  * the nightly `e2e-real-nightly.yml` workflow (kept out of the PR path per
  * that matrix's action #6).
