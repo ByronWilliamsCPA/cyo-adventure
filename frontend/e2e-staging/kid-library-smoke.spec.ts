@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsStagingTestUser, unlockParentalGateIfPresent } from './support/auth'
+import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
 
 /**
  * The one staging spec that writes: mints a device grant (via the real
@@ -73,7 +74,7 @@ test.describe('kid library via a real device grant on staging', () => {
   })
 
   test('the guardian authorizes this device for kid access', async () => {
-    await sharedPage.goto('/guardian')
+    await gotoResilient(sharedPage, '/guardian')
     await unlockParentalGateIfPresent(sharedPage, 'guardian')
 
     const setUp = sharedPage.getByRole('button', { name: 'Set up this device for your kids' })
@@ -93,19 +94,31 @@ test.describe('kid library via a real device grant on staging', () => {
   })
 
   test('the authorized device opens the populated test kid library', async () => {
-    await sharedPage.goto('/kids')
+    await gotoResilient(sharedPage, '/kids')
     await expect(sharedPage.getByRole('heading', { name: "Who's reading?", level: 1 })).toBeVisible()
 
+    // Paced by hand because this is an in-app route change, not a goto: the
+    // library mount fans out into its own list and recommendations fetches, so
+    // it spends request budget exactly like a navigation and must advance the
+    // same floor.
+    await paceNavigation(sharedPage)
     await sharedPage.getByRole('link', { name: TEST_KID_NAME }).click()
     await expect(sharedPage).toHaveURL(/\/library\//)
 
     // The seeded Test Reader has two published, assigned stories, so the
     // library renders the populated "My Books" view, not the empty state.
+    //
+    // A 429 on this route does NOT reach either state: LibraryPage classifies
+    // it as transient and, finding no IndexedDB cache in a fresh CI browser,
+    // renders "We lost the bookshelf" instead. That copy matches neither this
+    // assertion nor RATE_LIMIT_ALERT, so a rate limit here fails the test
+    // (correctly) while reporting a missing heading. The paceNavigation call
+    // above is what keeps that from happening in the first place.
     await expect(sharedPage.getByRole('heading', { name: 'My Books' })).toBeVisible()
   })
 
   test('the guardian revokes the device authorization', async () => {
-    await sharedPage.goto('/guardian')
+    await gotoResilient(sharedPage, '/guardian')
     await unlockParentalGateIfPresent(sharedPage, 'guardian')
 
     await sharedPage.getByRole('button', { name: 'Remove from this device' }).click()

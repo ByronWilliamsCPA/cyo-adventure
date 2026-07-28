@@ -21,7 +21,7 @@ strategy lives separately in `docs/development/testing.md`.
 | E2E (mocked) | Playwright, `chromium` project | `frontend/e2e/` | none, API responses mocked via route interception |
 | E2E (real-backend) | Playwright, `real-backend` project | `frontend/e2e-real/` | local Postgres + local uvicorn, via local Supabase CLI |
 | E2E (staging) | Playwright, scheduled + manual | `frontend/e2e-staging/` | shared staging Supabase project, targets an already-deployed staging frontend |
-| E2E (production smoke) | Playwright, manual only, never CI | `frontend/e2e-prod/` | live production; hard-blocked from running when `CI` is set (`requireProdCredentials()`), by deliberate decision |
+| E2E (production smoke) | Playwright, manual + one scheduled workflow | `frontend/e2e-prod/` | live production; CI execution is default-deny when `CI` is set (`requireProdCredentials()`), with a single audited override in `.github/workflows/e2e-prod.yml` |
 
 See [`coverage-matrix.md`](coverage-matrix.md) for the full journey-by-layer
 breakdown and current known gaps.

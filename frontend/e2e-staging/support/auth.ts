@@ -2,6 +2,12 @@ import { errors, expect, type Page } from '@playwright/test'
 
 import { GUARDIAN_CONSENT_PATH, GUARDIAN_LOGIN_PATH } from '../../src/routes'
 import { requireStagingCredentials } from './staging-env'
+import {
+  assertPositiveAttempts,
+  backoffDelayMs,
+  paceNavigation,
+  RATE_LIMIT_ALERT,
+} from '../../e2e-support/rate-limit'
 
 /**
  * Legal name typed into the ADR-018 consent form's electronic-signature field.
@@ -18,37 +24,71 @@ const CONSENT_SIGNER_NAME = 'Staging E2E Test Guardian'
  * signInAsProdTestAdmin: same real-Supabase-signin mechanics, parameterized
  * by role since staging seeds two separate accounts rather than one
  * dual-role account.
+ *
+ * The rate-limit retry is adapted from the same source. Staging is not a
+ * lighter-weight target in this respect: `app.py` enables the 60 rpm/IP limiter
+ * for every `ENVIRONMENT != "local"` deployment, so the identical ceiling
+ * applies here. Staging is in fact the worse case, because this tier signs in
+ * three times per run (guardian smoke, admin smoke, kid library) against one
+ * runner IP, where the prod tier signs in twice.
+ *
+ * A 429 on the post-login `/v1/me` renders AuthContext's "we couldn't load your
+ * account" alert, which is indistinguishable at the UI from a real auth break,
+ * so the whole sign-in is retried behind RATE_LIMIT_ALERT. As on prod, that
+ * means a genuine `/v1/me` 5xx is also retried before it surfaces (AuthContext
+ * maps every non-200 from that endpoint to the same copy); it still fails, one
+ * backoff cycle later. A wrong password renders a different alert and surfaces
+ * on the first attempt.
+ *
+ * #CRITICAL: security: this loop re-submits real staging credentials, so an
+ * upstream auth throttle could be deepened by the retry rather than waited out.
+ * #VERIFY: keep `maxAttempts` at 3 or lower, and keep the retry gated on
+ * RATE_LIMIT_ALERT so a wrong-password alert can never loop.
  */
 export async function signInAsStagingTestUser(
   page: Page,
-  role: 'guardian' | 'admin'
+  role: 'guardian' | 'admin',
+  maxAttempts = 3
 ): Promise<void> {
   const { email, password } = requireStagingCredentials(role)
+  assertPositiveAttempts(maxAttempts, 'signInAsStagingTestUser')
 
-  await page.goto(GUARDIAN_LOGIN_PATH)
-  await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Password').fill(password)
-  await page.getByRole('button', { name: 'Sign in' }).click()
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    // Through the shared pacer rather than a bare goto, for both reasons the
+    // prod tier does it: sign-in is the heaviest request burst in a run, and a
+    // bare goto would leave `lastNavAt` stale so the next paced navigation
+    // skipped its floor entirely.
+    await paceNavigation(page)
+    await page.goto(GUARDIAN_LOGIN_PATH)
+    await page.getByLabel('Email').fill(email)
+    await page.getByLabel('Password').fill(password)
+    await page.getByRole('button', { name: 'Sign in' }).click()
 
-  const left = page
-    .waitForURL((url) => url.pathname !== GUARDIAN_LOGIN_PATH, { timeout: 15_000 })
-    .then(() => null)
-  const failed = page
-    .getByRole('alert')
-    .waitFor({ state: 'visible', timeout: 15_000 })
-    .then(() => page.getByRole('alert').innerText())
+    const left = page
+      .waitForURL((url) => url.pathname !== GUARDIAN_LOGIN_PATH, { timeout: 15_000 })
+      .then(() => null)
+    const failed = page
+      .getByRole('alert')
+      .waitFor({ state: 'visible', timeout: 15_000 })
+      .then(() => page.getByRole('alert').innerText())
 
-  const alertText = await Promise.race([left, failed])
-  if (alertText !== null) {
-    throw new Error(`Staging login failed for role=${role}: ${alertText}`)
+    const alertText = await Promise.race([left, failed])
+    if (alertText !== null) {
+      if (!RATE_LIMIT_ALERT.test(alertText) || attempt === maxAttempts) {
+        throw new Error(`Staging login failed for role=${role}: ${alertText}`)
+      }
+      await page.waitForTimeout(backoffDelayMs(attempt))
+      continue
+    }
+
+    const destination = new URL(page.url()).pathname
+    if (!destination.startsWith('/guardian') && !destination.startsWith('/admin')) {
+      throw new Error(`Unexpected post-login destination for role=${role}: ${destination}`)
+    }
+
+    await acceptGuardianConsentIfPresent(page)
+    return
   }
-
-  const destination = new URL(page.url()).pathname
-  if (!destination.startsWith('/guardian') && !destination.startsWith('/admin')) {
-    throw new Error(`Unexpected post-login destination for role=${role}: ${destination}`)
-  }
-
-  await acceptGuardianConsentIfPresent(page)
 }
 
 /**

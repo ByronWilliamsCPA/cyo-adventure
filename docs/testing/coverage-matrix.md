@@ -22,7 +22,8 @@ relate to the Supabase project constraints.
   against a real local backend, `frontend/e2e-real/`), E2E-staging (Playwright
   against the shared staging Supabase project's seeded fixtures,
   `frontend/e2e-staging/`, scheduled + manual), E2E-prod (Playwright against
-  live production, `frontend/e2e-prod/`, manual only, never CI).
+  live production, `frontend/e2e-prod/`, manual plus one scheduled workflow
+  that deliberately overrides the tier's CI guard).
 - "NONE FOUND" means no test at that layer touches this journey. It does not
   necessarily mean the journey is unimplemented, only untested at that layer.
 

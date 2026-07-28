@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { gotoResilient } from '../e2e-support/rate-limit'
 
 /**
  * Read-only render smoke for both adult consoles on LIVE production, driven by
@@ -16,16 +17,22 @@ import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/au
  * Every listed page does only GETs on mount, so navigating and asserting a
  * heading is non-destructive. /admin/review/:id is deliberately excluded (it
  * needs a real storybook id and its heading is the dynamic story title). Kept
- * small and manual-trigger-only, never wired into CI, since every run
- * authenticates a real account against a live system.
+ * small because every run authenticates a real account against a live system,
+ * and this tier is no longer manual-only: it also runs unattended on a daily
+ * cron (see playwright.e2e-prod.config.ts and .github/workflows/e2e-prod.yml),
+ * so each page added here is paid for once a day, forever.
  */
 test.describe('dual-role account across both adult consoles', () => {
   // Serial (also enforced by fullyParallel:false/workers:1 in
   // playwright.e2e-prod.config.ts, made explicit here): the tests share one
   // authenticated page rather than each logging into production separately, so
-  // this suite performs one real login instead of many. Keeping the page count
-  // modest also stays comfortably under the prod backend's 60 rpm/IP limit
-  // (that limiter is disabled only in ENVIRONMENT=local).
+  // this suite performs one real login instead of many. One login plus a
+  // shared page is necessary but NOT sufficient against the prod backend's
+  // 60 rpm/IP limit (disabled only in ENVIRONMENT=local): each goto reloads
+  // the SPA and every mount fans out into several GETs, so nine back-to-back
+  // navigations can still burst past 60 in the rolling minute. gotoResilient
+  // paces navigations under that ceiling and backs off/retries on any residual
+  // 429, so a rate-limit blip never fails an otherwise-green run.
   test.describe.configure({ mode: 'serial' })
 
   let sharedPage: Page
@@ -39,6 +46,13 @@ test.describe('dual-role account across both adult consoles', () => {
     await sharedPage.close()
   })
 
+  // Expected <h1> per path. /guardian/requests and /admin/requests render the
+  // same StoryRequestQueue component but with different headings on purpose:
+  // P-6b gave the guardian surface an explicit "Requests from your kids" to
+  // disambiguate it from the sibling IntakePage, which previously shared the
+  // exact "Story requests" wording; the admin cross-family queue keeps the
+  // component's neutral default. Keep these two rows distinct. See
+  // src/guardian/RequestsPage.tsx and src/admin/AdminRequestsPage.tsx.
   for (const [path, heading] of [
     ['/guardian', 'Family console'],
     ['/guardian/intake', 'Request a story'],
@@ -51,7 +65,7 @@ test.describe('dual-role account across both adult consoles', () => {
     ['/admin/moderation-dashboard', 'Moderation dashboard'],
   ] as const) {
     test(`${path} renders without the error boundary`, async () => {
-      await sharedPage.goto(path)
+      await gotoResilient(sharedPage, path)
       // ADR-014: the adult subtree sits behind a single AdultGate. The real
       // sign-in in beforeAll warms it (sessionStorage, 5-min TTL) and that
       // warmth persists across these same-tab navigations, so this is usually

@@ -22,14 +22,23 @@ export const PROD_BASE_URL = process.env.E2E_PROD_BASE_URL || 'https://cyo.willi
  */
 export function requireProdCredentials(): { email: string; password: string } {
   // #CRITICAL: security: this tier authenticates a real account against live
-  // production on every run. It must never execute unattended in CI; fail
-  // fast and loudly rather than relying solely on the config file never
-  // being wired into a workflow.
-  // #VERIFY: this check is the only runtime enforcement of that constraint.
+  // production on every run, so CI execution is default-deny: any workflow that
+  // picks this config up fails fast here rather than quietly authenticating.
+  // Exactly one audited override exists, .github/workflows/e2e-prod.yml, which
+  // runs the tier on a daily cron and clears CI to an empty string for the
+  // test-run step specifically to pass this guard (an owner-directed decision,
+  // recorded in docs/planning/test-traceability-matrix.md). The guard is
+  // therefore still the enforcement point; it is simply no longer absolute.
+  // #VERIFY: this check is the only runtime enforcement, so any NEW workflow
+  // that clears or unsets CI is an unreviewed second override. Audit with
+  // `grep -rn "CI:" .github/workflows/` and expect exactly one hit for this
+  // tier.
   if (process.env.CI) {
     throw new Error(
-      'e2e-prod must never run in CI: every test authenticates a real account ' +
-        'against live production. This tier is manual-only (see frontend/README.md).'
+      'e2e-prod must not run in CI: every test authenticates a real account ' +
+        'against live production. The only sanctioned exception is ' +
+        '.github/workflows/e2e-prod.yml, which clears CI deliberately (see ' +
+        'frontend/README.md).'
     )
   }
 

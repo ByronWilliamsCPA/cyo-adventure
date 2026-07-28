@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { gotoResilient, paceNavigation } from '../e2e-support/rate-limit'
 
 /**
  * The one prod spec that WRITES: it exercises the real ADR-014 device-grant
@@ -10,8 +11,11 @@ import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/au
  * console UI, the authorized device opens the seeded "E2E Test Kid" library,
  * and the guardian then revokes it. The write is deliberately narrow and fully
  * reversible: exactly one grant, removed by the final test and, if that never
- * runs, by the afterAll safety net. Manual trigger only (see
- * playwright.e2e-prod.config.ts); every run authenticates a real account.
+ * runs, by the afterAll safety net. That reversibility matters more than it
+ * used to: this tier now also runs unattended on a daily cron (see
+ * playwright.e2e-prod.config.ts and .github/workflows/e2e-prod.yml), so a
+ * leaked grant would sit on production until someone read the alert issue.
+ * Every run authenticates a real account.
  *
  * Serial + one shared page: mint, use, and revoke are a single stateful thread
  * and must run in order against one authenticated session, not four separate
@@ -97,7 +101,7 @@ test.describe('kid access via a real device grant', () => {
   })
 
   test('the guardian authorizes this device for kid access', async () => {
-    await sharedPage.goto('/guardian')
+    await gotoResilient(sharedPage, '/guardian')
     await unlockParentalGateIfPresent(sharedPage)
 
     // First run shows "Set up this device for your kids"; a prior interrupted
@@ -123,25 +127,54 @@ test.describe('kid access via a real device grant', () => {
   })
 
   test('the authorized device opens the test kid library', async () => {
-    await sharedPage.goto('/kids')
+    await gotoResilient(sharedPage, '/kids')
     await expect(sharedPage.getByRole('heading', { name: "Who's reading?", level: 1 })).toBeVisible()
 
     // The picker tile is a link whose accessible name is the display name (its
     // avatar is aria-hidden); the E2E Test Family holds only this one kid.
+    // Paced by hand because this is an in-app route change, not a goto: the
+    // library mount fans out into its own list and recommendations fetches, so
+    // it spends request budget exactly like a navigation and must advance the
+    // same floor.
+    await paceNavigation(sharedPage)
     await sharedPage.getByRole('link', { name: TEST_KID_NAME }).click()
     await expect(sharedPage).toHaveURL(/\/library\//)
 
-    // The seeded test kid has no assigned stories, so the library renders its
-    // empty state, an <h2> "No books yet", never the populated "My Books" h1.
+    // Assert the library rendered in one of its two legitimate states, not that
+    // it is empty. This test's job is proving the device grant opens the kid
+    // surface; emptiness was incidental to that, and it is a property of shared
+    // production data rather than of the code. Catalog seeding has since
+    // assigned this kid real books, so an emptiness assertion encodes a
+    // snapshot of prod data and re-breaks on every future seed.
+    //
+    // Both branches are unique to a rendered LibraryPage, so this keeps its
+    // discriminating power: every failure mode renders neither. The loading
+    // state shows its own "Loading your books" text, the auth and permission
+    // states render EmptyState with different titles ("Time to find your
+    // grown-up", "This bookshelf isn't yours"), a transient fetch failure with
+    // no offline cache renders "We lost the bookshelf", and a crash renders the
+    // error boundary's "Something went wrong".
+    //
+    // "We lost the bookshelf" is the one a rate limit produces: LibraryPage
+    // classifies a 429 as transient and, finding no IndexedDB cache in a fresh
+    // CI browser, falls through to its error state. That copy is matched by
+    // neither branch here nor by RATE_LIMIT_ALERT, so a 429 on this route fails
+    // the test (correctly) but reports a missing heading. The paceNavigation
+    // call above is what keeps that from happening in the first place.
+    //
     // The RequestStory form also renders here; do NOT submit it (it POSTs a
     // real story request, which this non-destructive tier must not create).
-    await expect(sharedPage.getByRole('heading', { name: 'No books yet' })).toBeVisible()
+    await expect(
+      sharedPage
+        .getByRole('heading', { name: 'My Books', level: 1 })
+        .or(sharedPage.getByRole('heading', { name: 'No books yet', level: 2 }))
+    ).toBeVisible()
   })
 
   test('the guardian revokes the device authorization', async () => {
     // Crossing into /kids parked the AdultGate (DeviceAuthorizedRoute calls
     // parkAdultGate), so this navigation lands cold and needs a re-unlock.
-    await sharedPage.goto('/guardian')
+    await gotoResilient(sharedPage, '/guardian')
     await unlockParentalGateIfPresent(sharedPage)
 
     // "Remove from this device" clears the local grant only after the server
