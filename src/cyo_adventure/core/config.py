@@ -390,9 +390,14 @@ class Settings(BaseSettings):
     mock_story_fixture: Literal["safe", "invalid"] = "safe"
 
     # Model ids are pinned in config, not code (ADR-003): a model swap is a
-    # config change. OpenRouter rosters churn weekly, so pin first-party families
-    # (Anthropic, Google) that survive churn, and rely on the fallback below when
-    # a pinned id 404s.
+    # config change. OpenRouter rosters churn weekly, so pin ids from families with
+    # a stable roster presence, and rely on the fallback below when a pinned id
+    # 404s. Note the criterion here is availability, not data policy: ADR-003's
+    # 2026-07-28 amendment retired the vendor-identity rule that once limited
+    # production generation to Anthropic and Google. Eligibility is now the PII
+    # guard on every prompt plus the OpenRouter workspace ZDR/no-training
+    # guardrail, so a lab is disqualified by the data policy its endpoint enforces
+    # (or by not being allowlisted), never by which lab it is.
     # Primary is Haiku 4.5: the 2026-06-22 yield run measured it at 70% over the
     # 20-brief sample (clears the >=60% gate) at ~3x lower cost than Sonnet, which
     # stays as the reliable quality fallback if Haiku is unavailable. (Results:

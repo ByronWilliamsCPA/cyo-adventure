@@ -465,11 +465,16 @@ justification for a design decision (Phase 3a's FK-cascade exceptions) already s
   **Checklist drafted**: [`processor-dpa-checklist.md`](processor-dpa-checklist.md), with
   every DPA link live-verified (not reused from training-data memory) on 2026-07-20; execution
   itself is still the account owner's to-do.
-- **5b. Prioritize zero-data-retention (ZDR) terms with OpenRouter** specifically, since
-  ADR-018 already flags this as the standing blocker; resolve it explicitly rather than letting
-  it stay open indefinitely. The checklist's OpenRouter row is flagged as needing an actual
-  conversation (confirm account-wide ZDR is enabled and covers every downstream
-  model/provider), not just a click-through DPA.
+- **5b. Prioritize zero-data-retention (ZDR) terms with OpenRouter** specifically. **Updated
+  2026-07-28**: ZDR routing is now *configured* as a guardrail on a dedicated, key-scoped
+  OpenRouter workspace, so ADR-018's Blocker 1 is split rather than standing whole: 1a (the
+  generation leg) is narrowed to a documentation item and gates nothing, while 1b (the
+  directly-called Stage-0 classifier leg) is the standing blocker. A configured routing control
+  is not an executed contract, so this item does not close: the checklist's OpenRouter row is
+  still flagged as needing an actual conversation (execute the DPA / enterprise terms, and
+  confirm the guardrail covers every downstream model/provider), not just a click-through DPA,
+  and the guardrail state has to be re-confirmed at P7-08 and on any credential rotation. See
+  ADR-003's 2026-07-28 amendment.
 - **5c. Record every outcome** in `docs/planning/privacy-model.md`'s processor list, so Phase 7's
   Records of Processing document (below) has a single source of truth to pull from. Not yet
   done for any row (the checklist is the to-do list, not the durable record).
@@ -633,7 +638,7 @@ statutory basis specifically rather than GDPR generally).
 | Phase 2 (consent, notice) | P7-02, P7-03 | D1, D4 |
 | Phase 3 (rights) | P7-04, P7-05 | already-decided item 4 |
 | Phase 4 (retention, Supabase) | P7-09 | already-decided item 5 |
-| Phase 5 (processor paperwork) | P7-06, P7-12 | already-decided item 6, "Blocker 1" |
+| Phase 5 (processor paperwork) | P7-06, P7-12 | already-decided item 6, "Blocker 1" (split 2026-07-28 into 1a generation leg, narrowed, and 1b classifier leg, the standing gate) |
 | Phase 6 (security) | P7-13 | Article 32 / 312.8, not separately named in ADR-018 |
 | Phase 7 (DPIA, RoPA, DPO) | P7-08 | D2, D3, D4 |
 | Phase 1 (PII-guard hardening) | not separately tracked | data-minimization spine (already-decided item 5) |

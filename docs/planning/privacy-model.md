@@ -151,9 +151,14 @@ counterparties for two data categories:
 Consequences for the provider data-handling review (Blocker 1 below): OpenAI and Google
 (Perspective) must be included alongside the generation leg (OpenRouter) and the LLM
 review leg when confirming retention terms. **Since the 2026-07-28 narrowing, this leg is
-where Blocker 1's force sits** (Blocker 1b): it is the only path on which a child's own
-typed words leave the system, so it is not covered by the generation-side PII guard and is
-untouched by ADR-023's render-time substitution. Classifier calls should remain content-only:
+where Blocker 1's force sits** (Blocker 1b). The distinction is route control, not whether
+typed words egress at all: a child's own typed words reach the generation leg too, verbatim,
+because `ConceptBrief.premise` is `request.request_text` unaltered
+(`story_requests/brief.py:197`) and the brief is fenced into the generation prompt. What is
+different here is that the classifier leg calls OpenAI Moderation and Google Perspective
+**directly**, so it inherits none of the OpenRouter workspace guardrail that constrains the
+generation route, and ADR-023's proposed render-time substitution does nothing for it either
+(it addresses identifiers, not free text). Classifier calls should remain content-only:
 no child identifier, profile id, or family id accompanies the text, and failures are
 logged by node id only.
 
@@ -227,9 +232,10 @@ with the allow-list in reach; not a default yes.
 
 ## OPEN BLOCKERS
 
-The following item gates the classifier leg. A second former blocker (homelab reachability
-through Pangolin) has since been resolved; see [Resolved Blockers](#resolved-blockers)
-below.
+The following blocker is split into two sub-items. Only 1b (the classifier and review leg)
+gates anything; 1a (the generation leg) is narrowed to a documentation item and gates
+nothing. A second former blocker (homelab reachability through Pangolin) has since been
+resolved; see [Resolved Blockers](#resolved-blockers) below.
 
 ### Blocker 1: LLM Provider Data-Handling Terms
 
@@ -251,21 +257,27 @@ legs do not carry the same data and never did.
 The generation leg no longer gates dispatch. The reasoning, in the order it matters:
 
 1. **No registered child identifier can reach it.** `assert_prompt_pii_safe`
-   (`generation/pii.py:229-258`) raises and fails the job rather than redacting, over both
+   (`generation/pii.py:229-289`) raises and fails the job rather than redacting, over both
    the `system` and `user` blocks, and briefs fall back to a fictional `"Explorer"`
    (`story_requests/brief.py:79-81`).
-2. **That will not change under personalization.** ADR-023 resolves guardian-opt-in
-   personalization client-side at render time over sentinels the server stores and serves
-   unchanged, rather than at generation time (Route B), which would have put real names into
-   provider prompts and into `storybook_version.blob`.
-3. **Routing is constrained at the platform, not by policy.** A guardrail on a dedicated,
-   key-scoped OpenRouter workspace (configured 2026-07-28) requires zero-data-retention
-   endpoints across non-frontier, Anthropic, OpenAI, Google, and xAI routing, and disables
-   all three data-training paths (paid-trains, free-trains, free-publishes-prompts). The
-   guardrail's plugins-and-tools carve-out does not reach this app: the generation request
-   body contains no `plugins` or `tools` key
-   (`generation/providers/openrouter.py:154-164`). Full state and limits: ADR-003's
-   2026-07-28 amendment.
+2. **That is not expected to change under personalization, though the answer is proposed
+   rather than settled.** ADR-023 *proposes* resolving guardian-opt-in personalization
+   client-side at render time over sentinels the server stores and serves unchanged, rather
+   than at generation time. It is `status: proposed` with counsel sign-off open and no code
+   written yet, and it is a third route rather than the rejected Route B (which would have put
+   real names into provider prompts and into `storybook_version.blob`). If ADR-023 is not
+   adopted, this reason lapses.
+3. **Routing on the OpenRouter leg is constrained at the platform, not by policy.** A
+   guardrail on a dedicated, key-scoped OpenRouter workspace (configured 2026-07-28) requires
+   zero-data-retention endpoints across non-frontier, Anthropic, OpenAI, Google, and xAI
+   routing, and disables all three data-training paths (paid-trains, free-trains,
+   free-publishes-prompts). The guardrail's plugins-and-tools carve-out does not reach this
+   app: the generation request body contains no `plugins` or `tools` key
+   (`generation/providers/openrouter.py:154-164`). **This covers the OpenRouter route only.**
+   The direct-Anthropic leg (`generation/providers/anthropic.py`, selectable as
+   `generation_provider="anthropic"` and seeded in the admin allowlist) is built and bypasses
+   the guardrail; confining production generation to the guarded route is an open item, not an
+   existing control. Full state, limits, and that open item: ADR-003's 2026-07-28 amendment.
 4. **A second, independent egress chokepoint now exists.** Key-level Sensitive Info
    Detection redacts email, phone, SSN, credit-card, and IP patterns request-side, outside
    our process and after `assert_prompt_pii_safe` has already hard-failed on the overlapping
@@ -302,10 +314,19 @@ still carries the OpenRouter row as unexecuted.
 This leg is different in kind, and the original blocker's force belongs here. The Stage-0
 external classifiers receive **child-typed request text** at intake
 (`story_requests/screening.py`) and **every node of generated prose** during moderation (see
-the External Moderation Classifiers section above). The LLM review provider is subject to the
-same review. Child-typed free text crossing to a third party is not protected by the PII
-guard on the generation path and is not touched by ADR-023's render-time substitution: it is
-the child's own words, sent verbatim, before storage.
+the External Moderation Classifiers section above). They are called directly, so nothing about
+the OpenRouter workspace guardrail reaches them, and ADR-023's proposed render-time
+substitution does not touch them either: it addresses identifiers, and this is the child's own
+free text, sent verbatim, before storage.
+
+The **LLM review provider** stays in scope here but for a different reason, and an earlier
+draft gave the wrong one. It is not a child-typed-text path: it is built from the same
+`build_openrouter_leg` / `build_ollama_leg` adapters as generation
+(`moderation/review_provider.py`), and `review_openrouter_model` defaults to an Anthropic model
+(`core/config.py:562`), so when `review_provider="openrouter"` the review leg rides the **same
+guardrailed route** as generation and carries **generated prose**, not child-typed words. What
+it still needs is the same terms confirmation every counterparty needs, plus the caveat that
+its posture is inherited from the generation-route guardrail and moves with it.
 
 **Required action**: confirm the applicable retention path for each classifier counterparty
 and the review provider, and record the outcome (provider, route, contract reference or API

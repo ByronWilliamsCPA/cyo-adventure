@@ -154,13 +154,22 @@ Revised provider posture:
 - **Fallback cascade**: on `ProviderError`, route OpenRouter primary model -> OpenRouter
   fallback model (`settings.openrouter_fallback_model`) -> local Ollama. The interface
   already isolates this swap.
-- **Deferred**: a direct Anthropic SDK adapter. Not implemented in Phase 2b (OpenRouter
-  covers Claude); a trivial future add via the existing seam if direct Opus 4.8 or prompt
-  caching without the OpenRouter markup is ever wanted. **Reassessed 2026-07-28**: still
-  deferred, and now for a stronger reason than cost. The 2026-07-28 amendment attaches real
-  egress controls to the OpenRouter path that a direct adapter would not inherit, and BYOK
-  reaches both motivations above without leaving that path. See
-  [BYOK is the better answer than a direct adapter](#byok-is-the-better-answer-than-a-direct-adapter-and-it-retires-the-reason-for-one).
+- **Deferred at the time**: a direct Anthropic SDK adapter. Not implemented in Phase 2b
+  (OpenRouter covers Claude); described then as a trivial future add via the existing seam if
+  direct Opus 4.8 or prompt caching without the OpenRouter markup is ever wanted.
+  **Corrected 2026-07-28: it is no longer deferred, it is built.** `AnthropicProvider`
+  (`generation/providers/anthropic.py`) is a real Layer-1 adapter; `build_anthropic_leg`
+  (`generation/provider.py:381`) is dispatched from `build_provider` whenever the resolved
+  provider is `anthropic` (`generation/provider.py:659-660`); `anthropic` is an accepted value
+  of `settings.generation_provider` (`core/config.py:361-363`); and the admin-managed allowlist
+  both permits the provider and seeds two direct-Anthropic models
+  (`generation/allowlist.py:25` and `DEFAULT_ALLOWLIST`). The processor record already lists
+  "Anthropic (direct)" as a live recipient of request text
+  (`docs/compliance/records-of-processing-activities.md`, Section 3 row 3 and Section 4). The
+  direct leg is therefore credentialed and admin-selectable, and it routes around the
+  OpenRouter guardrail this ADR's 2026-07-28 amendment relies on. See
+  [BYOK is the better answer than routing traffic onto the direct leg](#byok-is-the-better-answer-than-routing-traffic-onto-the-direct-leg)
+  for why the two motivations above are better reached without sending more traffic that way.
 
 ### Model availability is weekly-volatile, not monthly
 
@@ -248,7 +257,7 @@ trained the model.
 
 The original text says the PII guard "strips real-child names before every egress". It does
 not strip anything. `assert_prompt_pii_safe` **raises `ValidationError`** and fails the job
-(`generation/pii.py:229-258`), on a registered child name or on email-, phone-, or
+(`generation/pii.py:229-289`), on a registered child name or on email-, phone-, or
 address-shaped text, over both the `system` and `user` blocks of a `StagePrompt`. The
 distinction matters for exactly the argument being made here: a hard fail cannot silently
 half-succeed the way a redactor can, so the guarantee is stronger than the original wording
@@ -262,26 +271,60 @@ written (`generation/pii.py:3-5`), and brief derivation has always fallen back t
 fictional `"Explorer"` rather than a real display name
 (`story_requests/brief.py:79-81`).
 
-What changed is that the invariant is now **settled against the one feature that could have
-broken it**. [ADR-023](./adr-023-story-personalization-slots.md) resolves guardian-opt-in
+What changed is that the one feature that could have broken the invariant now has a **proposed**
+answer. [ADR-023](./adr-023-story-personalization-slots.md) proposes resolving guardian-opt-in
 personalization client-side, at render time, over generic sentinels the server always stores
-and serves unchanged. The alternative it rejected (Route B, generation-time substitution)
-would have sent a real child's name to every text and image provider and persisted it in
-`storybook_version.blob`. So the open question "will the generation leg eventually have to
-carry real child data?" is now answered no, by construction rather than by policy, and a
-vendor-identity restriction that partly existed to hedge that risk no longer has to carry
-the weight.
+and serves unchanged. Two qualifications belong here rather than in a footnote:
+
+- **ADR-023 is Proposed, not Accepted, and no code exists for it yet.** Its frontmatter carries
+  `status: proposed`, counsel sign-off "remains open", and its Source line records "no code
+  exists for this feature yet". So the answer below is a design commitment, not a shipped
+  property. **If ADR-023 is not adopted, this narrowing's premise lapses** and the re-scope has
+  to be re-argued rather than patched around.
+- **ADR-023 is not the rejected Route B.** It says so itself: "This ADR is not Route B. It is a
+  third route the remediation plan did not consider." Route B (generation-time substitution,
+  which would have sent a real child's name to every text and image provider and persisted it in
+  `storybook_version.blob`) was rejected by
+  [coppa-gdpr-remediation-plan.md](../../compliance/coppa-gdpr-remediation-plan.md), Section 5's
+  "Self-naming" question, lines 741-759.
+
+So the open question "will the generation leg eventually have to carry real child data?" has a
+proposed answer of no, by construction rather than by policy, and a vendor-identity restriction
+that partly existed to hedge that risk no longer has to carry the weight.
 
 ### The replacement rule
 
-Production generation is governed by two controls, neither of which names a vendor:
+Production generation is governed by two controls, neither of which disqualifies a model by
+which lab trained it:
 
 1. **Content**: every assembled prompt passes `assert_prompt_pii_safe` before egress. This
    is unchanged and remains non-negotiable; no carve-out may be added to it (ADR-023,
    "Constraints").
-2. **Route**: production traffic is confined to endpoints that enforce zero data retention
+2. **Route**: OpenRouter traffic is confined to endpoints that enforce zero data retention
    and do not train on or publish request data. This is enforced at the provider platform,
    not by this document, and is described in "Basis" below.
+
+**Control 2's scope, stated honestly: it governs the OpenRouter route, not all production
+generation.** The guardrail is a property of a specific workspace and a specific key at a
+specific vendor, so it reaches only the legs that go through that vendor. The direct-Anthropic
+leg is built and admin-selectable (see the corrected bullet in the 2026-06-22 amendment above)
+and inherits none of it. Confining production generation to the guarded route is therefore an
+**open item**, not an existing control, and this ADR does not claim otherwise:
+
+```python
+# #CRITICAL: security: generation_provider="anthropic" and the two seeded
+#            direct-Anthropic allowlist rows let production generation bypass the
+#            OpenRouter ZDR guardrail entirely. Nothing in code restricts the direct
+#            leg to non-production tiers, in the same way nothing rejects
+#            generation_provider="mock" outside local (core/config.py's mock note).
+# #VERIFY: decide whether the direct leg may be production-selectable at all, then
+#          enforce that decision rather than relying on convention: a Settings
+#          model_validator rejecting non-guarded providers outside local, and/or
+#          disabling the "anthropic" allowlist rows in deployed tiers. Until that
+#          exists, confirm every deployed .env sets
+#          CYO_ADVENTURE_GENERATION_PROVIDER=openrouter and that no production
+#          allowlist row with provider="anthropic" is enabled.
+```
 
 There is also a third, unrelated control that should not be confused with either: the
 admin-managed `provider_model_allowlist` (`api/provider_allowlist.py`, ADR-022) bounds
@@ -306,9 +349,11 @@ should not assume it does.
   substitution does nothing about it. See
   [ADR-018](./adr-018-childrens-privacy-compliance.md) item 6 and the narrowed Blocker 1 in
   [privacy-model.md](../privacy-model.md).
-- **Briefs are identifier-free, not PII-free.** A brief still carries a coarse age band, the
-  guardian's `banned_themes`, content-flag caps rendered as plain-language constraints, and
-  free-typed premise text (`story_requests/brief.py:87-124`). The guard screens that free
+- **Briefs are identifier-free, not PII-free.** A brief still carries the guardian's
+  `banned_themes` and content-flag caps rendered as plain-language constraints
+  (`story_requests/brief.py:87-124`), plus a coarse age band and the requester's free-typed
+  premise text carried through verbatim (`story_requests/brief.py:176-203`, where
+  `premise=request.request_text`). The guard screens that free
   text for email/phone/address patterns, and its own docstring records that "general
   free-text PII detection can never be complete" (`pii.py:26-31`). **"No registered child
   identifier reaches a provider" is the claim that holds. "Nothing child-derived reaches a
@@ -388,38 +433,63 @@ allow-list in reach, not as an obvious yes. Tracked in
 
 The 2026-06-22 amendment recorded a direct Anthropic SDK adapter as **deferred**, "a trivial
 future add via the existing seam" if direct access or cheaper prompt caching were ever
-wanted. That characterization is now incomplete, and this amendment revises it.
+wanted. That characterization is now wrong twice over: the adapter was built (WS-C PR1, see
+the corrected bullet in the 2026-06-22 amendment above), and the trade is no longer
+cost-neutral.
 
 The controls above (ZDR routing, training and publishing disabled, key-level sensitive-info
 redaction, and optionally injection scanning) are properties of **the OpenRouter path
-specifically**. A direct-to-vendor adapter does not inherit any of them; it would move
-generation traffic onto a leg where the only egress control is our own PII guard. So the
-seam still exists and a direct adapter is still cheap to build, but it is no longer
-cost-neutral: **adding one removes a defense layer**, and that trade now has to be argued on
-the record rather than treated as a pure cost optimization. Prefer OpenRouter as the default
-egress path for that reason, independent of price. The same reasoning applies to any future
-provider leg added behind `GenerationProvider`: legs that bypass the guardrail layer inherit
-a higher bar, and the self-hosted Modal leg (ADR-010) is the one clean exception, since it
-introduces no third-party vendor at all.
+specifically**. The direct-Anthropic leg inherits none of them: selecting it moves generation
+traffic onto a leg where the only egress control is our own PII guard. Because that leg is
+already built, credentialed, and admin-selectable, this is a live configuration question and
+not a future build decision: **selecting it removes a defense layer**, and that trade has to be
+argued on the record rather than treated as a pure cost optimization. Prefer OpenRouter as the
+default egress path for that reason, independent of price. The same reasoning applies to any
+future provider leg added behind `GenerationProvider`: legs that bypass the guardrail layer
+inherit a higher bar.
 
-#### BYOK is the better answer than a direct adapter, and it retires the reason for one
+**The Modal leg (ADR-010) is not an exception to this, and an earlier draft of this section
+wrongly said it was.** Modal is a hosted third-party vendor, and ADR-010 says so in its own
+consequences ("Modal is a second serverless vendor"). The leg targets Modal Auto Endpoints over
+the network with proxy credentials (`core/config.py:529-554`), and `generation_provider="modal"`
+is dispatched to a live adapter (`generation/provider.py:676-677`). (The review-side
+`review_provider="modal"` is an accepted config value but still raises at build time,
+`moderation/review_provider.py`.) What is true is narrower: the model weights are
+self-hosted rather than a vendor's, so no model vendor is added; the platform hosting them still
+is one. Modal is currently absent from `docs/compliance/processor-dpa-checklist.md`, from
+[ADR-018](./adr-018-childrens-privacy-compliance.md) item 6, and from
+[privacy-model.md](../privacy-model.md). That is a pre-existing gap in the processor record,
+recorded here as an open item; it is not a finding that Modal is out of scope.
+
+```python
+# #ASSUME: external resource: Modal is a hosted third-party platform that would
+#          receive prompt content on any tier where the Modal leg is selected, yet
+#          it appears in no processor record.
+# #VERIFY: before the Modal leg is enabled on any deployed tier, add a Modal row to
+#          docs/compliance/processor-dpa-checklist.md, ADR-018 item 6, and
+#          privacy-model.md's counterparty list; confirm no deployed .env currently
+#          sets CYO_ADVENTURE_GENERATION_PROVIDER or CYO_ADVENTURE_REVIEW_PROVIDER
+#          to "modal".
+```
+
+#### BYOK is the better answer than routing traffic onto the direct leg
 
 OpenRouter supports bring-your-own-key. The operator already holds an Anthropic API key
 (noted in the 2026-06-22 amendment), so that key can be supplied to OpenRouter rather than
-used through a separate SDK adapter. This matters because it **dominates** the deferred
-direct-adapter option rather than merely competing with it:
+exercised through the direct `AnthropicProvider` leg. This matters because it **dominates**
+selecting that leg rather than merely competing with it:
 
 - Traffic stays on the OpenRouter path, so the ZDR routing guardrail, the key-level
   sensitive-info redaction, and any future injection scan all still apply.
 - The model call is nevertheless billed to, and governed by, the operator's own direct
   Anthropic relationship and its terms tier.
-- No second adapter is built, so the `GenerationProvider` seam stays at its current fan-out.
+- No traffic moves onto a leg whose only egress control is our own PII guard.
 
 The two motivations the 2026-06-22 amendment gave for a direct adapter, direct model access
 and prompt caching without the OpenRouter markup, are therefore both reachable **without**
 giving up a defense layer. That strengthens the preceding section's conclusion rather than
-qualifying it: a direct SDK adapter should now be treated as an option with no remaining
-advantage, not merely one to argue for.
+qualifying it: since the direct leg already exists, the live question is not whether to build
+it but whether to ever select it, and BYOK removes the remaining reason to.
 
 **Not adopted as of this record, and one interaction must be resolved first.** BYOK is
 described here as the evaluated path, not the configured one. The open question is a direct
@@ -484,9 +554,23 @@ Three limits, stated so the record does not overclaim:
    in scope for [ADR-018](./adr-018-childrens-privacy-compliance.md) item 6, which is
    updated accordingly.
 
-If a later check shows retention on the production route, control 2 is violated and this
+If a later check shows retention on the OpenRouter route, control 2 is violated and this
 amendment's premise fails. The correct response then is to revisit the re-scope, not to
 patch around it.
+
+### Two documents are deliberately left stale
+
+`docs/compliance/gdpr-compliance-review.md` and `docs/compliance/coppa-compliance-audit.md` still
+describe the pre-amendment posture, and that is intentional rather than drift. Both are **dated
+audit findings**: they record what was true when the audit was run, and rewriting them would
+destroy the record of what the audit actually found. Read them as history, and read this
+amendment, [ADR-018](./adr-018-childrens-privacy-compliance.md) item 6, and
+[privacy-model.md](../privacy-model.md)'s Blocker 1 for the current posture. Every other live
+document that carried the retired vendor-identity rule was updated with this amendment
+(`docs/compliance/information-security-program.md` Section 4,
+`docs/compliance/coppa-gdpr-remediation-plan.md` Phase 5b,
+`docs/compliance/processor-dpa-checklist.md`, `docs/planning/phase-2b-live-provider.md`, and the
+model-pinning comment in `core/config.py`).
 
 ### Related
 
