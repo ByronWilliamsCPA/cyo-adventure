@@ -64,8 +64,52 @@ surface), G12 (export and deletion), K14 (safe room), and A14 (compliance ops).
    OpenRouter and downstream model providers (generation), OpenAI Moderation and Google
    Perspective (Stage-0 classifiers over all generated prose and child-typed wishes),
    Google Gemini and Cloudflare R2 (cover art, ADR-017), Sentry (exceptions, no child
-   reading content). Every entry needs verified terms at P7-08; the OpenRouter ZDR
-   question is the standing Blocker 1.
+   reading content). Every entry still needs verified terms at P7-08.
+
+   **Amended 2026-07-28: the counterparties are no longer one undifferentiated tier**,
+   because they do not receive the same kind of data and were never well served by one
+   blocker covering all of them.
+
+   - **Generation leg (OpenRouter and the endpoints it routes to): a documentation item,
+     not a gate.** No registered child identifier can reach it: `assert_prompt_pii_safe`
+     hard-fails the job rather than redacting (`generation/pii.py:229-289`). [ADR-023](./adr-023-story-personalization-slots.md)
+     *proposes* to keep real values out of it permanently by resolving personalization
+     client-side at render time instead of at generation time, but that ADR is
+     `status: proposed`, its counsel sign-off is open, and no code exists for it yet, so it is
+     a design commitment rather than a shipped property; **if ADR-023 is not adopted, this
+     reason lapses.** Routing on the OpenRouter leg is additionally confined by a
+     platform guardrail on a dedicated, key-scoped OpenRouter workspace configured
+     2026-07-28: zero data retention required across non-frontier, Anthropic, OpenAI,
+     Google, and xAI routing, and all three data-training paths disabled (paid-trains,
+     free-trains, free-publishes-prompts). That guardrail reaches the OpenRouter route only;
+     the built and admin-selectable direct-Anthropic leg bypasses it, which ADR-003's
+     amendment records as an open item rather than a closed control. See ADR-003's 2026-07-28
+     amendment for the full state and its limits. What the generation leg still carries is a
+     coarse age band, guardian-set `banned_themes` and content-flag caps, and free-typed
+     premise text carried through verbatim, so it is **identifier-free, not PII-free**, and its
+     terms still belong in the P7-08 record.
+
+     **The sub-processor set changed on 2026-07-28 and this list changes with it.** Enabling
+     ZDR for the frontier vendors disables their *first-party* endpoints rather than the
+     model families, so generation prompts now route to those families via **AWS Bedrock,
+     Microsoft Azure, and Google Vertex**. Those three enter scope as OpenRouter's
+     sub-processors for the generation leg and belong in the P7-08 processor record; they are
+     added to `docs/compliance/processor-dpa-checklist.md` accordingly. First-party Anthropic
+     and OpenAI endpoints leave scope **for traffic routed through OpenRouter**. They do not
+     leave the record: the direct-Anthropic leg is built and admin-selectable and does not go
+     through OpenRouter, so the "Anthropic (direct)" row stays, and
+     `records-of-processing-activities.md` continues to list it as a live recipient. Note that
+     this affects the **generation** leg only: OpenAI Moderation on the classifier leg is a
+     separate, directly-called integration and is unaffected.
+   - **Classifier leg (OpenAI Moderation, Google Perspective): this is where the gate
+     lives now.** It receives child-typed request text at intake
+     (`story_requests/screening.py`) and every node of generated prose during moderation.
+     That is child-provided free text crossing to third parties, and nothing in ADR-023
+     changes it. Blocker 1 is therefore **narrowed onto this leg rather than closed**; see
+     privacy-model.md. The Perspective counterparty is separately in flux (see the Stage-0
+     Perspective sunset work), which changes who is on this list but not the requirement.
+   - **Cover art (Google Gemini) and storage (Cloudflare R2)** are unchanged: prompts derive
+     only from story metadata and no child PII reaches the image provider (ADR-017).
 7. **Contact boundary**: no messaging, no discovery, cross-family flows only through
    dual-guardian-consented connections (ADR-016).
 

@@ -151,9 +151,16 @@ Both criteria must be met for this work package to close Phase 2 fully:
 - **OpenRouter free-tier limits**: `:free` models allow 20 req/min and 50 req/day under $10 of
   purchased credits (1,000/day at >=$10). A 20-story run is ~100 calls, so a one-time $10 top-up is
   required to complete a free-model run in a day; reserve free models for debug iterations.
-- **Acceptable model families (minors' content, ADR-004)**: production generation routes only to
-  providers with a defensible data policy (Anthropic, Google); other OpenRouter labs are for
-  local/free experimentation only.
+- **Acceptable endpoints (minors' content)**: **re-scoped 2026-07-28.** The rule here was
+  previously vendor identity, "production generation routes only to providers with a defensible
+  data policy (Anthropic, Google)", attributed to ADR-004. ADR-003's 2026-07-28 amendment retires
+  that rule (and records that ADR-004 never set a provider-selection rule in the first place).
+  Production eligibility is now decided by two content-and-route controls, neither naming a
+  vendor: every assembled prompt must pass `assert_prompt_pii_safe` before egress, and OpenRouter
+  traffic is confined by a workspace guardrail to endpoints enforcing zero data retention with all
+  data-training paths disabled. A lab is disqualified by failing the data-policy guardrail or by
+  not being allowlisted, not by which lab it is. Full state, scope, and limits: ADR-003's
+  2026-07-28 amendment.
 - **No PII in prompts**: the PII guard is the enforcement point; adapters must not construct
   prompts independently of the orchestrator.
 - **MockProvider remains the default** in CI and local development until

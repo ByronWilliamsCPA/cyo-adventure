@@ -87,8 +87,8 @@ PII-scrubbed data, per the same standard applied to `pipeline_event` in the Phas
 | Processor | Data received | Oversight mechanism |
 |---|---|---|
 | Supabase (Postgres, auth) | Full application database, including child-linked tables | DPA/SCC execution tracked (Phase 5a); region choice reviewed (Phase 4a, already resolved to a US region) |
-| OpenRouter + downstream model providers | Story-generation prompts (PII-guarded; see `assert_prompt_pii_safe`) | Zero-data-retention terms are the standing blocker (Phase 5b); DPA/SCC execution tracked (Phase 5a) |
-| Anthropic (direct) | Story-generation prompts, same guard as above | DPA/SCC execution tracked (Phase 5a) |
+| OpenRouter + downstream model providers (incl. the AWS Bedrock, Microsoft Azure, and Google Vertex sub-processors ZDR routing now sends frontier-family traffic to) | Story-generation prompts (PII-guarded; see `assert_prompt_pii_safe`) | Zero data retention is **configured** as a workspace/key guardrail (2026-07-28) rather than being the standing blocker: since that date it is the production-routing control, so Blocker 1a is narrowed to a documentation item and Blocker 1b (the directly-called classifier leg) is where the standing gate now sits. DPA/SCC execution tracked (Phase 5a) and still unexecuted; a routing guardrail is not a contract. See ADR-003's 2026-07-28 amendment |
+| Anthropic (direct) | Story-generation prompts, same guard as above | DPA/SCC execution tracked (Phase 5a). Note this leg is built and admin-selectable and does **not** route through OpenRouter, so it inherits none of that workspace guardrail; confining production generation to the guarded route is an open item recorded in ADR-003's 2026-07-28 amendment |
 | OpenAI Moderation | Generated story prose, child-typed request text (Stage-0 classifier) | DPA/SCC execution tracked (Phase 5a); PII egress guard applied as of #304 |
 | Google Perspective | Same as OpenAI Moderation | DPA/SCC execution tracked (Phase 5a); PII egress guard applied as of #304 |
 | Google Gemini (nano banana cover art) | Cover-art prompts (PII-guarded as of #304) | DPA/SCC execution tracked (Phase 5a) |
