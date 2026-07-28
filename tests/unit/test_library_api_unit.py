@@ -10,6 +10,7 @@ the _parse_profile_id and _library_item helpers directly.
 
 from __future__ import annotations
 
+import json
 import math
 import uuid
 from datetime import UTC, datetime
@@ -671,6 +672,52 @@ class TestGetStorybookVersion:
         title = result["title"]
         assert isinstance(title, str)
         assert token in title
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_version_blob_identical_across_viewers(self) -> None:
+        """R3 (ADR-023): the version endpoint is the client's ``id@version``
+        offline cache key. Two different, independently-authorized viewers
+        (two children in the same family, each individually assigned) MUST
+        receive byte-identical payloads for the same storybook/version, or
+        the cache key would silently diverge per-viewer for what is meant to
+        be one immutable artifact.
+
+        ``get_storybook_version`` has no per-principal branch in its return
+        value: it returns ``version_row.blob`` verbatim, and the principal is
+        consulted only to decide whether to return at all (authorization),
+        never to shape what is returned. This test stands as the structural
+        pin against that ever changing, even though (given the handler's
+        current shape) it necessarily passes on the first run.
+        """
+        family_id = uuid.uuid4()
+        profile_a = uuid.uuid4()
+        profile_b = uuid.uuid4()
+        book = _published_book("story-1", family_id, version=1)
+        token = wrap("HERO", "Explorer")
+        blob: dict[str, object] = {
+            "title": f"{token}'s Great Adventure",
+            "nodes": [],
+        }
+        version = _version_row("story-1", 1, blob=blob)
+        version.approved_by = uuid.uuid4()
+        get_map: dict[tuple[type[object], object], object] = {
+            (Storybook, "story-1"): book,
+            (StorybookVersion, ("story-1", 1)): version,
+        }
+
+        session_a = _FakeSession(get_map=get_map, scalar_result="story-1")
+        principal_a = _child_principal(family_id, profile_a)
+        result_a = await get_storybook_version("story-1", 1, principal_a, session_a)
+
+        session_b = _FakeSession(get_map=get_map, scalar_result="story-1")
+        principal_b = _child_principal(family_id, profile_b)
+        result_b = await get_storybook_version("story-1", 1, principal_b, session_b)
+
+        assert result_a == result_b
+        assert json.dumps(result_a, sort_keys=True) == json.dumps(
+            result_b, sort_keys=True
+        )
 
     @pytest.mark.unit
     @pytest.mark.asyncio
