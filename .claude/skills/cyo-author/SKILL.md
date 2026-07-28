@@ -106,6 +106,20 @@ Invoke when given a skeleton file under `skeletons/<band>/<slug>.json` (or any
    structure), and re-run. If it reports an RL-13 reading-level warning, adjust vocabulary
    toward the band target; warnings do not block but should be addressed.
 
+7. **Log what the run taught you.** Append any lessons learned to
+   `docs/planning/authoring-lessons-log.md`, then validate the log:
+
+   ```bash
+   uv run python scripts/check_lessons_log.py
+   ```
+
+   A lesson qualifies if it cost real iteration to discover, if the tooling let a defect through
+   or reported it without pointing at the cause, or if the next author would re-learn it from
+   scratch. Every row carries a proposed change so the log drives tooling work. A run with no
+   lesson appends nothing. Read the existing `open` rows before starting a run: they are the known
+   traps, and several (carried-variable polarity, the three-sentence reading-level rule, never
+   using `once` in a DAG) will save you an iteration cycle directly.
+
 ## Hard rules
 
 - Structure is immutable; you only write prose.

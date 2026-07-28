@@ -612,3 +612,151 @@ def test_validate_policy_never_emits_pl22_for_a_configured_band(band: str) -> No
     """
     report = validate_policy(_story(age_band=band, kind=EndingKind.SUCCESS))
     assert not any(f.rule_id == "PL-22" for f in report.findings)
+
+
+# ---------------------------------------------------------------------------
+# PL-23 declared read time vs the derived clock (AL-021)
+# ---------------------------------------------------------------------------
+
+
+def _clock_story(*, estimated_minutes: int, words: int) -> Storybook:
+    """A two-node story with a satisfying ending and a known path word count."""
+    end = Node(
+        id="n_end",
+        body="w " * (words // 2),
+        is_ending=True,
+        ending=Ending(
+            id="e1", valence=Valence.POSITIVE, kind=EndingKind.COMPLETION, title="Win"
+        ),
+    )
+    start = Node(
+        id="n0",
+        body="w " * (words - words // 2),
+        choices=[{"id": "c1", "label": "a", "target": "n_end"}],
+    )
+    return Storybook(
+        id="clock",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=[start, end],
+        metadata=StoryMetadata(
+            age_band="16+",
+            reading_level=ReadingLevel(target=9.0),
+            tier=1,
+            estimated_minutes=estimated_minutes,
+            ending_count=1,
+            content_flags=ContentFlags(violence="none", scariness="none", peril="none"),
+            topology=Topology.BRANCH_AND_BOTTLENECK,
+        ),
+    )
+
+
+def test_pl23_warns_when_declared_read_time_is_far_from_derived() -> None:
+    """A 3x overstatement of estimated_minutes is surfaced as an advisory."""
+    # 440 words at the 16+ anchor of 220 wpm is a 2-minute fastest finish.
+    report = validate_policy(_clock_story(estimated_minutes=6, words=440))
+    pl23 = [f for f in report.findings if f.rule_id == "PL-23"]
+    assert len(pl23) == 1
+    assert pl23[0].severity is Severity.WARNING, "the clock is advisory, never blocking"
+    assert "derived fastest-finish clock 2 min" in pl23[0].message
+
+
+def test_pl23_is_silent_when_the_declared_clock_matches() -> None:
+    """A correct declaration produces no finding."""
+    report = validate_policy(_clock_story(estimated_minutes=2, words=440))
+    assert not [f for f in report.findings if f.rule_id == "PL-23"]
+
+
+# ---------------------------------------------------------------------------
+# PL-24 ending mix (AL-015)
+# ---------------------------------------------------------------------------
+
+
+def _mix_story(
+    *, kinds: list[tuple[EndingKind, Valence]], style: NarrativeStyle
+) -> Storybook:
+    """A story whose ending mix is exactly the supplied kind/valence list."""
+    ends = [
+        Node(
+            id=f"n_end{i}",
+            body="done",
+            is_ending=True,
+            ending=Ending(id=f"e{i}", valence=valence, kind=kind, title=f"E{i}"),
+        )
+        for i, (kind, valence) in enumerate(kinds)
+    ]
+    start = Node(
+        id="n0",
+        body="go",
+        choices=[
+            {"id": f"c{i}", "label": "a", "target": node.id}
+            for i, node in enumerate(ends)
+        ],
+    )
+    return Storybook(
+        id="mix",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=[start, *ends],
+        metadata=StoryMetadata(
+            age_band="16+",
+            reading_level=ReadingLevel(target=9.0),
+            tier=1,
+            estimated_minutes=1,
+            ending_count=len(ends),
+            content_flags=ContentFlags(violence="none", scariness="none", peril="none"),
+            topology=Topology.BRANCH_AND_BOTTLENECK,
+            narrative_style=style,
+        ),
+    )
+
+
+def test_pl24_warns_when_one_ending_kind_dominates() -> None:
+    """A story that is almost entirely one kind is surfaced."""
+    kinds = [(EndingKind.SETBACK, Valence.NEGATIVE)] * 9
+    kinds += [(EndingKind.COMPLETION, Valence.POSITIVE)]
+    report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.GAMEBOOK))
+    dominant = [f for f in report.findings if "is 9 of 10 endings" in f.message]
+    assert len(dominant) == 1
+    assert dominant[0].rule_id == "PL-24"
+    assert dominant[0].severity is Severity.WARNING
+
+
+def test_pl24_gamebook_floor_is_a_count_not_a_share() -> None:
+    """A gamebook with one winnable ending warns even though breadth is intended.
+
+    Calibration note: every catalog gamebook sits at 2-5% positive-valence
+    endings, so a share floor would flag the whole style. The absolute floor
+    catches the real defect instead.
+    """
+    kinds: list[tuple[EndingKind, Valence]] = [
+        (EndingKind.DEATH, Valence.NEGATIVE)
+    ] * 40
+    kinds += [(EndingKind.COMPLETION, Valence.POSITIVE)]
+    report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.GAMEBOOK))
+    winnable = [f for f in report.findings if "positive-valence ending(s)" in f.message]
+    assert len(winnable) == 1, "one winnable ending in 41 must be surfaced"
+    assert "below the gamebook floor of 3" in winnable[0].message
+
+
+def test_pl24_gamebook_with_enough_winnable_endings_is_silent() -> None:
+    """Few wins and many fails is the declared gamebook shape, not a defect."""
+    kinds: list[tuple[EndingKind, Valence]] = [
+        (EndingKind.DEATH, Valence.NEGATIVE)
+    ] * 40
+    kinds += [(EndingKind.SUCCESS, Valence.POSITIVE)] * 3
+    report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.GAMEBOOK))
+    assert not [f for f in report.findings if "positive-valence ending(s)" in f.message]
+
+
+def test_pl24_prose_uses_a_share_floor() -> None:
+    """Prose is held to a share, where a low win rate is a real signal."""
+    kinds: list[tuple[EndingKind, Valence]] = [
+        (EndingKind.SETBACK, Valence.NEUTRAL)
+    ] * 19
+    kinds += [(EndingKind.COMPLETION, Valence.POSITIVE)]
+    report = validate_policy(_mix_story(kinds=kinds, style=NarrativeStyle.PROSE))
+    share = [f for f in report.findings if "below the prose floor" in f.message]
+    assert len(share) == 1, "1 positive in 20 (5%) is below the 10% prose floor"

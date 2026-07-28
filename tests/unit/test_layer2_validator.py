@@ -1153,3 +1153,177 @@ def test_l2_14_does_not_run_on_tier1() -> None:
         ending_count=2,
     )
     assert _l2_14_ids(validate_layer2(story)) == []
+
+
+# ---------------------------------------------------------------------------
+# L2-11 cause hints (AL-003)
+# ---------------------------------------------------------------------------
+#
+# Across a real three-book series build, every L2-11 had one of exactly two
+# causes and the bare "condition always false" message named neither. The hint
+# also reaches the Stage C repair prompt, which gets findings verbatim: a repair
+# model told the cause fixes the gate, one told only the symptom deletes the
+# branch.
+
+
+def _dead_branch_story(*, initial: bool, grant_node: str | None) -> Storybook:
+    """A Tier-2 story whose one conditional choice is a dead branch."""
+    grant = (
+        [{"op": "set", "var": "token", "value": True}] if grant_node == "start" else []
+    )
+    late_grant = (
+        [{"op": "set", "var": "token", "value": True}] if grant_node == "mid" else []
+    )
+    return _tier2_story(
+        nodes=[
+            {
+                "id": "start",
+                "body": "Start.",
+                "is_ending": False,
+                "on_enter": grant,
+                "choices": [
+                    {"id": "c_on", "label": "On.", "target": "mid"},
+                    {
+                        "id": "c_dead",
+                        "label": "Dead.",
+                        "target": "mid",
+                        "condition": {"==": [{"var": "token"}, not initial]},
+                    },
+                ],
+            },
+            {
+                "id": "mid",
+                "body": "Mid.",
+                "is_ending": False,
+                "on_enter": late_grant,
+                "choices": [{"id": "c_end", "label": "End.", "target": "end"}],
+            },
+            {
+                "id": "end",
+                "body": "End.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e1",
+                    "kind": "completion",
+                    "valence": "positive",
+                    "title": "Done",
+                },
+            },
+        ],
+        start="start",
+        variables=[{"name": "token", "type": "bool", "initial": initial}],
+    )
+
+
+@pytest.mark.unit
+def test_l2_11_names_carried_variable_polarity_as_the_cause() -> None:
+    """A never-unset true variable gated as false names that as the cause."""
+    story = _dead_branch_story(initial=True, grant_node=None)
+    findings = [f for f in validate_layer2(story).findings if f.rule_id == "L2-11"]
+    assert len(findings) == 1
+    assert "initialises true and no effect ever unsets it" in findings[0].message
+    assert "carried state in a continuation is read-only" in findings[0].message
+
+
+@pytest.mark.unit
+def test_l2_11_names_grant_order_as_the_cause() -> None:
+    """A gate placed before the only node that grants the variable names that."""
+    story = _dead_branch_story(initial=False, grant_node="mid")
+    findings = [f for f in validate_layer2(story).findings if f.rule_id == "L2-11"]
+    assert len(findings) == 1
+    assert "no node granting 'token' precedes this one" in findings[0].message
+
+
+@pytest.mark.unit
+def test_l2_11_falls_back_to_the_generic_message() -> None:
+    """When neither pattern matches, the original wording still stands."""
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "start",
+                "body": "Start.",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_on", "label": "On.", "target": "end"},
+                    {
+                        "id": "c_dead",
+                        "label": "Dead.",
+                        "target": "end",
+                        "condition": {">=": [{"var": "score"}, 99]},
+                    },
+                ],
+            },
+            {
+                "id": "end",
+                "body": "End.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e1",
+                    "kind": "completion",
+                    "valence": "positive",
+                    "title": "Done",
+                },
+            },
+        ],
+        start="start",
+        variables=[{"name": "score", "type": "int", "initial": 0, "min": 0, "max": 5}],
+    )
+    findings = [f for f in validate_layer2(story).findings if f.rule_id == "L2-11"]
+    assert len(findings) == 1
+    assert findings[0].message.endswith("(condition always false)")
+
+
+@pytest.mark.unit
+def test_l2_11_does_not_blame_a_variable_required_true() -> None:
+    """A required-*true* carried variable is never named as the dead cause.
+
+    ``and(token == true, score >= 99)`` is dead because ``score`` can never reach
+    99, not because of ``token``. ``token`` initialises true and is never unset,
+    which once tripped Cause 1 into blaming it with an inverted claim; the
+    polarity gate must let the message fall back to the generic wording instead.
+    That cause text is fed verbatim into the Stage C repair prompt, so a wrong
+    cause actively misdirects the repair.
+    """
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "start",
+                "body": "Start.",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_on", "label": "On.", "target": "end"},
+                    {
+                        "id": "c_dead",
+                        "label": "Dead.",
+                        "target": "end",
+                        "condition": {
+                            "and": [
+                                {"==": [{"var": "token"}, True]},
+                                {">=": [{"var": "score"}, 99]},
+                            ]
+                        },
+                    },
+                ],
+            },
+            {
+                "id": "end",
+                "body": "End.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e1",
+                    "kind": "completion",
+                    "valence": "positive",
+                    "title": "Done",
+                },
+            },
+        ],
+        start="start",
+        variables=[
+            {"name": "token", "type": "bool", "initial": True},
+            {"name": "score", "type": "int", "initial": 0, "min": 0, "max": 5},
+        ],
+    )
+    findings = [f for f in validate_layer2(story).findings if f.rule_id == "L2-11"]
+    assert len(findings) == 1
+    assert "initialises true" not in findings[0].message
+    assert findings[0].message.endswith("(condition always false)")

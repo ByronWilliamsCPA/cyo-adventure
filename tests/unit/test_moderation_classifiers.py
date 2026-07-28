@@ -10,6 +10,7 @@ import pytest
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+from cyo_adventure.moderation import classifiers
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.report import Source, Verdict
 
@@ -716,3 +717,183 @@ async def test_perspective_non_finite_score_degrades_gracefully() -> None:
     categories = {f.category for f in findings}
     assert "toxicity" in categories
     assert "sexually_explicit" not in categories
+
+
+# ---------------------------------------------------------------------------
+# Stage-0 coverage gating (AL-033)
+# ---------------------------------------------------------------------------
+#
+# Before this behaviour the first ClassifierUnavailable disabled its classifier
+# for every remaining node and the only trace was a non-gating ADVISORY, so a
+# report with most of a book unscreened was indistinguishable from a clean one.
+
+
+@pytest.fixture
+def _no_backoff(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Zero the retry sleeps, keeping the retry COUNT, so tests stay fast.
+
+    Setting the tuple empty would remove the retries themselves, not just their
+    delays, since its length is what defines the attempt budget.
+    """
+    monkeypatch.setattr(classifiers, "_RETRY_BACKOFF_SECONDS", (0.0, 0.0))
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_transient_failure_is_retried_and_does_not_lose_coverage() -> None:
+    """A node that fails once then succeeds is screened, with no coverage flag."""
+    calls = {"n": 0}
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return httpx.Response(500)
+        return httpx.Response(
+            200,
+            json={
+                "results": [{"flagged": False, "categories": {}, "category_scores": {}}]
+            },
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="okey",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert calls["n"] == 2, "the failed call must be retried"
+    assert not [
+        f for f in findings if f.category == "classifier_coverage_incomplete"
+    ], "a retried-and-succeeded node is fully covered"
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_persistent_failure_flags_incomplete_coverage_as_a_soft_gate() -> None:
+    """An unscreenable node produces a FLAG, not merely an advisory."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(500)
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text"), ("n2", "text"), ("n3", "text")],
+        openai_key="okey",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    coverage = [f for f in findings if f.category == "classifier_coverage_incomplete"]
+    assert len(coverage) == 1
+    assert coverage[0].verdict is Verdict.FLAG, (
+        "incomplete bright-line coverage must gate; an ADVISORY would let a "
+        "partially-screened report reach in_review looking clean"
+    )
+    assert coverage[0].source is Source.OPENAI
+    assert coverage[0].node_id is None, "coverage is a whole-story finding"
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_unscreened_nodes_are_named_and_counted() -> None:
+    """The finding names the shortfall so a reviewer knows what was not checked."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(429)
+
+    nodes = [(f"n{i}", "text") for i in range(5)]
+    findings = await run_classifiers(
+        nodes=nodes,
+        openai_key="okey",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    coverage = next(
+        f for f in findings if f.category == "classifier_coverage_incomplete"
+    )
+    assert "0 of 5" in coverage.message
+    assert "5 node(s) were never bright-line screened" in coverage.message
+    assert "n0" in coverage.message
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_a_later_node_still_gets_screened_after_one_node_fails() -> None:
+    """One bad node costs one node's coverage, not the rest of the book."""
+    seen: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = request.content.decode()
+        if "poison" in body:
+            seen.append("poison")
+            return httpx.Response(500)
+        seen.append("ok")
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": True,
+                        "categories": {"sexual/minors": True},
+                        "category_scores": {"sexual/minors": 0.99},
+                    }
+                ]
+            },
+        )
+
+    findings = await run_classifiers(
+        nodes=[("bad", "poison"), ("good", "clean text")],
+        openai_key="okey",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert "ok" in seen, "the node after the failure must still be called"
+    assert any(f.verdict is Verdict.BLOCK for f in findings), (
+        "a bright-line hit on a later node must still be caught"
+    )
+    coverage = next(
+        f for f in findings if f.category == "classifier_coverage_incomplete"
+    )
+    assert "1 node(s) were never bright-line screened" in coverage.message
+
+
+@pytest.mark.unit
+@pytest.mark.usefixtures("_no_backoff")
+async def test_circuit_opens_after_consecutive_failures_and_stops_calling() -> None:
+    """A down provider is not hammered once per node, but every node is reported."""
+    calls = {"n": 0}
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(503)
+
+    nodes = [(f"n{i}", "text") for i in range(40)]
+    findings = await run_classifiers(
+        nodes=nodes,
+        openai_key="okey",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert calls["n"] < len(nodes), (
+        "the circuit must open rather than calling a down provider for every node"
+    )
+    coverage = next(
+        f for f in findings if f.category == "classifier_coverage_incomplete"
+    )
+    assert "40 node(s) were never bright-line screened" in coverage.message, (
+        "nodes skipped by the open circuit are still unscreened and must be counted"
+    )
+
+
+@pytest.mark.unit
+async def test_unconfigured_key_does_not_flag_coverage() -> None:
+    """An intentionally absent classifier is an advisory, never a gate."""
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        perspective_key=None,
+        client=_client(lambda _r: httpx.Response(500)),
+        require_classifiers=True,
+    )
+    assert [f for f in findings if f.category == "classifier_degraded"]
+    assert not [
+        f for f in findings if f.category == "classifier_coverage_incomplete"
+    ], "no key configured is a deployment choice, not a screening shortfall"

@@ -13,6 +13,7 @@ from typing import Any, cast
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.responses import JSONResponse
+from starlette.middleware.gzip import GZipMiddleware
 
 from cyo_adventure import __version__
 from cyo_adventure.api import (
@@ -461,6 +462,16 @@ def create_app() -> FastAPI:
         enable_https_redirect=settings.environment != "local",
         allowed_hosts=_allowed_hosts or None,
     )
+    # A published story is the largest response the API serves and the one a
+    # child waits on with nothing to do: the 746-node book is 405 KB of JSON
+    # uncompressed and 107 KB gzipped, so the whole 3-book series costs 750 KB
+    # instead of 202 KB to take offline (AL-031). Nothing else in the stack
+    # compresses, so this is the only place it can happen. minimum_size skips
+    # the small responses where the CPU is not worth it.
+    # compresslevel=6 is zlib's default balance point: it captures nearly all of
+    # the ratio that level 9 reaches on this repetitive story JSON at a fraction
+    # of the CPU, keeping the child's wait short without pinning the worker.
+    app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=6)
     # #CRITICAL: observability: CorrelationMiddleware is added LAST so it is the
     # OUTERMOST layer (Starlette applies the most-recently-added middleware
     # first). This way a rate-limit / body-size / SSRF rejection emitted by the

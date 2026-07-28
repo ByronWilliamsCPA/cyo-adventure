@@ -39,6 +39,7 @@ from cyo_adventure.mutation._raw import (
 )
 from cyo_adventure.mutation.subtree import adjacency, node_ids
 from cyo_adventure.storybook.models import Topology
+from cyo_adventure.validator.band_profile import reading_pace_wpm
 from cyo_adventure.validator.topology import admissible_topologies
 
 if TYPE_CHECKING:
@@ -56,26 +57,10 @@ _FILL_WORDS_RE = re.compile(r"words\s*=\s*(\d+)")
 # #ASSUME: data-integrity: reading-pace anchors (words per minute) are sourced
 # from ADR-011 section 5 ("Reading-pace anchors ... 3-5 ~100 wpm (read aloud),
 # 5-8 ~90, 8-11 ~120, 10-13 ~150, 13-16 ~190, 16+ ~220"). There is no
-# words-per-minute table in code today (band_profile.py carries a
-# words-per-NODE table, not a pace table), so the anchors are declared here as
-# a single module-level source. If ADR-011 retunes these numbers, this table
-# must follow (design risk 6); single-sourcing from band_profile.py is the
-# preferred follow-up if a pace table is ever added there.
-# #VERIFY: tests/unit/test_skeleton_mutation_identity.py pins every band's anchor and
-# asserts resync of every catalog skeleton yields estimated_minutes >= 1.
-_READING_PACE_WPM: dict[str, int] = {
-    "3-5": 100,
-    "5-8": 90,
-    "8-11": 120,
-    "10-13": 150,
-    "13-16": 190,
-    "16+": 220,
-}
-
-# The pace used when a story declares a band with no configured anchor; the
-# 8-11 core-research value, the same anchor the ADR uses as its baseline.
-_DEFAULT_PACE_WPM = 120
-
+# Reading-pace anchors now live in validator/band_profile.py, the documented
+# single source for ADR-011 band data (this module's previous comment named
+# that consolidation as the preferred follow-up). Imported rather than
+# duplicated so an ADR-011 retune changes one table.
 # #ASSUME: data-integrity: the per-band admissible-topology rows are sourced
 # from ADR-011 section 7's "Per-band topology and flow allowances" table,
 # reconciled with the gate-accepted production catalog where the two disagree.
@@ -482,7 +467,7 @@ def recompute_estimated_minutes(story: Mapping[str, object]) -> int:
         int: The estimated minutes, always at least 1.
     """
     band = _str_field(_metadata_of(story), "age_band") or ""
-    pace = _READING_PACE_WPM.get(band, _DEFAULT_PACE_WPM)
+    pace = reading_pace_wpm(band)
     words = _fastest_finish_words(story)
     return max(1, round(words / pace))
 

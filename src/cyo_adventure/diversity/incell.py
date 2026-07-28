@@ -160,10 +160,26 @@ def iter_incell_pairs() -> Iterator[PairDistance]:
             # lets the cell label state when style did not partition.
             # #VERIFY: tests/unit/test_incell_clone_audit.py::
             # test_lower_band_pairs_are_not_double_counted
+            #
+            # #CRITICAL: data integrity: the audit measures continuations that
+            # generation selection deliberately excludes (AL-045). A book 2 is
+            # never *drawn* for a cell, but if it re-skins book 1 it is still a
+            # near-duplicate tree a series reader meets, so it must stay in the
+            # catalog-quality measurement. Passing include_continuations=True
+            # keeps the audit independent of the selection filter; without it a
+            # book-2 re-skin would silently drop out of the gate and the #415
+            # allowlist entry that tracks it would read as stale.
+            # #VERIFY: tests/unit/test_incell_clone_audit.py::
+            # test_exactly_one_pair_breaches_the_floor
             by_slugs: dict[tuple[str, ...], list[str]] = {}
             for style in NarrativeStyle:
                 slugs = tuple(
-                    candidates_for_cell(band.value, length.value, style.value)
+                    candidates_for_cell(
+                        band.value,
+                        length.value,
+                        style.value,
+                        include_continuations=True,
+                    )
                 )
                 if len(slugs) < 2:
                     continue

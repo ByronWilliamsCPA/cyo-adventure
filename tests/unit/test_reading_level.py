@@ -346,3 +346,23 @@ class TestReadingLevelSentinelStrip:
         report = check_reading_level(story)
         rl13 = [f for f in report.findings if f.rule_id == "RL-13"]
         assert rl13 == [], "sentinel body must score within the wide tolerance band"
+
+
+def test_unfilled_skeleton_bodies_are_not_scored() -> None:
+    """A FILL directive is not prose, so scoring it is one dead warning per node.
+
+    Regression for AL-033-adjacent lesson AL-006: a ceiling-scale skeleton emitted
+    746 RL-13 warnings, one per node, which is noise that trains a reviewer to
+    ignore the rule.
+    """
+    directive = (
+        "<<FILL role=setup words=80 beats='the extraordinarily sophisticated "
+        "philosopher contemplated the incomprehensible metaphysical implications "
+        "of the multidimensional extraterrestrial manifestations with considerable "
+        "perspicacity and analytical deliberation'>>"
+    )
+    # Sanity: the same text as prose WOULD warn, so the skip is what silences it.
+    assert check_reading_level(_make_story(directive.replace("<<FILL", "FILL"), 3.0))
+    story = _make_story(directive, target=3.0)
+    report = check_reading_level(story)
+    assert report.warnings == [], "a FILL directive is not prose and must not score"

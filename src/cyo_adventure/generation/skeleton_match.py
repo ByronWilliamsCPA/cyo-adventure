@@ -144,7 +144,12 @@ def _production_candidates(band: str) -> list[tuple[str, StoryMetadata]]:
 
 
 def skeleton_matches_cell(
-    metadata: StoryMetadata, *, band: str, length: str, style: str
+    metadata: StoryMetadata,
+    *,
+    band: str,
+    length: str,
+    style: str,
+    include_continuations: bool = False,
 ) -> bool:
     """Return whether a skeleton's metadata matches a (band, length, style) cell.
 
@@ -159,6 +164,14 @@ def skeleton_matches_cell(
         style: The request's narrative style; ignored for every band except
             "13-16" and "16+" (ADR-011: style collapses to prose below the
             teen bands).
+        include_continuations: When False (the default, used by generation
+            selection), a mid-series continuation is not a cell match, because
+            it must not be drawn for an ordinary themed request (AL-045). When
+            True, the continuation gate is skipped: the in-cell clone audit
+            (diversity/incell.py) opts in so that a book 2 which re-skins book 1
+            is still measured against the catalog. Selection and catalog-quality
+            are separate concerns that happen to share this predicate; only the
+            audit sets this flag.
 
     Returns:
         True if age_band matches, the skeleton's length matches (or the
@@ -168,12 +181,46 @@ def skeleton_matches_cell(
     """
     if metadata.age_band != band:
         return False
+    if not include_continuations and is_continuation_skeleton(metadata):
+        return False
     if metadata.length is not None and metadata.length != length:
         return False
     return band not in _STYLE_AWARE_BANDS or metadata.narrative_style == style
 
 
-def candidates_for_cell(band: str, length: str, style: str) -> list[str]:
+def is_continuation_skeleton(metadata: StoryMetadata) -> bool:
+    """Return whether a skeleton is a mid-series book rather than an entry point.
+
+    A continuation book opens on state it did not earn: the Wyrmreach book 2
+    skeleton declares ``iron_key`` and ``knows_compact`` already true and
+    ``renown`` already at 2, and its opening beats name the artifact and the
+    conspiracy from book 1. Drawn for an ordinary themed request it delivers a
+    protagonist who owns things from a story the reader has never seen, and the
+    fill has to render those beats against an unrelated theme, so the Stage 1
+    fidelity check ends up fighting the skeleton instead of checking it.
+
+    Book 1 of a series stays selectable: it is a valid standalone entry point,
+    and its continuations are reached through the series flow
+    (``generation/series_link.py``), not through cell matching.
+
+    Args:
+        metadata: The skeleton's typed metadata.
+
+    Returns:
+        bool: True when the skeleton declares a series ``book_index`` above 1.
+    """
+    # #CRITICAL: data-integrity: without this, roughly 40% of
+    # (16+, medium, gamebook) requests drew a Wyrmreach book and about 20% drew
+    # book 2 specifically, pre-seeded with a previous book's outcome (AL-045).
+    # #VERIFY: test_continuation_book_is_not_a_cell_candidate and
+    # test_series_first_book_is_still_a_cell_candidate.
+    series = metadata.series
+    return series is not None and series.book_index > 1
+
+
+def candidates_for_cell(
+    band: str, length: str, style: str, *, include_continuations: bool = False
+) -> list[str]:
     """Return slugs of every production-eligible skeleton matching a cell.
 
     Args:
@@ -181,6 +228,10 @@ def candidates_for_cell(band: str, length: str, style: str) -> list[str]:
         length: The request's length, already defaulted if the request's own
             length was null.
         style: The request's narrative style.
+        include_continuations: Forwarded to :func:`skeleton_matches_cell`. The
+            default (False) is generation-selection behavior and excludes
+            mid-series books. The in-cell clone audit passes True so a
+            continuation is still measured against its cell-mates.
 
     Returns:
         Sorted-by-filename slugs; empty if no skeleton matches (the caller
@@ -190,7 +241,13 @@ def candidates_for_cell(band: str, length: str, style: str) -> list[str]:
     return [
         slug
         for slug, metadata in _production_candidates(band)
-        if skeleton_matches_cell(metadata, band=band, length=length, style=style)
+        if skeleton_matches_cell(
+            metadata,
+            band=band,
+            length=length,
+            style=style,
+            include_continuations=include_continuations,
+        )
     ]
 
 

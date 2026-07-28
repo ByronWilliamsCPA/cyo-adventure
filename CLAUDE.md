@@ -43,6 +43,30 @@ This feedback will be shared with the template team to improve the cookiecutter 
 
 ---
 
+## Authoring Lessons Requirement (CRITICAL)
+
+Story development is a refinement loop, not a one-shot. Every authoring run must leave behind what it
+taught us, so a lesson learned once becomes a change to the tooling instead of folklore the next
+author rediscovers.
+
+**MANDATORY**: at the end of any story authoring run (a new story or series book, a skeleton
+promotion, a fill pass, or a validator change made in service of authoring), you MUST append any
+lessons learned to [docs/planning/authoring-lessons-log.md](docs/planning/authoring-lessons-log.md).
+
+- One row per lesson: `ID`, `Date`, `Source`, `Category`, `Lesson`, `Proposed change`, `Status`, `Ref`.
+- A lesson qualifies if it cost real iteration to discover, if the tooling let a defect through or
+  reported it without pointing at the cause, or if the next person would re-learn it from scratch.
+- Every lesson carries a **proposed change**, so the log drives work rather than collecting anecdotes.
+- `applied`, `rejected`, and `superseded` are claims about something having happened and require a
+  `Ref` that proves it.
+- Validate before committing: `uv run python scripts/check_lessons_log.py`.
+- A run that produced no lesson appends nothing; an empty run is a real outcome.
+
+Note the split from the section above: **template** issues go to `docs/template_feedback.md`;
+**authoring and validator** lessons go to the authoring lessons log.
+
+---
+
 ## Project Overview
 
 **Name**: CYO Adventure

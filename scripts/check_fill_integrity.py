@@ -130,9 +130,30 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("skeleton", help="Path to the pristine skeleton JSON.")
     parser.add_argument("filled", help="Path to the filled story JSON.")
     args = parser.parse_args(argv)
+    # #CRITICAL: data-integrity: this check is a comparison, so it is only as
+    # good as the independence of its two inputs. A builder bug once wrote the
+    # prose story to BOTH paths, and the structural comparison then compared a
+    # file with itself and PASSED, silently making the verification vacuous
+    # (AL-016). A check that cannot fail manufactures confidence, so refuse the
+    # degenerate inputs outright instead of reporting a meaningless success.
+    # #VERIFY: test_check_fill_integrity_rejects_same_file and
+    # test_check_fill_integrity_rejects_a_skeleton_with_no_markers.
+    if Path(args.skeleton).resolve() == Path(args.filled).resolve():
+        sys.stderr.write(
+            "FAIL inputs: skeleton and filled are the same file, so the "
+            "structural comparison would trivially pass and prove nothing\n"
+        )
+        return 1
     skeleton = _load(args.skeleton)
     filled = _load(args.filled)
     if skeleton is None or filled is None:
+        return 1
+    if _FILL_MARKER not in json.dumps(skeleton):
+        sys.stderr.write(
+            f"FAIL inputs: '{args.skeleton}' contains no {_FILL_MARKER} directive, "
+            f"so it is not an unfilled skeleton; comparing two filled stories "
+            f"cannot detect a failed fill\n"
+        )
         return 1
     failed = False
 
