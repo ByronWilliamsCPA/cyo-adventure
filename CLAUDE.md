@@ -615,6 +615,11 @@ FastAPI backend (src/cyo_adventure/)
    - validator/      deterministic two-layer validation gate (topology, safety,
                       reading level, band profile) before anything reaches a human
    - moderation/      safety classifiers, fidelity review, repair, thresholds
+   - diversity/       structural/lexical similarity metrics; anti-template guard
+                      at request time (story_requests/authoring_plan.py,
+                      generation/binding.py, generation/worker.py), inside the
+                      moderation pipeline (moderation/leaf_diversity.py), and in
+                      flywheel/ (strategy.py, trigger.py)
    - publishing/      guardian approve-and-publish state machine
    - covers/          AI cover-art generation (nano banana), storage, optimization
    - player/          reading/replay state engine
@@ -623,6 +628,16 @@ FastAPI backend (src/cyo_adventure/)
    v
 PostgreSQL (async SQLAlchemy, core/database.py) + Redis (RQ job queue)
 ```
+
+**Offline-only, not part of the request path above:** `mutation/` (ADR-020,
+WS-5) is a catalog-time skeleton mutation core, a CLI authoring accelerator run
+via `scripts/mutate_skeleton.py` / `scripts/calibrate_mutation_floors.py` to
+grow the skeleton catalog offline. It reads no request, database, or network by
+design and is never imported by `app.py` or any router; do not mistake its size
+(it holds the largest file in the backend, `mutation/operators.py` at ~4,200
+lines) for production surface area. It is unrelated to the `mutmut`
+mutation-testing tool referenced elsewhere in this file: shared vocabulary, no
+shared code.
 
 **Key architectural facts a future instance needs:**
 
@@ -683,6 +698,12 @@ src/cyo_adventure/
 │                            # band_profile, series, walk, policy, report
 ├── moderation/               # classifiers, fidelity_review, pipeline, repair,
 │                            # review_provider, thresholds
+├── diversity/                # similarity metrics, anti-template guard, request-time
+│                            # query; live (authoring_plan, binding, worker,
+│                            # moderation pipeline, flywheel)
+├── mutation/                 # OFFLINE ONLY (ADR-020): catalog-time skeleton mutation
+│                            # CLI, run via scripts/mutate_skeleton.py; never imported
+│                            # by app.py or any router; not part of the deployed service
 ├── publishing/               # service.py, state_machine.py (approve -> publish)
 ├── covers/                   # AI cover-art: prompt, provider, service, storage,
 │                            # optimize, worker
