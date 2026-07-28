@@ -177,8 +177,9 @@ in PROJECT-PLAN.md section 1's audit note):
   [skeleton-corpus-story-generation-test-plan.md](./skeleton-corpus-story-generation-test-plan.md)
   (0/21 skeletons proven end-to-end).
 - Issues #125 (Supabase RLS not enabled on 13 public tables) and #214 (R2 cover-art backfill),
-  both cited in `handoff-r2-readiness-2026-07-11.md`, appear in neither master document by
-  number or description.
+  both cited in `handoff-r2-readiness-2026-07-11.md` (retired in PR #444; recoverable via
+  `git show 4afe490~1:docs/planning/handoff-r2-readiness-2026-07-11.md`), appear in neither
+  master document by number or description.
 - **Update, same day**: #321 (WS-5 structure/state variation, ADR-020), #323 (ADR-021, service
   accounts/RLS/worker deployment), and #311 (a second, larger COPPA/GDPR remediation pass:
   data rights, verifiable parental consent, self-signup approval, audit logging, plus new
