@@ -363,7 +363,7 @@
       [
         "Wait for the ninth hour and walk out with the file.",
         "a4_file_out",
-        "knows_compact"
+        "deep_charts"
       ],
       [
         "Sit down on the stair. You are finished.",
@@ -591,7 +591,7 @@
       [
         "Ask for the Warden charter and a standing writ.",
         "e_a4_win_charter",
-        "renown>=2"
+        "renown>=2&oath_sworn"
       ],
       [
         "Hand over the relay iron with the report.",
@@ -735,7 +735,7 @@
     "i": "e_a4_keeper_office",
     "r": "failure",
     "w": 70,
-    "e": "setback|negative|Somebody Has to Count",
+    "e": "setback|neutral|Somebody Has to Count",
     "b": "written into a Warden file in the captain's own hand: the door is shut, all nine irons are seated, and the count is kept by the captain of the Ninth Sword, who will be at the Marchgate every ninth night for the rest of a life that now has a schedule attached",
     "s": [
       "sad_moment"
@@ -825,7 +825,7 @@
     "i": "e_a4_opened",
     "r": "failure",
     "w": 70,
-    "e": "death|negative|Finish What You Started",
+    "e": "capture|negative|Finish What You Started",
     "b": "the fourth iron drawn while the paymaster's voice is still being courteous, and then the fifth, after which no further decisions are required of anybody in the gallery, because the arrangement has concluded and the accounts are being settled in the order they were opened",
     "s": [
       "peril",
@@ -857,7 +857,7 @@
     "i": "e_a4_spoke",
     "r": "failure",
     "w": 70,
-    "e": "death|negative|Spoken To",
+    "e": "capture|negative|Spoken To",
     "b": "one sentence spoken through a hand's width of open door, in common speech, politely, and the reply arriving not as sound but as arithmetic: the company counted, priced, scheduled and entered against an instalment recorded as falling due immediately",
     "s": [
       "peril",
@@ -868,7 +868,7 @@
     "i": "e_a4_in_for_people",
     "r": "failure",
     "w": 70,
-    "e": "death|negative|Somebody Has To",
+    "e": "capture|negative|Somebody Has To",
     "b": "the door pushed wide and five people walking into a hall the size of a mountain to bring out four thousand who are standing in rows counting, which is the most defensible decision anybody makes in this story, and which adds five to the rows and changes nothing else",
     "s": [
       "peril",
@@ -879,7 +879,7 @@
     "i": "e_a4_lamp",
     "r": "failure",
     "w": 65,
-    "e": "death|negative|Reaching For the Lamp",
+    "e": "capture|negative|Reaching For the Lamp",
     "b": "an arm through the gap to take back a lamp relit by nobody, and the lamp handed over properly into the hand that reached for it by something that has been waiting nine hundred years for a transaction it did not have to begin itself",
     "s": [
       "peril",
@@ -922,7 +922,7 @@
     "i": "e_a4_ledger_lingered",
     "r": "failure",
     "w": 70,
-    "e": "death|negative|The Clerk's Tally, Too",
+    "e": "capture|negative|The Clerk's Tally, Too",
     "b": "the plaster tally chiselled off the cubby wall because it is evidence and evidence wins arguments with Wardens, which takes eleven minutes, which is about eight minutes longer than the clerk's own arrangement allowed for with whatever comes to read his wall on the hour",
     "s": [
       "peril",
@@ -933,7 +933,7 @@
     "i": "e_a4_sat_down",
     "r": "failure",
     "w": 65,
-    "e": "death|negative|Sat Down on the Stair",
+    "e": "capture|negative|Sat Down on the Stair",
     "b": "a captain sitting down on the two hundredth step because the legs have finished arguing, a company that will not leave without its captain, and a stair that has been getting longer all evening and is in no hurry whatsoever",
     "s": [
       "peril",

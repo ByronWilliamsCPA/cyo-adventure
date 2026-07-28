@@ -1719,7 +1719,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a1_gibbet_night",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Counted at the Fourth Station"
       },
@@ -1811,7 +1811,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a1_counted",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Given the Next Number"
       },
@@ -3037,7 +3037,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a2_nest",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "On Your Terms"
       },
@@ -3054,7 +3054,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a2_tooth",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Off the Nearest One's Belt"
       },
@@ -3098,7 +3098,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a2_carry",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Evidence for the Warden"
       },
@@ -3114,7 +3114,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a2_ask_too_long",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "The Ninth Question"
       },
@@ -3142,7 +3142,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a2_mouth",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "As the Frozen Man Carried His"
       },
@@ -3158,7 +3158,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a2_hole",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Down the Clerk's Hole"
       },
@@ -3221,7 +3221,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a2_douse",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "What Comes Up to Relight Them"
       },
@@ -4295,7 +4295,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_landing_rest",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Twenty Minutes on the Stair"
       },
@@ -4311,7 +4311,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_shrine_take",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "One of the Eight"
       },
@@ -4327,7 +4327,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_count_steps",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Counted on the Stair"
       },
@@ -4343,7 +4343,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_grab",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Taken Hold Of"
       },
@@ -4390,7 +4390,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_sink",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Holed From Below"
       },
@@ -4469,7 +4469,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_hands",
-        "kind": "death",
+        "kind": "discovery",
         "valence": "negative",
         "title": "Where His Hands Went"
       },
@@ -4501,7 +4501,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_read_end",
-        "kind": "death",
+        "kind": "discovery",
         "valence": "negative",
         "title": "The Name at the Bottom"
       },
@@ -4534,7 +4534,7 @@
       "ending": {
         "id": "end_e_a3_accept",
         "kind": "capture",
-        "valence": "negative",
+        "valence": "neutral",
         "title": "One of the Five"
       },
       "safety_scope": [
@@ -4549,7 +4549,7 @@
       "ending": {
         "id": "end_e_a3_accept_self",
         "kind": "setback",
-        "valence": "negative",
+        "valence": "neutral",
         "title": "The Ninth Hand's Chair"
       },
       "safety_scope": [
@@ -4578,7 +4578,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_chapel_defends",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Nine Benches Worth"
       },
@@ -4595,7 +4595,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_vale_count",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "A Count Without a Keeper"
       },
@@ -4669,7 +4669,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_ring",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "The Empty Tenth Chair"
       },
@@ -4685,7 +4685,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a3_through",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Once, So You Know"
       },
@@ -5256,7 +5256,7 @@
           "condition": {
             "==": [
               {
-                "var": "knows_compact"
+                "var": "deep_charts"
               },
               true
             ]
@@ -5536,11 +5536,23 @@
           "label": "Ask for the Warden charter and a standing writ.",
           "target": "e_a4_win_charter",
           "condition": {
-            ">=": [
+            "and": [
               {
-                "var": "renown"
+                ">=": [
+                  {
+                    "var": "renown"
+                  },
+                  2
+                ]
               },
-              2
+              {
+                "==": [
+                  {
+                    "var": "oath_sworn"
+                  },
+                  true
+                ]
+              }
             ]
           }
         },
@@ -5820,7 +5832,7 @@
       "ending": {
         "id": "end_e_a4_keeper_office",
         "kind": "setback",
-        "valence": "negative",
+        "valence": "neutral",
         "title": "Somebody Has to Count"
       },
       "safety_scope": [
@@ -5964,7 +5976,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a4_opened",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Finish What You Started"
       },
@@ -6011,7 +6023,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a4_spoke",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Spoken To"
       },
@@ -6027,7 +6039,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a4_in_for_people",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Somebody Has To"
       },
@@ -6043,7 +6055,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a4_lamp",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Reaching For the Lamp"
       },
@@ -6111,7 +6123,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a4_ledger_lingered",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "The Clerk's Tally, Too"
       },
@@ -6127,7 +6139,7 @@
       "choices": [],
       "ending": {
         "id": "end_e_a4_sat_down",
-        "kind": "death",
+        "kind": "capture",
         "valence": "negative",
         "title": "Sat Down on the Stair"
       },

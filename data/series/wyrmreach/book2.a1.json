@@ -686,7 +686,7 @@
     "i": "e_a1_gibbet_night",
     "r": "failure",
     "w": 65,
-    "e": "death|negative|Counted at the Fourth Station",
+    "e": "capture|negative|Counted at the Fourth Station",
     "b": "a dry warm camp at the fourth station, and at the third hour the file arrives and stops, and a voice begins a count that includes the sleepers by name in the order they lay down, with the captain ninth",
     "s": [
       "peril",
@@ -748,7 +748,7 @@
     "i": "e_a1_counted",
     "r": "failure",
     "w": 65,
-    "e": "death|negative|Given the Next Number",
+    "e": "capture|negative|Given the Next Number",
     "b": "the next number given aloud, and the shape at the edge of the lamplight accepting it as an answer and stepping in to complete the transaction, and whatever the Ninth Sword becomes afterwards is counted, kept, and no longer a company",
     "s": [
       "peril",

@@ -987,7 +987,7 @@
     "i": "e_a2_nest",
     "r": "failure",
     "w": 60,
-    "e": "death|negative|On Your Terms",
+    "e": "capture|negative|On Your Terms",
     "b": "four pale couriers woken deliberately in a dark store room by a company that had a plan, which survives until the second one comes off the ceiling behind the line, after which the stores are simply a larder with more in them",
     "s": [
       "peril",
@@ -999,7 +999,7 @@
     "i": "e_a2_tooth",
     "r": "failure",
     "w": 55,
-    "e": "death|negative|Off the Nearest One's Belt",
+    "e": "capture|negative|Off the Nearest One's Belt",
     "b": "a relay iron lifted off a sleeping courier's belt, which takes two seconds, and the fourth one deciding after all that it is worth bothering, and a salt line that was laid for people who keep walking forward",
     "s": [
       "peril",
@@ -1028,7 +1028,7 @@
     "i": "e_a2_carry",
     "r": "failure",
     "w": 60,
-    "e": "death|negative|Evidence for the Warden",
+    "e": "capture|negative|Evidence for the Warden",
     "b": "a drained Warden cut out of the barricade and carried up the road on a shield because evidence wins arguments with Wardens, and the thing on the shield waiting until the second station to demonstrate what it was kept alive to do",
     "s": [
       "peril",
@@ -1039,7 +1039,7 @@
     "i": "e_a2_ask_too_long",
     "r": "failure",
     "w": 60,
-    "e": "death|negative|The Ninth Question",
+    "e": "capture|negative|The Ninth Question",
     "b": "the ninth question asked and answered: the company's own names given back in the order they came through the gate, with the hour of each, after which all nine Wardens along the wall fold their hands the same way at once",
     "s": [
       "peril",
@@ -1057,7 +1057,7 @@
     "i": "e_a2_mouth",
     "r": "failure",
     "w": 60,
-    "e": "death|negative|As the Frozen Man Carried His",
+    "e": "capture|negative|As the Frozen Man Carried His",
     "b": "the relay iron carried in the mouth the way the frozen man in the adit carried his, because both hands were needed on the rope, and no time afterwards to spit it out and explain that the arrangement was purely practical",
     "s": [
       "peril",
@@ -1068,7 +1068,7 @@
     "i": "e_a2_hole",
     "r": "failure",
     "w": 55,
-    "e": "death|negative|Down the Clerk's Hole",
+    "e": "capture|negative|Down the Clerk's Hole",
     "b": "eleven feet down a broken wall into a room where the bootprints go round and round, and the circle turning out to have a middle, and the middle being occupied, and having been waiting for exactly this",
     "s": [
       "peril",
@@ -1111,7 +1111,7 @@
     "i": "e_a2_douse",
     "r": "failure",
     "w": 60,
-    "e": "death|negative|What Comes Up to Relight Them",
+    "e": "capture|negative|What Comes Up to Relight Them",
     "b": "nine lamps out and the company waiting in the dark to see who tends them, and the answer coming up the stair without a light, relighting all nine from the bottom bracket upward, and taking the trimming very seriously indeed",
     "s": [
       "peril",

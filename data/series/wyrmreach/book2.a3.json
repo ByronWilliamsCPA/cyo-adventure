@@ -879,7 +879,7 @@
     "i": "e_a3_landing_rest",
     "r": "failure",
     "w": 60,
-    "e": "death|negative|Twenty Minutes on the Stair",
+    "e": "capture|negative|Twenty Minutes on the Stair",
     "b": "twenty minutes on the first landing with boots off, which the schedule board warned about in chalk, and the stair's own traffic arriving on time to find a company sitting in a right of way nine hundred years in continuous use",
     "s": [
       "peril",
@@ -890,7 +890,7 @@
     "i": "e_a3_shrine_take",
     "r": "failure",
     "w": 55,
-    "e": "death|negative|One of the Eight",
+    "e": "capture|negative|One of the Eight",
     "b": "a token lifted out of the second niche and the seven remaining turning a quarter turn in their sockets at once, and the stair below filling with the sound of somebody coming up two flights at a time to correct an error",
     "s": [
       "peril",
@@ -901,7 +901,7 @@
     "i": "e_a3_count_steps",
     "r": "failure",
     "w": 55,
-    "e": "death|negative|Counted on the Stair",
+    "e": "capture|negative|Counted on the Stair",
     "b": "the steps counted aloud in the dark to keep five people together, which works to eight, and then a second voice taking over the counting from below without a break, and the company descending because the numbers keep being correct",
     "s": [
       "peril",
@@ -912,7 +912,7 @@
     "i": "e_a3_grab",
     "r": "failure",
     "w": 55,
-    "e": "death|negative|Taken Hold Of",
+    "e": "capture|negative|Taken Hold Of",
     "b": "a hand put out to take hold of what is passing on the stair, which turns out to be entirely willing to be held, and to have been waiting a long time for somebody to begin the transaction rather than merely submit to it",
     "s": [
       "peril",
@@ -944,7 +944,7 @@
     "i": "e_a3_sink",
     "r": "failure",
     "w": 55,
-    "e": "death|negative|Holed From Below",
+    "e": "capture|negative|Holed From Below",
     "b": "the barge holed from underneath and going down in eight feet of warm water with its crate, and the crate opening as it sinks, and whatever the Compact packed in it deciding that the nearest hands in the water will do",
     "s": [
       "peril",
@@ -998,7 +998,7 @@
     "i": "e_a3_hands",
     "r": "failure",
     "w": 55,
-    "e": "death|negative|Where His Hands Went",
+    "e": "discovery|negative|Where His Hands Went",
     "b": "a search for a dead paymaster's hands, which are found in the wall's tally-groove where they have been cutting the same nine strokes for four years, still working when the lamp finds them, and stopping the moment they are noticed",
     "s": [
       "peril",
@@ -1020,7 +1020,7 @@
     "i": "e_a3_read_end",
     "r": "failure",
     "w": 60,
-    "e": "death|negative|The Name at the Bottom",
+    "e": "discovery|negative|The Name at the Bottom",
     "b": "the wall-tally read to the bottom of the final group, where the ninth stroke has been begun and left unfinished, and a name cut beside it in fresh bright work that is not the paymaster's and not Ferrin's",
     "s": [
       "peril",
@@ -1042,7 +1042,7 @@
     "i": "e_a3_accept",
     "r": "failure",
     "w": 65,
-    "e": "capture|negative|One of the Five",
+    "e": "capture|neutral|One of the Five",
     "b": "a name spoken aloud in a warm chapel and written into the book without hurry, and the company walking out of the march four strong and rich with the road safe for nine years, which is a real thing that was really bought",
     "s": [
       "sad_moment"
@@ -1052,7 +1052,7 @@
     "i": "e_a3_accept_self",
     "r": "failure",
     "w": 65,
-    "e": "setback|negative|The Ninth Hand's Chair",
+    "e": "setback|neutral|The Ninth Hand's Chair",
     "b": "the captain's own name in the ninth hand's book, the company sent up the stair with the road-book and the iron and the arrears, and a new keeper sitting down at a clerk's desk to learn a count that has been running since before the road was cut",
     "s": [
       "sad_moment"
@@ -1072,7 +1072,7 @@
     "i": "e_a3_chapel_defends",
     "r": "failure",
     "w": 60,
-    "e": "death|negative|Nine Benches Worth",
+    "e": "capture|negative|Nine Benches Worth",
     "b": "a stand made in a chapel against nine benches of standing dust, won for ninety seconds and then lost for the reason Ferrin did not think worth mentioning, which is that everybody who has ever sat in that room is still on the roll",
     "s": [
       "peril",
@@ -1084,7 +1084,7 @@
     "i": "e_a3_vale_count",
     "r": "failure",
     "w": 60,
-    "e": "death|negative|A Count Without a Keeper",
+    "e": "capture|negative|A Count Without a Keeper",
     "b": "the silence after Ferrin's death waited out to see what a count does without a keeper, and the answer arriving from the direction of the door: it looks for the nearest hand that has held an iron today, and it is not particular about consent",
     "s": [
       "peril",
@@ -1133,7 +1133,7 @@
     "i": "e_a3_ring",
     "r": "failure",
     "w": 55,
-    "e": "death|negative|The Empty Tenth Chair",
+    "e": "capture|negative|The Empty Tenth Chair",
     "b": "a ring taken off the arm of a stone chair that has nobody sitting in it, and the nine road-wardens turning their heads together to see who has accepted the office, and the plaque under the tenth chair turning out to be a job description",
     "s": [
       "peril",
@@ -1144,7 +1144,7 @@
     "i": "e_a3_through",
     "r": "failure",
     "w": 55,
-    "e": "death|negative|Once, So You Know",
+    "e": "capture|negative|Once, So You Know",
     "b": "one long look at the occupied chair, taken deliberately so that at least one person in the company would know what was in the room, and the thing in the chair returning the courtesy in full and at length",
     "s": [
       "peril",
