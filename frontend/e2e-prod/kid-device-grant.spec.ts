@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { gotoResilient } from './support/rate-limit'
 
 /**
  * The one prod spec that WRITES: it exercises the real ADR-014 device-grant
@@ -97,7 +98,7 @@ test.describe('kid access via a real device grant', () => {
   })
 
   test('the guardian authorizes this device for kid access', async () => {
-    await sharedPage.goto('/guardian')
+    await gotoResilient(sharedPage, '/guardian')
     await unlockParentalGateIfPresent(sharedPage)
 
     // First run shows "Set up this device for your kids"; a prior interrupted
@@ -123,7 +124,7 @@ test.describe('kid access via a real device grant', () => {
   })
 
   test('the authorized device opens the test kid library', async () => {
-    await sharedPage.goto('/kids')
+    await gotoResilient(sharedPage, '/kids')
     await expect(sharedPage.getByRole('heading', { name: "Who's reading?", level: 1 })).toBeVisible()
 
     // The picker tile is a link whose accessible name is the display name (its
@@ -141,7 +142,7 @@ test.describe('kid access via a real device grant', () => {
   test('the guardian revokes the device authorization', async () => {
     // Crossing into /kids parked the AdultGate (DeviceAuthorizedRoute calls
     // parkAdultGate), so this navigation lands cold and needs a re-unlock.
-    await sharedPage.goto('/guardian')
+    await gotoResilient(sharedPage, '/guardian')
     await unlockParentalGateIfPresent(sharedPage)
 
     // "Remove from this device" clears the local grant only after the server

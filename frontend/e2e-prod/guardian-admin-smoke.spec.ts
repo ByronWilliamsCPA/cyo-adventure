@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
 import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
+import { gotoResilient } from './support/rate-limit'
 
 /**
  * Read-only render smoke for both adult consoles on LIVE production, driven by
@@ -23,9 +24,13 @@ test.describe('dual-role account across both adult consoles', () => {
   // Serial (also enforced by fullyParallel:false/workers:1 in
   // playwright.e2e-prod.config.ts, made explicit here): the tests share one
   // authenticated page rather than each logging into production separately, so
-  // this suite performs one real login instead of many. Keeping the page count
-  // modest also stays comfortably under the prod backend's 60 rpm/IP limit
-  // (that limiter is disabled only in ENVIRONMENT=local).
+  // this suite performs one real login instead of many. One login plus a
+  // shared page is necessary but NOT sufficient against the prod backend's
+  // 60 rpm/IP limit (disabled only in ENVIRONMENT=local): each goto reloads
+  // the SPA and every mount fans out into several GETs, so nine back-to-back
+  // navigations can still burst past 60 in the rolling minute. gotoResilient
+  // paces navigations under that ceiling and backs off/retries on any residual
+  // 429, so a rate-limit blip never fails an otherwise-green run.
   test.describe.configure({ mode: 'serial' })
 
   let sharedPage: Page
@@ -51,7 +56,7 @@ test.describe('dual-role account across both adult consoles', () => {
     ['/admin/moderation-dashboard', 'Moderation dashboard'],
   ] as const) {
     test(`${path} renders without the error boundary`, async () => {
-      await sharedPage.goto(path)
+      await gotoResilient(sharedPage, path)
       // ADR-014: the adult subtree sits behind a single AdultGate. The real
       // sign-in in beforeAll warms it (sessionStorage, 5-min TTL) and that
       // warmth persists across these same-tab navigations, so this is usually

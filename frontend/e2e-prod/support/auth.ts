@@ -2,6 +2,7 @@ import { expect, type Page } from '@playwright/test'
 
 import { GUARDIAN_LOGIN_PATH } from '../../src/routes'
 import { requireProdCredentials } from './prod-env'
+import { backoffDelayMs, RATE_LIMIT_ALERT } from './rate-limit'
 
 /**
  * Signs in through the real login form against live production. Unlike the
@@ -9,40 +10,56 @@ import { requireProdCredentials } from './prod-env'
  * is no shortcut here: production verifies a real JWT signature and JWKS, so
  * this must go through an actual Supabase sign-in and land wherever the app
  * redirects a resolved Principal (guardian console or admin console).
+ *
+ * Retries the whole sign-in on a transient rate-limit blip. The Supabase auth
+ * itself succeeds (JWT + JWKS verified server-side), but a 429 on the immediate
+ * `/v1/me` follow-up makes AuthContext render "we couldn't load your account",
+ * which is indistinguishable from a real auth break at the UI. A real failure
+ * (bad password, 5xx) shows a different alert and surfaces immediately; only a
+ * rate-limit alert triggers backoff-and-retry.
  */
-export async function signInAsProdTestAdmin(page: Page): Promise<void> {
+export async function signInAsProdTestAdmin(page: Page, maxAttempts = 3): Promise<void> {
   const { email, password } = requireProdCredentials()
 
-  await page.goto(GUARDIAN_LOGIN_PATH)
-  await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Password').fill(password)
-  await page.getByRole('button', { name: 'Sign in' }).click()
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    await page.goto(GUARDIAN_LOGIN_PATH)
+    await page.getByLabel('Email').fill(email)
+    await page.getByLabel('Password').fill(password)
+    await page.getByRole('button', { name: 'Sign in' }).click()
 
-  // Signed-in resolution is async (session -> /v1/me -> redirect); give it
-  // real network time rather than the default assertion timeout. Race
-  // against LoginPage's on-page error alert so a genuine login failure (bad
-  // password, rate limit, 5xx) surfaces its actual message instead of a bare
-  // 15s "expect().not.toHaveURL() timeout exceeded".
-  const left = page
-    .waitForURL((url) => url.pathname !== GUARDIAN_LOGIN_PATH, { timeout: 15_000 })
-    .then(() => null)
-  const failed = page
-    .getByRole('alert')
-    .waitFor({ state: 'visible', timeout: 15_000 })
-    .then(() => page.getByRole('alert').innerText())
+    // Signed-in resolution is async (session -> /v1/me -> redirect); give it
+    // real network time rather than the default assertion timeout. Race
+    // against LoginPage's on-page error alert so a genuine login failure (bad
+    // password, rate limit, 5xx) surfaces its actual message instead of a bare
+    // 15s "expect().not.toHaveURL() timeout exceeded".
+    const left = page
+      .waitForURL((url) => url.pathname !== GUARDIAN_LOGIN_PATH, { timeout: 15_000 })
+      .then(() => null)
+    const failed = page
+      .getByRole('alert')
+      .waitFor({ state: 'visible', timeout: 15_000 })
+      .then(() => page.getByRole('alert').innerText())
 
-  const alertText = await Promise.race([left, failed])
-  if (alertText !== null) {
-    throw new Error(`Production login failed: ${alertText}`)
-  }
+    const alertText = await Promise.race([left, failed])
+    if (alertText === null) {
+      // Landing spot is either the guardian or admin console depending on the
+      // account's role/capability mix (see api/me and the dual-role shells);
+      // the login path itself is already ruled out above, so a real destination
+      // check just confirms we reached one of the two adult consoles.
+      const destination = new URL(page.url()).pathname
+      if (!destination.startsWith('/guardian') && !destination.startsWith('/admin')) {
+        throw new Error(`Unexpected post-login destination: ${destination}`)
+      }
+      return
+    }
 
-  // Landing spot is either the guardian or admin console depending on the
-  // account's role/capability mix (see api/me and the dual-role shells); the
-  // login path itself is already ruled out above, so a real destination
-  // check just confirms we reached one of the two adult consoles.
-  const destination = new URL(page.url()).pathname
-  if (!destination.startsWith('/guardian') && !destination.startsWith('/admin')) {
-    throw new Error(`Unexpected post-login destination: ${destination}`)
+    // An alert surfaced. A rate-limit / account-load blip (a 429 on /v1/me) is
+    // transient, so back off and retry the whole sign-in; any other alert (bad
+    // password, 5xx) is a real failure and must surface on the first attempt.
+    if (!RATE_LIMIT_ALERT.test(alertText) || attempt === maxAttempts) {
+      throw new Error(`Production login failed: ${alertText}`)
+    }
+    await page.waitForTimeout(backoffDelayMs(attempt))
   }
 }
 

@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 import { GUARDIAN_LOGIN_PATH } from '../src/routes'
+import { gotoResilient } from './support/rate-limit'
 
 /**
  * Unauthenticated public surfaces on LIVE production. These are the lightest
@@ -12,7 +13,7 @@ import { GUARDIAN_LOGIN_PATH } from '../src/routes'
  */
 test.describe('public surfaces (unauthenticated)', () => {
   test('the landing page renders its title and both doors', async ({ page }) => {
-    await page.goto('/')
+    await gotoResilient(page, '/')
     await expect(page.getByRole('heading', { name: 'CYO Adventure', level: 1 })).toBeVisible()
     // The two audience doors live in a labelled nav; their visible text
     // ("Kids", "Grown-ups") is span content inside the links, so match the
@@ -23,7 +24,7 @@ test.describe('public surfaces (unauthenticated)', () => {
   })
 
   test('the guardian sign-in form renders its fields', async ({ page }) => {
-    await page.goto(GUARDIAN_LOGIN_PATH)
+    await gotoResilient(page, GUARDIAN_LOGIN_PATH)
     // The heading is "Guardian sign-in" (not "Sign in", which is the submit
     // button). exact:true on the field labels avoids matching the reset
     // sub-form's "Email for reset link" if the "Forgot your password?" toggle
