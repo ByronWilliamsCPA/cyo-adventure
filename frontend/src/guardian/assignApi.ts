@@ -1,9 +1,9 @@
 /**
  * Adapter from the axios instance to the assignment API (C4a-6).
  *
- * Hand-typed like profilesApi.ts: the generated client is not committed and
- * nothing imports it. Types mirror AssignmentListView in
- * src/cyo_adventure/api/schemas.py.
+ * Hand-typed like profilesApi.ts: the generated client under src/client exists
+ * only to drift-check the OpenAPI contract in CI; nothing in the app imports
+ * it. Types mirror AssignmentListView in src/cyo_adventure/api/schemas.py.
  */
 
 import type { AxiosInstance } from 'axios'
@@ -51,6 +51,13 @@ export interface GuardianBooksView {
 export interface AssignApi {
   get(storybookId: string): Promise<string[]>
   add(storybookId: string, profileIds: string[]): Promise<string[]>
+  /**
+   * Revoke a single child's access to a book (G8 per-child kill switch).
+   * Returns the family's full remaining assignment list for the book, same
+   * shape as add(). Idempotent: removing an already-unassigned child is a
+   * no-op that still returns the current list.
+   */
+  remove(storybookId: string, profileId: string): Promise<string[]>
   contentSummary(storybookId: string): Promise<ContentSummary>
   listBooks(): Promise<GuardianBookItem[]>
 }
@@ -65,6 +72,12 @@ export function makeAssignApi(api: AxiosInstance): AssignApi {
       const res = await api.post<AssignmentList>(`/v1/storybooks/${storybookId}/assignments`, {
         profile_ids: profileIds,
       })
+      return res.data.profile_ids
+    },
+    async remove(storybookId: string, profileId: string): Promise<string[]> {
+      const res = await api.delete<AssignmentList>(
+        `/v1/storybooks/${storybookId}/assignments/${profileId}`
+      )
       return res.data.profile_ids
     },
     async contentSummary(storybookId: string): Promise<ContentSummary> {
